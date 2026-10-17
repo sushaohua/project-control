@@ -1,0 +1,26 @@
+manifest_version: "1.0"
+timestamp: "2026-10-17T12:21:29+08:00"
+coordinator: "COORD"
+status: "planning-ready"
+repositories:
+  project-control:
+    url: "local:~/workspace/ai_soc_project/project-control"
+    commit: "initial"
+    status: "active-canonical"
+  soc-ap:
+    url: "local:~/workspace/ai_soc_project/soc-ap"
+    commit: "initial"
+    branch: "main"
+  mcu-p3:
+    url: "local:~/workspace/ai_soc_project/mcu-p3"
+    commit: "initial"
+    branch: "main"
+  test_harness:
+    url: "local:~/workspace/ai_soc_project/test_harness"
+    commit: "initial"
+    branch: "main"
+hardware_environment:
+  mc_chip: "AT32F435VGT7"
+  th_chip: "AT32A423CCT7"
+  flasher_tool: "probe-rs 0.32.0"
+  soc_serial_port: "/dev/ttyUSB0 (115200 8N1)"
