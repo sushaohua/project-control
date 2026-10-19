@@ -2,7 +2,7 @@
 title: MS-01 工程与环境输入登记（本地资料已整理，源核验待进行）
 date: 2026-10-13
 created: '2026-10-13 13:11:46'
-updated: '2026-10-13 13:17:40'
+updated: '2026-10-19 19:58:27'
 timezone: 北京时间（UTC+8）
 status: materials-prepared
 approval_status: Draft
@@ -12,7 +12,15 @@ tags: [soc, mc, handoff, input-register]
 
 # MS-01 工程与环境输入登记
 
+> **2026-10-19 串口输入及用途更新：** 用户明确 AP `/dev/ttyUSB0` 接 MC USART2 PA2(TX)/PA3(RX)，115200 8N1；MC USART6 PA4(TX)/PA5(RX)接 TH USART1 PB6(TX)/PB7(RX)，921600 8N1；两段均无硬件流控。AP 替代原迪文屏，原屏不再连接 USART2。参数与串口初始化源码一致，但旧 USART2 DGUS 收发仍须迁移；本轮仅登记，不修改固件或进行硬件通信。当前原件见 [串口链路登记](serial_links.md)。下文 USART1 RX 是历史能力调查线索，不是本轮 AP 接入端口；后续能力核验应以 USART2 AP 请求/应答路径为重点，USART1 单独登记为调试通道。
+
+> **2026-10-19 19:44:07 开发分支确认：** 用户明确 MC/TH 开发使用 `origin/feat/soc-debug`。本地核对分支为 `feat/soc-debug`，upstream 为 `origin/feat/soc-debug`；HEAD 与本地缓存的远程跟踪引用均为 `14b8057b04030bd659744c874c73ff8f09f29979`，工作区干净。当前登记已同步到 `project-control/manifest.yaml`；下文 `b00e715...` 保留为历史快照。本次未连接远端服务器，不声称缓存引用是服务器最新状态，也不将源码快照当成构建/HIL 验收。正式任务卡的旧 `base_commit` 保留，实际派单前须按当前输入核对版本后再登记。
+
 **MC 工程的位置和历史方法已有文档输入；当前源码、构建结果、固件身份和 Ubuntu/SoC 访问条件仍需核验。**本记录完成当前项目内材料整理，不是 MS-01 验收通过，不把 MS-02/03 标为已执行。
+
+> **2026-10-19 工程位置更正：** 用户确认 MC 与 TH 源码均已放入工作区 `mcu-p3/`，共用同一个 Git 仓库，按目录区分。当前登记快照为分支 `feat/soc-debug`、HEAD `b00e7156363159fc70ff1b13829049b7d693137c`，工作区干净；MC App 在 `motion-controller-mcu/`，TH App 在 `color-engine-mcu/io_toggle/`，两端 Bootloader 分别在 `bootloader/435/`、`bootloader/423/`。这更新并取代下方历史材料里“工程路径/TH 仓库待提供”的状态。这里只核对本地 Git 元数据和目录存在性，不代表已审阅源码、配置或复现构建；MC、TH 没有独立的 Git 分支身份。
+
+> **2026-10-19 SoC/AP 环境更新：** 用户说明当前用 VMware Ubuntu 虚拟机模拟 SoC/AP，登录入口为 `ssh vmware`；VMware 中 CH341 USB 转串口报告为 `/dev/ttyUSB0`，依据用户提供的内核日志：`[92136.577564] usb 1-2.1: ch341-uart converter now attached to ttyUSB0`。本轮仅登记该信息，未实际 SSH、检查设备稳定性或运行 AP/SoC 程序；该模拟环境不等同于真实 SoC 板卡验收。
 
 作者：当前主对话助手，整理 INTEGRATOR 交接输入；未登记实际 COORD、独立 Reviewer 或 QA 签署。用户明确选择“本轮仅整理当前文档目录”；本轮不读取项目外工程。资料中的路径和命令只作输入，不构成写入、构建或设备操作授权。
 
@@ -31,16 +39,16 @@ tags: [soc, mc, handoff, input-register]
 
 | 输入 | 文档记载 | 原始来源 | 本次接受状态 |
 | --- | --- | --- | --- |
-| MC 私有 App | `/home/sushaohua/projects/boot/bootloader435/motion-controller-mcu` | [[mc_th_env_summary_20261012_170811]] §2.1；[[motion_controller_migration_step0_step1_step2_complete_handoff_20261012_163100]] | 路径已提供，实际存在/访问/版本待源核验 `[UNVERIFIED]` |
-| MC 远程仓库 | `ssh://git@192.168.77.113:2222/sushaohua/motion-controller-mcu.git`，Project 126 | 同上 | 文档输入；未连接远程，IP 是 GitLab 地址，不能当 VMware 地址 |
-| MC Bootloader 父工程 | `/home/sushaohua/projects/boot/bootloader435` | 同上 | 只需适用规则与指定交接日志；不扩大到整个父工程开发 |
+| MC App | `mcu-p3/motion-controller-mcu/` | 当前工作区 `mcu-p3` 仓 | 本地目录存在；仓库级分支 `feat/soc-debug`、HEAD `b00e7156363159fc70ff1b13829049b7d693137c`；源码/配置/构建状态仍待核 |
+| MC Bootloader | `mcu-p3/bootloader/435/` | 当前工作区 `mcu-p3` 仓 | 与 MC App 共用仓库、分支及 commit；具体适用规则与构建状态待核 |
+| MCU 远程仓库 | `ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git`，远程名 `origin` | 当前 `mcu-p3` Git 配置 | URL 已登记自本地配置；本轮未连接远程或验证远端分支状态。此地址不是 VMware 地址 |
 | 上游参考仓 | `/home/sushaohua/projects/motion-controller-mcu` | 环境汇总 §2.1 | 保持隔离，不读取或修改以替代私有工程 |
 | MC 历史构建基线 | `983b6c5` | 环境汇总 §2.1、Step 0 交接 | 历史报告身份，不作为当前 HEAD |
 | MC 能力分析快照 | HEAD `8d1c880d1277c79cd2b9d6c40dc8ed52846f18e1` 加当时工作区 | [[mc_capability_report_baseline]] §1.2、附录 C | 静态报告来源，未独立重读源码；最新状态 `[UNVERIFIED]` |
 | MC 历史产物 | `motion-controller-mcu/build/Marlin_AT32.elf`、`Marlin_AT32.bin`、`fw_mc.bin` | 交接与环境汇总 §4 | 实際路径/哈希/对应源码版本待核；既有二进制不代表现行构建通过 |
-| TH Bootloader | `/home/sushaohua/projects/boot/bootloader423`，远程 `bootloader423.git` | [[at32a423_project_handoff_20261010_195500]] | 只登记；这不是 TH 混色业务 App，也不在本轮拟请求读取范围 |
-| TH 业务 App | 自定义 Marlin / Color Engine | 环境汇总 §2.2、§8 | 仓库 URL、目录、commit 和查询/混色契约待 ENG-TH 提供 |
-| SoC 当前环境 | VMware Ubuntu 宿主程序，SSH 访问；CH340 USB 直通 MC | B0 D25；[[开发调试环境搭建（带SoC）.canvas]] | 方向已选；用户明确“还没有配置好。等执行的时候给出。”；访问/工程启动信息在执行时登记，不据此断言虚拟机或源码不存在 |
+| TH Bootloader | `mcu-p3/bootloader/423/` | 当前工作区 `mcu-p3` 仓 | 与 TH App 共用仓库、分支及 commit；目录存在，具体源码与构建状态待核 |
+| TH 业务 App | `mcu-p3/color-engine-mcu/io_toggle/` | 当前工作区 `mcu-p3` 仓 | 本地目录已登记；不再等待单独仓库 URL。查询/混色契约与构建状态待核 |
+| SoC/AP 当前环境 | VMware Ubuntu 虚拟机模拟 SoC/AP；SSH 别名 `vmware`；CH341 USB 转串口 `/dev/ttyUSB0` | 用户于 2026-10-19 提供；内核日志见本节更新 | 连接、设备可用性及 AP/SoC 工程的启动入口待实测/登记；模拟环境不替代真实目标板验收 |
 | Windows/WSL 工具 | probe-rs 0.32.0、Windows Python/pyserial | [[probe_rs_usage_guide_20261010_110700]]；环境汇总 §3 | 历史工具说明，未查实际安装或调用工具 |
 | 真实 SoC 板卡 | B0 D25 记录当前无板卡 | [[AI_SoC_协作方案/baseline/B0_方案基线]] | Canvas 实体 C302X/网口是后续环境，宿主 HIL 不代替目标 SoC 运行验收 |
 
@@ -86,16 +94,16 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
 | --- | --- |
 | 较早交接写移植独立 `bsp_usart6`；较新 Step 3 指定复用 `wk_usart` 独占 | 以较新明确的设计约束作为参考；当前代码是否实现仍需核对，不能把方案写成已执行 |
 | Step 3 设计要求 printf 走 USART1；能力快照指出输出链存在分歧 | 设计与快照实现分开，归档 `wk_usart.h` 并发变化可能改变最新状态，须核对声明/实现/链接 |
-| 2026-10-12 交接正文使用 AT32A423，但某条命令仍写 AT32F423 | 不复制旧烧录参数执行；真实芯片、探针与当前工具支持须维护者核对。本轮不调用 probe-rs |
+| TH 芯片型号与旧配置不一致（AT32F423VCT7、AT32F423RCT7、AT32A423CCT7） | 按维护者确认统一为 AT32F423CCT7；源码构建目标与项目文件已据此修正。烧录工具支持及实物丝印仍需在 MS-01 验证；本轮不调用 probe-rs |
 | 环境汇总称宿主代码与目标 SoC 100% 一致；B0 已要求独立验证目标端 | 以当前 B0 为工作依据，设备名/驱动/ABI/性能到板后复验；登记材料不把旧表述变成兼容性承诺 |
 
 ## 6. 需要补齐的最小信息
 
-1. **MC 只读源核验范围**：私有 App 工程，以及父目录适用 AGENTS.md、指定 `docs/` 交接日志。用户选择本轮仅整理当前目录，源读取留到后续实际执行阶段。当前项目 [[AGENTS]] 的访问范围要求项目外资料先征得同意。
-2. **VMware/SoC 入口**：用户说明尚未配置好，实际执行时提供 SSH 地址/用户名或别名、SoC 工程目录和构建/启动入口，本轮不继续索取。
+1. **MC/TH 只读源核验范围**：本地 `mcu-p3` 仓内上述四个子目录及其适用规则。登记的目录映射不表示已完成源码、配置或构建核验；任务卡路径白名单限定后续工作范围。
+2. **VMware/SoC 运行入口**：SSH 别名与串口设备名已由用户提供；开始运行验证时仍需核验 `ssh vmware` 是否可连、`/dev/ttyUSB0` 当前是否存在/可访问，并提供或确认 AP/SoC 工程路径及启动/停止命令。不要提供密码或私钥。
 3. **正式交接与独立检查**：唯一 COORD 的实际入口、ARCH Reviewer、后续 MS-02 QA 及资料收件回执。当前未登记，不虚构签署。
 
-TH 业务 App 资料主要影响出口 B，可以并行准备，不应把其缺失扩大为 MC 只读材料整理的阻塞。SoC 访问缺失主要影响 MS-18/07，不妨碍获准后的 MC 源核验。
+TH 业务 App 的协议和混色契约主要影响出口 B；工程目录已登记，不应把待核契约扩大为 MC/TH 源码盘点的阻塞。VMware SSH 别名和串口设备名已登记；连接、设备权限及 AP/SoC 启停入口待实测，主要影响 MS-18/07，不妨碍本地源码核查。
 
 ## 7. 下一步准入与交付
 

@@ -1,26 +1,86 @@
 manifest_version: "1.0"
-timestamp: "2026-10-17T12:21:29+08:00"
+timestamp: "2026-10-19T20:03:35+08:00"
 coordinator: "COORD"
 status: "planning-ready"
 repositories:
   project-control:
-    url: "local:~/workspace/ai_soc_project/project-control"
-    commit: "initial"
+    url: "ssh://git@192.168.77.113:2222/sushaohua/project-control.git"
+    local_path: "~/workspace/ai_soc_project/project-control"
+    branch: "main"
+    base_commit: "ba563026d2e5bcd35d5ccef7a420874e23dd9044"
+    commit_source: "The containing Git commit identifies this control snapshot; use git rev-parse HEAD after checkout."
     status: "active-canonical"
   soc-ap:
-    url: "local:~/workspace/ai_soc_project/soc-ap"
-    commit: "initial"
+    url: "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git"
+    local_path: "~/workspace/ai_soc_project/soc-ap"
+    commit: "cf2dff40e8b9d7c94b41d01386f287be45afdb4d"
     branch: "main"
+    commit_status: "local-host-build-and-smoke-verified-not-vmware-or-hil-validated"
   mcu-p3:
-    url: "local:~/workspace/ai_soc_project/mcu-p3"
-    commit: "initial"
-    branch: "main"
+    url: "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git"
+    local_path: "~/workspace/ai_soc_project/mcu-p3"
+    commit: "14b8057b04030bd659744c874c73ff8f09f29979"
+    branch: "feat/soc-debug"
+    remote: "origin"
+    upstream_branch: "origin/feat/soc-debug"
+    commit_status: "observed-source-snapshot-not-build-or-hil-validated"
+    reference_check: "Local HEAD and locally cached upstream ref match; remote server not contacted."
+    components:
+      mc:
+        path: "motion-controller-mcu"
+        chip: "AT32F435VGT7"
+        owner_role: "ENG-MC"
+      th:
+        path: "color-engine-mcu/io_toggle"
+        chip: "AT32F423CCT7"
+        owner_role: "ENG-TH"
+      mc_bootloader:
+        path: "bootloader/435"
+      th_bootloader:
+        path: "bootloader/423"
+    branch_scope: "MC and TH share this repository branch and commit; they are directory-scoped components, not separate Git repositories."
   test_harness:
-    url: "local:~/workspace/ai_soc_project/test_harness"
-    commit: "initial"
+    url: "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git"
+    local_path: "~/workspace/ai_soc_project/test_harness"
+    commit: "ad0398e20d3645dbfa37bfd0550ded0828d018b2"
     branch: "main"
 hardware_environment:
   mc_chip: "AT32F435VGT7"
-  th_chip: "AT32A423CCT7"
+  th_chip: "AT32F423CCT7"
   flasher_tool: "probe-rs 0.32.0"
-  soc_serial_port: "/dev/ttyUSB0 (115200 8N1)"
+  soc_runtime: "VMware Ubuntu VM simulating SoC/AP"
+  ssh_alias: "vmware"
+  ssh_access: "ssh vmware (user-provided; connectivity not independently verified)"
+  soc_serial_port: "/dev/ttyUSB0"
+  soc_serial_format: "115200 8N1"
+  serial_inputs: "docs/baseline/serial_links.md"
+  serial_links:
+    ap_mc:
+      source_status: "user-confirmed-not-hil-validated"
+      ap_device: "/dev/ttyUSB0"
+      mc_uart: "USART2"
+      mc_tx_pin: "PA2"
+      mc_rx_pin: "PA3"
+      baudrate: 115200
+      data_bits: 8
+      parity: "none"
+      stop_bits: 1
+      hardware_flow_control: false
+      replaces_dgus_display: true
+      dgus_display_on_usart2: false
+      firmware_migration_status: "pending-dgus-to-ap-interface-migration"
+    mc_th:
+      source_status: "user-confirmed-not-hil-validated"
+      mc_uart: "USART6"
+      mc_tx_pin: "PA4"
+      mc_rx_pin: "PA5"
+      th_uart: "USART1"
+      th_tx_pin: "PB6"
+      th_rx_pin: "PB7"
+      baudrate: 921600
+      data_bits: 8
+      parity: "none"
+      stop_bits: 1
+      hardware_flow_control: false
+  soc_serial_adapter: "CH341 USB-to-UART (user-reported kernel attach)"
+  soc_serial_kernel_log: "[92136.577564] usb 1-2.1: ch341-uart converter now attached to ttyUSB0"

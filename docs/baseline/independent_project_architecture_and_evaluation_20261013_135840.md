@@ -75,7 +75,7 @@ flowchart TD
 ### 2.2 工作区参考目录拓扑 (Candidate Layout)
 
 依据选项 A（多仓工作区聚合模式）与现行 [[AI_SoC_协作方案/04_公共看板与读写协议#10.1.1 推荐的项目目录和 Git 仓库划分|公共看板与读写协议 §10.1.1]]，工作区物理拓扑结构如下：
-`ai_soc_project/` 本身作为纯工作区目录（无顶层 `.git`），`.agents/` 物理归属于 `project-control` 独立管理仓，主控与从控固件统一在已有的 `mcu-p3` 仓库内按子目录管理，各子系统作为独立 Git 仓库并排检出：
+`ai_soc_project/` 本身作为纯工作区目录（无顶层 `.git`），`.agents/` 物理归属于 `project-control` 独立管理仓；MC 与 TH 固件共同位于已有的 `mcu-p3` Git 仓库中，按子目录划分职责和任务范围：
 
 ```text
 ai_soc_project/                      # 【纯工作区目录，本身无 .git】
@@ -100,12 +100,9 @@ ai_soc_project/                      # 【纯工作区目录，本身无 .git】
 │
 ├── mcu-p3/                          # 【独立 Git 仓库 3：双 MCU 固件已有仓库】(已有仓，ENG-MC / ENG-TH 负责)
 │   ├── .git/
-│   ├── mc/                          # 主控固件源码 (AT32F435, Marlin 内核, ENG-MC 负责)
-│   │   ├── include/                 # Stage A 接口层 (头文件/结构体)
-│   │   └── src/                     # Stage B/C 逻辑层 (驱动/状态机)
-│   └── th/                          # 工具头从控固件源码 (AT32A423, ENG-TH 负责)
-│       ├── include/                 # Stage A 接口层 (头文件/结构体)
-│       └── src/                     # Stage B/C 逻辑层 (驱动/状态机)
+│   ├── motion-controller-mcu/       # MC App (AT32F435, Marlin; ENG-MC 负责)
+│   ├── color-engine-mcu/io_toggle/  # TH App (AT32F423CCT7; ENG-TH 负责)
+│   └── bootloader/{435,423}/        # MC/TH Bootloader 目录
 │
 ├── test_harness/                    # 【独立 Git 仓库 4：QA 黑盒验收与测试套件仓】(独立 QA 专属)
 │   ├── .git/
@@ -137,8 +134,9 @@ ai_soc_project/                      # 【纯工作区目录，本身无 .git】
 | `project-control/.agents/kanban/` | **读写 (权威)** | 只读 | 只读 | 只读 | 只读 | 只读 | 只读 |
 | `project-control/.agents/audit_logs/`| 只读 | 只读 | 只读 | 只读 | 只读 | **读写 (专属)** | 只读 |
 | `project-control/docs/specs/` | 只读 | **读写 (主责)** | 只读 | 只读 | 只读 | 只读 | 只读 |
-| `mcu-p3/mc/` (主控固件目录) | 只读 | 只读 | **读写 (受控)** | 只读 | 只读 | **只读** | 只读 |
-| `mcu-p3/th/` (从控固件目录) | 只读 | 只读 | 只读 | **读写 (受控)** | 只读 | **只读** | 只读 |
+| `mcu-p3/motion-controller-mcu/` (主控 App) | 只读 | 只读 | **读写 (受控)** | 只读 | 只读 | **只读** | 只读 |
+| `mcu-p3/color-engine-mcu/io_toggle/` (从控 App) | 只读 | 只读 | 只读 | **读写 (受控)** | 只读 | **只读** | 只读 |
+| `mcu-p3/bootloader/435/`、`mcu-p3/bootloader/423/` | 只读 | 只读 | **按对应 MCU 任务授权** | **按对应 MCU 任务授权** | 只读 | **只读** | 只读 |
 | `soc-ap/` (上位机与契约原件) | 只读 | 只读 | 只读 | 只读 | **读写 (受控)** | **只读** | 只读 |
 | `test_harness/` (测试套件仓) | 只读 | 只读 | 只读 | 只读 | 只读 | **读写 (专属)** | 配合维护 |
 | `tools/` (构建与工具链) | 只读 | 审查 | 只读 | 只读 | 只读 | 只读 | **读写 (主责)** |

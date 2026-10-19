@@ -53,8 +53,9 @@ ai_soc_project/                      # 【纯工作区根目录，本身无顶�
 │
 ├── mcu-p3/                          # 【双 MCU 固件已有仓 (已有独立 Git)】(统一管理主从控)
 │   ├── .git/
-│   ├── mc/                          # 主控固件源码目录 (AT32F435, include/ 与 src/)
-│   └── th/                          # 工具头从控固件源码目录 (AT32A423, include/ 与 src/)
+│   ├── motion-controller-mcu/       # MC App (AT32F435)
+│   ├── color-engine-mcu/io_toggle/   # TH App (AT32F423CCT7)
+│   └── bootloader/{435,423}/        # MC/TH Bootloader
 │
 ├── test_harness/                    # 【QA 独立测试套件仓 (独立 Git)】(预留测试夹具骨架)
 │   ├── .git/
@@ -113,15 +114,10 @@ cd soc-ap && git init
 mkdir -p config core specs tests
 cd ..
 
-# 4. 检出/准备 mcu-p3 已有固件仓骨架
-# (若已有远端则 git clone，否则建立本地目录结构备用)
-mkdir -p mcu-p3
-cd mcu-p3
-if [ ! -d ".git" ]; then
-    git init
-    mkdir -p mc/include mc/src th/include th/src
-fi
-cd ..
+# 4. 使用已有 mcu-p3 双 MCU 固件仓
+# MC 与 TH 共用同一 Git 分支/commit，按实际子目录分工；不要创建空的 mc/、th/ 替代源码。
+git -C mcu-p3 status --short --branch
+git -C mcu-p3 rev-parse HEAD
 
 # 5. 建立 test_harness 仓骨架并初始化 Git
 mkdir -p test_harness

@@ -81,8 +81,10 @@ PM、ARCH 的早期讨论可以在主对话中分阶段完成。复杂方案采�
 | ENG-MQTT（MQTT 通信工程师）      | `middleware/mqtt/`、`services/mqtt_agent/`、`config/mqtt/`、`tests/mqtt/`     | MQTT 客户端／Broker 适配、连接与会话、TLS、QoS、订阅、重连、遗嘱、保留消息和有界缓存                | 标准消息传递、断网恢复、传输身份与 Broker ACL、资源证据                           | 定义业务命令和业务权限、绕开 gateway／STATE 执行动作、重写 Broker          |
 | ENG-SIM（模拟环境工程师）          | `sim/` 中映射并授权的配置、主机适配与故障工具                                                 | 维护轻量 Python Mock、字节分段/延迟/丢弃工具与硬件故障 SOP；工具与真实 MCU 生命周期/证据分开         | 启停、覆盖差异、故障开关和可复现日志；QA 独立验收                                  | 重写 Marlin 规划器、擅改生产 MC/SCM 协议、修改 FWD 或 QA 断言来使模拟通过    |
 | ENG-COLOR（混色算法工程师，后续按需拆出） | `algorithms/mixing/`、`tests/mixing/`                                       | 混色比例、色彩延迟、校准、材料参数、切片语义                                             | 带单位和版本的混色计划；标定样本和效果证据                                       | 两个 Agent 同时修改 JOB 内部算法、假设模型一定物理正确                    |
-| ENG-MC（MC 开发工程师）              | `mcu-p3/mc/`（已有双 MCU 固件仓 `mcu-p3`）；私有仓 `bootloader435/motion-controller-mcu`           | MC（AT32F435VGT7）固件代码、Bootloader、Marlin 业务 App、TH 中继升级状态机；代码撰写与构建可由 AI 协助执行 | MC 固件制品（`fw_mc.bin`）、构建日志、串口验证记录；板间 USART6 接口契约             | 直接操作 SoC 串口；修改 TH 固件；绕过人工门禁点自主烧录                     |
-| ENG-TH（TH 开发工程师）              | `mcu-p3/th/`（已有双 MCU 固件仓 `mcu-p3`）；TH Bootloader 仓（`bootloader423`）与 Color Engine App 仓 | TH（AT32A423CCT7）Bootloader、Color Engine 混色业务 App；代码撰写与构建可由 AI 协助执行       | TH 固件制品（`fw_th.bin`）、构建日志、串口验证记录；板间 USART1 接口契约             | 直接操作 SoC 串口；修改 MC 固件；绕过人工门禁点自主烧录                     |
+| ENG-MC（MC 开发工程师）              | `mcu-p3/motion-controller-mcu/`（MC App）；`mcu-p3/bootloader/435/`（MC Bootloader），均在同一 `mcu-p3` Git 仓 | MC（AT32F435VGT7）固件代码、Bootloader、Marlin 业务 App、TH 中继升级状态机；代码撰写与构建可由 AI 协助执行 | MC 固件制品（`fw_mc.bin`）、构建日志、串口验证记录；板间 USART6 接口契约 | 直接操作 SoC 串口；修改 TH 固件目录；绕过人工门禁点自主烧录 |
+| ENG-TH（TH 开发工程师）              | `mcu-p3/color-engine-mcu/io_toggle/`（TH App）；`mcu-p3/bootloader/423/`（TH Bootloader），均在同一 `mcu-p3` Git 仓 | TH（AT32F423CCT7）Bootloader、Color Engine 混色业务 App；代码撰写与构建可由 AI 协助执行 | TH 固件制品（`fw_th.bin`）、构建日志、串口验证记录；板间 USART1 接口契约 | 直接操作 SoC 串口；修改 MC 固件目录；绕过人工门禁点自主烧录 |
+
+MC 与 TH 共用一个 `mcu-p3` 仓库，因此分支、HEAD 和工作区状态是仓库级属性；任务授权和代码所有权再按上述子目录划分。不要为 MC、TH 虚构独立 Git 分支或远程仓库。
 
 初期混色模块归 ENG-JOB，同一任务上下文维护；启用 ENG-COLOR 时先建立独立目录并完成所有权移交。存储和 HTTP／LAN 业务网关暂归 ENG-NET；DDS、D-Bus 和 MQTT 通信底座分别由三个专职工程师维护，边界见 [[AI_SoC_协作方案/06_通信工程师职责与接口边界]]。Mock 与故障工具由 ENG-SIM 维护；真实 MC/TH 业务由 ENG-MC/ENG-TH 实现，QA 独立验收，见 [[AI_SoC_协作方案/08_双MCU模拟器与联调验收]]。这些角色 ID 用于任务分工，不表示固定的 AI 编号，也不要求所有岗位同时运行。
 
