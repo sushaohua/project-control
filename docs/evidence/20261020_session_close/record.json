@@ -1,0 +1,113 @@
+{
+  "started_at": "2026-10-20T03:50:49.145475+00:00",
+  "scope": "Handoff documentation only; no development dispatch or independent approval.",
+  "baseline_commit": "517ba18dc9b3ecd9893680b60d7bcaf0ff873e18",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "started_at": "2026-10-20T03:50:49.145569+00:00",
+      "ended_at": "2026-10-20T03:50:49.147495+00:00",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/soc-ap",
+      "started_at": "2026-10-20T03:50:49.147531+00:00",
+      "ended_at": "2026-10-20T03:50:49.148903+00:00",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/soc-ap",
+      "started_at": "2026-10-20T03:50:49.148937+00:00",
+      "ended_at": "2026-10-20T03:50:49.149992+00:00",
+      "exit_code": 0,
+      "output": "cf2dff40e8b9d7c94b41d01386f287be45afdb4d\n"
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/mcu-p3",
+      "started_at": "2026-10-20T03:50:49.150031+00:00",
+      "ended_at": "2026-10-20T03:50:49.153977+00:00",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/mcu-p3",
+      "started_at": "2026-10-20T03:50:49.154021+00:00",
+      "ended_at": "2026-10-20T03:50:49.155131+00:00",
+      "exit_code": 0,
+      "output": "14b8057b04030bd659744c874c73ff8f09f29979\n"
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/test_harness",
+      "started_at": "2026-10-20T03:50:49.155168+00:00",
+      "ended_at": "2026-10-20T03:50:49.156407+00:00",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/test_harness",
+      "started_at": "2026-10-20T03:50:49.156442+00:00",
+      "ended_at": "2026-10-20T03:50:49.157400+00:00",
+      "exit_code": 0,
+      "output": "ad0398e20d3645dbfa37bfd0550ded0828d018b2\n"
+    }
+  ],
+  "previous_check_failure": {
+    "actual_exit_code": 1,
+    "reason": "Local-link checker checked this record path before the record was created.",
+    "correction": "Create pending record first, then verify local links and replace it with actual results. No handoff link or acceptance condition weakened."
+  },
+  "files": {
+    "HANDOFF_20261020.md": "18934e1d424028fe270be1fe4b87aa233f221b9ddfcd7c588cc982f19f04710e",
+    "project-control/docs/handoff/HANDOFF_20261020.md": "72855bacab46e37a007765d77f18175012b22d5729bec9b3662fb0378f3472f4",
+    "project-control/workspace-root/HANDOFF_20261020.md.snapshot": "18934e1d424028fe270be1fe4b87aa233f221b9ddfcd7c588cc982f19f04710e"
+  },
+  "checks": {
+    "local_links_and_fences": "passed",
+    "root_navigation_matches_snapshot": true,
+    "previous_baseline_hash_manifest_unmodified": true,
+    "source_repositories_clean": true,
+    "independent_review": "user-designated session/report pending",
+    "new_cards_status": "Backlog; not dispatched",
+    "background_work": "none; session ends after handoff commit",
+    "remote_sync": "not reattempted; previous failure evidence retained"
+  },
+  "ended_at": "2026-10-20T03:50:49.161372+00:00",
+  "status": "passed"
+}

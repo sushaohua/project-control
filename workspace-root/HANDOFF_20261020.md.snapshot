@@ -9,3 +9,5 @@
 本文件仅导航；恢复副本在 `project-control/workspace-root/HANDOFF_20261020.md.snapshot`。正式任务状态读取 `project-control/.agents/`，根目录旧 `.agents/` 不更新。
 
 首批协议增量已落实为 [25 张实际卡](project-control/.agents/kanban/microtasks/minimc_v2/README.md)，结构检查通过，实际派单字段仍待登记。用户选择独立会话人工审阅，转交材料见[审阅说明](project-control/docs/handoff/MINIMC_V2_PLANNING_REVIEW.md)。
+
+本轮已按用户要求更新交接并结束。控制仓编排基线为 `517ba18dc9b3ecd9893680b60d7bcaf0ff873e18`；本次交接更新另存后续文档提交，以控制仓 HEAD 为准。没有后台自动续跑。下一会话先读完整原件“本轮结束检查点”，等待用户指定的独立会话报告后再落实首票派工；25 张卡仍为 Backlog。
