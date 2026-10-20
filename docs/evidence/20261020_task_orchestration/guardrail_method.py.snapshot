@@ -1,0 +1,44 @@
+from pathlib import Path
+import tempfile, shutil, subprocess, json, yaml, hashlib, datetime
+root=Path('/home/sushaohua/workspace/ai_soc_project');control=root/'project-control';out=control/'docs/evidence/20261020_task_orchestration';out.mkdir(parents=True,exist_ok=True)
+checker=control/'tools/check_task_graph.py';stage=Path(tempfile.mkdtemp(prefix='minimc_task_checker_guardrails_'))
+base=stage/'baseline';base.mkdir();shutil.copytree(str(control),str(base/'project-control'),ignore=shutil.ignore_patterns('.git','__pycache__'))
+for repo in ['soc-ap','test_harness','mcu-p3']:(base/repo).mkdir()
+results=[]
+def run(label,workspace,expected,mutate=None,extra=None,expected_text=None):
+ if mutate:mutate(workspace)
+ cmd=['python3',str(checker),'--workspace',str(workspace)]+(extra or [])
+ p=subprocess.run(cmd,capture_output=True,text=True)
+ (out/(label+'.log')).write_text('$ '+' '.join(cmd)+'\n'+p.stdout+p.stderr+'\nACTUAL_EXIT_CODE='+str(p.returncode)+'\nEXPECTED_EXIT_CODE='+str(expected)+'\n')
+ payload=json.loads(p.stdout);passed=p.returncode==expected and (not expected_text or expected_text in p.stdout)
+ results.append({'case':label,'synthetic_input':True,'expected_exit_code':expected,'actual_exit_code':p.returncode,'expected_diagnostic':expected_text,'passed':passed,'raw_log':label+'.log'})
+ if not passed:raise RuntimeError(label+' failed: '+str(p.returncode))
+def clone(label):
+ w=stage/label;shutil.copytree(str(base),str(w));return w
+path='.agents/kanban/microtasks/minimc_v2/'
+def edit(w,task,fn):
+ p=w/'project-control'/path/(task+'.md');s=p.read_text();parts=s.split('---',2);h=yaml.safe_load(parts[1]);fn(h);p.write_text('---\n'+yaml.safe_dump(h,allow_unicode=True,sort_keys=False)+'---'+parts[2])
+def deps(h,ids):
+ h['depends_on']=ids;h['dependency_conditions']=[{'task':n,'accepted_version':None,'acceptance_evidence':None,'required':'synthetic check'} for n in ids]
+run('guard_01_valid_structure',base,0)
+run('guard_02_missing_dependency',clone('missing'),1,lambda w:edit(w,'V2-P01A',lambda h:deps(h,['V2-NOT-EXIST'])),expected_text='missing predecessor V2-NOT-EXIST')
+run('guard_03_cycle',clone('cycle'),1,lambda w:edit(w,'V2-P01A',lambda h:deps(h,['V2-P06C'])),expected_text='dependency cycle')
+def escaping(w):
+ def change(h):
+  h['write_scope']['soc-ap']=['../outside'];h['allowed_paths']=[repo+'/'+p for repo,paths in h['write_scope'].items() for p in paths]
+ edit(w,'V2-P01A',change)
+run('guard_04_escaping_write',clone('escaping'),1,escaping,expected_text='unbounded/escaping write path')
+run('guard_05_premature_ready',clone('ready'),1,lambda w:edit(w,'V2-P01A',lambda h:h.update(status='Ready')),expected_text='state cannot advance')
+run('guard_06_unassigned_ready_gate',base,2,extra=['--check-ready','V2-P01A'],expected_text='required independent reviewer session is not assigned')
+def mismatch(w):
+ p=w/'project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md';p.write_bytes(p.read_bytes()+b'\n')
+run('guard_07_protocol_changed',clone('protocol'),1,mismatch,expected_text='protocol hash mismatch')
+run('guard_08_unordered_shared_writes',clone('parallel'),1,lambda w:edit(w,'V2-P04B',lambda h:deps(h,['V2-P03F'])),expected_text='shared writes lack dependency ordering')
+run('guard_09_missing_negative_cases',clone('cases'),1,lambda w:edit(w,'V2-P04A',lambda h:h['verification'].update(negative_cases=[])),expected_text='missing verification negative_cases')
+run('guard_10_missing_deliverable',base,1,extra=['--check-artifact','V2-P01A'],expected_text='declared deliverable missing')
+def bad_candidate(w):
+ p=w/'project-control/docs/releases/minimc_v2_offline_candidate.yaml';p.parent.mkdir(parents=True,exist_ok=True);p.write_text(yaml.safe_dump({'candidate_id':'synthetic-negative-case','scope':'offline-codec-parser','repositories':{'soc-ap':'synthetic'},'protocol':'invalid-type','verification':['synthetic'],'limitations':['synthetic check only'],'handoff':{'state':'not-accepted'}}))
+run('guard_11_bad_candidate_protocol',clone('candidate'),1,bad_candidate,extra=['--check-artifact','V2-P06C'],expected_text='candidate protocol hash differs')
+report={'checked_at':datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).isoformat(),'author':'AI (Codex), current /root; tool author self-verification, not independent QA','checker_sha256':hashlib.sha256(checker.read_bytes()).hexdigest(),'scope':'Synthetic copies of planning inputs only. No real card was promoted or changed by rejection checks, no protocol implementation or hardware was tested.','stage':str(stage),'results':results,'passed':sum(x['passed'] for x in results),'total':len(results)}
+(out/'guardrail_checks.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+print('Task-checker guardrails:',report['passed'],'/',report['total'],'passed; canonical task state was not mutated.')

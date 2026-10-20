@@ -1,0 +1,87 @@
+{
+  "started_at": "2026-10-20T03:44:41.148336+00:00",
+  "author": "AI (Codex), /root; author checks only",
+  "commands": [
+    {
+      "name": "structure_check",
+      "command": [
+        "python3",
+        "project-control/tools/check_task_graph.py",
+        "--workspace",
+        ".",
+        "--report",
+        "project-control/docs/evidence/20261020_task_orchestration/structure_check.json"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project",
+      "started_at": "2026-10-20T03:44:41.148451+00:00",
+      "ended_at": "2026-10-20T03:44:41.420465+00:00",
+      "actual_exit_code": 0,
+      "expected_exit_code": 0,
+      "raw_log": "structure_check.log"
+    },
+    {
+      "name": "first_ticket_readiness",
+      "command": [
+        "python3",
+        "project-control/tools/check_task_graph.py",
+        "--workspace",
+        ".",
+        "--check-ready",
+        "V2-P01A",
+        "--report",
+        "project-control/docs/evidence/20261020_task_orchestration/first_ticket_readiness.json"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project",
+      "started_at": "2026-10-20T03:44:41.420600+00:00",
+      "ended_at": "2026-10-20T03:44:41.687820+00:00",
+      "actual_exit_code": 2,
+      "expected_exit_code": 2,
+      "raw_log": "first_ticket_readiness.log"
+    },
+    {
+      "name": "git_diff_check",
+      "command": [
+        "git",
+        "-C",
+        "project-control",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project",
+      "started_at": "2026-10-20T03:44:41.687985+00:00",
+      "ended_at": "2026-10-20T03:44:41.690939+00:00",
+      "actual_exit_code": 0,
+      "expected_exit_code": 0,
+      "raw_log": "git_diff_check.log"
+    }
+  ],
+  "status": "passed",
+  "scope": "Planning/management checks only; no protocol code, MCU build, hardware actions or independent acceptance.",
+  "ended_at": "2026-10-20T03:44:42.025434+00:00",
+  "canonical_task_cards": 67,
+  "microtask_cards": 25,
+  "active_markdown_files_checked": 56,
+  "archived_audit_inputs_verified": 42,
+  "archived_toolcheck_runs_verified": 2,
+  "guardrail_cases_passed": 11,
+  "source_repositories": {
+    "soc-ap": {
+      "head": "cf2dff40e8b9d7c94b41d01386f287be45afdb4d",
+      "branch": "main",
+      "status": ""
+    },
+    "mcu-p3": {
+      "head": "14b8057b04030bd659744c874c73ff8f09f29979",
+      "branch": "feat/soc-debug",
+      "status": ""
+    },
+    "test_harness": {
+      "head": "ad0398e20d3645dbfa37bfd0550ded0828d018b2",
+      "branch": "main",
+      "status": ""
+    }
+  },
+  "independent_review": "User-designated independent session, manual handoff; identity/report pending",
+  "previous_failure": "runs/final_validation_01/failure_and_correction.json",
+  "correction": "One LF-normalization correction in seven already edited legacy Markdown files; no Git rule changes."
+}

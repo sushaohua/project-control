@@ -1,0 +1,53 @@
+{
+  "captured_at": "2026-10-20T10:28:19.685213+08:00",
+  "stage": "/tmp/soc_ap_standalone_20261020_tf8uhar8",
+  "source_head": "cf2dff40e8b9d7c94b41d01386f287be45afdb4d",
+  "source_files_copied": 11,
+  "environment": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "LANG": "C.UTF-8"
+  },
+  "commands": [
+    {
+      "command": [
+        "cmake",
+        "-S",
+        "/tmp/soc_ap_standalone_20261020_tf8uhar8/soc-ap",
+        "-B",
+        "/tmp/soc_ap_standalone_20261020_tf8uhar8/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "cwd": "/tmp/soc_ap_standalone_20261020_tf8uhar8",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "cmake",
+        "--build",
+        "/tmp/soc_ap_standalone_20261020_tf8uhar8/build"
+      ],
+      "cwd": "/tmp/soc_ap_standalone_20261020_tf8uhar8",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "ctest",
+        "--output-on-failure"
+      ],
+      "cwd": "/tmp/soc_ap_standalone_20261020_tf8uhar8/build",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/tmp/soc_ap_standalone_20261020_tf8uhar8/build/bin/soc-ap",
+        "--check-config"
+      ],
+      "cwd": "/tmp/soc_ap_standalone_20261020_tf8uhar8",
+      "exit_code": 0
+    }
+  ],
+  "executable_sha256": "1cf1708ac16a8dfdc2df234c89a5991cbe9d4d5502820c49453a9e7ed21f95f3",
+  "scope": "Relocated AP scaffold, no knowledge-base files copied; no MCU build/HIL or filesystem unmount performed."
+}

@@ -1,0 +1,21 @@
+{
+  "file": "mcu-p3/color-engine-mcu/io_toggle/build/fw_th.bin",
+  "file_size": 64068,
+  "trailer_magic": "0x41545347",
+  "trailer_struct_version": "0x10000",
+  "board_id": "0x42300001",
+  "firmware_version": "0x100a8fd",
+  "payload_size": 63940,
+  "timestamp": 1792407725,
+  "magic_matches": true,
+  "board_matches_th": true,
+  "payload_size_matches": true,
+  "payload_sha256_matches": true,
+  "trailer_crc32_matches": true,
+  "anchor_size": 140,
+  "anchor_magic_matches": true,
+  "anchor_trailer_matches": true,
+  "anchor_payload_crc_matches": true,
+  "anchor_crc_matches": true,
+  "scope": "Existing bytes only; not a source-to-binary or hardware verification."
+}

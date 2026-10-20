@@ -1,0 +1,59 @@
+from pathlib import Path
+import subprocess,json,hashlib,datetime,re,yaml,shutil
+r=Path('/home/sushaohua/workspace/ai_soc_project');c=r/'project-control';out=c/'docs/evidence/20261020_task_orchestration';run=out/'runs/final_validation_02';run.mkdir(parents=True,exist_ok=True)
+def stamp():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+records=[];validation={'started_at':stamp(),'author':'AI (Codex), /root; author checks only','commands':records,'status':'running','scope':'Planning/management checks only; no protocol code, MCU build, hardware actions or independent acceptance.'}
+def save():
+ for p in [run/'validation_record.json',out/'validation_record.json']:p.write_text(json.dumps(validation,ensure_ascii=False,indent=2)+'\n')
+save()
+for name,args,expected in [
+ ('structure_check',['python3','project-control/tools/check_task_graph.py','--workspace','.','--report',str((out/'structure_check.json').relative_to(r))],0),
+ ('first_ticket_readiness',['python3','project-control/tools/check_task_graph.py','--workspace','.','--check-ready','V2-P01A','--report',str((out/'first_ticket_readiness.json').relative_to(r))],2),
+ ('git_diff_check',['git','-C','project-control','diff','--check'],0)]:
+ start=stamp();p=subprocess.run(args,cwd=str(r),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+ content='$ cwd='+str(r)+'\n$ '+' '.join(args)+'\n'+p.stdout+'\nACTUAL_EXIT_CODE='+str(p.returncode)+'\n'
+ for folder in [run,out]:(folder/(name+'.log')).write_text(content)
+ if name in ['structure_check','first_ticket_readiness']:shutil.copy2(str(out/(name+'.json')),str(run/(name+'.json')))
+ records.append({'name':name,'command':args,'cwd':str(r),'started_at':start,'ended_at':stamp(),'actual_exit_code':p.returncode,'expected_exit_code':expected,'raw_log':name+'.log'})
+ save()
+ if p.returncode!=expected:
+  validation.update(status='failed',ended_at=stamp());save();raise RuntimeError(name+' failed, raw log retained')
+files=[]
+for pattern in ['.agents/kanban/milestones/*.md','.agents/kanban/microtasks/minimc_v2/V2-*.md','docs/planning/work_packages/TASK-*.md','docs/planning/product/product_pl*.md']:files.extend(c.glob(pattern))
+assert len(files)==67
+files.extend(c/p for p in ['tools/check_task_graph.py','manifest.yaml','.agents/kanban/KANBAN.md','.agents/kanban/microtasks/minimc_v2/README.md','docs/planning/minimc_v2_first_increment_20261020.md','docs/guides/minimc_v2_task_execution.md','docs/guides/templates/task_run_record.md','docs/handoff/COORD_20261020.md','docs/handoff/MINIMC_V2_PLANNING_REVIEW.md','docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md','docs/specs/protocol_selection_20261020.md','workspace-root/README.md.snapshot','workspace-root/HANDOFF_20261020.md.snapshot'])
+manifest={'created_at':stamp(),'scope':'Canonical planning inputs; containing Git commit identifies checkpoint. This is not an approval.','control_edit_base_head':subprocess.check_output(['git','-C',str(c),'rev-parse','HEAD'],text=True).strip(),'files':{str(p.relative_to(c)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(set(files))}}
+(out/'card_hash_manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
+shutil.copy2(str(out/'card_hash_manifest.json'),str(run/'card_hash_manifest.json'))
+audit=json.loads((c/'docs/evidence/20261020_task_audit/task_audit.json').read_text());archive=c/'docs/evidence/20261020_task_audit/inputs'
+for card in audit['cards']:assert hashlib.sha256((archive/card['path']).read_bytes()).hexdigest()==card['sha256'],card['path']
+assert hashlib.sha256((archive/'docs/planning/minimc_v2_first_increment_20261020.md').read_bytes()).hexdigest()==audit['v2_plan_sha256']
+for name in ['toolcheck_01','toolcheck_02']:
+ d=out/'runs'/name;rep=json.loads((d/'guardrail_checks.json').read_text());assert hashlib.sha256((d/'check_task_graph.py.snapshot').read_bytes()).hexdigest()==rep['checker_sha256']
+ for row in json.loads((d/'input_hashes.json').read_text()):assert hashlib.sha256((d/'inputs'/(row['path']+'.snapshot')).read_bytes()).hexdigest()==row['sha256']
+guards=json.loads((out/'guardrail_checks.json').read_text());assert guards['passed']==guards['total']==11
+assert hashlib.sha256((c/'tools/check_task_graph.py').read_bytes()).hexdigest()==guards['checker_sha256']
+raw=subprocess.check_output(['git','-C',str(c),'diff','--name-only','-z'])+subprocess.check_output(['git','-C',str(c),'ls-files','--others','--exclude-standard','-z'])
+mds={c/p.decode() for p in raw.split(b'\0') if p and p.decode().endswith('.md')};mds.update([r/'README.md',r/'HANDOFF_20261020.md']);checked=0
+for p in mds:
+ rel=str(p.relative_to(c)) if c in p.parents else str(p)
+ if '/inputs/' in rel or p.name=='ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md':continue
+ s=p.read_text();assert s.count('```')%2==0,str(p)
+ for target in re.findall(r'\]\(([^)]+)\)',s):
+  if '://' in target or target.startswith('#'):continue
+  target=target.split('#')[0].strip('<>');assert (p.parent/target).exists() or target=='SHA256SUMS',str(p)+': '+target
+ checked+=1
+for p in files:
+ if p.suffix=='.md' and p.read_text().startswith('---'):yaml.safe_load(p.read_text().split('---',2)[1])
+yaml.safe_load((c/'manifest.yaml').read_text())
+for src,dst in [(r/'README.md',c/'workspace-root/README.md.snapshot'),(r/'HANDOFF_20261020.md',c/'workspace-root/HANDOFF_20261020.md.snapshot')]:assert src.read_bytes()==dst.read_bytes()
+repo_checks={}
+for repo in ['soc-ap','mcu-p3','test_harness']:
+ state=subprocess.check_output(['git','-C',str(r/repo),'status','--porcelain=v1'],text=True);assert not state,repo
+ repo_checks[repo]={'head':subprocess.check_output(['git','-C',str(r/repo),'rev-parse','HEAD'],text=True).strip(),'branch':subprocess.check_output(['git','-C',str(r/repo),'branch','--show-current'],text=True).strip(),'status':state}
+validation.update(status='passed',ended_at=stamp(),canonical_task_cards=67,microtask_cards=25,active_markdown_files_checked=checked,archived_audit_inputs_verified=42,archived_toolcheck_runs_verified=2,guardrail_cases_passed=11,source_repositories=repo_checks,independent_review='User-designated independent session, manual handoff; identity/report pending',previous_failure='runs/final_validation_01/failure_and_correction.json',correction='One LF-normalization correction in seven already edited legacy Markdown files; no Git rule changes.')
+save();shutil.copy2('/tmp/verify_task_checker.py',str(out/'guardrail_method.py.snapshot'));shutil.copy2(__file__,str(out/'final_validation_method.py.snapshot'))
+(out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n' for p in sorted(out.iterdir()) if p.is_file() and p.name!='SHA256SUMS'))
+print('PASS: 67 task cards, 25 mapped microtasks, no graph errors; first ticket correctly refused Ready (exit 2).')
+print('PASS: 11 management-tool guardrails; old 42-card audit and two tool-check input snapshots verified.')
+print('PASS: YAML, active links/fences ('+str(checked)+' files), root snapshots; AP/MCU/QA source trees clean.')

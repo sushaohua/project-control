@@ -1,8 +1,8 @@
 ---
-title: MS-01 工程与环境输入登记（本地资料已整理，源核验待进行）
+title: MS-01 工程与环境输入登记（当前源核验见 20261020 补充）
 date: 2026-10-13
 created: '2026-10-13 13:11:46'
-updated: '2026-10-19 19:58:27'
+updated: '2026-10-20 09:37:29'
 timezone: 北京时间（UTC+8）
 status: materials-prepared
 approval_status: Draft
@@ -11,6 +11,8 @@ tags: [soc, mc, handoff, input-register]
 ---
 
 # MS-01 工程与环境输入登记
+
+> **2026-10-20 当前接续：** 已按实际 HEAD `14b8057b04030bd659744c874c73ff8f09f29979` 只读核对 MC/TH 源码、构建配置、工具链及现有制品，交付见 [MS-01 当前工程登记](ms01_source_inventory_20261020.md)及其原始证据。MC App build 目录不存在；TH 有既有制品，内部校验通过但源码/硬件身份尚未验证；Bootloader 两目录只有制品。本地主机 AP 复现 CTest 1/1 通过，服务器 push 与 VMware SSH 均在 socket 阶段失败。用户随后已明确采用[本地 v2.0 / Rev 2.0.3](../specs/README.md)，知识库仅为来源。尚无独立 ARCH 评审，正式 MS-01 未验收；下文保留 2026-10-13/19 历史整理范围与检查表，其“本轮未读源码”等表述不描述今天。
 
 > **2026-10-19 串口输入及用途更新：** 用户明确 AP `/dev/ttyUSB0` 接 MC USART2 PA2(TX)/PA3(RX)，115200 8N1；MC USART6 PA4(TX)/PA5(RX)接 TH USART1 PB6(TX)/PB7(RX)，921600 8N1；两段均无硬件流控。AP 替代原迪文屏，原屏不再连接 USART2。参数与串口初始化源码一致，但旧 USART2 DGUS 收发仍须迁移；本轮仅登记，不修改固件或进行硬件通信。当前原件见 [串口链路登记](serial_links.md)。下文 USART1 RX 是历史能力调查线索，不是本轮 AP 接入端口；后续能力核验应以 USART2 AP 请求/应答路径为重点，USART1 单独登记为调试通道。
 

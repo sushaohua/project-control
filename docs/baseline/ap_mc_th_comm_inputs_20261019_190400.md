@@ -7,7 +7,11 @@
 
 **2026-10-19 用户确认更新：** AP 接 MC USART2 PA2/PA3、115200 8N1，替代原迪文屏；原屏不再连接此串口。MC USART6 PA4/PA5↔TH USART1 PB6/PB7、921600 8N1；均无硬件流控。MC USART1 是此前的候选假设，不是本轮 AP 入口。USART2 的源码参数匹配，但当前 DGUS 收发/解析仍须在后续固件任务迁移。详见串口登记，不重复要求用户提供这些参数。
 
-## 结论
+## 2026-10-20 当前协议采用
+
+用户明确选择 [本地 MiniMCProto v2.0 / Rev 2.0.3](../specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md)，已原样复制、校验 SHA256 并登记到[采用记录](../specs/protocol_selection_20261020.md)。它取代此前 D20 对旧原稿的选择；知识库仅为来源，当前开发使用项目副本。原稿内历史评审回链不是构建/运行依赖。下文保留 2026-10-19 的资料阅读快照，不再作为要求重新选择旧协议的指令。
+
+## 2026-10-19 历史结论
 
 `/mnt/d/AI_RDdocs` 有值得纳入本任务的协议草案、评审、串口测试计划和硬件拓扑资料。它们不能整体视为现行规范：不同版本互不兼容，且部分文件状态为草案或待批准。当前项目基线 D20 已选原始 `ap_mc_formal_protocol_specification_baseline.md` 作为工作依据，并明确它尚未冻结或通过验收；v1.1 仅作参考，不覆盖 D20。
 
@@ -27,11 +31,11 @@
 
 | 文档 | 状态及用途 |
 | --- | --- |
-| `/mnt/d/AI_RDdocs/ap_mc_formal_protocol_specification_baseline.md` | D20 当前工作依据。描述 AP-MC 二进制帧、PING/PONG 和 SCM 隧道命令；隧道内 TH 业务负载仍未定义。按既有评审修复前不可当作冻结契约。 |
+| `/mnt/d/AI_RDdocs/ap_mc_formal_protocol_specification_baseline.md` | 2026-10-19 当时的 D20 工作依据，现已被本地 v2.0 取代。描述 AP-MC 二进制帧、PING/PONG 和 SCM 隧道命令；隧道内 TH 业务负载仍未定义。按既有评审修复前不可当作冻结契约。 |
 | `/mnt/d/AI_RDdocs/AI_SoC_协作方案/formal_protocol_review_20261009_210204.md` | D20 评审指出遥测长度与字段合计不符、CRC 表/向量错误、状态机及序号/重试规则不完整、隧道负载未定义等 P0 问题；评审没有编译固件或进行 HIL。 |
 | `/mnt/d/AI_RDdocs/AI_SoC_协作方案/ap_mc_formal_protocol_v1_1_20261009_223404.md` | 明确标为 reference-only；依 D20 不采用其 16 字节前缀或迁移步骤。 |
 | `/mnt/d/AI_RDdocs/ap_mc_formal_protocol_v1_2_specification_and_verification_20261009_093000.md` | 另一套 7 字节头/8 位序号方案，与 D20 帧布局不兼容；未见其被项目基线采纳。 |
-| `/mnt/d/AI_RDdocs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md` | 后续多设备路由草案，12 字节头、含源/目的地址，且面向整网 OTA；文件说明尚未编码，不能据此替换 D20。 |
+| `/mnt/d/AI_RDdocs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md` | 2026-10-20 用户已明确选择，并复制到项目协议目录；当前准确身份为 Rev 2.0.3，以本地采用记录取代本行旧判断。 |
 | `/mnt/d/AI_RDdocs/app_test_usart6_th_comm_implementationplan_20261010_151500.md` | Pending Approval 的旧测试计划，使用 115200 并以升级握手探测 TH；与当前源码 921600 和普通只读业务查询目标均有差异。 |
 | `/mnt/d/AI_RDdocs/c308l_ap_mc_uart_pinmux_migration_20260921_201240.md` | 产品 AP↔MC 硬件设计资料列出 1.5/3 Mbps、RTS/CTS 等方案；与当前 VMware USB-串口 HIL 接入不同，需分别记录，不能混为同一物理链路。 |
 

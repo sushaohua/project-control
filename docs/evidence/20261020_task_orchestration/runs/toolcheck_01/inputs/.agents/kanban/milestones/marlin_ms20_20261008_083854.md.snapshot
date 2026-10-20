@@ -1,0 +1,133 @@
+---
+id: MS-20
+title: "MS-20 准备 MC 硬件查询验收候选"
+created: '2026-10-08 08:38:54'
+timezone: 北京时间（UTC+8）
+revision: 2
+task_kind: integration
+dispatchable: true
+status: Backlog
+blocked: false
+owner: null
+proposed_owner: INTEGRATOR
+baseline: B0
+scope_status: unmapped
+required_evidence_level: build-verified
+verification_environment: host-build+real-mcu-candidate
+verification_scope: MC-only
+contract_status: experimental
+depends_on:
+- MS-06
+- MS-10
+allowed_repositories: []
+allowed_paths: []
+base_commit: null
+candidate_commit: null
+merged_commit: null
+lease: null
+tags:
+- soc
+- task
+- marlin
+- current-plan
+plan_revision: marlin-r2
+updated: '2026-10-13 12:16:03'
+reviewer:
+- ARCH
+verifier: QA
+integrator: INTEGRATOR
+executor:
+  role: INTEGRATOR
+  agent_id: null
+  run_id: null
+review_assignments:
+  reviewer_sessions:
+  - role: ARCH
+    session: null
+    decision: null
+    artifact_version: null
+    evidence: null
+  verifier_session: null
+  integrator_session: null
+primary_work_package: TASK-004
+related_work_packages:
+- TASK-010
+requirement:
+- PILOT-REQ-01
+- PILOT-REQ-02
+- PILOT-REQ-03
+icd_versions: []
+resources: []
+budget: null
+checkpoint: null
+version_bundle: null
+evidence: []
+handoff:
+  receiver_role: COORD
+  receiver_session: null
+  transport: null
+  evidence_location: null
+  acknowledgement: null
+---
+
+# MS-20 准备 MC 硬件查询验收候选
+
+## 目标
+
+装配 Ubuntu SoC 程序、真实 MC 固件身份、契约、样例与故障工具的统一验收候选。
+
+## 输入与写入边界
+
+准确 SoC commit、MC 工作区/配置/ELF/BIN 哈希、USB 端点和启停方法；离线工具不冒充 MC 正常路径。
+
+建议路径：`build/host/**；runtime/host/**；manifests/**；本卡候选说明`。逻辑目录不是授权，派单时映射真实仓库、工作区、文件白名单及证据位置。读取 B0、本卡与相关已接受输入；参考报告只作线索。
+
+## 前置交付与可使用条件
+
+| 生产卡/外部来源 | 要交什么 | 准确版本 | 本卡为什么使用 | 什么时候可用 |
+| --- | --- | --- | --- | --- |
+| [[AI_SoC_协作方案/tasks/marlin_ms06_20261007_214108\|MS-06]] | MC 查询/解析/无回复的独立样例、故障预期、期限来源 | 待取得后登记准确版本/哈希 | 按独立正常/边界/故障预期实现或检查 | 来源/输入/预期/期限可追溯并获独立评审 |
+| [[AI_SoC_协作方案/tasks/marlin_ms10_20261007_214108\|MS-10]] | 断链/超时/恢复查询实现与相应检查 | 待取得后登记准确版本/哈希 | 组成主控正常与故障候选 | 实现已按模块条件检查并合入，版本与样例匹配 |
+| 外部输入，由 COORD 登记提供者 | 本卡输入中列出的外部资料、权限、工作模式或产品选择 | 待核查；未知不填造 | 支持本卡目标 | 本卡必要条件齐全；无关未来项不阻塞 |
+
+上游 Done 不能代替上述使用条件。否定调查结论保留；所需能力不满足时登记缺口与恢复条件，不派依赖实现。
+
+## Ready 前核对
+
+按 [[AI_SoC_协作方案/04_公共看板与读写协议#4.1 派单前必须明确的五项|派单五项]] 落实输入、范围、实际检查者/收件方、资源、预算与检查点。代码/运行卡补准确构建和检查命令；调查/设计明确来源与评审方法。开工时不要求尚未产生的候选代码或测试结果。
+
+## 谁做和谁检查
+
+| 环节 | 岗位与实际入口 | 负责的检查/交付 |
+| --- | --- | --- |
+| 作者 | INTEGRATOR；`executor.agent_id` 待登记 | 完成目标、保存实际证据，不批准自己的结果 |
+| 必需评审 | ARCH；对应 `reviewer_sessions` 待登记 | 检查准确输入/交付版本、方法与结论；与该交付作者分开 |
+| 独立运行验证 | QA；`verifier_session` 待登记 | 按本卡预期检查准确候选并留记录；不修实现 |
+| 合入/候选装配 | INTEGRATOR；实际执行者待登记 | 所需评审/检查通过后合入，核对实际组合与受影响检查；不自批 |
+| 收件和状态 | 唯一 COORD；`handoff` 待登记 | 明确收到/需补材料；条件满足才更新正式状态 |
+
+所有列出的评审项均为必需；`session/decision` 空值是待登记，不是已检查。身份、替代检查与不适用规则见 [[AI_SoC_协作方案/04_公共看板与读写协议#4.3 按任务类型安排检查|检查安排]]。
+
+## 验收与交付
+
+清单锁定 SoC、MC、真实 MC 固件与宿主程序依赖、配置、约定、场景与工具；保存制品摘要和构建/启动/停止/清理方法，基本启动检查可重复。SCM 标不适用；交 QA 的组合与清单一致。此卡不要求 MS-11 已通过。
+
+交付：MC-only 候选版本清单、制品摘要、启动/停止方法。运行卡附实际命令、退出结果、日志、版本组合与制品摘要；文档卡附准确文档版本与来源/评审。候选 commit、diff、合入版本只在适用且实际产生后填写。向登记的 COORD 交位置并取得回执；共同行为见 [[AI_SoC_协作方案/templates/角色任务提示词|交付格式]]。
+
+## 非目标
+
+不替 QA 通过端到端用例；合并冲突/业务错误交对应作者；不得换未评审版本、清理用户原成果。
+
+## 归属、资源与进度
+
+主工作包：[[AI_SoC_协作方案/tasks/TASK-004_锁定源码和可复现构建|TASK-004]]。其他关联仅便于覆盖追踪，不重复计算任务完成；`depends_on` 才表示本卡直接前置。实时状态、实际执行者和版本只读取本卡 frontmatter/证据，不在正文另写一份状态。
+
+实际资源由 COORD 在 Ready 前填写：工作区、构建输出、Ubuntu 进程/硬件串口端点及占用检查点。同目录不同分支仍需评估行为冲突；不并发操作同一实例。字段或接口改变后按 [[AI_SoC_协作方案/04_公共看板与读写协议#4.4 完成后变更与证据撤回|变更规则]] 处理。
+
+需求原件：[[AI_SoC_协作方案/pilot_requirements_20261008_083854|查询试点需求与验收]]；本卡对应 PILOT-REQ-01、PILOT-REQ-02、PILOT-REQ-03。
+
+## 当前 HIL 范围与能力条件
+
+所需接口、样例、版本与操作范围按本卡前置逐项接受，调查否定结果不能使依赖实现自动 Ready。
+
+当前 SoC 运行端为 VMware Ubuntu 宿主程序；真实设备证据须记录 MC/TH 固件及 USB/板间串口，Mock 证据单列。MC 能力报告只提供快照线索，最新实现 `[UNVERIFIED]`，实际源码读取和硬件操作需准确任务授权。现有状态、执行者和 evidence 本轮保持原值。

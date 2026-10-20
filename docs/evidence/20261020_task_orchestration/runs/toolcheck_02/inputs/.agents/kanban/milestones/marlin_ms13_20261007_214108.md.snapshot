@@ -1,0 +1,123 @@
+---
+title: "MS-13 核查真实板间 USART6 通信条件"
+created: 2026-10-07 21:41:08
+updated: '2026-10-13 12:16:03'
+timezone: 北京时间（UTC+8）
+id: MS-13
+revision: 4
+plan_revision: marlin-r2
+task_kind: investigation
+dispatchable: true
+status: Backlog
+blocked: false
+owner: null
+proposed_owner: ENG-MC
+executor:
+  role: ENG-MC
+  agent_id: null
+  run_id: null
+reviewer:
+- ARCH
+verifier: null
+integrator: null
+review_assignments:
+  reviewer_sessions:
+  - role: ARCH
+    session: null
+    decision: null
+    artifact_version: null
+    evidence: null
+  verifier_session: null
+  integrator_session: null
+baseline: B0
+scope_status: unmapped
+required_evidence_level: hardware-verified
+verification_environment: ubuntu-host+real-mcu-hil
+verification_scope: MC+SCM
+contract_status: experimental
+depends_on: ["MS-12", "MS-02"]
+allowed_repositories: []
+allowed_paths: []
+base_commit: null
+candidate_commit: null
+merged_commit: null
+lease: null
+handoff:
+  receiver_role: COORD
+  receiver_session: null
+  transport: null
+  evidence_location: null
+  acknowledgement: null
+tags: [soc, task, marlin, current-plan]
+primary_work_package: TASK-006
+related_work_packages: []
+requirement:
+- PILOT-REQ-04
+- PILOT-REQ-05
+icd_versions: []
+resources: []
+budget: null
+checkpoint: null
+version_bundle: null
+evidence: []
+---
+
+# MS-13 核查真实板间 USART6 通信条件
+
+## 目标
+
+对照原理图、两端配置和可取得的只读轨迹，核对 MC USART6 与 TH USART1 参数、引脚、帧边界与接收处理。
+
+## 输入与写入边界
+
+MS-12 与 MS-02 版本；当前资料为 115200 8N1，MC PA4/PA5 对 TH PB6/PB7，真实板版/连线待独立核验。不再调查 TH 主机模拟可行性。
+
+建议路径：`contracts/hil/mc-th-link/**`。逻辑目录不是授权，派单时映射真实仓库、工作区、文件白名单及证据位置。读取 B0、本卡与相关已接受输入；参考报告只作线索。
+
+## 前置交付与可使用条件
+
+| 生产卡/外部来源 | 要交什么 | 准确版本 | 本卡为什么使用 | 什么时候可用 |
+| --- | --- | --- | --- | --- |
+| [[AI_SoC_协作方案/tasks/marlin_ms12_20261007_214108\|MS-12]] | MC/SCM 原始来源、一个只读转发接口及能力缺口 | 待取得后登记准确版本/哈希 | 使用真实来源和已接受的转发用例 | 所用接口及必要错误行为有来源；缺接口则不得派依赖实现 |
+| [[AI_SoC_协作方案/tasks/marlin_ms02_20261007_214108\|MS-02]] | 同版本 MC 固件隔离构建/台架启动记录、命令退出结果与制品哈希 | 待取得后登记准确版本/哈希 | 以已复现主控作为本轮调查/联调基础 | 准确工程/配置可重复运行，不用其他示例替代 |
+| 外部输入，由 COORD 登记提供者 | 本卡输入中列出的外部资料、权限、工作模式或产品选择 | 待核查；未知不填造 | 支持本卡目标 | 本卡必要条件齐全；无关未来项不阻塞 |
+
+上游 Done 不能代替上述使用条件。否定调查结论保留；所需能力不满足时登记缺口与恢复条件，不派依赖实现。
+
+## Ready 前核对
+
+按 [[AI_SoC_协作方案/04_公共看板与读写协议#4.1 派单前必须明确的五项|派单五项]] 落实输入、范围、实际检查者/收件方、资源、预算与检查点。代码/运行卡补准确构建和检查命令；调查/设计明确来源与评审方法。开工时不要求尚未产生的候选代码或测试结果。
+
+## 谁做和谁检查
+
+| 环节 | 岗位与实际入口 | 负责的检查/交付 |
+| --- | --- | --- |
+| 作者 | ENG-MC；`executor.agent_id` 待登记 | 完成目标、保存实际证据，不批准自己的结果 |
+| 必需评审 | ARCH；对应 `reviewer_sessions` 待登记 | 检查准确输入/交付版本、方法与结论；与该交付作者分开 |
+| 额外运行验证 | 不适用 | 本卡以来源/文档评审完成；不制造镜像或运行成功记录 |
+| 合入/候选装配 | 不适用 | 无生产代码合入；文档/报告按准确版本归档 |
+| 收件和状态 | 唯一 COORD；`handoff` 待登记 | 明确收到/需补材料；条件满足才更新正式状态 |
+
+所有列出的评审项均为必需；`session/decision` 空值是待登记，不是已检查。身份、替代检查与不适用规则见 [[AI_SoC_协作方案/04_公共看板与读写协议#4.3 按任务类型安排检查|检查安排]]。
+
+## 验收与交付
+
+登记真实两端串口外设、引脚、波特率、收发缓冲与帧边界的来源；源码/原理图核查与实收结果分别记录，缺少后者不编造连通结论。使用本轮实际板版和配置；业务接口未接入时明确交缺口，交由 MS-14 与 ENG-TH 微步实现。向 COORD 提交准确记录及评审回执。
+
+## 非目标
+
+不再构建 MarlinSimUI 或评估 SCM 主机模拟；不凭芯片型号推断接线、帧规则或业务已通；本卡不改固件。
+
+## 归属、资源与进度
+
+主工作包：[[AI_SoC_协作方案/tasks/TASK-006_实现独立模拟 MCU 和异常夹具|TASK-006]]。其他关联仅便于覆盖追踪，不重复计算任务完成；`depends_on` 才表示本卡直接前置。实时状态、实际执行者和版本只读取本卡 frontmatter/证据，不在正文另写一份状态。
+
+实际资源由 COORD 在 Ready 前填写：工作区、构建输出、Ubuntu 进程/硬件串口端点及占用检查点。同目录不同分支仍需评估行为冲突；不并发操作同一实例。字段或接口改变后按 [[AI_SoC_协作方案/04_公共看板与读写协议#4.4 完成后变更与证据撤回|变更规则]] 处理。
+
+需求原件：[[AI_SoC_协作方案/pilot_requirements_20261008_083854|查询试点需求与验收]]；本卡对应 PILOT-REQ-04、PILOT-REQ-05。
+
+## 当前 HIL 范围与能力条件
+
+所需接口、样例、版本与操作范围按本卡前置逐项接受，调查否定结果不能使依赖实现自动 Ready。
+
+当前 SoC 运行端为 VMware Ubuntu 宿主程序；真实设备证据须记录 MC/TH 固件及 USB/板间串口，Mock 证据单列。MC 能力报告只提供快照线索，最新实现 `[UNVERIFIED]`，实际源码读取和硬件操作需准确任务授权。现有状态、执行者和 evidence 本轮保持原值。

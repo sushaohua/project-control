@@ -1,0 +1,33 @@
+$ cwd=/tmp/soc_ap_standalone_20261020_tf8uhar8
+$ cmake -S /tmp/soc_ap_standalone_20261020_tf8uhar8/soc-ap -B /tmp/soc_ap_standalone_20261020_tf8uhar8/build -G Ninja -DCMAKE_BUILD_TYPE=Release
+-- The CXX compiler identification is GNU 9.4.0
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/soc_ap_standalone_20261020_tf8uhar8/build
+EXIT_CODE=0
+$ cwd=/tmp/soc_ap_standalone_20261020_tf8uhar8
+$ cmake --build /tmp/soc_ap_standalone_20261020_tf8uhar8/build
+[1/2] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o
+[2/2] Linking CXX executable bin/soc-ap
+EXIT_CODE=0
+$ cwd=/tmp/soc_ap_standalone_20261020_tf8uhar8/build
+$ ctest --output-on-failure
+Test project /tmp/soc_ap_standalone_20261020_tf8uhar8/build
+    Start 1: host_runtime_smoke
+1/1 Test #1: host_runtime_smoke ...............   Passed    0.11 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.11 sec
+EXIT_CODE=0
+$ cwd=/tmp/soc_ap_standalone_20261020_tf8uhar8
+$ /tmp/soc_ap_standalone_20261020_tf8uhar8/build/bin/soc-ap --check-config
+serial_port=/dev/ttyUSB0
+serial_opened=false
+EXIT_CODE=0

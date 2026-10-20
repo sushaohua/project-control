@@ -1,13 +1,13 @@
 ---
-title: "TASK-004 锁定源码和可复现构建"
+title: TASK-004 锁定源码和可复现构建
 date: 2026-09-30
 id: TASK-004
-revision: 4
+revision: 5
 status: Backlog
 blocked: false
 owner: null
-proposed_owner: "INTEGRATOR"
-reviewer: "ENG-BSP"
+proposed_owner: INTEGRATOR
+reviewer: ENG-BSP
 verifier: QA
 integrator: INTEGRATOR
 baseline: B0
@@ -18,8 +18,10 @@ base_commit: null
 candidate_commit: null
 merged_commit: null
 depends_on: []
-tags: [soc, task]
-updated: '2026-10-08 08:38:54'
+tags:
+- soc
+- task
+updated: '2026-10-20 11:26:37'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 task_kind: work_package
@@ -30,6 +32,7 @@ child_tasks:
 - MS-18
 - MS-20
 - MS-21
+- V2-P06C
 planning_relations: []
 related_tasks: []
 ---
@@ -69,3 +72,11 @@ MS-01/02 交接复现主控；MS-18 提供 SoC 主机工程；MS-20/21 分别提
 不自动创建开发 Agent、安装系统依赖、改参考报告、替换运动规划、扩大产品功能或操作未授权硬件。主控查询不以 BSP/UI/三总线完成为默认前置；没有的 Marlin 功能记录缺口，不造 API。
 
 实际进度与证据见子任务；规划关联不作为自动派单的硬前置。具体制度见 [[AI_SoC_协作方案/04_公共看板与读写协议]]，统一执行顺序见 [[AI_SoC_协作方案/03_实施步骤与首个闭环]]。
+
+## v2.0 离线增量的实际子任务
+
+2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
+
+[V2-P06C](../../../.agents/kanban/microtasks/minimc_v2/V2-P06C.md)。
+
+这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。

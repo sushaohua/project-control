@@ -1,0 +1,53 @@
+{
+  "captured_at": "2026-10-20T10:31:25.454557+08:00",
+  "scope": "Four repositories; Git-tracked non-document/non-binary regular files; actual project symlinks walked without following links. Only direct knowledge-base references checked; relocation build separately verifies AP scaffold.",
+  "patterns": [
+    "AI_RDdocs",
+    "/mnt/d/"
+  ],
+  "repositories": {
+    "project-control": {
+      "head": "97b17fb6842d708eccb4a96049c42f415cdbb15a",
+      "checked_count": 2,
+      "direct_reference_hits": []
+    },
+    "soc-ap": {
+      "head": "cf2dff40e8b9d7c94b41d01386f287be45afdb4d",
+      "checked_count": 9,
+      "direct_reference_hits": []
+    },
+    "mcu-p3": {
+      "head": "14b8057b04030bd659744c874c73ff8f09f29979",
+      "checked_count": 1913,
+      "direct_reference_hits": []
+    },
+    "test_harness": {
+      "head": "ad0398e20d3645dbfa37bfd0550ded0828d018b2",
+      "checked_count": 3,
+      "direct_reference_hits": []
+    }
+  },
+  "symlinks": [
+    {
+      "path": "mcu-p3/.agents",
+      "target": "/home/sushaohua/agents/mcu-p3/.agents/",
+      "resolved": "/home/sushaohua/agents/mcu-p3/.agents",
+      "points_to_knowledge_base": false
+    },
+    {
+      "path": "mcu-p3/AGENTS.md",
+      "target": "/home/sushaohua/agents/mcu-p3/AGENTS.md",
+      "resolved": "/home/sushaohua/agents/mcu-p3/AGENTS.md",
+      "points_to_knowledge_base": false
+    }
+  ],
+  "protocol_copy": {
+    "local_path": "docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md",
+    "source_path": "/mnt/d/AI_RDdocs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md",
+    "size": 55301,
+    "sha256": "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54",
+    "byte_identical_to_source": true,
+    "regular_file": true,
+    "source_modified_by_task": false
+  }
+}

@@ -1,0 +1,4 @@
+$ cwd=/home/sushaohua/workspace/ai_soc_project
+$ git -C project-control diff --check
+
+ACTUAL_EXIT_CODE=0

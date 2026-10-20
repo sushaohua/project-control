@@ -1,0 +1,1175 @@
+{
+  "scope": "Local control repository checkpoint only; exact-copy originals and frozen inputs are byte-preserved, authored active changes remain checked.",
+  "original_full_check": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "actual_exit_code": 2,
+    "raw_log": "original_diff_check.log",
+    "explanation": "Existing raw bytes only; no active authored path reported."
+  },
+  "exclusions": [
+    "docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md",
+    "docs/evidence/20261020_task_audit/inputs/**",
+    "docs/evidence/20261020_task_orchestration/runs/*/inputs/**",
+    "docs/evidence/20261020/push_attempt.log",
+    "docs/evidence/20261020/vmware_ssh.log",
+    "docs/evidence/20261020_task_orchestration/runs/staged_validation_01/original_diff_check.log"
+  ],
+  "git_whitespace_policy_changed": false,
+  "scoped_check": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      ".",
+      ":(exclude)docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md",
+      ":(exclude)docs/evidence/20261020_task_audit/inputs/**",
+      ":(exclude)docs/evidence/20261020_task_orchestration/runs/*/inputs/**",
+      ":(exclude)docs/evidence/20261020/push_attempt.log",
+      ":(exclude)docs/evidence/20261020/vmware_ssh.log",
+      ":(exclude)docs/evidence/20261020_task_orchestration/runs/staged_validation_01/original_diff_check.log"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+    "started_at": "2026-10-20T03:47:54.854311+00:00",
+    "ended_at": "2026-10-20T03:47:54.860578+00:00",
+    "actual_exit_code": 0,
+    "raw_log": "scoped_diff_check.log"
+  },
+  "preserved_files": [
+    {
+      "path": "docs/evidence/20261020/push_attempt.log",
+      "bytes": 987,
+      "sha256": "539264f363dbee5b7150fb33ac94588d67fe6885d6a2b84b26d369efd5098ec9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020/vmware_ssh.log",
+      "bytes": 87,
+      "sha256": "3354d92c5bbf8f43004a818ef42ef81f71e59843c281da22ac6c07dac766e8c2",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms01_20261007_214108.md",
+      "bytes": 7408,
+      "sha256": "30d57f060fba4e589561a622e1cb288fe2943ba9ae0dd3f17c24f51675347e19",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms02_20261007_214108.md",
+      "bytes": 6252,
+      "sha256": "b1ef8d48e64d871738220f1275e1ce81f5cd878946756b7338826ab3d5066bd2",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms03_20261007_214108.md",
+      "bytes": 6885,
+      "sha256": "182ca0464aea0c43ccd34f553da9086451656269922f2e1317055d0ff0fc0deb",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms04_20261007_214108.md",
+      "bytes": 6966,
+      "sha256": "eccbaf57cd9b8ab7cb46a8d6f07101b3f26b95c7b21cc16607dbf80f79e210a6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms05_20261007_214108.md",
+      "bytes": 7311,
+      "sha256": "0d37d828eb8eb11965408bbc254b616e22deb93f579b26d2b9c933c3bb9ad2a8",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms06_20261007_214108.md",
+      "bytes": 6734,
+      "sha256": "5663a4913ab27e50ca634793a0a5fd941b49d91f82d01413984da782e4de4d98",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+      "bytes": 6806,
+      "sha256": "4c357d864e874b6be60f3fa973356df0ce621544619b3913900547ef21e314be",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms08_20261007_214108.md",
+      "bytes": 6150,
+      "sha256": "810276cbdd6dff6d21b27faa8ebd8736bfb4f0474b0b0e7ca422959303f984c9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms09_20261007_214108.md",
+      "bytes": 6784,
+      "sha256": "91735ae1b90edabb0727d5c2a134f4a9fb77e6c395c1ec6a5bef0f95989cc5c7",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms10_20261007_214108.md",
+      "bytes": 6741,
+      "sha256": "a37da8e5a24f4db3193f84f8188cd8e1b0ccfd47af1a56dccb15175f7882e07a",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms11_20261007_214108.md",
+      "bytes": 7120,
+      "sha256": "fc3b45ceac0b554e1d06f9b725c5460ef44f4a90f3bdfe4a4c8301a30b49b720",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms12_20261007_214108.md",
+      "bytes": 6796,
+      "sha256": "d344118af1f3879e877c09da69b4f67330fe83534054704c0d0372654ecdb04c",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms13_20261007_214108.md",
+      "bytes": 6224,
+      "sha256": "f6cdc49b22feffb001cdaead4ad2fc36c309fbf3022535252665386e2a35fca0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms14_20261007_214108.md",
+      "bytes": 7588,
+      "sha256": "8b9bfcb12195b0ae85a77b2b61d9c0c74086ca40c46e6a8f62bfca1022aa8b59",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms15_20261007_214108.md",
+      "bytes": 6790,
+      "sha256": "2dd760a28773f9080604260ead45b8d3d264a1c2c879f5ab6a6a0107dd67ef12",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms16_20261007_214108.md",
+      "bytes": 6505,
+      "sha256": "80507a67aeb2ad318793bcb3dbc8abd5a945523c56205b7d091786f8521e3583",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms17_20261007_214108.md",
+      "bytes": 7495,
+      "sha256": "e2d3243e76e0d22cb1f083fbf22415ff7a82ab5e81ae54b2acda8782f6be7c59",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms18_20261008_083854.md",
+      "bytes": 7094,
+      "sha256": "72eb7466d656aa4096c2b6e8e19fcfeb374fef34ba71e52eb3099d453ff50fe9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms19_20261008_083854.md",
+      "bytes": 7212,
+      "sha256": "5b193a417f60aed17ab5d56e8774bf7aa91acb8dac83f38beb02c6dcbcfa71c9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms20_20261008_083854.md",
+      "bytes": 6718,
+      "sha256": "00aa4cb8c47c120d1a33bf6eeed177faad1a95632f24fa70f60f214da9faa48c",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms21_20261008_083854.md",
+      "bytes": 7220,
+      "sha256": "063c4b8b1e94c0df1376ea320a4c212e34d9574cfb1a90e25e648aca74112119",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/.agents/kanban/milestones/marlin_ms22_20261008_083854.md",
+      "bytes": 6415,
+      "sha256": "e284f89a9d33f40ccae001abf012e16043c14d31cfcad9369239bcca06cdd86a",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/minimc_v2_first_increment_20261020.md",
+      "bytes": 6356,
+      "sha256": "83575aea05a9ac1524478b9b3ee95c76479e23e541a8eb5b3cd23493e55668ff",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/product/product_pl01_20261008_083854.md",
+      "bytes": 6193,
+      "sha256": "6122f2b7b912eb96be2768c65dfaad35da730cafe53c0dd10b0aecb91a2be897",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/product/product_pl02_20261008_083854.md",
+      "bytes": 6683,
+      "sha256": "267bc5ce1ae98459d55b621069a04addf5b0976f6b01614122edf4e75439bc06",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md",
+      "bytes": 3579,
+      "sha256": "83e60fd8ad0d61c566e39aee33a1326e6396299a09701419d94ab632921d5180",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md",
+      "bytes": 3512,
+      "sha256": "d913409219de3887db11af2380b3d3984e2c20140fe6d2ff5393a9499b571632",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md",
+      "bytes": 3064,
+      "sha256": "cc1610780c36d589b5a0eb66f03fe8e14649b74e01e6ea53b75fa550980596ff",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+      "bytes": 3399,
+      "sha256": "1f56c3a158a1d53209101928becbda434720d17c7df4b6efbac2be1ec66b3d69",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+      "bytes": 5870,
+      "sha256": "d69432b6a591a1f79335c937d068f06f4b3c08675800cc5555e1d8ecf37f0969",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md",
+      "bytes": 3540,
+      "sha256": "55309d9ce0d937e6067d76dcb4eaab7e60ecc505acdc17acbb3c7bb699383a36",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md",
+      "bytes": 3849,
+      "sha256": "7f11a3a193e4669b0aa754d13c8854b97b12a2b5ea01059c68ac684064902ff6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md",
+      "bytes": 3098,
+      "sha256": "1d4d142cc5bfc4e0d9ae621bc707c0d81948185a9782b010655c9584c9207faa",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md",
+      "bytes": 3090,
+      "sha256": "70ba6dde56ffdfd44f23c26c61de12ed933c4fab8dd922cc0e7037891f4d5030",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+      "bytes": 4126,
+      "sha256": "6441a7774a9daa04bd7eb7c84852ee30b66e946cff87740e44fe5c5c13fbc5c6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md",
+      "bytes": 3677,
+      "sha256": "58fcc6768666890043727c1a66464f485698272f4fbf1e0e337cc985824b4ee0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md",
+      "bytes": 3594,
+      "sha256": "cf5a1319415cb87182d707572beec5165c1bd1a57909c04f4b1d37af02637b9f",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md",
+      "bytes": 3159,
+      "sha256": "7c18937686d31cf274e037a76968b611f539539cbb9f8ccd771597e61118383e",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md",
+      "bytes": 3140,
+      "sha256": "9c2bab91c87a4dc0ae6235ad3d0b1c8bc2aff66423effc3524cc4816768b5993",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md",
+      "bytes": 3138,
+      "sha256": "b293a222d71d0829a7e357fe12329c7c7ebcf34ac2a29ffc8ac68d570f4833b6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md",
+      "bytes": 3129,
+      "sha256": "51911e9b84d176e119fb0b89d02f594c7cfbebb2dffa09e3c614a5a11c23cfcc",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md",
+      "bytes": 3409,
+      "sha256": "4ae8448e76c033292d6ac9bb4771a196d6d697c90b53c9cf95f8c45507b9e0bf",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_audit/inputs/docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md",
+      "bytes": 3411,
+      "sha256": "50eda22e6881add71a48f36b3cc5e3176ffcd5854273d39298cd33469ec56a9c",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/final_validation_01/inputs/.agents/kanban/milestones/marlin_ms05_20261007_214108.md.snapshot",
+      "bytes": 8060,
+      "sha256": "9647752e613da396af705166ae29a5a000615415cc477ec04f5f30e9ab1c69ce",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/final_validation_01/inputs/.agents/kanban/milestones/marlin_ms06_20261007_214108.md.snapshot",
+      "bytes": 7355,
+      "sha256": "1b60d9d2a269b0a22bb676b6a0cf4226a622c1a403c52c52c5df547090b1d061",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/final_validation_01/inputs/.agents/kanban/milestones/marlin_ms07_20261007_214108.md.snapshot",
+      "bytes": 7428,
+      "sha256": "7b709fb538b3e66cbe9585829420d8611684daea65315b7744c275ebd06dad20",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/final_validation_01/inputs/docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md.snapshot",
+      "bytes": 3949,
+      "sha256": "8625be71a2bdf8776e4a220304acd2ca93fc9d6d67ffbc9dd08a02dd0f2c0ec7",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/final_validation_01/inputs/docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md.snapshot",
+      "bytes": 6904,
+      "sha256": "224d6fd8173f2fe219cc93e7ec9bc195dc0977869b475ae3b0f254c0aa5d6656",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/final_validation_01/inputs/docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md.snapshot",
+      "bytes": 5791,
+      "sha256": "1c1bc4b335509820f55b9e4f145c7f0c9fb74571228e304f1210206c491cb5b0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/final_validation_01/inputs/docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md.snapshot",
+      "bytes": 4676,
+      "sha256": "eb1bc29bd3800f65afea149806a85578b65c10c242e76a7c3be6f370bb7b5722",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/staged_validation_01/original_diff_check.log",
+      "bytes": 2654267,
+      "sha256": "688c4099075f5d65b7742e26b1d88d830282d245afc77d777787127d9448e817",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P01A.md.snapshot",
+      "bytes": 6984,
+      "sha256": "0c6bb9aa63b550fbc1a540332e248c8a12b7806311b101bb7d54764c3363f9e7",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P01B.md.snapshot",
+      "bytes": 7301,
+      "sha256": "feac07fd215a6f9db2e5ac0fba1136c86815879d43ee48b96690a5aeefe9b19d",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P01C.md.snapshot",
+      "bytes": 7522,
+      "sha256": "4f20139ca8be1273c463e03bd1b7d8f959dce6cef29846fedcbe60bb299f3217",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P01D.md.snapshot",
+      "bytes": 7380,
+      "sha256": "1d2744df6ea75678bd6cadc2fb409416a7a4f555a26eadfad70620833784d96b",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P02A.md.snapshot",
+      "bytes": 7782,
+      "sha256": "75afa184390a49567d6b8a4d42f3bb29cf50e49012a326e8a74f9bf644c76703",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P02B.md.snapshot",
+      "bytes": 7278,
+      "sha256": "6b9b4d50942b41e44fed2a8178bfb4979f1aa36fbf46d9892cc138e71dce4243",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P02C.md.snapshot",
+      "bytes": 7804,
+      "sha256": "6ff282258b44527005be1d0506225c04d2137309cb7ad4df7ebdeb744224fad3",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03A.md.snapshot",
+      "bytes": 7579,
+      "sha256": "32f19283500e92d42897978f88b326458e20bad277a7f3273c6605b9e4dcf123",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03B.md.snapshot",
+      "bytes": 7805,
+      "sha256": "e5221ecf8e7e9252d7d820791fe956d355baca90d13ac2c1652ca6d2fe29bba2",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03C.md.snapshot",
+      "bytes": 8253,
+      "sha256": "af3d7b7c6e9551d8614cae183cfe4cd397d9c7d0e61ccc30d88bbc9878bbc8c9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03D.md.snapshot",
+      "bytes": 7984,
+      "sha256": "3dfa31435d4176eec1313b748bb8d47745a491da9184300435f773f2ddfc6d3a",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03E.md.snapshot",
+      "bytes": 8019,
+      "sha256": "4bddc5c4ef77e71269f67a7243990709d513db5e5003603fadbc555a7d7c0838",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03F.md.snapshot",
+      "bytes": 9316,
+      "sha256": "6fbd44d09f3b062e95cc3c61c672926f2b30e487100de7ea1feb5b7c50b54f71",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P04A.md.snapshot",
+      "bytes": 8249,
+      "sha256": "1e7e10b8d6b47d61627a83291384efa12b151e5dec047d6b1f6ccf14ec5e5de2",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P04B.md.snapshot",
+      "bytes": 8284,
+      "sha256": "5b9a7a2a70a527a0c845ee33ffbab7710bcd37bca6abd717c7bef158dad78fa0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P04C.md.snapshot",
+      "bytes": 8288,
+      "sha256": "a4e3d94403444948583f4baf08c4ea29dafe412e0889a2e0c1923f1c14aa4721",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P04D.md.snapshot",
+      "bytes": 8295,
+      "sha256": "c1c29d359f6fee9fd472ae273c0adc2d54cebeb9fd59cb0581c055291dd90720",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05A.md.snapshot",
+      "bytes": 8253,
+      "sha256": "2cb021359518396d90a95dd3fc94d3e47abac64fbadf3c02778982d98e3cdbb4",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05B.md.snapshot",
+      "bytes": 7211,
+      "sha256": "f8b1b84120c9a852b7c0745a8cf4700e665b55f4833492dd6020750f774a8454",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05C.md.snapshot",
+      "bytes": 8311,
+      "sha256": "5b1cb564244ebfcf9c024f9a984ea962bfa6c9fbe90b7ff27757280de55c55e4",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05D.md.snapshot",
+      "bytes": 8269,
+      "sha256": "f019ba3cd393c1c51ed5da577f4f4835a31c19237ab41d1ceb37cf195352b1f6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05E.md.snapshot",
+      "bytes": 8342,
+      "sha256": "251a5dcf26b8db48fd3cfbfa49c97184387c55c1dff47c362b8ea07ab7d4834d",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P06A.md.snapshot",
+      "bytes": 8266,
+      "sha256": "2c3bc530bc7592b463455b7d7ed57636732526c93ce134ae2e03b7338c5532b0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P06B.md.snapshot",
+      "bytes": 8108,
+      "sha256": "d7c5c11ccccff1164fe69ecf4f120de955c971eb1527899ae78d8f1727f172ed",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/microtasks/minimc_v2/V2-P06C.md.snapshot",
+      "bytes": 7388,
+      "sha256": "679612655f5ab70fa58d4354cf2990ac3fb2a1d5514aa4b39440c8963178cabc",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms01_20261007_214108.md.snapshot",
+      "bytes": 7408,
+      "sha256": "30d57f060fba4e589561a622e1cb288fe2943ba9ae0dd3f17c24f51675347e19",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms02_20261007_214108.md.snapshot",
+      "bytes": 6252,
+      "sha256": "b1ef8d48e64d871738220f1275e1ce81f5cd878946756b7338826ab3d5066bd2",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms03_20261007_214108.md.snapshot",
+      "bytes": 6885,
+      "sha256": "182ca0464aea0c43ccd34f553da9086451656269922f2e1317055d0ff0fc0deb",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms04_20261007_214108.md.snapshot",
+      "bytes": 6966,
+      "sha256": "eccbaf57cd9b8ab7cb46a8d6f07101b3f26b95c7b21cc16607dbf80f79e210a6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms05_20261007_214108.md.snapshot",
+      "bytes": 8060,
+      "sha256": "9647752e613da396af705166ae29a5a000615415cc477ec04f5f30e9ab1c69ce",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms06_20261007_214108.md.snapshot",
+      "bytes": 7355,
+      "sha256": "1b60d9d2a269b0a22bb676b6a0cf4226a622c1a403c52c52c5df547090b1d061",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms07_20261007_214108.md.snapshot",
+      "bytes": 7428,
+      "sha256": "7b709fb538b3e66cbe9585829420d8611684daea65315b7744c275ebd06dad20",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms08_20261007_214108.md.snapshot",
+      "bytes": 6150,
+      "sha256": "810276cbdd6dff6d21b27faa8ebd8736bfb4f0474b0b0e7ca422959303f984c9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms09_20261007_214108.md.snapshot",
+      "bytes": 6784,
+      "sha256": "91735ae1b90edabb0727d5c2a134f4a9fb77e6c395c1ec6a5bef0f95989cc5c7",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms10_20261007_214108.md.snapshot",
+      "bytes": 6741,
+      "sha256": "a37da8e5a24f4db3193f84f8188cd8e1b0ccfd47af1a56dccb15175f7882e07a",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms11_20261007_214108.md.snapshot",
+      "bytes": 7120,
+      "sha256": "fc3b45ceac0b554e1d06f9b725c5460ef44f4a90f3bdfe4a4c8301a30b49b720",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms12_20261007_214108.md.snapshot",
+      "bytes": 6796,
+      "sha256": "d344118af1f3879e877c09da69b4f67330fe83534054704c0d0372654ecdb04c",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms13_20261007_214108.md.snapshot",
+      "bytes": 6224,
+      "sha256": "f6cdc49b22feffb001cdaead4ad2fc36c309fbf3022535252665386e2a35fca0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms14_20261007_214108.md.snapshot",
+      "bytes": 7588,
+      "sha256": "8b9bfcb12195b0ae85a77b2b61d9c0c74086ca40c46e6a8f62bfca1022aa8b59",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms15_20261007_214108.md.snapshot",
+      "bytes": 6790,
+      "sha256": "2dd760a28773f9080604260ead45b8d3d264a1c2c879f5ab6a6a0107dd67ef12",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms16_20261007_214108.md.snapshot",
+      "bytes": 6505,
+      "sha256": "80507a67aeb2ad318793bcb3dbc8abd5a945523c56205b7d091786f8521e3583",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms17_20261007_214108.md.snapshot",
+      "bytes": 7495,
+      "sha256": "e2d3243e76e0d22cb1f083fbf22415ff7a82ab5e81ae54b2acda8782f6be7c59",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms18_20261008_083854.md.snapshot",
+      "bytes": 7094,
+      "sha256": "72eb7466d656aa4096c2b6e8e19fcfeb374fef34ba71e52eb3099d453ff50fe9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms19_20261008_083854.md.snapshot",
+      "bytes": 7212,
+      "sha256": "5b193a417f60aed17ab5d56e8774bf7aa91acb8dac83f38beb02c6dcbcfa71c9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms20_20261008_083854.md.snapshot",
+      "bytes": 6718,
+      "sha256": "00aa4cb8c47c120d1a33bf6eeed177faad1a95632f24fa70f60f214da9faa48c",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms21_20261008_083854.md.snapshot",
+      "bytes": 7220,
+      "sha256": "063c4b8b1e94c0df1376ea320a4c212e34d9574cfb1a90e25e648aca74112119",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/.agents/kanban/milestones/marlin_ms22_20261008_083854.md.snapshot",
+      "bytes": 6415,
+      "sha256": "e284f89a9d33f40ccae001abf012e16043c14d31cfcad9369239bcca06cdd86a",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/product/product_pl01_20261008_083854.md.snapshot",
+      "bytes": 6193,
+      "sha256": "6122f2b7b912eb96be2768c65dfaad35da730cafe53c0dd10b0aecb91a2be897",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/product/product_pl02_20261008_083854.md.snapshot",
+      "bytes": 6683,
+      "sha256": "267bc5ce1ae98459d55b621069a04addf5b0976f6b01614122edf4e75439bc06",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md.snapshot",
+      "bytes": 3579,
+      "sha256": "83e60fd8ad0d61c566e39aee33a1326e6396299a09701419d94ab632921d5180",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md.snapshot",
+      "bytes": 3512,
+      "sha256": "d913409219de3887db11af2380b3d3984e2c20140fe6d2ff5393a9499b571632",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md.snapshot",
+      "bytes": 3064,
+      "sha256": "cc1610780c36d589b5a0eb66f03fe8e14649b74e01e6ea53b75fa550980596ff",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md.snapshot",
+      "bytes": 3949,
+      "sha256": "8625be71a2bdf8776e4a220304acd2ca93fc9d6d67ffbc9dd08a02dd0f2c0ec7",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md.snapshot",
+      "bytes": 6904,
+      "sha256": "224d6fd8173f2fe219cc93e7ec9bc195dc0977869b475ae3b0f254c0aa5d6656",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md.snapshot",
+      "bytes": 3540,
+      "sha256": "55309d9ce0d937e6067d76dcb4eaab7e60ecc505acdc17acbb3c7bb699383a36",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md.snapshot",
+      "bytes": 5791,
+      "sha256": "1c1bc4b335509820f55b9e4f145c7f0c9fb74571228e304f1210206c491cb5b0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md.snapshot",
+      "bytes": 3098,
+      "sha256": "1d4d142cc5bfc4e0d9ae621bc707c0d81948185a9782b010655c9584c9207faa",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md.snapshot",
+      "bytes": 3090,
+      "sha256": "70ba6dde56ffdfd44f23c26c61de12ed933c4fab8dd922cc0e7037891f4d5030",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md.snapshot",
+      "bytes": 4676,
+      "sha256": "eb1bc29bd3800f65afea149806a85578b65c10c242e76a7c3be6f370bb7b5722",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md.snapshot",
+      "bytes": 3677,
+      "sha256": "58fcc6768666890043727c1a66464f485698272f4fbf1e0e337cc985824b4ee0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md.snapshot",
+      "bytes": 3594,
+      "sha256": "cf5a1319415cb87182d707572beec5165c1bd1a57909c04f4b1d37af02637b9f",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md.snapshot",
+      "bytes": 3159,
+      "sha256": "7c18937686d31cf274e037a76968b611f539539cbb9f8ccd771597e61118383e",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md.snapshot",
+      "bytes": 3140,
+      "sha256": "9c2bab91c87a4dc0ae6235ad3d0b1c8bc2aff66423effc3524cc4816768b5993",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md.snapshot",
+      "bytes": 3138,
+      "sha256": "b293a222d71d0829a7e357fe12329c7c7ebcf34ac2a29ffc8ac68d570f4833b6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md.snapshot",
+      "bytes": 3129,
+      "sha256": "51911e9b84d176e119fb0b89d02f594c7cfbebb2dffa09e3c614a5a11c23cfcc",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md.snapshot",
+      "bytes": 3409,
+      "sha256": "4ae8448e76c033292d6ac9bb4771a196d6d697c90b53c9cf95f8c45507b9e0bf",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_01/inputs/docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md.snapshot",
+      "bytes": 3411,
+      "sha256": "50eda22e6881add71a48f36b3cc5e3176ffcd5854273d39298cd33469ec56a9c",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P01A.md.snapshot",
+      "bytes": 6984,
+      "sha256": "0c6bb9aa63b550fbc1a540332e248c8a12b7806311b101bb7d54764c3363f9e7",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P01B.md.snapshot",
+      "bytes": 7301,
+      "sha256": "feac07fd215a6f9db2e5ac0fba1136c86815879d43ee48b96690a5aeefe9b19d",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P01C.md.snapshot",
+      "bytes": 7522,
+      "sha256": "4f20139ca8be1273c463e03bd1b7d8f959dce6cef29846fedcbe60bb299f3217",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P01D.md.snapshot",
+      "bytes": 7380,
+      "sha256": "1d2744df6ea75678bd6cadc2fb409416a7a4f555a26eadfad70620833784d96b",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P02A.md.snapshot",
+      "bytes": 7782,
+      "sha256": "75afa184390a49567d6b8a4d42f3bb29cf50e49012a326e8a74f9bf644c76703",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P02B.md.snapshot",
+      "bytes": 7278,
+      "sha256": "6b9b4d50942b41e44fed2a8178bfb4979f1aa36fbf46d9892cc138e71dce4243",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P02C.md.snapshot",
+      "bytes": 7804,
+      "sha256": "6ff282258b44527005be1d0506225c04d2137309cb7ad4df7ebdeb744224fad3",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03A.md.snapshot",
+      "bytes": 7579,
+      "sha256": "32f19283500e92d42897978f88b326458e20bad277a7f3273c6605b9e4dcf123",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03B.md.snapshot",
+      "bytes": 7805,
+      "sha256": "e5221ecf8e7e9252d7d820791fe956d355baca90d13ac2c1652ca6d2fe29bba2",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03C.md.snapshot",
+      "bytes": 8253,
+      "sha256": "af3d7b7c6e9551d8614cae183cfe4cd397d9c7d0e61ccc30d88bbc9878bbc8c9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03D.md.snapshot",
+      "bytes": 7984,
+      "sha256": "3dfa31435d4176eec1313b748bb8d47745a491da9184300435f773f2ddfc6d3a",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03E.md.snapshot",
+      "bytes": 8019,
+      "sha256": "4bddc5c4ef77e71269f67a7243990709d513db5e5003603fadbc555a7d7c0838",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P03F.md.snapshot",
+      "bytes": 9316,
+      "sha256": "6fbd44d09f3b062e95cc3c61c672926f2b30e487100de7ea1feb5b7c50b54f71",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P04A.md.snapshot",
+      "bytes": 8249,
+      "sha256": "1e7e10b8d6b47d61627a83291384efa12b151e5dec047d6b1f6ccf14ec5e5de2",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P04B.md.snapshot",
+      "bytes": 8284,
+      "sha256": "5b9a7a2a70a527a0c845ee33ffbab7710bcd37bca6abd717c7bef158dad78fa0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P04C.md.snapshot",
+      "bytes": 8288,
+      "sha256": "a4e3d94403444948583f4baf08c4ea29dafe412e0889a2e0c1923f1c14aa4721",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P04D.md.snapshot",
+      "bytes": 8295,
+      "sha256": "c1c29d359f6fee9fd472ae273c0adc2d54cebeb9fd59cb0581c055291dd90720",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05A.md.snapshot",
+      "bytes": 8253,
+      "sha256": "2cb021359518396d90a95dd3fc94d3e47abac64fbadf3c02778982d98e3cdbb4",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05B.md.snapshot",
+      "bytes": 7211,
+      "sha256": "f8b1b84120c9a852b7c0745a8cf4700e665b55f4833492dd6020750f774a8454",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05C.md.snapshot",
+      "bytes": 8311,
+      "sha256": "5b1cb564244ebfcf9c024f9a984ea962bfa6c9fbe90b7ff27757280de55c55e4",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05D.md.snapshot",
+      "bytes": 8269,
+      "sha256": "f019ba3cd393c1c51ed5da577f4f4835a31c19237ab41d1ceb37cf195352b1f6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P05E.md.snapshot",
+      "bytes": 8342,
+      "sha256": "251a5dcf26b8db48fd3cfbfa49c97184387c55c1dff47c362b8ea07ab7d4834d",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P06A.md.snapshot",
+      "bytes": 8266,
+      "sha256": "2c3bc530bc7592b463455b7d7ed57636732526c93ce134ae2e03b7338c5532b0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P06B.md.snapshot",
+      "bytes": 8108,
+      "sha256": "d7c5c11ccccff1164fe69ecf4f120de955c971eb1527899ae78d8f1727f172ed",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/microtasks/minimc_v2/V2-P06C.md.snapshot",
+      "bytes": 7388,
+      "sha256": "679612655f5ab70fa58d4354cf2990ac3fb2a1d5514aa4b39440c8963178cabc",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms01_20261007_214108.md.snapshot",
+      "bytes": 7408,
+      "sha256": "30d57f060fba4e589561a622e1cb288fe2943ba9ae0dd3f17c24f51675347e19",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms02_20261007_214108.md.snapshot",
+      "bytes": 6252,
+      "sha256": "b1ef8d48e64d871738220f1275e1ce81f5cd878946756b7338826ab3d5066bd2",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms03_20261007_214108.md.snapshot",
+      "bytes": 6885,
+      "sha256": "182ca0464aea0c43ccd34f553da9086451656269922f2e1317055d0ff0fc0deb",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms04_20261007_214108.md.snapshot",
+      "bytes": 6966,
+      "sha256": "eccbaf57cd9b8ab7cb46a8d6f07101b3f26b95c7b21cc16607dbf80f79e210a6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms05_20261007_214108.md.snapshot",
+      "bytes": 8060,
+      "sha256": "9647752e613da396af705166ae29a5a000615415cc477ec04f5f30e9ab1c69ce",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms06_20261007_214108.md.snapshot",
+      "bytes": 7355,
+      "sha256": "1b60d9d2a269b0a22bb676b6a0cf4226a622c1a403c52c52c5df547090b1d061",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms07_20261007_214108.md.snapshot",
+      "bytes": 7428,
+      "sha256": "7b709fb538b3e66cbe9585829420d8611684daea65315b7744c275ebd06dad20",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms08_20261007_214108.md.snapshot",
+      "bytes": 6150,
+      "sha256": "810276cbdd6dff6d21b27faa8ebd8736bfb4f0474b0b0e7ca422959303f984c9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms09_20261007_214108.md.snapshot",
+      "bytes": 6784,
+      "sha256": "91735ae1b90edabb0727d5c2a134f4a9fb77e6c395c1ec6a5bef0f95989cc5c7",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms10_20261007_214108.md.snapshot",
+      "bytes": 6741,
+      "sha256": "a37da8e5a24f4db3193f84f8188cd8e1b0ccfd47af1a56dccb15175f7882e07a",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms11_20261007_214108.md.snapshot",
+      "bytes": 7120,
+      "sha256": "fc3b45ceac0b554e1d06f9b725c5460ef44f4a90f3bdfe4a4c8301a30b49b720",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms12_20261007_214108.md.snapshot",
+      "bytes": 6796,
+      "sha256": "d344118af1f3879e877c09da69b4f67330fe83534054704c0d0372654ecdb04c",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms13_20261007_214108.md.snapshot",
+      "bytes": 6224,
+      "sha256": "f6cdc49b22feffb001cdaead4ad2fc36c309fbf3022535252665386e2a35fca0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms14_20261007_214108.md.snapshot",
+      "bytes": 7588,
+      "sha256": "8b9bfcb12195b0ae85a77b2b61d9c0c74086ca40c46e6a8f62bfca1022aa8b59",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms15_20261007_214108.md.snapshot",
+      "bytes": 6790,
+      "sha256": "2dd760a28773f9080604260ead45b8d3d264a1c2c879f5ab6a6a0107dd67ef12",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms16_20261007_214108.md.snapshot",
+      "bytes": 6505,
+      "sha256": "80507a67aeb2ad318793bcb3dbc8abd5a945523c56205b7d091786f8521e3583",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms17_20261007_214108.md.snapshot",
+      "bytes": 7495,
+      "sha256": "e2d3243e76e0d22cb1f083fbf22415ff7a82ab5e81ae54b2acda8782f6be7c59",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms18_20261008_083854.md.snapshot",
+      "bytes": 7094,
+      "sha256": "72eb7466d656aa4096c2b6e8e19fcfeb374fef34ba71e52eb3099d453ff50fe9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms19_20261008_083854.md.snapshot",
+      "bytes": 7212,
+      "sha256": "5b193a417f60aed17ab5d56e8774bf7aa91acb8dac83f38beb02c6dcbcfa71c9",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms20_20261008_083854.md.snapshot",
+      "bytes": 6718,
+      "sha256": "00aa4cb8c47c120d1a33bf6eeed177faad1a95632f24fa70f60f214da9faa48c",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms21_20261008_083854.md.snapshot",
+      "bytes": 7220,
+      "sha256": "063c4b8b1e94c0df1376ea320a4c212e34d9574cfb1a90e25e648aca74112119",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/.agents/kanban/milestones/marlin_ms22_20261008_083854.md.snapshot",
+      "bytes": 6415,
+      "sha256": "e284f89a9d33f40ccae001abf012e16043c14d31cfcad9369239bcca06cdd86a",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/product/product_pl01_20261008_083854.md.snapshot",
+      "bytes": 6193,
+      "sha256": "6122f2b7b912eb96be2768c65dfaad35da730cafe53c0dd10b0aecb91a2be897",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/product/product_pl02_20261008_083854.md.snapshot",
+      "bytes": 6683,
+      "sha256": "267bc5ce1ae98459d55b621069a04addf5b0976f6b01614122edf4e75439bc06",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md.snapshot",
+      "bytes": 3579,
+      "sha256": "83e60fd8ad0d61c566e39aee33a1326e6396299a09701419d94ab632921d5180",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md.snapshot",
+      "bytes": 3512,
+      "sha256": "d913409219de3887db11af2380b3d3984e2c20140fe6d2ff5393a9499b571632",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md.snapshot",
+      "bytes": 3064,
+      "sha256": "cc1610780c36d589b5a0eb66f03fe8e14649b74e01e6ea53b75fa550980596ff",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md.snapshot",
+      "bytes": 3949,
+      "sha256": "8625be71a2bdf8776e4a220304acd2ca93fc9d6d67ffbc9dd08a02dd0f2c0ec7",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md.snapshot",
+      "bytes": 6904,
+      "sha256": "224d6fd8173f2fe219cc93e7ec9bc195dc0977869b475ae3b0f254c0aa5d6656",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md.snapshot",
+      "bytes": 3540,
+      "sha256": "55309d9ce0d937e6067d76dcb4eaab7e60ecc505acdc17acbb3c7bb699383a36",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md.snapshot",
+      "bytes": 5791,
+      "sha256": "1c1bc4b335509820f55b9e4f145c7f0c9fb74571228e304f1210206c491cb5b0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md.snapshot",
+      "bytes": 3098,
+      "sha256": "1d4d142cc5bfc4e0d9ae621bc707c0d81948185a9782b010655c9584c9207faa",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md.snapshot",
+      "bytes": 3090,
+      "sha256": "70ba6dde56ffdfd44f23c26c61de12ed933c4fab8dd922cc0e7037891f4d5030",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md.snapshot",
+      "bytes": 4676,
+      "sha256": "eb1bc29bd3800f65afea149806a85578b65c10c242e76a7c3be6f370bb7b5722",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md.snapshot",
+      "bytes": 3677,
+      "sha256": "58fcc6768666890043727c1a66464f485698272f4fbf1e0e337cc985824b4ee0",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md.snapshot",
+      "bytes": 3594,
+      "sha256": "cf5a1319415cb87182d707572beec5165c1bd1a57909c04f4b1d37af02637b9f",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md.snapshot",
+      "bytes": 3159,
+      "sha256": "7c18937686d31cf274e037a76968b611f539539cbb9f8ccd771597e61118383e",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md.snapshot",
+      "bytes": 3140,
+      "sha256": "9c2bab91c87a4dc0ae6235ad3d0b1c8bc2aff66423effc3524cc4816768b5993",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md.snapshot",
+      "bytes": 3138,
+      "sha256": "b293a222d71d0829a7e357fe12329c7c7ebcf34ac2a29ffc8ac68d570f4833b6",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md.snapshot",
+      "bytes": 3129,
+      "sha256": "51911e9b84d176e119fb0b89d02f594c7cfbebb2dffa09e3c614a5a11c23cfcc",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md.snapshot",
+      "bytes": 3409,
+      "sha256": "4ae8448e76c033292d6ac9bb4771a196d6d697c90b53c9cf95f8c45507b9e0bf",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261020_task_orchestration/runs/toolcheck_02/inputs/docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md.snapshot",
+      "bytes": 3411,
+      "sha256": "50eda22e6881add71a48f36b3cc5e3176ffcd5854273d39298cd33469ec56a9c",
+      "index_matches_worktree": true
+    },
+    {
+      "path": "docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md",
+      "bytes": 55301,
+      "sha256": "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54",
+      "index_matches_worktree": true
+    }
+  ],
+  "status": "scoped-authored-check-passed; immutable-raw-format-findings-retained"
+}

@@ -1,13 +1,13 @@
 ---
-title: "TASK-010 验收首个多 Agent 端到端试点"
+title: TASK-010 验收首个多 Agent 端到端试点
 date: 2026-09-30
 id: TASK-010
-revision: 7
+revision: 8
 status: Backlog
 blocked: false
 owner: null
-proposed_owner: "QA"
-reviewer: "ARCH"
+proposed_owner: QA
+reviewer: ARCH
 verifier: QA
 integrator: INTEGRATOR
 baseline: B0
@@ -18,8 +18,10 @@ base_commit: null
 candidate_commit: null
 merged_commit: null
 depends_on: []
-tags: [soc, task]
-updated: '2026-10-13 12:24:23'
+tags:
+- soc
+- task
+updated: '2026-10-20 11:26:37'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 task_kind: work_package
@@ -30,6 +32,7 @@ child_tasks:
 - MS-17
 - MS-19
 - MS-22
+- V2-P06B
 planning_relations:
 - MS-06
 - MS-08
@@ -78,3 +81,11 @@ MS-06/19 提前交独立预期，MS-11/17 分别验收 MC-only 与 MC+SCM，MS-2
 ## 当前真实台架验收范围
 
 MS-11/17 必须有 Ubuntu 宿主程序＋真实 MC/TH 候选、原始报文与故障恢复记录；MS-22 需实际任务全生命周期/异常交接及独立检查。Mock、文档结构校验和工作包存在不能代替任何出口通过。目标 SoC 与物理打印另按产品阶段验证。
+
+## v2.0 离线增量的实际子任务
+
+2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
+
+[V2-P06B](../../../.agents/kanban/microtasks/minimc_v2/V2-P06B.md)。
+
+这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。

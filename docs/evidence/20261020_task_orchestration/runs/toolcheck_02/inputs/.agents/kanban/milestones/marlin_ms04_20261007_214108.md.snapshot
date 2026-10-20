@@ -1,0 +1,128 @@
+---
+title: "MS-04 核查真实 MC 双向串口与实收样例"
+created: 2026-10-07 21:41:08
+updated: '2026-10-13 12:15:01'
+timezone: 北京时间（UTC+8）
+id: MS-04
+revision: 4
+plan_revision: marlin-r2
+task_kind: investigation
+dispatchable: true
+status: Backlog
+blocked: false
+owner: null
+proposed_owner: ENG-FWD
+executor:
+  role: ENG-FWD
+  agent_id: null
+  run_id: null
+reviewer:
+- ARCH
+verifier: QA
+integrator: null
+review_assignments:
+  reviewer_sessions:
+  - role: ARCH
+    session: null
+    decision: null
+    artifact_version: null
+    evidence: null
+  verifier_session: null
+  integrator_session: null
+baseline: B0
+scope_status: unmapped
+required_evidence_level: hardware-verified
+verification_environment: ubuntu-host+real-mcu-hil
+verification_scope: MC-only
+contract_status: experimental
+depends_on:
+- MS-02
+- MS-03
+allowed_repositories: []
+allowed_paths: []
+base_commit: null
+candidate_commit: null
+merged_commit: null
+lease: null
+handoff:
+  receiver_role: COORD
+  receiver_session: null
+  transport: null
+  evidence_location: null
+  acknowledgement: null
+tags: [soc, task, marlin, current-plan]
+primary_work_package: TASK-006
+related_work_packages: []
+requirement:
+- PILOT-REQ-01
+icd_versions: []
+resources: []
+budget: null
+checkpoint: null
+version_bundle: null
+evidence: []
+dependency_conditions: ["TASK-005 内 MCQ 接口验收或等效固件证据"]
+---
+
+# MS-04 核查真实 MC 双向串口与实收样例
+
+## 目标
+
+在固件接口可用条件成立后，用独立只读客户端验证 Ubuntu USB 直通 MC 的请求/应答，交出原始 TX/RX。
+
+## 输入与写入边界
+
+MS-03 允许的探测、MS-02 固件身份，以及 TASK-005 的 MCQ 接口验收或等效现成接口证据。COM8 是 Windows 标识，当前 Ubuntu 使用经核验的 /dev/ttyUSB0；缺接口先登记，不改固件或用日志冒充响应。
+
+建议路径：`tests/hil/mc-query/**；本任务独立日志目录`。逻辑目录不是授权，派单时映射真实仓库、工作区、文件白名单及证据位置。读取 B0、本卡与相关已接受输入；参考报告只作线索。
+
+## 前置交付与可使用条件
+
+| 生产卡/外部来源 | 要交什么 | 准确版本 | 本卡为什么使用 | 什么时候可用 |
+| --- | --- | --- | --- | --- |
+| [[AI_SoC_协作方案/tasks/marlin_ms02_20261007_214108\|MS-02]] | 同版本 MC 固件隔离构建/台架启动记录、命令退出结果与制品哈希 | 待取得后登记准确版本/哈希 | 以已复现主控作为本轮调查/联调基础 | 准确工程/配置可重复运行，不用其他示例替代 |
+| [[AI_SoC_协作方案/tasks/marlin_ms03_20261007_214108\|MS-03]] | 源码/配置核查结论、允许的最小只读探测与限制 | 待取得后登记准确版本/哈希 | 使用允许的只读探测并核对实际响应 | 源码/配置支持本轮候选；否定结果不授权发送不存在命令 |
+| 外部输入，由 COORD 登记提供者 | 本卡输入中列出的外部资料、权限、工作模式或产品选择 | 待核查；未知不填造 | 支持本卡目标 | 本卡必要条件齐全；无关未来项不阻塞 |
+
+上游 Done 不能代替上述使用条件。否定调查结论保留；所需能力不满足时登记缺口与恢复条件，不派依赖实现。
+
+## Ready 前核对
+
+按 [[AI_SoC_协作方案/04_公共看板与读写协议#4.1 派单前必须明确的五项|派单五项]] 落实输入、范围、实际检查者/收件方、资源、预算与检查点。代码/运行卡补准确构建和检查命令；调查/设计明确来源与评审方法。开工时不要求尚未产生的候选代码或测试结果。
+
+## 谁做和谁检查
+
+| 环节 | 岗位与实际入口 | 负责的检查/交付 |
+| --- | --- | --- |
+| 作者 | ENG-FWD；`executor.agent_id` 待登记 | 完成目标、保存实际证据，不批准自己的结果 |
+| 必需评审 | ARCH；对应 `reviewer_sessions` 待登记 | 检查准确输入/交付版本、方法与结论；与该交付作者分开 |
+| 独立运行验证 | QA；`verifier_session` 待登记 | 按本卡预期检查准确候选并留记录；不修实现 |
+| 合入/候选装配 | 不适用 | 无生产代码合入；文档/报告按准确版本归档 |
+| 收件和状态 | 唯一 COORD；`handoff` 待登记 | 明确收到/需补材料；条件满足才更新正式状态 |
+
+所有列出的评审项均为必需；`session/decision` 空值是待登记，不是已检查。身份、替代检查与不适用规则见 [[AI_SoC_协作方案/04_公共看板与读写协议#4.3 按任务类型安排检查|检查安排]]。
+
+## 验收与交付
+
+记录实际监听端点、Marlin 输入/输出通道和查询 TX/RX。证明可以收到固件回复，连接成功本身不算通过。确需桥接改动时另列准确范围并评审，当前核查任务不顺手改源代码。 样例注明实际命令、源码/配置版本和完整字节；提供 MS-05 所需的版本/温度实收行为，异常不能归一成成功。
+
+交付：实际双向端点、带版本的原始 TX/RX 与实收回复样例。运行卡附实际命令、退出结果、日志、版本组合与制品摘要；文档卡附准确文档版本与来源/评审。候选 commit、diff、合入版本只在适用且实际产生后填写。向登记的 COORD 交位置并取得回执；共同行为见 [[AI_SoC_协作方案/templates/角色任务提示词|交付格式]]。
+
+## 非目标
+
+不强制改成 PTY，不同时执行两种桥接方案，不改 UI 字号或生产 MCU 固件。
+
+
+## 归属、资源与进度
+
+主工作包：[[AI_SoC_协作方案/tasks/TASK-006_实现独立模拟 MCU 和异常夹具|TASK-006]]。其他关联仅便于覆盖追踪，不重复计算任务完成；`depends_on` 才表示本卡直接前置。实时状态、实际执行者和版本只读取本卡 frontmatter/证据，不在正文另写一份状态。
+
+实际资源由 COORD 在 Ready 前填写：工作区、构建输出、Ubuntu 进程/硬件串口端点及占用检查点。同目录不同分支仍需评估行为冲突；不并发操作同一实例。字段或接口改变后按 [[AI_SoC_协作方案/04_公共看板与读写协议#4.4 完成后变更与证据撤回|变更规则]] 处理。
+
+需求原件：[[AI_SoC_协作方案/pilot_requirements_20261008_083854|查询试点需求与验收]]；本卡对应 PILOT-REQ-01。
+
+## 当前 HIL 范围与能力条件
+
+MCQ 的只读接口候选及硬件验收成立，或准确现成固件提供等效证据；未满足时保留调查缺口，不发送不存在命令。
+
+当前 SoC 运行端为 VMware Ubuntu 宿主程序；真实设备证据须记录 MC/TH 固件及 USB/板间串口，Mock 证据单列。MC 能力报告只提供快照线索，最新实现 `[UNVERIFIED]`，实际源码读取和硬件操作需准确任务授权。现有状态、执行者和 evidence 本轮保持原值。

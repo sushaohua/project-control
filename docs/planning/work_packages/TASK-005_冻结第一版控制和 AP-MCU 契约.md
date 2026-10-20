@@ -1,13 +1,13 @@
 ---
-title: "TASK-005 冻结第一版控制和 AP-MCU 契约"
+title: TASK-005 冻结第一版控制和 AP-MCU 契约
 date: 2026-09-30
 id: TASK-005
-revision: 6
+revision: 7
 status: Backlog
 blocked: false
 owner: null
 proposed_owner: ARCH
-reviewer: "ENG-FWD＋现有 MCU Owner"
+reviewer: ENG-FWD＋现有 MCU Owner
 verifier: QA
 integrator: INTEGRATOR
 baseline: B0
@@ -18,8 +18,10 @@ base_commit: null
 candidate_commit: null
 merged_commit: null
 depends_on: []
-tags: [soc, task]
-updated: '2026-10-13 12:19:12'
+tags:
+- soc
+- task
+updated: '2026-10-20 11:26:37'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 task_kind: work_package
@@ -28,6 +30,11 @@ child_tasks:
 - MS-03
 - MS-05
 - PL-02
+- V2-P01A
+- V2-P01B
+- V2-P01C
+- V2-P01D
+- V2-P02C
 planning_relations: []
 related_tasks:
 - MS-12
@@ -39,7 +46,7 @@ related_tasks:
 
 ## 目标与范围
 
-本机 Marlin 主控对接与既有主从协议分别核查/接受；后续控制 API、流控和升级按功能补充，不默认二进制 CRC 或幽灵字段。
+通信格式已由 B0 D20 选择本地 MiniMCProto v2.0 / Rev 2.0.3；先提取离线最小契约和独立预期，再结合实际固件核对可用能力。后续会话、控制与升级分别拆卡，不把旧文本/升级通道当成 v2.0 已实现。
 
 建议主责 ARCH；所需证据 document。实际执行条件在子任务登记。读取当前 B0、角色边界和相关已接受约定；分析报告只参考。
 
@@ -75,7 +82,7 @@ related_tasks:
 
 | 微步 ID | 阶段/建议岗位 | 前置 | 明确产物与判据 | 当前状态 |
 | --- | --- | --- | --- | --- |
-| MCQ-01 | 设计／ARCH＋ENG-MC | MS-03 来源结论 | 只读身份/能力/温度、结束/错误/期限、文本/二进制适用范围的接受稿；与 D20 冲突需选择记录 | Backlog |
+| MCQ-01 | 设计／ARCH＋ENG-MC | MS-03 来源结论 | 消费 V2-P01B 的离线设计及 MS-03 来源结论，形成固件只读身份/能力/温度、结束/错误/期限的建设接受稿；v2.0 选择已由 B0 记录，不再等待旧协议选择 | Backlog |
 | MCQ-02 | 接口／ENG-MC | MCQ-01 | 仅本轮所需头文件声明；引用构建与类型/布局检查通过，实际命令开工前登记 | Backlog |
 | MCQ-03 | 符号／ENG-MC | MCQ-02 | 实现文件最小可链接符号；未实现返回明确不可用，不返回假成功 | Backlog |
 | MCQ-04 | 构建接入／INTEGRATOR＋ENG-MC | MCQ-03 | 单独接入现行构建目标/include/source 清单；准确固件构建返回 0、告警核查 | Backlog |
@@ -91,3 +98,11 @@ GAP-02 轴边界、GAP-03 时间单位、GAP-04 断电 ISR 进入相应固件修
 保留 MCQ 结构化前置；设计稿、实际固件和可消费契约版本分别记录。
 
 对应产品项以 PM:/SOC: 限定 ID 追踪到 REQ/ADR/ICD、细卡和实际验收；本工作包不直接派单，不因报告或文档修订改 Done。必要 MCU 扩展由已设立 ENG-MC/ENG-TH 按准确任务授权实施。
+
+## v2.0 离线增量的实际子任务
+
+2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
+
+[V2-P01A](../../../.agents/kanban/microtasks/minimc_v2/V2-P01A.md)、[V2-P01B](../../../.agents/kanban/microtasks/minimc_v2/V2-P01B.md)、[V2-P01C](../../../.agents/kanban/microtasks/minimc_v2/V2-P01C.md)、[V2-P01D](../../../.agents/kanban/microtasks/minimc_v2/V2-P01D.md)、[V2-P02C](../../../.agents/kanban/microtasks/minimc_v2/V2-P02C.md)。
+
+这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。

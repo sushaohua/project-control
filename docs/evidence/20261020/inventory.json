@@ -1,0 +1,674 @@
+{
+  "captured_at": "2026-10-20T09:32:48.148709+08:00",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.29",
+  "repositories": {
+    "project-control": {
+      "head": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/project-control",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "output": "97b17fb6842d708eccb4a96049c42f415cdbb15a"
+      },
+      "branch": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/project-control",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "output": "main"
+      },
+      "status": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/project-control",
+          "status",
+          "--porcelain=v1"
+        ],
+        "exit_code": 0,
+        "output": "?? docs/evidence/"
+      },
+      "upstream": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/project-control",
+          "rev-parse",
+          "--abbrev-ref",
+          "--symbolic-full-name",
+          "@{upstream}"
+        ],
+        "exit_code": 0,
+        "output": "origin/main"
+      },
+      "cached_upstream_sha": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/project-control",
+          "rev-parse",
+          "@{upstream}"
+        ],
+        "exit_code": 0,
+        "output": "ba563026d2e5bcd35d5ccef7a420874e23dd9044"
+      },
+      "origin": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/project-control",
+          "remote",
+          "get-url",
+          "origin"
+        ],
+        "exit_code": 0,
+        "output": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git"
+      }
+    },
+    "soc-ap": {
+      "head": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/soc-ap",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "output": "cf2dff40e8b9d7c94b41d01386f287be45afdb4d"
+      },
+      "branch": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/soc-ap",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "output": "main"
+      },
+      "status": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/soc-ap",
+          "status",
+          "--porcelain=v1"
+        ],
+        "exit_code": 0,
+        "output": ""
+      },
+      "upstream": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/soc-ap",
+          "rev-parse",
+          "--abbrev-ref",
+          "--symbolic-full-name",
+          "@{upstream}"
+        ],
+        "exit_code": 0,
+        "output": "origin/main"
+      },
+      "cached_upstream_sha": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/soc-ap",
+          "rev-parse",
+          "@{upstream}"
+        ],
+        "exit_code": 0,
+        "output": "fc816aabb2551307c48c99f73ce53609e94c9a3c"
+      },
+      "origin": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/soc-ap",
+          "remote",
+          "get-url",
+          "origin"
+        ],
+        "exit_code": 0,
+        "output": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git"
+      }
+    },
+    "mcu-p3": {
+      "head": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/mcu-p3",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "output": "14b8057b04030bd659744c874c73ff8f09f29979"
+      },
+      "branch": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/mcu-p3",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "output": "feat/soc-debug"
+      },
+      "status": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/mcu-p3",
+          "status",
+          "--porcelain=v1"
+        ],
+        "exit_code": 0,
+        "output": ""
+      },
+      "upstream": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/mcu-p3",
+          "rev-parse",
+          "--abbrev-ref",
+          "--symbolic-full-name",
+          "@{upstream}"
+        ],
+        "exit_code": 0,
+        "output": "origin/feat/soc-debug"
+      },
+      "cached_upstream_sha": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/mcu-p3",
+          "rev-parse",
+          "@{upstream}"
+        ],
+        "exit_code": 0,
+        "output": "14b8057b04030bd659744c874c73ff8f09f29979"
+      },
+      "origin": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/mcu-p3",
+          "remote",
+          "get-url",
+          "origin"
+        ],
+        "exit_code": 0,
+        "output": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git"
+      }
+    },
+    "test_harness": {
+      "head": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/test_harness",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "output": "ad0398e20d3645dbfa37bfd0550ded0828d018b2"
+      },
+      "branch": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/test_harness",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "output": "main"
+      },
+      "status": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/test_harness",
+          "status",
+          "--porcelain=v1"
+        ],
+        "exit_code": 0,
+        "output": ""
+      },
+      "upstream": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/test_harness",
+          "rev-parse",
+          "--abbrev-ref",
+          "--symbolic-full-name",
+          "@{upstream}"
+        ],
+        "exit_code": 0,
+        "output": "origin/main"
+      },
+      "cached_upstream_sha": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/test_harness",
+          "rev-parse",
+          "@{upstream}"
+        ],
+        "exit_code": 0,
+        "output": "ad0398e20d3645dbfa37bfd0550ded0828d018b2"
+      },
+      "origin": {
+        "command": [
+          "git",
+          "-C",
+          "/home/sushaohua/workspace/ai_soc_project/test_harness",
+          "remote",
+          "get-url",
+          "origin"
+        ],
+        "exit_code": 0,
+        "output": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git"
+      }
+    }
+  },
+  "tools": {
+    "cmake": {
+      "path": "/usr/bin/cmake",
+      "version": {
+        "command": [
+          "/usr/bin/cmake",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "cmake version 3.16.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+      }
+    },
+    "ninja": {
+      "path": "/usr/bin/ninja",
+      "version": {
+        "command": [
+          "/usr/bin/ninja",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "1.10.0"
+      }
+    },
+    "make": {
+      "path": "/usr/bin/make",
+      "version": {
+        "command": [
+          "/usr/bin/make",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "GNU Make 4.2.1\nBuilt for x86_64-pc-linux-gnu\nCopyright (C) 1988-2016 Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law."
+      }
+    },
+    "gcc": {
+      "path": "/usr/bin/gcc",
+      "version": {
+        "command": [
+          "/usr/bin/gcc",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0\nCopyright (C) 2019 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      }
+    },
+    "g++": {
+      "path": "/usr/bin/g++",
+      "version": {
+        "command": [
+          "/usr/bin/g++",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "g++ (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0\nCopyright (C) 2019 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      }
+    },
+    "python3": {
+      "path": "/usr/bin/python3",
+      "version": {
+        "command": [
+          "/usr/bin/python3",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "Python 3.8.10"
+      }
+    },
+    "arm-none-eabi-gcc": {
+      "path": "/usr/bin/arm-none-eabi-gcc",
+      "version": {
+        "command": [
+          "/usr/bin/arm-none-eabi-gcc",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "arm-none-eabi-gcc (15:9-2019-q4-0ubuntu1) 9.2.1 20191025 (release) [ARM/arm-9-branch revision 277599]\nCopyright (C) 2019 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      }
+    },
+    "arm-none-eabi-g++": {
+      "path": "/usr/bin/arm-none-eabi-g++",
+      "version": {
+        "command": [
+          "/usr/bin/arm-none-eabi-g++",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "arm-none-eabi-g++ (15:9-2019-q4-0ubuntu1) 9.2.1 20191025 (release) [ARM/arm-9-branch revision 277599]\nCopyright (C) 2019 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      }
+    },
+    "arm-none-eabi-objcopy": {
+      "path": "/usr/bin/arm-none-eabi-objcopy",
+      "version": {
+        "command": [
+          "/usr/bin/arm-none-eabi-objcopy",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "GNU objcopy (2.34-4ubuntu1+13ubuntu1) 2.34\nCopyright (C) 2020 Free Software Foundation, Inc.\nThis program is free software; you may redistribute it under the terms of\nthe GNU General Public License version 3 or (at your option) any later version.\nThis program has absolutely no warranty."
+      }
+    },
+    "arm-none-eabi-size": {
+      "path": "/usr/bin/arm-none-eabi-size",
+      "version": {
+        "command": [
+          "/usr/bin/arm-none-eabi-size",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "GNU size (2.34-4ubuntu1+13ubuntu1) 2.34\nCopyright (C) 2020 Free Software Foundation, Inc.\nThis program is free software; you may redistribute it under the terms of\nthe GNU General Public License version 3 or (at your option) any later version.\nThis program has absolutely no warranty."
+      }
+    },
+    "probe-rs": {
+      "path": null,
+      "version": null
+    }
+  },
+  "source_files": {
+    "AGENTS.md": {
+      "size": 11225,
+      "sha256": "ed3a1d062ae06cbd646b2723693ee7fcf9090268710a226fc662a70ef8089d6a"
+    },
+    ".agents/rules/task_execution_protocol.md": {
+      "size": 2892,
+      "sha256": "f5345c235d74fe957b1e9485a14bc4488e79996314f48bb66bf584aa025c2675"
+    },
+    "README.md": {
+      "size": 10779,
+      "sha256": "b366e971cdb7a4fb7ab8c894c23e330ed582be7fc820b962dcb377c87d96de11"
+    },
+    "wsl_build_environment_setup_guide.md": {
+      "size": 10341,
+      "sha256": "35a064ff605604e77b45b771478fedc2bc59030e1db59b009b91253b5894ffb5"
+    },
+    "tools/version_tool.py": {
+      "size": 4096,
+      "sha256": "cb7fbf563944208192b9e4938ebaa2c8f4840619618616133ca7c3b354ab0d3c"
+    },
+    "tools/pack_firmware.py": {
+      "size": 8656,
+      "sha256": "93efb0ffcab0be246796e6b4ec6ea16d06c8a6071a549e12f471142366ac8036"
+    },
+    "motion-controller-mcu/Makefile": {
+      "size": 1307,
+      "sha256": "94c0d1ca9d6e06c5e3984e8ace957a274c6bed33358c407ccfdef66f43fd1422"
+    },
+    "motion-controller-mcu/CMakeLists.txt": {
+      "size": 2809,
+      "sha256": "5a4f6757ab2537b8b5828ff9b5f78f7d4457a2316fa7bdd5d0c0856d2418263b"
+    },
+    "motion-controller-mcu/cmake/gcc-arm-none-eabi.cmake": {
+      "size": 2019,
+      "sha256": "49b99db94804bbd2a059a018490c9ca7f9cecfbf77cb2ecd7e5c29e84c9e05ed"
+    },
+    "motion-controller-mcu/cmake/at32_workbench/CMakeLists.txt": {
+      "size": 7705,
+      "sha256": "74cf207a985ca3306a61ef74a1f04f496eac0f57d5c24e11a6ba39b883555367"
+    },
+    "motion-controller-mcu/AT32F435xG_FLASH.ld": {
+      "size": 3897,
+      "sha256": "4066fbee0df0d4aefbb0f0b946d80dff04c6c5c221758d2d51f8e308aa4ad634"
+    },
+    "motion-controller-mcu/version.ini": {
+      "size": 51,
+      "sha256": "1855e1e9b929f9f6b455af1b7b4909246b22d864f42938be9c9252c8cd2196b3"
+    },
+    "motion-controller-mcu/project/marlin/configure.h": {
+      "size": 15931,
+      "sha256": "2dfe88e6273ed0c43c78738cdc3ebfce189eaeca26095f07f6676292bdf5733a"
+    },
+    "motion-controller-mcu/project/src/main.c": {
+      "size": 9539,
+      "sha256": "484b0c132ad1a80551406b353d905acc6b1a2c7bba318a91c98bdede7b5078b7"
+    },
+    "motion-controller-mcu/project/src/wk_usart.c": {
+      "size": 21497,
+      "sha256": "63d781f6a987e88f84ebdebf7fb00656b1b476ac1fe4332d9cbda260a8fdddc3"
+    },
+    "motion-controller-mcu/project/src/wk_dma.c": {
+      "size": 11288,
+      "sha256": "9ec5b63ee7dfd1f43f6ea7abe15b0e62d3ea63afda4fc0fb20ca1baf4cd55b31"
+    },
+    "motion-controller-mcu/project/src/at32f435_437_int.c": {
+      "size": 12733,
+      "sha256": "534962cd236483765a02a5ea361b778a6a31e173f8adf6e55061e03108bad46f"
+    },
+    "motion-controller-mcu/project/src/at32f435_437_wk_config.c": {
+      "size": 8765,
+      "sha256": "2859f58e3b6adbbd8a8b1cececeb2e2d2cb174c376f10dd97cf6f678e50e8d3e"
+    },
+    "motion-controller-mcu/project/inc/wk_usart.h": {
+      "size": 3662,
+      "sha256": "d2e246eb6037f2e316a2e2f30e7fb8d46f0e172c390e3c6ced769c831a4d1d0f"
+    },
+    "motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c": {
+      "size": 186998,
+      "sha256": "ca0cac1dbd96176bb4a9d76f18bd93419d2378061d73c59cb17efbbfc54cb78e"
+    },
+    "motion-controller-mcu/project/marlin/marlin_core/motherboard.c": {
+      "size": 11033,
+      "sha256": "07b5b6c41af6843682ac4c7e76b9e0af28918c2d64ec7415855381360c27a807"
+    },
+    "motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c": {
+      "size": 5147,
+      "sha256": "86eb673d099b83b99c15cdb9bffc5c1bb9cd54890be8b2957aa37a771a0837e7"
+    },
+    "motion-controller-mcu/syscalls.c": {
+      "size": 3525,
+      "sha256": "13586a032ae87babb9810bd48b511a69317208fafefac7fe80652b31b056d0b6"
+    },
+    "color-engine-mcu/version.ini": {
+      "size": 51,
+      "sha256": "8abb56e1d32eaf4c6ffc884fd6b543d5c9c6c1c9739535020b11439b0ead50ea"
+    },
+    "color-engine-mcu/io_toggle/Makefile": {
+      "size": 5004,
+      "sha256": "b21981ca2f523d8b01104dfacafedebe7553a0f356691fedeb4c6c6be9af084f"
+    },
+    "color-engine-mcu/io_toggle/inc/Configuration.h": {
+      "size": 29612,
+      "sha256": "5e360c9ac9219bf14921864fab8851ce995760be8e4c13893b2826a1467b4acd"
+    },
+    "color-engine-mcu/io_toggle/inc/Configuration_adv.h": {
+      "size": 4021,
+      "sha256": "9277e1d5f0209d7367ec72ca2b35a416c076cb14ccb8b25f47bb2515fdf2d510"
+    },
+    "color-engine-mcu/io_toggle/inc/usart.h": {
+      "size": 3912,
+      "sha256": "7391ee1c23d18bf2fceaa78ba844d10afb619deae414b1c2a7709df2952094da"
+    },
+    "color-engine-mcu/io_toggle/src/user/main.c": {
+      "size": 2271,
+      "sha256": "75874b02a110534f3f191cd7f313a7c7a9493c7aefd455bc06d4028d1568ac26"
+    },
+    "color-engine-mcu/io_toggle/src/bsp/usart.c": {
+      "size": 30392,
+      "sha256": "1b30669359393af1aba78b4b9086f09a38d05fa4eb7b7e38a54213666c9c1dcd"
+    },
+    "color-engine-mcu/io_toggle/src/bsp/at32f423_clock.c": {
+      "size": 4649,
+      "sha256": "2028f453a9bb70437ce499da204d85cdde796dbf985be612a10c642a7fa44d35"
+    },
+    "color-engine-mcu/io_toggle/src/app/mycontrol.c": {
+      "size": 116643,
+      "sha256": "66bc52876eede5b02f8a93a1b3295d9a1e5a798a3d15bad21a89ec738e4aa17e"
+    },
+    "color-engine-mcu/io_toggle/src/app/motherboard.c": {
+      "size": 3581,
+      "sha256": "534c479e60ab0934025a3da2a38afd316e3f00c7d1cc6c5dada1f90485e017c6"
+    },
+    "color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/system_at32f423.c": {
+      "size": 5958,
+      "sha256": "c614a824e9f4b9b4013b5c7dd43a68d09c7c5b1920dcf1275662bfc0585c326e"
+    },
+    "color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld": {
+      "size": 3894,
+      "sha256": "18f2669a47b6aef5c587218f496cab5af99ae72708296c9a340ff5e3b430ee07"
+    },
+    "motion-controller-mcu/project/MDK_V5/Marlin_AT32.uvprojx": {
+      "size": 30500,
+      "sha256": "0ebb7985d1e99ce8c56bca5cbde5dfb5a1832579e62e8a12f5eeceba2f07b25a"
+    },
+    "color-engine-mcu/io_toggle/mdk_v5/io_toggle.uvprojx": {
+      "size": 24266,
+      "sha256": "0657b65181b76c628357796b9d7ca06daa7cb73fc74c6ed091dfdd12a20de3f9"
+    }
+  },
+  "existing_artifacts": {
+    "motion-controller-mcu/build": {
+      "exists": false,
+      "files": {}
+    },
+    "color-engine-mcu/io_toggle/build": {
+      "exists": true,
+      "files": {
+        "anchor.bin": {
+          "size": 140,
+          "sha256": "4ab5573c383ea1c3e5560080cbcdce63aaca9a1d78a4c19853b8fbf42ad76549"
+        },
+        "fw_th.bin": {
+          "size": 64068,
+          "sha256": "6b5265083e8d9ef093b382f741bae7129eb5a4af45c35a7369a807146efcfecf"
+        },
+        "fw_th.elf": {
+          "size": 572736,
+          "sha256": "dba37c6a2fb510c22ab08b9ade454fb1207719816c9a4f9f37ca7ab68761065e"
+        },
+        "fw_th.hex": {
+          "size": 179837,
+          "sha256": "29a635e18c447ad00c6729af95942f54baa72c18576c86792c222ac68329bf5a"
+        },
+        "fw_th.map": {
+          "size": 639937,
+          "sha256": "299593f2137ce1d475defdaa5bb5392e6b2a15ef191d067f6d81704b11ad585a"
+        },
+        "version_autogen.h": {
+          "size": 519,
+          "sha256": "d38e681cbe1526864e5f2a88a854a69fa083f596de75f31811ace991d23e9c93"
+        }
+      }
+    },
+    "bootloader/435": {
+      "exists": true,
+      "files": {
+        "bootloader.bin": {
+          "size": 34384,
+          "sha256": "c68457f30eb027329132c800499a86f20bef4c27934761c6782930fe630336e0"
+        },
+        "bootloader.elf": {
+          "size": 1014756,
+          "sha256": "927ea5521d17066eb1b18ae864343d039c4a3182ffacdcc9daa2d35685cf6ae1"
+        },
+        "bootloader.hex": {
+          "size": 96787,
+          "sha256": "363b7f529c0f27d7af2934e9919c3c599c13b2cb594671be0c6bed00a30d5c28"
+        },
+        "bootloader.map": {
+          "size": 744537,
+          "sha256": "28e0db55c07dfefef2f16aee9e4a2fd6ea97fe392f1d6e5d63aaf1bf69db8908"
+        }
+      }
+    },
+    "bootloader/423": {
+      "exists": true,
+      "files": {
+        "bootloader423.bin": {
+          "size": 15692,
+          "sha256": "d85f0ec9c8d91894ec2f1eba8f02fadc2c7168f38d469fc99b335328e534eefc"
+        },
+        "bootloader423.elf": {
+          "size": 338176,
+          "sha256": "7a5d156b4777bbd35c499463465c97462e20e2337799388469f26c95ba3013b7"
+        },
+        "bootloader423.hex": {
+          "size": 44227,
+          "sha256": "1051e30ccf3482a302a42413a9a85727fa94ae01174dd4842ce90e7a47fb1b2b"
+        },
+        "bootloader423.map": {
+          "size": 216611,
+          "sha256": "0beb6994dd50f15ec8695ef4953579dc437ba55e6cb200c542771b6b7b3e9e06"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "mc_cmake_paths": {
+      "count": 102,
+      "missing": [
+        "project/marlin/marlin_gcode"
+      ]
+    },
+    "th_c_sources": {
+      "count": 47,
+      "missing": [],
+      "duplicate_object_basenames": []
+    },
+    "bootloader_entries": {
+      "bootloader/435": [
+        "bootloader.bin",
+        "bootloader.elf",
+        "bootloader.hex",
+        "bootloader.map"
+      ],
+      "bootloader/423": [
+        "bootloader423.bin",
+        "bootloader423.elf",
+        "bootloader423.hex",
+        "bootloader423.map"
+      ]
+    }
+  },
+  "symlinks": {
+    "AGENTS.md": {
+      "target": "/home/sushaohua/agents/mcu-p3/AGENTS.md",
+      "target_exists": true
+    },
+    ".agents": {
+      "target": "/home/sushaohua/agents/mcu-p3/.agents/",
+      "target_exists": true
+    }
+  },
+  "ap_executable": {
+    "path": "/tmp/soc_ap_work_20261020/bin/soc-ap",
+    "sha256": "1cf1708ac16a8dfdc2df234c89a5991cbe9d4d5502820c49453a9e7ed21f95f3"
+  }
+}

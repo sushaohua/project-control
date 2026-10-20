@@ -1,13 +1,13 @@
 ---
-title: "TASK-007 实现 forward 协议与传输"
+title: TASK-007 实现 forward 协议与传输
 date: 2026-09-30
 id: TASK-007
-revision: 6
+revision: 7
 status: Backlog
 blocked: false
 owner: null
 proposed_owner: ENG-FWD
-reviewer: "ARCH"
+reviewer: ARCH
 verifier: QA
 integrator: INTEGRATOR
 baseline: B0
@@ -18,8 +18,10 @@ base_commit: null
 candidate_commit: null
 merged_commit: null
 depends_on: []
-tags: [soc, task]
-updated: '2026-10-13 12:24:23'
+tags:
+- soc
+- task
+updated: '2026-10-20 11:26:37'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 task_kind: work_package
@@ -29,6 +31,24 @@ child_tasks:
 - MS-08
 - MS-10
 - MS-15
+- V2-P02A
+- V2-P02B
+- V2-P03A
+- V2-P03B
+- V2-P03C
+- V2-P03D
+- V2-P03E
+- V2-P03F
+- V2-P04A
+- V2-P04B
+- V2-P04C
+- V2-P04D
+- V2-P05A
+- V2-P05B
+- V2-P05C
+- V2-P05D
+- V2-P05E
+- V2-P06A
 planning_relations:
 - MS-05
 - MS-06
@@ -41,7 +61,7 @@ related_tasks: []
 
 ## 目标与范围
 
-先实现 SoC 主控查询/恢复，再按真实公开接口接从控状态；后续窗口流控、行校验/重发和升级传输另拆卡，不以 DDS 为前置。
+先建设本地 v2.0 编解码/组帧与离线检查能力，再按已接受的固件接口实现 SoC 主控查询/恢复和从控状态；会话/串口/HIL 独立验收，不以 DDS 为前置。
 
 建议主责 ENG-FWD；所需证据按子卡范围：离线单测、真实 MCU HIL 和目标 SoC 分开。实际执行条件在子任务登记。读取当前 B0、角色边界和相关已接受约定；分析报告只参考。
 
@@ -76,3 +96,11 @@ related_tasks: []
 SoC FWD 消费真实 MC/TH 接口；MC/TH 设备侧串口/DMA/代理按固件 Owner 微步交付，运行/升级独占。
 
 对应产品项以 PM:/SOC: 限定 ID 追踪到 REQ/ADR/ICD、细卡和实际验收；本工作包不直接派单，不因报告或文档修订改 Done。必要 MCU 扩展由已设立 ENG-MC/ENG-TH 按准确任务授权实施。
+
+## v2.0 离线增量的实际子任务
+
+2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
+
+[V2-P02A](../../../.agents/kanban/microtasks/minimc_v2/V2-P02A.md)、[V2-P02B](../../../.agents/kanban/microtasks/minimc_v2/V2-P02B.md)、[V2-P03A](../../../.agents/kanban/microtasks/minimc_v2/V2-P03A.md)、[V2-P03B](../../../.agents/kanban/microtasks/minimc_v2/V2-P03B.md)、[V2-P03C](../../../.agents/kanban/microtasks/minimc_v2/V2-P03C.md)、[V2-P03D](../../../.agents/kanban/microtasks/minimc_v2/V2-P03D.md)、[V2-P03E](../../../.agents/kanban/microtasks/minimc_v2/V2-P03E.md)、[V2-P03F](../../../.agents/kanban/microtasks/minimc_v2/V2-P03F.md)、[V2-P04A](../../../.agents/kanban/microtasks/minimc_v2/V2-P04A.md)、[V2-P04B](../../../.agents/kanban/microtasks/minimc_v2/V2-P04B.md)、[V2-P04C](../../../.agents/kanban/microtasks/minimc_v2/V2-P04C.md)、[V2-P04D](../../../.agents/kanban/microtasks/minimc_v2/V2-P04D.md)、[V2-P05A](../../../.agents/kanban/microtasks/minimc_v2/V2-P05A.md)、[V2-P05B](../../../.agents/kanban/microtasks/minimc_v2/V2-P05B.md)、[V2-P05C](../../../.agents/kanban/microtasks/minimc_v2/V2-P05C.md)、[V2-P05D](../../../.agents/kanban/microtasks/minimc_v2/V2-P05D.md)、[V2-P05E](../../../.agents/kanban/microtasks/minimc_v2/V2-P05E.md)、[V2-P06A](../../../.agents/kanban/microtasks/minimc_v2/V2-P06A.md)。
+
+这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。

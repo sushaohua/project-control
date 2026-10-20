@@ -1,0 +1,318 @@
+$ cwd=/home/sushaohua/workspace/ai_soc_project
+$ git -C project-control diff --check
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:2: trailing whitespace.
++title: MS-05 接受主控最小对接约定
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:4: trailing whitespace.
++updated: '2026-10-20 11:26:37'
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:7: trailing whitespace.
++revision: 5
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:50: trailing whitespace.
++depends_on:
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:51: trailing whitespace.
++- MS-03
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:52: trailing whitespace.
++- MS-04
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:53: trailing whitespace.
++- V2-P01B
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:66: trailing whitespace.
++tags:
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:67: trailing whitespace.
++- soc
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:68: trailing whitespace.
++- task
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:69: trailing whitespace.
++- marlin
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:70: trailing whitespace.
++- current-plan
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:75: trailing whitespace.
++icd_versions:
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:76: trailing whitespace.
++- MiniMCProto v2.0 Rev 2.0.3; selected source SHA256 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:82: trailing whitespace.
++dependency_conditions:
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:83: trailing whitespace.
++- task: V2-P01B
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:84: trailing whitespace.
++  accepted_version: null
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:85: trailing whitespace.
++  acceptance_evidence: null
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:86: trailing whitespace.
++  required: 消费该离线交付的准确已接受版本；原硬件样例/固件前置保持，不以离线通过替代
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:97: trailing whitespace.
++MS-03/04 的准确固件与实收样例，加上 V2-P01B 的离线命令契约，分别绑定版本。B0 D20 已明确选择本地 MiniMCProto v2.0 / Rev 2.0.3，迁移选择不再待确认；现有文本或升级帧只登记为存量能力，不宣称 v2.0 已实现。FWD、ENG-MC、QA 共同核对。
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:131: trailing whitespace.
++允许命令、v2.0 帧长/响应匹配与结束条件、确认/错误/日志语义、请求级超时、一次一个待确认命令、断线和查询恢复清楚；本轮所需参数必须已接受；无关缺口可列明。若关键参数仍未知，只能交设计调查记录，不能把本卡记作已接受的实现契约。范围是 MC-only 主机试验，不能包装为生产协议。
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:152: trailing whitespace.
++
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:153: trailing whitespace.
++## 2026-10-20 v2.0 编排接入
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:154: trailing whitespace.
++
+.agents/kanban/milestones/marlin_ms05_20261007_214108.md:155: trailing whitespace.
++新增直接前置 [V2-P01B](../microtasks/minimc_v2/V2-P01B.md)，其准确产物接受后才能消费。已有依赖不移除；离线设计/测试不等于实测样例或硬件能力。本卡仍 Backlog、未派单、未签署。
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:2: trailing whitespace.
++title: MS-06 准备独立主控验收样例
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:4: trailing whitespace.
++updated: '2026-10-20 11:26:37'
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:7: trailing whitespace.
++revision: 5
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:50: trailing whitespace.
++depends_on:
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:51: trailing whitespace.
++- MS-05
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:52: trailing whitespace.
++- V2-P01D
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:65: trailing whitespace.
++tags:
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:66: trailing whitespace.
++- soc
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:67: trailing whitespace.
++- task
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:68: trailing whitespace.
++- marlin
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:69: trailing whitespace.
++- current-plan
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:76: trailing whitespace.
++icd_versions:
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:77: trailing whitespace.
++- MiniMCProto v2.0 Rev 2.0.3; selected source SHA256 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:83: trailing whitespace.
++dependency_conditions:
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:84: trailing whitespace.
++- task: V2-P01D
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:85: trailing whitespace.
++  accepted_version: null
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:86: trailing whitespace.
++  acceptance_evidence: null
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:87: trailing whitespace.
++  required: 消费该离线交付的准确已接受版本；原硬件样例/固件前置保持，不以离线通过替代
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:153: trailing whitespace.
++
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:154: trailing whitespace.
++## 2026-10-20 v2.0 编排接入
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:155: trailing whitespace.
++
+.agents/kanban/milestones/marlin_ms06_20261007_214108.md:156: trailing whitespace.
++新增直接前置 [V2-P01D](../microtasks/minimc_v2/V2-P01D.md)，其准确产物接受后才能消费。已有依赖不移除；离线设计/测试不等于实测样例或硬件能力。本卡仍 Backlog、未派单、未签署。
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:2: trailing whitespace.
++title: MS-07 实现主控版本查询
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:4: trailing whitespace.
++updated: '2026-10-20 11:26:37'
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:7: trailing whitespace.
++revision: 5
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:42: trailing whitespace.
++- V2-P06C
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:55: trailing whitespace.
++tags:
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:56: trailing whitespace.
++- soc
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:57: trailing whitespace.
++- task
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:58: trailing whitespace.
++- marlin
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:59: trailing whitespace.
++- current-plan
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:64: trailing whitespace.
++icd_versions:
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:65: trailing whitespace.
++- MiniMCProto v2.0 Rev 2.0.3; selected source SHA256 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:71: trailing whitespace.
++dependency_conditions:
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:72: trailing whitespace.
++- task: V2-P06C
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:73: trailing whitespace.
++  accepted_version: null
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:74: trailing whitespace.
++  acceptance_evidence: null
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:75: trailing whitespace.
++  required: 消费该离线交付的准确已接受版本；原硬件样例/固件前置保持，不以离线通过替代
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:141: trailing whitespace.
++
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:142: trailing whitespace.
++## 2026-10-20 v2.0 编排接入
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:143: trailing whitespace.
++
+.agents/kanban/milestones/marlin_ms07_20261007_214108.md:144: trailing whitespace.
++新增直接前置 [V2-P06C](../microtasks/minimc_v2/V2-P06C.md)，其准确产物接受后才能消费。已有依赖不移除；离线设计/测试不等于实测样例或硬件能力。本卡仍 Backlog、未派单、未签署。
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:2: trailing whitespace.
++title: TASK-004 锁定源码和可复现构建
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:5: trailing whitespace.
++revision: 5
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:9: trailing whitespace.
++proposed_owner: INTEGRATOR
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:10: trailing whitespace.
++reviewer: ENG-BSP
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:21: trailing whitespace.
++tags:
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:22: trailing whitespace.
++- soc
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:23: trailing whitespace.
++- task
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:24: trailing whitespace.
++updated: '2026-10-20 11:26:37'
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:35: trailing whitespace.
++- V2-P06C
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:75: trailing whitespace.
++
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:76: trailing whitespace.
++## v2.0 离线增量的实际子任务
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:77: trailing whitespace.
++
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:78: trailing whitespace.
++2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:79: trailing whitespace.
++
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:80: trailing whitespace.
++[V2-P06C](../../../.agents/kanban/microtasks/minimc_v2/V2-P06C.md)。
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:81: trailing whitespace.
++
+docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md:82: trailing whitespace.
++这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:2: trailing whitespace.
++title: TASK-005 冻结第一版控制和 AP-MCU 契约
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:5: trailing whitespace.
++revision: 7
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:10: trailing whitespace.
++reviewer: ENG-FWD＋现有 MCU Owner
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:21: trailing whitespace.
++tags:
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:22: trailing whitespace.
++- soc
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:23: trailing whitespace.
++- task
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:24: trailing whitespace.
++updated: '2026-10-20 11:26:37'
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:33: trailing whitespace.
++- V2-P01A
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:34: trailing whitespace.
++- V2-P01B
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:35: trailing whitespace.
++- V2-P01C
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:36: trailing whitespace.
++- V2-P01D
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:37: trailing whitespace.
++- V2-P02C
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:49: trailing whitespace.
++通信格式已由 B0 D20 选择本地 MiniMCProto v2.0 / Rev 2.0.3；先提取离线最小契约和独立预期，再结合实际固件核对可用能力。后续会话、控制与升级分别拆卡，不把旧文本/升级通道当成 v2.0 已实现。
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:85: trailing whitespace.
++| MCQ-01 | 设计／ARCH＋ENG-MC | MS-03 来源结论 | 消费 V2-P01B 的离线设计及 MS-03 来源结论，形成固件只读身份/能力/温度、结束/错误/期限的建设接受稿；v2.0 选择已由 B0 记录，不再等待旧协议选择 | Backlog |
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:101: trailing whitespace.
++
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:102: trailing whitespace.
++## v2.0 离线增量的实际子任务
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:103: trailing whitespace.
++
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:104: trailing whitespace.
++2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:105: trailing whitespace.
++
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:106: trailing whitespace.
++[V2-P01A](../../../.agents/kanban/microtasks/minimc_v2/V2-P01A.md)、[V2-P01B](../../../.agents/kanban/microtasks/minimc_v2/V2-P01B.md)、[V2-P01C](../../../.agents/kanban/microtasks/minimc_v2/V2-P01C.md)、[V2-P01D](../../../.agents/kanban/microtasks/minimc_v2/V2-P01D.md)、[V2-P02C](../../../.agents/kanban/microtasks/minimc_v2/V2-P02C.md)。
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:107: trailing whitespace.
++
+docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md:108: trailing whitespace.
++这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:2: trailing whitespace.
++title: TASK-007 实现 forward 协议与传输
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:5: trailing whitespace.
++revision: 7
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:10: trailing whitespace.
++reviewer: ARCH
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:21: trailing whitespace.
++tags:
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:22: trailing whitespace.
++- soc
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:23: trailing whitespace.
++- task
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:24: trailing whitespace.
++updated: '2026-10-20 11:26:37'
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:34: trailing whitespace.
++- V2-P02A
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:35: trailing whitespace.
++- V2-P02B
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:36: trailing whitespace.
++- V2-P03A
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:37: trailing whitespace.
++- V2-P03B
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:38: trailing whitespace.
++- V2-P03C
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:39: trailing whitespace.
++- V2-P03D
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:40: trailing whitespace.
++- V2-P03E
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:41: trailing whitespace.
++- V2-P03F
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:42: trailing whitespace.
++- V2-P04A
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:43: trailing whitespace.
++- V2-P04B
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:44: trailing whitespace.
++- V2-P04C
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:45: trailing whitespace.
++- V2-P04D
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:46: trailing whitespace.
++- V2-P05A
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:47: trailing whitespace.
++- V2-P05B
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:48: trailing whitespace.
++- V2-P05C
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:49: trailing whitespace.
++- V2-P05D
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:50: trailing whitespace.
++- V2-P05E
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:51: trailing whitespace.
++- V2-P06A
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:64: trailing whitespace.
++先建设本地 v2.0 编解码/组帧与离线检查能力，再按已接受的固件接口实现 SoC 主控查询/恢复和从控状态；会话/串口/HIL 独立验收，不以 DDS 为前置。
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:99: trailing whitespace.
++
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:100: trailing whitespace.
++## v2.0 离线增量的实际子任务
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:101: trailing whitespace.
++
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:102: trailing whitespace.
++2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:103: trailing whitespace.
++
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:104: trailing whitespace.
++[V2-P02A](../../../.agents/kanban/microtasks/minimc_v2/V2-P02A.md)、[V2-P02B](../../../.agents/kanban/microtasks/minimc_v2/V2-P02B.md)、[V2-P03A](../../../.agents/kanban/microtasks/minimc_v2/V2-P03A.md)、[V2-P03B](../../../.agents/kanban/microtasks/minimc_v2/V2-P03B.md)、[V2-P03C](../../../.agents/kanban/microtasks/minimc_v2/V2-P03C.md)、[V2-P03D](../../../.agents/kanban/microtasks/minimc_v2/V2-P03D.md)、[V2-P03E](../../../.agents/kanban/microtasks/minimc_v2/V2-P03E.md)、[V2-P03F](../../../.agents/kanban/microtasks/minimc_v2/V2-P03F.md)、[V2-P04A](../../../.agents/kanban/microtasks/minimc_v2/V2-P04A.md)、[V2-P04B](../../../.agents/kanban/microtasks/minimc_v2/V2-P04B.md)、[V2-P04C](../../../.agents/kanban/microtasks/minimc_v2/V2-P04C.md)、[V2-P04D](../../../.agents/kanban/microtasks/minimc_v2/V2-P04D.md)、[V2-P05A](../../../.agents/kanban/microtasks/minimc_v2/V2-P05A.md)、[V2-P05B](../../../.agents/kanban/microtasks/minimc_v2/V2-P05B.md)、[V2-P05C](../../../.agents/kanban/microtasks/minimc_v2/V2-P05C.md)、[V2-P05D](../../../.agents/kanban/microtasks/minimc_v2/V2-P05D.md)、[V2-P05E](../../../.agents/kanban/microtasks/minimc_v2/V2-P05E.md)、[V2-P06A](../../../.agents/kanban/microtasks/minimc_v2/V2-P06A.md)。
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:105: trailing whitespace.
++
+docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md:106: trailing whitespace.
++这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:2: trailing whitespace.
++title: TASK-010 验收首个多 Agent 端到端试点
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:5: trailing whitespace.
++revision: 8
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:9: trailing whitespace.
++proposed_owner: QA
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:10: trailing whitespace.
++reviewer: ARCH
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:21: trailing whitespace.
++tags:
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:22: trailing whitespace.
++- soc
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:23: trailing whitespace.
++- task
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:24: trailing whitespace.
++updated: '2026-10-20 11:26:37'
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:35: trailing whitespace.
++- V2-P06B
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:84: trailing whitespace.
++
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:85: trailing whitespace.
++## v2.0 离线增量的实际子任务
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:86: trailing whitespace.
++
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:87: trailing whitespace.
++2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:88: trailing whitespace.
++
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:89: trailing whitespace.
++[V2-P06B](../../../.agents/kanban/microtasks/minimc_v2/V2-P06B.md)。
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:90: trailing whitespace.
++
+docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md:91: trailing whitespace.
++这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。
+
+ACTUAL_EXIT_CODE=2

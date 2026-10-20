@@ -1,0 +1,192 @@
+---
+id: V2-P02A
+title: 定义无堆分配编解码接口
+revision: 1
+plan_revision: marlin-r2-v2-offline-1
+task_kind: design
+dispatchable: true
+status: Backlog
+blocked: false
+planning_status: mapped-awaiting-dispatch
+owner: null
+proposed_owner: ENG-FWD
+executor:
+  role: ENG-FWD
+  agent_id: null
+  run_id: null
+reviewer:
+- QA
+verifier: null
+integrator: null
+review_assignments:
+  reviewer_sessions:
+  - role: QA
+    session: null
+    decision: null
+    artifact_version: null
+    evidence: null
+  verifier_session: null
+  integrator_session: null
+baseline: B0 D20/D27, 2026-10-20 local Rev 2.0.3 selection
+primary_work_package: TASK-007
+requirement:
+- PILOT-REQ-01
+- 'PILOT-REQ-02: supporting offline capability only'
+increment_section: V2-P02
+depends_on:
+- V2-P01A
+- V2-P01B
+- V2-P01D
+dependency_conditions:
+- task: V2-P01A
+  required: 该前置卡在准确交付版本上完成必需评审/验证与收件；记录消费commit或sha256；若否定结果不满足本票能力则不得Ready
+  accepted_version: null
+  acceptance_evidence: null
+- task: V2-P01B
+  required: 该前置卡在准确交付版本上完成必需评审/验证与收件；记录消费commit或sha256；若否定结果不满足本票能力则不得Ready
+  accepted_version: null
+  acceptance_evidence: null
+- task: V2-P01D
+  required: 该前置卡在准确交付版本上完成必需评审/验证与收件；记录消费commit或sha256；若否定结果不满足本票能力则不得Ready
+  accepted_version: null
+  acceptance_evidence: null
+scope_status: mapped
+allowed_repositories:
+- project-control
+- soc-ap
+write_scope:
+  soc-ap:
+  - core/forward/minimc/codec.h
+  project-control:
+  - docs/evidence/minimc_v2/V2-P02A/**
+allowed_paths:
+- soc-ap/core/forward/minimc/codec.h
+- project-control/docs/evidence/minimc_v2/V2-P02A/**
+forbidden_paths:
+- mcu-p3/**
+- D:/AI_RDdocs/**
+- /mnt/d/AI_RDdocs/**
+- project-control/.agents/** (作者不可写正式状态)
+source_baseline:
+  soc-ap: cf2dff40e8b9d7c94b41d01386f287be45afdb4d
+  test_harness: ad0398e20d3645dbfa37bfd0550ded0828d018b2
+  status: planning snapshot; dispatch must bind accepted upstream candidate and current diff
+base_commit: null
+dispatch_binding:
+  source_commit: null
+  workspace_diff_sha256: null
+  consumed_artifact_versions: {}
+  note: 未来实现的上游SHA尚未产生，禁止伪造；Ready前按依赖接受记录解析并填入
+protocol_input:
+  path: project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md
+  sha256: 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
+  revision: 2.0.3
+icd_versions:
+- MiniMCProto v2.0 Rev 2.0.3; sha256:9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
+read_sources:
+- project-control/docs/guides/minimc_v2_task_execution.md
+- project-control/docs/specs/protocol_selection_20261020.md
+worktree: null
+resources:
+- resource: soc-ap source tree
+  location: soc-ap/
+  exclusive: 同一时刻一张实现票；派单时绑定实际隔离工作区，不切换mcu-p3分支
+- resource: test_harness source tree
+  location: test_harness/
+  exclusive: QA预期/运行器由对应作者写；业务实现作者不得改预期促通过
+- resource: build output
+  location: /tmp/ai_soc_v2_build/V2-P02A
+  exclusive: V2-P02A
+lease: null
+budget:
+  planned_checkpoint_minutes: 30
+  max_evidence_based_corrections: 2
+  on_limit: 保存检查点/失败日志，交COORD决定续领或调整；不自动继续
+checkpoint: 开工前；首个原子改动完成；首次命令失败立即报告；到预算检查点交进展
+required_evidence_level: host-build-verified
+verification_environment: local-linux-host; no hardware
+verification_scope: MiniMCProto offline library only
+contract_status: user-selected-source; per-task deliverables require independent acceptance
+verification:
+  commands:
+  - id: precheck
+    cwd: workspace-root
+    command: git -C soc-ap rev-parse HEAD && git -C soc-ap status --porcelain=v1 && git -C test_harness rev-parse
+      HEAD && git -C test_harness status --porcelain=v1
+    availability: 'planned-output: 依赖产物接受后执行；不是本次已执行日志'
+    expected: 记录准确HEAD和差异；与已接受前置一致；工作区有不明差异则停止，不覆盖
+  - id: header
+    cwd: workspace-root
+    command: c++ -std=c++17 -Wall -Wextra -Wpedantic -Werror -I soc-ap/core/forward/minimc -x c++ -fsyntax-only
+      -include codec.h /dev/null
+    availability: 'planned-output: 依赖产物接受后执行；不是本次已执行日志'
+    expected: 退出码0；完整stdout/stderr留存；检查结果必须同时满足本卡case判据
+  positive_cases:
+  - 冻结Bytes/MutableBytes、FrameView、Status与crc16/encode_frame/decode_frame声明
+  - 明确输出容量/已写长度、输入别名生命周期、失败时输出不产生假成功
+  negative_cases:
+  - 头文件自包含，无直接将字节流转结构体解引用
+  - 接口不得把CRC值0当失败；未实现使用显式not_implemented状态
+  no_empty_test_pass: true
+  independent_review_required: true
+deliverables:
+  artifacts:
+  - soc-ap/core/forward/minimc/codec.h
+  record: docs/evidence/minimc_v2/V2-P02A/runs/<actual-run-id>/result.md
+  raw_logs: docs/evidence/minimc_v2/V2-P02A/runs/<actual-run-id>/
+  required_record_fields:
+  - task_id
+  - task_revision
+  - actor_session
+  - start_end_time
+  - input_versions
+  - worktree_and_diff
+  - commands_cwd_exit_codes
+  - raw_log_paths
+  - candidate_commit_or_diff_sha256
+  - actual_cases
+  - warnings
+  - failures_and_corrections
+  - reviewed_version
+  - review_decision
+  - handoff_ack
+rollback:
+  scope: 只撤回本票产生的差异；保存开工快照、准确diff和失败证据；不删除前置或用户修改
+  trigger: 任何验证失败先停止；两次有依据纠正仍失败则停止，不再猜测
+  forbidden:
+  - git reset --hard
+  - 全仓git clean
+  - 对脏文件整文件checkout
+  - 删除/放宽检查获得PASS
+evidence: []
+candidate_commit: null
+merged_commit: null
+handoff:
+  receiver_role: COORD
+  receiver_session: Codex 主对话 /root（2026-10-20 本次编排）
+  transport: 人工转交；当前主对话收件
+  evidence_location: docs/evidence/minimc_v2/V2-P02A
+  acknowledgement: null
+created: '2026-10-20T11:21:51+08:00'
+updated: '2026-10-20T11:21:51+08:00'
+execution_contract: project-control/docs/guides/minimc_v2_task_execution.md
+readiness_pending:
+- 实际作者/独立检查会话登记
+- 准确输入与候选消费版本绑定
+- 实际工作区、租约与预算检查点确认
+- 上游接受记录尚未产生
+---
+
+# V2-P02A 定义无堆分配编解码接口
+
+## 单一交付
+
+冻结Bytes/MutableBytes、FrameView、Status与crc16/encode_frame/decode_frame声明。完整正反判据及命令见本卡 `verification`；每条都要有实际记录，不能用“已测试”代替。
+
+## 开工与关闭
+
+遵守[逐票执行和证据约定](../../../../docs/guides/minimc_v2_task_execution.md)。本卡范围已映射，当前仍是 Backlog；空会话/接受记录表示待落实，不是默认通过。先核对协议哈希和每个前置的准确版本及能力条件，登记实际工作区/资源，再由实际 COORD 放行。
+
+本票只改 `write_scope` 中列出的文件；正文提及的其他接口、驱动和测试预期只读。观察到超范围缺口时保存证据并回交，不顺手修改。`availability: planned-output` 的命令依赖将来产物，目前没有执行过，不得当作既有日志。
+
+交付后由不同实际执行者核对同一候选，保存结论；COORD 记录收到、核对必需接受结果，适用时绑定集成候选，再更新 Done。失败/重派保存历史 run，不覆盖前次日志。普通产出和收件不是独立签署；没有硬件 TX/RX 或升级操作。

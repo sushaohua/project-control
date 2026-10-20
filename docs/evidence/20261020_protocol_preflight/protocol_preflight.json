@@ -1,0 +1,72 @@
+{
+  "checked_at": "2026-10-20T10:44:00.765032+08:00",
+  "author": "AI (Codex), current /root dialogue",
+  "source_path": "project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md",
+  "source_sha256": "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54",
+  "method": "Extract section 7 hex frames; independently calculate CRC with Python stdlib binascii.crc_hqx(data, 0xFFFF); compare little-endian trailing CRC, L+14 length and flags version. Derive all 256 table values bitwise using polynomial 0x1021.",
+  "golden_frames": [
+    {
+      "name": "V01：AP $\\to$ MC 版本查询空载请求 (14 字节)",
+      "hex": "55 AA 01 02 05 01 04 00 00 00 00 00 F9 1E",
+      "frame_bytes": 14,
+      "declared_payload_bytes": 0,
+      "frame_length_matches": true,
+      "crc_calculated": "0x1EF9",
+      "crc_in_document": "0x1EF9",
+      "crc_matches": true,
+      "version_bits_valid": true,
+      "semantic_note": null
+    },
+    {
+      "name": "V02 入站：AP 经 MC 转发至 SCM/TH 的心跳 Ping 请求 (18 字节)",
+      "hex": "55 AA 01 03 05 03 04 00 01 00 04 00 78 56 34 12 66 B0",
+      "frame_bytes": 18,
+      "declared_payload_bytes": 4,
+      "frame_length_matches": true,
+      "crc_calculated": "0xB066",
+      "crc_in_document": "0xB066",
+      "crc_matches": true,
+      "version_bits_valid": true,
+      "semantic_note": null
+    },
+    {
+      "name": "V02 出站：MC 转发至次级串口的出站物理帧 (18 字节)",
+      "hex": "55 AA 01 03 05 03 03 04 01 00 04 00 78 56 34 12 73 30",
+      "frame_bytes": 18,
+      "declared_payload_bytes": 4,
+      "frame_length_matches": true,
+      "crc_calculated": "0x3073",
+      "crc_in_document": "0x3073",
+      "crc_matches": true,
+      "version_bits_valid": true,
+      "semantic_note": null
+    },
+    {
+      "name": "V03：AP $\\to$ MC 切片数据块发送 (25 字节，CMD_STREAM_CHUNK)",
+      "hex": "55 AA 01 02 05 31 04 00 02 00 0B 00 01 00 00 00 03 00 00 00 47 32 38 A0 DA",
+      "frame_bytes": 25,
+      "declared_payload_bytes": 11,
+      "frame_length_matches": true,
+      "crc_calculated": "0xDAA0",
+      "crc_in_document": "0xDAA0",
+      "crc_matches": true,
+      "version_bits_valid": true,
+      "semantic_note": null
+    },
+    {
+      "name": "V04：全网特权急停广播请求 (14 字节)",
+      "hex": "55 AA 01 FF 14 12 04 00 00 00 00 00 3D C1",
+      "frame_bytes": 14,
+      "declared_payload_bytes": 0,
+      "frame_length_matches": true,
+      "crc_calculated": "0xC13D",
+      "crc_in_document": "0xC13D",
+      "crc_matches": true,
+      "version_bits_valid": true,
+      "semantic_note": "V04 payload length conflicts with sections 5.1/5.2; CRC pass is not business acceptance."
+    }
+  ],
+  "crc_table_entries": 256,
+  "crc_table_mismatch_indices": [],
+  "scope": "Protocol document arithmetic only. No production codec implemented, no independent QA sign-off, no hardware transmission. V04 semantic length conflict remains open."
+}

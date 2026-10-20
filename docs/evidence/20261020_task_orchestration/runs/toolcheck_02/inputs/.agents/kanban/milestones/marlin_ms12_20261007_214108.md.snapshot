@@ -1,0 +1,140 @@
+---
+title: "MS-12 交接真实 TH 与既有业务协议"
+created: 2026-10-07 21:41:08
+updated: '2026-10-13 12:15:01'
+timezone: 北京时间（UTC+8）
+id: MS-12
+revision: 4
+plan_revision: marlin-r2
+task_kind: investigation
+dispatchable: true
+status: Backlog
+blocked: false
+owner: null
+proposed_owner: ARCH
+executor:
+  role: ARCH
+  agent_id: null
+  run_id: null
+reviewer:
+- ENG-FWD
+- ENG-SIM
+- QA
+verifier: null
+integrator: null
+review_assignments:
+  reviewer_sessions:
+  - role: ENG-FWD
+    session: null
+    decision: null
+    artifact_version: null
+    evidence: null
+  - role: ENG-SIM
+    session: null
+    decision: null
+    artifact_version: null
+    evidence: null
+  - role: QA
+    session: null
+    decision: null
+    artifact_version: null
+    evidence: null
+  verifier_session: null
+  integrator_session: null
+baseline: B0
+scope_status: unmapped
+required_evidence_level: source-reviewed
+verification_environment: host
+verification_scope: MC+SCM
+contract_status: experimental
+depends_on: ["MS-01"]
+allowed_repositories: []
+allowed_paths: []
+base_commit: null
+candidate_commit: null
+merged_commit: null
+lease: null
+handoff:
+  receiver_role: COORD
+  receiver_session: null
+  transport: null
+  evidence_location: null
+  acknowledgement: null
+tags: [soc, task, marlin, current-plan]
+primary_work_package: TASK-002
+related_work_packages:
+- TASK-005
+requirement:
+- PILOT-REQ-04
+- PILOT-REQ-05
+icd_versions: []
+resources: []
+budget: null
+checkpoint: null
+version_bundle: null
+evidence: []
+---
+
+# MS-12 交接真实 TH 与既有业务协议
+
+## 目标
+
+复核 MC/TH 定制源码、USART6 业务接口、来源与一个只读代理用例，登记双向代理缺口。
+
+## 输入与写入边界
+
+准确两端代码/配置/契约；报告只确认 MC 消费 filaout，TH 最新行为需来源。ENG-MC/ENG-TH 提供业务资料，COM6 只作诊断证据。
+
+建议路径：`contracts/legacy/mc-scm-source-index.md；contracts/marlin/scm-status-v0.1.md`。逻辑目录不是授权，派单时映射真实仓库、工作区、文件白名单及证据位置。读取 B0、本卡与相关已接受输入；参考报告只作线索。
+
+## 前置交付与可使用条件
+
+| 生产卡/外部来源 | 要交什么 | 准确版本 | 本卡为什么使用 | 什么时候可用 |
+| --- | --- | --- | --- | --- |
+| [[AI_SoC_协作方案/tasks/marlin_ms01_20261007_214108\|MS-01]] | MC 固件/配置 工程登记、实际版本/配置/依赖、已有命令与未核实项 | 待取得后登记准确版本/哈希 | 定位正确工程，复用已有成果 | 可访问；来源与本轮待复现状态分开 |
+| 外部输入，由 COORD 登记提供者 | 本卡输入中列出的外部资料、权限、工作模式或产品选择 | 待核查；未知不填造 | 支持本卡目标 | 本卡必要条件齐全；无关未来项不阻塞 |
+
+上游 Done 不能代替上述使用条件。否定调查结论保留；所需能力不满足时登记缺口与恢复条件，不派依赖实现。
+
+## Ready 前核对
+
+按 [[AI_SoC_协作方案/04_公共看板与读写协议#4.1 派单前必须明确的五项|派单五项]] 落实输入、范围、实际检查者/收件方、资源、预算与检查点。代码/运行卡补准确构建和检查命令；调查/设计明确来源与评审方法。开工时不要求尚未产生的候选代码或测试结果。
+
+## 谁做和谁检查
+
+| 环节 | 岗位与实际入口 | 负责的检查/交付 |
+| --- | --- | --- |
+| 作者 | ARCH；`executor.agent_id` 待登记 | 完成目标、保存实际证据，不批准自己的结果 |
+| 必需评审 | ENG-FWD；对应 `reviewer_sessions` 待登记 | 检查准确输入/交付版本、方法与结论；与该交付作者分开 |
+| 必需评审 | ENG-SIM；对应 `reviewer_sessions` 待登记 | 检查准确输入/交付版本、方法与结论；与该交付作者分开 |
+| 必需评审 | QA；对应 `reviewer_sessions` 待登记 | 检查准确输入/交付版本、方法与结论；与该交付作者分开 |
+| 额外运行验证 | 不适用 | 本卡以来源/文档评审完成；不制造镜像或运行成功记录 |
+| 合入/候选装配 | 不适用 | 无生产代码合入；文档/报告按准确版本归档 |
+| 收件和状态 | 唯一 COORD；`handoff` 待登记 | 明确收到/需补材料；条件满足才更新正式状态 |
+
+所有列出的评审项均为必需；`session/decision` 空值是待登记，不是已检查。身份、替代检查与不适用规则见 [[AI_SoC_协作方案/04_公共看板与读写协议#4.3 按任务类型安排检查|检查安排]]。
+
+## 验收与交付
+
+两端源码入口、配置/版本、最小命令与回复、主控转发/错误返回、未知项及评审记录可追溯。不存在状态接口则提出扩展依赖，不能假造接口完成此卡；试验替代须另行接受范围。
+
+交付：MC/SCM 原始来源、一个只读转发接口及能力缺口。运行卡附实际命令、退出结果、日志、版本组合与制品摘要；文档卡附准确文档版本与来源/评审。候选 commit、diff、合入版本只在适用且实际产生后填写。向登记的 COORD 交位置并取得回执；共同行为见 [[AI_SoC_协作方案/templates/角色任务提示词|交付格式]]。
+
+## 非目标
+
+不按拓竹报告猜命令，不擅改生产协议、MC 或 SCM 业务逻辑。
+
+
+## 归属、资源与进度
+
+主工作包：[[AI_SoC_协作方案/tasks/TASK-002_交接现有双 MCU 能力与协议|TASK-002]]。其他关联仅便于覆盖追踪，不重复计算任务完成；`depends_on` 才表示本卡直接前置。实时状态、实际执行者和版本只读取本卡 frontmatter/证据，不在正文另写一份状态。
+
+实际资源由 COORD 在 Ready 前填写：工作区、构建输出、Ubuntu 进程/硬件串口端点及占用检查点。同目录不同分支仍需评估行为冲突；不并发操作同一实例。字段或接口改变后按 [[AI_SoC_协作方案/04_公共看板与读写协议#4.4 完成后变更与证据撤回|变更规则]] 处理。
+
+需求原件：[[AI_SoC_协作方案/pilot_requirements_20261008_083854|查询试点需求与验收]]；本卡对应 PILOT-REQ-04、PILOT-REQ-05。
+
+## 当前 HIL 范围与能力条件
+
+所需接口、样例、版本与操作范围按本卡前置逐项接受，调查否定结果不能使依赖实现自动 Ready。
+
+当前 SoC 运行端为 VMware Ubuntu 宿主程序；真实设备证据须记录 MC/TH 固件及 USB/板间串口，Mock 证据单列。MC 能力报告只提供快照线索，最新实现 `[UNVERIFIED]`，实际源码读取和硬件操作需准确任务授权。现有状态、执行者和 evidence 本轮保持原值。

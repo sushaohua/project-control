@@ -1,0 +1,89 @@
+{
+  "observed_at": "2026-10-20T03:43:05.919496+00:00",
+  "scope": "Actual planning/document check failure, not a protocol/HIL result",
+  "command": "git -C project-control diff --check",
+  "actual_exit_code": 2,
+  "raw_log": "git_diff_check.log",
+  "cause": "Seven edited legacy Markdown files used CRLF. Git whitespace rules reported the newly added CR line endings as trailing whitespace.",
+  "correction_attempt": 1,
+  "correction": "Normalize line endings only in the seven already edited files; retain original and pre-correction byte snapshots. No Git rule/suppression changes.",
+  "changes": [
+    {
+      "path": ".agents/kanban/milestones/marlin_ms05_20261007_214108.md",
+      "before_sha256": "9647752e613da396af705166ae29a5a000615415cc477ec04f5f30e9ab1c69ce",
+      "after_sha256": "7d84332ab5f43c77c8f8a48020e6aa3f8d45b27faaa433e25dbcd5295eef4a8e",
+      "crlf_count_before": 155,
+      "change": "CRLF -> LF only"
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms06_20261007_214108.md",
+      "before_sha256": "1b60d9d2a269b0a22bb676b6a0cf4226a622c1a403c52c52c5df547090b1d061",
+      "after_sha256": "389f372764d67a532e2f948b6743355a5698335a77698d0d9031b74f71013ca1",
+      "crlf_count_before": 156,
+      "change": "CRLF -> LF only"
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+      "before_sha256": "7b709fb538b3e66cbe9585829420d8611684daea65315b7744c275ebd06dad20",
+      "after_sha256": "81aab6896f69caad88b9da003e2b5572372b134d85733a771773a51c8c781da2",
+      "crlf_count_before": 144,
+      "change": "CRLF -> LF only"
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+      "before_sha256": "8625be71a2bdf8776e4a220304acd2ca93fc9d6d67ffbc9dd08a02dd0f2c0ec7",
+      "after_sha256": "513b0a5b9b5c4f9c2964fcf2a755a3c896333e94108eef1dbd8475ef019bca9c",
+      "crlf_count_before": 82,
+      "change": "CRLF -> LF only"
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+      "before_sha256": "224d6fd8173f2fe219cc93e7ec9bc195dc0977869b475ae3b0f254c0aa5d6656",
+      "after_sha256": "e6fda232f068d93e16038138890b98da01224548291a112083e37044c10da4bc",
+      "crlf_count_before": 108,
+      "change": "CRLF -> LF only"
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md",
+      "before_sha256": "1c1bc4b335509820f55b9e4f145c7f0c9fb74571228e304f1210206c491cb5b0",
+      "after_sha256": "48cb2bc602e3e79d11586a4d4ba0742d9265b306578d8c0215e7b2bc07d0ec0b",
+      "crlf_count_before": 106,
+      "change": "CRLF -> LF only"
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+      "before_sha256": "eb1bc29bd3800f65afea149806a85578b65c10c242e76a7c3be6f370bb7b5722",
+      "after_sha256": "86dce251539e8645906ea56fc6bbb41cc4bd8e5f94921c64df3620d46738be25",
+      "crlf_count_before": 91,
+      "change": "CRLF -> LF only"
+    }
+  ],
+  "retained_logs": [
+    {
+      "path": "structure_check.json",
+      "sha256": "dec580e06ab0e4b074742cb43396dbb41b8ea1810d5288595ae72ce48f061c57",
+      "file_mtime_utc": "2026-10-20T03:42:12.106381+00:00"
+    },
+    {
+      "path": "structure_check.log",
+      "sha256": "539636a1c02aaf0410dbf5ac7e45f77bae25486c46e125fa905ccf9f5811c382",
+      "file_mtime_utc": "2026-10-20T03:42:12.109979+00:00"
+    },
+    {
+      "path": "first_ticket_readiness.json",
+      "sha256": "9586705ef2b6fb1b5906584f00a75abc1f58204e3fa938d060aea0f9232d2517",
+      "file_mtime_utc": "2026-10-20T03:42:12.374483+00:00"
+    },
+    {
+      "path": "first_ticket_readiness.log",
+      "sha256": "655598a25ef2fa53669e7000f2659a1ef1c6ab57bf8464cad35a438474e762b1",
+      "file_mtime_utc": "2026-10-20T03:42:12.377748+00:00"
+    },
+    {
+      "path": "git_diff_check.log",
+      "sha256": "6e96b5d45d09a517dd57fadf5ec04ff0379fabcd437fa288f65f02f12dc3514e",
+      "file_mtime_utc": "2026-10-20T03:42:12.392268+00:00"
+    }
+  ],
+  "timestamp_limit": "First partial validation did not flush separate per-command start/end metadata before stopping; raw commands/cwd/output/exit codes and filesystem modification times are retained. Do not invent earlier timestamps."
+}

@@ -1,0 +1,92 @@
+{
+  "checked_at": "2026-10-20T11:30:48.907744+08:00",
+  "author": "AI (Codex), current /root; tool author self-verification, not independent QA",
+  "checker_sha256": "525540a0c62449aae3101a380e01cf0e32b823edd027a0faaf29ef5f146849ef",
+  "scope": "Synthetic copies of planning inputs only. No real card was promoted or changed by rejection checks, no protocol implementation or hardware was tested.",
+  "stage": "/tmp/minimc_task_checker_guardrails_0t1idto9",
+  "results": [
+    {
+      "case": "guard_01_valid_structure",
+      "synthetic_input": true,
+      "expected_exit_code": 0,
+      "actual_exit_code": 0,
+      "expected_diagnostic": null,
+      "passed": true,
+      "raw_log": "guard_01_valid_structure.log"
+    },
+    {
+      "case": "guard_02_missing_dependency",
+      "synthetic_input": true,
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_diagnostic": "missing predecessor V2-NOT-EXIST",
+      "passed": true,
+      "raw_log": "guard_02_missing_dependency.log"
+    },
+    {
+      "case": "guard_03_cycle",
+      "synthetic_input": true,
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_diagnostic": "dependency cycle",
+      "passed": true,
+      "raw_log": "guard_03_cycle.log"
+    },
+    {
+      "case": "guard_04_escaping_write",
+      "synthetic_input": true,
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_diagnostic": "unbounded/escaping write path",
+      "passed": true,
+      "raw_log": "guard_04_escaping_write.log"
+    },
+    {
+      "case": "guard_05_premature_ready",
+      "synthetic_input": true,
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_diagnostic": "state cannot advance",
+      "passed": true,
+      "raw_log": "guard_05_premature_ready.log"
+    },
+    {
+      "case": "guard_06_unassigned_ready_gate",
+      "synthetic_input": true,
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "expected_diagnostic": "required independent reviewer session is not assigned",
+      "passed": true,
+      "raw_log": "guard_06_unassigned_ready_gate.log"
+    },
+    {
+      "case": "guard_07_protocol_changed",
+      "synthetic_input": true,
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_diagnostic": "protocol hash mismatch",
+      "passed": true,
+      "raw_log": "guard_07_protocol_changed.log"
+    },
+    {
+      "case": "guard_08_unordered_shared_writes",
+      "synthetic_input": true,
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_diagnostic": "shared writes lack dependency ordering",
+      "passed": true,
+      "raw_log": "guard_08_unordered_shared_writes.log"
+    },
+    {
+      "case": "guard_09_missing_negative_cases",
+      "synthetic_input": true,
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_diagnostic": "missing verification negative_cases",
+      "passed": true,
+      "raw_log": "guard_09_missing_negative_cases.log"
+    }
+  ],
+  "passed": 9,
+  "total": 9
+}

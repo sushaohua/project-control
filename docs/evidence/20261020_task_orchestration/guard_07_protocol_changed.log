@@ -1,0 +1,634 @@
+$ python3 /home/sushaohua/workspace/ai_soc_project/project-control/tools/check_task_graph.py --workspace /tmp/minimc_task_checker_guardrails_kj3aun0g/protocol
+{
+  "scope": "static planning validation, not execution/approval/QA acceptance",
+  "canonical_task_count": 67,
+  "v2_microtask_count": 25,
+  "errors": [
+    "V2-P01A: protocol hash mismatch",
+    "V2-P01B: protocol hash mismatch",
+    "V2-P01C: protocol hash mismatch",
+    "V2-P01D: protocol hash mismatch",
+    "V2-P02A: protocol hash mismatch",
+    "V2-P02B: protocol hash mismatch",
+    "V2-P02C: protocol hash mismatch",
+    "V2-P03A: protocol hash mismatch",
+    "V2-P03B: protocol hash mismatch",
+    "V2-P03C: protocol hash mismatch",
+    "V2-P03D: protocol hash mismatch",
+    "V2-P03E: protocol hash mismatch",
+    "V2-P03F: protocol hash mismatch",
+    "V2-P04A: protocol hash mismatch",
+    "V2-P04B: protocol hash mismatch",
+    "V2-P04C: protocol hash mismatch",
+    "V2-P04D: protocol hash mismatch",
+    "V2-P05A: protocol hash mismatch",
+    "V2-P05B: protocol hash mismatch",
+    "V2-P05C: protocol hash mismatch",
+    "V2-P05D: protocol hash mismatch",
+    "V2-P05E: protocol hash mismatch",
+    "V2-P06A: protocol hash mismatch",
+    "V2-P06B: protocol hash mismatch",
+    "V2-P06C: protocol hash mismatch"
+  ],
+  "dependency_cycles": [],
+  "shared_write_pairs": [
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05E"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P06A"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03E",
+        "V2-P06A"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04C",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05A",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05A",
+        "V2-P05C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05A",
+        "V2-P05D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05A",
+        "V2-P05E"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05B",
+        "V2-P05C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05B",
+        "V2-P05D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05B",
+        "V2-P05E"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05C",
+        "V2-P05D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05C",
+        "V2-P05E"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05D",
+        "V2-P05E"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    }
+  ],
+  "readiness_blockers": {
+    "V2-P01A": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "V2-P01B": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P01A is not Done",
+      "V2-P01A accepted deliverable/version is not bound"
+    ],
+    "V2-P01C": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P01A is not Done",
+      "V2-P01A accepted deliverable/version is not bound",
+      "V2-P01B is not Done",
+      "V2-P01B accepted deliverable/version is not bound"
+    ],
+    "V2-P01D": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P01C is not Done",
+      "V2-P01C accepted deliverable/version is not bound"
+    ],
+    "V2-P02A": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P01A is not Done",
+      "V2-P01A accepted deliverable/version is not bound",
+      "V2-P01B is not Done",
+      "V2-P01B accepted deliverable/version is not bound",
+      "V2-P01D is not Done",
+      "V2-P01D accepted deliverable/version is not bound"
+    ],
+    "V2-P02B": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P02A is not Done",
+      "V2-P02A accepted deliverable/version is not bound"
+    ],
+    "V2-P02C": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P02A is not Done",
+      "V2-P02A accepted deliverable/version is not bound",
+      "V2-P02B is not Done",
+      "V2-P02B accepted deliverable/version is not bound",
+      "V2-P01D is not Done",
+      "V2-P01D accepted deliverable/version is not bound"
+    ],
+    "V2-P03A": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P02A is not Done",
+      "V2-P02A accepted deliverable/version is not bound"
+    ],
+    "V2-P03B": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P02B is not Done",
+      "V2-P02B accepted deliverable/version is not bound",
+      "V2-P03A is not Done",
+      "V2-P03A accepted deliverable/version is not bound"
+    ],
+    "V2-P03C": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P03A is not Done",
+      "V2-P03A accepted deliverable/version is not bound",
+      "V2-P03B is not Done",
+      "V2-P03B accepted deliverable/version is not bound"
+    ],
+    "V2-P03D": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P03C is not Done",
+      "V2-P03C accepted deliverable/version is not bound",
+      "V2-P02C is not Done",
+      "V2-P02C accepted deliverable/version is not bound"
+    ],
+    "V2-P03E": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P03D is not Done",
+      "V2-P03D accepted deliverable/version is not bound"
+    ],
+    "V2-P03F": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P01D is not Done",
+      "V2-P01D accepted deliverable/version is not bound",
+      "V2-P02C is not Done",
+      "V2-P02C accepted deliverable/version is not bound",
+      "V2-P03E is not Done",
+      "V2-P03E accepted deliverable/version is not bound"
+    ],
+    "V2-P04A": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P03F is not Done",
+      "V2-P03F accepted deliverable/version is not bound"
+    ],
+    "V2-P04B": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P04A is not Done",
+      "V2-P04A accepted deliverable/version is not bound"
+    ],
+    "V2-P04C": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P04B is not Done",
+      "V2-P04B accepted deliverable/version is not bound"
+    ],
+    "V2-P04D": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P04C is not Done",
+      "V2-P04C accepted deliverable/version is not bound"
+    ],
+    "V2-P05A": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P04D is not Done",
+      "V2-P04D accepted deliverable/version is not bound"
+    ],
+    "V2-P05B": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P05A is not Done",
+      "V2-P05A accepted deliverable/version is not bound"
+    ],
+    "V2-P05C": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P05B is not Done",
+      "V2-P05B accepted deliverable/version is not bound"
+    ],
+    "V2-P05D": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P05C is not Done",
+      "V2-P05C accepted deliverable/version is not bound"
+    ],
+    "V2-P05E": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P05D is not Done",
+      "V2-P05D accepted deliverable/version is not bound"
+    ],
+    "V2-P06A": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P05E is not Done",
+      "V2-P05E accepted deliverable/version is not bound"
+    ],
+    "V2-P06B": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P06A is not Done",
+      "V2-P06A accepted deliverable/version is not bound"
+    ],
+    "V2-P06C": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff is not bound",
+      "actual lease and checkpoint deadline are not registered",
+      "V2-P06B is not Done",
+      "V2-P06B accepted deliverable/version is not bound"
+    ]
+  },
+  "card_paths": {
+    "V2-P01A": ".agents/kanban/microtasks/minimc_v2/V2-P01A.md",
+    "V2-P01B": ".agents/kanban/microtasks/minimc_v2/V2-P01B.md",
+    "V2-P01C": ".agents/kanban/microtasks/minimc_v2/V2-P01C.md",
+    "V2-P01D": ".agents/kanban/microtasks/minimc_v2/V2-P01D.md",
+    "V2-P02A": ".agents/kanban/microtasks/minimc_v2/V2-P02A.md",
+    "V2-P02B": ".agents/kanban/microtasks/minimc_v2/V2-P02B.md",
+    "V2-P02C": ".agents/kanban/microtasks/minimc_v2/V2-P02C.md",
+    "V2-P03A": ".agents/kanban/microtasks/minimc_v2/V2-P03A.md",
+    "V2-P03B": ".agents/kanban/microtasks/minimc_v2/V2-P03B.md",
+    "V2-P03C": ".agents/kanban/microtasks/minimc_v2/V2-P03C.md",
+    "V2-P03D": ".agents/kanban/microtasks/minimc_v2/V2-P03D.md",
+    "V2-P03E": ".agents/kanban/microtasks/minimc_v2/V2-P03E.md",
+    "V2-P03F": ".agents/kanban/microtasks/minimc_v2/V2-P03F.md",
+    "V2-P04A": ".agents/kanban/microtasks/minimc_v2/V2-P04A.md",
+    "V2-P04B": ".agents/kanban/microtasks/minimc_v2/V2-P04B.md",
+    "V2-P04C": ".agents/kanban/microtasks/minimc_v2/V2-P04C.md",
+    "V2-P04D": ".agents/kanban/microtasks/minimc_v2/V2-P04D.md",
+    "V2-P05A": ".agents/kanban/microtasks/minimc_v2/V2-P05A.md",
+    "V2-P05B": ".agents/kanban/microtasks/minimc_v2/V2-P05B.md",
+    "V2-P05C": ".agents/kanban/microtasks/minimc_v2/V2-P05C.md",
+    "V2-P05D": ".agents/kanban/microtasks/minimc_v2/V2-P05D.md",
+    "V2-P05E": ".agents/kanban/microtasks/minimc_v2/V2-P05E.md",
+    "V2-P06A": ".agents/kanban/microtasks/minimc_v2/V2-P06A.md",
+    "V2-P06B": ".agents/kanban/microtasks/minimc_v2/V2-P06B.md",
+    "V2-P06C": ".agents/kanban/microtasks/minimc_v2/V2-P06C.md",
+    "MS-01": ".agents/kanban/milestones/marlin_ms01_20261007_214108.md",
+    "MS-02": ".agents/kanban/milestones/marlin_ms02_20261007_214108.md",
+    "MS-03": ".agents/kanban/milestones/marlin_ms03_20261007_214108.md",
+    "MS-04": ".agents/kanban/milestones/marlin_ms04_20261007_214108.md",
+    "MS-05": ".agents/kanban/milestones/marlin_ms05_20261007_214108.md",
+    "MS-06": ".agents/kanban/milestones/marlin_ms06_20261007_214108.md",
+    "MS-07": ".agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+    "MS-08": ".agents/kanban/milestones/marlin_ms08_20261007_214108.md",
+    "MS-09": ".agents/kanban/milestones/marlin_ms09_20261007_214108.md",
+    "MS-10": ".agents/kanban/milestones/marlin_ms10_20261007_214108.md",
+    "MS-11": ".agents/kanban/milestones/marlin_ms11_20261007_214108.md",
+    "MS-12": ".agents/kanban/milestones/marlin_ms12_20261007_214108.md",
+    "MS-13": ".agents/kanban/milestones/marlin_ms13_20261007_214108.md",
+    "MS-14": ".agents/kanban/milestones/marlin_ms14_20261007_214108.md",
+    "MS-15": ".agents/kanban/milestones/marlin_ms15_20261007_214108.md",
+    "MS-16": ".agents/kanban/milestones/marlin_ms16_20261007_214108.md",
+    "MS-17": ".agents/kanban/milestones/marlin_ms17_20261007_214108.md",
+    "MS-18": ".agents/kanban/milestones/marlin_ms18_20261008_083854.md",
+    "MS-19": ".agents/kanban/milestones/marlin_ms19_20261008_083854.md",
+    "MS-20": ".agents/kanban/milestones/marlin_ms20_20261008_083854.md",
+    "MS-21": ".agents/kanban/milestones/marlin_ms21_20261008_083854.md",
+    "MS-22": ".agents/kanban/milestones/marlin_ms22_20261008_083854.md",
+    "PL-01": "docs/planning/product/product_pl01_20261008_083854.md",
+    "PL-02": "docs/planning/product/product_pl02_20261008_083854.md",
+    "TASK-001": "docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md",
+    "TASK-002": "docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md",
+    "TASK-003": "docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md",
+    "TASK-004": "docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+    "TASK-005": "docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+    "TASK-006": "docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md",
+    "TASK-007": "docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md",
+    "TASK-008": "docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md",
+    "TASK-009": "docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md",
+    "TASK-010": "docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+    "TASK-011": "docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md",
+    "TASK-012": "docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md",
+    "TASK-013": "docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md",
+    "TASK-014": "docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md",
+    "TASK-015": "docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md",
+    "TASK-016": "docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md",
+    "TASK-017": "docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md",
+    "TASK-018": "docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md"
+  },
+  "exit_code": 1
+}
+
+ACTUAL_EXIT_CODE=1
+EXPECTED_EXIT_CODE=1
