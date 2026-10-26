@@ -1,0 +1,4 @@
+$ c++ -std=c++17 -Wall -Wextra -Wpedantic -Werror -I soc-ap/core/forward/minimc -x c++ -fsyntax-only -include parser.h /dev/null
+[EXIT_CODE]: 0
+[STDERR]: (empty)
+[STDOUT]: (empty)

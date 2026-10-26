@@ -1,0 +1,5 @@
+$ git -C soc-ap rev-parse HEAD && git -C soc-ap status --porcelain=v1 && git -C test_harness rev-parse HEAD && git -C test_harness status --porcelain=v1
+26e05d3cf519728089a2da248b6725d0f3b1f2cc
+?? core/forward/minimc/parser.h
+59d2320663dd7ef4a080272d624f831684935c34
+[EXIT_CODE]: 0
