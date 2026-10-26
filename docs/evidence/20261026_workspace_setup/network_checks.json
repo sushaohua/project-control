@@ -1,0 +1,26 @@
+{
+  "source": "actual socket, urllib and ssh tool results observed in this session",
+  "token_environment": "GITLAB_TOKEN present; value not recorded",
+  "http_api": "http://192.168.77.113/api/v4/user",
+  "authentication_method": "PRIVATE-TOKEN header",
+  "tcp_80": {
+    "errno": 1,
+    "error": "Operation not permitted"
+  },
+  "tcp_2222": {
+    "errno": 1,
+    "error": "Operation not permitted"
+  },
+  "api_request": {
+    "errno": 1,
+    "error": "Operation not permitted",
+    "http_response_received": false
+  },
+  "ssh": {
+    "exit_code": 255,
+    "stderr": "socket: Operation not permitted\nssh: connect to host 192.168.77.113 port 2222: failure"
+  },
+  "server_project_created": false,
+  "remote_push_completed": false,
+  "token_validity": "not verified"
+}

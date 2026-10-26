@@ -1,0 +1,32 @@
+test_api_creates_private_project_in_exact_namespace (test_workspace.WorkspaceTests) ... ok
+test_bundle_roundtrip_uses_exact_root_and_child_commits (test_workspace.WorkspaceTests) ... ERROR
+test_dirty_lock_is_rejected_without_changing_manifest (test_workspace.WorkspaceTests) ... ok
+test_existing_project_is_reused_without_creation (test_workspace.WorkspaceTests) ... ok
+test_manifest_rejects_escaping_paths_and_credential_urls (test_workspace.WorkspaceTests) ... ok
+test_missing_child_does_not_resolve_to_parent_git (test_workspace.WorkspaceTests) ... ok
+test_non_fast_forward_push_is_rejected (test_workspace.WorkspaceTests) ... ok
+test_restore_pins_commit_even_when_branch_has_advanced (test_workspace.WorkspaceTests) ... ok
+
+======================================================================
+ERROR: test_bundle_roundtrip_uses_exact_root_and_child_commits (test_workspace.WorkspaceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/sushaohua/workspace/ai_soc_project/tools/test_workspace.py", line 97, in test_bundle_roundtrip_uses_exact_root_and_child_commits
+    ws.restore(restored, ws.load_manifest(restored), destination)
+  File "/home/sushaohua/workspace/ai_soc_project/tools/workspace.py", line 62, in load_manifest
+    data = json.loads((root / "workspace.json").read_text())
+  File "/usr/lib/python3.8/pathlib.py", line 1236, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/usr/lib/python3.8/pathlib.py", line 1222, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/usr/lib/python3.8/pathlib.py", line 1078, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmp0a8fn3uc/from-bundle/workspace.json'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.286s
+
+FAILED (errors=1)
+BUNDLED /tmp/tmp0a8fn3uc/bundles
+VERIFIED soc-ap main d8e8a1cc81aa899cbc1b7240819c9f57200a2685
+RESTORED all pinned commits; existing checkouts were preserved

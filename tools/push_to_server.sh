@@ -11,6 +11,11 @@ else
     workspace_root=$(cd -- "$script_dir/../.." && pwd)
 fi
 
+# Prefer the entry repository's token-authenticated, five-repository publisher.
+if [[ -f "$workspace_root/workspace.json" && -f "$workspace_root/tools/workspace.py" ]]; then
+    exec python3 "$workspace_root/tools/workspace.py" --workspace "$workspace_root" publish
+fi
+
 export GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh -o BatchMode=yes -o ConnectTimeout=10}"
 failed=0
 for entry in soc-ap:main project-control:main mcu-p3:feat/soc-debug test_harness:main; do

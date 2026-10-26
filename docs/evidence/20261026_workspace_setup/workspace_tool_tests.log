@@ -1,0 +1,17 @@
+test_api_creates_private_project_in_exact_namespace (test_workspace.WorkspaceTests) ... ok
+test_bundle_roundtrip_uses_exact_root_and_child_commits (test_workspace.WorkspaceTests) ... ok
+test_dirty_lock_is_rejected_without_changing_manifest (test_workspace.WorkspaceTests) ... ok
+test_existing_project_is_reused_without_creation (test_workspace.WorkspaceTests) ... ok
+test_manifest_rejects_escaping_paths_and_credential_urls (test_workspace.WorkspaceTests) ... ok
+test_missing_child_does_not_resolve_to_parent_git (test_workspace.WorkspaceTests) ... ok
+test_non_fast_forward_push_is_rejected (test_workspace.WorkspaceTests) ... ok
+test_restore_pins_commit_even_when_branch_has_advanced (test_workspace.WorkspaceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.335s
+
+OK
+BUNDLED /tmp/tmp4tu9u2ng/bundles
+RESTORED all pinned commits; existing checkouts were preserved
+VERIFIED soc-ap main cedb85b45c2da27e6fbbc7175937e30c1e3387db
+RESTORED all pinned commits; existing checkouts were preserved

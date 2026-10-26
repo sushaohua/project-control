@@ -1,39 +1,52 @@
 # 工作区恢复与服务器同步
 
-工作区根目录不是 Git 仓库。代码及管理资料分别保存在四个仓库；根目录入口文件的导出快照保存在本仓 `workspace-root/`，避免只推子仓导致入口丢失。根目录 `.agents/` 是旧副本，正式状态读取本仓 `.agents/`。
+2026-10-26 起采用“轻量工作区总仓＋manifest＋同步脚本”。总仓管理根目录入口、
+公共脚本和四仓准确恢复版本；工程规则、任务、协议与验收证据仍以本控制仓为权威。
+完整步骤和环境限制见根目录 [WORKSPACE.md](../../../WORKSPACE.md)。
 
-## 从服务器恢复
+## 当前恢复方式
 
-在空工作区中执行以下命令（已有目录时先核对，避免重复检出）：
-
-```bash
-git clone --branch main ssh://git@192.168.77.113:2222/sushaohua/project-control.git project-control
-git clone --branch main ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git soc-ap
-git clone --branch feat/soc-debug ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git mcu-p3
-git clone --branch main ssh://git@192.168.77.113:2222/sushaohua/test_harness.git test_harness
-cp -n project-control/workspace-root/README.md.snapshot README.md
-cp -n project-control/workspace-root/AGENTS.md.snapshot AGENTS.md
-```
-
-`cp -n` 保留已存在的根目录文件。随后读取本仓最新交接 `docs/handoff/HANDOFF_20261020.md`；需要根目录导航及历史交接副本时：
+在空父目录执行：
 
 ```bash
-cp -n project-control/docs/handoff/HANDOFF_20261019.md HANDOFF_20261019.md
-cp -n project-control/workspace-root/HANDOFF_20261020.md.snapshot HANDOFF_20261020.md
+git clone --branch main ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git ai_soc_project
+cd ai_soc_project
+python3 tools/workspace.py restore
+python3 tools/workspace.py verify
 ```
 
-快照仅用于恢复或导出，不作为第二份持续编辑的根目录原件。根目录文件更新后，发布时刷新快照。
+总仓服务器创建和推送必须真实成功后，上述服务器克隆方式才可使用；本机提交和
+离线 bundle 恢复通过不代表服务器已同步。若服务器不可达，按 WORKSPACE.md 从五仓
+离线包恢复。未配置 SSH 的新机器先配置允许访问该服务器的 SSH 认证。
 
-恢复后依次读取本地[协议目录](../specs/README.md)和[独立工作区运行说明](standalone_workspace.md)。无需克隆或挂载知识库；历史迁移文档中的知识库命令不是恢复/启动步骤。
+`workspace.json` 锁定恢复 commit；本仓 `manifest.yaml` 保留工程基线与验证状态，
+不能把历史基线当作最新备份提交。恢复保留 `mcu-p3` 的 `feat/soc-debug` 分支。
+已有子目录只有在分支、commit 和干净状态都一致时复用，脚本不覆盖本机修改。
 
-## 推送与验证
+总仓排除四个子仓、凭据、构建缓存与离线传输包。根目录旧 `.agents/` 不是正式状态来源；
+新机器恢复后缺少该目录时创建到本仓 `.agents/` 的相对符号链接。
 
-在允许连接服务器的终端，从工作区执行：
+## 提交、锁定与推送
+
+先审阅并分别提交各仓改动，再运行：
 
 ```bash
-bash project-control/tools/push_to_server.sh
+python3 tools/workspace.py lock
+bash tools/workspace_git.sh add workspace.json
+bash tools/workspace_git.sh commit -m 'chore(workspace): pin repository checkpoints'
+python3 tools/workspace.py publish
 ```
 
-脚本检查分支及工作区状态，普通推送四个指定分支，再用 `ls-remote` 核对服务器 SHA；不强制覆盖远端历史。服务器拒绝非快进推送时，先核对远端新增提交及冲突，再继续。输出 `VERIFIED` 才算完成对应仓库的远端核对。
+推送使用环境变量 `GITLAB_TOKEN`。GitLab API 查询/创建项目后，通过 HTTP(S) Git
+逐仓推送并检查远端 SHA，最后上传总仓；不强制推送、不自动合并或自动提交。
+真实 GitLab HTTP 入口可通过 `GITLAB_URL` 或 `--gitlab-url` 提供，令牌不写入 URL/文件。
+`project-control/tools/push_to_server.sh` 在总仓脚本存在时转交该流程，否则保留旧四仓 SSH 推送方式。
 
-根目录 `artifacts/server_sync_20261019/` 保留昨日 Git bundle、版本清单与校验和；不包含 2026-10-20 后续本地检查点中的新增资料。bundle 含当批分支所需历史，可搬到可联网环境后检出；不能将旧包当作今天全部工作或已同步服务器。本次推送失败证据见 `docs/evidence/20261020/push_attempt.log`。工作区有修改时脚本会跳过对应仓库，应先审阅并提交准确候选，再推送。
+## 历史材料
+
+`workspace-root/*.snapshot`、旧交接和 `artifacts/server_sync_20261019/` 是之前的恢复材料。
+原件保持追溯，后续根目录入口由总仓保存，不再要求刷新多份导出快照。
+旧 bundle 只覆盖当批版本，不能当作后续全部工作或服务器上传证据。
+
+恢复后读取[本地协议](../specs/README.md)和[独立工作区运行说明](standalone_workspace.md)。
+知识库不作为构建或运行输入；硬件与 MCU 证据要求保持原任务约定。
