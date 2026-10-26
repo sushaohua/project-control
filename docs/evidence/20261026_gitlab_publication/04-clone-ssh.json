@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-10-26T16:48:12.058311+08:00",
+  "finished_at": "2026-10-26T16:48:14.923767+08:00",
+  "cwd": "/home/sushaohua/workspace/ai_soc_project",
+  "command": [
+    "git",
+    "-c",
+    "core.sshCommand=ssh -o BatchMode=yes -o ConnectTimeout=10",
+    "clone",
+    "--branch",
+    "main",
+    "ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git",
+    "/tmp/ai-soc-gitlab-publication-20261026T164656/initial-restored"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "Cloning into '/tmp/ai-soc-gitlab-publication-20261026T164656/initial-restored'...\n"
+}

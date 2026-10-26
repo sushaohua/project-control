@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-10-26T16:48:21.825707+08:00",
+  "finished_at": "2026-10-26T16:48:44.241523+08:00",
+  "cwd": "/tmp/ai-soc-gitlab-publication-20261026T164656/initial-restored",
+  "command": [
+    "python3",
+    "tools/workspace.py",
+    "restore"
+  ],
+  "exit_code": 0,
+  "stdout": "RESTORED all pinned commits; existing checkouts were preserved\n",
+  "stderr": ""
+}

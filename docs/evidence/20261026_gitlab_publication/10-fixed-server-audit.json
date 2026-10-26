@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-10-26T16:51:21.323327+08:00",
+  "finished_at": "2026-10-26T16:51:26.648066+08:00",
+  "cwd": "/home/sushaohua/workspace/ai_soc_project",
+  "command": [
+    "python3",
+    "/tmp/ai_soc_publication_audit.py",
+    "/home/sushaohua/workspace/ai_soc_project",
+    "/tmp/ai-soc-gitlab-publication-20261026T164656/fixed-restored"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/tmp/ai_soc_publication_audit.py\", line 48, in <module>\n    assert sha(source / 'project-control' / name) == sha(restored / 'project-control' / name), name\n  File \"/tmp/ai_soc_publication_audit.py\", line 19, in sha\n    return hashlib.sha256(path.read_bytes()).hexdigest()\n  File \"/usr/lib/python3.8/pathlib.py\", line 1229, in read_bytes\n    with self.open(mode='rb') as f:\n  File \"/usr/lib/python3.8/pathlib.py\", line 1222, in open\n    return io.open(self, mode, buffering, encoding, errors, newline,\n  File \"/usr/lib/python3.8/pathlib.py\", line 1078, in _opener\n    return self._accessor.open(self, flags, mode)\nFileNotFoundError: [Errno 2] No such file or directory: '/home/sushaohua/workspace/ai_soc_project/project-control/\".agents/rules/02_\\\\346\\\\250\\\\241\\\\345\\\\235\\\\227\\\\344\\\\270\\\\216Agent\\\\350\\\\201\\\\214\\\\350\\\\264\\\\243.md\"'\n"
+}

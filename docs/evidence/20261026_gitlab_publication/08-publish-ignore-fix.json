@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-10-26T16:49:57.526769+08:00",
+  "finished_at": "2026-10-26T16:50:09.553273+08:00",
+  "cwd": "/home/sushaohua/workspace/ai_soc_project",
+  "command": [
+    "python3",
+    "tools/workspace.py",
+    "publish"
+  ],
+  "exit_code": 0,
+  "stdout": "GitLab authenticated as sushaohua\nVERIFIED project-control main 2b84bbfefca513973bb13726f45d2102d45e9bce\nVERIFIED soc-ap main 849135ee69500e7e96ee75eed73c245e1ac94851\nVERIFIED mcu-p3 feat/soc-debug 14b8057b04030bd659744c874c73ff8f09f29979\nVERIFIED test_harness main 59d2320663dd7ef4a080272d624f831684935c34\nVERIFIED ai_soc_project main a7f4f33c185c8aa4334628c2a6229f0fe377b3b3\nPUBLISHED http://192.168.77.113/sushaohua/ai-soc-workspace\n",
+  "stderr": ""
+}

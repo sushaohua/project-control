@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-10-26T16:47:07.515659+08:00",
+  "finished_at": "2026-10-26T16:47:17.263891+08:00",
+  "cwd": "/home/sushaohua/workspace/ai_soc_project",
+  "command": [
+    "python3",
+    "-"
+  ],
+  "exit_code": 0,
+  "stdout": "ROOT a772a4880ac2d2e8cedfe34af29c1d28576b6843\nROOT STATUS ''\nCHILD STATES [{\"path\": \"project-control\", \"branch\": \"main\", \"commit\": \"2b84bbfefca513973bb13726f45d2102d45e9bce\", \"dirty\": false}, {\"path\": \"soc-ap\", \"branch\": \"main\", \"commit\": \"849135ee69500e7e96ee75eed73c245e1ac94851\", \"dirty\": false}, {\"path\": \"mcu-p3\", \"branch\": \"feat/soc-debug\", \"commit\": \"14b8057b04030bd659744c874c73ff8f09f29979\", \"dirty\": false}, {\"path\": \"test_harness\", \"branch\": \"main\", \"commit\": \"59d2320663dd7ef4a080272d624f831684935c34\", \"dirty\": false}]\nAPI /api/v4/user HTTP 200 username=sushaohua\nPROJECT http://192.168.77.113/sushaohua/project-control VISIBILITY private\nFrom http://192.168.77.113/sushaohua/project-control\n * branch            main       -> FETCH_HEAD\nREMOTE project-control main 70dbb6f44a2fd830b1cbf19f26de9792867a063b ancestor_of_local= True\n2b84bbf docs(workspace): document entry repository recovery and sync evidence\ndd077aa chore(control): checkpoint task records and independent Codex reviews\n12b3bd8 chore(control): record V2-P01C completion and independent ARCH approval\nc85cf33 chore(control): record V2-P01B completion and independent QA approval\nPROJECT http://192.168.77.113/sushaohua/soc-ap VISIBILITY private\nFrom http://192.168.77.113/sushaohua/soc-ap\n * branch            main       -> FETCH_HEAD\nREMOTE soc-ap main 5949bcae6ccc3813e025d2702caf7150d6a79f95 ancestor_of_local= True\n849135e docs(contracts): extract version and ping command contracts for MiniMCProto v2.0 (V2-P01B)\nPROJECT http://192.168.77.113/sushaohua/mcu-p3 VISIBILITY internal\nFrom http://192.168.77.113/sushaohua/mcu-p3\n * branch            feat/soc-debug -> FETCH_HEAD\nREMOTE mcu-p3 feat/soc-debug 14b8057b04030bd659744c874c73ff8f09f29979 ancestor_of_local= True\n\nPROJECT http://192.168.77.113/sushaohua/test_harness VISIBILITY private\nFrom http://192.168.77.113/sushaohua/test_harness\n * branch            main       -> FETCH_HEAD\nREMOTE test_harness main ad0398e20d3645dbfa37bfd0550ded0828d018b2 ancestor_of_local= True\n59d2320 chore(checkpoint): preserve in-progress V2-P01D reference tool\na3cccf1 test(minimcproto): add golden and negative test vectors (V2-P01C)\nENTRY PROJECT MISSING\n",
+  "stderr": ""
+}

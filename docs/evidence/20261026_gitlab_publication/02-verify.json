@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-10-26T16:47:21.786887+08:00",
+  "finished_at": "2026-10-26T16:47:21.847289+08:00",
+  "cwd": "/home/sushaohua/workspace/ai_soc_project",
+  "command": [
+    "python3",
+    "tools/workspace.py",
+    "verify"
+  ],
+  "exit_code": 0,
+  "stdout": "[\n  {\n    \"path\": \"project-control\",\n    \"branch\": \"main\",\n    \"commit\": \"2b84bbfefca513973bb13726f45d2102d45e9bce\",\n    \"dirty\": false\n  },\n  {\n    \"path\": \"soc-ap\",\n    \"branch\": \"main\",\n    \"commit\": \"849135ee69500e7e96ee75eed73c245e1ac94851\",\n    \"dirty\": false\n  },\n  {\n    \"path\": \"mcu-p3\",\n    \"branch\": \"feat/soc-debug\",\n    \"commit\": \"14b8057b04030bd659744c874c73ff8f09f29979\",\n    \"dirty\": false\n  },\n  {\n    \"path\": \"test_harness\",\n    \"branch\": \"main\",\n    \"commit\": \"59d2320663dd7ef4a080272d624f831684935c34\",\n    \"dirty\": false\n  }\n]\n",
+  "stderr": ""
+}

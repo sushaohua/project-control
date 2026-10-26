@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-10-26T16:50:44.102695+08:00",
+  "finished_at": "2026-10-26T16:51:11.410704+08:00",
+  "cwd": "/home/sushaohua/workspace/ai_soc_project",
+  "command": [
+    "python3",
+    "/tmp/ai_soc_server_roundtrip.py",
+    "/home/sushaohua/workspace/ai_soc_project",
+    "/tmp/ai-soc-gitlab-publication-20261026T164656/fixed-restored"
+  ],
+  "exit_code": 1,
+  "stdout": "{\"cwd\": \"/home/sushaohua/workspace/ai_soc_project\", \"command\": [\"git\", \"clone\", \"--branch\", \"main\", \"ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git\", \"/tmp/ai-soc-gitlab-publication-20261026T164656/fixed-restored\"]}\nCloning into '/tmp/ai-soc-gitlab-publication-20261026T164656/fixed-restored'...\nEXIT 0\n{\"cwd\": \"/tmp/ai-soc-gitlab-publication-20261026T164656/fixed-restored\", \"command\": [\"python3\", \"tools/workspace.py\", \"restore\"]}\nRESTORED all pinned commits; existing checkouts were preserved\nEXIT 0\n{\"cwd\": \"/tmp/ai-soc-gitlab-publication-20261026T164656/fixed-restored\", \"command\": [\"python3\", \"tools/workspace.py\", \"verify\"]}\n[\n  {\n    \"path\": \"project-control\",\n    \"branch\": \"main\",\n    \"commit\": \"2b84bbfefca513973bb13726f45d2102d45e9bce\",\n    \"dirty\": false\n  },\n  {\n    \"path\": \"soc-ap\",\n    \"branch\": \"main\",\n    \"commit\": \"849135ee69500e7e96ee75eed73c245e1ac94851\",\n    \"dirty\": false\n  },\n  {\n    \"path\": \"mcu-p3\",\n    \"branch\": \"feat/soc-debug\",\n    \"commit\": \"14b8057b04030bd659744c874c73ff8f09f29979\",\n    \"dirty\": false\n  },\n  {\n    \"path\": \"test_harness\",\n    \"branch\": \"main\",\n    \"commit\": \"59d2320663dd7ef4a080272d624f831684935c34\",\n    \"dirty\": false\n  }\n]\nEXIT 0\n{\"cwd\": \"/home/sushaohua/workspace/ai_soc_project\", \"command\": [\"python3\", \"/tmp/ai_soc_publication_audit.py\", \"/home/sushaohua/workspace/ai_soc_project\", \"/tmp/ai-soc-gitlab-publication-20261026T164656/fixed-restored\"]}\nTraceback (most recent call last):\n  File \"/tmp/ai_soc_publication_audit.py\", line 42, in <module>\n    assert agents.is_symlink() and agents.readlink() == Path('project-control/.agents')\nAttributeError: 'PosixPath' object has no attribute 'readlink'\nEXIT 1\n",
+  "stderr": ""
+}

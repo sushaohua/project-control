@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-10-26T16:48:55.335368+08:00",
+  "finished_at": "2026-10-26T16:48:55.487924+08:00",
+  "cwd": "/home/sushaohua/workspace/ai_soc_project",
+  "command": [
+    "python3",
+    "/tmp/ai_soc_publication_audit.py",
+    "/home/sushaohua/workspace/ai_soc_project",
+    "/tmp/ai-soc-gitlab-publication-20261026T164656/initial-restored"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/tmp/ai_soc_publication_audit.py\", line 24, in <module>\n    assert not git(restored, 'status', '--porcelain=v1')\nAssertionError\n"
+}

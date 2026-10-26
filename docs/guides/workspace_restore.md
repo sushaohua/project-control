@@ -15,8 +15,9 @@ python3 tools/workspace.py restore
 python3 tools/workspace.py verify
 ```
 
-总仓服务器创建和推送必须真实成功后，上述服务器克隆方式才可使用；本机提交和
-离线 bundle 恢复通过不代表服务器已同步。若服务器不可达，按 WORKSPACE.md 从五仓
+2026-10-26 已实际创建并上传总仓，完成五仓普通推送及 SSH 克隆、准确提交恢复。
+执行记录、初次发现的问题及修正后核对结果见[服务器发布证据](../evidence/20261026_gitlab_publication/README.md)。
+本机提交和离线 bundle 恢复通过不代表服务器已同步。若服务器不可达，按 WORKSPACE.md 从五仓
 离线包恢复。未配置 SSH 的新机器先配置允许访问该服务器的 SSH 认证。
 
 `workspace.json` 锁定恢复 commit；本仓 `manifest.yaml` 保留工程基线与验证状态，
