@@ -1,0 +1,92 @@
+{
+  "case_set": "stream_header",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P05B/bin/minimc-probe",
+  "total_cases": 5,
+  "passed_cases": 5,
+  "failed_cases": 0,
+  "failures": [],
+  "results": [
+    {
+      "case_id": "SHDR-001",
+      "group": "stream_header",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "READ_HEADER",
+        "header_bytes_collected": 9,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SHDR-002",
+      "group": "stream_header",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "READ_CRC",
+        "candidate_payload_len": 0,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SHDR-003",
+      "group": "stream_header",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "READ_PAYLOAD",
+        "candidate_payload_len": 4,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SHDR-004",
+      "group": "stream_header",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "READ_PAYLOAD",
+        "candidate_payload_len": 1024,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SHDR-005",
+      "group": "stream_header",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "err_mtu_delta": 1,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}

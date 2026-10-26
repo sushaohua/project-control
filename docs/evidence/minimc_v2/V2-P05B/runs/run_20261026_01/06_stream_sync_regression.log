@@ -1,0 +1,88 @@
+{
+  "case_set": "stream_sync",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P05B/bin/minimc-probe",
+  "total_cases": 5,
+  "passed_cases": 5,
+  "failed_cases": 0,
+  "failures": [],
+  "results": [
+    {
+      "case_id": "SYNC-001",
+      "group": "stream_sync",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SYNC-002",
+      "group": "stream_sync",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF2",
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SYNC-003",
+      "group": "stream_sync",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "READ_HEADER",
+        "header_bytes_collected": 0,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SYNC-004",
+      "group": "stream_sync",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SYNC-005",
+      "group": "stream_sync",
+      "operation": "reset",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}
