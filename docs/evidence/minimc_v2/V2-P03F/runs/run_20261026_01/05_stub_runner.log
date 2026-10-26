@@ -1,0 +1,64 @@
+{
+  "case_set": "stub",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P03F/bin/minimc-probe",
+  "total_cases": 4,
+  "passed_cases": 4,
+  "failed_cases": 0,
+  "failures": [],
+  "results": [
+    {
+      "case_id": "STUB-001",
+      "group": "stub",
+      "operation": "crc",
+      "exit_code": 126,
+      "passed": true,
+      "expected": {
+        "status": "not_implemented"
+      },
+      "actual_status": "error",
+      "actual_error_code": "not_implemented",
+      "diffs": []
+    },
+    {
+      "case_id": "STUB-002",
+      "group": "stub",
+      "operation": "encode",
+      "exit_code": 126,
+      "passed": true,
+      "expected": {
+        "status": "not_implemented"
+      },
+      "actual_status": "error",
+      "actual_error_code": "not_implemented",
+      "diffs": []
+    },
+    {
+      "case_id": "STUB-003",
+      "group": "stub",
+      "operation": "decode",
+      "exit_code": 126,
+      "passed": true,
+      "expected": {
+        "status": "not_implemented"
+      },
+      "actual_status": "error",
+      "actual_error_code": "not_implemented",
+      "diffs": []
+    },
+    {
+      "case_id": "STUB-004",
+      "group": "stub",
+      "operation": "feed",
+      "exit_code": 126,
+      "passed": true,
+      "expected": {
+        "status": "not_implemented"
+      },
+      "actual_status": "error",
+      "actual_error_code": "not_implemented",
+      "diffs": []
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}

@@ -1,0 +1,66 @@
+{
+  "mode": "self-check",
+  "tested_exception_paths_count": 7,
+  "passed_count": 7,
+  "failed_count": 0,
+  "checks": [
+    {
+      "check_id": "SELF-01",
+      "name": "missing_probe_rejected",
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "passed": true,
+      "detail": "Probe binary does not exist or is not a file: /tmp/minimc_runner_selfcheck_zisxgyzq/does_not_exist_probe"
+    },
+    {
+      "check_id": "SELF-02",
+      "name": "non_executable_probe_rejected",
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "passed": true,
+      "detail": "Probe binary is not executable: /tmp/minimc_runner_selfcheck_zisxgyzq/non_exec_probe"
+    },
+    {
+      "check_id": "SELF-03",
+      "name": "unknown_case_set_rejected",
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "passed": true,
+      "detail": "Unknown case-set 'nonexistent_group'. Allowed: 'all', 'stub', or one of ['crc', 'encode', 'decode_bounds', 'decode', 'stream_sync', 'stream_header', 'stream_payload', 'timeout', 'recovery']"
+    },
+    {
+      "check_id": "SELF-04",
+      "name": "empty_case_set_rejected",
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "passed": true,
+      "detail": "No Empty Test Pass violation: 0 cases matched case-set 'crc'"
+    },
+    {
+      "check_id": "SELF-05",
+      "name": "subprocess_timeout_rejected",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "passed": true,
+      "detail": "subprocess timeout after 0.1s"
+    },
+    {
+      "check_id": "SELF-06",
+      "name": "unimplemented_on_functional_group_rejected",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "passed": true,
+      "detail": "unimplemented backend rejected on functional group 'crc' (exit_code=126, error_code='not_implemented')"
+    },
+    {
+      "check_id": "SELF-07",
+      "name": "output_value_mismatch_rejected",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "passed": true,
+      "detail": "crc16_hex: expected '0x29B1', got '0x0000'; crc16_le_hex: expected 'B129', got '0000'"
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}
