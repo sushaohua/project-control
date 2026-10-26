@@ -1,0 +1,5 @@
+$ c++ -std=c++17 -Wall -Wextra -Wpedantic -Werror -I soc-ap/core/forward/minimc -x c++ -fsyntax-only -include codec.h /dev/null
+[EXIT_CODE]: 0
+[STDOUT]: 
+[STDERR]: 
+[HEADER_CHECK]: PASSED (self-contained, C++17 compatible, zero warnings under -Wall -Wextra -Wpedantic -Werror)
