@@ -1,0 +1,5 @@
+$ python3 -m json.tool test_harness/test_cases/minimcproto/vectors.json > /dev/null && sha256sum test_harness/test_cases/minimcproto/vectors.json && wc -c test_harness/test_cases/minimcproto/vectors.json && git -C test_harness status --porcelain=v1 && git -C soc-ap status --porcelain=v1
+6d46bd05a4133e678611abe2ab1cb88db190c394f23151900009c0c077c8d995  test_harness/test_cases/minimcproto/vectors.json
+48365 test_harness/test_cases/minimcproto/vectors.json
+?? test_cases/minimcproto/
+[EXIT_CODE]: 0
