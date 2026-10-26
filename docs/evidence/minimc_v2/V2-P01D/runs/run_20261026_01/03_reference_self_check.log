@@ -1,0 +1,59 @@
+$ python3 test_harness/static_checks/minimcproto/reference_vectors.py --vectors test_harness/test_cases/minimcproto/vectors.json --self-check
+{
+  "mode": "self-check",
+  "status": "passed",
+  "mutations_tested": 8,
+  "results": [
+    {
+      "mutation": "corrupt_golden_v01_crc",
+      "rejected": true,
+      "simulated_exit_code": 1,
+      "triggered_error": "golden vector V01 CRC mismatch: calculated 0x1EF9 != 0xFFFF"
+    },
+    {
+      "mutation": "corrupt_case_crc_001",
+      "rejected": true,
+      "simulated_exit_code": 1,
+      "triggered_error": "CRC-001: CRC mismatch: calc 0x29B1 != 0x0000"
+    },
+    {
+      "mutation": "duplicate_case_id",
+      "rejected": true,
+      "simulated_exit_code": 1,
+      "triggered_error": "duplicate case_id: STUB-001"
+    },
+    {
+      "mutation": "empty_functional_group_timeout",
+      "rejected": true,
+      "simulated_exit_code": 1,
+      "triggered_error": "functional group 'timeout' has 0 cases"
+    },
+    {
+      "mutation": "tamper_protocol_sha256",
+      "rejected": true,
+      "simulated_exit_code": 1,
+      "triggered_error": "protocol_sha256 mismatch: got '0000000000000000000000000000000000000000000000000000000000000000', expected '9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54'"
+    },
+    {
+      "mutation": "violate_v04_oq01_command_valid",
+      "rejected": true,
+      "simulated_exit_code": 1,
+      "triggered_error": "golden vector V04 command_valid mismatch: got True, expected False"
+    },
+    {
+      "mutation": "corrupt_decode_expected_seq",
+      "rejected": true,
+      "simulated_exit_code": 1,
+      "triggered_error": "DEC-002: decoded header.seq mismatch: 1 != 999"
+    },
+    {
+      "mutation": "corrupt_stream_expected_dispatched_frames",
+      "rejected": true,
+      "simulated_exit_code": 1,
+      "triggered_error": "REC-004: dispatched_frames mismatch: calc 2 != 99"
+    }
+  ],
+  "exit_code": 0
+}
+exit_code: 0
+timestamp: 2026-10-26T16:10:00+08:00

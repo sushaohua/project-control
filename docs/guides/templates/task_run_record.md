@@ -30,7 +30,11 @@ failures_and_corrections: []
 actual_result: not-executed
 unverified: []
 independent_review:
-  reviewer_session: null
+  platform: codex
+  policy: project-control/.agents/rules/codex_qa_review.md
+  planned_session_alias: null
+  reviewer_session: null # 实际落实的会话入口，不填未启动的计划名
+  cli_session_id: null # 通过 CLI 审核时记录真实 ID
   reviewed_artifact_version: null
   report_path: null
   report_sha256: null

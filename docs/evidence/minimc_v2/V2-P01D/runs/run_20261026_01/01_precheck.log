@@ -1,0 +1,6 @@
+$ git -C soc-ap rev-parse HEAD && git -C soc-ap status --porcelain=v1 && git -C test_harness rev-parse HEAD && git -C test_harness status --porcelain=v1
+849135ee69500e7e96ee75eed73c245e1ac94851
+a3cccf17ac0e740352413daeebe20ef89d82f594
+?? static_checks/minimcproto/
+exit_code: 0
+timestamp: 2026-10-26T16:09:52+08:00

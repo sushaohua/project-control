@@ -7,6 +7,7 @@ status: Backlog
 blocked: false
 owner: null
 proposed_owner: ARCH
+qa_review_policy: project-control/.agents/rules/codex_qa_review.md
 reviewer: "现有 MCU Owner"
 verifier: QA
 integrator: INTEGRATOR

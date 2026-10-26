@@ -13,6 +13,10 @@ updated: '2026-10-13 12:25:34'
 
 # 独立 QA 审查清单与过程审计指引 (QA Audit Checklist & Guide)
 
+## 当前审查平台
+
+所有后续独立 QA 审查和验收统一由独立 Codex 会话执行，按 [Codex QA 规则](codex_qa_review.md) 登记实际会话、所审候选与报告哈希。QA 作者报告的独立 ARCH 复核也使用独立 Codex；原作者与实际检查者分开，保留原岗位。AGY 内部自检不能替代 Codex 独立签署，历史签署保留原记录。
+
 > **设计基准**：本指引旨在落实多 Agent 体系下的**司法独立原则**与**双轨审查机制（Dual-Track Audit）**。QA 绝不仅仅是跑测试用例的“测试员”，更是维护项目架构纪律与工程底线的**“过程审计官”**。
 > 本指引直接挂钩 [[AI_SoC_协作方案/human_input|human_input.md]] 与 [[AI_SoC_协作方案/single_ticket_atomic_microstep_design_20261013_113636|单票原子微步设计规范]]。
 

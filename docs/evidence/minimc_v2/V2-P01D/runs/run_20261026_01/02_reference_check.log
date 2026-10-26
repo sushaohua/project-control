@@ -1,0 +1,26 @@
+$ python3 test_harness/static_checks/minimcproto/reference_vectors.py --vectors test_harness/test_cases/minimcproto/vectors.json --check
+{
+  "schema_version": "minimcproto-vectors-v2.0.3-r1",
+  "protocol_sha256": "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54",
+  "golden_frame_count": 5,
+  "total_case_count": 64,
+  "group_counts": {
+    "stub": 4,
+    "crc": 9,
+    "encode": 8,
+    "decode_bounds": 6,
+    "decode": 12,
+    "stream_sync": 5,
+    "stream_header": 5,
+    "stream_payload": 5,
+    "timeout": 6,
+    "recovery": 4
+  },
+  "errors": [],
+  "mode": "check",
+  "vectors_path": "test_harness/test_cases/minimcproto/vectors.json",
+  "vectors_sha256": "6d46bd05a4133e678611abe2ab1cb88db190c394f23151900009c0c077c8d995",
+  "exit_code": 0
+}
+exit_code: 0
+timestamp: 2026-10-26T16:09:56+08:00

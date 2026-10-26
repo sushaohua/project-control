@@ -7,6 +7,7 @@ status: Backlog
 blocked: false
 owner: null
 proposed_owner: INTEGRATOR
+qa_review_policy: project-control/.agents/rules/codex_qa_review.md
 reviewer: ENG-BSP
 verifier: QA
 integrator: INTEGRATOR

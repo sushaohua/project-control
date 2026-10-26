@@ -7,6 +7,7 @@ status: Backlog
 blocked: false
 owner: null
 proposed_owner: "ENG-NET"
+qa_review_policy: project-control/.agents/rules/codex_qa_review.md
 reviewer: "ARCH＋ENG-STATE＋ENG-MQTT"
 verifier: QA
 integrator: INTEGRATOR

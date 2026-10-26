@@ -7,6 +7,7 @@ status: Backlog
 blocked: false
 owner: null
 proposed_owner: "ARCH"
+qa_review_policy: project-control/.agents/rules/codex_qa_review.md
 reviewer: "ENG-DDS＋ENG-DBUS＋ENG-MQTT＋相关业务 Owner"
 verifier: QA
 integrator: INTEGRATOR

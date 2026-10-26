@@ -50,6 +50,12 @@ python3 project-control/tools/check_task_graph.py --workspace . --check-ready V2
 
 ## 独立检查与关闭
 
+用户 2026-10-26 明确要求：后续独立 QA 统一使用 Codex。包括 QA Reviewer、QA Verifier 和 QA 作者产物的独立 ARCH 复核，均遵守 [Codex QA 规则](../../.agents/rules/codex_qa_review.md)。已完成的 P01A/P01B 及原始报告保留原会话，未完成卡引用该规则；作者、其他岗位和硬件条件保持原有分工。
+
+派单时读取 `qa_review_policy`，按条目 `platform: codex` 选择独立 Codex。未启动的任务只登记 `planned_session_alias`，实际 `session` 保持 null；落实会话后由 COORD 填入可定位标识。V2-P01C 保留用户指定别名 `codex-qa-session-01`，审核仍待执行。通过 CLI 运行时保存真实会话 ID 与别名对应关系。结构工具不负责启动 Codex，未接调度脚本时采用主会话启动或人工转交。
+
+独立审查必须核对协议原文、准确交付物哈希与实际日志。报告保存所审版本、真实命令及退出码、过程/结果判据、限制和 APPROVED/REJECTED；COORD 收件并核对候选与报告哈希后再推进状态。退出码 0、报告存在或结构检查通过不能代替签署通过；失败、超时或缺失报告不得释放下一微步。
+
 每张卡的 Reviewer 为必需项。QA 编写独立预期或运行器时，其报告仍由非作者检查。实现作者不能改 `test_harness` 中独立预期促通过，QA 也不能改业务代码促通过；本规则目前由人工核对执行，不声称已有文件系统权限系统。
 
 `Review → Verify → Done` 必须绑定同一准确交付：内容/运行检查结论齐全，实际 COORD 确认收件，代码适用时绑定消费/集成版本。代码实现票的“验证通过”只表示该原子能力；最终 V2-P06B 独立复现、V2-P06C 候选归档分别处理。Done 后再变更接口或代码，按新 revision/复验记录更新适用关系，不能沿用旧通过。
