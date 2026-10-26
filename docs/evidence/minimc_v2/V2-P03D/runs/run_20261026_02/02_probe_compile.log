@@ -1,0 +1,4 @@
+$ mkdir -p /tmp/ai_soc_v2_build/V2-P03D && c++ -std=c++17 -Wall -Wextra -Wpedantic -Werror -I soc-ap/core/forward/minimc soc-ap/tests/protocol/probe.cpp soc-ap/core/forward/minimc/codec.cpp soc-ap/core/forward/minimc/parser.cpp -o /tmp/ai_soc_v2_build/V2-P03D/minimc-probe
+[EXIT_CODE]: 0
+[STDERR]: (empty)
+[STDOUT]: (empty)
