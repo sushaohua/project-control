@@ -128,6 +128,26 @@ def structural_errors(task_id, card, cards, workspace):
     for command in verification.get("commands", []):
         if not all(command.get(field) for field in ["id", "cwd", "command", "expected", "availability"]):
             problems.append("incomplete verification command")
+    cpp_writes = [p for p in flat_paths if p.endswith(".cpp")]
+    cmd_ids = {c.get("id") for c in verification.get("commands", [])}
+    if card.get("task_kind") == "implementation" and cpp_writes:
+        if "header" in cmd_ids or not any("build" in cid or "compile" in cid for cid in cmd_ids):
+            problems.append("cpp implementation task must compile/build cpp target, not header-only check")
+    expected_case_sets = {
+        "V2-P04A": "crc",
+        "V2-P04B": "encode",
+        "V2-P04C": "decode_bounds",
+        "V2-P04D": "decode",
+        "V2-P05A": "stream_sync",
+        "V2-P05B": "stream_header",
+        "V2-P05C": "stream_payload",
+        "V2-P05D": "timeout",
+        "V2-P05E": "recovery",
+    }
+    if task_id in expected_case_sets:
+        expected_flag = "--case-set " + expected_case_sets[task_id]
+        if not any(expected_flag in c.get("command", "") for c in verification.get("commands", [])):
+            problems.append("missing focused_cases command with " + expected_flag)
     sessions = (card.get("review_assignments") or {}).get("reviewer_sessions", [])
     if {item.get("role") for item in sessions} != set(card.get("reviewer", [])):
         problems.append("required reviewer roles differ from assignments")

@@ -1,0 +1,33 @@
+=== Independent Re-Verification Log (Round 2) ===
+Timestamp (UTC+8): 2026-10-26T13:57:13.574156+08:00
+[project-control] HEAD=770bc8433462388132493c3cfca007d5dbf185e0
+[project-control] status --porcelain=v1:
+M .agents/kanban/microtasks/minimc_v2/V2-P05B.md
+ M tools/check_task_graph.py
+?? docs/evidence/20261020_task_orchestration/independent/
+[soc-ap] HEAD=cf2dff40e8b9d7c94b41d01386f287be45afdb4d
+[soc-ap] status --porcelain=v1:
+(clean)
+[mcu-p3] HEAD=14b8057b04030bd659744c874c73ff8f09f29979
+[mcu-p3] status --porcelain=v1:
+(clean)
+[test_harness] HEAD=ad0398e20d3645dbfa37bfd0550ded0828d018b2
+[test_harness] status --porcelain=v1:
+(clean)
+
+[project-control] working tree tracked diff sha256: db0db071ffe29aa4017dc49fe2c7d00e669cc632694b2ef855a1efb4b485511b
+Updated file SHA256: .agents/kanban/microtasks/minimc_v2/V2-P05B.md -> d937a740bd1e7a0b1553198fb2a448ccd984e0a0cbfde9252fb0117475cd0f36
+Updated file SHA256: tools/check_task_graph.py -> 4d56947e496fea6cd69b4c7b41a8192bf7f7eafbb91f402226e0e597a50bf953
+
+V2-P05B revision: 2
+V2-P05B updated: 2026-10-26T13:48:30+08:00
+V2-P05B verification commands:
+  - precheck: git -C soc-ap rev-parse HEAD && git -C soc-ap status --porcelain=v1 && git -C test_harness rev-parse HEAD && git -C test_harness status --porcelain=v1
+  - configure: cmake -S soc-ap -B /tmp/ai_soc_v2_build/V2-P05B -G Ninja -DCMAKE_BUILD_TYPE=Debug
+  - build: cmake --build /tmp/ai_soc_v2_build/V2-P05B
+  - focused_cases: python3 test_harness/static_checks/minimcproto/run_codec_cases.py --vectors test_harness/test_cases/minimcproto/vectors.json --probe /tmp/ai_soc_v2_build/V2-P05B/bin/minimc-probe --case-set stream_header
+  - host_regression: cd /tmp/ai_soc_v2_build/V2-P05B && ctest --output-on-failure -R ^host_runtime_smoke$
+
+Canonical check errors count: 0
+Synthetic old V2-P05B rejection check errors: ['V2-P05B: cpp implementation task must compile/build cpp target, not header-only check', 'V2-P05B: missing focused_cases command with --case-set stream_header']
+Synthetic old V2-P05B rejection check: PASSED (correctly rejected both header-only check and missing --case-set stream_header)

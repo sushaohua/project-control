@@ -14,6 +14,7 @@
 4. 本地 [Rev 2.0.3 采用记录](../specs/protocol_selection_20261020.md)、[协议原文](../specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md)。知识库不是必需输入，原文 V04 长度冲突仍是已知未决项。
 5. TASK-004/005/007/010 的子任务清单和 MS-05/06/07 的新依赖，见[公共看板](../../.agents/kanban/KANBAN.md)及卡链接。
 6. [本批检查与哈希记录](../evidence/20261020_task_orchestration/README.md)，以及 `project-control/tools/check_task_graph.py` 的实际实现。
+7. [串口链路登记](../baseline/serial_links.md)及[MS-01 源码登记](../baseline/ms01_source_inventory_20261020.md)，核对下述架构要求与固件迁移缺口。
 
 先记录 `git -C project-control rev-parse HEAD`、`git -C project-control status --porcelain=v1`，核对 `card_hash_manifest.json` 中的输入哈希。若工作区有差异，明确本次所审的是哪个 commit＋差异/文件哈希组合；不能只写“最新版本”。
 
@@ -41,6 +42,16 @@ python3 project-control/tools/check_task_graph.py --workspace . --check-ready V2
 - 独立预期是否在实现前接受，作者/QA/状态写入/收件是否区分，失败重试与回退是否保留用户差异？
 - 单票记录能否绑定输入、diff/候选、命令、原始日志、失败/修正、独立结论及收件？历史旧卡/旧计划是否确实保留原哈希？
 - 正式状态是否如实保持 Backlog，哪些真实派单条件仍待补？不要把计划结构接受变成“25 张开发任务已经验收”。
+
+## 必须核对的架构要求：原屏幕串口改接 AP
+
+2026-10-26 用户再次明确：新架构将 MC 原连接屏幕的串口改为连接 AP 板，当前由 Linux 虚拟机模拟 AP。这是既有 B0 D25/D26 的重申，接口参数沿用[串口登记](../baseline/serial_links.md)，不要求用户重新选择。
+
+- 当前链路为 VMware Ubuntu AP 程序 → USB 串口直通 `/dev/ttyUSB0` → MC USART2 PA2(TX)/PA3(RX)，115200 8N1、无硬件流控；原迪文屏不再连接 USART2。AP 与真实 MC 经串口通信，AP 主机模拟不等于 MCU 模拟。
+- MC USART2 的接收、DMA 缓冲、IDLE 回调、发送和协议解析须按已选 MiniMCProto v2.0 / Rev 2.0.3 迁移。已有源码登记中的 DGUS/GUI 收发路径是待处理缺口；不能仅凭串口初始化参数正确或物理换线，认定 AP 协议已经接通。审阅时区分历史源码登记与当前实际源码证据。
+- 审核后续任务是否明确覆盖上述迁移、旧屏幕路径的停用及 AP 收发独占，避免 DGUS 解析、屏幕发送或调试输出混入 AP 协议流。MC USART1 调试口不能替代本轮 AP USART2 入口。
+- 双端链路仍须经 AP → MC → TH → MC → AP。MC↔TH 使用 MC USART6 与 TH USART1，921600 8N1、无硬件流控；AP 直访 TH 不能代替该链路验收。
+- 本次仅审查离线增量与后续硬件路线的边界和覆盖。25 张离线微步不承担 USART2 固件迁移或真实通信验收，也不应等待该硬件迁移后才开始；后续迁移应另行细化任务并按其授权执行。报告分别说明“本轮离线编排结论”和“后续串口迁移缺口”，离线测试通过不能作为串口迁移或真实 RTT 已通过的证据。
 
 ## 回交内容
 

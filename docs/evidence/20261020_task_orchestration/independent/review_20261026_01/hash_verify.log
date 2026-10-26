@@ -1,0 +1,39 @@
+=== Independent Hash & Git Verification Log ===
+Timestamp (UTC+8): 2026-10-26T13:40:35.770785+08:00
+[project-control] HEAD=770bc8433462388132493c3cfca007d5dbf185e0
+[project-control] status --porcelain=v1:
+?? docs/evidence/20261020_task_orchestration/independent/
+[soc-ap] HEAD=cf2dff40e8b9d7c94b41d01386f287be45afdb4d
+[soc-ap] status --porcelain=v1:
+(clean)
+[mcu-p3] HEAD=14b8057b04030bd659744c874c73ff8f09f29979
+[mcu-p3] status --porcelain=v1:
+(clean)
+[test_harness] HEAD=ad0398e20d3645dbfa37bfd0550ded0828d018b2
+[test_harness] status --porcelain=v1:
+(clean)
+
+--- project-control recent commits ---
+770bc84 docs: update session handoff and exit checkpoint
+517ba18 chore(control): baseline v2 protocol and offline task workflow
+97b17fb docs: record MCU inputs and prepare workspace handoff
+
+--- project-control diff 517ba18..HEAD --name-status ---
+A	docs/evidence/20261020_session_close/record.json
+M	docs/handoff/HANDOFF_20261020.md
+M	workspace-root/HANDOFF_20261020.md.snapshot
+
+--- card_hash_manifest.json check (80 entries) ---
+517ba18 baseline mismatches: 0
+Current HEAD (770bc84) worktree mismatches: 1
+  DIFF @770bc84: ('workspace-root/HANDOFF_20261020.md.snapshot', 'e4028804aab0466972a75fc2bde3de0bc310d7ebe48f3fc18c87c014335040f3', '18934e1d424028fe270be1fe4b87aa233f221b9ddfcd7c588cc982f19f04710e')
+
+--- 20261020_session_close/record.json check ---
+baseline_commit in record.json: 517ba18dc9b3ecd9893680b60d7bcaf0ff873e18
+  HANDOFF_20261020.md: match=True (18934e1d424028fe270be1fe4b87aa233f221b9ddfcd7c588cc982f19f04710e)
+  project-control/docs/handoff/HANDOFF_20261020.md: match=True (72855bacab46e37a007765d77f18175012b22d5729bec9b3662fb0378f3472f4)
+  project-control/workspace-root/HANDOFF_20261020.md.snapshot: match=True (18934e1d424028fe270be1fe4b87aa233f221b9ddfcd7c588cc982f19f04710e)
+
+--- Historical snapshot check in 20261020_task_audit/inputs/ ---
+Total archived files in inputs/: 43
+Verified 42 historical cards in task_audit.json against inputs/: mismatches=0
