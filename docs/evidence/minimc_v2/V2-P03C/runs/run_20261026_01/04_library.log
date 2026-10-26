@@ -1,0 +1,3 @@
+$ cmake --build /tmp/ai_soc_v2_build/V2-P03C --target minimcproto
+ninja: no work to do.
+[EXIT_CODE]: 0
