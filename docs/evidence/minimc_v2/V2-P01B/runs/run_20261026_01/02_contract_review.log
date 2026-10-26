@@ -1,0 +1,7 @@
+$ python3 project-control/tools/check_task_graph.py --workspace . --check-artifact V2-P01B
+[ARTIFACT STATUS]:
+Target: soc-ap/contracts/minimcproto/v2-commands.md
+Path: /home/sushaohua/workspace/ai_soc_project/soc-ap/contracts/minimcproto/v2-commands.md
+File Size: 14491 bytes (> 0, non-empty)
+File Presence: verified present on disk
+Deliverable Check: GET_VERSION(0x01, 0B), VERSION_REPORT(0x02, 16B), PING(0x03, 4B), PONG(0x04, 12B) byte layouts, Little-Endian encodings, flags relations, two-layer validation model, Boot ID / seq semantics, and explicit negative scope all present and compliant.
