@@ -1,0 +1,12 @@
+$ /tmp/ai_soc_v2_build/V2-P03E/bin/minimc-probe --help && /tmp/ai_soc_v2_build/V2-P03E/bin/minimc-probe --self-check
+minimc_probe: MiniMCProto v2.0 Test Probe Adapter
+protocol_version: 2.0.3
+supported_subcommands: crc, encode, decode, feed, poll, reset
+status: ok
+minimc_probe: MiniMCProto v2.0 Test Probe Adapter
+protocol_version: 2.0.3
+supported_subcommands: crc, encode, decode, feed, poll, reset
+self_check: ok
+backend_state: stub_not_implemented
+status: ok
+[EXIT_CODE]: 0

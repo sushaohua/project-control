@@ -1,0 +1,9 @@
+$ cmake --build /tmp/ai_soc_v2_build/V2-P03E
+[1/7] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o
+[2/7] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o
+[3/7] Linking CXX static library libminimcproto.a
+[4/7] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o
+[5/7] Linking CXX executable bin/soc-ap
+[6/7] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o
+[7/7] Linking CXX executable bin/minimc-probe
+[EXIT_CODE]: 0
