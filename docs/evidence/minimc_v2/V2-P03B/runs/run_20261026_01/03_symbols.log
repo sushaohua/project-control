@@ -1,0 +1,9 @@
+$ nm -C --defined-only /tmp/ai_soc_v2_build/V2-P03B/parser.o
+0000000000000000 T minimc::parser_init(minimc::StreamParser*)
+0000000000000032 T minimc::parser_reset(minimc::StreamParser*)
+0000000000000081 T minimc::parser_feed_byte(minimc::StreamParser*, unsigned char, unsigned int, minimc::FrameView*, bool*)
+0000000000000174 T minimc::parser_poll_timeout(minimc::StreamParser*, unsigned int)
+0000000000000000 W minimc::Bytes::Bytes()
+0000000000000000 W minimc::Bytes::Bytes()
+0000000000000000 n minimc::Bytes::Bytes()
+[EXIT_CODE]: 0
