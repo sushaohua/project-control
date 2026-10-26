@@ -1,0 +1,133 @@
+{
+  "case_set": "encode",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P04B/bin/minimc-probe",
+  "total_cases": 8,
+  "passed_cases": 8,
+  "failed_cases": 0,
+  "failures": [],
+  "results": [
+    {
+      "case_id": "ENC-001",
+      "group": "encode",
+      "operation": "encode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "encoded_len": 14,
+        "raw_hex": "55AA01020501040000000000F91E"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "ENC-002",
+      "group": "encode",
+      "operation": "encode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "encoded_len": 18,
+        "raw_hex": "55AA010305030400010004007856341266B0"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "ENC-003",
+      "group": "encode",
+      "operation": "encode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "encoded_len": 26,
+        "raw_hex": "55AA03010604040001000C007856341280563412100800007F2B"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "ENC-004",
+      "group": "encode",
+      "operation": "encode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "encoded_len": 30,
+        "raw_hex": "55AA020106020400000010000200010001000000A1B2C3D407000000780C"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "ENC-005",
+      "group": "encode",
+      "operation": "encode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "encoded_len": 1038,
+        "crc16_hex": "0x1021",
+        "crc16_le_hex": "2110"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "ENC-006",
+      "group": "encode",
+      "operation": "encode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "mtu_exceeded",
+        "encoded_len": 0
+      },
+      "actual_status": "error",
+      "actual_error_code": "mtu_exceeded",
+      "diffs": []
+    },
+    {
+      "case_id": "ENC-007",
+      "group": "encode",
+      "operation": "encode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "buffer_too_small",
+        "encoded_len": 0
+      },
+      "actual_status": "error",
+      "actual_error_code": "buffer_too_small",
+      "diffs": []
+    },
+    {
+      "case_id": "ENC-008",
+      "group": "encode",
+      "operation": "encode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "invalid_argument",
+        "encoded_len": 0
+      },
+      "actual_status": "error",
+      "actual_error_code": "invalid_argument",
+      "diffs": []
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}
