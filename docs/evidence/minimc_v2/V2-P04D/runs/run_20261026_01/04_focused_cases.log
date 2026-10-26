@@ -1,0 +1,269 @@
+{
+  "case_set": "decode",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P04D/bin/minimc-probe",
+  "total_cases": 12,
+  "passed_cases": 12,
+  "failed_cases": 0,
+  "failures": [],
+  "results": [
+    {
+      "case_id": "DEC-001",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "frame_valid": true,
+        "command_valid": true,
+        "header": {
+          "src_id": 1,
+          "dst_id": 2,
+          "flags": 5,
+          "cmd_id": 1,
+          "hop_limit": 4,
+          "route_ctrl": 0,
+          "seq": 0,
+          "payload_len": 0
+        },
+        "payload_hex": "",
+        "crc16_hex": "0x1EF9"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-002",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "frame_valid": true,
+        "command_valid": true,
+        "header": {
+          "src_id": 1,
+          "dst_id": 3,
+          "flags": 5,
+          "cmd_id": 3,
+          "hop_limit": 4,
+          "route_ctrl": 0,
+          "seq": 1,
+          "payload_len": 4
+        },
+        "payload_hex": "78563412",
+        "crc16_hex": "0xB066"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-003",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "frame_valid": true,
+        "command_valid": true,
+        "header": {
+          "src_id": 1,
+          "dst_id": 3,
+          "flags": 5,
+          "cmd_id": 3,
+          "hop_limit": 3,
+          "route_ctrl": 4,
+          "seq": 1,
+          "payload_len": 4
+        },
+        "payload_hex": "78563412",
+        "crc16_hex": "0x3073"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-004",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "frame_valid": true,
+        "header": {
+          "src_id": 1,
+          "dst_id": 2,
+          "flags": 5,
+          "cmd_id": 49,
+          "hop_limit": 4,
+          "route_ctrl": 0,
+          "seq": 2,
+          "payload_len": 11
+        },
+        "payload_hex": "0100000003000000473238",
+        "crc16_hex": "0xDAA0"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-005",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "frame_valid": true,
+        "command_valid": false,
+        "conflict_id": "OQ-01",
+        "header": {
+          "src_id": 1,
+          "dst_id": 255,
+          "flags": 20,
+          "cmd_id": 18,
+          "hop_limit": 4,
+          "route_ctrl": 0,
+          "seq": 0,
+          "payload_len": 0
+        },
+        "payload_hex": "",
+        "crc16_hex": "0xC13D"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-006",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "frame_valid": true,
+        "command_valid": true,
+        "header": {
+          "src_id": 1,
+          "dst_id": 2,
+          "flags": 5,
+          "cmd_id": 3,
+          "hop_limit": 4,
+          "route_ctrl": 0,
+          "seq": 0,
+          "payload_len": 4
+        },
+        "payload_hex": "000052DC",
+        "crc16_hex": "0x0000"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-007",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "frame_valid": true,
+        "header": {
+          "src_id": 1,
+          "dst_id": 2,
+          "flags": 5,
+          "cmd_id": 49,
+          "hop_limit": 4,
+          "route_ctrl": 0,
+          "seq": 0,
+          "payload_len": 1024
+        },
+        "crc16_hex": "0x1021"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-008",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "bad_sof"
+      },
+      "actual_status": "error",
+      "actual_error_code": "bad_sof",
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-009",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "crc_mismatch"
+      },
+      "actual_status": "error",
+      "actual_error_code": "crc_mismatch",
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-010",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "bad_version"
+      },
+      "actual_status": "error",
+      "actual_error_code": "bad_version",
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-011",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "bad_flags_reserved"
+      },
+      "actual_status": "error",
+      "actual_error_code": "bad_flags_reserved",
+      "diffs": []
+    },
+    {
+      "case_id": "DEC-012",
+      "group": "decode",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "bad_route_ctrl"
+      },
+      "actual_status": "error",
+      "actual_error_code": "bad_route_ctrl",
+      "diffs": []
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}

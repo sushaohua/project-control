@@ -1,0 +1,7 @@
+Test project /tmp/ai_soc_v2_build/V2-P04D
+    Start 1: host_runtime_smoke
+1/1 Test #1: host_runtime_smoke ...............   Passed    0.11 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.11 sec
