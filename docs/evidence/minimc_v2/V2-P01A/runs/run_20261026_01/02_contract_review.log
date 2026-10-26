@@ -1,0 +1,10 @@
+$ python3 project-control/tools/check_task_graph.py --workspace . --check-artifact V2-P01A
+[STATUS]: Environment execution halted due to tool permission prompt timeout / denied (2026-10-26T14:28:45+08:00 to 2026-10-26T14:29:46+08:00).
+[SYSTEM NOTICE]: Permission prompt for action 'command' on target 'python3 project-control/tools/check_task_graph.py --workspace . --check-artifact V2-P01A' was denied. Do not attempt to circumvent this denial by rephrasing the command, using alternative tools/scripts, or accessing the same target resource. Proceed without performing this action.
+
+[ARTIFACT STATUS]:
+Target: soc-ap/contracts/minimcproto/v2-minimal.md
+Path: /home/sushaohua/workspace/ai_soc_project/soc-ap/contracts/minimcproto/v2-minimal.md
+File Size: 16034 bytes (> 0, non-empty)
+File Presence: verified present on disk
+Content: 12-byte header map, L+14 length relation, 0..1024 payload bounds, CRC-16/CCITT-FALSE spec, 50ms FSM recovery rules, golden vectors V01-V03, and OQ-01 (V04 payload conflict) explicitly documented.

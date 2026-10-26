@@ -9,11 +9,11 @@ tags:
 - kanban
 - soc
 - multi-agent
-updated: '2026-10-20 11:26:37'
+updated: '2026-10-26 14:55:00'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
-projection_updated: '2026-10-20 11:26:37'
-execution_mode: 独立会话、人工转交；本轮主对话已运行，独立检查会话待登记
+projection_updated: '2026-10-26 14:55:00'
+execution_mode: 主对话委派子Agent；V2-P01A已完成独立QA闭环并Done
 active_increment: marlin-r2-v2-offline-1
 ---
 
@@ -41,7 +41,7 @@ active_increment: marlin-r2-v2-offline-1
 
 | 分组 | 实际任务 | 当前状态 | 下一步/使用条件 |
 | --- | --- | --- | --- |
-| 契约与独立预期 | V2-P01A～P01D | Backlog | 首张 P01A 从已选本地协议开始；登记作者/独立检查/输入绑定后才能 Ready |
+| 契约与独立预期 | V2-P01A～P01D | InProgress (P01A: Done) | P01A 已通过独立 QA 验收并归档；P01B 可基于 P01A 交付绑定派单 |
 | 接口与测试工具约定 | V2-P02A～P02C | Backlog | 接受帧/命令/样例输入，分别冻结接口 |
 | 桩、构建与探针/运行器 | V2-P03A～P03F | Backlog | 先声明、再桩/编译链接；明确未实现，禁止桩当成功 |
 | CRC/编码/解码 | V2-P04A～P04D | Backlog | 每票单一能力，使用实现前固定的独立预期 |
