@@ -1,0 +1,146 @@
+{
+  "case_set": "crc",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P04A/bin/minimc-probe",
+  "total_cases": 9,
+  "passed_cases": 9,
+  "failed_cases": 0,
+  "failures": [],
+  "results": [
+    {
+      "case_id": "CRC-001",
+      "group": "crc",
+      "operation": "crc",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "crc16_hex": "0x29B1",
+        "crc16_le_hex": "B129"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "CRC-002",
+      "group": "crc",
+      "operation": "crc",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "crc16_hex": "0xFFFF",
+        "crc16_le_hex": "FFFF"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "CRC-003",
+      "group": "crc",
+      "operation": "crc",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "crc16_hex": "0x1EF9",
+        "crc16_le_hex": "F91E"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "CRC-004",
+      "group": "crc",
+      "operation": "crc",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "crc16_hex": "0xB066",
+        "crc16_le_hex": "66B0"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "CRC-005",
+      "group": "crc",
+      "operation": "crc",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "crc16_hex": "0x3073",
+        "crc16_le_hex": "7330"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "CRC-006",
+      "group": "crc",
+      "operation": "crc",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "crc16_hex": "0xDAA0",
+        "crc16_le_hex": "A0DA"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "CRC-007",
+      "group": "crc",
+      "operation": "crc",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "crc16_hex": "0xC13D",
+        "crc16_le_hex": "3DC1"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "CRC-008",
+      "group": "crc",
+      "operation": "crc",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "crc16_hex": "0x0000",
+        "crc16_le_hex": "0000"
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "CRC-009",
+      "group": "crc",
+      "operation": "crc",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "invalid_argument"
+      },
+      "actual_status": "error",
+      "actual_error_code": "invalid_argument",
+      "diffs": []
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}
