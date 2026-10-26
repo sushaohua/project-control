@@ -1,0 +1,96 @@
+{
+  "case_set": "decode_bounds",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P04C/bin/minimc-probe",
+  "total_cases": 6,
+  "passed_cases": 6,
+  "failed_cases": 0,
+  "failures": [],
+  "results": [
+    {
+      "case_id": "DBND-001",
+      "group": "decode_bounds",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "frame_too_short"
+      },
+      "actual_status": "error",
+      "actual_error_code": "frame_too_short",
+      "diffs": []
+    },
+    {
+      "case_id": "DBND-002",
+      "group": "decode_bounds",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "frame_too_short"
+      },
+      "actual_status": "error",
+      "actual_error_code": "frame_too_short",
+      "diffs": []
+    },
+    {
+      "case_id": "DBND-003",
+      "group": "decode_bounds",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "frame_too_short"
+      },
+      "actual_status": "error",
+      "actual_error_code": "frame_too_short",
+      "diffs": []
+    },
+    {
+      "case_id": "DBND-004",
+      "group": "decode_bounds",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "mtu_exceeded"
+      },
+      "actual_status": "error",
+      "actual_error_code": "mtu_exceeded",
+      "diffs": []
+    },
+    {
+      "case_id": "DBND-005",
+      "group": "decode_bounds",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "length_mismatch"
+      },
+      "actual_status": "error",
+      "actual_error_code": "length_mismatch",
+      "diffs": []
+    },
+    {
+      "case_id": "DBND-006",
+      "group": "decode_bounds",
+      "operation": "decode",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "error",
+        "error_code": "length_mismatch"
+      },
+      "actual_status": "error",
+      "actual_error_code": "length_mismatch",
+      "diffs": []
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}
