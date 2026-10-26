@@ -1,0 +1,141 @@
+{
+  "case_set": "stream_payload",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P05C/bin/minimc-probe",
+  "total_cases": 5,
+  "passed_cases": 5,
+  "failed_cases": 0,
+  "failures": [],
+  "results": [
+    {
+      "case_id": "SPLD-001",
+      "group": "stream_payload",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "dispatched_frames": 1,
+        "frames": [
+          {
+            "src_id": 1,
+            "dst_id": 2,
+            "flags": 5,
+            "cmd_id": 1,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 0,
+            "payload_len": 0,
+            "payload_hex": "",
+            "crc16_hex": "0x1EF9"
+          }
+        ]
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SPLD-002",
+      "group": "stream_payload",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "dispatched_frames": 2,
+        "frames": [
+          {
+            "src_id": 1,
+            "dst_id": 3,
+            "flags": 5,
+            "cmd_id": 3,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 1,
+            "payload_len": 4,
+            "payload_hex": "78563412",
+            "crc16_hex": "0xB066"
+          },
+          {
+            "src_id": 1,
+            "dst_id": 3,
+            "flags": 5,
+            "cmd_id": 3,
+            "hop_limit": 3,
+            "route_ctrl": 4,
+            "seq": 1,
+            "payload_len": 4,
+            "payload_hex": "78563412",
+            "crc16_hex": "0x3073"
+          }
+        ]
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SPLD-003",
+      "group": "stream_payload",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "dispatched_frames": 1,
+        "frames": [
+          {
+            "src_id": 1,
+            "dst_id": 2,
+            "flags": 5,
+            "cmd_id": 49,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 0,
+            "payload_len": 1024,
+            "crc16_hex": "0x1021"
+          }
+        ]
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SPLD-004",
+      "group": "stream_payload",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "READ_CRC",
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "SPLD-005",
+      "group": "stream_payload",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_crc_errors_delta": 1,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}

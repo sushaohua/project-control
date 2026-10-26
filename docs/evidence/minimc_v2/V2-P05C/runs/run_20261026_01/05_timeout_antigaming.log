@@ -1,0 +1,183 @@
+{
+  "case_set": "timeout",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P05C/bin/minimc-probe",
+  "total_cases": 6,
+  "passed_cases": 4,
+  "failed_cases": 2,
+  "failures": [
+    {
+      "case_id": "TMO-003",
+      "group": "timeout",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": false,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_timeout_resets_delta": 1,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": [
+        "dispatched_frames: expected 0, got count=1, counter=1",
+        "stat_timeout_resets_delta: expected 1, got 0"
+      ]
+    },
+    {
+      "case_id": "TMO-004",
+      "group": "timeout",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": false,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_timeout_resets_delta": 1,
+        "dispatched_frames": 1,
+        "frames": [
+          {
+            "src_id": 1,
+            "dst_id": 2,
+            "flags": 5,
+            "cmd_id": 1,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 0,
+            "payload_len": 0,
+            "payload_hex": "",
+            "crc16_hex": "0x1EF9"
+          }
+        ]
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": [
+        "dispatched_frames: expected 1, got count=0, counter=0",
+        "stat_timeout_resets_delta: expected 1, got 0",
+        "frames length: expected 1, got 0"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "case_id": "TMO-001",
+      "group": "timeout",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_timeout_resets_delta": 0,
+        "dispatched_frames": 1
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "TMO-002",
+      "group": "timeout",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_timeout_resets_delta": 0,
+        "dispatched_frames": 1
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "TMO-003",
+      "group": "timeout",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": false,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_timeout_resets_delta": 1,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": [
+        "dispatched_frames: expected 0, got count=1, counter=1",
+        "stat_timeout_resets_delta: expected 1, got 0"
+      ]
+    },
+    {
+      "case_id": "TMO-004",
+      "group": "timeout",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": false,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_timeout_resets_delta": 1,
+        "dispatched_frames": 1,
+        "frames": [
+          {
+            "src_id": 1,
+            "dst_id": 2,
+            "flags": 5,
+            "cmd_id": 1,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 0,
+            "payload_len": 0,
+            "payload_hex": "",
+            "crc16_hex": "0x1EF9"
+          }
+        ]
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": [
+        "dispatched_frames: expected 1, got count=0, counter=0",
+        "stat_timeout_resets_delta: expected 1, got 0",
+        "frames length: expected 1, got 0"
+      ]
+    },
+    {
+      "case_id": "TMO-005",
+      "group": "timeout",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_timeout_resets_delta": 0,
+        "dispatched_frames": 1
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "TMO-006",
+      "group": "timeout",
+      "operation": "poll",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_timeout_resets_delta": 0,
+        "dispatched_frames": 0
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    }
+  ],
+  "status": "error",
+  "exit_code": 1
+}
