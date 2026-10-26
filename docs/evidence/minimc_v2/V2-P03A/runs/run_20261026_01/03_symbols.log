@@ -1,0 +1,8 @@
+$ nm -C --defined-only /tmp/ai_soc_v2_build/V2-P03A/codec.o
+0000000000000000 T minimc::calc_crc16(minimc::Bytes)
+000000000000006b T minimc::decode_frame(minimc::Bytes, minimc::FrameView*)
+0000000000000020 T minimc::encode_frame(minimc::FrameHeader const&, minimc::Bytes, minimc::MutableBytes, unsigned long*)
+0000000000000000 W minimc::Bytes::Bytes()
+0000000000000000 W minimc::Bytes::Bytes()
+0000000000000000 n minimc::Bytes::Bytes()
+[EXIT_CODE]: 0

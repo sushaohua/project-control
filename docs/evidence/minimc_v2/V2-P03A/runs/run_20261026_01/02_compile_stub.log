@@ -1,0 +1,4 @@
+$ mkdir -p /tmp/ai_soc_v2_build/V2-P03A && c++ -std=c++17 -Wall -Wextra -Wpedantic -Werror -I soc-ap/core/forward/minimc -c soc-ap/core/forward/minimc/codec.cpp -o /tmp/ai_soc_v2_build/V2-P03A/codec.o
+[EXIT_CODE]: 0
+[STDERR]: (empty)
+[STDOUT]: (empty)

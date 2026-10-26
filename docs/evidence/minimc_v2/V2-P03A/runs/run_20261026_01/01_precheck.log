@@ -1,0 +1,4 @@
+$ git -C soc-ap rev-parse HEAD && git -C soc-ap status --porcelain=v1 && git -C test_harness rev-parse HEAD && git -C test_harness status --porcelain=v1
+8a8d35a00c70de9faf65d9991491d2f5a41edb16
+59d2320663dd7ef4a080272d624f831684935c34
+[EXIT_CODE]: 0
