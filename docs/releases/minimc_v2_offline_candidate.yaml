@@ -1,0 +1,70 @@
+candidate_id: minimc-v2-offline-candidate-20261027-01
+release_tag: v2.0.3-offline-rc1
+created: '2026-10-27T09:50:00+08:00'
+scope:
+  description: MiniMCProto v2.0 离线协议栈候选版本，包含编码、解码、流式解析状态机、超时与自愈恢复
+  capability: offline-host-library-and-validation
+  hardware_bound: false
+
+repositories:
+  soc-ap:
+    base_commit: 79be851016c62e31b041700b4cd200a488a8eade
+    artifacts:
+      - core/forward/minimc/codec.h
+      - core/forward/minimc/codec.cpp
+      - core/forward/minimc/parser.h
+      - core/forward/minimc/parser.cpp
+      - CMakeLists.txt
+  test_harness:
+    commit: 5a2ebe49e26ffb76a55ab74de652142ce9961de7
+    artifacts:
+      - test_cases/minimcproto/vectors.json
+      - static_checks/minimcproto/run_codec_cases.py
+      - static_checks/minimcproto/reference_vectors.py
+  project-control:
+    commit: 92ca46d485bfaa8065fdabc994c75a88dcad16bd
+
+protocol:
+  specification: project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md
+  revision: 2.0.3
+  sha256: 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
+  icd_version: MiniMCProto v2.0 Rev 2.0.3
+
+verification:
+  test_environment: local-linux-host
+  compiler: g++ 9.4.0 (C++17)
+  build_system: CMake 3.16+ / Ninja (Debug)
+  ctest_suite:
+    total_targets: 11
+    targets:
+      - host_runtime_smoke
+      - minimc_reference
+      - minimc_crc
+      - minimc_encode
+      - minimc_decode_bounds
+      - minimc_decode
+      - minimc_stream_sync
+      - minimc_stream_header
+      - minimc_stream_payload
+      - minimc_timeout
+      - minimc_recovery
+    all_passed: true
+  test_vectors_count: 60
+  coding_standard: project-control/.agents/rules/c_cpp_coding_standard.md
+  coding_standard_compliance:
+    max_function_lines: 48 (<= 50)
+    max_function_parameters: 4 (<= 4)
+    zero_heap_allocation: true
+
+limitations:
+  - 仅包含离线主机库与流式解析验证，未接入物理 UART/SPI/以太网硬件链路
+  - 未包含双 MCU 固件 (mcu-p3) 联调与真实急停 (E-Stop) 引脚动作验证
+  - V04 协议急停语义冲突待后续里程碑在线联合闭环解决
+
+handoff:
+  producer_role: ENG-FWD
+  producer_session: 1c634be7-4be2-4743-af02-dc8ada31bad3
+  receiver_role: COORD
+  receiver_session: 9e5411f4-acad-421e-b487-9e68b9483320
+  task_id: V2-P0506
+  evidence_location: project-control/docs/evidence/minimc_v2/V2-P0506/runs/run_20261027_01/

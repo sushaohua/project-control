@@ -1,0 +1,14 @@
+Test project /tmp/ai_soc_v2_build/V2-P0506
+  Test  #1: host_runtime_smoke
+  Test  #2: minimc_reference
+  Test  #3: minimc_crc
+  Test  #4: minimc_encode
+  Test  #5: minimc_decode_bounds
+  Test  #6: minimc_decode
+  Test  #7: minimc_stream_sync
+  Test  #8: minimc_stream_header
+  Test  #9: minimc_stream_payload
+  Test #10: minimc_timeout
+  Test #11: minimc_recovery
+
+Total Tests: 11

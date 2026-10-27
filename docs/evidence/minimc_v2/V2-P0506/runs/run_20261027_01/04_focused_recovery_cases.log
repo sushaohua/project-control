@@ -1,0 +1,144 @@
+{
+  "case_set": "recovery",
+  "probe_path": "/tmp/ai_soc_v2_build/V2-P0506/bin/minimc-probe",
+  "total_cases": 4,
+  "passed_cases": 4,
+  "failed_cases": 0,
+  "failures": [],
+  "results": [
+    {
+      "case_id": "REC-001",
+      "group": "recovery",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_crc_errors_delta": 1,
+        "dispatched_frames": 1,
+        "frames": [
+          {
+            "src_id": 1,
+            "dst_id": 2,
+            "flags": 5,
+            "cmd_id": 1,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 0,
+            "payload_len": 0,
+            "payload_hex": "",
+            "crc16_hex": "0x1EF9"
+          }
+        ]
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "REC-002",
+      "group": "recovery",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "err_mtu_delta": 1,
+        "dispatched_frames": 1,
+        "frames": [
+          {
+            "src_id": 1,
+            "dst_id": 3,
+            "flags": 5,
+            "cmd_id": 3,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 1,
+            "payload_len": 4,
+            "payload_hex": "78563412",
+            "crc16_hex": "0xB066"
+          }
+        ]
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "REC-003",
+      "group": "recovery",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "dispatched_frames": 1,
+        "frames": [
+          {
+            "src_id": 1,
+            "dst_id": 2,
+            "flags": 5,
+            "cmd_id": 1,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 0,
+            "payload_len": 0,
+            "payload_hex": "",
+            "crc16_hex": "0x1EF9"
+          }
+        ]
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    },
+    {
+      "case_id": "REC-004",
+      "group": "recovery",
+      "operation": "feed",
+      "exit_code": 0,
+      "passed": true,
+      "expected": {
+        "status": "ok",
+        "final_state": "WAIT_SOF1",
+        "stat_crc_errors_delta": 1,
+        "stat_timeout_resets_delta": 1,
+        "dispatched_frames": 2,
+        "frames": [
+          {
+            "src_id": 1,
+            "dst_id": 2,
+            "flags": 5,
+            "cmd_id": 1,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 0,
+            "payload_len": 0,
+            "payload_hex": "",
+            "crc16_hex": "0x1EF9"
+          },
+          {
+            "src_id": 1,
+            "dst_id": 2,
+            "flags": 5,
+            "cmd_id": 49,
+            "hop_limit": 4,
+            "route_ctrl": 0,
+            "seq": 2,
+            "payload_len": 11,
+            "payload_hex": "0100000003000000473238",
+            "crc16_hex": "0xDAA0"
+          }
+        ]
+      },
+      "actual_status": "ok",
+      "actual_error_code": null,
+      "diffs": []
+    }
+  ],
+  "status": "ok",
+  "exit_code": 0
+}
