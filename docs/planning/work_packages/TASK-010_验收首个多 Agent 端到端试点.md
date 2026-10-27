@@ -33,7 +33,6 @@ child_tasks:
 - MS-17
 - MS-19
 - MS-22
-- V2-P06B
 planning_relations:
 - MS-06
 - MS-08

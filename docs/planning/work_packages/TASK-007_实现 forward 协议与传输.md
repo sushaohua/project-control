@@ -46,10 +46,7 @@ child_tasks:
 - V2-P04D
 - V2-P05A
 - V2-P05B
-- V2-P05C
-- V2-P05D
-- V2-P05E
-- V2-P06A
+- V2-P0506
 planning_relations:
 - MS-05
 - MS-06

@@ -33,7 +33,6 @@ child_tasks:
 - MS-18
 - MS-20
 - MS-21
-- V2-P06C
 planning_relations: []
 related_tasks: []
 ---

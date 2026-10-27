@@ -143,6 +143,7 @@ def structural_errors(task_id, card, cards, workspace):
         "V2-P05C": "stream_payload",
         "V2-P05D": "timeout",
         "V2-P05E": "recovery",
+        "V2-P0506": "recovery",
     }
     if task_id in expected_case_sets:
         expected_flag = "--case-set " + expected_case_sets[task_id]
@@ -204,7 +205,7 @@ def artifact_check(card, workspace):
             hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
             if not path.stat().st_size:
                 issues.append("declared deliverable empty: " + name)
-    if card["id"] == "V2-P06C" and hashes:
+    if card["id"] in {"V2-P06C", "V2-P0506"} and hashes:
         path = workspace / "project-control/docs/releases/minimc_v2_offline_candidate.yaml"
         candidate = yaml.safe_load(path.read_text())
         for field in ["candidate_id", "scope", "repositories", "protocol", "verification", "limitations", "handoff"]:
