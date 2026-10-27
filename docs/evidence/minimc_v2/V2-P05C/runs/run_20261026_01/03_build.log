@@ -1,7 +1,3 @@
-[1/7] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o
-[2/7] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o
-[3/7] Linking CXX static library libminimcproto.a
-[4/7] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o
-[5/7] Linking CXX executable bin/soc-ap
-[6/7] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o
-[7/7] Linking CXX executable bin/minimc-probe
+[1/3] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o
+[2/3] Linking CXX static library libminimcproto.a
+[3/3] Linking CXX executable bin/minimc-probe
