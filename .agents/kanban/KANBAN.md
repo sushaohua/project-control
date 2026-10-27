@@ -72,7 +72,7 @@ active_increment: marlin-r2-v2-offline-1
 | [MS-12 交接真实 TH 与既有业务协议](milestones/marlin_ms12_20261007_214108.md) | ARCH | MS-01 | Backlog | 复核 MC/TH 定制源码、USART6 业务接口、来源与一个只读代理用例，登记双向代理缺口。 |
 | [MS-13 核查真实板间 USART6 通信条件](milestones/marlin_ms13_20261007_214108.md) | ENG-MC | MS-12, MS-02 | Backlog | 对照原理图、两端配置和可取得的只读轨迹，核对 MC USART6 与 TH USART1 参数、引脚、帧边界与接收处理。 |
 | [MS-19 准备真实 TH 独立验收预期](milestones/marlin_ms19_20261008_083854.md) | QA | MS-12, MS-13 | Backlog | 在 MC/TH 代理实现前定义真实从控正常、不支持、单端失联/恢复与旧回复预期。 |
-| [MS-14 接通 MC 到 TH 双向业务代理](milestones/marlin_ms14_20261007_214108.md) | ENG-MC | MS-05, MS-12, MS-13, MS-11, MS-19 | Backlog | 按接受的板间业务约定实现 MC 请求转发、TH 回传消费、来源与错误返回；配合 ENG-TH 提供真实只读业务入口。 |
+| [MS-14 接通 MC 到 TH 双向业务代理](milestones/marlin_ms14_20261007_214108.md) | ENG-MC | MS-07 | In Progress (MCQ-0106) | 实现 MC 路由转发 TH 请求 (USART6/USART1) 并原路封装回传 MiniMCProto 响应帧。 |
 | [MS-15 接入经 MC 返回的 TH 状态](milestones/marlin_ms15_20261007_214108.md) | ENG-FWD | MS-07, MS-14, MS-19 | Backlog | 只经 MC 公开接口解析真实 TH 状态和错误，分别记录 MC 与 TH 有效性。 |
 | [MS-16 提供 TH 单端故障场景](milestones/marlin_ms16_20261007_214108.md) | ENG-SIM | MS-14, MS-19 | Backlog | 按 MS-19 提供真实 TH 单端不回复/断开/恢复场景并保留 MC 可观察；离线故障工具单列。 |
 | [MS-21 准备真实双端验收候选](milestones/marlin_ms21_20261008_083854.md) | INTEGRATOR | MS-11, MS-15, MS-16, MS-19 | Backlog | 锁定已通过主控基础、真实 TH/MC 代理、FWD 和故障工具，交双端候选。 |
