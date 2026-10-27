@@ -31,6 +31,21 @@ child_tasks:
 - MS-13
 - MS-14
 - MS-16
+- MCQ-0106
+- CR-00
+- CR-01
+- CR-02
+- CR-02Q
+- CR-02T
+- CR-03
+- CR-04
+- CR-05
+- CR-06
+- CR-07
+- CR-08
+- CR-09
+- CR-10
+- CR-11
 planning_relations: []
 related_tasks:
 - MS-19

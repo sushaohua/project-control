@@ -36,6 +36,7 @@ child_tasks:
 - V2-P01C
 - V2-P01D
 - V2-P02C
+- MCQ-0105
 planning_relations: []
 related_tasks:
 - MS-12

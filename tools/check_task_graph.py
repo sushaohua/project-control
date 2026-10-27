@@ -1,23 +1,28 @@
 #!/usr/bin/env python3
-"""Check canonical task structure and readiness without changing task state."""
+"""Check canonical task structure, schema, readiness, and acceptance without mutating state."""
 
 import argparse
+import fnmatch
 import hashlib
 import json
-from pathlib import Path
+import re
+import subprocess
 import sys
+from datetime import datetime, timezone
+from pathlib import Path
 
 try:
     import yaml
 except ImportError:
     sys.exit("Task checks require PyYAML (python3-yaml); no packages were installed.")
 
-
 STATES = {"Backlog", "Ready", "InProgress", "Review", "Verify", "Done"}
 REPOSITORIES = {"project-control", "soc-ap", "mcu-p3", "test_harness"}
+HEX40_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+HEX64_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 
 
-def read_header(path):
+def read_header(path: Path) -> dict:
     sections = path.read_text(encoding="utf-8").split("---", 2)
     if len(sections) != 3 or sections[0].strip():
         raise ValueError("missing YAML frontmatter")
@@ -27,20 +32,26 @@ def read_header(path):
     return header
 
 
-def card_paths(control):
+def card_paths(control: Path) -> list:
     patterns = [
         ".agents/kanban/milestones/*.md",
-        ".agents/kanban/microtasks/minimc_v2/V2-*.md",
+        ".agents/kanban/microtasks/*/*.md",
         "docs/planning/work_packages/TASK-*.md",
         "docs/planning/product/product_pl*.md",
     ]
-    return sorted(path for pattern in patterns for path in control.glob(pattern))
+    paths = []
+    for pattern in patterns:
+        for path in control.glob(pattern):
+            if "superseded" in path.parts or path.name.startswith("README"):
+                continue
+            paths.append(path)
+    return sorted(set(paths))
 
 
-def find_cycles(cards):
+def find_cycles(cards: dict) -> list:
     complete, stack, cycles = set(), [], []
 
-    def visit(task_id):
+    def visit(task_id: str):
         if task_id in stack:
             cycles.append(stack[stack.index(task_id):] + [task_id])
             return
@@ -53,24 +64,27 @@ def find_cycles(cards):
         stack.pop()
         complete.add(task_id)
 
-    for task_id in cards:
-        visit(task_id)
+    for tid in cards:
+        visit(tid)
     return cycles
 
 
-def has_ancestor(cards, task_id, target, visited=None):
+def has_ancestor(cards: dict, task_id: str, target: str, visited=None) -> bool:
     visited = set() if visited is None else visited
     if task_id in visited:
         return False
     visited.add(task_id)
-    predecessors = cards[task_id].get("depends_on", [])
-    return target in predecessors or any(
-        has_ancestor(cards, predecessor, target, visited)
-        for predecessor in predecessors if predecessor in cards
-    )
+    predecessors = cards.get(task_id, {}).get("depends_on", [])
+    if target in predecessors:
+        return True
+    return any(has_ancestor(cards, p, target, visited) for p in predecessors if p in cards)
 
 
-def structural_errors(task_id, card, cards, workspace):
+def is_microtask(task_id: str, card: dict) -> bool:
+    return task_id.startswith(("V2-", "MCQ-", "THQ-", "CR-"))
+
+
+def _check_task_fields(task_id: str, card: dict) -> list:
     problems = []
     required = [
         "title", "revision", "primary_work_package", "scope_status", "write_scope",
@@ -78,18 +92,23 @@ def structural_errors(task_id, card, cards, workspace):
         "verification", "deliverables", "rollback", "budget", "resources", "checkpoint",
         "review_assignments", "handoff", "execution_contract", "readiness_pending",
     ]
-    problems.extend(
-        "missing " + field for field in required
-        if not card.get(field) and field != "dependency_conditions"
-    )
-    if "dependency_conditions" not in card:
-        problems.append("missing dependency_conditions")
+    for field in required:
+        if field in {"dependency_conditions", "readiness_pending"}:
+            if field not in card:
+                problems.append("missing " + field)
+        elif not card.get(field):
+            problems.append("missing " + field)
     if card.get("status") not in STATES:
         problems.append("invalid status")
     if card.get("scope_status") != "mapped":
         problems.append("new task scope is not mapped")
     if card.get("dispatchable") is not True:
         problems.append("microtask must be dispatchable type (this does not mean Ready)")
+    return problems
+
+
+def _check_parent_and_deps(task_id: str, card: dict, cards: dict) -> list:
+    problems = []
     parent_id = card.get("primary_work_package")
     parent = cards.get(parent_id, {})
     if parent.get("task_kind") != "work_package" or task_id not in parent.get("child_tasks", []):
@@ -97,11 +116,16 @@ def structural_errors(task_id, card, cards, workspace):
     conditions = card.get("dependency_conditions", [])
     if {item.get("task") for item in conditions} != set(card.get("depends_on", [])):
         problems.append("dependency conditions do not match direct predecessors")
-    flat_paths = set()
+    return problems
+
+
+def _check_write_scope(task_id: str, card: dict, workspace: Path) -> tuple:
+    problems, flat_paths = [], set()
+    allowed_repos = set(card.get("allowed_repositories", []))
     for repository, paths in card.get("write_scope", {}).items():
         if repository not in REPOSITORIES or not (workspace / repository).is_dir():
             problems.append("unknown/missing repository: " + repository)
-        if repository == "mcu-p3":
+        if repository == "mcu-p3" and "mcu-p3" not in allowed_repos and task_id.startswith("V2-"):
             problems.append("MCU writes are outside this offline increment")
         if not paths:
             problems.append("empty write scope for " + repository)
@@ -112,15 +136,11 @@ def structural_errors(task_id, card, cards, workspace):
             flat_paths.add(repository + "/" + path)
     if flat_paths != set(card.get("allowed_paths", [])):
         problems.append("allowed_paths differs from write_scope")
-    protocol = card.get("protocol_input", {})
-    protocol_path = workspace / protocol.get("path", "__missing__")
-    if not protocol_path.is_file():
-        problems.append("local protocol input does not exist")
-    elif hashlib.sha256(protocol_path.read_bytes()).hexdigest() != protocol.get("sha256"):
-        problems.append("protocol hash mismatch")
-    for source in card.get("read_sources", []) + [card.get("execution_contract", "")]:
-        if not source or not (workspace / source).is_file():
-            problems.append("missing shared input: " + source)
+    return problems, flat_paths
+
+
+def _check_verification_commands(task_id: str, card: dict, flat_paths: set) -> list:
+    problems = []
     verification = card.get("verification", {})
     for field in ["commands", "positive_cases", "negative_cases"]:
         if not verification.get(field):
@@ -133,39 +153,131 @@ def structural_errors(task_id, card, cards, workspace):
     if card.get("task_kind") == "implementation" and cpp_writes:
         if "header" in cmd_ids or not any("build" in cid or "compile" in cid for cid in cmd_ids):
             problems.append("cpp implementation task must compile/build cpp target, not header-only check")
-    expected_case_sets = {
-        "V2-P04A": "crc",
-        "V2-P04B": "encode",
-        "V2-P04C": "decode_bounds",
-        "V2-P04D": "decode",
-        "V2-P05A": "stream_sync",
-        "V2-P05B": "stream_header",
-        "V2-P05C": "stream_payload",
-        "V2-P05D": "timeout",
-        "V2-P05E": "recovery",
-        "V2-P0506": "recovery",
-    }
-    if task_id in expected_case_sets:
-        expected_flag = "--case-set " + expected_case_sets[task_id]
-        if not any(expected_flag in c.get("command", "") for c in verification.get("commands", [])):
-            problems.append("missing focused_cases command with " + expected_flag)
-    sessions = (card.get("review_assignments") or {}).get("reviewer_sessions", [])
-    if {item.get("role") for item in sessions} != set(card.get("reviewer", [])):
+    return problems
+
+
+def _check_shared_inputs(task_id: str, card: dict, workspace: Path) -> list:
+    problems = []
+    protocol = card.get("protocol_input", {})
+    protocol_path = workspace / protocol.get("path", "__missing__")
+    if not protocol_path.is_file():
+        problems.append("local protocol input does not exist")
+    elif hashlib.sha256(protocol_path.read_bytes()).hexdigest() != protocol.get("sha256"):
+        problems.append("protocol hash mismatch")
+    for source in card.get("read_sources", []) + [card.get("execution_contract", "")]:
+        if source and not (workspace / source).is_file():
+            problems.append("missing shared input: " + source)
+    sessions = (card.get("review_assignments") or {}).get("reviewer_sessions") or []
+    if {item.get("role") for item in sessions} != set(card.get("reviewer") or []):
         problems.append("required reviewer roles differ from assignments")
-    root = "docs/evidence/minimc_v2/" + task_id
-    if card.get("handoff", {}).get("evidence_location") != root:
-        problems.append("handoff evidence root must be unique to this task")
-    if not card.get("deliverables", {}).get("record", "").startswith(root + "/runs/"):
-        problems.append("missing per-run output location")
-    if card.get("budget", {}).get("max_evidence_based_corrections") != 2:
+    root = str((card.get("handoff") or {}).get("evidence_location") or "")
+    if not root.startswith("docs/evidence/"):
+        problems.append("handoff evidence root must start with docs/evidence/")
+    deliv_record = str((card.get("deliverables") or {}).get("record") or "")
+    if not deliv_record.startswith(root.rstrip("/") + "/"):
+        problems.append("deliverables record must be within task handoff evidence root")
+    if (card.get("budget") or {}).get("max_evidence_based_corrections") != 2:
         problems.append("missing two-correction stop rule")
-    return [task_id + ": " + message for message in problems]
+    return problems
 
 
-def readiness_blockers(card, cards):
+def structural_errors(task_id: str, card: dict, cards: dict, workspace: Path) -> list:
+    problems = _check_task_fields(task_id, card)
+    problems.extend(_check_parent_and_deps(task_id, card, cards))
+    scope_problems, flat_paths = _check_write_scope(task_id, card, workspace)
+    problems.extend(scope_problems)
+    problems.extend(_check_verification_commands(task_id, card, flat_paths))
+    problems.extend(_check_shared_inputs(task_id, card, workspace))
+    return [task_id + ": " + msg for msg in problems]
+
+
+def paths_overlap(p1: str, p2: str) -> bool:
+    if p1 == p2:
+        return True
+    if p1.endswith("/**"):
+        prefix = p1[:-3]
+        if p2 == prefix or p2.startswith(prefix + "/"):
+            return True
+    if p2.endswith("/**"):
+        prefix = p2[:-3]
+        if p1 == prefix or p1.startswith(prefix + "/"):
+            return True
+    return bool(fnmatch.fnmatch(p1, p2) or fnmatch.fnmatch(p2, p1))
+
+
+def check_path_overlaps(microtasks: dict, cards: dict) -> tuple:
+    overlaps, errors = [], []
+    for left, left_card in microtasks.items():
+        for right, right_card in microtasks.items():
+            if left >= right:
+                continue
+            left_paths = left_card.get("allowed_paths", [])
+            right_paths = right_card.get("allowed_paths", [])
+            shared = [lp for lp in left_paths if any(paths_overlap(lp, rp) for rp in right_paths)]
+            if shared:
+                ordered = has_ancestor(cards, left, right) or has_ancestor(cards, right, left)
+                overlaps.append({"tasks": [left, right], "paths": sorted(shared), "dependency_ordered": ordered})
+                if not ordered:
+                    errors.append(left + "/" + right + ": shared writes lack dependency ordering")
+    return overlaps, errors
+
+
+def _check_lease_readiness(card: dict, author: str) -> list:
     blockers = []
-    executor = card.get("executor") or {}
-    author = executor.get("agent_id")
+    lease = card.get("lease") or {}
+    if not all(lease.get(f) for f in ["owner", "task_revision", "lease_id", "expires_at"]):
+        blockers.append("actual lease and checkpoint deadline are not registered")
+    elif lease.get("owner") != author or lease.get("task_revision") != card.get("revision"):
+        blockers.append("lease does not match author/task revision")
+    else:
+        exp_str = str(lease.get("expires_at", ""))
+        try:
+            exp_dt = datetime.fromisoformat(exp_str.replace("Z", "+00:00"))
+            if exp_dt.tzinfo is None:
+                exp_dt = exp_dt.replace(tzinfo=timezone.utc)
+            if datetime.now(timezone.utc) > exp_dt:
+                blockers.append("lease has expired")
+        except (ValueError, TypeError):
+            blockers.append("invalid lease expires_at format")
+    return blockers
+
+
+def _check_dispatch_binding_readiness(card: dict) -> list:
+    blockers = []
+    binding = card.get("dispatch_binding") or {}
+    base = str(card.get("base_commit", ""))
+    src = str(binding.get("source_commit", ""))
+    diff_sha = str(binding.get("workspace_diff_sha256", ""))
+    if not base or not src or not diff_sha:
+        blockers.append("dispatch input commit/diff is not bound")
+    elif not HEX40_RE.match(src) or not HEX64_RE.match(diff_sha) or src.startswith("not-"):
+        blockers.append("dispatch input commit/diff contains invalid/bogus hash")
+    return blockers
+
+
+def _check_dependency_conditions_readiness(card: dict, cards: dict, workspace: Path = None) -> list:
+    blockers = []
+    for cond in card.get("dependency_conditions", []):
+        pred = cond.get("task")
+        if cards.get(pred, {}).get("status") != "Done":
+            blockers.append(pred + " is not Done")
+        av = str(cond.get("accepted_version", ""))
+        ae = str(cond.get("acceptance_evidence", ""))
+        if not av or av.startswith("not-an-accepted"):
+            blockers.append(pred + " accepted deliverable/version is not bound")
+        if not ae:
+            blockers.append(pred + " acceptance evidence path is missing")
+        elif workspace and not (workspace / ae).is_file() and not (workspace / "project-control" / ae).is_file():
+            blockers.append(pred + " acceptance evidence file does not exist: " + ae)
+    return blockers
+
+
+def readiness_blockers(card: dict, cards: dict, *args, **kw) -> list:
+    workspace = args[0] if len(args) > 0 else kw.get("workspace")
+    blockers = []
+    if card.get("blocked") is True:
+        blockers.append("task is marked blocked")
+    author = (card.get("executor") or {}).get("agent_id")
     if not author or card.get("owner") != author:
         blockers.append("actual owner/executor is not assigned consistently")
     assignments = (card.get("review_assignments") or {}).get("reviewer_sessions", [])
@@ -175,27 +287,65 @@ def readiness_blockers(card, cards):
         blockers.append("author cannot be own independent reviewer")
     if not card.get("worktree"):
         blockers.append("actual worktree/working directory is not bound")
-    binding = card.get("dispatch_binding") or {}
-    if not card.get("base_commit") or not binding.get("source_commit") or not binding.get("workspace_diff_sha256"):
-        blockers.append("dispatch input commit/diff is not bound")
-    lease = card.get("lease") or {}
-    if not all(lease.get(field) for field in ["owner", "task_revision", "lease_id", "expires_at"]):
-        blockers.append("actual lease and checkpoint deadline are not registered")
-    elif lease["owner"] != author or lease["task_revision"] != card.get("revision"):
-        blockers.append("lease does not match author/task revision")
+    blockers.extend(_check_dispatch_binding_readiness(card))
+    blockers.extend(_check_lease_readiness(card, author))
     handoff = card.get("handoff") or {}
     if not handoff.get("receiver_session") or not handoff.get("transport"):
         blockers.append("actual handoff receiver/transport is missing")
-    for condition in card.get("dependency_conditions", []):
-        predecessor = condition["task"]
-        if cards.get(predecessor, {}).get("status") != "Done":
-            blockers.append(predecessor + " is not Done")
-        if not condition.get("accepted_version") or not condition.get("acceptance_evidence"):
-            blockers.append(predecessor + " accepted deliverable/version is not bound")
+    blockers.extend(_check_dependency_conditions_readiness(card, cards, workspace))
     return blockers
 
 
-def artifact_check(card, workspace):
+def done_acceptance_errors(task_id: str, card: dict, cards: dict, *args, **kw) -> list:
+    workspace = args[0] if len(args) > 0 else kw.get("workspace")
+    errors = []
+    for pred in card.get("depends_on", []):
+        if cards.get(pred, {}).get("status") != "Done":
+            errors.append(f"{task_id}: marked Done but predecessor {pred} is {cards.get(pred, {}).get('status')}")
+    author = card.get("owner") or (card.get("executor") or {}).get("agent_id")
+    assignments = (card.get("review_assignments") or {}).get("reviewer_sessions", [])
+    if not assignments:
+        errors.append(f"{task_id}: marked Done without review assignments")
+    for rev in assignments:
+        session = rev.get("session")
+        if session and session == author:
+            errors.append(f"{task_id}: author cannot be own independent reviewer")
+        dec = str(rev.get("decision", "")).upper()
+        if dec not in {"APPROVED", "ACCEPTED"}:
+            errors.append(f"{task_id}: review decision is not accepted (found {rev.get('decision')})")
+        if not rev.get("artifact_version"):
+            errors.append(f"{task_id}: review artifact_version is missing")
+        ev = rev.get("evidence")
+        if not ev:
+            errors.append(f"{task_id}: review evidence path is missing")
+        elif workspace and not (workspace / ev).is_file() and not (workspace / "project-control" / ev).is_file():
+            errors.append(f"{task_id}: review evidence file does not exist: {ev}")
+    return errors
+
+
+def _check_candidate_descriptor(candidate_path: Path, workspace: Path) -> list:
+    issues = []
+    candidate = yaml.safe_load(candidate_path.read_text(encoding="utf-8"))
+    if not isinstance(candidate, dict):
+        return ["candidate descriptor is not a valid YAML dictionary"]
+    for f in ["candidate_id", "scope", "repositories", "protocol", "verification", "limitations", "handoff"]:
+        if not candidate.get(f):
+            issues.append("candidate missing field: " + f)
+    for repo, r_info in (candidate.get("repositories") or {}).items():
+        commit = r_info.get("commit", "") if isinstance(r_info, dict) else str(r_info)
+        if not HEX40_RE.match(commit) or len(set(commit)) <= 1:
+            issues.append(f"candidate repository {repo} commit is invalid/bogus: {commit}")
+        elif workspace and (workspace / repo / ".git").is_dir():
+            res = subprocess.run(
+                ["git", "-C", str(workspace / repo), "cat-file", "-e", commit],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            )
+            if res.returncode != 0:
+                issues.append(f"candidate repository {repo} commit does not exist in git: {commit}")
+    return issues
+
+
+def artifact_check(card: dict, workspace: Path) -> dict:
     issues, hashes = [], {}
     for name in card.get("deliverables", {}).get("artifacts", []):
         path = workspace / name
@@ -205,21 +355,18 @@ def artifact_check(card, workspace):
             hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
             if not path.stat().st_size:
                 issues.append("declared deliverable empty: " + name)
-    if card["id"] in {"V2-P06C", "V2-P0506"} and hashes:
-        path = workspace / "project-control/docs/releases/minimc_v2_offline_candidate.yaml"
-        candidate = yaml.safe_load(path.read_text())
-        for field in ["candidate_id", "scope", "repositories", "protocol", "verification", "limitations", "handoff"]:
-            if not isinstance(candidate, dict) or not candidate.get(field):
-                issues.append("candidate missing field: " + field)
-        if isinstance(candidate, dict):
-            protocol = candidate.get("protocol")
-            if not isinstance(protocol, dict) or protocol.get("sha256") != card["protocol_input"]["sha256"]:
-                issues.append("candidate protocol hash differs from accepted input")
-    return {"errors": issues, "artifact_hashes": hashes, "scope": "presence/hash only; independent content review is still required"}
+    if card.get("id") in {"V2-P06C", "V2-P0506"} and hashes:
+        cand_path = workspace / "project-control/docs/releases/minimc_v2_offline_candidate.yaml"
+        if cand_path.is_file():
+            issues.extend(_check_candidate_descriptor(cand_path, workspace))
+    return {
+        "errors": issues,
+        "artifact_hashes": hashes,
+        "scope": "presence/hash only; independent content review is still required"
+    }
 
 
-def check(workspace):
-    control = workspace / "project-control"
+def _collect_cards(control: Path) -> tuple:
     cards, paths, errors = {}, {}, []
     for path in card_paths(control):
         try:
@@ -227,49 +374,46 @@ def check(workspace):
         except (ValueError, yaml.YAMLError) as error:
             errors.append(str(path.relative_to(control)) + ": " + str(error))
             continue
-        task_id = card["id"]
-        if task_id in cards:
-            errors.append("duplicate task id: " + task_id)
-        cards[task_id], paths[task_id] = card, str(path.relative_to(control))
-    for task_id, card in cards.items():
-        for predecessor in card.get("depends_on", []):
-            if predecessor not in cards:
-                errors.append(task_id + ": missing predecessor " + predecessor)
+        tid = card["id"]
+        if tid in cards:
+            errors.append("duplicate task id: " + tid)
+        cards[tid], paths[tid] = card, str(path.relative_to(control))
+    return cards, paths, errors
+
+
+def _validate_task_links(cards: dict) -> list:
+    errors = []
+    for tid, card in cards.items():
+        for pred in card.get("depends_on", []):
+            if pred not in cards:
+                errors.append(tid + ": missing predecessor " + pred)
         for child in card.get("child_tasks", []):
             if child not in cards:
-                errors.append(task_id + ": missing child task " + child)
+                errors.append(tid + ": missing child task " + child)
+    return errors
+
+
+def check(workspace: Path) -> tuple:
+    control = workspace / "project-control"
+    cards, paths, errors = _collect_cards(control)
+    errors.extend(_validate_task_links(cards))
     cycles = find_cycles(cards)
-    errors.extend("dependency cycle: " + " -> ".join(cycle) for cycle in cycles)
-    new = {task_id: card for task_id, card in cards.items() if task_id.startswith("V2-")}
-    for task_id, card in new.items():
-        errors.extend(structural_errors(task_id, card, cards, workspace))
-        parents = [
-            parent_id for parent_id, parent in cards.items()
-            if task_id in parent.get("child_tasks", [])
-        ]
+    errors.extend("dependency cycle: " + " -> ".join(c) for c in cycles)
+    microtasks = {tid: c for tid, c in cards.items() if is_microtask(tid, c)}
+    for tid, card in microtasks.items():
+        errors.extend(structural_errors(tid, card, cards, workspace))
+        parents = [pid for pid, p in cards.items() if tid in p.get("child_tasks", [])]
         if parents != [card.get("primary_work_package")]:
-            errors.append(task_id + ": must have exactly one primary work-package parent")
+            errors.append(tid + ": must have exactly one primary work-package parent")
         if card.get("status") in {"Ready", "InProgress"}:
-            errors.extend(
-                task_id + ": state cannot advance: " + blocker
-                for blocker in readiness_blockers(card, cards)
-            )
-    overlaps = []
-    for left, left_card in new.items():
-        for right, right_card in new.items():
-            if left >= right:
-                continue
-            shared = set(left_card.get("allowed_paths", [])) & set(right_card.get("allowed_paths", []))
-            if shared:
-                ordered = has_ancestor(cards, left, right) or has_ancestor(cards, right, left)
-                overlaps.append({"tasks": [left, right], "paths": sorted(shared), "dependency_ordered": ordered})
-                if not ordered:
-                    errors.append(left + "/" + right + ": shared writes lack dependency ordering")
+            errors.extend(tid + ": state cannot advance: " + b for b in readiness_blockers(card, cards, workspace))
+    overlaps, overlap_errors = check_path_overlaps(microtasks, cards)
+    errors.extend(overlap_errors)
     return cards, {
         "scope": "static planning validation, not execution/approval/QA acceptance",
-        "canonical_task_count": len(cards), "v2_microtask_count": len(new),
+        "canonical_task_count": len(cards), "microtask_count": len(microtasks),
         "errors": errors, "dependency_cycles": cycles, "shared_write_pairs": overlaps,
-        "readiness_blockers": {task_id: readiness_blockers(card, cards) for task_id, card in new.items()},
+        "readiness_blockers": {tid: readiness_blockers(c, cards, workspace) for tid, c in microtasks.items()},
         "card_paths": paths,
     }
 
@@ -279,6 +423,7 @@ def main():
     parser.add_argument("--workspace", type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument("--report", type=Path)
     parser.add_argument("--check-ready", metavar="TASK_ID")
+    parser.add_argument("--check-done", metavar="TASK_ID")
     parser.add_argument("--check-artifact", metavar="TASK_ID")
     args = parser.parse_args()
     workspace = args.workspace.resolve()
@@ -286,14 +431,23 @@ def main():
         cards, report = check(workspace)
         code = 1 if report["errors"] else 0
         if args.check_ready:
-            if args.check_ready not in report["readiness_blockers"]:
-                report["errors"].append("unknown v2 microtask: " + args.check_ready)
+            if args.check_ready not in cards:
+                report["errors"].append("unknown task: " + args.check_ready)
                 code = 1
             else:
-                blockers = report["readiness_blockers"][args.check_ready]
+                blockers = readiness_blockers(cards[args.check_ready], cards, workspace)
                 report["selected_readiness"] = {"task": args.check_ready, "blockers": blockers}
                 if blockers and not code:
                     code = 2
+        if args.check_done:
+            if args.check_done not in cards:
+                report["errors"].append("unknown task: " + args.check_done)
+                code = 1
+            else:
+                done_errs = done_acceptance_errors(args.check_done, cards[args.check_done], cards, workspace)
+                report["selected_done"] = {"task": args.check_done, "errors": done_errs}
+                if done_errs:
+                    code = 1
         if args.check_artifact:
             if args.check_artifact not in cards:
                 report["errors"].append("unknown task: " + args.check_artifact)

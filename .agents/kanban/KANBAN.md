@@ -86,15 +86,15 @@ active_increment: marlin-r2-v2-offline-1
 | 治理票 | 核心交付 | 前置条件 | 当前状态 | 负责角色 |
 | :--- | :--- | :--- | :--- | :--- |
 | **CR-00** | 基线固化与已有成果保护 | 用户排查授权 | **Done** | COORD |
-| **CR-01** | 结论撤回/限制登记与卡片语法修复 | CR-00 | **Done** (本票) | COORD |
-| **CR-02** | 最小只读级联 ICD 冻结 (GET_VERSION / PING) | CR-01 | **Ready** | ARCH + 各端 Owner |
-| **CR-02Q** | 独立黄金预期与采集器判据 | CR-02 | Backlog | QA |
-| **CR-02T** | HIL 工具防御漏洞治理 (F23~F26 反例消除) | CR-00, CR-02 | Backlog | QA 工具作者 + 独立审查 |
-| **CR-03A~E** | 任务检查工具补全与规则一致性保障 | CR-01, CR-02 | Backlog | 控制工具作者 + 独立审查 |
-| **CR-04A~E** | AP 宿主健壮查询与负例防御改造 (F01~F07) | CR-02, CR-02Q, CR-03 | Backlog | ENG-FWD |
-| **CR-05A~E** | MC 原生双向透明路由与中断解耦 (F08~F11) | CR-02, CR-02Q, CR-03 | Backlog | ENG-MC |
-| **CR-06A~D** | TH 原生 MiniMCProto 固件实现 | CR-02, CR-02Q, CR-03 | Backlog | ENG-TH |
-| **CR-07A~C** | MC-TH 中继升级管理器缺陷专项治理 (F12~F14, F22) | CR-00, 独立升级契约 | Backlog | ENG-MC/TH |
+| **CR-01** | 结论撤回/限制登记与卡片语法修复 | CR-00 | **Done** | COORD |
+| **CR-02** | 最小只读级联 ICD 冻结 (GET_VERSION / PING) | CR-01 | **Done** | ARCH + 各端 Owner |
+| **CR-02Q** | 独立黄金预期与采集器判据 | CR-02 | **Done** | QA |
+| **CR-02T** | HIL 工具防御漏洞治理 (F23~F26 反例消除) | CR-00, CR-02 | **Done** | QA 工具作者 + 独立审查 |
+| **CR-03** | 任务检查工具补全与规则一致性保障 | CR-01, CR-02 | **Done** | 控制工具作者 + 独立审查 |
+| **CR-04** | AP 宿主健壮查询与负例防御改造 (F01~F07) | CR-02, CR-02Q, CR-03 | **Ready** (下一阶段) | ENG-FWD |
+| **CR-05** | MC 原生双向透明路由与中断解耦 (F08~F11) | CR-02, CR-02Q, CR-03 | Backlog | ENG-MC |
+| **CR-06** | TH 原生 MiniMCProto 固件实现 | CR-02, CR-02Q, CR-03 | Backlog | ENG-TH |
+| **CR-07** | MC-TH 中继升级管理器缺陷专项治理 (F12~F14, F22) | CR-00, 独立升级契约 | Backlog | ENG-MC/TH |
 | **CR-08** | 装配协同候选清单 (Candidate Bundle) | CR-04/05/06 独立检查 | Backlog | INTEGRATOR |
 | **CR-09** | 物理台架三端工程联合调试 | CR-08, CR-02T 夹具就绪 | Backlog | COORD + 各端 Owner |
 | **CR-10** | 独立真实 HIL 验收复验 (MS-07/MS-17 最终出口) | CR-09, CR-02Q 预期 | Backlog | 独立 QA (Codex) |
