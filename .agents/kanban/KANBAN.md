@@ -92,8 +92,8 @@ active_increment: marlin-r2-v2-offline-1
 | **CR-02T** | HIL 工具防御漏洞治理 (F23~F26 反例消除) | CR-00, CR-02 | **Done** | QA 工具作者 + 独立审查 |
 | **CR-03** | 任务检查工具补全与规则一致性保障 | CR-01, CR-02 | **Done** | 控制工具作者 + 独立审查 |
 | **CR-04** | AP 宿主健壮查询与负例防御改造 (F01~F07) | CR-02, CR-02Q, CR-03 | **Done** | ENG-FWD |
-| **CR-05** | MC 原生双向透明路由与中断解耦 (F08~F11) | CR-02, CR-02Q, CR-03 | **Ready** (当前执行) | ENG-MC |
-| **CR-06** | TH 原生 MiniMCProto 固件实现 | CR-02, CR-02Q, CR-03 | Backlog | ENG-TH |
+| **CR-05** | MC 原生双向透明路由与中断解耦 (F08~F11) | CR-02, CR-02Q, CR-03 | **Done** | ENG-MC |
+| **CR-06** | TH 原生 MiniMCProto 固件实现 | CR-02, CR-02Q, CR-03 | **Ready** (当前执行) | ENG-TH |
 | **CR-07** | MC-TH 中继升级管理器缺陷专项治理 (F12~F14, F22) | CR-00, 独立升级契约 | Backlog | ENG-MC/TH |
 | **CR-08** | 装配协同候选清单 (Candidate Bundle) | CR-04/05/06 独立检查 | Backlog | INTEGRATOR |
 | **CR-09** | 物理台架三端工程联合调试 | CR-08, CR-02T 夹具就绪 | Backlog | COORD + 各端 Owner |
