@@ -63,7 +63,7 @@ active_increment: marlin-r2-v2-offline-1
 | [MS-05 接受主控最小对接约定](milestones/marlin_ms05_20261007_214108.md) | ARCH | MS-03, MS-04, V2-P01B | Backlog | 接受本轮可消费的 MC 只读接口、设计/实现版本、结束条件、不支持/错误、来源与期限。 |
 | [MS-06 准备独立主控验收样例](milestones/marlin_ms06_20261007_214108.md) | QA | MS-05, V2-P01D | Backlog | 在实现前准备绑定真实固件版本的查询/解析/无回复、日志交错与恢复预期。 |
 | [MS-18 准备 Ubuntu SoC 主机工程](milestones/marlin_ms18_20261008_083854.md) | INTEGRATOR | MS-01 | Backlog | 提供在 VMware Ubuntu 可构建、启动、正常退出的最小 SoC 工程，已有工程优先复用。 |
-| [MS-07 实现主控版本查询](milestones/marlin_ms07_20261007_214108.md) | ENG-FWD | MS-05, MS-06, MS-18, V2-P06C | Backlog | 在 Ubuntu SoC 主机工程中按接受契约发送版本查询并解析完整真实 MC 回复。 |
+| [MS-07 实现主控版本查询](milestones/marlin_ms07_20261007_214108.md) | ENG-FWD | MS-05, MS-06, MS-18, V2-P06C | Blocked (触犯 HW-G5: 物理MCU无合法响应，等待 ENG-MC 固件改造) | 在 Ubuntu SoC 主机工程中按接受契约发送版本查询并解析完整真实 MC 回复。 |
 | [MS-08 实现主控温度查询](milestones/marlin_ms08_20261007_214108.md) | ENG-FWD | MS-07 | Backlog | 沿已接受路径解析真实 MC 温度、目标、单位与有效性，缺字段显示未知。 |
 | [MS-09 提供可复现主控故障工具](milestones/marlin_ms09_20261007_214108.md) | ENG-SIM | MS-04, MS-05, MS-06 | Backlog | 提供可关闭的 Python Mock/字节故障工具及真实串口断开场景；两类证据分开。 |
 | [MS-10 处理主控断链与查询恢复](milestones/marlin_ms10_20261007_214108.md) | ENG-FWD | MS-08, MS-09, MS-06 | Backlog | 按有界期限处理无回复/断开/恢复，重连后重新发新的只读查询，拒绝盲重放动作。 |
