@@ -1,0 +1,54 @@
+/usr/bin/cmake -S/home/sushaohua/workspace/ai_soc_project/soc-ap -B/tmp/ai_soc_ms07_build --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/cmake -E cmake_progress_start /tmp/ai_soc_ms07_build/CMakeFiles /tmp/ai_soc_ms07_build/CMakeFiles/progress.marks
+/usr/bin/make -f CMakeFiles/Makefile2 all
+make[1]: Entering directory '/tmp/ai_soc_ms07_build'
+/usr/bin/make -f CMakeFiles/minimcproto.dir/build.make CMakeFiles/minimcproto.dir/depend
+make[2]: Entering directory '/tmp/ai_soc_ms07_build'
+cd /tmp/ai_soc_ms07_build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sushaohua/workspace/ai_soc_project/soc-ap /home/sushaohua/workspace/ai_soc_project/soc-ap /tmp/ai_soc_ms07_build /tmp/ai_soc_ms07_build /tmp/ai_soc_ms07_build/CMakeFiles/minimcproto.dir/DependInfo.cmake --color=
+make[2]: Leaving directory '/tmp/ai_soc_ms07_build'
+/usr/bin/make -f CMakeFiles/minimcproto.dir/build.make CMakeFiles/minimcproto.dir/build
+make[2]: Entering directory '/tmp/ai_soc_ms07_build'
+[ 12%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o
+/usr/bin/c++   -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/minimc -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/transport  -O3 -DNDEBUG   -Wall -Wextra -Wpedantic -Werror -std=c++17 -o CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o -c /home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/minimc/codec.cpp
+[ 25%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o
+/usr/bin/c++   -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/minimc -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/transport  -O3 -DNDEBUG   -Wall -Wextra -Wpedantic -Werror -std=c++17 -o CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o -c /home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/minimc/parser.cpp
+[ 37%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o
+/usr/bin/c++   -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/minimc -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/transport  -O3 -DNDEBUG   -Wall -Wextra -Wpedantic -Werror -std=c++17 -o CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o -c /home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/transport/serial_posix.cpp
+[ 50%] Linking CXX static library libminimcproto.a
+/usr/bin/cmake -P CMakeFiles/minimcproto.dir/cmake_clean_target.cmake
+/usr/bin/cmake -E cmake_link_script CMakeFiles/minimcproto.dir/link.txt --verbose=1
+/usr/bin/ar qc libminimcproto.a  CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o
+/usr/bin/ranlib libminimcproto.a
+make[2]: Leaving directory '/tmp/ai_soc_ms07_build'
+[ 50%] Built target minimcproto
+/usr/bin/make -f CMakeFiles/minimc-probe.dir/build.make CMakeFiles/minimc-probe.dir/depend
+make[2]: Entering directory '/tmp/ai_soc_ms07_build'
+cd /tmp/ai_soc_ms07_build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sushaohua/workspace/ai_soc_project/soc-ap /home/sushaohua/workspace/ai_soc_project/soc-ap /tmp/ai_soc_ms07_build /tmp/ai_soc_ms07_build /tmp/ai_soc_ms07_build/CMakeFiles/minimc-probe.dir/DependInfo.cmake --color=
+make[2]: Leaving directory '/tmp/ai_soc_ms07_build'
+/usr/bin/make -f CMakeFiles/minimc-probe.dir/build.make CMakeFiles/minimc-probe.dir/build
+make[2]: Entering directory '/tmp/ai_soc_ms07_build'
+[ 62%] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o
+/usr/bin/c++   -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/minimc -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/transport  -O3 -DNDEBUG   -Wall -Wextra -Wpedantic -Werror -std=c++17 -o CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o -c /home/sushaohua/workspace/ai_soc_project/soc-ap/tests/protocol/probe.cpp
+[ 75%] Linking CXX executable bin/minimc-probe
+/usr/bin/cmake -E cmake_link_script CMakeFiles/minimc-probe.dir/link.txt --verbose=1
+/usr/bin/c++  -O3 -DNDEBUG   CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o  -o bin/minimc-probe  libminimcproto.a 
+make[2]: Leaving directory '/tmp/ai_soc_ms07_build'
+[ 75%] Built target minimc-probe
+/usr/bin/make -f CMakeFiles/soc-ap.dir/build.make CMakeFiles/soc-ap.dir/depend
+make[2]: Entering directory '/tmp/ai_soc_ms07_build'
+cd /tmp/ai_soc_ms07_build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/sushaohua/workspace/ai_soc_project/soc-ap /home/sushaohua/workspace/ai_soc_project/soc-ap /tmp/ai_soc_ms07_build /tmp/ai_soc_ms07_build /tmp/ai_soc_ms07_build/CMakeFiles/soc-ap.dir/DependInfo.cmake --color=
+Dependee "/home/sushaohua/workspace/ai_soc_project/soc-ap/core/host/main.cpp" is newer than depends file "/tmp/ai_soc_ms07_build/CMakeFiles/soc-ap.dir/depend.internal".
+Clearing dependencies in "/tmp/ai_soc_ms07_build/CMakeFiles/soc-ap.dir/depend.make".
+Scanning dependencies of target soc-ap
+make[2]: Leaving directory '/tmp/ai_soc_ms07_build'
+/usr/bin/make -f CMakeFiles/soc-ap.dir/build.make CMakeFiles/soc-ap.dir/build
+make[2]: Entering directory '/tmp/ai_soc_ms07_build'
+[ 87%] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o
+/usr/bin/c++  -DSOC_AP_VERSION=\"0.1.0\" -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/minimc -I/home/sushaohua/workspace/ai_soc_project/soc-ap/core/forward/transport  -O3 -DNDEBUG   -Wall -Wextra -Wpedantic -Werror -std=c++17 -o CMakeFiles/soc-ap.dir/core/host/main.cpp.o -c /home/sushaohua/workspace/ai_soc_project/soc-ap/core/host/main.cpp
+[100%] Linking CXX executable bin/soc-ap
+/usr/bin/cmake -E cmake_link_script CMakeFiles/soc-ap.dir/link.txt --verbose=1
+/usr/bin/c++  -O3 -DNDEBUG   CMakeFiles/soc-ap.dir/core/host/main.cpp.o  -o bin/soc-ap  libminimcproto.a 
+make[2]: Leaving directory '/tmp/ai_soc_ms07_build'
+[100%] Built target soc-ap
+make[1]: Leaving directory '/tmp/ai_soc_ms07_build'
+/usr/bin/cmake -E cmake_progress_start /tmp/ai_soc_ms07_build/CMakeFiles 0

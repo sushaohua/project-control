@@ -1,0 +1,27 @@
+Test project /tmp/ai_soc_ms07_build
+      Start  1: host_runtime_smoke
+ 1/11 Test  #1: host_runtime_smoke ...............   Passed    0.11 sec
+      Start  2: minimc_reference
+ 2/11 Test  #2: minimc_reference .................   Passed    0.02 sec
+      Start  3: minimc_crc
+ 3/11 Test  #3: minimc_crc .......................   Passed    0.03 sec
+      Start  4: minimc_encode
+ 4/11 Test  #4: minimc_encode ....................   Passed    0.03 sec
+      Start  5: minimc_decode_bounds
+ 5/11 Test  #5: minimc_decode_bounds .............   Passed    0.03 sec
+      Start  6: minimc_decode
+ 6/11 Test  #6: minimc_decode ....................   Passed    0.04 sec
+      Start  7: minimc_stream_sync
+ 7/11 Test  #7: minimc_stream_sync ...............   Passed    0.03 sec
+      Start  8: minimc_stream_header
+ 8/11 Test  #8: minimc_stream_header .............   Passed    0.03 sec
+      Start  9: minimc_stream_payload
+ 9/11 Test  #9: minimc_stream_payload ............   Passed    0.03 sec
+      Start 10: minimc_timeout
+10/11 Test #10: minimc_timeout ...................   Passed    0.03 sec
+      Start 11: minimc_recovery
+11/11 Test #11: minimc_recovery ..................   Passed    0.03 sec
+
+100% tests passed, 0 tests failed out of 11
+
+Total Test time (real) =   0.41 sec
