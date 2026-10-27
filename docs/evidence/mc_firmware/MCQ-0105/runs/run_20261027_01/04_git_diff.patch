@@ -1,0 +1,230 @@
+diff --git a/motion-controller-mcu/CMakeLists.txt b/motion-controller-mcu/CMakeLists.txt
+index f153316..42e92c1 100644
+--- a/motion-controller-mcu/CMakeLists.txt
++++ b/motion-controller-mcu/CMakeLists.txt
+@@ -45,6 +45,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
+ # Add sources to executable
+ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+     # Add user sources here
++    project/src/minimc_proto.c
+ )
+ 
+ # Add include paths
+diff --git a/motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c b/motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c
+index 3b434a6..85b8140 100644
+--- a/motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c
++++ b/motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c
+@@ -105,21 +105,10 @@ uint16_t calcCRC16(uint8_t* data, size_t dataLen)
+   */
+ void send_msg_to_lcd_screen(uint8_t *data, uint8_t size)
+ {
+-	if(size == 0) return;
+-
+-	/* 等待上次 DMA 发送完成 */
+-	while(usart2_tx_busy);
+-
+-	/* 拷贝到发送缓冲, 避免 DMA 发送期间源数据被改写 */
+-	memcpy(send_fifo, data, size);
+-
+-	usart2_tx_busy = 1;
+-
+-	/* 配置 DMA 源地址和长度并启动发送, 外设地址(paddr=&USART2->dt)已在初始化时配置 */
+-	dma_channel_enable(DMA1_CHANNEL2, FALSE);
+-	DMA1_CHANNEL2->maddr = (uint32_t)send_fifo;
+-	DMA1_CHANNEL2->dtcnt = size;
+-	dma_channel_enable(DMA1_CHANNEL2, TRUE);
++	/* MCQ-0105: 旁路旧迪文屏外喷，USART2 专供 AP MiniMCProto 链路 */
++	(void)data;
++	(void)size;
++	return;
+ }
+ 
+ 
+diff --git a/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c b/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
+index 2993b7a..1d3d03c 100644
+--- a/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
++++ b/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
+@@ -1,5 +1,6 @@
+ #include "memu_gui.h"
+ #include "gui_cmd_list.h"
++#include "minimc_proto.h"
+ #include "heater.h"
+ #include "stepper.h"
+ #include "led.h"
+@@ -429,6 +430,12 @@ void gui_rx_callback(void)
+ 		DMA1_CHANNEL6->dtcnt = USART2_RX_DMA_BUF_SIZE;
+ 		dma_channel_enable(DMA1_CHANNEL6, TRUE);
+ 
++		/* MCQ-0105: 接入 MiniMCProto 流式解析器 */
++		if (usart2_rx_len > 0U)
++		{
++			minimc_proto_process_rx(rx_fifo, usart2_rx_len);
++		}
++
+ 		rxdata_complete = true;
+ 	}
+ }
+@@ -559,65 +566,8 @@ void file_pagenum_display(uint16_t addr,uint16_t cpnum,uint16_t spnum)
+  */
+ void preheating_page_temp(void)
+ {
+-    static uint16_t cnt = 0;
+-	uint8_t cmd_buf[16] = {0};
+-    uint16_t cmd_len = 0;
+-    uint16_t crc = 0;
+-	
+-    if(gui_dgus.sdprinting == true && cnt++ <50)
+-    {
+-        return;
+-    }
+-    else
+-    {
+-        cnt = 0;
+-    }
+-
+-    cmd_buf[cmd_len++] = (0x5A);
+-    cmd_buf[cmd_len++] = (0xA5);
+-    cmd_buf[cmd_len++] = (0x07);
+-    cmd_buf[cmd_len++] = (0x82);
+-    cmd_buf[cmd_len++] = (0x10);
+-    cmd_buf[cmd_len++] = (0x09);
+-    cmd_buf[cmd_len++] = (Extruder_One.current_temperature>>8);
+-    cmd_buf[cmd_len++] = (Extruder_One.current_temperature&0xFF);
+-    crc = calcCRC16(cmd_buf + 3, cmd_len - 3);
+-    cmd_buf[cmd_len++] = crc >> 8;
+-    cmd_buf[cmd_len++] = crc & 0xff;
+-    send_msg_to_lcd_screen(cmd_buf, cmd_len);
+-
+-    cmd_len = 3;
+-    cmd_buf[cmd_len++] = (0x82);
+-    cmd_buf[cmd_len++] = 0x21;
+-    cmd_buf[cmd_len++] = 0x87;
+-    cmd_buf[cmd_len++] = (Heater_get_set_temperature(&Extruder_One)>>8);
+-    cmd_buf[cmd_len++] = (Heater_get_set_temperature(&Extruder_One)&0xFF);
+-    crc = calcCRC16(cmd_buf + 3, cmd_len - 3);
+-    cmd_buf[cmd_len++] = crc >> 8;
+-    cmd_buf[cmd_len++] = crc & 0xff;
+-    send_msg_to_lcd_screen(cmd_buf, cmd_len);
+-
+-    cmd_len = 3;
+-    cmd_buf[cmd_len++] = (0x82);
+-    cmd_buf[cmd_len++] = 0x10;
+-    cmd_buf[cmd_len++] = 0x0B;
+-    cmd_buf[cmd_len++] = (Platform.current_temperature>>8);
+-    cmd_buf[cmd_len++] = (Platform.current_temperature&0xFF);
+-    crc = calcCRC16(cmd_buf + 3, cmd_len - 3);
+-    cmd_buf[cmd_len++] = crc >> 8;
+-    cmd_buf[cmd_len++] = crc & 0xff;
+-    send_msg_to_lcd_screen(cmd_buf, cmd_len);
+-
+-    cmd_len = 3;
+-    cmd_buf[cmd_len++] = (0x82);
+-    cmd_buf[cmd_len++] = 0x21;
+-    cmd_buf[cmd_len++] = 0x8B;
+-    cmd_buf[cmd_len++] = (Heater_get_set_temperature(&Platform)>>8);
+-    cmd_buf[cmd_len++] = (Heater_get_set_temperature(&Platform)&0xFF);
+-    crc = calcCRC16(cmd_buf + 3, cmd_len - 3);
+-    cmd_buf[cmd_len++] = crc >> 8;
+-    cmd_buf[cmd_len++] = crc & 0xff;
+-    send_msg_to_lcd_screen(cmd_buf, cmd_len);
++    /* MCQ-0105: 关停向 USART2 周期外喷屏幕温度帧，彻底消除 11KB/s 噪声 */
++    return;
+ }
+ 
+ /**
+@@ -626,67 +576,8 @@ void preheating_page_temp(void)
+  */
+ void printing_page_temp(void)
+ {
+-    static uint16_t page_cnt = 0;
+-	uint8_t cmd_buf[16] = {0};
+-    uint16_t cmd_len = 0;
+-    uint16_t crc = 0;
+-	
+-    if(page_cnt++ <50)
+-    {
+-        return;
+-    }
+-    else
+-    {
+-        page_cnt = 0;
+-    }
+-    
+-
+-    cmd_buf[cmd_len++] = (0x5A);
+-    cmd_buf[cmd_len++] = (0xA5);
+-    cmd_buf[cmd_len++] = (0x07);
+-    cmd_buf[cmd_len++] = (0x82);
+-    cmd_buf[cmd_len++] = (0x10);
+-    cmd_buf[cmd_len++] = (0x09);
+-    cmd_buf[cmd_len++] = (Extruder_One.current_temperature>>8);
+-    cmd_buf[cmd_len++] = (Extruder_One.current_temperature&0xFF);
+-    crc = calcCRC16(cmd_buf + 3, cmd_len - 3);
+-    cmd_buf[cmd_len++] = crc >> 8;
+-    cmd_buf[cmd_len++] = crc & 0xff;
+-    send_msg_to_lcd_screen(cmd_buf, cmd_len);
+-
+-
+-    cmd_len = 3;
+-    cmd_buf[cmd_len++] = (0x82);
+-    cmd_buf[cmd_len++] = 0x10;
+-    cmd_buf[cmd_len++] = 0x6f;
+-    cmd_buf[cmd_len++] = (Heater_get_set_temperature(&Extruder_One)>>8);
+-    cmd_buf[cmd_len++] = (Heater_get_set_temperature(&Extruder_One)&0xFF);
+-    crc = calcCRC16(cmd_buf + 3, cmd_len - 3);
+-    cmd_buf[cmd_len++] = crc >> 8;
+-    cmd_buf[cmd_len++] = crc & 0xff;
+-    send_msg_to_lcd_screen(cmd_buf, cmd_len);
+-
+-    cmd_len = 3;
+-    cmd_buf[cmd_len++] = (0x82);
+-    cmd_buf[cmd_len++] = 0x10;
+-    cmd_buf[cmd_len++] = 0x0B;
+-    cmd_buf[cmd_len++] = (Platform.current_temperature>>8);
+-    cmd_buf[cmd_len++] = (Platform.current_temperature&0xFF);
+-    crc = calcCRC16(cmd_buf + 3, cmd_len - 3);
+-    cmd_buf[cmd_len++] = crc >> 8;
+-    cmd_buf[cmd_len++] = crc & 0xff;
+-    send_msg_to_lcd_screen(cmd_buf, cmd_len);
+-
+-    cmd_len = 3;
+-    cmd_buf[cmd_len++] = (0x82);
+-    cmd_buf[cmd_len++] = 0x10;
+-    cmd_buf[cmd_len++] = 0x6d;
+-    cmd_buf[cmd_len++] = (Heater_get_set_temperature(&Platform)>>8);
+-    cmd_buf[cmd_len++] = (Heater_get_set_temperature(&Platform)&0xFF);
+-    crc = calcCRC16(cmd_buf + 3, cmd_len - 3);
+-    cmd_buf[cmd_len++] = crc >> 8;
+-    cmd_buf[cmd_len++] = crc & 0xff;
+-    send_msg_to_lcd_screen(cmd_buf, cmd_len);
++    /* MCQ-0105: 关停向 USART2 周期外喷屏幕温度帧，彻底消除 11KB/s 噪声 */
++    return;
+ }
+ 
+ /**
+diff --git a/motion-controller-mcu/project/src/main.c b/motion-controller-mcu/project/src/main.c
+index d94f576..96f32b2 100644
+--- a/motion-controller-mcu/project/src/main.c
++++ b/motion-controller-mcu/project/src/main.c
+@@ -51,6 +51,7 @@
+ #include "poweroff.h"
+ #include "sdio_sdcard.h"
+ #include "fan.h"
++#include "minimc_proto.h"
+ 
+ /* 规避 configure.h 中宏定义 version 污染 usbh_msc_bot_scsi.h 结构体字段 */
+ #ifdef version
+@@ -181,6 +182,7 @@ int main(void)
+ 
+ 	/* init dma1 channel6: 迪文屏 USART2_RX 循环接收(配合 IDLE 中断判帧) */
+ 	wk_dma1_channel6_init();
++	minimc_proto_init();
+ 
+ 	/* init usb_otgfs1 function. */
+ 	wk_usb_otgfs1_init();
+ M motion-controller-mcu/CMakeLists.txt
+ M motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c
+ M motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
+ M motion-controller-mcu/project/src/main.c
+?? motion-controller-mcu/project/inc/minimc_proto.h
+?? motion-controller-mcu/project/src/minimc_proto.c

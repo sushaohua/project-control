@@ -1,0 +1,30 @@
+=== Precheck Environment & Git Repositories ===
+2026-10-27T12:15:17+08:00
+--- mcu-p3 status ---
+On branch feat/soc-debug
+Your branch is up to date with 'origin/feat/soc-debug'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   motion-controller-mcu/CMakeLists.txt
+	modified:   motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c
+	modified:   motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
+	modified:   motion-controller-mcu/project/src/main.c
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	motion-controller-mcu/project/inc/minimc_proto.h
+	motion-controller-mcu/project/src/minimc_proto.c
+
+no changes added to commit (use "git add" and/or "git commit -a")
+--- mcu-p3 HEAD ---
+14b8057 fix(th): align TH target chip model and probe configs to AT32F423CCT7
+--- soc-ap status ---
+--- test_harness status ---
+?? static_checks/minimcproto/__pycache__/
+--- project-control status ---
+?? docs/evidence/mc_firmware/
+?? docs/guides/feishu_cli_howto.md
+?? docs/guides/feishu_cli_user_access_experience_20261026.md
+?? tools/__pycache__/
