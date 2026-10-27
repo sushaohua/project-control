@@ -1,0 +1,32 @@
+[
+  {
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "log",
+      "-2",
+      "--format=%H %cI %s"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "policy_0.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "AGENTS.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "policy_1.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "project-control/.agents/rules/codex_qa_review.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "policy_2.txt"
+  }
+]

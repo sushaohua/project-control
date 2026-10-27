@@ -1,0 +1,75 @@
+{
+  "scope": "documentation checks only; not task readiness/approval or HIL",
+  "checks": [
+    {
+      "path": ".agents/rules/templates/任务卡模板.md",
+      "yaml_blocks": 3,
+      "yaml_unique_keys": true
+    },
+    {
+      "path": ".agents/rules/templates/角色任务提示词.md",
+      "yaml_blocks": 1,
+      "yaml_unique_keys": true
+    },
+    {
+      "path": "docs/guides/templates/task_run_record.md",
+      "yaml_blocks": 2,
+      "yaml_unique_keys": true
+    },
+    {
+      "path": ".agents/rules/templates/QA审查报告模板.md",
+      "yaml_blocks": 2,
+      "yaml_unique_keys": true
+    },
+    {
+      "path": ".agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+      "yaml_blocks": 1,
+      "yaml_unique_keys": true
+    },
+    {
+      "path": ".agents/rules/codex_qa_review.md",
+      "yaml_blocks": 2,
+      "yaml_unique_keys": true
+    },
+    {
+      "path": "docs/guides/minimc_v2_task_execution.md",
+      "yaml_blocks": 0,
+      "yaml_unique_keys": true
+    }
+  ],
+  "blank_defaults_safe": true,
+  "template_CRLF_preserved": true,
+  "active_v2_count": 20,
+  "markdown_links_exist": true,
+  "diff_check": {
+    "command": [
+      "git",
+      "-c",
+      "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "diff",
+      "--check",
+      "--",
+      ".agents/rules/templates/任务卡模板.md",
+      ".agents/rules/templates/角色任务提示词.md",
+      "docs/guides/templates/task_run_record.md",
+      ".agents/rules/templates/QA审查报告模板.md",
+      ".agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+      ".agents/rules/codex_qa_review.md",
+      "docs/guides/minimc_v2_task_execution.md"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "candidate_sha256": {
+    ".agents/rules/templates/任务卡模板.md": "6121c4a99a5e155b5bf56c25115f67bc61e56274e431390bc1c8ba0ddc486ce6",
+    ".agents/rules/templates/角色任务提示词.md": "aa2a3f07753bf90dc20ea4aca749b974514b2ddd9dc6844c7aa422e42fe1eda9",
+    "docs/guides/templates/task_run_record.md": "79b7132f1732ac453d690ba3450e5082f935e1d6be3d42d364f4e379383ed6c2",
+    ".agents/rules/templates/QA审查报告模板.md": "9f8687eb89eb2ad4b4a304709fbcfed47488b06073656204c841b559cbefbba6",
+    ".agents/rules/qa_audit_checklist_guide_20261013_115611.md": "747a464dcacaa4e5f342b0875e49de972b2dcbcb6abc6208204f037d93c34aa7",
+    ".agents/rules/codex_qa_review.md": "90d41e689ea9bf7d6943f987d6a54440141b2775033fbcd66a79895976ba4f4c",
+    "docs/guides/minimc_v2_task_execution.md": "1b0d51ba17f18369965e70f03caa71246bb27d07c13eee12df94c21ce3d67559"
+  }
+}

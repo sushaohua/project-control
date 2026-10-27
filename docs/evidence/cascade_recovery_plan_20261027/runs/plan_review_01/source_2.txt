@@ -1,0 +1,348 @@
+#include <chrono>
+#include <csignal>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <thread>
+
+#include "codec.h"
+#include "parser.h"
+#include "serial_posix.h"
+
+namespace {
+
+volatile std::sig_atomic_t g_keep_running = 1;
+
+void request_shutdown(int) {
+    g_keep_running = 0;
+}
+
+struct HostOptions {
+    const char* serial_port = "/dev/ttyUSB0";
+    bool check_config = false;
+    bool query_version = false;
+    int timeout_ms = 2000;
+    uint8_t cmd_id = 0x03; // CMD_VERSION_GET per MS-07 dispatch
+    uint8_t dst_id = 0x02; // Default to MC (0x02)
+};
+
+void print_usage(const char* executable) {
+    std::cout << "Usage: " << executable << " [--serial-port PATH | --device PATH]\n"
+              << "       " << executable << " --query-version [--timeout-ms MS] [--cmd-id ID] [--dst-id ID]\n"
+              << "       " << executable << " --check-config\n"
+              << "       " << executable << " --help | --version\n";
+}
+
+void print_hex_stream(const char* label, const uint8_t* data, size_t len) {
+    if (!label) {
+        return;
+    }
+    std::cout << label << " (" << len << " bytes): ";
+    for (size_t i = 0; i < len; ++i) {
+        std::cout << std::uppercase << std::hex << std::setfill('0')
+                  << std::setw(2) << static_cast<int>(data[i]) << ' ';
+    }
+    std::cout << std::dec << '\n';
+}
+
+int parse_arg_item(const char* arg,
+                   const char* next_arg,
+                   HostOptions* opts,
+                   int* advance) {
+    if (!arg || !opts || !advance) {
+        return 2;
+    }
+    *advance = 0;
+    const std::string s = arg;
+
+    if (s == "--check-config") {
+        opts->check_config = true;
+        return 0;
+    }
+    if (s == "--query-version") {
+        opts->query_version = true;
+        return 0;
+    }
+    if (s == "--serial-port" || s == "--device") {
+        if (!next_arg || next_arg[0] == '\0') {
+            std::cerr << "error: " << s << " requires a non-empty path\n";
+            return 2;
+        }
+        opts->serial_port = next_arg;
+        *advance = 1;
+        return 0;
+    }
+    if (s == "--timeout-ms") {
+        if (!next_arg) return 2;
+        opts->timeout_ms = std::atoi(next_arg);
+        *advance = 1;
+        return 0;
+    }
+    if (s == "--cmd-id") {
+        if (!next_arg) return 2;
+        opts->cmd_id = static_cast<uint8_t>(std::strtoul(next_arg, nullptr, 0));
+        *advance = 1;
+        return 0;
+    }
+    if (s == "--dst-id" || s == "--target-id") {
+        if (!next_arg) return 2;
+        opts->dst_id = static_cast<uint8_t>(std::strtoul(next_arg, nullptr, 0));
+        *advance = 1;
+        return 0;
+    }
+    return -1; // Unrecognized
+}
+
+int parse_arguments(int argc, char* argv[], HostOptions* opts) {
+    if (!opts) return 2;
+    const char* env_port = std::getenv("SOC_AP_SERIAL_PORT");
+    if (env_port != nullptr && *env_port != '\0') {
+        opts->serial_port = env_port;
+    }
+
+    for (int i = 1; i < argc; ++i) {
+        const std::string arg = argv[i];
+        if (arg == "--help") {
+            print_usage(argv[0]);
+            return 100;
+        }
+        if (arg == "--version") {
+            std::cout << "soc-ap " << SOC_AP_VERSION << '\n';
+            return 100;
+        }
+
+        const char* next = (i + 1 < argc) ? argv[i + 1] : nullptr;
+        int advance = 0;
+        const int res = parse_arg_item(argv[i], next, opts, &advance);
+        if (res > 0) return res;
+        if (res < 0) {
+            std::cerr << "error: unknown argument: " << arg << '\n';
+            print_usage(argv[0]);
+            return 2;
+        }
+        i += advance;
+    }
+    return 0;
+}
+
+bool send_version_query(minimc::SerialContext* ctx,
+                        uint8_t dst_id,
+                        uint8_t cmd_id,
+                        size_t* tx_len) {
+    if (!ctx || !tx_len) return false;
+    minimc::FrameHeader header{};
+    header.src_id = 0x01; // AP
+    header.dst_id = dst_id;
+    header.flags = 0x05;  // WANTS_ACK | VER_2_0
+    header.cmd_id = cmd_id;
+    header.hop_limit = 0x04;
+    header.route_ctrl = 0x00;
+    header.seq = 1;
+    header.payload_len = 0;
+
+    uint8_t tx_buf[minimc::MAX_FRAME_SIZE] = {};
+    const minimc::Status st = minimc::encode_frame(
+        header, minimc::Bytes(nullptr, 0),
+        minimc::MutableBytes(tx_buf, sizeof(tx_buf)), tx_len
+    );
+    if (st != minimc::Status::OK) return false;
+
+    print_hex_stream("TX Query Frame", tx_buf, *tx_len);
+    size_t written = 0;
+    return minimc::serial_write(ctx, tx_buf, *tx_len, &written) && (written == *tx_len);
+}
+
+void print_frame_report(const minimc::FrameView* frame) {
+    if (!frame) return;
+    const char* sender_label = (frame->header.src_id == 0x03)
+                                   ? "TH (Toolhead Color Engine)"
+                                   : "MCU";
+    std::cout << "SUCCESS: Valid response frame received from " << sender_label << "!\n"
+              << "  src_id: 0x" << std::hex << static_cast<int>(frame->header.src_id)
+              << "  dst_id: 0x" << static_cast<int>(frame->header.dst_id)
+              << "  cmd_id: 0x" << static_cast<int>(frame->header.cmd_id)
+              << "  seq: " << std::dec << frame->header.seq
+              << "  payload_len: " << frame->header.payload_len
+              << "  crc16: 0x" << std::hex << frame->crc << std::dec << '\n';
+
+    if (frame->payload.size >= 4) {
+        std::cout << "  Firmware Version Report:\n"
+                  << "    proto_ver: " << static_cast<int>(frame->payload.data[0])
+                  << '.' << static_cast<int>(frame->payload.data[1]) << '\n'
+                  << "    firmware_ver: " << static_cast<int>(frame->payload.data[2])
+                  << '.' << static_cast<int>(frame->payload.data[3]) << '\n';
+    }
+}
+
+void print_query_diagnostics(size_t total_rx,
+                             const uint8_t* rx_log,
+                             size_t rx_log_len,
+                             const minimc::StreamParser* parser) {
+    if (!parser) return;
+    std::cout << "INFO: Query window closed.\n"
+              << "  total_bytes_received: " << total_rx << '\n'
+              << "  counters:\n"
+              << "    err_sof: " << parser->err_sof << '\n'
+              << "    err_header: " << parser->err_header << '\n'
+              << "    err_mtu: " << parser->err_mtu << '\n'
+              << "    err_crc: " << parser->err_crc << '\n'
+              << "    err_timeout: " << parser->err_timeout << '\n'
+              << "    dispatched_frames: " << parser->dispatched_frames << '\n';
+
+    if (rx_log_len > 0 && rx_log != nullptr) {
+        print_hex_stream("RX Raw Captured Data", rx_log, rx_log_len);
+    }
+}
+
+struct RxCapture {
+    uint8_t buffer[512] = {};
+    size_t length = 0;
+};
+
+static void record_raw_capture(RxCapture* cap, const uint8_t* src, size_t count) {
+    if (!cap || !src || count == 0) return;
+    const size_t copy_n = (cap->length + count <= sizeof(cap->buffer))
+                              ? count
+                              : (sizeof(cap->buffer) - cap->length);
+    for (size_t k = 0; k < copy_n; ++k) {
+        cap->buffer[cap->length + k] = src[k];
+    }
+    cap->length += copy_n;
+}
+
+static uint32_t current_time_ms() {
+    const auto now = std::chrono::steady_clock::now();
+    return static_cast<uint32_t>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            now.time_since_epoch()
+        ).count()
+    );
+}
+
+struct FeedTarget {
+    minimc::StreamParser* parser;
+    minimc::FrameView* out_frame;
+    bool* received;
+};
+
+static void feed_rx_bytes(const uint8_t* src,
+                          size_t count,
+                          FeedTarget* target,
+                          uint32_t now_ms) {
+    if (!src || !target || !target->parser || !target->received) return;
+    for (size_t i = 0; i < count; ++i) {
+        minimc::parser_feed_byte(target->parser, src[i], now_ms,
+                                 target->out_frame, target->received);
+        if (*target->received) {
+            break;
+        }
+    }
+}
+
+int poll_and_parse(minimc::SerialContext* ctx,
+                   int timeout_ms,
+                   minimc::FrameView* out_frame,
+                   bool* received) {
+    if (!ctx || !out_frame || !received) return 1;
+    *received = false;
+
+    minimc::StreamParser parser{};
+    minimc::parser_init(&parser);
+    FeedTarget target{&parser, out_frame, received};
+
+    uint8_t rx_buf[64] = {};
+    minimc::SerialBuffer sbuf{rx_buf, sizeof(rx_buf)};
+    RxCapture cap{};
+    size_t total_rx = 0;
+
+    const auto t0 = std::chrono::steady_clock::now();
+    while (!*received) {
+        const auto now = std::chrono::steady_clock::now();
+        const int elapsed = static_cast<int>(
+            std::chrono::duration_cast<std::chrono::milliseconds>(now - t0).count()
+        );
+        if (elapsed >= timeout_ms) break;
+
+        size_t n_read = 0;
+        const int slice = (timeout_ms - elapsed > 50) ? 50 : (timeout_ms - elapsed);
+        if (minimc::serial_read(ctx, &sbuf, slice, &n_read) && n_read > 0) {
+            total_rx += n_read;
+            record_raw_capture(&cap, rx_buf, n_read);
+            feed_rx_bytes(rx_buf, n_read, &target, current_time_ms());
+        }
+    }
+
+    if (*received) {
+        print_frame_report(out_frame);
+    } else {
+        print_query_diagnostics(total_rx, cap.buffer, cap.length, &parser);
+    }
+    return 0;
+}
+
+int execute_query_version(const HostOptions* opts) {
+    if (!opts) return 1;
+    std::cout << "soc-ap: executing version query on " << opts->serial_port
+              << " (baud=115200 8N1, timeout=" << opts->timeout_ms << "ms)...\n";
+
+    minimc::SerialConfig cfg{opts->serial_port, 115200};
+    minimc::SerialContext ctx{};
+    if (!minimc::serial_open(&cfg, &ctx)) {
+        std::cerr << "error: failed to open serial device " << opts->serial_port
+                  << " (" << std::strerror(errno) << ")\n";
+        return 1;
+    }
+
+    size_t tx_len = 0;
+    if (!send_version_query(&ctx, opts->dst_id, opts->cmd_id, &tx_len)) {
+        std::cerr << "error: failed to transmit query frame\n";
+        minimc::serial_close(&ctx);
+        return 1;
+    }
+
+    minimc::FrameView out_frame{};
+    bool received = false;
+    poll_and_parse(&ctx, opts->timeout_ms, &out_frame, &received);
+    minimc::serial_close(&ctx);
+    return 0;
+}
+
+int run_host_daemon(const HostOptions* opts) {
+    if (!opts) return 1;
+    std::signal(SIGINT, request_shutdown);
+    std::signal(SIGTERM, request_shutdown);
+
+    std::cout << "soc-ap started; serial_port=" << opts->serial_port
+              << "; serial_opened=false\n" << std::flush;
+
+    while (g_keep_running != 0) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    std::cout << "soc-ap stopped cleanly\n";
+    return 0;
+}
+
+} // namespace
+
+int main(int argc, char* argv[]) {
+    HostOptions opts{};
+    const int parse_res = parse_arguments(argc, argv, &opts);
+    if (parse_res == 100) return 0;
+    if (parse_res != 0) return parse_res;
+
+    if (opts.check_config) {
+        std::cout << "serial_port=" << opts.serial_port << '\n'
+                  << "serial_opened=false\n";
+        return 0;
+    }
+
+    if (opts.query_version) {
+        return execute_query_version(&opts);
+    }
+
+    return run_host_daemon(&opts);
+}

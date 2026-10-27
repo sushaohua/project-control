@@ -1,0 +1,84 @@
+[
+  {
+    "command": [
+      "git",
+      "-C",
+      "test_harness",
+      "log",
+      "-3",
+      "--format=%H %s"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "baseline_0.txt"
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "test_harness",
+      "status",
+      "--short",
+      "--branch"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "baseline_1.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "workspace.json"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "baseline_2.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "mcu-p3/AGENTS.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "baseline_3.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "project-control/docs/evidence/cascade_recovery_plan_20261027/host/cascade_host_gap_audit_20261027.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "baseline_4.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "project-control/docs/evidence/cascade_recovery_plan_20261027/workflow/cascade_workflow_gap_audit_20261027.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "baseline_5.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "project-control/docs/evidence/cascade_recovery_plan_20261027/firmware/cascade_firmware_gap_audit_20261027.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "baseline_6.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "165,195p",
+      "project-control/docs/planning/ap_mc_th_cascade_recovery_implementationplan_20261027_162003.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "baseline_7.txt"
+  }
+]

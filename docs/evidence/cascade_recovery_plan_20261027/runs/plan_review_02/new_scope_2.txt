@@ -1,0 +1,11 @@
+conflicting_fingerprint_role MC
+duplicate_role_selected probe-B
+wrong_address_count_read [256]
+manual_target_unchecked ('probe-MC', 'AT32F423CCT7')
+write_after_failed_snapshot [0]
+>> 开始对 [TH] USART1 注入瞬态抖动故障 (-1 ms)...
+glitch_cleanup_events ['disabled']
+reset_all_false_write_result None
+reset_all_false_write_stdout >> 正在执行全量外设物理接口一键复位/开通... | [-] 目标 [MC] 未在线，跳过。 | [+] [TH] USART1 (TH-MC 级联通信串口 (连接主控)) -> 恢复使能 (CTRL1 = 0x0000202C) | >> 所有接口已重置为正常使能状态。
+scale_violations device_discovery.py [["probe_memory_word", 26, 6]]
+scale_violations probe_fault_injector.py [["write_memory_word", 15, 5], ["glitch_uart", 7, 5], ["main", 76, 0]]

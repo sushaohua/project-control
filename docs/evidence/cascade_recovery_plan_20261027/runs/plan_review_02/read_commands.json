@@ -1,0 +1,56 @@
+[
+  {
+    "command": [
+      "cat",
+      "project-control/docs/evidence/cascade_recovery_plan_20261027/hil_tools/cascade_new_hil_tools_audit_20261027.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "new_scope_0.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "project-control/docs/evidence/cascade_recovery_plan_20261027/hil_tools/cascade_new_hil_tools_repro_20261027.py"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "new_scope_1.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "project-control/docs/evidence/cascade_recovery_plan_20261027/hil_tools/cascade_new_hil_tools_repro_20261027.out"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "new_scope_2.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "test_harness/hil/tools/device_discovery.py"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "new_scope_3.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "test_harness/hil/tools/probe_fault_injector.py"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "new_scope_4.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "test_harness/hil/guides/probe_rs_hardware_fault_injection.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "new_scope_5.txt"
+  }
+]

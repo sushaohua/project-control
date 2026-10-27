@@ -2,11 +2,11 @@
 
 ## 范围与权威位置
 
-本约定与 [25 张实际微步卡](../../.agents/kanban/microtasks/minimc_v2/README.md)一起使用，补齐首个 AP 离线协议增量的编排。用户本轮“继续”授权落实任务编排；代码票仍须满足实际派单条件。当前 Codex 主对话 `/root` 负责本轮编排与收件，用户已选择另行指定独立会话、人工转交检查；具体会话身份与报告尚未提供。当前不据此假设其他 Agent 已运行。
+本约定覆盖首个AP离线协议增量，并与[有效任务索引](../../.agents/kanban/microtasks/minimc_v2/README.md)、[任务卡模板](../../.agents/rules/templates/任务卡模板.md)、[派单提示词](../../.agents/rules/templates/角色任务提示词.md)一起使用。模板与本约定只定义流程，不指定当前实际COORD、作者或正在运行会话；这些身份及反馈方式以准确任务卡和实际交接记录为准，旧会话记录保留其历史时间。
 
-任务原件位于 `project-control/.agents/kanban/microtasks/minimc_v2/`；看板和任务索引只是投影。旧 V2-P01～06 仅作分组，实际可派单 ID 为带 A/B/C 后缀的独立卡。每张卡只有一个 `primary_work_package`，以原工作包的 `child_tasks` 挂接；没有另建第二套状态原件。
+任务原件位于控制仓`.agents/kanban/`。V2原25张拆解后有6张移入superseded并由V2-P0506承接，2026-10-27目录采样为20张有效V2微步卡；后续数量、状态和替代关系只读准确卡片，本指南不是实时投影。任务索引/看板仍可能有旧投影，派单先核原件与替代关系。每张实际票只有一个primary_work_package；旧分组及已替代卡不直接派单。
 
-本批产出是本机离线编解码/组帧能力，不包括 AP 串口会话、MCU 源码、OTA、物理急停或 HIL。原 MS-05/07/11/17 的实测前置和验收分别保留；离线最终候选 V2-P06C 不能代替它们。
+本批是离线编解码/组帧能力，不包含AP串口事务、MCU协议实现、OTA、物理急停或HIL。当前离线候选归档票为V2-P0506；原V2-P06B/P06C已替代，只保留历史来源。MS-05/07/11/17的固件/实测条件不因离线通过被解除。跨节点纠偏按[完整实施方案](../planning/ap_mc_th_cascade_recovery_implementationplan_20261027_162003.md)建立相关能力/验收票，不把该方案文档审查当成源码或硬件通过。
 
 ## 每票怎样进入 Ready
 
@@ -32,7 +32,7 @@ python3 project-control/tools/check_task_graph.py --workspace .
 python3 project-control/tools/check_task_graph.py --workspace . --check-ready V2-P01A
 ```
 
-静态工具通过只表示结构和字段检查通过，不代表内容正确、已独立评审或已获得授权。
+静态工具通过只表示它实际覆盖的结构/字段检查通过。当前工具主要扫描固定V2目录并对V2的Ready/InProgress检查部分字段；不能完整覆盖MCQ/THQ、Review/Verify/Done、真实提交/报告内容、过期租约和glob范围交叠。模板新增字段不会自动变成工具能力，COORD仍逐项人工核对；工具专项另建票和独立反例验收。
 
 ## 逐票输出和失败处理
 
@@ -62,13 +62,13 @@ python3 project-control/tools/check_task_graph.py --workspace . --check-ready V2
 
 用户 2026-10-26 明确要求：后续独立 QA 统一使用 Codex。包括 QA Reviewer、QA Verifier 和 QA 作者产物的独立 ARCH 复核，均遵守 [Codex QA 规则](../../.agents/rules/codex_qa_review.md)。已完成的 P01A/P01B 及原始报告保留原会话，未完成卡引用该规则；作者、其他岗位和硬件条件保持原有分工。
 
-派单时读取 `qa_review_policy`，按条目 `platform: codex` 选择独立 Codex。未启动的任务只登记 `planned_session_alias`，实际 `session` 保持 null；落实会话后由 COORD 填入可定位标识。V2-P01C 保留用户指定别名 `codex-qa-session-01`，审核仍待执行。通过 CLI 运行时保存真实会话 ID 与别名对应关系。结构工具不负责启动 Codex，未接调度脚本时采用主会话启动或人工转交。
+派单时读取 `qa_review_policy`，按条目 `platform: codex` 选择独立 Codex。未启动的任务只登记 `planned_session_alias`，实际 `session` 保持 null；落实会话后由 COORD 填入可定位标识。旧卡保留历史计划别名（如codex-qa-session-01）；实际是否已审核只看对应准确版本的session/报告，不由本指南写实时结论。通过 CLI 运行时保存真实会话 ID 与别名对应关系。结构工具不负责启动 Codex，未接调度脚本时采用主会话启动或人工转交。
 
 独立审查必须核对协议原文、准确交付物哈希与实际日志。报告保存所审版本、真实命令及退出码、过程/结果判据、限制和 APPROVED/REJECTED；COORD 收件并核对候选与报告哈希后再推进状态。退出码 0、报告存在或结构检查通过不能代替签署通过；失败、超时或缺失报告不得释放下一微步。
 
 每张卡的 Reviewer 为必需项。QA 编写独立预期或运行器时，其报告仍由非作者检查。实现作者不能改 `test_harness` 中独立预期促通过，QA 也不能改业务代码促通过；本规则目前由人工核对执行，不声称已有文件系统权限系统。
 
-`Review → Verify → Done` 必须绑定同一准确交付：内容/运行检查结论齐全，实际 COORD 确认收件，代码适用时绑定消费/集成版本。代码实现票的“验证通过”只表示该原子能力；最终 V2-P06B 独立复现、V2-P06C 候选归档分别处理。Done 后再变更接口或代码，按新 revision/复验记录更新适用关系，不能沿用旧通过。
+`Review → Verify → Done` 必须绑定同一准确交付：内容/运行检查结论齐全，实际 COORD 确认收件，代码适用时绑定消费/集成版本。代码实现票的“验证通过”只表示该原子能力；当前V2-P0506承接原V2-P06B/P06C的复现/归档范围，是否满足全部必需检查仍按其准确候选证据核对，不因合票自动视为接受。Done 后再变更接口或代码，按新 revision/复验记录更新适用关系，不能沿用旧通过。
 
 ## 首批工具、样例与覆盖范围
 
@@ -83,3 +83,14 @@ P02C 单独冻结测试探针 CLI/文本输出与运行器接口；不引入外�
 显式传入 `MINIMC_QA_ROOT` 后缺参考脚本/样例必须配置失败；没有传入时允许仅构建 AP/库，但必须显示协议测试未启用，不能以 host smoke 1/1 冒充协议候选验收。PyYAML 仅用于控制仓任务检查，不进入 AP 程序依赖；工具缺失如实报错，不自动安装包。
 
 最终候选 YAML 必含 `candidate_id`、`scope`、`repositories`（准确 commit/diff/hash）、`protocol`、`verification`（报告路径/哈希/所审版本/会话）、`limitations`、`handoff`。候选归档不能只写“各仓最新分支”，不能把文档中的预期或本批静态结构检查写为已发生的独立验收。
+
+
+## 模板接入与状态推进核对
+
+新建卡登记template_version=2026-10-27；存量活动卡在本轮revision补必要字段，历史报告和签署不批量回填。parent_task/coordination/inherited_gates记录关联，相关前置能力必须显式落实到depends_on与对象化dependency_conditions；不得把最终HIL通过反向设为单板实现开工前置。
+
+Ready确认blocked=false、前置能力及准确接受版本、owner/session/worktree/范围/授权/资源、有效租约和预算；本票候选与最终签署在交付后产生。Review/Verify/Done分别核同一候选、全部必需独立审查、适用运行/集成与COORD接受，收到不等于通过。不适用环节列理由与依据，不能用默认单板/默认通过跳过检查。
+
+运行记录逐命令/逐例写独立预期与实际观察，计划和实际分开；必跑测试名/组与非零case明确。正常查询零有效关联响应失败，预期断链/坏帧无响应可通过相应负例；不混淆CRC、命令语义、事务匹配、物理闭环。文档票核结构、来源和链接，不伪造构建或HIL。独立签署用[QA报告模板](../../.agents/rules/templates/QA审查报告模板.md)。
+
+输入变化或旧误判时追加evidence_updates/撤回记录，标明旧/新候选、受影响消费者和恢复条件，保留历史原件。正式status保持Backlog/Ready/InProgress/Review/Verify/Done；报告decision使用APPROVED/REJECTED，阻塞用blocked和recovery_condition。全部正式变更由唯一实际COORD完成，模板修改不自行改变现有任务状态。

@@ -1,0 +1,118 @@
+# 双 MCU 固件工程主约束总纲 (Master Engineering Protocol)
+
+本文档为当前工程根目录（`mcu/` 工作区）的主约束总纲。当前工作区包含两个独立的固件子工程：
+- **`motion-controller-mcu/`**：主运动控制器 MC板，面向 **AT32F435**（基地址 `0x08020000`），基于 Marlin 移植改造；
+- **`color-engine-mcu/io_toggle/`**：多色/工具头从控 TH板，面向 **AT32F423**（基地址 `0x08004000`），极简 7 轴运动与换色控制。
+
+所有参与本工程代码编写、架构设计、排错验证与代码审查的 AI，必须无条件遵循以下铁律。
+
+---
+
+## 1. 底层认知与执行硬约束 (Foundational Invariants)
+
+- **Anti-Sycophancy (反谄媚与事实裁决)**：严禁无条件盲目道歉或迎合质疑。受到质疑时必须在回复前通过外部工具（代码检索、编译验证等）独立实证，开门见山呈现事实证据。
+- **Physical Retrieval Invariant (外部实体物理检索)**：严禁凭空臆断固件库 API、寄存器位、时钟配置或升级参数。在断言前必须调用工具物理核验；若无法验证必须显式声明 `[UNVERIFIED]`。
+- **优先修改现有逻辑**：已有相关实现时，先理解其行为、调用关系和设计约束，优先在现有逻辑上做最小必要修改。修改前简要说明沿用现有逻辑的弊端、影响范围及应对措施，结论须结合实际代码。若现有结构无法合理满足需求，应说明原因和证据，再进行必要的重构，避免不断堆叠分支和补丁。
+- **Fail-Fast (错误立即熔断)**：构建脚本或工具报错时立即停下，直接呈现完整原始日志，严禁脑补解释或未授权绕过。最新指令具有最高优先级。
+- **Workspace Confinement (工作区边界硬隔离 - 核心铁律)**：
+  - 未在用户当次提示词中显式给出外部路径的情况下，**绝对严禁读取、遍历或探测当前工程根工作区以外的任何目录或文件**（包括兄弟工程与上级目录）。
+  - **工程内软链接豁免与合法范围 (Symlink Whitelist)**：
+    - 允许通过当前工程根目录下已建立的合法软链接（如 `docs/`、`.agents/`、`AGENTS.md`）进行读取与写入，其目标内容视为本工作区合法范围；
+    - **防越界红线**：严禁通过 `..`、`cd` 或绝对路径跳出软链接目标目录去遍历其外部宿主目录（例如禁止越界访问 `/home/sushaohua/agents/` 下的其他兄弟目录或文件）；
+    - **路径使用规范**：在命令执行与文件读写时，统一使用工作区相对路径（如 `docs/xxx.md`）,禁止直接使用外部目标绝对路径。
+  - 在当前工程未检索到目标时，如实陈述查验结果或向用户求证，**严禁自行退至上一级（`../`）搜寻**。
+- **WSL Linux PATH Isolation (WSL 纯净环境隔离硬约束)**：
+  - 在 WSL2 环境下执行任何 Shell、CMake、Ninja 或交叉编译工具链探测命令时，宿主 Windows 路径（如 `/mnt/c/...`）跨盘 I/O 检索会导致终端阻塞假死。
+  - 所有命令行执行必须前置净化环境变量，强制指定纯 Linux 本地标准路径（`PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin`），严禁允许构建与工具链搜索遍历 Windows 挂载点。
+- **Python 运行环境唯一性**：串口与自动化脚本**必须调用 Windows venv**：
+  `/mnt/c/Users/EDY/tools/.venv_agent/Scripts/python.exe`，严禁调用系统 `WindowsApps/python.exe`。
+- **WSL 防挂死 (< /dev/null)**：WSL 环境调用任何 Windows 原生 `.exe` 程序末尾必须追加 `< /dev/null`。
+- **工具唯一性 (Probe-rs Exclusive)**：烧录、寄存器读写与复位**只允许使用 `probe-rs`**。
+  - 主控 (MC) 统一指定：`--chip AT32F435VGT7`；
+  - 从控 (TH) 统一指定：`--chip AT32F423CCT7`。
+  - 多探针环境下必须传参 `--probe`，严禁缺省导致交互挂死。
+- **串口隔离与时序**：主控调试串口为 `COM8 @ 115200`，从控调试串口为 `COM6 @ 115200`，**严禁越界读取非目标板串口**。开机抓包必须先启动串口接收并等待 0.5s 预热，再触发硬件复位。
+
+---
+
+## 2. 强制工作流：实施方案先行与审批闭环 (Mandatory Two-Phase Protocol)
+
+任何涉及代码编写、修改、配置调整或环境写操作的指令，AI **严禁直接修改工程代码**，必须执行“两阶段协议”（纯只读排查与检索除外）：
+
+### 阶段一：实施方案先行与归档 (Phase 1: Implementation Plan)
+1. 方案文档统一输出至工程根目录下的 `docs/` 目录，初次创建必须包含任务时间戳：
+   `docs/{Task_Summary}_implementationplan_{YYYYMMDD_HHMMSS}.md`
+2. **方案生命周期与迭代规则 (Single Source of Truth - 单一真相源)**：
+   - **严禁跨任务覆盖**：禁止覆盖或改写以往其他已结项任务的历史方案文档。
+   - **同任务原地迭代**：在当前任务的方案讨论、评审质询与多轮修改过程中，**必须在当次方案文档中直接原地就地更新（In-place Update）**，严禁为同一任务的多次讨论碎片化创建新文件。
+   - **修订记录追踪**：方案文档头部必须维护简明“修订历史 (Revision History)”表格，包含：版本（如 v1.0, v1.1）、修订时间、**修订人 (Agent / Author)**、变更摘要、评审审批状态。**其中“修订人”必须显式注明具体 AI 客户端/引擎实体（例如 `AI (Antigravity-CLI)`、`AI (Antigravity-IDE)`、`AI (Claude)`、`AI (Codex)` 等）或人类开发者**，严禁只笼统填写模糊的“AI”，以保障多工具/多模型协作时的审计溯源；完整的行级变更依赖 Git 进行版本履历审计。
+3. 方案必须包含：**背景与目标**、**影响模块与文件清单**、**软硬件契约推演 (时钟/中断/内存/VTOR)**、**最小修改预算 (Diff Budget)**、**验证与回滚预案**。
+   - 子任务须列明 Task ID、目标文件（区分声明与实现）、前置依赖、验收命令与 Pass Criteria；接口与实现、底层数据结构与上层业务分别拆为独立步骤。
+4. **等待审批**：方案生成或更新后明确提示用户审阅。**在用户明确给出批准指令（如“批准执行”、“Plan Approved”）前，严禁产生任何代码修改行为**。
+
+### 阶段二：获批后的最小化代码生成 (Phase 2: Execution)
+- 严格遵循批准方案圈定的边界，执行最小化精准修改，零闲聊，严禁附带无关重构。
+- 按任务执行规则逐项完成前后检查、验收及状态记录；未经客观验证不得标为完成。
+- 耗时超 1 分钟的任务必须带进度参数并输出动态日志，彻底消除等待假死感。
+
+---
+
+## 3. 模块化规则体系索引 (Sub-Rules Index)
+
+具体编码实现、接口封装与芯片底层硬件逻辑，必须严格遵从 `.agents/rules/` 目录下的细分规则：
+
+1. **[C/C++ 编码规范与底层外设操作约束](.agents/rules/c_cpp_coding_standard.md)** (`.agents/rules/c_cpp_coding_standard.md`)
+   - KISS 原则、指针显式化（禁用 `*dst++ = *src++` 等黑魔法）、控制流扁平（卫语句优先、嵌套<=3层）、蛇形命名与 `<stdint.h>` 显式位宽。
+   - 寄存器读-改-写分步执行（Clear后Set）、**轮询等待强制超时保护 (禁止 while(!FLAG); 死等)**、四步初始化时序标注、裸机 C++ 零堆分配与两阶段 `init()`。
+2. **[模块化工程与 API 接口设计规范](.agents/rules/api_modular_design.md)** (`.agents/rules/api_modular_design.md`)
+   - 头文件只声明绝不定义变量（全局变量 `extern`）、自包含校验、内部函数/变量强制 `static` 修饰。
+   - 函数入参在前/出参在后/只读加 `const`、入口防御性空指针检查、返回值统一错误码。
+   - **硬性门禁**：函数参数不得超过 4 个（超额封装结构体指针），单个函数行数不得超过 50 行。
+   - **Marlin 存量代码豁免原则**：自研模块 100% 严格执行门禁；Marlin 开源存量代码以**最小修改预算 (Minimal Diff Budget)** 优先，严禁大范围无关重构。
+3. **[双 MCU (AT32F435/AT32F423) 硬件特性与固件安全规范](.agents/rules/dual_mcu_firmware_spec.md)** (`.agents/rules/dual_mcu_firmware_spec.md`)
+   - 雅特力标准固件库（`USE_STDPERIPH_DRIVER`）优先。
+   - 主控 288MHz、从控 144MHz 时钟树 CRM 顺序与 Flash Latency 先行配置。
+   - Flash 物理扇区 (2KB) 擦写临界区与看门狗喂狗防护。
+   - VTOR 向量表偏移对齐（MC: `0x08020000` / TH: `0x08004000`）与安全跳转协议。
+   - 硬件参数四步穿透查验、固件隔离（8.3短文件名：`fw_mc.bin` vs `fw_th.bin`）与 128B Trailer 擦除前预验签。
+   - 硬件自愈：MC 专用 GPIO 控制 TH 物理 `NRST` 复位引脚防变砖。
+4. **[任务执行闭环协议](.agents/rules/task_execution_protocol.md)** (`.agents/rules/task_execution_protocol.md`)
+   - 原子步骤、前后检查、验收证据、失败纠正与安全回滚、状态同步。
+5. **[QA 提测材料参考规范](.agents/rules/qa_handoff.md)** (`.agents/rules/qa_handoff.md`)
+   - 可选 A/B 类提测材料参考、证据真实性、缺项标记与归档结构。
+
+---
+
+## 4. 本工程专用构建与开发命令 (Build Commands)
+
+编译前确认已安装 `arm-none-eabi-gcc` 工具链。从本工作区根目录执行：
+
+- **从控工具头 (color-engine-mcu)**：
+  - `make -C color-engine-mcu/io_toggle size`：编译并输出 ELF 内存占用。
+  - `make -C color-engine-mcu/io_toggle`：生成 HEX/BIN 固件。
+- **主控制器 (motion-controller-mcu)**：
+  - `cmake -S motion-controller-mcu -B motion-controller-mcu/build -DCMAKE_BUILD_TYPE=Debug`：配置 CMake 工程并导出 compile_commands.json。
+  - `cmake --build motion-controller-mcu/build`：编译生成 ELF、BIN、HEX 镜像。
+
+两套程序均运行于目标硬件，无宿主机直接运行指令。
+
+### Commit & Merge Request 规范
+- Commit Subject 统一遵循 Angular 规范，带明确前缀：`feat: ...`, `feat(mc): ...`, `feat(th): ...`, `fix: ...`, `build: ...`。保持每次提交作用域单一。
+- **线性基准与 Rebase 约束**：提交与推送前必须先拉取远端目标分支最新基准进行 `rebase` 对齐，保持提交历史呈严格线性。严禁默认 `git pull` 产生冗余的 Merge 节点（Merge branch '...' of ...）。
+- **冲突熔断机制 (Fail-Fast)**：Rebase 或合流过程中一旦检测到分支冲突，必须**立即熔断停机并保留现场**，严禁擅自强行覆盖代码或继续盲目强制变基；须向开发者完整呈现冲突文件列表并等待人工仲裁。
+- Merge Request 必须指明受影响板卡、行为改动、编译及硬件验证证据。
+
+---
+
+## 5. 核心禁令 (Zero-Tolerance Policy)
+
+* ❌ **严禁未直接提示读取本工程外部目录**（首要红线；当前工程根下已链接的 `docs/`、`.agents/`、`AGENTS.md` 目标内文件除外）。
+* ❌ **严禁未经方案审批直接改动代码**。
+* ❌ **严禁凭空捏造 API / 寄存器 / 宏定义**。
+* ❌ **严禁编写超 50 行或超 4 个入参的自研非结构体函数**。
+* ❌ **严禁指针自增压缩黑魔法（如 `*dst++ = *src++`）**。
+* ❌ **严禁编写无超时计数的硬件轮询死循环（如 `while(!FLAG);`）**。
+* ❌ **严禁在未验签通过前擦除 Flash 扇区**。
+* ❌ **严禁调用 `WindowsApps/python.exe` 存根**。
+* ❌ **严禁越界读取非目标板调试串口**。
+* ❌ **严禁在 WSL 调用 Windows 原生 `.exe` 时漏加 `< /dev/null`**。

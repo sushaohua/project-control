@@ -1,0 +1,222 @@
+mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
+413: }
+414: 
+415: 
+416: __attribute__((section("RAMCODE1")))  /*--*/
+417: void gui_rx_callback(void)
+418: {
+419: 	if(usart_interrupt_flag_get(USART2, USART_IDLEF_FLAG) != RESET)
+420: 	{
+421: 		// 清除IDLE标志位(库内部会读 STS/DT 清除 ORE 残留)
+422:         usart_flag_clear(USART2, USART_IDLEF_FLAG);
+423: 
+424: 		// 读取 DMA 剩余计数, 得到本帧实际接收长度(DMA 已直接写入 rx_fifo)
+425: 		usart2_rx_len = (uint8_t)(USART2_RX_DMA_BUF_SIZE - dma_data_number_get(DMA1_CHANNEL6));
+426: 
+427: 		// 重置 DMA 循环接收计数, 准备接收下一帧
+428: 		dma_channel_enable(DMA1_CHANNEL6, FALSE);
+429: 		DMA1_CHANNEL6->maddr = (uint32_t)rx_fifo;
+430: 		DMA1_CHANNEL6->dtcnt = USART2_RX_DMA_BUF_SIZE;
+431: 		dma_channel_enable(DMA1_CHANNEL6, TRUE);
+432: 
+433: 		/* MCQ-0105: 接入 MiniMCProto 流式解析器 */
+434: 		if (usart2_rx_len > 0U)
+435: 		{
+436: 			minimc_proto_process_rx(rx_fifo, usart2_rx_len);
+
+mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
+432: 
+433: 		/* MCQ-0105: 接入 MiniMCProto 流式解析器 */
+434: 		if (usart2_rx_len > 0U)
+435: 		{
+436: 			minimc_proto_process_rx(rx_fifo, usart2_rx_len);
+437: 		}
+438: 
+439: 		rxdata_complete = true;
+440: 	}
+441: }
+442: 
+443: 
+444: 
+445: // ----------------------------------------- 原usart2---------------------------
+446: 
+447: /**
+448:  * @brief 页面跳转功能
+449:  * 
+450:  * @param page 页面编号
+451:  */
+452: void Page_Jump_fiunction(uint8_t page)
+453: {
+454:     uint8_t cmd_buf[12] = {0x00};
+455:     uint16_t cmd_len = 0;
+
+mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c
+70: /* add user code end 0 */
+71: 
+72: /* external variables ---------------------------------------------------------*/
+73: /* add user code begin external variables */
+74: extern void gui_rx_callback(void);
+75: extern void tmr7_global_callback(void);
+76: extern void power_off_callback(void);
+77: /* add user code end external variables */
+78: 
+79: /**
+80:   * @brief  this function handles nmi exception.
+81:   * @param  none
+82:   * @retval none
+83:   */
+84: void NMI_Handler(void)
+85: {
+86:   /* add user code begin NonMaskableInt_IRQ 0 */
+87: 
+88:   /* add user code end NonMaskableInt_IRQ 0 */
+89: 
+90:   /* add user code begin NonMaskableInt_IRQ 1 */
+91: 
+92:   /* add user code end NonMaskableInt_IRQ 1 */
+93: }
+
+mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c
+350:   * @param  none
+351:   * @retval none
+352:   */
+353: __attribute__((section("RAMCODE1")))  /*--*/
+354: void USART2_IRQHandler(void)
+355: {
+356:   /* add user code begin USART2_IRQ 0 */
+357: 	gui_rx_callback();
+358:   /* add user code end USART2_IRQ 0 */
+359:   /* add user code begin USART2_IRQ 1 */
+360: 
+361:   /* add user code end USART2_IRQ 1 */
+362: }
+363: 
+364: /**
+365:   * @brief  this function handles USART6 handler. (转发串口 RX IDLE 判帧)
+366:   * @param  none
+367:   * @retval none
+368:   */
+369: void USART6_IRQHandler(void)
+370: {
+371:   if(usart_interrupt_flag_get(USART6, USART_IDLEF_FLAG) != RESET)
+372:   {
+373:     usart_flag_clear(USART6, USART_IDLEF_FLAG);
+
+mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c
+353: __attribute__((section("RAMCODE1")))  /*--*/
+354: void USART2_IRQHandler(void)
+355: {
+356:   /* add user code begin USART2_IRQ 0 */
+357: 	gui_rx_callback();
+358:   /* add user code end USART2_IRQ 0 */
+359:   /* add user code begin USART2_IRQ 1 */
+360: 
+361:   /* add user code end USART2_IRQ 1 */
+362: }
+363: 
+364: /**
+365:   * @brief  this function handles USART6 handler. (转发串口 RX IDLE 判帧)
+366:   * @param  none
+367:   * @retval none
+368:   */
+369: void USART6_IRQHandler(void)
+370: {
+371:   if(usart_interrupt_flag_get(USART6, USART_IDLEF_FLAG) != RESET)
+372:   {
+373:     usart_flag_clear(USART6, USART_IDLEF_FLAG);
+374: 
+375:     /* 帧长 = 缓冲总长 - DMA 剩余计数 */
+376:     forward_uart_dma.forward_uart_rx_len =
+
+mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c
+365:   * @brief  this function handles USART6 handler. (转发串口 RX IDLE 判帧)
+366:   * @param  none
+367:   * @retval none
+368:   */
+369: void USART6_IRQHandler(void)
+370: {
+371:   if(usart_interrupt_flag_get(USART6, USART_IDLEF_FLAG) != RESET)
+372:   {
+373:     usart_flag_clear(USART6, USART_IDLEF_FLAG);
+374: 
+375:     /* 帧长 = 缓冲总长 - DMA 剩余计数 */
+376:     forward_uart_dma.forward_uart_rx_len =
+377:         (uint16_t)(FORWARD_UART_RX_BUF_SIZE - dma_data_number_get(DMA1_CHANNEL5));
+378: 
+379:     /* 复位 DMA 循环计数，让下一帧从缓冲区头部开始 */
+380:     dma_channel_enable(DMA1_CHANNEL5, FALSE);
+381:     DMA1_CHANNEL5->maddr = (uint32_t)forward_uart_dma.forward_uart_rx_buf;
+382:     DMA1_CHANNEL5->dtcnt = FORWARD_UART_RX_BUF_SIZE;
+383:     dma_channel_enable(DMA1_CHANNEL5, TRUE);
+384: 
+385:     forward_uart_dma.forward_uart_rx_complete = 1;
+386:   }
+387: }
+388: 
+
+mcu-p3/motion-controller-mcu/project/src/at32f435_437_wk_config.c
+254:   nvic_irq_enable(TMR2_GLOBAL_IRQn, 0, 0);
+255:   nvic_irq_enable(TMR3_GLOBAL_IRQn, 0, 0);
+256:   nvic_irq_enable(TMR4_GLOBAL_IRQn, 0, 0);
+257:   nvic_irq_enable(TMR5_GLOBAL_IRQn, 1, 0);
+258:   nvic_irq_enable(USART2_IRQn, 2, 0);
+259:   nvic_irq_enable(USART6_IRQn, 2, 0);
+260:   nvic_irq_enable(TMR7_GLOBAL_IRQn, 0, 0);
+261: //  nvic_irq_enable(DMA1_Channel1_IRQn, 0, 0);
+262:   nvic_irq_enable(DMA1_Channel2_IRQn, 0, 0);
+263:   nvic_irq_enable(DMA1_Channel3_IRQn, 0, 0);
+264:   nvic_irq_enable(DMA1_Channel4_IRQn, 0, 0);
+265:   nvic_irq_enable(DMA2_Channel4_IRQn, 0, 0);
+266:   nvic_irq_enable(SDIO1_IRQn, 0, 0);
+267:   nvic_irq_enable(OTGFS1_IRQn, 0, 0);
+268: }
+269: 
+270: /* add user code begin 1 */
+271: 
+272: /* add user code end 1 */
+
+mcu-p3/motion-controller-mcu/project/src/at32f435_437_wk_config.c
+255:   nvic_irq_enable(TMR3_GLOBAL_IRQn, 0, 0);
+256:   nvic_irq_enable(TMR4_GLOBAL_IRQn, 0, 0);
+257:   nvic_irq_enable(TMR5_GLOBAL_IRQn, 1, 0);
+258:   nvic_irq_enable(USART2_IRQn, 2, 0);
+259:   nvic_irq_enable(USART6_IRQn, 2, 0);
+260:   nvic_irq_enable(TMR7_GLOBAL_IRQn, 0, 0);
+261: //  nvic_irq_enable(DMA1_Channel1_IRQn, 0, 0);
+262:   nvic_irq_enable(DMA1_Channel2_IRQn, 0, 0);
+263:   nvic_irq_enable(DMA1_Channel3_IRQn, 0, 0);
+264:   nvic_irq_enable(DMA1_Channel4_IRQn, 0, 0);
+265:   nvic_irq_enable(DMA2_Channel4_IRQn, 0, 0);
+266:   nvic_irq_enable(SDIO1_IRQn, 0, 0);
+267:   nvic_irq_enable(OTGFS1_IRQn, 0, 0);
+268: }
+269: 
+270: /* add user code begin 1 */
+271: 
+272: /* add user code end 1 */
+
+mcu-p3/motion-controller-mcu/project/src/wk_usart.c
+290:    * Users need to configure USART2 interrupt functions according to the actual application.
+291:    * 1. Call the below function to enable the corresponding USART2 interrupt.
+292:    *     --usart_interrupt_enable(...)
+293:    * 2. Add the user's interrupt handler code into the below function in the at32f435_437_int.c file.
+294:    *     --void USART2_IRQHandler(void)
+295:    */
+296: 
+297:   /* add user code begin usart2_init 2 */
+298: 	/* 接收改为 DMA 搬运: 关闭逐字节 RDBF 中断, 保留 IDLE 中断用于判帧 */
+299: 	usart_interrupt_enable(USART2, USART_RDBF_INT, FALSE);
+300: 	usart_interrupt_enable(USART2, USART_IDLE_INT, TRUE);
+301:   /* add user code end usart2_init 2 */
+302: 
+303:   usart_enable(USART2, TRUE);
+304: 
+305:   /* add user code begin usart2_init 3 */
+306: 
+307:   /* add user code end usart2_init 3 */
+308: }
+309: 
+310: /* add user code begin 1 */
+311: 
+312: 
+313: 

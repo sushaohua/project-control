@@ -1,0 +1,29 @@
+        has_ancestor(cards, predecessor, target, visited)
+        for predecessor in predecessors if predecessor in cards
+    )
+
+
+def structural_errors(task_id, card, cards, workspace):
+    problems = []
+    required = [
+        "title", "revision", "primary_work_package", "scope_status", "write_scope",
+        "protocol_input", "source_baseline", "dispatch_binding", "dependency_conditions",
+        "verification", "deliverables", "rollback", "budget", "resources", "checkpoint",
+        "review_assignments", "handoff", "execution_contract", "readiness_pending",
+    ]
+    problems.extend(
+        "missing " + field for field in required
+        if not card.get(field) and field != "dependency_conditions"
+    )
+    if "dependency_conditions" not in card:
+        problems.append("missing dependency_conditions")
+    if card.get("status") not in STATES:
+        problems.append("invalid status")
+    if card.get("scope_status") != "mapped":
+        problems.append("new task scope is not mapped")
+    if card.get("dispatchable") is not True:
+        problems.append("microtask must be dispatchable type (this does not mean Ready)")
+    parent_id = card.get("primary_work_package")
+    parent = cards.get(parent_id, {})
+    if parent.get("task_kind") != "work_package" or task_id not in parent.get("child_tasks", []):
+        problems.append("primary work package is missing or does not list this child")

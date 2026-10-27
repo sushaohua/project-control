@@ -1,0 +1,37 @@
+[
+  {
+    "path": ".agents/rules/templates/任务卡模板.md",
+    "before_sha256": "3d3ed3b24771ed8b4d956738338c05fb84f603f8b3cae82b3da1eead48d26879",
+    "candidate_sha256": "6121c4a99a5e155b5bf56c25115f67bc61e56274e431390bc1c8ba0ddc486ce6"
+  },
+  {
+    "path": ".agents/rules/templates/角色任务提示词.md",
+    "before_sha256": "85037f4e7ddb317877c352e0c0dbf5b87953b26c58a2d9e6b1518ac8548f9e6e",
+    "candidate_sha256": "aa2a3f07753bf90dc20ea4aca749b974514b2ddd9dc6844c7aa422e42fe1eda9"
+  },
+  {
+    "path": "docs/guides/templates/task_run_record.md",
+    "before_sha256": "ed341f7dcb215831720035bc6772317b8a63ca558e0e93eca6e1e8b4b1a95703",
+    "candidate_sha256": "79b7132f1732ac453d690ba3450e5082f935e1d6be3d42d364f4e379383ed6c2"
+  },
+  {
+    "path": ".agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+    "before_sha256": "25275406cbea9a0e56f53e492c37bb67420087c4020f11f9207fca821ba7606a",
+    "candidate_sha256": "747a464dcacaa4e5f342b0875e49de972b2dcbcb6abc6208204f037d93c34aa7"
+  },
+  {
+    "path": ".agents/rules/codex_qa_review.md",
+    "before_sha256": "42872e1cf12467f050fab32895e99434f07145080f1c43f905460dc162b04e2e",
+    "candidate_sha256": "90d41e689ea9bf7d6943f987d6a54440141b2775033fbcd66a79895976ba4f4c"
+  },
+  {
+    "path": "docs/guides/minimc_v2_task_execution.md",
+    "before_sha256": "cb4353a9322fff1e3c1c822dfc8858c38f27bb3ea0ee75d88852705bfe3f3dbe",
+    "candidate_sha256": "1b0d51ba17f18369965e70f03caa71246bb27d07c13eee12df94c21ce3d67559"
+  },
+  {
+    "path": ".agents/rules/templates/QA审查报告模板.md",
+    "before_sha256": null,
+    "candidate_sha256": "9f8687eb89eb2ad4b4a304709fbcfed47488b06073656204c841b559cbefbba6"
+  }
+]

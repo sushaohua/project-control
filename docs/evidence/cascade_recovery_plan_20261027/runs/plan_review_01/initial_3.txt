@@ -1,0 +1,86 @@
+| `mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c` | gui_rx_callback只完成必要清标志/快照/入队，不在IRQ等待业务；避免同槽DMA覆盖 | CR-05B / ENG-MC |
+| `mcu-p3/motion-controller-mcu/project/src/main.c` | 主循环服务解析/路由/超时，明确每轮预算，不阻塞Marlin | CR-05C / ENG-MC |
+| `mcu-p3/motion-controller-mcu/project/src/wk_usart.c`、`project/inc/wk_usart.h`、`project/inc/wk_dma.h`、`project/src/wk_dma.c` | 有界二进制收发、slot交接、busy/完成/错误传递、运行/升级独占；不复用追加CRLF的文本接口 | CR-05A/B/D / ENG-MC |
+| `mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c`、`at32f435_437_wk_config.c` | 核查IRQ调用链和优先级；只改已证明必要的接点，不能靠改优先级绕开等待设计 | CR-05B / ENG-MC |
+| `mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h`、`src/app/minimc_proto.c`（新增） | TH有界原生解析及GET_VERSION/PING业务响应；结构布局编译期检查 | CR-06A～C / ENG-TH |
+| `mcu-p3/color-engine-mcu/io_toggle/src/bsp/usart.c`、`inc/usart.h`、`src/user/main.c` | 收发交接与周期处理；二进制业务口和调试口分流；核对现有端口占用 | CR-06B/C / ENG-TH |
+| `mcu-p3/color-engine-mcu/io_toggle/src/app/mycontrol.c` | 仅当旧文本入口与新业务口实际冲突时局部隔离；不改运动/温控业务 | CR-06B / ENG-TH |
+| `mcu-p3/color-engine-mcu/io_toggle/Makefile`；MC `CMakeLists.txt`/`Makefile` | 注册自研文件、编译身份和独立输出；沿用已核查pack入口，产物位置记录真实值 | CR-05E/06D / 对应Owner |
+| `mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c`及对应头文件 | ACK真实容量/长度/序号、文件读返回/长度/Trailer核对、误导性Verified日志 | CR-07A/B / ENG-MC |
+| `mcu-p3/motion-controller-mcu/project/src/wk_usart.c`、`project/inc/wk_usart.h` | recv_frame接收容量契约与升级调用者对齐；改接口前列所有调用点 | CR-07A / ENG-MC |
+| `mcu-p3/README.md`及项目内实际pack脚本 | 纠正header/trailer、改名/安装成功的含义，写出可复现双制品命令与身份检查；只有确认缺陷才改打包算法 | CR-07C/08 / 对应Owner |
+| `mcu-p3/tools/pack_firmware.py`、TH `libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld`、MC `AT32F435xG_FLASH.ld`、`th_upgrade_mgr.h` | 先核实Flash/锚点与Bootloader能力；打包显式board/版本并查向量/长度/摘要；只修改已确认必要的链接/容量项 | CR-07C / ARCH＋MCU Owner |
+
+Bootloader若只有二进制不宣称已审其Flash写入实现；仅登记准确哈希、可验证格式与限制。MC/TH构建、启动地址、时钟、VTOR必须分别确认：MC `0x08020000`、TH `0x08004000`为现有规则值，首次烧录命令仍需按HW-G2人工复核。
+
+### 4.4 候选、实测和恢复
+
+| 文件 | 操作与内容 | 票/主责 |
+| --- | --- | --- |
+| `project-control/docs/releases/ap_mc_th_readonly_candidate.yaml`（新增） | 锁AP/MC/TH完整提交、源差异/配置/工具链/制品哈希、协议、测试预期、Bootloader和证据 | CR-08 / INTEGRATOR |
+| `project-control/docs/operations/ap_mc_th_joint_debug.md`（新增） | 接线/设备确认、资源占用、制品校验、刷写SOP、启动身份、三段联调、失败退出及恢复 | CR-08/09 / COORD＋对应Owner |
+| `test_harness/hil/cascade/cases.json`、`capture.py`（新增） | 实现前冻结物理正常/故障判据；独立采集两段双向原始数据、命令/cwd/退出码；不包含成功响应注入 | CR-02Q/10 / QA作者；独立ARCH复核 |
+| `project-control/docs/evidence/cascade_recovery/<ticket>/runs/<run-id>/`（后续新增） | 各作者/独立审查者自己的报告、原始命令输出、制品和hash清单；更正另建run | 所有后续票 |
+| `workspace.json`、`WORKSPACE.md`、根`HANDOFF_20261027.md`、控制仓交接入口 | 先分别提交子仓再锁版本；说明源码恢复锁不等于HIL批准；旧文档只加准确导航 | CR-11 / COORD/INTEGRATOR |
+| `mcu-p3/.gitignore`、`mcu-p3/AGENTS.md`（拟受控入口） | 经来源迁移后将必要本地入口纳入版本；先备份现有软链，不就地覆盖/写外部软链目标，不删除用户本地资料 | CR-03E / 规则Owner＋ENG-MC/TH |
+| `tools/workspace.py`、`tools/test_workspace.py`、`WORKSPACE.md`、根`AGENTS.md` | 增加规则来源/漂移检查及隔离恢复测试；根旧.agents明确canonical导航；恢复不静默掩盖旧副本差异 | CR-03E / 工具Owner＋规则Owner |
+
+## 5. 实施票与严格顺序
+
+下列ID为拟建任务，尚未派单；不是已运行会话。每张实现票仍须一个owner、准确revision、实际worktree、白名单、有效租约、检查者与收件入口。最大两张实现票并行；每个作者一张活跃微步。
+
+| 票 | 单一结果 | 前置 | 验收/退出条件 |
+| --- | --- | --- | --- |
+| CR-00 | 固化基线、保护已有修改、登记本次审查输入 | 用户本次文档/排查授权 | 五仓HEAD/工作树/规则/关键证据哈希可复核；无实施状态提升 |
+| CR-01 | 结论撤回/限制与卡片语法修正 | CR-00；COORD按证据裁决 | 历史完整、每个受影响消费者可追溯、YAML能解析；不宣称问题已修复 |
+| CR-02 | 最小ICD与接口接受 | CR-01＋实际能力调查 | AP/MC/TH Owner接受；错误/超时/缓冲/身份参数齐全；独立检查 |
+| CR-02Q | 独立预期与运行器/采集接口 | CR-02 | 黄金预期不来自生产输出；QA作者产物由独立Codex ARCH复核 |
+| CR-03A～D | 任务schema→类型/状态规则→版本/投影规则→独立反例 | CR-01；规则变更消费CR-02 | 第6.1节反例全被拒；良好样例可推进；脚本不自动修改正式状态 |
+| CR-03E | 必要规则版本化与恢复一致性 | CR-00、CR-03；来源与迁移方案已接受 | 隔离恢复后规则/入口一致；本地资料保留；不把同步脚本当工程验收 |
+| CR-04A～E | AP接口→I/O→命令与关联→日志/CLI→测试集成 | CR-02、CR-02Q；开工需CR-03有效门禁 | 第6.2节正常与负例通过；完整所需CTest集合实际执行 |
+| CR-05A～E | MC接口→ISR/缓冲→本机命令→透明路由→打包 | 同上；必要真实输入已接受 | 路由/事件调度/边界/错误路径符合预期；准确制品 |
+| CR-06A～D | TH接口→接收交接→命令→构建打包 | 同上 | TH原生响应与独立黄金帧一致；准确制品 |
+| CR-07A～C | 升级容量/ACK→文件预检→SOP限制 | CR-00；独立升级修复契约 | 边界反例通过；若为部署所需必须先于CR-09；不用该路径时明确限制和替代证据 |
+| CR-08 | 准确组合候选与部署SOP | CR-04/05/06完成所需独立检查；部署相关CR-07 | 不依赖最终HIL已通过，避免循环依赖；清单匹配所有制品 |
+| CR-09 | 工程联合调试记录 | CR-08；实际设备/占用/HW-G门禁 | 分段定位后全链路正常及恢复可观察；修代码则回作者产生新候选 |
+| CR-10 | 独立真实HIL验收 | CR-09稳定候选＋CR-02Q预期 | 独立Codex完整报告，另有其报告所需独立复核；绑定准确组合 |
+| CR-11 | 接受、交接与源码同步 | CR-10及全部必需签署 | COORD更新正式状态；按授权同步，逐仓远端SHA；实机结论不因push自动升级 |
+
+同一CR下的A/B/C不是允许一票连续完成的口号，实例化时分别建卡，按上一微步已验收放行后才领下一步。接口/符号桩/核心逻辑/静态与单测分开。普通文档勘误只做对应文档检查，不伪造固件构建。
+
+```mermaid
+flowchart TD
+    A[CR-00 基线] --> B[CR-01 纠正结论]
+    B --> C[CR-02 契约]
+    C --> Q[CR-02Q 独立预期]
+    B --> G[CR-03 任务门禁]
+    Q --> AP[CR-04 AP]
+    Q --> MC[CR-05 MC]
+    Q --> TH[CR-06 TH]
+    G --> AP
+    G --> MC
+    G --> TH
+    A --> U[CR-07 升级专项]
+    AP --> R[CR-08 锁定候选]
+    MC --> R
+    TH --> R
+    R --> J[CR-09 工程联调]
+    U -.所选部署路径需要时.-> J
+    J --> V[CR-10 独立HIL]
+    V --> E[CR-11 接受与交接]
+```
+
+## 6. 必须执行的验收矩阵
+
+### 6.1 任务工具反例（全部在临时副本）
+
+| 反例 | 预期 |
+| --- | --- |
+| YAML含未引用冒号、重复ID、未知status、漏登记的MCQ/THQ | 非零退出，定位文件；不能只因扫描不到就忽略 |
+| MS已Done但前置Backlog/缺接受版本，或子票绕过必要能力门禁 | 拒绝该推进/消费；区分历史快照的说明与活动任务检查 |
+| 作者兼自己的ARCH/QA、任一必需签署空值、session仅计划别名 | 拒绝独立接受，不能因报告文本含APPROVED通过 |
+| 租约过期、owner/revision错配、实际工作区未绑定、路径越白名单 | 活动票拒绝新增动作；历史Done不要求租约现在仍有效，而核查当时执行证据 |
+| 候选SHA不存在、前置版本与报告不符、当前制品与所审哈希不符 | 拒绝版本接受；构建时间导致重打包hash不同也不能直接当同一部署制品 |
+| 报告不存在/范围不符/所审候选不同/已撤回/原始命令缺失 | 保持待审或拒绝对应接受，不能自动补APPROVED |
+| 看板与卡片依赖/状态不同、两票重叠文件/硬件资源 | 报错要求COORD协调；路径冲突用归一化和glob包含关系，不只比较字符串相等 |
+| 合法单板实现票仅交本板固件；最终组合交双端固件 | 前者按本票验收，后者必须双端；不把最终出口要求提前成循环依赖 |

@@ -1,0 +1,115 @@
+{
+  "actual_session": "/root/task_template_review",
+  "created_utc": "2026-10-27T09:15:16.030762+00:00",
+  "decision": "REJECTED",
+  "files": [
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_01.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_01.stdout.log",
+      "sha256": "02e751a0c165cbb7b63df88451ea1792bc0eacbfc07837c927eaf69264b4f054"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_02.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_02.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_03.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_03.stdout.log",
+      "sha256": "6768eecd93a116ee34830a642f23b083d963b7e7af649535be2373239327f5ad"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_04.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_04.stdout.log",
+      "sha256": "baece0e638ffaf76b88a29b25ba7e78661c99fc1d221225aaef5c47c18c04e1f"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_05.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_05.stdout.log",
+      "sha256": "176ae5cece73c631f5b11b4facb089c042e15fdc7801d29e1be49a00b927024d"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_06.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_06.stdout.log",
+      "sha256": "4f36c23f24cabaceb250f26d7c50cc2b5ce0c621fbfc5396b8b7c26bdb02facd"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_07.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_07.stdout.log",
+      "sha256": "ac64ff9db09f385487d8ce26ad15567ee24e1a8cc3fb784e25678d9249620089"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/commands.json",
+      "sha256": "efc744f7d3198fd59d054763f3a45b7f777f6e907b5efee969c905b08f701501"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/independent_candidate.patch",
+      "sha256": "21b768a10a846360e484f83a4fd021d9605db1db53f32bbc452fecd52bb4f12c"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/independent_checks.py",
+      "sha256": "bdf7eea9838124b8190dc88e3a3e4b0847cc1627b35c46c01998b75419e4f919"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/qa_review_report.md",
+      "sha256": "304c0e8e89547042381be80dc579a09b9d055bcc9f29254660cc5699eeadcbff"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/reviewed_candidate_manifest.json",
+      "sha256": "a6a6de2540d806929b08f8fd1da03f7ccd1b427ccc1b0f3ec3578f33cb60b99d"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/reviewed_snapshot/.agents/rules/codex_qa_review.md",
+      "sha256": "7f8723fa9ec8da48e7d9e7b4e6a2628299cce83732bd72aefd77772f128c90fa"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/reviewed_snapshot/.agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+      "sha256": "4a405e1e06dedc13a857d82e6838cdb9eeebf4eb77d7bd7c62a6960d91ce0ee8"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/reviewed_snapshot/.agents/rules/templates/QA审查报告模板.md",
+      "sha256": "9f8687eb89eb2ad4b4a304709fbcfed47488b06073656204c841b559cbefbba6"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/reviewed_snapshot/.agents/rules/templates/任务卡模板.md",
+      "sha256": "0a290d6e8ddc2ea19b7313677b6ea39da8924083f389d96f6ea04de424e4a1ab"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/reviewed_snapshot/.agents/rules/templates/角色任务提示词.md",
+      "sha256": "aa2a3f07753bf90dc20ea4aca749b974514b2ddd9dc6844c7aa422e42fe1eda9"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/reviewed_snapshot/docs/guides/minimc_v2_task_execution.md",
+      "sha256": "7eb733f76e9a846d0bcab5f58fba9377f911e3654ce00c02599a1f1943b61990"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/reviewed_snapshot/docs/guides/templates/task_run_record.md",
+      "sha256": "79b7132f1732ac453d690ba3450e5082f935e1d6be3d42d364f4e379383ed6c2"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_01/run_commands.py",
+      "sha256": "e19ad7bcd0e33ada2497e00de696eae1ba3f14dd0b416d4411e53bfe04da50ab"
+    }
+  ]
+}

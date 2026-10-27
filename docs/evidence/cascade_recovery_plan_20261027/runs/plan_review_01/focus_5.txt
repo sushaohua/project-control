@@ -1,0 +1,91 @@
+//    writePageCmd(gui_dgus.curPage);
+//  }
+//}
+
+/**
+ * @brief GUI页面切换函数
+ * @param page_num 目标页面编号
+ * @param errorMsg 可选的错误消息字符串，NULL表示不显示错误消息
+ * @return null
+ * @note 该函数是3D打印机UI系统的核心页面切换函数，负责在LCD上显示不同的界面页面，并可选择性地显示错误提示信息
+ */
+void gui_showPage(uint16_t page_num, const char *errorMsg)
+{
+    uint16_t errorMsg_len;            // 错误消息长度变量
+    uint16_t errTextAddress = 0x119C; // LCD中用于显示错误消息的固定内存地址
+    size_t varCnt = 1;                // 变量数量（此处错误消息作为单个变量处理）
+    size_t varLen = 50;               // 变量最大长度（错误消息最多可显示50个字符）
+
+    // 检查是否提供了错误消息，如果有则显示
+    if (NULL != errorMsg)
+    {
+        errorMsg_len = sizeof(errorMsg) / sizeof(char);                            // 计算错误消息的长度
+        printf("Receive errorMsg: %s\r\n", errorMsg);                              // 通过串口打印错误消息（调试用途）
+        gui_clearVariableBuffer(errTextAddress, varCnt, varLen);                   // 清除LCD上指定位置的旧错误消息
+        gui_updateReminderText(errTextAddress, (uint8_t *)errorMsg, errorMsg_len); // 在LCD上更新显示新的错误消息
+    }
+
+    // 更新UI页面信息结构体中的当前页面ID
+    UI_Page_info.Current_Page_Id = page_num;
+
+    // 更新GUI状态管理结构体的页面状态信息
+    gui_dgus.prevPage = gui_dgus.curPage; // 将当前页面保存为上一个页面
+    gui_dgus.curPage = page_num;          // 设置新的页面为当前页面
+
+    // 向LCD控制器发送页面切换命令，执行实际的页面切换
+    gui_writePageCmd(page_num);
+
+    // 通过串口打印页面切换信息（调试用途）
+    // printf("change to new page: %d->%d\r\n", gui_dgus.prevPage, gui_dgus.curPage);
+}
+
+/**
+  * @brief  gui_updateProgress
+  * @note
+  * @param
+  * @retval null
+  */
+static void gui_updateProgress(uint16_t address, uint8_t percent)
+{
+	uint8_t cmd[10] = {0};
+    uint16_t addr = address;
+	size_t len = 10;
+    uint16_t crc = 0;
+	
+	TODGUSADDR(addr);
+	
+	cmd[0] = CMD_HEAD1;
+	cmd[1] = CMD_HEAD2;
+	cmd[2] = 0x07;
+	cmd[3] = CMD_WRITE_RAM;
+	cmd[4] = addr >> 8;
+	cmd[5] = addr & 0xFF;
+    cmd[7] = percent;
+
+    // only need to calc crc for command and data
+    // not include command head and length, that is 5 bytes
+    crc = calcCRC16(cmd + 3, len - 5);
+    cmd[len - 2] = crc >> 8;
+    cmd[len - 1] = crc & 0xff;
+
+    send_msg_to_lcd_screen(cmd, len);
+}
+/**
+  * @brief  gui_updateTime
+  * @note
+  * @param
+  * @retval null
+  */
+static void gui_updateTime(uint16_t address, uint32_t time)
+{
+	uint8_t timeNeed[12] = {0};
+    uint16_t addr = address;
+    uint16_t crc = 0;
+    size_t len = 12;
+
+    uint16_t hours = (time /1000) / 60 / 60;
+    uint16_t minutes = (time /1000) / 60 % 60;
+    uint16_t seconds = (time /1000) % 60;
+    char strHours[10] = { 0 };
+    char strMinutes[10] = { 0 };
+    char strSeconds[10] = { 0 };

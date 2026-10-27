@@ -1,0 +1,22 @@
+
+### 4.1 控制仓与任务门禁
+
+| 文件 | 操作与内容 | 票/主责 |
+| --- | --- | --- |
+| `project-control/docs/decisions/cascade_candidate_adjudication_20261027.md`（新增） | 精确记录旧结论限制/撤回、旧/新版本、受影响消费者、恢复条件；历史结果原件不覆盖 | CR-01 / COORD |
+| `project-control/.agents/kanban/milestones/marlin_ms07_20261007_214108.md` | 引号修复；撤回适用性引用；独立ARCH与QA记录；准确依赖版本；按证据修状态 | CR-01/03 / COORD |
+| `project-control/.agents/kanban/microtasks/mc_firmware/MCQ-0106.md` | 保留旧实现/报告引用，追加失效说明与替代票；明确停止作为原生路由候选 | CR-01 / COORD |
+| `project-control/.agents/kanban/milestones/marlin_ms14_20261007_214108.md` | 修正有效状态拼写；登记未满足条件；关联MC/TH/AP子票、联调票与独立验收 | CR-01/03 / COORD |
+| `project-control/.agents/kanban/milestones/marlin_ms05_20261007_214108.md`、`marlin_ms12_20261007_214108.md`、`marlin_ms13_20261007_214108.md`、`marlin_ms19_20261008_083854.md`（均在milestones） | 接受/调查/独立预期各自按证据补齐；不能只把Backlog批量改Done | CR-02/03 / 对应作者＋COORD |
+| `project-control/.agents/kanban/milestones/marlin_ms21_20261008_083854.md`、`marlin_ms17_20261007_214108.md`（均在milestones） | 分别承担准确双端候选与最终独立HIL；保留职责分离 | CR-08/10 / COORD |
+| `project-control/.agents/kanban/KANBAN.md` | 刷新投影、原件链接、依赖、实际阶段、时间和下一步；删除会误导的旧实时叙述或明确历史时间 | CR-01/03/10 / COORD |
+| `project-control/.agents/kanban/microtasks/cascade_recovery/CR-*.md`（新增） | 把第5节建议票实例化；各票输入、路径、资源、独立会话及租约留真实值 | CR-03 / COORD |
+| `project-control/tools/check_task_graph.py` | 扫描/类型/schema、完整生命周期、父子能力、身份、租约期限、前置接受版本、产物、看板一致性 | CR-03A～C / 控制工具作者 |
+| `project-control/tools/test_check_task_graph.py`（新增） | 全部使用临时副本，验证第6节门禁反例；不得改正式卡促测试通过 | CR-03D / 独立QA作者＋独立复核 |
+| `project-control/.agents/rules/codex_qa_review.md`、`04_公共看板与读写协议.md`、`02_模块与Agent职责.md`（均在rules） | 统一状态/决定/blocked、反例语义、组合出口、必要签署与版本；保留独立QA和硬件红线 | CR-02/03 / 相应规则Owner |
+| `project-control/docs/analysis/ap_mc_th_cascade_verification_issues_and_root_cause_analysis_20261027.md` | 通过追加勘误/接受记录纠正第1.3节事实，不覆盖历史责任证据 | CR-01 / 文档Owner |
+| `project-control/docs/handoff/HANDOFF_20261027.md`、`docs/guides/minimc_v2_task_execution.md` | 当前入口指向本方案和准确任务；旧交接标明时间/适用版本 | CR-03/10 / 对应Owner |
+| `project-control/.agents/kanban/microtasks/minimc_v2/README.md`、任务模板 | 修复指向已移入superseded卡的当前链接，区分实际20张活跃卡与历史25张拆解，展示当前最终票V2-P0506 | CR-03 / COORD |
+| `project-control/.agents/rules/`及`docs/baseline/mcu_rule_inputs/`（必要版本化输入） | 核对并迁入恢复时必须具备的MCU规则/指南，记录来源哈希和优先级；不把参考文档变成自动批准 | CR-03E / 规则Owner |
+
+规则/规划较多但不是一次全量重写；以撤回引用、修正矛盾和补可执行门禁为最小差异。根 `.agents` 不并行修改；先核对来源，后决定只读导航/可复现导出方案。MCU外部软链目标不在本轮写入范围。

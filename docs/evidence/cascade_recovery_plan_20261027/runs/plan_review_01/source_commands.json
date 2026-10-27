@@ -1,0 +1,57 @@
+[
+  {
+    "command": [
+      "sed",
+      "-n",
+      "1,240p",
+      "soc-ap/contracts/minimcproto/v2-commands.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "source_0.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "1,240p",
+      "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "source_1.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "1,360p",
+      "soc-ap/core/host/main.cpp"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "source_2.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "1,220p",
+      "soc-ap/core/forward/transport/serial_posix.cpp"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "source_3.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "145,166p",
+      "project-control/docs/planning/ap_mc_th_cascade_recovery_implementationplan_20261027_162003.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "source_4.txt"
+  }
+]

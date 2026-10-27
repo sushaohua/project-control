@@ -1,0 +1,127 @@
+Host software audit only; no physical hardware / no HIL.
+TRANSPORT baud EXIT=0
+REQUEST=921600 ACTUAL_IS_115200=1
+
+TRANSPORT eagain WATCHDOG=300ms PROCESS_KILLED EXIT=-9
+FILL_RESULT=-1 ERRNO=11
+
+TRANSPORT zero WATCHDOG=300ms PROCESS_KILLED EXIT=-9
+
+HOST nonnumeric_timeout ARGS=['--timeout-ms', 'garbage'] EXIT=0 ELAPSED=0.001s TX=55aa01020503040001000000ae08
+soc-ap: executing version query on /dev/pts/0 (baud=115200 8N1, timeout=0ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 03 04 00 01 00 00 00 AE 08 
+INFO: Query window closed.
+  total_bytes_received: 0
+  counters:
+    err_sof: 0
+    err_header: 0
+    err_mtu: 0
+    err_crc: 0
+    err_timeout: 0
+    dispatched_frames: 0
+
+HOST negative_timeout ARGS=['--timeout-ms', '-1'] EXIT=0 ELAPSED=0.001s TX=55aa01020503040001000000ae08
+soc-ap: executing version query on /dev/pts/0 (baud=115200 8N1, timeout=-1ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 03 04 00 01 00 00 00 AE 08 
+INFO: Query window closed.
+  total_bytes_received: 0
+  counters:
+    err_sof: 0
+    err_header: 0
+    err_mtu: 0
+    err_crc: 0
+    err_timeout: 0
+    dispatched_frames: 0
+
+HOST nonnumeric_cmd ARGS=['--cmd-id', 'garbage'] EXIT=0 ELAPSED=0.081s TX=55aa010205000400010000002cd0
+soc-ap: executing version query on /dev/pts/0 (baud=115200 8N1, timeout=80ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 00 04 00 01 00 00 00 2C D0 
+INFO: Query window closed.
+  total_bytes_received: 0
+  counters:
+    err_sof: 0
+    err_header: 0
+    err_mtu: 0
+    err_crc: 0
+    err_timeout: 0
+    dispatched_frames: 0
+
+HOST trailing_garbage_cmd ARGS=['--cmd-id', '3junk'] EXIT=0 ELAPSED=0.081s TX=55aa01020503040001000000ae08
+soc-ap: executing version query on /dev/pts/0 (baud=115200 8N1, timeout=80ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 03 04 00 01 00 00 00 AE 08 
+INFO: Query window closed.
+  total_bytes_received: 0
+  counters:
+    err_sof: 0
+    err_header: 0
+    err_mtu: 0
+    err_crc: 0
+    err_timeout: 0
+    dispatched_frames: 0
+
+HOST overflow_cmd ARGS=['--cmd-id', '0x103'] EXIT=0 ELAPSED=0.081s TX=55aa01020503040001000000ae08
+soc-ap: executing version query on /dev/pts/0 (baud=115200 8N1, timeout=80ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 03 04 00 01 00 00 00 AE 08 
+INFO: Query window closed.
+  total_bytes_received: 0
+  counters:
+    err_sof: 0
+    err_header: 0
+    err_mtu: 0
+    err_crc: 0
+    err_timeout: 0
+    dispatched_frames: 0
+
+HOST negative_cmd ARGS=['--cmd-id', '-1'] EXIT=0 ELAPSED=0.081s TX=55aa010205ff0400010000005d75
+soc-ap: executing version query on /dev/pts/0 (baud=115200 8N1, timeout=80ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 FF 04 00 01 00 00 00 5D 75 
+INFO: Query window closed.
+  total_bytes_received: 0
+  counters:
+    err_sof: 0
+    err_header: 0
+    err_mtu: 0
+    err_crc: 0
+    err_timeout: 0
+    dispatched_frames: 0
+
+HOST overflow_dst ARGS=['--dst-id', '0x102'] EXIT=0 ELAPSED=0.082s TX=55aa01020503040001000000ae08
+soc-ap: executing version query on /dev/pts/0 (baud=115200 8N1, timeout=80ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 03 04 00 01 00 00 00 AE 08 
+INFO: Query window closed.
+  total_bytes_received: 0
+  counters:
+    err_sof: 0
+    err_header: 0
+    err_mtu: 0
+    err_crc: 0
+    err_timeout: 0
+    dispatched_frames: 0
+
+HOST peer_hangup ARGS=[] EXIT=0 ELAPSED=0.081s TX=55aa01020503040001000000ae08
+soc-ap: executing version query on /dev/pts/0 (baud=115200 8N1, timeout=80ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 03 04 00 01 00 00 00 AE 08 
+INFO: Query window closed.
+  total_bytes_received: 0
+  counters:
+    err_sof: 0
+    err_header: 0
+    err_mtu: 0
+    err_crc: 0
+    err_timeout: 0
+    dispatched_frames: 0
+
+HOST noise_capture_truncation ARGS=[] EXIT=0 ELAPSED=0.081s TX=55aa01020503040001000000ae08
+soc-ap: executing version query on /dev/pts/0 (baud=115200 8N1, timeout=80ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 03 04 00 01 00 00 00 AE 08 
+INFO: Query window closed.
+  total_bytes_received: 600
+  counters:
+    err_sof: 600
+    err_header: 0
+    err_mtu: 0
+    err_crc: 0
+    err_timeout: 0
+    dispatched_frames: 0
+RX Raw Captured Data (512 bytes): 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 5A 
+

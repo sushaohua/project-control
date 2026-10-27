@@ -1,0 +1,176 @@
+#include "serial_posix.h"
+
+#include <cerrno>
+#include <fcntl.h>
+#include <poll.h>
+#include <termios.h>
+#include <unistd.h>
+
+namespace minimc {
+
+static speed_t baud_to_speed(uint32_t baud) noexcept {
+    switch (baud) {
+        case 9600:
+            return B9600;
+        case 19200:
+            return B19200;
+        case 38400:
+            return B38400;
+        case 57600:
+            return B57600;
+        case 115200:
+            return B115200;
+        case 230400:
+            return B230400;
+        default:
+            return B115200;
+    }
+}
+
+static bool configure_termios(int fd, speed_t speed) noexcept {
+    struct termios tty{};
+    if (tcgetattr(fd, &tty) != 0) {
+        return false;
+    }
+
+    cfsetospeed(&tty, speed);
+    cfsetispeed(&tty, speed);
+
+    // 8N1 raw configuration
+    tty.c_cflag &= static_cast<tcflag_t>(~PARENB);
+    tty.c_cflag &= static_cast<tcflag_t>(~CSTOPB);
+    tty.c_cflag &= static_cast<tcflag_t>(~CSIZE);
+    tty.c_cflag |= CS8;
+    tty.c_cflag &= static_cast<tcflag_t>(~CRTSCTS);
+    tty.c_cflag |= (CLOCAL | CREAD);
+
+    tty.c_lflag &= static_cast<tcflag_t>(~(ICANON | ECHO | ECHOE | ISIG));
+    tty.c_iflag &= static_cast<tcflag_t>(~(IXON | IXOFF | IXANY));
+    tty.c_iflag &= static_cast<tcflag_t>(~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL));
+    tty.c_oflag &= static_cast<tcflag_t>(~OPOST);
+
+    tty.c_cc[VMIN] = 0;
+    tty.c_cc[VTIME] = 0;
+
+    return tcsetattr(fd, TCSANOW, &tty) == 0;
+}
+
+bool serial_open(const SerialConfig* config, SerialContext* ctx) noexcept {
+    if (!config || !ctx || !config->device_path) {
+        return false;
+    }
+    if (ctx->is_open && ctx->fd >= 0) {
+        serial_close(ctx);
+    }
+
+    const int fd = open(config->device_path, O_RDWR | O_NOCTTY | O_NONBLOCK);
+    if (fd < 0) {
+        return false;
+    }
+
+    const speed_t speed = baud_to_speed(config->baud_rate);
+    if (!configure_termios(fd, speed)) {
+        close(fd);
+        return false;
+    }
+
+    tcflush(fd, TCIOFLUSH);
+    ctx->fd = fd;
+    ctx->is_open = true;
+    return true;
+}
+
+void serial_close(SerialContext* ctx) noexcept {
+    if (!ctx) {
+        return;
+    }
+    if (ctx->fd >= 0) {
+        close(ctx->fd);
+    }
+    ctx->fd = -1;
+    ctx->is_open = false;
+}
+
+bool serial_write(SerialContext* ctx,
+                  const uint8_t* data,
+                  size_t size,
+                  size_t* bytes_written) noexcept {
+    if (bytes_written != nullptr) {
+        *bytes_written = 0;
+    }
+    if (!ctx || !ctx->is_open || ctx->fd < 0) {
+        return false;
+    }
+    if (size == 0) {
+        return true;
+    }
+    if (!data) {
+        return false;
+    }
+
+    size_t total_written = 0;
+    while (total_written < size) {
+        const size_t remaining = size - total_written;
+        const ssize_t res = write(ctx->fd, data + total_written, remaining);
+        if (res > 0) {
+            total_written += static_cast<size_t>(res);
+        } else if (res < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
+                continue;
+            }
+            if (bytes_written != nullptr) {
+                *bytes_written = total_written;
+            }
+            return false;
+        }
+    }
+
+    if (bytes_written != nullptr) {
+        *bytes_written = total_written;
+    }
+    return true;
+}
+
+bool serial_read(SerialContext* ctx,
+                 SerialBuffer* buf,
+                 int timeout_ms,
+                 size_t* bytes_read) noexcept {
+    if (bytes_read != nullptr) {
+        *bytes_read = 0;
+    }
+    if (!ctx || !ctx->is_open || ctx->fd < 0 || !buf || !buf->data || buf->capacity == 0) {
+        return false;
+    }
+
+    struct pollfd pfd{};
+    pfd.fd = ctx->fd;
+    pfd.events = POLLIN;
+
+    const int poll_res = poll(&pfd, 1, timeout_ms);
+    if (poll_res < 0) {
+        return (errno == EINTR);
+    }
+    if (poll_res == 0) {
+        return true;
+    }
+    if ((pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+        return false;
+    }
+    if ((pfd.revents & POLLIN) == 0) {
+        return true;
+    }
+
+    const ssize_t res = read(ctx->fd, buf->data, buf->capacity);
+    if (res > 0) {
+        if (bytes_read != nullptr) {
+            *bytes_read = static_cast<size_t>(res);
+        }
+        return true;
+    }
+    if (res < 0 && (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)) {
+        return true;
+    }
+    return false;
+}
+
+} // namespace minimc

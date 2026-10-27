@@ -1,0 +1,81 @@
+{
+  "scope": "source review and host software negative tests; not HIL or formal task approval",
+  "copies": [
+    {
+      "path": "host/cascade_host_gap_audit_20261027.md",
+      "source": "/tmp/cascade_host_gap_audit_20261027.md",
+      "sha256": "a3fb946a1097795e657248cfb7a7f0329c5ed8f64e8c815e5580bf2463339803"
+    },
+    {
+      "path": "host/cascade_host_gap_probes_20261027.log",
+      "source": "/tmp/cascade_host_gap_probes_20261027.log",
+      "sha256": "67380e8bc8412977fd3465c732f957022e4e9cee89f4ca17ef171f0c48d92750"
+    },
+    {
+      "path": "host/cascade_host_gap_probes.py",
+      "source": "/tmp/cascade_host_gap_probes.py",
+      "sha256": "417850faa415f77bf1f99c39a2407e2ecdcaae888a699bc6e3b2aa7fb0602dbb"
+    },
+    {
+      "path": "host/cascade_transport_gap_probe.cpp",
+      "source": "/tmp/cascade_transport_gap_probe.cpp",
+      "sha256": "32316f6e2fd068ba9f99e1509dffe6d086991db8c2f5fcf93e637d1f2695f8e9"
+    },
+    {
+      "path": "host/initial_query_negative_cases.py",
+      "source": "/tmp/independent_host_review_20261027.py",
+      "sha256": "ce6871e684d021c327276bec2c59c2ae0f810b43eea5e4c05dfac18aca24a4d7"
+    },
+    {
+      "path": "host/LastTest.log",
+      "source": "/tmp/independent_host_review_20261027_build/Testing/Temporary/LastTest.log",
+      "sha256": "bfa457a620baf6014dd073cf90806b26521b2d60eef2942b8284446d12efaa4f"
+    },
+    {
+      "path": "workflow/cascade_workflow_gap_audit_20261027.md",
+      "source": "/tmp/cascade_workflow_gap_audit_20261027.md",
+      "sha256": "6a768003ea790dbc2a27309b6cd5ce163361800eb4d7e10d80461252d3616722"
+    },
+    {
+      "path": "workflow/cascade_workflow_repro_20261027.py",
+      "source": "/tmp/cascade_workflow_repro_20261027.py",
+      "sha256": "50431d8f4282b2eec702f5789a894c56b767ded5f16f4d0513b1009c6b6a7509"
+    },
+    {
+      "path": "workflow/cascade_workflow_repro_20261027.out",
+      "source": "/tmp/cascade_workflow_repro_20261027.out",
+      "sha256": "7cd9a3864747abd30af376ea1e5ef33f86f4c9627d0f88cb769263285db5738c"
+    },
+    {
+      "path": "workflow/cascade_task_graph_baseline_20261027.json",
+      "source": "/tmp/cascade_task_graph_baseline_20261027.json",
+      "sha256": "7d3def420d0faaafeadb11bd716839a22a7012449019fba08a19d86a44b58b1f"
+    },
+    {
+      "path": "workflow/cascade_task_graph_baseline_20261027.stdout",
+      "source": "/tmp/cascade_task_graph_baseline_20261027.stdout",
+      "sha256": "7d3def420d0faaafeadb11bd716839a22a7012449019fba08a19d86a44b58b1f"
+    },
+    {
+      "path": "firmware/cascade_firmware_gap_audit_20261027.md",
+      "source": "/tmp/cascade_firmware_gap_audit_20261027.md",
+      "sha256": "37e0c408ec03801fd4738429bada4f1e540212ef9b698eebcbecccb1617ac4ef"
+    },
+    {
+      "path": "hil_tools/cascade_new_hil_tools_audit_20261027.md",
+      "source": "/tmp/cascade_new_hil_tools_audit_20261027.md",
+      "sha256": "3e4fabbe466013b0d0ed58323ba3ee6159c3d0493370a0e26e1e117868dfa540"
+    },
+    {
+      "path": "hil_tools/cascade_new_hil_tools_repro_20261027.py",
+      "source": "/tmp/cascade_new_hil_tools_repro_20261027.py",
+      "sha256": "8159760fb734f9a185152b62c25c1ee249edd3b5a0322f10cef1f3d61d70765c"
+    },
+    {
+      "path": "hil_tools/cascade_new_hil_tools_repro_20261027.out",
+      "source": "/tmp/cascade_new_hil_tools_repro_20261027.out",
+      "sha256": "fadc4a34af8d2061fc920ddf8ed13bdd30ebbd9c1dbc75843a9b78e918498e03"
+    }
+  ],
+  "supplement_reviewed_commit": "test_harness:1d0861f199b92f9eac7c2103dfe80b207dbe4838"
+}

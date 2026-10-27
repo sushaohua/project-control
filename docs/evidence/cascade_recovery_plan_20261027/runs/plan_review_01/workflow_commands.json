@@ -1,0 +1,63 @@
+[
+  {
+    "command": [
+      "python3",
+      "project-control/tools/check_task_graph.py",
+      "--workspace",
+      "/home/sushaohua/workspace/ai_soc_project",
+      "--report",
+      "project-control/docs/evidence/cascade_recovery_plan_20261027/runs/plan_review_01/task_graph_readonly.json"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 1,
+    "log": "workflow_0.txt"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 128,
+    "log": "workflow_1.txt"
+  },
+  {
+    "command": [
+      "git",
+      "log",
+      "-2",
+      "--format=%H %cI %s"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 128,
+    "log": "workflow_2.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "project-control/.agents/kanban/milestones/marlin_ms07_20261007_214108.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "workflow_3.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "project-control/.agents/kanban/milestones/marlin_ms14_20261007_214108.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "workflow_4.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "project-control/.agents/kanban/microtasks/mc_firmware/MCQ-0106.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "workflow_5.txt"
+  }
+]

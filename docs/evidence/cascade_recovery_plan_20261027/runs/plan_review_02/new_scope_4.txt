@@ -1,0 +1,285 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+probe_fault_injector.py - 基于 probe-rs 的非侵入式硬件故障注入工具
+通过动态自发现机制绑定 MC (AT32F435) 与 TH (AT32F423)，
+在线读写外设 MMIO 寄存器（如 USART_CTRL1），动态开合物理串口通信，
+用于 HIL 自动化测试、从机掉线仿真、超时自恢复与单端故障场景（MS-16）。
+"""
+
+import os
+import sys
+import json
+import time
+import argparse
+from typing import Dict, Any, Optional
+
+# 导入同目录的自发现模块
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
+from device_discovery import discover_all, find_probe_rs_bin, probe_memory_word, run_cmd
+
+# 外设寄存器配置定义
+PERIPHERAL_REGISTERS = {
+    "MC": {
+        "chip": "AT32F435VGT7",
+        "uarts": {
+            "USART2": {
+                "desc": "AP-MC 通信串口 (连接 SoC)",
+                "ctrl1_addr": 0x4000440C,
+                "default_val": 0x0000201C,
+            },
+            "USART6": {
+                "desc": "MC-TH 级联总线串口 (连接工具头)",
+                "ctrl1_addr": 0x4001140C,
+                "default_val": 0x0000201C,
+            },
+        },
+    },
+    "TH": {
+        "chip": "AT32F423CCT7",
+        "uarts": {
+            "USART1": {
+                "desc": "TH-MC 级联通信串口 (连接主控)",
+                "ctrl1_addr": 0x4001100C,
+                "default_val": 0x0000202C,
+            },
+        },
+    },
+}
+
+STATE_CACHE_DIR = "/tmp/hil_fault_cache"
+
+
+def get_cached_state_file(role: str, uart: str) -> str:
+    os.makedirs(STATE_CACHE_DIR, exist_ok=True)
+    return os.path.join(STATE_CACHE_DIR, f"{role}_{uart}_ctrl1.json")
+
+
+def save_cached_state(role: str, uart: str, val: int):
+    fpath = get_cached_state_file(role, uart)
+    with open(fpath, "w", encoding="utf-8") as f:
+        json.dump({"role": role, "uart": uart, "cached_val": val, "timestamp": time.time()}, f)
+
+
+def load_cached_state(role: str, uart: str, default_val: int) -> int:
+    fpath = get_cached_state_file(role, uart)
+    if os.path.exists(fpath):
+        try:
+            with open(fpath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return int(data.get("cached_val", default_val))
+        except Exception:
+            pass
+    return default_val
+
+
+def resolve_target_probe(probe_rs_bin: str, role: str, manual_probe: Optional[str] = None) -> tuple:
+    """解析目标角色的 probe_id 与芯片型号"""
+    if manual_probe:
+        chip = PERIPHERAL_REGISTERS[role]["chip"]
+        return manual_probe, chip
+
+    disco = discover_all()
+    target_info = disco.get("target_mapping", {}).get(role)
+    if not target_info:
+        raise RuntimeError(f"在当前连接的探针中未识别到角色 [{role}] (MC 或 TH 未上电或未连接 SWD)。")
+
+    return target_info["probe_id"], target_info["chip"]
+
+
+def write_memory_word(probe_rs_bin: str, probe_id: str, chip: str, address: int, val: int) -> bool:
+    """向指定物理地址写入 32 位寄存器值"""
+    cmd = [
+        probe_rs_bin,
+        "write",
+        "b32",
+        f"0x{address:08X}",
+        f"0x{val:08X}",
+        "--probe",
+        probe_id,
+        "--chip",
+        chip,
+    ]
+    res = run_cmd(cmd, timeout=5)
+    return res.returncode == 0
+
+
+def decode_ctrl1(val: int) -> Dict[str, Any]:
+    uen = bool(val & (1 << 13))
+    rdbfie = bool(val & (1 << 5))
+    idleien = bool(val & (1 << 4))
+    ten = bool(val & (1 << 3))
+    ren = bool(val & (1 << 2))
+    return {
+        "raw_hex": f"0x{val:08X}",
+        "status": "OPEN (正常使能)" if uen else "CLOSED (已切断/去使能)",
+        "UEN": uen,
+        "TEN": ten,
+        "REN": ren,
+        "IDLEIEN": idleien,
+        "RDBFIE": rdbfie,
+    }
+
+
+def get_uart_status(probe_rs_bin: str, role: str, uart: str, manual_probe: Optional[str] = None) -> Dict[str, Any]:
+    probe_id, chip = resolve_target_probe(probe_rs_bin, role, manual_probe)
+    uart_cfg = PERIPHERAL_REGISTERS[role]["uarts"][uart]
+    addr = uart_cfg["ctrl1_addr"]
+
+    val_res = probe_memory_word(probe_rs_bin, probe_id, chip, addr, width="b32", count=1)
+    if val_res is None:
+        raise RuntimeError(f"读取 [{role}] {uart} 寄存器 0x{addr:08X} 失败。")
+
+    raw_val = val_res[0]
+    decoded = decode_ctrl1(raw_val)
+    decoded["role"] = role
+    decoded["uart"] = uart
+    decoded["desc"] = uart_cfg["desc"]
+    decoded["probe_id"] = probe_id
+    decoded["ctrl1_addr"] = f"0x{addr:08X}"
+    return decoded
+
+
+def disable_uart(probe_rs_bin: str, role: str, uart: str, manual_probe: Optional[str] = None) -> Dict[str, Any]:
+    """切断指定串口接口（写入 0x00000000，关闭 UEN/TEN/REN）"""
+    probe_id, chip = resolve_target_probe(probe_rs_bin, role, manual_probe)
+    uart_cfg = PERIPHERAL_REGISTERS[role]["uarts"][uart]
+    addr = uart_cfg["ctrl1_addr"]
+
+    # 1. 读取并保存当前正常状态
+    val_res = probe_memory_word(probe_rs_bin, probe_id, chip, addr, width="b32", count=1)
+    if val_res and val_res[0] != 0:
+        save_cached_state(role, uart, val_res[0])
+
+    # 2. 写入 0x0
+    ok = write_memory_word(probe_rs_bin, probe_id, chip, addr, 0x00000000)
+    if not ok:
+        raise RuntimeError(f"写入 [{role}] {uart} 寄存器 0x{addr:08X} 失败。")
+
+    return get_uart_status(probe_rs_bin, role, uart, manual_probe=probe_id)
+
+
+def enable_uart(probe_rs_bin: str, role: str, uart: str, manual_probe: Optional[str] = None) -> Dict[str, Any]:
+    """恢复指定串口接口（恢复原有或默认 CTRL1 配置）"""
+    probe_id, chip = resolve_target_probe(probe_rs_bin, role, manual_probe)
+    uart_cfg = PERIPHERAL_REGISTERS[role]["uarts"][uart]
+    addr = uart_cfg["ctrl1_addr"]
+    target_val = load_cached_state(role, uart, uart_cfg["default_val"])
+
+    ok = write_memory_word(probe_rs_bin, probe_id, chip, addr, target_val)
+    if not ok:
+        raise RuntimeError(f"写入 [{role}] {uart} 寄存器 0x{addr:08X} 失败。")
+
+    return get_uart_status(probe_rs_bin, role, uart, manual_probe=probe_id)
+
+
+def glitch_uart(probe_rs_bin: str, role: str, uart: str, duration_ms: int, manual_probe: Optional[str] = None):
+    """瞬间故障注入（切断指定毫秒数后自动恢复）"""
+    print(f">> 开始对 [{role}] {uart} 注入瞬态抖动故障 ({duration_ms} ms)...")
+    disable_uart(probe_rs_bin, role, uart, manual_probe)
+    time.sleep(duration_ms / 1000.0)
+    enable_uart(probe_rs_bin, role, uart, manual_probe)
+    print(f">> [{role}] {uart} 抖动注入完成并已自动恢复。")
+
+
+def reset_all_uarts(probe_rs_bin: str):
+    """一键重置 MC 与 TH 所有的物理串口至正常工作状态"""
+    disco = discover_all()
+    print(">> 正在执行全量外设物理接口一键复位/开通...")
+    for role in ["MC", "TH"]:
+        target_info = disco.get("target_mapping", {}).get(role)
+        if not target_info:
+            print(f"[-] 目标 [{role}] 未在线，跳过。")
+            continue
+        probe_id = target_info["probe_id"]
+        for uart, uart_cfg in PERIPHERAL_REGISTERS[role]["uarts"].items():
+            addr = uart_cfg["ctrl1_addr"]
+            val = uart_cfg["default_val"]
+            write_memory_word(probe_rs_bin, probe_id, target_info["chip"], addr, val)
+            print(f"[+] [{role}] {uart} ({uart_cfg['desc']}) -> 恢复使能 (CTRL1 = 0x{val:08X})")
+    print(">> 所有接口已重置为正常使能状态。")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="HIL 基于 probe-rs 的非侵入式硬件串口开合与故障注入工具")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # list: 列出所有探测到的板卡和串口
+    subparsers.add_parser("list", help="自动发现并列出所有板卡和外设串口")
+
+    # status: 查询串口状态
+    status_parser = subparsers.add_parser("status", help="查询指定外设串口寄存器开合状态")
+    status_parser.add_argument("--target", choices=["MC", "TH"], required=True, help="目标角色 (MC 或 TH)")
+    status_parser.add_argument("--uart", help="串口名称 (MC: USART2, USART6; TH: USART1)")
+    status_parser.add_argument("--probe", help="手动指定 probe ID (可选)")
+
+    # disable: 切断串口
+    disable_parser = subparsers.add_parser("disable", help="关闭/切断指定外设串口 (去使能)")
+    disable_parser.add_argument("--target", choices=["MC", "TH"], required=True, help="目标角色 (MC 或 TH)")
+    disable_parser.add_argument("--uart", required=True, help="串口名称 (MC: USART2, USART6; TH: USART1)")
+    disable_parser.add_argument("--probe", help="手动指定 probe ID (可选)")
+
+    # enable: 恢复串口
+    enable_parser = subparsers.add_parser("enable", help="开通/恢复指定外设串口 (使能)")
+    enable_parser.add_argument("--target", choices=["MC", "TH"], required=True, help="目标角色 (MC 或 TH)")
+    enable_parser.add_argument("--uart", required=True, help="串口名称 (MC: USART2, USART6; TH: USART1)")
+    enable_parser.add_argument("--probe", help="手动指定 probe ID (可选)")
+
+    # glitch: 瞬间抖动
+    glitch_parser = subparsers.add_parser("glitch", help="瞬间切断并在指定毫秒后恢复")
+    glitch_parser.add_argument("--target", choices=["MC", "TH"], required=True, help="目标角色 (MC 或 TH)")
+    glitch_parser.add_argument("--uart", required=True, help="串口名称 (MC: USART2, USART6; TH: USART1)")
+    glitch_parser.add_argument("--duration-ms", type=int, default=500, help="故障维持毫秒数 (默认 500ms)")
+    glitch_parser.add_argument("--probe", help="手动指定 probe ID (可选)")
+
+    # reset-all: 全部复位恢复
+    subparsers.add_parser("reset-all", help="一键恢复所有板卡的所有串口至正常开启状态")
+
+    args = parser.parse_args()
+    probe_rs_bin = find_probe_rs_bin()
+
+    if args.command == "list":
+        disco = discover_all()
+        print("=" * 85)
+        print("       HIL 外设通信接口与物理寄存器实时状态映射表")
+        print("=" * 85)
+        for role in ["MC", "TH"]:
+            item = disco.get("target_mapping", {}).get(role)
+            if not item:
+                print(f"[{role}] 未连接探针或未上电")
+                continue
+            print(f"[{role}] 芯片: {item['chip']} | 探针: {item['probe_id']}")
+            for uart, cfg in PERIPHERAL_REGISTERS[role]["uarts"].items():
+                st = get_uart_status(probe_rs_bin, role, uart, manual_probe=item['probe_id'])
+                print(f"   * {uart:<7} | 寄存器: {st['ctrl1_addr']} | 原始值: {st['raw_hex']} | 状态: {st['status']}")
+                print(f"     用途: {cfg['desc']}")
+        print("=" * 85)
+
+    elif args.command == "status":
+        uarts = [args.uart] if args.uart else list(PERIPHERAL_REGISTERS[args.target]["uarts"].keys())
+        for u in uarts:
+            st = get_uart_status(probe_rs_bin, args.target, u, manual_probe=args.probe)
+            print(json.dumps(st, indent=2, ensure_ascii=False))
+
+    elif args.command == "disable":
+        st = disable_uart(probe_rs_bin, args.target, args.uart, manual_probe=args.probe)
+        print(f"[OK] 已成功切断 [{args.target}] {args.uart} 物理通信!")
+        print(json.dumps(st, indent=2, ensure_ascii=False))
+
+    elif args.command == "enable":
+        st = enable_uart(probe_rs_bin, args.target, args.uart, manual_probe=args.probe)
+        print(f"[OK] 已成功开通恢复 [{args.target}] {args.uart} 物理通信!")
+        print(json.dumps(st, indent=2, ensure_ascii=False))
+
+    elif args.command == "glitch":
+        glitch_uart(probe_rs_bin, args.target, args.uart, args.duration_ms, manual_probe=args.probe)
+
+    elif args.command == "reset-all":
+        reset_all_uarts(probe_rs_bin)
+
+
+if __name__ == "__main__":
+    main()

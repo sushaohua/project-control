@@ -1,0 +1,71 @@
+}
+
+static void th_upg_handle_handshake_state(void)
+{
+  if (th_upg_do_handshake())
+  {
+    s_current_chunk = 0;
+    s_running_crc32 = 0;
+    s_state = TH_UPG_STATE_STREAM_CHUNKS;
+  }
+  else
+  {
+    s_state = TH_UPG_STATE_ERROR;
+    forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+  }
+}
+
+static void th_upg_handle_finish_state(void)
+{
+  if (th_upg_do_finish())
+  {
+    s_th_recovery_mode = false;
+    s_upg_done_for_current_udisk = true;
+    s_boot_window_expired = true;
+    s_state = TH_UPG_STATE_SUCCESS;
+  }
+  else
+  {
+    s_state = TH_UPG_STATE_ERROR;
+  }
+  forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+}
+
+void th_upgrade_mgr_poll(uint32_t ticks)
+{
+  /* 1. 单向不可逆安全栅栏：开机 5 秒超时后，彻底永久注销升级轮询，0 开销退出 */
+  if (s_boot_window_expired)
+  {
+    return;
+  }
+
+  /* 2. 在空闲态下判断开机时间是否超过 5 秒 (且未处于 TH 变砖急救模式) */
+  if ((s_state == TH_UPG_STATE_IDLE) && !s_th_recovery_mode && (ticks > APP_BOOT_UDISK_WINDOW_MS))
+  {
+    s_boot_window_expired = true;
+    mc_debug_print("[MC_APP][SAFETY] Boot upgrade window (5s) expired with TH healthy. Upgrade polling permanently disabled.\r\n");
+    return;
+  }
+
+  switch (s_state)
+  {
+    case TH_UPG_STATE_IDLE:
+      th_upg_step_idle(ticks);
+      break;
+
+    case TH_UPG_STATE_SCAN_UDISK:
+      th_upg_handle_scan_state();
+      break;
+
+    case TH_UPG_STATE_SEND_M997:
+      th_upg_trigger_reboot();
+      s_state = TH_UPG_STATE_WAIT_HELLO;
+      break;
+
+    case TH_UPG_STATE_WAIT_HELLO:
+      th_upg_handle_wait_hello_state();
+      break;
+
+    case TH_UPG_STATE_START_HANDSHAKE:
+      th_upg_handle_handshake_state();
+      break;

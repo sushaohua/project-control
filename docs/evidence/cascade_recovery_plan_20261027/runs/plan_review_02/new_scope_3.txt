@@ -1,0 +1,229 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+device_discovery.py - 硬件探针与外设接口动态自发现工具
+用于在多 ST-Link 探针与多 COM 口环境下，基于硅片物理指纹（Flash 大小、SRAM 栈顶、96-bit UID）
+自动识别 MC (AT32F435) 与 TH (AT32F423)，彻底解决接口插乱与探针序号漂移问题。
+"""
+
+import os
+import sys
+import json
+import re
+import subprocess
+import shutil
+from typing import Dict, List, Optional, Any
+
+# 默认 probe-rs 候选路径
+PROBE_RS_CANDIDATES = [
+    os.environ.get("PROBE_RS_PATH", ""),
+    "/mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe",
+    shutil.which("probe-rs") or "",
+    shutil.which("probe-rs.exe") or "",
+    os.path.expanduser("~/.cargo/bin/probe-rs"),
+    os.path.expanduser("~/.cargo/bin/probe-rs.exe"),
+]
+
+# 芯片硬件指纹已知规格表
+CHIP_FINGERPRINTS = {
+    "AT32F435VGT7": {
+        "role": "MC",
+        "description": "Motion Controller 主控板",
+        "expected_flash_kb": 1024,
+        "expected_msp": 0x20060000,
+        "default_chip_param": "AT32F435VGT7",
+    },
+    "AT32F423CCT7": {
+        "role": "TH",
+        "description": "Tool Head 工具头从控板",
+        "expected_flash_kb": 256,
+        "expected_msp": 0x2000C000,
+        "default_chip_param": "AT32F423CCT7",
+    },
+}
+
+
+def find_probe_rs_bin() -> str:
+    """寻找可用的 probe-rs 可执行文件路径"""
+    for candidate in PROBE_RS_CANDIDATES:
+        if candidate and os.path.exists(candidate):
+            return candidate
+    raise FileNotFoundError("未找到 probe-rs 工具，请设置环境变量 PROBE_RS_PATH 或安装至 PATH。")
+
+
+def run_cmd(args: List[str], timeout: int = 6) -> subprocess.CompletedProcess:
+    """安全执行外部命令，杜绝 WSL 标准输入挂起"""
+    return subprocess.run(
+        args,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        timeout=timeout,
+        check=False,
+    )
+
+
+def list_raw_probes(probe_rs_bin: str) -> List[str]:
+    """获取系统当前挂载的所有 ST-Link 探针标识符"""
+    res = run_cmd([probe_rs_bin, "list"])
+    if res.returncode != 0:
+        return []
+
+    probes = []
+    # 典型输出：
+    # [0]: STLink V2 -- 0483:3748:75003800120000334C41534E (ST-LINK)
+    # [1]: STLink V2 -- 0483:3748: (ST-LINK)
+    for line in res.stdout.splitlines():
+        match = re.search(r"--\s+([0-9a-fA-F]{4}:[0-9a-fA-F]{4}:[0-9a-fA-F]*)", line)
+        if match:
+            probes.append(match.group(1))
+    return probes
+
+
+def probe_memory_word(probe_rs_bin: str, probe_id: str, chip: str, address: int, width: str = "b32", count: int = 1) -> Optional[List[int]]:
+    """通过 probe-rs 读取指定物理内存地址"""
+    cmd = [
+        probe_rs_bin,
+        "read",
+        width,
+        f"0x{address:08X}",
+        str(count),
+        "--probe",
+        probe_id,
+        "--chip",
+        chip,
+    ]
+    res = run_cmd(cmd, timeout=5)
+    if res.returncode != 0:
+        return None
+
+    # 输出格式：1ffff7e0: 0400 或 1ffff7e8: 05302390 4c96c000 0d819709
+    for line in res.stdout.splitlines():
+        if ":" in line:
+            parts = line.split(":", 1)[1].strip().split()
+            try:
+                return [int(p, 16) for p in parts]
+            except ValueError:
+                pass
+    return None
+
+
+def inspect_probe(probe_rs_bin: str, probe_id: str) -> Dict[str, Any]:
+    """探测单个探针所连接芯片的物理硅片指纹"""
+    info = {
+        "probe_id": probe_id,
+        "role": "UNKNOWN",
+        "chip": "UNKNOWN",
+        "flash_kb": None,
+        "msp_top": None,
+        "uid": None,
+        "status": "UNREACHABLE",
+    }
+
+    # 优先尝试以通用 Cortex-M4 / AT32F435 协议探针连接
+    for test_chip in ["AT32F435VGT7", "AT32F423CCT7"]:
+        # 1. 尝试读取 Flash 寄存器 (0x1FFFF7E0, 16-bit)
+        flash_res = probe_memory_word(probe_rs_bin, probe_id, test_chip, 0x1FFFF7E0, width="b16", count=1)
+        if flash_res:
+            flash_kb = flash_res[0]
+            info["flash_kb"] = flash_kb
+
+            # 2. 读取 MSP 初始栈顶 (0x08000000, 32-bit)
+            msp_res = probe_memory_word(probe_rs_bin, probe_id, test_chip, 0x08000000, width="b32", count=1)
+            if msp_res:
+                info["msp_top"] = f"0x{msp_res[0]:08X}"
+
+            # 3. 读取 96-bit UID (0x1FFFF7E8, 32-bit x 3)
+            uid_res = probe_memory_word(probe_rs_bin, probe_id, test_chip, 0x1FFFF7E8, width="b32", count=3)
+            if uid_res:
+                info["uid"] = "".join(f"{w:08X}" for w in uid_res)
+
+            info["status"] = "ONLINE"
+
+            # 依据硅片指纹判别角色
+            if flash_kb == 1024 or (msp_res and msp_res[0] == 0x20060000):
+                info["role"] = "MC"
+                info["chip"] = "AT32F435VGT7"
+                info["description"] = "Motion Controller 主控板"
+            elif flash_kb == 256 or (msp_res and msp_res[0] == 0x2000C000):
+                info["role"] = "TH"
+                info["chip"] = "AT32F423CCT7"
+                info["description"] = "Tool Head 工具头从控板"
+            else:
+                info["role"] = "GENERIC_MCU"
+                info["chip"] = test_chip
+            break
+
+    return info
+
+
+def discover_all() -> Dict[str, Any]:
+    """全自动发现当前系统连接的所有探针与串口映射"""
+    probe_rs_bin = find_probe_rs_bin()
+    raw_probes = list_raw_probes(probe_rs_bin)
+
+    results = {
+        "probe_rs_path": probe_rs_bin,
+        "probes": {},
+        "target_mapping": {},
+    }
+
+    for probe_id in raw_probes:
+        p_info = inspect_probe(probe_rs_bin, probe_id)
+        results["probes"][probe_id] = p_info
+        role = p_info.get("role")
+        if role in ["MC", "TH"]:
+            results["target_mapping"][role] = p_info
+
+    return results
+
+
+def print_summary(data: Dict[str, Any]):
+    """打印人类友好的对账摘要表格"""
+    print("=" * 80)
+    print("       HIL 物理设备自动发现与指纹对账表 (Device Auto-Discovery)")
+    print("=" * 80)
+    print(f"probe-rs 引擎: {data['probe_rs_path']}")
+    print("-" * 80)
+    print(f"{'目标角色':<6} | {'芯片型号':<14} | {'Flash':<8} | {'MSP 栈顶':<12} | {'探针标识 (Probe ID)':<30}")
+    print("-" * 80)
+
+    for role in ["MC", "TH"]:
+        item = data.get("target_mapping", {}).get(role)
+        if item:
+            flash_str = f"{item['flash_kb']} KB" if item['flash_kb'] else "N/A"
+            msp_str = item['msp_top'] or "N/A"
+            print(f"[{role:<4}] | {item['chip']:<14} | {flash_str:<8} | {msp_str:<12} | {item['probe_id']:<30}")
+            print(f"       -> 唯一芯片 UID: {item.get('uid', 'N/A')}")
+        else:
+            print(f"[{role:<4}] | {'[未检测到连接]':<14} | {'--':<8} | {'--':<12} | {'--':<30}")
+    print("=" * 80)
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="HIL 硬件探针与外设自动发现工具")
+    parser.add_argument("--json", action="store_true", help="以 JSON 格式输出机器可解析映射")
+    parser.add_argument("--target", choices=["MC", "TH"], help="仅返回指定目标的 Probe ID")
+    args = parser.parse_args()
+
+    data = discover_all()
+
+    if args.target:
+        target_info = data.get("target_mapping", {}).get(args.target)
+        if target_info:
+            print(target_info["probe_id"])
+            sys.exit(0)
+        else:
+            sys.stderr.write(f"错误: 未找到目标 [{args.target}] 的有效探针连接。\n")
+            sys.exit(1)
+
+    if args.json:
+        print(json.dumps(data, indent=2, ensure_ascii=False))
+    else:
+        print_summary(data)
+
+
+if __name__ == "__main__":
+    main()

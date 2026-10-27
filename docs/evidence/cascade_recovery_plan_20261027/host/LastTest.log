@@ -1,0 +1,18 @@
+Start testing: Oct 27 16:19 CST
+----------------------------------------------------------
+1/1 Testing: host_runtime_smoke
+1/1 Test: host_runtime_smoke
+Command: "/usr/bin/bash" "/home/sushaohua/workspace/ai_soc_project/soc-ap/tests/host/smoke.sh" "/tmp/independent_host_review_20261027_build/bin/soc-ap"
+Directory: /tmp/independent_host_review_20261027_build
+"host_runtime_smoke" start time: Oct 27 16:19 CST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.11 sec
+----------------------------------------------------------
+Test Passed.
+"host_runtime_smoke" end time: Oct 27 16:19 CST
+"host_runtime_smoke" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 27 16:19 CST

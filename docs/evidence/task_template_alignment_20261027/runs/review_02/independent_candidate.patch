@@ -1,0 +1,827 @@
+--- before/.agents/rules/templates/任务卡模板.md
++++ after/.agents/rules/templates/任务卡模板.md
+@@ -3,7 +3,7 @@
+ date: 2026-09-30
+ status: current-template
+ tags: [template, task]
+-updated: '2026-10-13 12:22:48'
++updated: '2026-10-27T17:16:02+08:00'
+ timezone: 北京时间（UTC+8）
+ plan_revision: marlin-r2
+ ---
+@@ -13,78 +13,170 @@
+ 复制下方字段用于新任务。模板中的值不是已批准的授权。派单五项及接单/交付规则以 [[AI_SoC_协作方案/04_公共看板与读写协议#4.1 派单前必须明确的五项|派单五项]] 为准；这张卡保存具体定义，派单消息引用它的准确版本。
+ 
+ ```yaml
+-id: TASK-xxxx
+-task_kind: implementation # investigation / design / experiment / implementation / integration / verification / work_package
+-plan_revision: marlin-r2
+-dispatchable: true # work_package 使用 false，不直接派单
++template_version: '2026-10-27'
++id: null # COORD 分配唯一实际 ID；不复制占位 ID 派单
++title: null
++task_kind: null # investigation / design / experiment / implementation / integration / verification / work_package
++execution_stage: null # 接口 / 符号桩 / 核心逻辑 / 验证；文档任务说明其阶段
++plan_revision: null
++revision: 1
++status: Backlog # 仅 Backlog / Ready / InProgress / Review / Verify / Done
++blocked: false # 阻塞独立于 status；Blocked/Rejected 不是任务状态
++blocked_reason: null
++recovery_condition: null
++dispatchable: true # work_package 为 false；模板不是开工许可
++parent_task: null # 对应细任务/里程碑；不能替代直接前置
+ child_tasks: []
+-revision: 1
+-status: Backlog
+-blocked: false
+-blocked_reason: null
+-requirement: REQ-xxxx
+-feature: SOC:FEAT-xxxx # PM 产品目标使用 PM:FEAT-xxxx
+-priority: null # 依据范围填写，不把全部模板任务默认成最高优先级
+-module: forward
+-owner: null # 实际认领执行者入口/标识，与 executor.agent_id 一致
+-proposed_owner: ENG-FWD # 建议岗位，不代表已创建或认领的 Agent
++primary_work_package: null
++related_work_packages: []
++planning_relations: [] # 仅工作包的规划关联，不是派单前置
++requirement: null
++feature: null # 使用 PM:/SOC: 限定 ID
++priority: null
++module: null
++owner: null # 与实际 executor.agent_id 相同
++proposed_owner: null
+ executor:
+-  role: ENG-FWD
+-  agent_id: null # 实际可定位的会话入口或工具 ID，进入 InProgress 前登记
+-  run_id: null # 本轮实际追踪标识
+-reviewer: [ARCH] # 必需岗位，逐项落实，不是任选一个
+-verifier: QA # QA 作者/纯文档无额外运行检查时用 null，正文解释
+-integrator: INTEGRATOR # 无代码合入/候选装配时用 null
+-qa_review_policy: project-control/.agents/rules/codex_qa_review.md # 本卡涉及 QA 时必填
++  role: null
++  agent_id: null
++  run_id: null
++authorization:
++  evidence: null # 当前或既有有效授权来源；不因本字段反复要求已获授权
++  scope: null
++reviewer: [] # 必需岗位，逐项安排；QA 作者产物保留独立 ARCH 复核
++verifier: null # 是否额外运行验证由任务类型决定；不适用须说明
++integrator: null
++qa_review_policy: project-control/.agents/rules/codex_qa_review.md
+ review_assignments:
+-  reviewer_sessions:
+-    - role: ARCH
+-      session: null
+-      decision: null
+-      artifact_version: null
+-      evidence: null
+-  verifier_platform: codex # verifier 为 QA 时填写，否则删除
+-  verifier_planned_session_alias: null # 计划名不代替实际会话
++  reviewer_sessions: [] # 条目结构见下文；只登记计划别名不算实际会话
++  verifier_platform: null
++  verifier_planned_session_alias: null
+   verifier_session: null
++  verifier_reviewed_task_revision: null
++  verifier_artifact_version: null
++  verifier_decision: null
++  verifier_evidence: null
++  verifier_report_sha256: null
+   integrator_session: null
+-baseline: B0 # 填本轮准确文件版本/commit，不只填基线名称
+-icd_versions: [] # 实现 Ready 前填本轮实际已接受版本；不把示例当已存在
+-depends_on: [] # 细卡的直接前置
+-primary_work_package: null
+-related_work_packages: [] # 仅覆盖关联，不重复计数
+-planning_relations: [] # 只供 work_package 使用，不参与硬前置调度
++  integration_artifact_version: null
++  integration_evidence: null
++  not_applicable: [] # 环节、理由、接受依据；不能通过删必需岗位跳过检查
++baseline: null
++protocol_input: null # 使用协议时填 path / revision / sha256
++icd_versions: []
++source_baseline: {} # 仓库 -> 准确输入提交；不是将来产物的伪造提交
++base_commit: null # 单仓入口；多仓的准确输入在 version_bundle 中逐仓绑定
++branch: null
++worktree: null
++dispatch_binding:
++  source_commit: null
++  workspace_diff_sha256: null
++  consumed_artifact_versions: {}
++depends_on: []
++dependency_conditions: [] # 每个直接前置的对象结构见下文
++inherited_gates: [] # 父任务相关能力/阶段门，落实到直接前置或明确的外部接受记录
++capability_source_version: null
++interface_status: unknown
++contract_status: null
++coordination:
++  nodes: [] # 跨节点票列 AP/MC/TH 中实际涉及的节点
++  node_tasks: [] # 节点、接口提供票与接受版本
++  contract_task: null
++  joint_debug_task: null
++  acceptance_task: null
++  not_applicable_reason: null
++scope_status: unmapped # Backlog可未映射；Ready前必须mapped并落实真实范围
+ allowed_repositories: []
+-allowed_paths: []
++write_scope: {} # 仓库 -> 仓内具体文件/有界路径
++allowed_paths: [] # 与 write_scope 等价的“仓库/路径”展开
+ forbidden_paths: []
+ read_sources: []
+-base_commit: null
+-branch: null
+-worktree: null
+-resources: []
+-lease: null # 开工时人工登记 owner/task_revision/lease_id/expires_at
+-checkpoint: null # 实际检查点及续领方法，不代表后台自动续租
+-required_evidence_level: null # document / source-reviewed / build-verified / host-tool-verified / hardware-verified，按任务填
+-verification_environment: null # vmware-ubuntu-host / ubuntu-host+real-mcu-hil / target-soc，按任务填
+-verification_scope: MC-only # MC+SCM / actual-firmware / physical，按实际范围
+-version_bundle: null # 实际构建依赖、定制源码、配置、工具、契约及场景的准确清单
+-dependency_conditions: [] # MCQ 等结构化微步或外部固件的可用性条件
+-mapped_product_features: [] # 目录限定 ID，一对多
+-gap_dependencies: [] # GAP-01 等，准确版本复核后填
+-capability_source_version: null # 源码/工作区/配置/固件哈希
+-interface_status: unknown # 与产品批准及任务状态分开
+-verification_components: [] # Ubuntu 程序 / MC / TH / Mock / 目标 SoC
+-contract_status: experimental
+-budget: 待 COORD 派单时填写，不允许默认为无限
++execution_contract: project-control/.agents/rules/04_公共看板与读写协议.md
++resources: [] # 实际工作树、输出目录、设备/端口/探针、独占范围和交接
++lease: null # 开工时 owner / task_revision / lease_id / expires_at（带时区）
++checkpoint: null
++budget:
++  planned_checkpoint_minutes: null
++  max_evidence_based_corrections: 2
++  on_limit: 保存失败与检查点，交 COORD；只回退本票差异
++required_evidence_level: null # 按任务选 document/source-reviewed/host-build-verified/host-tool-verified/hardware-verified
++verification_environment: null # 区分 host-software、真实 MCU HIL、目标 SoC
++verification_scope: null # 不默认 MC-only 或整机通过
++verification_components: []
++verification:
++  commands: [] # 每项 id/cwd/command/availability/expected；是计划，非实际执行
++  positive_cases: []
++  negative_cases: [] # 每例写触发、期望响应/失败、期限与判定
++  required_test_sets: [] # 预期测试名/组、最低非零用例量及适用依据
++  not_applicable: [] # 文档不要求固件构建；列对应核对方法与理由
++version_bundle: null # 准确候选清单路径及 SHA256；源码、配置、工具、制品、协议分别绑定
+ candidate_commit: null
++candidate_diff_sha256: null
+ merged_commit: null
++deliverables:
++  artifacts: [] # 文档/源码/二进制，使用工作区相对路径
++  record: null # 本票唯一证据根下 runs/<实际run-id>/result.md
++rollback:
++  scope: null # 仅本票差异，保留开工前用户修改
++  checkpoint: null
++  evidence: null
+ evidence: []
++evidence_updates: [] # 追加撤回/限制/替代记录；不覆盖旧报告或改写历史签署
++acceptance:
++  accepted_scope: null
++  accepted_artifact_version: null
++  coord_session: null
++  record: null
++  record_sha256: null
+ handoff:
+   receiver_role: COORD
+-  receiver_session: null # 唯一 COORD 的实际会话入口/标识
+-  transport: null # 本轮主子反馈 / 人工转交 / 已验证收件服务
+-  evidence_location: null # 实际授权的证据输出位置
+-  acknowledgement: null # 由谁怎样确认收到；收到不表示验收通过
++  receiver_session: null
++  transport: null
++  evidence_location: null # 固定为本票证据根，实际运行再建独立 run
++  acknowledgement: null # 收件不等于 APPROVED 或 Done
+ ```
++
++## 填写结构与阶段门禁
++
++本模板版本适用于新建卡和本轮需要修订的活动卡。旧卡/旧签署不批量改名；按准确 revision 补充变化与适用范围。`template_version` 是模板版本，不表示检查器已经实现该版本 schema。
++
++`dependency_conditions` 每个对象包含以下字段，`task` 必须对应 `depends_on`；父任务的相关能力门要在这里显式落实，不能用“父任务存在”或“前置 Done”代替。外部输入无内部 task 时，在 `read_sources`、`inherited_gates` 和前置表记录提供者、版本、接受证据与恢复条件，不编造内部 ID。
++
++```yaml
++dependency_condition_fields:
++  task: null
++  required: null
++  accepted_version: null
++  acceptance_evidence: null
++  acceptance_report_sha256: null
++reviewer_session_fields:
++  role: null
++  platform: null # QA 或 QA 作者的独立 ARCH 复核填 codex
++  planned_session_alias: null
++  session: null
++  reviewed_task_revision: null
++  artifact_version: null
++  decision: null # 新签署使用 APPROVED / REJECTED；未审保持 null
++  evidence: null
++  report_sha256: null
++```
++
++上面两个 `*_fields` 仅说明对象结构，不是可原样粘贴的有效前置/Reviewer；按实际任务实例化到数组。SHA256 的对象域必须明确（候选清单、源码文件、制品或报告），不能混用。报告自身哈希在报告写完后由交接记录/卡片保存，不要求报告把自己的哈希嵌入自身。
++
++| 阶段 | 本卡需要满足的条件 | 不可替代的证据 |
++| --- | --- | --- |
++| Backlog → Ready | 实际输入、父任务相关能力、路径、授权、检查安排、资源、有限预算与期限齐全；blocked=false | 准确消费版本和接受依据；不要求尚未产生的本票候选或签署 |
++| Ready → InProgress | 作者回执，实际会话/工作区/任务revision/有效租约一致 | 实际认领记录；计划会话名不算执行者 |
++| InProgress → Review | 提交候选或文档版本、差异、原始命令结果、未执行项 | 同一候选的完整交付；不能只提交exit 0 |
++| Review → Verify | 每项必需独立评审接受准确候选；作者不得占本产物独立评审位 | 实际session、任务revision、候选版本、报告及其SHA256 |
++| Verify → Done | 本票正常/异常判据完成，适用的独立运行/集成和收件证据齐全 | COORD记录接受范围、版本和依据；CLI或文档APPROVED不自动改状态 |
++| 证据撤回/输入变化 | 保存旧报告，追加失效范围、受影响消费者、替代票与恢复条件 | COORD据证据修当前适用关系；Blocked不是新status |
++
++这些是人工必须核对的条件。现有 `check_task_graph.py` 仍有任务类型/阶段覆盖限制；结构检查绿灯不能代替本表，尚未实现的检查不得写成自动门禁已生效。
++
++本模板是通用任务字段约定，不等于现有工具写死的离线V2 schema。V2票还需按实际任务补专用适配字段（如readiness_pending、聚焦case组与证据目录）；若工具旧约束与真实任务冲突，登记工具缺口，不填造待办、版本或结果换绿灯。
++
++跨节点任务将“契约接受 → 各节点必要实现 → 工程联合调试 → 独立组合验收”显式关联。`coordination` 是协作目录，实际前置仍写 `depends_on/dependency_conditions`；最终验收票不能反过来作为单板实现开工前置。单板微步只验本票交付；最终组合需锁定 AP、MC、TH 中实际参与的全部版本和所需固件，不要求每张单板票重复产出所有节点制品。
+ 
+ ## 目标
+ 
+@@ -106,12 +198,16 @@
+ 
+ ## 谁做和谁检查
+ 
++按[公共规则§4.3的任务类型矩阵](../04_公共看板与读写协议.md#43-按任务类型安排检查)落实必需岗位。reviewer空数组、verifier/integrator空值只是Backlog占位，不表示这些环节统一免检；派单前按类型补齐，确实不适用时写理由与接受依据。
++
+ 独立 QA 平台统一为 Codex，规则见 [Codex QA 规则](../codex_qa_review.md)。Reviewer 为 QA 或承担 QA 作者产物 ARCH 复核时，在对应条目补 `platform: codex` 和 `planned_session_alias`；实际 `session` 由 COORD 落实会话后填写。QA Verifier 使用上述 verifier 字段。其他 Reviewer/Integrator/HUMAN 的岗位与批准要求保留。
+ 
+ 按本卡写作者、必需 Reviewer、额外运行验证、合入/装配、收件/状态登记五个环节；不适用项写原因。QA 作者由独立 Reviewer 检查方法与报告；多人 Reviewer 按角色逐项映射实际入口。具体规则见 [[AI_SoC_协作方案/04_公共看板与读写协议#4.3 按任务类型安排检查]]。
+ 
+ ## 验收
+ 
++先固定独立预期。帧级CRC正确、命令语义正确、请求关联成功、真实物理闭环分别验证；旧帧、错源/目的/命令/序号、请求回显、错误长度和零响应不得被一般帧解码成功替代。正常场景零有效关联响应必须失败；失联/坏包等负例按其冻结预期判断，不能一律要求有响应。
++
+ 给出可运行的命令／步骤、可观察预期、必须覆盖的相关正常和故障场景、所需证据层级，以及谁对哪个版本检查。调查任务写怎样检查来源和结论；离线 Mock 不以真实打印或物理温度作为通过证据；HIL 查询需指定 MCU 原始报文，真实动作和目标 SoC 验收分别声明。
+ 
+ ## 交付
+--- before/.agents/rules/templates/角色任务提示词.md
++++ after/.agents/rules/templates/角色任务提示词.md
+@@ -3,12 +3,14 @@
+ date: 2026-09-30
+ status: current-template
+ tags: [template, agent, ownership]
+-updated: '2026-10-13 12:24:23'
++updated: '2026-10-27T17:06:13+08:00'
+ timezone: 北京时间（UTC+8）
+ plan_revision: marlin-r2
+ ---
+ 
+ # 岗位指定、任务派单与交接提示词
++
++模板版本：2026-10-27。字段以[任务卡模板](任务卡模板.md)为准；执行和签署分别使用[实际运行记录](../../../docs/guides/templates/task_run_record.md)与[QA报告模板](QA审查报告模板.md)。根目录旧 `.agents` 副本不是本模板原件。
+ 
+ 以下为待适配模板，不会自动创建 Agent 或改变当前 Vault 的 AGENTS.md。派单五项以 [[AI_SoC_协作方案/04_公共看板与读写协议#4.1 派单前必须明确的五项|公共规则]] 为准，具体值以任务卡准确 revision 为准；角色名称不能代替实际执行者与接收方。
+ 
+@@ -30,7 +32,9 @@
+ 本轮岗位：{role_id}；实际执行者/会话入口：{agent_id}；本轮标识：{run_id}。
+ 本轮只执行任务 {task_id} revision {revision}；反馈给登记的 COORD 入口 {receiver_session}。
+ 先核对任务、输入版本、可写范围、完成标准和实际接收方，返回简短接单回执。必要内容缺失先说明，不自行补造接口或授权。
+-读取指定 baseline、角色卡、任务卡和相关 ICD。历史笔记是参考，未冻结内容不得作为硬件事实。
++读取任务卡准确revision、当前有效授权、已接受ICD、父任务相关能力条件和独立预期，核对实际输入哈希。历史笔记和分析报告只作参考，不将静态配置当板上事实。
++缺前置能力、blocked=true、租约过期、路径/设备占用冲突时停止受影响动作，记录DEPENDENCY_REQUEST；不由活跃会话单边补造下游能力。
++帧结构、业务命令、请求关联和硬件闭环分开判断；正常场景无有效响应为失败，故障注入按其预期判定。
+ 修改范围仅限任务的仓库与路径白名单；公共 schema、DTS、构建文件的修改必须由其 Owner 承担。
+ 发现范围外问题时提交 DEPENDENCY_REQUEST 或 RFC，继续不依赖该问题的工作。
+ 模块作者和检查者不得自行创建额外团队。COORD 只在明确委派授权内组织本轮子 Agent，并按任务登记。
+@@ -47,24 +51,24 @@
+ 以下为占位示例，所有路径、版本、执行者、方法与接收方式必须换成当前卡的真实值后才能派单。调查/设计按其实际输入和交付填写，不要求先有要产出的契约。
+ 
+ ```text
+-角色：ENG-FWD；实际执行者：待分配的具体 Agent/会话，开工前登记
+-任务：MS-07，revision=已登记版本；plan_revision=marlin-r2
+-批准输入：B0 的准确文件版本/commit；实际已接受 Marlin 对接约定原件及版本；本轮实际回复样例和 QA 独立预期
+-前置交付：逐项列生产卡/来源、产物、准确版本、用途与使用条件；MS-07 必须含 MS-18 的可构建主机工程
+-工作区：独立目录；base_commit=准确 SHA；branch=任务分支
+-白名单：services/forward/**、tests/forward/**（映射真实源码后填写）
+-禁止修改：公共 schema、device_manager、job_engine、DTS、rootfs 全局装配
+-目标：仅实现本版本 Marlin 的一次版本查询，完整解析多行回复并保存原始 TX/RX
+-验收：按独立样例检查正常多行、半行、日志交错和错误；校验/重发按已核查能力，不默认错误 CRC
+-预算与检查点：本轮明确给定；人工占用期限与续领回执位置一并登记
+-交付：候选 commit、diff、日志哈希、未解决项和回退说明
+-检查岗位：Reviewer=[ARCH]；Verifier=QA；Integrator=INTEGRATOR（此为实现卡示例）
+-实际检查者/会话：逐项填写 role/session，交检查时再填准确产物版本、decision 和证据；作者与独立检查者分开
+-任务类型：文档/QA 作者卡按公共规则说明无需额外运行 QA 或合入的原因，不机械套用实现示例
+-接收方：唯一 COORD 的实际对话入口/会话标识
+-反馈方式：本轮主子工具反馈 / 人工转交 / 已验证收件服务，明确选择实际方式
+-证据位置：准确且已授权的目录/文件或制品位置
+-收件确认：COORD 回复已收到/需补材料；收到不代表通过检查
++岗位/实际会话/run：{role}/{actual_session}/{run_id}；唯一COORD：{coord_session}
++任务：{task_id} revision={revision}，template_version=2026-10-27；只执行该票阶段
++授权：引用当前或既有有效授权，写明范围；不重复索要已具备授权
++输入：{协议/接口/源码/配置/独立预期的准确版本、哈希、接受记录}
++前置：{每项depends_on对应产物/能力/接受版本}；父任务相关门禁={实际映射}
++状态：blocked=false；实际租约/检查点={已登记值}；当前不是模板自动开工
++工作区/范围：{真实仓库、分支、base_commit、开工diff SHA256、具体文件白名单/禁止项}
++资源：{隔离输出、实际设备/端口/探针、占用者和期限}；角色名不授予设备使用权
++目标/非目标：{一个结果及排除范围}；涉及AP/MC/TH时列每个节点能力提供票
++跨节点协作：{契约票、节点任务、工程联调票、独立组合验收票}；不制造循环前置
++验收：{命令/cwd、必跑测试组和最低非零case、正常/异常预期、期限及证据层级}
++成功标准：{命令语义、src/dst/flags/cmd/seq/长度或对应业务断言}；不能只看CRC或exit0
++交付：{准确候选commit/diff/清单SHA256、制品哈希、实际运行记录、失败/未执行项}
++独立检查：逐项登记{岗位/platform/实际session}；交付后再绑定同一候选、结论和报告SHA256
++适用性：{verifier/integrator/HIL不适用的理由与依据}；不能靠删必需岗位绕过
++收件：{COORD实际入口、传递方式、证据根/run位置}；收到不等于接受
++回退：{仅本票差异与保护点}；不覆盖已有用户改动，失败按原始输出→根因→单点修复
++接单回执：核对以上输入和范围后回复；任一必要条件不具备先报告缺口
+ ```
+ 
+ ## 接单与交付的简短格式
+@@ -80,8 +84,9 @@
+ 
+ ```text
+ 交付：任务 ID/revision；实际输入与候选/文档版本。
+-完成：具体结果与实际改动。
+-验证：执行的检查、原始证据、未执行项与限制。
++完成：具体结果、实际改动、准确候选commit/diff/制品及其哈希。
++验证：逐例预期与实际观察、实际命令/cwd/退出码、必跑组/非零case、原始证据及其哈希；未执行项保持未执行。
++适用范围：本票/离线/单板/组合/真实HIL分别说明；新候选不继承旧签署。
+ 问题：未解决项、依赖请求或下一步。
+ 接收：已发送到登记入口，等待收件确认与后续检查。
+ ```
+@@ -97,7 +102,9 @@
+ | PM | 产品经理 | 用户行为、优先级、排除项和验收清楚；产品取舍提交项目负责人 |
+ | ARCH | 软件架构师 | 拆任务并说明依赖产物；维护模块/接口/状态归属；不编造硬件事实 |
+ | COORD | 项目协调员 | 检查五项、版本和开工条件；登记实际执行者及检查者；按真实交付更新任务；协调不等于实现/合入授权 |
+-| ENG-FWD | SoC 通信工程师 | 不承包整个打印业务；ACK 与执行完成分开；断链不盲重放非幂等动作 |
++| ENG-FWD | SoC 通信工程师 | 命令/响应关联和失败退出码完整；发送/接收有界；不替MC/TH生成成功；ACK与执行完成分开 |
++| ENG-MC | 主控固件工程师 | 本机业务与中继分开；不转译/伪造TH响应；ISR不等待业务，DMA缓冲交接有界 |
++| ENG-TH | 工具头固件工程师 | 从已接受契约提供真实节点响应；版本、部署身份、只读能力有来源；不假设旧板已支持新协议 |
+ | ENG-BSP | 板级支持工程师 | 区分 Demo 和目标板；修改授权的配置源，验证设备能力与恢复 |
+ | ENG-JOB | 打印作业工程师 | 不直访 UART；作业状态依据执行反馈；文件引用不可变 |
+ | ENG-STATE | 整机状态工程师 | 所有入口共享准入规则，不复制 JobState；不取代 MCU 物理保护 |
+@@ -130,8 +137,18 @@
+ 当前 SoC 程序运行 VMware Ubuntu，USB 直通 MC；TH 业务经 MC，COM6 仅诊断。
+ MS-03 先调查；缺 RX/版本/温度时用 TASK-005 MCQ 前置，不在 FWD 补造固件回复。
+ 本票先锁定文件/输入/验收命令和回退保护，再单步实施验证；本步证据和独立检查接受后继续。
+-记录真实 MC/TH 固件/配置/制品与 TX/RX，Mock 证据单列，正式状态交唯一 COORD 投影。
++HIL先绑定准确AP/MC/TH候选、实际刷入/启动身份和端点；保存带UTC毫秒与单调时钟的原始双向Hex和请求关联。
++正常查询零有效关联响应必须失败；失联负例按其冻结预期判断；不得用PTY/Mock替代物理响应。
++故障工具先完成独立检查、目标唯一绑定、原值快照/异常恢复与读回校验，再进入已授权台架。
++记录真实MC/TH固件/配置/制品与TX/RX，Mock证据单列，正式状态交唯一COORD投影。
+ 已有用户修改保持，只回退本票差异；缺真实能力/授权时记录依赖并继续不受影响工作。
+ ```
+ 
+ 本模板不自动创建 Agent、确认实际 COORD 或启动常驻调度；普通文档检查用结构/来源核对，不伪造编译、硬件结果或独立 QA 签署。真实 MCU/保护操作继续按对应 Owner 和 HW-G 门禁。
++
++
++## 独立审查派单补充
++
++交给独立Codex的材料仅含任务/规则、正式输入、准确候选和原始证据；不fork/resume实现会话或复制其完整交互历史。作者不得同时占本产物独立ARCH/QA位置，QA作者的预期、运行器和报告另由未参与写作的Codex复核。审阅者只读业务源码，发现问题交作者，新候选重新审查。未启动会话、调用失败或报告缺失保持待审，不填写计划别名为实际session。
++
++派单者须声明检查器实际覆盖范围；目前模板中的完整生命周期、MCQ/THQ、租约/真实版本/交叠资源等要求仍需逐项人工核对，不能因静态结构命令exit0跳过。
+--- before/docs/guides/templates/task_run_record.md
++++ after/docs/guides/templates/task_run_record.md
+@@ -1,48 +1,76 @@
+ # 单票实际执行记录模板
+ 
+-此模板只供真实 run 时复制到卡内证据目录；模板不是已执行结果。未发生的命令、签署或回执填“未执行/待检查”，不填写示例 PASS。
++模板版本：2026-10-27。与[任务卡](../../../.agents/rules/templates/任务卡模板.md)、[派单提示](../../../.agents/rules/templates/角色任务提示词.md)、[QA报告](../../../.agents/rules/templates/QA审查报告模板.md)配套。只在真实run复制到本票授权证据目录；模板和计划命令不是运行结果，空值不能改成示例PASS。
+ 
+ ```yaml
++template_version: '2026-10-27'
+ task_id: null
+ task_revision: null
+ actual_run_id: null
++actor_role: null
+ actor_session: null
+ lease_id: null
+-start_time: null
++start_time: null # UTC或明确时区；不得猜秒数
+ end_time: null
+ workspace: null
+-input_versions: []
++branch: null
++input_versions: [] # 每项来源/生产票、准确版本、用途、接受报告/哈希
+ source_head: null
+ workspace_diff_sha256: null
+-commands:
+-  - command: null
+-    cwd: null
+-    start_time: null
+-    end_time: null
+-    actual_exit_code: null
+-    stdout_stderr_path: null
+-    actual_case_count: null
+-    warning_count: null
++version_bundle: null # 路径及SHA256，包含实际输入/候选组合
++verification_environment: null
++verification_scope: null
++required_evidence_level: null
++commands: [] # 每项结构见下面 command_fields；写实际执行过的命令
++case_results: [] # 每例结构见下面 case_result_fields
++required_test_sets: []
++executed_test_sets: []
++missing_test_sets: []
+ candidate_commit: null
+ candidate_diff_sha256: null
+-artifact_hashes: []
++artifact_hashes: [] # 每项 path/sha256/type；区分ELF/raw BIN/pack BIN/报告
++hardware: null # HIL才填：端点、串口参数、probe/UID、实际部署/启动身份与证据
++raw_trace_files: [] # 每项路径/SHA256/时戳来源/方向/丢失或截断数
+ failures_and_corrections: []
+-actual_result: not-executed
++actual_result: not-executed # not-executed / passed / failed；不是任务Done或QA决定
+ unverified: []
+-independent_review:
+-  platform: codex
+-  policy: project-control/.agents/rules/codex_qa_review.md
+-  planned_session_alias: null
+-  reviewer_session: null # 实际落实的会话入口，不填未启动的计划名
+-  cli_session_id: null # 通过 CLI 审核时记录真实 ID
+-  reviewed_artifact_version: null
+-  report_path: null
+-  report_sha256: null
+-  decision: null
++not_applicable: [] # 环节、理由和接受依据；不适用不填PASS
++independent_reviews: [] # 每项角色、实际会话、同一候选/revision、报告路径/SHA256/决定
+ handoff:
+   receiver_session: null
+   acknowledgement_path: null
+-  decision: null
++  acceptance_record: null # COORD另行接受记录；收件回执不代替签署
+ ```
+ 
+-正文按需补：本票实际修改、输入与前置为何可用、正常/异常预期与观察、失败根因和逐次更正、保留的用户差异、回退范围、交付版本与下游使用限制。
++```yaml
++command_fields:
++  command: null
++  cwd: null
++  start_time: null
++  end_time: null
++  tool_versions: []
++  actual_exit_code: null
++  stdout_stderr_path: null
++  stdout_stderr_sha256: null
++  actual_case_count: null
++  warning_count: null
++case_result_fields:
++  case_id: null
++  scenario: null # normal / fault-injection / document-check等实际范围
++  expectation_source_version: null
++  input_or_trigger: null
++  expected: null # 包含正常响应或预期无响应/错误、时间期限与退出码
++  observed: null
++  matched_response_count: null # 文档/非通信检查不适用时说明
++  result: not-executed # not-executed / passed / failed / not-applicable
++  evidence: null
++  evidence_sha256: null
++```
++
++`*_fields`是数组元素的结构说明，不把空对象当已运行命令/用例。先固定独立预期，再写实际观察。负例的预期exit非零或零响应可以正确，但必须比较预期与实际；正常查询零有效关联响应必须失败。单纯exit0、CRC正确或测试进程未崩溃不构成业务成功。
++
++正文写明实际修改、前置能力为何可用、失败原文→根因→逐次更正、未执行项、用户既有差异、回退范围和下游使用限制。必跑组缺失、case=0或关键原始日志截断时不得宣称对应验收通过。
++
++HIL记录真实端点和部署身份，原始TX/RX带UTC毫秒及单调时钟/测量点；RTT记录样本、成功/失败/超时及分布。PTY/Mock/假探针结果只能归host-software；命令写入成功、文件改名不等于物理恢复或新App生效。
++
++本记录只承载执行事实；所有必需独立检查分别填写`independent_reviews`。新记录使用数组，避免一个结论覆盖多岗位；已有历史`independent_review`原件保留，修订时注明字段迁移，不能补造过去的签署。报告自身SHA256在文件写完后保存到任务卡/交接清单，避免自引用。
+--- before/.agents/rules/qa_audit_checklist_guide_20261013_115611.md
++++ after/.agents/rules/qa_audit_checklist_guide_20261013_115611.md
+@@ -1,19 +1,21 @@
+ ---
+ title: 独立 QA 审查清单与过程审计指引
+ date: 2026-10-13
+-version: 1.0
++version: 1.1
+ status: approved-baseline
+ owner: QA
+ reviewers: [ARCH, COORD]
+ tags: [qa, audit-checklist, process-audit, code-hygiene, verification]
+ created: '2026-10-13 11:56:11'
+ timezone: 北京时间（UTC+8）
+-updated: '2026-10-13 12:25:34'
++updated: '2026-10-27T17:16:02+08:00'
+ ---
+ 
+ # 独立 QA 审查清单与过程审计指引 (QA Audit Checklist & Guide)
+ 
+ ## 当前审查平台
++
++2026-10-27起，新建/修订审查采用[独立QA报告模板](templates/QA审查报告模板.md)，任务与执行分别使用[任务卡模板](templates/任务卡模板.md)及[实际运行记录](../../docs/guides/templates/task_run_record.md)。历史报告/签署不回写。以下过程与结果检查按任务范围适用，文档任务不要求固件构建，负例按其冻结预期判断。
+ 
+ 所有后续独立 QA 审查和验收统一由独立 Codex 会话执行，按 [Codex QA 规则](codex_qa_review.md) 登记实际会话、所审候选与报告哈希。QA 作者报告的独立 ARCH 复核也使用独立 Codex；原作者与实际检查者分开，保留原岗位。AGY 内部自检不能替代 Codex 独立签署，历史签署保留原记录。
+ 
+@@ -34,7 +36,7 @@
+     *   QA Agent 拥有测试脚本、审计工具的执行权限，以及QA 报告的签署与结果事件提交权限；正式看板状态由唯一 COORD 根据已签署证据投影。
+ 3.  **双轨审查机制（Dual-Track Model）与一票否决权**：
+     *   审查分为**第一轨：过程审计（Process Audit）** 与 **第二轨：结果验收（Result Check）**。
+-    *   **过程审计拥有一票否决权（Veto Power）**：若过程审计不合规，即便功能测试全绿，QA 必须直接下达 `[REJECT]` 驳回指令，拒绝验收！
++    *   **过程审计拥有一票否决权（Veto Power）**：若过程审计不合规，即便功能测试全绿，QA 必须直接下达 `[REJECTED]` 驳回指令，拒绝验收！
+ 
+ ---
+ 
+@@ -43,16 +45,16 @@
+ ```mermaid
+ flowchart TD
+     SUBMIT["开发 Agent 提测<br/>(提交 Git Commit + 终端日志)"] --> T1{"第一轨: 过程合规审计<br/>(Process Audit)"}
+-    
+-    T1 -->|"发现过程违规<br/>(未批先动/跨层改动/屏蔽告警/隐瞒试错)"| REJECT["一票否决 (REJECT)<br/>输出过程违规单，强制回退基线"]
++
++    T1 -->|"发现过程违规<br/>(未批先动/跨层改动/屏蔽告警/隐瞒试错)"| REJECT["一票否决 (REJECTED)<br/>输出问题单，仅回退本票差异并保留已有修改"]
+     REJECT --> BACK["开发 Agent 领回重构"]
+-    
++
+     T1 -->|"过程 100% 合规"| T2{"第二轨: 结果客观验收<br/>(Result Check)"}
+-    
+-    T2 -->|"构建有警告 / 单测失败 / 通信超时"| FAIL["功能驳回 (FAIL)<br/>输出缺陷日志与复现脚本"]
++
++    T2 -->|"适用检查不满足正常或异常预期"| FAIL["功能驳回 (REJECTED)<br/>输出缺陷日志与复现脚本"]
+     FAIL --> BACK
+-    
+-    T2 -->|"独立复现构建 0 告警 & 物理黑盒全通"| PASS["双轨放行 (APPROVED)<br/>签署审计报告，推进公共看板"]
++
++    T2 -->|"本票适用检查及所需证据齐全"| PASS["双轨放行 (APPROVED)<br/>签署报告，COORD核对后投影状态"]
+ ```
+ 
+ ---
+@@ -68,14 +70,14 @@
+ | **PA-3** | **代码卫生<br/>(Hygiene & Bypass)** | 是否存在任何绕过类型检查或逃避编译器的行径？ | • 滥用 `(void*)` 暴力强转；<br/>• 强行 `const_cast` 或移除 `const` 限定；<br/>• 添加 `#pragma GCC diagnostic ignored`；<br/>• 通信结构体缺少 `__attribute__((packed))`。 | `git diff` 源码检索 |
+ | **PA-4** | **构建配置篡改<br/>(Toolchain Integrity)** | 是否私自弱化了编译器的告警与安全检查开关？ | • 修改 CMakeLists.txt/Makefile 删除了 `-Wall`、`-Wextra` 或 `-Werror`；<br/>• 增加了任何 `-Wno-*` 告警屏蔽选项。 | 构建配置 Git Diff |
+ | **PA-5** | **熔断与试错合规<br/>(Fail-Safe Limit)** | 开发过程中若出现编译报错，是否遵守三步汇报与重试上限？ | • 未按“原文日志 $\to$ 物理根因 $\to$ 修复方案”三步记录；<br/>• 单步失败后盲目试错超过 2 次，未按本票快照/diff 回退本票差异（须保留原有修改）。 | 终端操作轨迹 |
+-| **PA-6** | **客观证据凭证<br/>(Objective Proof)** | 开发 Agent 是否提供了不可伪造的物理终端命令执行凭证？ | • 仅使用“逻辑已改完，应该正常”等主观推断声称完成；<br/>• 缺乏 Exit Code 0 和 0 Warning 的终端实际截图/日志。 | 开发填报工单 |
+-| **PA-7** | **环境真实与防瞒报<br/>(Zero-Deception / HW-G5)** | 提测与验证是否使用了真实受测标的？是否存在使用伪终端/软件Mock代替真实物理硬件欺骗闭环的行为？ | • 在 HIL 硬件验收中使用伪终端（PTY）或 Loopback 伪造物理单片机响应；<br/>• 物理对端有效协议响应帧数 = 0 却宣称测试通过；<br/>• 将“过滤噪声未崩溃”偷换为“接口通信通过”。 | 提测脚本 / 进程调用 / 串口对账日志 |
++| **PA-6** | **客观证据凭证<br/>(Objective Proof)** | 是否保存本票实际命令/cwd/退出码、原始输出、用例观察与适用告警记录？ | • 用主观推断或预期值代替实际记录；<br/>• 缺少可复核的执行证据，或实际结果不符合事先接受的判据。负例可预期非零/无响应；Exit0和零告警仅用于明确要求它们的构建/正常用例。 | 独立预期、实际运行记录与原始日志 |
++| **PA-7** | **环境真实与防瞒报<br/>(Zero-Deception / HW-G5)** | 提测与验证是否使用了真实受测标的？是否存在使用伪终端/软件Mock代替真实物理硬件欺骗闭环的行为？ | • 在 HIL 硬件验收中使用伪终端（PTY）或 Loopback 伪造物理单片机响应；<br/>• 正常物理查询有效关联响应帧数 = 0 却宣称通过；<br/>• 将“过滤噪声未崩溃”偷换为“接口通信通过”。 | 提测脚本 / 进程调用 / 串口对账日志 |
+ 
+ ---
+ 
+ ## 4. 第二轨：结果客观验收清单 (Result Verification Checklist)
+ 
+-当过程审计 7 项全部通过后，QA Agent 进入独立沙箱或物理环境，执行客观验证：
++过程审计全部适用项通过、不适用项有理由和接受依据后，QA进入本票规定环境执行检查。构建、静态分析、主机测试、HIL按范围选用；不能以不适用冒充PASS或删除必需检查。
+ 
+ ### 4.1 RV-1: 独立清洁构建复现 (Clean Rebuild & Hash Check)
+ *   **操作**：QA 独立拉取开发分支，仅清理本任务隔离构建目录中的产物（核对目录后再用 `ninja clean` / `make clean`），执行全量构建。
+@@ -97,11 +99,11 @@
+ *   **操作**：QA 必须连接真实物理硬件串口（如 VMware `/dev/ttyUSB0` 直通端点）发送探测包，捕获物理双向原始字节流。**严禁使用 PTY 或 Mock 替身！**
+ *   **核查点与硬性通过判据**：
+     1.  **物理原始对账证据**：必须保存带毫秒时戳的物理 TX 原始 Hex 与物理 RX 原始 Hex。
+-    2.  **物理有效响应绝对性**：在测试窗口内，来自对端物理硬件的合法 MiniMCProto 响应帧数（Valid Response Frames）必须 $\ge 1$ 且 CRC 校验通过。**有效回包数为 0 直接判定为 FAIL/REJECT！**
++    2.  **物理有效响应绝对性**：在测试窗口内，正常查询来自目标物理硬件的有效关联响应必须 $\ge 1$，并满足CRC、src/dst/flags/cmd/seq/精确载荷等正式契约；零响应直接REJECTED。失联/坏包等负例按其预期无响应/错误及恢复条件判断，不能据负例通过签正常闭环通过。
+     3.  **禁止偷换通过标的**：对端物理硬件返回的无关外设旧数据（如迪文屏 DGUS 5A A5 温度帧）被 AP 解析器丢弃并计数为 `err_sof`，仅代表 AP 防御性正常，**绝不等于通信闭环成功**；若未收到协议合法帧，严禁签署通过。
+     4.  **握手与版本查询**：先确认固件侧已支持的协议接口，核验返回报文格式、字段对齐与版本号字符串。
+-    5.  **心跳与持续通信**：连续发送 50 次查询命令，物理丢包率必须为 0%。
+-    6.  **响应时延**：指令平均往返响应时延（RTT）必须低于基线要求（例如 $\le 100\text{ms}$）。
++    5.  **心跳与持续通信**：默认连续50次正常查询、物理丢包率0%；按任务接受的场景/次数/门限检查，变更须有准确依据，不能事后按结果调整。
++    6.  **响应时延**：按已接受门限核对RTT，并记录样本数、失败/超时、min/p50/p95/max和单调时钟测量点；示例100ms不是对所有任务自动生效的门限。
+ 
+ ### 4.4 RV-4: 异常注入与鲁棒性验证 (Fault Injection & Boundary)
+ *   **操作**：QA 故意注入破坏性数据流，测试系统自愈能力：
+@@ -112,39 +114,11 @@
+ 
+ ## 5. QA 审计与验收报告模板 (Audit Report Template)
+ 
+-每次审查完成后，QA Agent 必须在项目中输出结构化审计结论（或更新到任务卡末尾）：
++报告原件统一使用[独立QA与QA作者产物复核报告模板](templates/QA审查报告模板.md)，复制到本票新run。模板的decision为null、检查项为未执行，不预填PASS/APPROVED，不把示例回包当成实测。
+ 
+-```markdown
+-# [QA-REPORT] 工单审计与验收报告: TK-20261013-001
++提交时必须绑定实际会话、任务revision、准确候选、独立预期、逐例正常/异常观察、真实命令/cwd/退出码、原始输出和哈希、必跑组/非零case、未执行与不适用项。报告完成后计算自身SHA256并登记到卡片或交接清单。文档接受、实施授权、单板交付、组合验收和物理部署分别表述。
+ 
+-## 1. 审查元数据
+-- 审查对象: Task MS-07 / Ticket TK-20261013-001
+-- 责任开发: ENG-MC
+-- 审计者: QA (独立审计会话)
+-- 审计时间: 2026-10-13 12:00:00 (北京时间 UTC+8)
+-- 关联 Git Commit: `b4c5d6e`
+-
+-## 2. 第一轨：过程合规审计结果 (Process Audit)
+-- [x] PA-1 计划准入审计: PASS (已预先提交 Markdown Checklist)
+-- [x] PA-2 原子颗粒度审计: PASS (仅修改 `gcode_dispatcher.h`，无跨层污染)
+-- [x] PA-3 代码卫生与防御: PASS (无危险强转，结构体已显式 packed)
+-- [x] PA-4 构建配置完整性: PASS (未篡改 Makefile，-Werror 完好)
+-- [x] PA-5 熔断与试错合规: PASS (一次编译通过，无超标重试)
+-- [x] PA-6 客观凭证完整性: PASS (附带真实 Exit Code 0 日志)
+-- [x] PA-7 环境真实与防瞒报: PASS (使用真实物理端点，零虚拟化/零伪终端作假)
+-> **过程审计结论**: [PROCESS: COMPLIANT] (放行进入结果验收)
+-
+-## 3. 第二轨：结果客观验收结果 (Result Check)
+-- [x] RV-1 独立构建复现: PASS (Exit Code 0, 0 Warnings)
+-- [x] RV-2 静态分析扫描: PASS (cppcheck 0 errors)
+-- [x] RV-3 物理通信黑盒: PASS (真实 MCU 回传合法协议帧 $\ge 1$，物理 Hex 对账一致，RTT < 100ms)
+-- [x] RV-4 异常注入鲁棒性: PASS (畸形 CRC 报文被正确静默丢弃并上报 NAK)
+-> **结果验收结论**: [RESULT: PASSED]
+-
+-## 4. 终审裁决
+-- **最终决议**: **[APPROVED] 放行入库**
+-- **后续动作**: 允许签署合并请求，向 COORD 提交准确版本的签署证据，由 COORD 核对后更新正式状态并按人工规则释放下一微步 Token。
+-```
++报告决定仅APPROVED/REJECTED，待审保持空值；正式任务status使用Backlog/Ready/InProgress/Review/Verify/Done，阻塞另用blocked/recovery_condition。当前检查器不能完整校验这些要求，COORD必须人工逐项核对后更新状态。
+ 
+ ---
+ 
+@@ -152,14 +126,14 @@
+ 
+ | 场景序号 | 开发 Agent 交付表现 | QA 审计裁决 | 裁决依据与处理动作 |
+ | :--- | :--- | :--- | :--- |
+-| **案例 1** | 功能跑通，串口回包完全正确，但 Git Diff 显示其未先输出 Checklist 直接改了代码。 | **一票否决<br/>[REJECT]** | 违反 PA-1。责令开发 Agent 补充规范计划，复核修改范围后重新提审。 |
+-| **案例 2** | 构建通过，但为了消除 `warning: cast from pointer to integer`，代码中使用了 `(void*)(uintptr_t)` 暴力强转。 | **一票否决<br/>[REJECT]** | 违反 PA-3（掩耳盗铃）。直接驳回，要求从指针生命周期和类型设计上消除根因。 |
+-| **案例 3** | 功能看似完成，但为避免严格警告，在模块内加了 `#pragma GCC diagnostic ignored "-Wunused-variable"`。 | **一票否决<br/>[REJECT]** | 违反 PA-3 与 PA-4。强制 `git revert`，必须达到原生零告警。 |
+-| **案例 4** | 过程审计完全合规，但独立测试时发现注入畸形报文导致单片机触发 HardFault 锁死。 | **功能驳回<br/>[FAIL]** | 过程合规但 RV-4 失败。提供触发崩溃的原始十六进制字节序列，指派开发修复。 |
+-| **案例 5** | 物理串口仅收到未迁移旧固件的噪声（如迪文屏数据），无合法响应；QA 自建虚拟伪终端（PTY）灌数据强行闭环。 | **一票否决<br/>[REJECT]** | 严重违反 PA-7 与 HW-G5（弄虚作假）。撤销结论并记录违规，任务回退 Blocked 等待物理固件更新。 |
++| **案例 1** | 功能跑通，串口回包完全正确，但 Git Diff 显示其未先输出 Checklist 直接改了代码。 | **一票否决<br/>[REJECTED]** | 违反 PA-1。责令开发 Agent 补充规范计划，复核修改范围后重新提审。 |
++| **案例 2** | 构建通过，但为了消除 `warning: cast from pointer to integer`，代码中使用了 `(void*)(uintptr_t)` 暴力强转。 | **一票否决<br/>[REJECTED]** | 违反 PA-3（掩耳盗铃）。直接驳回，要求从指针生命周期和类型设计上消除根因。 |
++| **案例 3** | 功能看似完成，但为避免严格警告，在模块内加了 `#pragma GCC diagnostic ignored "-Wunused-variable"`。 | **一票否决<br/>[REJECTED]** | 违反 PA-3 与 PA-4。由作者按本票差异修复或回退，保留用户原改动，重新提审。 |
++| **案例 4** | 过程审计完全合规，但独立测试时发现注入畸形报文导致单片机触发 HardFault 锁死。 | **功能驳回<br/>[REJECTED]** | 过程合规但 RV-4 失败。提供触发崩溃的原始十六进制字节序列，指派开发修复。 |
++| **案例 5** | 物理串口仅收到未迁移旧固件的噪声（如迪文屏数据），无合法响应；QA 自建虚拟伪终端（PTY）灌数据强行闭环。 | **一票否决<br/>[REJECTED]** | 严重违反 PA-7 与 HW-G5（弄虚作假）。撤销结论并记录违规，COORD追加撤回记录并设置blocked及恢复条件，等待实际固件与复验。 |
+ 
+ ## 当前方案适用边界
+ 
+ 本指引的“看板写入”指提交 QA 报告/签署结果，不赋予第二个正式状态写入者；以 04 的唯一 COORD 投影规则为准。尚未部署自动 Token 服务时由人工核对，不把规则文档称为运行控制。
+ 
+-源码构建/静态分析/硬件测试按任务实际范围与已配置工具执行；普通文档更新核对结构、来源、链接和实际差异，不伪造固件构建日志。回退仅本微步差异、保留用户原有改动；隔离构建输出可清理，共享输出或脏源码不可整目录清理。HIL 使用真实 MCU，M115/M105 能否发送先由 MS-03/MCQ 接受，拒绝未实现的探针。作者自检不是独立 QA 签署。
++源码构建/静态分析/硬件测试按任务实际范围与已配置工具执行；普通文档更新核对结构、来源、链接和实际差异，不伪造固件构建日志。回退仅本微步差异、保留用户原有改动；隔离构建输出可清理，共享输出或脏源码不可整目录清理。HIL使用真实MCU，命令语义以本票已接受ICD为准；M115/M105等旧文本仅可用于明确接受的维护协议，不替代原生MiniMCProto业务请求。作者自检不是独立 QA 签署。
+--- before/.agents/rules/codex_qa_review.md
++++ after/.agents/rules/codex_qa_review.md
+@@ -3,6 +3,7 @@
+ status: current-rule
+ owner: COORD
+ effective_date: 2026-10-26
++updated: '2026-10-27T17:16:02+08:00'
+ authorization: 用户本轮明确要求“把所有的qa都独立成codex审查”
+ ---
+ 
+@@ -30,11 +31,13 @@
+     planned_session_alias: codex-qa-<task-id>-review
+     session: null
+     decision: null
++    reviewed_task_revision: null
+     artifact_version: null
+     evidence: null
++    report_sha256: null
+ ```
+ 
+-独立 Verifier 在 `review_assignments` 中登记 `verifier_platform: codex`、`verifier_planned_session_alias: codex-qa-<task-id>-verify`，实际 `verifier_session` 在落实会话后填写。
++独立Verifier在`review_assignments`登记platform/计划别名；实际`verifier_session`落实后填写。提交时分别绑定`verifier_reviewed_task_revision`、`verifier_artifact_version`、`verifier_decision`、`verifier_evidence`、`verifier_report_sha256`。所有必需Reviewer逐项填写同等信息，单个报告不能默默覆盖其他岗位。
+ 
+ `planned_session_alias` 只是计划名称，不代表会话已创建或通过 Ready。尚未落实的实际 `session` 保持 null；COORD 实际安排独立 Codex 会话后，填写可定位的会话标识。用户已指定的 `codex-qa-session-01` 保留为 V2-P01C 的会话别名，不能据此宣称已经审核。通过 CLI 执行时，从真实运行事件记录 CLI 会话 ID 及其与别名的对应关系，不编造 ID。
+ 
+@@ -43,14 +46,14 @@
+ 1. **真实硬件回环绝对性（Zero Virtualization in HIL）**：
+    凡任务定义中包含 `required_evidence_level: hardware-verified`、`verification_environment` 涉及真实物理板卡（如 `real-mcu-hil`、`/dev/ttyUSB0`）的，验收必须严格执行物理在环测试。**严禁以伪终端（PTY）、本地回环（Loopback）、Socket 模拟器或软件 Mock 代替物理单片机应答**。
+ 2. **物理回包有效性底线（零响应即否决）**：
+-   物理串口通讯测试必须验证真实的物理双向闭环。若物理链路仅收到线路噪声、未迁移外设旧报文（如迪文屏 DGUS 数据）或合法协议响应帧数（Valid Response Frames）为 0，QA **必须无条件判定为 `REJECTED`**，开具硬阻塞单（Blocker Issue），挂起任务并交还协调员。**严禁以“AP 单向发包成功”或“AP 过滤了噪声未崩溃”等局部表现替代端到端成功**。
++   正常物理查询必须验证真实双向闭环及目标响应关联。若仅收到线路噪声/旧外设报文，或符合正式契约的src/dst/flags/cmd/seq/精确载荷等有效关联响应为0，QA必须判定REJECTED并交COORD登记阻塞。失联、坏帧、超时等负例按事先接受的无响应/错误与恢复预期判断，不能把负例通过提升为正常闭环通过。**严禁以“AP 单向发包成功”或“AP 过滤了噪声未崩溃”等局部表现替代端到端成功**。
+ 3. **不可伪造的硬件对账凭证**：
+    HIL 验收证据必须包含物理串口设备路径、波特率设置、精确到毫秒的真实时戳，以及原始的双向收发十六进制报文（Raw Hex TX 与 Raw Hex RX 逐帧对账记录）。缺少物理硬件原始应答对账证据的，COORD 严禁采纳。
+ 4. **反作弊与虚假结论作废**：
+-   QA 独立评审员严禁“替受测方写测试桩促成通过”。若发现任何使用 PTY/Mock 替身绕过物理硬件验证的行为，一律判定为严重违规，其签发的 `APPROVED` 结论自始无效，任务状态强制回退至 `Blocked / Rejected`。
++   QA 独立评审员严禁“替受测方写测试桩促成通过”。若发现任何使用 PTY/Mock 替身绕过物理硬件验证的行为，一律判定为严重违规，其签发的 `APPROVED` 结论自始无效，由唯一COORD追加撤回记录、保留历史签署，并在现有生命周期内修正状态、设置`blocked: true`与恢复条件；`REJECTED`是报告决定，不是任务status。
+ 
+ 5. **端到端协议原生一致性（严禁转译伪造与拆单遗漏, HW-G6）**：
+-   凡规范定义为原生透明路由的跨节点链路，**中间路由节点严禁解包或将协议私自降级为旧文本协议（如 G-code），严禁在中间节点伪造下游应答**。跨物理节点工程必须强制采用“ARCH 契约冻结 → 双端并行实施 → 联合调试验收”三段式拆解；若发现仅由单板工程师单边兜底造假或未配对交付双固件（`fw_mc.bin` + `fw_th.bin`）的，QA 必须直接判定为 `REJECTED`。
++   凡规范定义为原生透明路由的链路，中继必须按正式协议识别路由头、校验完整帧，并处理Hop、ROUTE_IS_ROUTED与CRC；“零业务解析”不禁止这些帧级操作。**中继转发路径严禁解析cmd_id的业务语义、解包Payload、修改业务seq，严禁私自降级为G-code等旧文本或伪造下游应答**。本机业务及协议规定的本机广播消费按契约处理，与中继转发职责分开。跨节点工程必须落实“ARCH契约接受 → 各节点必要实现 → 工程联合调试 → 独立组合验收”，显式登记节点提供票及能力前置。单板微步按本票范围交付，不要求每张票产出双固件；最终MC＋TH组合必须锁定两端固件（fw_mc.bin＋fw_th.bin）及AP准确版本与实际部署证据。中间节点不得替未就绪的下游生成成功；缺少最终组合必需制品或物理证据时拒绝相应组合接受。
+ 
+ ## 执行与签署
+ 
+@@ -63,3 +66,14 @@
+ 7. 只有唯一 COORD 在准确版本获得所有必需接受结果、收件及适用的集成验证后，才能推进 Review → Verify → Done 并释放下一微步。
+ 
+ 本规则和卡内 `platform` 是调度要求，不能自行启动 Codex。当前结构检查工具不会调用审核服务；尚未接入实际调度脚本时，由 COORD 启动独立 Codex 会话或人工转交，不能声称后台自动审核已部署。
++
++
++## 模板、阶段与工具边界（2026-10-27）
++
++新建/修订任务使用[任务卡模板](templates/任务卡模板.md)、[派单提示词](templates/角色任务提示词.md)、[实际运行记录](../../docs/guides/templates/task_run_record.md)、[独立报告模板](templates/QA审查报告模板.md)。历史accepted等签署值按原版本保留，不批量改写；新报告decision使用APPROVED/REJECTED，未审为null。
++
++Ready核输入、实际作者/检查安排、授权范围、资源和有效租约，不要求本票尚未产生的候选/签署。Review/Verify/Done按同一准确候选核全部必需接受、适用运行/集成与收件；blocked或未满足的能力条件不能通过新建子票绕过。报告自身SHA256在文件写完后存卡片/交接清单，避免自引用。
++
++故障夹具/黄金预期/报告也是受审产物；先检查工具目标绑定、写失败传播、原状态快照、异常恢复和读回，才能用于所授权台架。寄存器操作、模拟测试、真实链路、部署启动证据分别记录。
++
++本轮模板规范更新不表示`check_task_graph.py`的MCU任务发现、全生命周期、真实版本/报告、租约期限或范围交叠校验已经实现；这些项目仍需COORD人工核对，并在工具专项完成后另留验收证据。文件存在、exit0、CRC通过都不自动解除该责任。
+--- before/docs/guides/minimc_v2_task_execution.md
++++ after/docs/guides/minimc_v2_task_execution.md
+@@ -2,11 +2,11 @@
+ 
+ ## 范围与权威位置
+ 
+-本约定与 [25 张实际微步卡](../../.agents/kanban/microtasks/minimc_v2/README.md)一起使用，补齐首个 AP 离线协议增量的编排。用户本轮“继续”授权落实任务编排；代码票仍须满足实际派单条件。当前 Codex 主对话 `/root` 负责本轮编排与收件，用户已选择另行指定独立会话、人工转交检查；具体会话身份与报告尚未提供。当前不据此假设其他 Agent 已运行。
++本约定覆盖首个AP离线协议增量，并与[有效任务索引](../../.agents/kanban/microtasks/minimc_v2/README.md)、[任务卡模板](../../.agents/rules/templates/任务卡模板.md)、[派单提示词](../../.agents/rules/templates/角色任务提示词.md)一起使用。模板与本约定只定义流程，不指定当前实际COORD、作者或正在运行会话；这些身份及反馈方式以准确任务卡和实际交接记录为准，旧会话记录保留其历史时间。
+ 
+-任务原件位于 `project-control/.agents/kanban/microtasks/minimc_v2/`；看板和任务索引只是投影。旧 V2-P01～06 仅作分组，实际可派单 ID 为带 A/B/C 后缀的独立卡。每张卡只有一个 `primary_work_package`，以原工作包的 `child_tasks` 挂接；没有另建第二套状态原件。
++任务原件位于控制仓`.agents/kanban/`。V2原25张拆解后有6张移入superseded并由V2-P0506承接，2026-10-27目录采样为20张有效V2微步卡；后续数量、状态和替代关系只读准确卡片，本指南不是实时投影。任务索引/看板仍可能有旧投影，派单先核原件与替代关系。每张实际票只有一个primary_work_package；旧分组及已替代卡不直接派单。
+ 
+-本批产出是本机离线编解码/组帧能力，不包括 AP 串口会话、MCU 源码、OTA、物理急停或 HIL。原 MS-05/07/11/17 的实测前置和验收分别保留；离线最终候选 V2-P06C 不能代替它们。
++本批是离线编解码/组帧能力，不包含AP串口事务、MCU协议实现、OTA、物理急停或HIL。当前离线候选归档票为V2-P0506；原V2-P06B/P06C已替代，只保留历史来源。MS-05/07/11/17的固件/实测条件不因离线通过被解除。跨节点纠偏按[完整实施方案](../planning/ap_mc_th_cascade_recovery_implementationplan_20261027_162003.md)建立相关能力/验收票，不把该方案文档审查当成源码或硬件通过。
+ 
+ ## 每票怎样进入 Ready
+ 
+@@ -32,7 +32,7 @@
+ python3 project-control/tools/check_task_graph.py --workspace . --check-ready V2-P01A
+ ```
+ 
+-静态工具通过只表示结构和字段检查通过，不代表内容正确、已独立评审或已获得授权。
++静态工具通过只表示它实际覆盖的结构/字段检查通过。当前工具主要扫描固定V2目录并对V2的Ready/InProgress检查部分字段；不能完整覆盖MCQ/THQ、Review/Verify/Done、真实提交/报告内容、过期租约和glob范围交叠。模板新增字段不会自动变成工具能力，COORD仍逐项人工核对；工具专项另建票和独立反例验收。
+ 
+ ## 逐票输出和失败处理
+ 
+@@ -62,13 +62,13 @@
+ 
+ 用户 2026-10-26 明确要求：后续独立 QA 统一使用 Codex。包括 QA Reviewer、QA Verifier 和 QA 作者产物的独立 ARCH 复核，均遵守 [Codex QA 规则](../../.agents/rules/codex_qa_review.md)。已完成的 P01A/P01B 及原始报告保留原会话，未完成卡引用该规则；作者、其他岗位和硬件条件保持原有分工。
+ 
+-派单时读取 `qa_review_policy`，按条目 `platform: codex` 选择独立 Codex。未启动的任务只登记 `planned_session_alias`，实际 `session` 保持 null；落实会话后由 COORD 填入可定位标识。V2-P01C 保留用户指定别名 `codex-qa-session-01`，审核仍待执行。通过 CLI 运行时保存真实会话 ID 与别名对应关系。结构工具不负责启动 Codex，未接调度脚本时采用主会话启动或人工转交。
++派单时读取 `qa_review_policy`，按条目 `platform: codex` 选择独立 Codex。未启动的任务只登记 `planned_session_alias`，实际 `session` 保持 null；落实会话后由 COORD 填入可定位标识。旧卡保留历史计划别名（如codex-qa-session-01）；实际是否已审核只看对应准确版本的session/报告，不由本指南写实时结论。通过 CLI 运行时保存真实会话 ID 与别名对应关系。结构工具不负责启动 Codex，未接调度脚本时采用主会话启动或人工转交。
+ 
+ 独立审查必须核对协议原文、准确交付物哈希与实际日志。报告保存所审版本、真实命令及退出码、过程/结果判据、限制和 APPROVED/REJECTED；COORD 收件并核对候选与报告哈希后再推进状态。退出码 0、报告存在或结构检查通过不能代替签署通过；失败、超时或缺失报告不得释放下一微步。
+ 
+ 每张卡的 Reviewer 为必需项。QA 编写独立预期或运行器时，其报告仍由非作者检查。实现作者不能改 `test_harness` 中独立预期促通过，QA 也不能改业务代码促通过；本规则目前由人工核对执行，不声称已有文件系统权限系统。
+ 
+-`Review → Verify → Done` 必须绑定同一准确交付：内容/运行检查结论齐全，实际 COORD 确认收件，代码适用时绑定消费/集成版本。代码实现票的“验证通过”只表示该原子能力；最终 V2-P06B 独立复现、V2-P06C 候选归档分别处理。Done 后再变更接口或代码，按新 revision/复验记录更新适用关系，不能沿用旧通过。
++`Review → Verify → Done` 必须绑定同一准确交付：内容/运行检查结论齐全，实际 COORD 确认收件，代码适用时绑定消费/集成版本。代码实现票的“验证通过”只表示该原子能力；当前V2-P0506承接原V2-P06B/P06C的复现/归档范围，是否满足全部必需检查仍按其准确候选证据核对，不因合票自动视为接受。Done 后再变更接口或代码，按新 revision/复验记录更新适用关系，不能沿用旧通过。
+ 
+ ## 首批工具、样例与覆盖范围
+ 
+@@ -83,3 +83,14 @@
+ 显式传入 `MINIMC_QA_ROOT` 后缺参考脚本/样例必须配置失败；没有传入时允许仅构建 AP/库，但必须显示协议测试未启用，不能以 host smoke 1/1 冒充协议候选验收。PyYAML 仅用于控制仓任务检查，不进入 AP 程序依赖；工具缺失如实报错，不自动安装包。
+ 
+ 最终候选 YAML 必含 `candidate_id`、`scope`、`repositories`（准确 commit/diff/hash）、`protocol`、`verification`（报告路径/哈希/所审版本/会话）、`limitations`、`handoff`。候选归档不能只写“各仓最新分支”，不能把文档中的预期或本批静态结构检查写为已发生的独立验收。
++
++
++## 模板接入与状态推进核对
++
++新建卡登记template_version=2026-10-27；存量活动卡在本轮revision补必要字段，历史报告和签署不批量回填。parent_task/coordination/inherited_gates记录关联，相关前置能力必须显式落实到depends_on与对象化dependency_conditions；不得把最终HIL通过反向设为单板实现开工前置。
++
++Ready确认blocked=false、前置能力及准确接受版本、owner/session/worktree/范围/授权/资源、有效租约和预算；本票候选与最终签署在交付后产生。Review/Verify/Done分别核同一候选、全部必需独立审查、适用运行/集成与COORD接受，收到不等于通过。不适用环节列理由与依据，不能用默认单板/默认通过跳过检查。
++
++运行记录逐命令/逐例写独立预期与实际观察，计划和实际分开；必跑测试名/组与非零case明确。正常查询零有效关联响应失败，预期断链/坏帧无响应可通过相应负例；不混淆CRC、命令语义、事务匹配、物理闭环。文档票核结构、来源和链接，不伪造构建或HIL。独立签署用[QA报告模板](../../.agents/rules/templates/QA审查报告模板.md)。
++
++输入变化或旧误判时追加evidence_updates/撤回记录，标明旧/新候选、受影响消费者和恢复条件，保留历史原件。正式status保持Backlog/Ready/InProgress/Review/Verify/Done；报告decision使用APPROVED/REJECTED，阻塞用blocked和recovery_condition。全部正式变更由唯一实际COORD完成，模板修改不自行改变现有任务状态。
+--- before/.agents/rules/templates/QA审查报告模板.md
++++ after/.agents/rules/templates/QA审查报告模板.md
+@@ -0,0 +1,76 @@
++---
++title: 独立 QA 与 QA 作者产物复核报告模板
++status: current-template
++template_version: '2026-10-27'
++updated: '2026-10-27T17:07:21+08:00'
++---
++
++# 独立审查报告模板
++
++本模板适用于独立QA，以及QA作者产物的独立ARCH复核；保留实际岗位。按[Codex QA规则](../codex_qa_review.md)运行，审阅者未参与本产物写作，不继承实现完整交互历史，只读业务源码。复制到新的授权run，不覆盖历史报告。
++
++```yaml
++template_version: '2026-10-27'
++review_id: null
++review_status: pending # pending / completed；不是正式任务status
++reviewer_role: null # QA 或 QA作者产物的ARCH复核
++platform: codex
++planned_session_alias: null
++actual_session: null
++author_session: null
++task_id: null
++task_revision: null
++reviewed_artifact_version: null # 准确候选清单/文档/commit+diff/制品SHA256及其对象域
++reviewed_artifacts: [] # 每项 path/commit或sha256/配置版本
++protocol_and_expectations: [] # 正式来源/版本/哈希/已接受范围
++verification_environment: null
++verification_scope: null
++required_evidence_level: null
++review_time: null
++process_audit: not-executed
++result_check: not-executed
++decision: null # 完成后仅APPROVED / REJECTED；不得预填通过
++accepted_scope: null
++limitations: []
++unexecuted: []
++not_applicable: [] # 检查项/理由/已接受依据；不适用不等于PASS
++issues: []
++commands: [] # 实际command/cwd/工具版本/时间/退出码/完整stdout-stderr路径与SHA256
++case_results: [] # 独立预期版本、触发/输入、预期、观察、判定、原始证据及哈希
++required_test_sets: []
++executed_test_sets: []
++missing_test_sets: []
++raw_trace_files: [] # 真实HIL原始双向Hex/时间源/设备/方向/关联/丢失计数
++supersedes_or_limits: [] # 追加旧结论适用变化，保留旧报告
++handoff:
++  receiver_session: null
++  evidence_location: null
++```
++
++## 1. 身份、候选与过程核查
++
++逐项写实际观察和证据；状态只能为“未执行/通过/失败/不适用（附理由）”，复制模板时不得预勾选：
++
++| 检查项 | 要核对什么 | 实际结果 | 证据 |
++| --- | --- | --- | --- |
++| 输入/范围 | 任务revision、正式契约、前置能力、准确候选、授权路径 | 未执行 | 待实际填写 |
++| 独立性 | 作者与各独立检查者分离，QA作者报告另有独立复核 | 未执行 | 待实际填写 |
++| 原子步骤 | 先计划/前检、阶段边界、失败归因/熔断、保留用户改动 | 未执行 | 待实际填写 |
++| 代码/构建 | 适用的函数/参数/内存/ISR/DMA及告警门禁，不弱化检查 | 未执行 | 待实际填写 |
++| 证据真实 | 命令/cwd/退出码/原始输出/哈希/环境范围一致，未将模拟当HIL | 未执行 | 待实际填写 |
++
++有过程阻断则报告REJECTED，不以结果绿灯抵消；保留未做项，不编造后续运行证据。文档审查用来源/链接/结构/准确差异，不机械要求固件构建或HIL。
++
++## 2. 结果与正常/异常判据
++
++每例列独立预期、输入/故障触发、实际观察、时间期限、退出码及证据。帧层校验、命令语义、事务匹配、端到端物理闭环分别核对；参考工具自身推算的command_valid不能冒充生产实现验证。必跑组/用例缺失或实际case=0时不得通过对应验收。
++
++正常物理查询必须取得符合src/dst/flags/cmd/seq/精确载荷等正式契约的关联响应；零响应、线路噪声、请求回显或MC生成TH固定身份都不能通过。失联、超时、坏帧等负例按既定预期判定：坏CRC应按协议静默丢弃，不将标准NACK作为坏CRC的默认应答。
++
++HIL必须明确真实设备、串口参数、AP/MC/TH实际部署版本与制品哈希，保留带UTC毫秒和单调时钟的逐帧双向原始Hex与关联。联合调试记录与最终独立验收分开；软件PTY/Mock可以验证主机行为，结果不提升为硬件通过。故障夹具先有独立接受、唯一目标绑定、快照/异常恢复/读回证据；写寄存器成功不等于链路恢复。
++
++## 3. 问题、限制与结论
++
++先列问题、缺失证据和未执行项，再给准确范围的APPROVED或REJECTED；待审/报告缺失/调用失败不填APPROVED。单板票只评价本票交付，最终组合才要求参与节点的全部制品和适用物理证据。文档APPROVED不等于源码实施批准、固件接受或HIL通过。
++
++报告自身SHA256由收件者在文件写完后存入任务卡/交接清单，不在报告内容中嵌入自身哈希。新候选重新审核，旧报告和签署保留。审阅者提交结果，唯一COORD核对全部必需签署、同一候选、集成和收件条件后才更新正式status；REJECTED是报告决定，阻塞用blocked字段记录。

@@ -3,6 +3,7 @@ title: 独立 QA 统一使用 Codex 的执行规则
 status: current-rule
 owner: COORD
 effective_date: 2026-10-26
+updated: '2026-10-27T17:16:02+08:00'
 authorization: 用户本轮明确要求“把所有的qa都独立成codex审查”
 ---
 
@@ -30,11 +31,13 @@ review_assignments:
     planned_session_alias: codex-qa-<task-id>-review
     session: null
     decision: null
+    reviewed_task_revision: null
     artifact_version: null
     evidence: null
+    report_sha256: null
 ```
 
-独立 Verifier 在 `review_assignments` 中登记 `verifier_platform: codex`、`verifier_planned_session_alias: codex-qa-<task-id>-verify`，实际 `verifier_session` 在落实会话后填写。
+独立Verifier在`review_assignments`登记platform/计划别名；实际`verifier_session`落实后填写。提交时分别绑定`verifier_reviewed_task_revision`、`verifier_artifact_version`、`verifier_decision`、`verifier_evidence`、`verifier_report_sha256`。所有必需Reviewer逐项填写同等信息，单个报告不能默默覆盖其他岗位。
 
 `planned_session_alias` 只是计划名称，不代表会话已创建或通过 Ready。尚未落实的实际 `session` 保持 null；COORD 实际安排独立 Codex 会话后，填写可定位的会话标识。用户已指定的 `codex-qa-session-01` 保留为 V2-P01C 的会话别名，不能据此宣称已经审核。通过 CLI 执行时，从真实运行事件记录 CLI 会话 ID 及其与别名的对应关系，不编造 ID。
 
@@ -43,14 +46,14 @@ review_assignments:
 1. **真实硬件回环绝对性（Zero Virtualization in HIL）**：
    凡任务定义中包含 `required_evidence_level: hardware-verified`、`verification_environment` 涉及真实物理板卡（如 `real-mcu-hil`、`/dev/ttyUSB0`）的，验收必须严格执行物理在环测试。**严禁以伪终端（PTY）、本地回环（Loopback）、Socket 模拟器或软件 Mock 代替物理单片机应答**。
 2. **物理回包有效性底线（零响应即否决）**：
-   物理串口通讯测试必须验证真实的物理双向闭环。若物理链路仅收到线路噪声、未迁移外设旧报文（如迪文屏 DGUS 数据）或合法协议响应帧数（Valid Response Frames）为 0，QA **必须无条件判定为 `REJECTED`**，开具硬阻塞单（Blocker Issue），挂起任务并交还协调员。**严禁以“AP 单向发包成功”或“AP 过滤了噪声未崩溃”等局部表现替代端到端成功**。
+   正常物理查询必须验证真实双向闭环及目标响应关联。若仅收到线路噪声/旧外设报文，或符合正式契约的src/dst/flags/cmd/seq/精确载荷等有效关联响应为0，QA必须判定REJECTED并交COORD登记阻塞。失联、坏帧、超时等负例按事先接受的无响应/错误与恢复预期判断，不能把负例通过提升为正常闭环通过。**严禁以“AP 单向发包成功”或“AP 过滤了噪声未崩溃”等局部表现替代端到端成功**。
 3. **不可伪造的硬件对账凭证**：
    HIL 验收证据必须包含物理串口设备路径、波特率设置、精确到毫秒的真实时戳，以及原始的双向收发十六进制报文（Raw Hex TX 与 Raw Hex RX 逐帧对账记录）。缺少物理硬件原始应答对账证据的，COORD 严禁采纳。
 4. **反作弊与虚假结论作废**：
-   QA 独立评审员严禁“替受测方写测试桩促成通过”。若发现任何使用 PTY/Mock 替身绕过物理硬件验证的行为，一律判定为严重违规，其签发的 `APPROVED` 结论自始无效，任务状态强制回退至 `Blocked / Rejected`。
+   QA 独立评审员严禁“替受测方写测试桩促成通过”。若发现任何使用 PTY/Mock 替身绕过物理硬件验证的行为，一律判定为严重违规，其签发的 `APPROVED` 结论自始无效，由唯一COORD追加撤回记录、保留历史签署，并在现有生命周期内修正状态、设置`blocked: true`与恢复条件；`REJECTED`是报告决定，不是任务status。
 
 5. **端到端协议原生一致性（严禁转译伪造与拆单遗漏, HW-G6）**：
-   凡规范定义为原生透明路由的跨节点链路，**中间路由节点严禁解包或将协议私自降级为旧文本协议（如 G-code），严禁在中间节点伪造下游应答**。跨物理节点工程必须强制采用“ARCH 契约冻结 → 双端并行实施 → 联合调试验收”三段式拆解；若发现仅由单板工程师单边兜底造假或未配对交付双固件（`fw_mc.bin` + `fw_th.bin`）的，QA 必须直接判定为 `REJECTED`。
+   凡规范定义为原生透明路由的链路，中继必须按正式协议识别路由头、校验完整帧，并处理Hop、ROUTE_IS_ROUTED与CRC；“零业务解析”不禁止这些帧级操作。**中继转发路径严禁解析cmd_id的业务语义、解包Payload、修改业务seq，严禁私自降级为G-code等旧文本或伪造下游应答**。本机业务及协议规定的本机广播消费按契约处理，与中继转发职责分开。跨节点工程必须落实“ARCH契约接受 → 各节点必要实现 → 工程联合调试 → 独立组合验收”，显式登记节点提供票及能力前置。单板微步按本票范围交付，不要求每张票产出双固件；最终MC＋TH组合必须锁定两端固件（fw_mc.bin＋fw_th.bin）及AP准确版本与实际部署证据。中间节点不得替未就绪的下游生成成功；缺少最终组合必需制品或物理证据时拒绝相应组合接受。
 
 ## 执行与签署
 
@@ -63,3 +66,14 @@ review_assignments:
 7. 只有唯一 COORD 在准确版本获得所有必需接受结果、收件及适用的集成验证后，才能推进 Review → Verify → Done 并释放下一微步。
 
 本规则和卡内 `platform` 是调度要求，不能自行启动 Codex。当前结构检查工具不会调用审核服务；尚未接入实际调度脚本时，由 COORD 启动独立 Codex 会话或人工转交，不能声称后台自动审核已部署。
+
+
+## 模板、阶段与工具边界（2026-10-27）
+
+新建/修订任务使用[任务卡模板](templates/任务卡模板.md)、[派单提示词](templates/角色任务提示词.md)、[实际运行记录](../../docs/guides/templates/task_run_record.md)、[独立报告模板](templates/QA审查报告模板.md)。历史accepted等签署值按原版本保留，不批量改写；新报告decision使用APPROVED/REJECTED，未审为null。
+
+Ready核输入、实际作者/检查安排、授权范围、资源和有效租约，不要求本票尚未产生的候选/签署。Review/Verify/Done按同一准确候选核全部必需接受、适用运行/集成与收件；blocked或未满足的能力条件不能通过新建子票绕过。报告自身SHA256在文件写完后存卡片/交接清单，避免自引用。
+
+故障夹具/黄金预期/报告也是受审产物；先检查工具目标绑定、写失败传播、原状态快照、异常恢复和读回，才能用于所授权台架。寄存器操作、模拟测试、真实链路、部署启动证据分别记录。
+
+本轮模板规范更新不表示`check_task_graph.py`的MCU任务发现、全生命周期、真实版本/报告、租约期限或范围交叠校验已经实现；这些项目仍需COORD人工核对，并在工具专项完成后另留验收证据。文件存在、exit0、CRC通过都不自动解除该责任。

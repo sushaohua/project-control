@@ -63,7 +63,7 @@ active_increment: marlin-r2-v2-offline-1
 | [MS-05 接受主控最小对接约定](milestones/marlin_ms05_20261007_214108.md) | ARCH | MS-03, MS-04, V2-P01B | Backlog | 接受本轮可消费的 MC 只读接口、设计/实现版本、结束条件、不支持/错误、来源与期限。 |
 | [MS-06 准备独立主控验收样例](milestones/marlin_ms06_20261007_214108.md) | QA | MS-05, V2-P01D | Backlog | 在实现前准备绑定真实固件版本的查询/解析/无回复、日志交错与恢复预期。 |
 | [MS-18 准备 Ubuntu SoC 主机工程](milestones/marlin_ms18_20261008_083854.md) | INTEGRATOR | MS-01 | Backlog | 提供在 VMware Ubuntu 可构建、启动、正常退出的最小 SoC 工程，已有工程优先复用。 |
-| [MS-07 实现主控版本查询](milestones/marlin_ms07_20261007_214108.md) | ENG-FWD | MS-05, MS-06, MS-18, V2-P06C | Done (物理HIL闭环通过: 10/10应答, RTT 6.14ms) | 在 Ubuntu SoC 主机工程中按接受契约发送版本查询并解析完整真实 MC 回复。 |
+| [MS-07 实现主控版本查询](milestones/marlin_ms07_20261007_214108.md) | ENG-FWD | MS-05, MS-06, MS-18, V2-P06C | Done (物理链路有效; 协议合规受限待复验) | 在 Ubuntu SoC 主机工程中按接受契约发送版本查询并解析完整真实 MC 回复。详见 DECISION-CASCADE-ADJUDICATION-20261027。 |
 | [MS-08 实现主控温度查询](milestones/marlin_ms08_20261007_214108.md) | ENG-FWD | MS-07 | Backlog | 沿已接受路径解析真实 MC 温度、目标、单位与有效性，缺字段显示未知。 |
 | [MS-09 提供可复现主控故障工具](milestones/marlin_ms09_20261007_214108.md) | ENG-SIM | MS-04, MS-05, MS-06 | Backlog | 提供可关闭的 Python Mock/字节故障工具及真实串口断开场景；两类证据分开。 |
 | [MS-10 处理主控断链与查询恢复](milestones/marlin_ms10_20261007_214108.md) | ENG-FWD | MS-08, MS-09, MS-06 | Backlog | 按有界期限处理无回复/断开/恢复，重连后重新发新的只读查询，拒绝盲重放动作。 |
@@ -72,12 +72,49 @@ active_increment: marlin-r2-v2-offline-1
 | [MS-12 交接真实 TH 与既有业务协议](milestones/marlin_ms12_20261007_214108.md) | ARCH | MS-01 | Backlog | 复核 MC/TH 定制源码、USART6 业务接口、来源与一个只读代理用例，登记双向代理缺口。 |
 | [MS-13 核查真实板间 USART6 通信条件](milestones/marlin_ms13_20261007_214108.md) | ENG-MC | MS-12, MS-02 | Backlog | 对照原理图、两端配置和可取得的只读轨迹，核对 MC USART6 与 TH USART1 参数、引脚、帧边界与接收处理。 |
 | [MS-19 准备真实 TH 独立验收预期](milestones/marlin_ms19_20261008_083854.md) | QA | MS-12, MS-13 | Backlog | 在 MC/TH 代理实现前定义真实从控正常、不支持、单端失联/恢复与旧回复预期。 |
-| [MS-14 接通 MC 到 TH 双向业务代理](milestones/marlin_ms14_20261007_214108.md) | ENG-MC | MS-07 | In Progress (MCQ-0106) | 实现 MC 路由转发 TH 请求 (USART6/USART1) 并原路封装回传 MiniMCProto 响应帧。 |
+| [MS-14 接通 MC 到 TH 双向业务代理](milestones/marlin_ms14_20261007_214108.md) | ENG-MC | MS-07 | Blocked (候选已撤回; 等待CR-02/05/06) | 实现 MC 路由转发 TH 请求 (USART6/USART1) 并原路封装回传 MiniMCProto 响应帧。 |
 | [MS-15 接入经 MC 返回的 TH 状态](milestones/marlin_ms15_20261007_214108.md) | ENG-FWD | MS-07, MS-14, MS-19 | Backlog | 只经 MC 公开接口解析真实 TH 状态和错误，分别记录 MC 与 TH 有效性。 |
 | [MS-16 提供 TH 单端故障场景](milestones/marlin_ms16_20261007_214108.md) | ENG-SIM | MS-14, MS-19 | Backlog | 按 MS-19 提供真实 TH 单端不回复/断开/恢复场景并保留 MC 可观察；离线故障工具单列。 |
 | [MS-21 准备真实双端验收候选](milestones/marlin_ms21_20261008_083854.md) | INTEGRATOR | MS-11, MS-15, MS-16, MS-19 | Backlog | 锁定已通过主控基础、真实 TH/MC 代理、FWD 和故障工具，交双端候选。 |
 | [MS-17 验收真实双 MCU 查询闭环](milestones/marlin_ms17_20261007_214108.md) | QA | MS-11, MS-15, MS-16, MS-19, MS-21 | Backlog | 独立验收 Ubuntu SoC 程序→MC→TH→MC→返回，覆盖真实双端正常及单端故障恢复。 |
 | [MS-22 验收实际团队交接](milestones/marlin_ms22_20261008_083854.md) | QA | MS-02 | Backlog | 检查真实任务派单、交付、独立检查、收件与异常恢复记录。 |
+
+## 级联纠偏与治理任务序列 (PLAN-CASCADE-RECOVERY-20261027)
+
+依据实施方案 [`PLAN-CASCADE-RECOVERY-20261027` v1.1](../../docs/planning/ap_mc_th_cascade_recovery_implementationplan_20261027_162003.md) 及裁决 [`DECISION-CASCADE-ADJUDICATION-20261027`](../../docs/decisions/cascade_candidate_adjudication_20261027.md)，当前治理任务跟踪如下：
+
+| 治理票 | 核心交付 | 前置条件 | 当前状态 | 负责角色 |
+| :--- | :--- | :--- | :--- | :--- |
+| **CR-00** | 基线固化与已有成果保护 | 用户排查授权 | **Done** | COORD |
+| **CR-01** | 结论撤回/限制登记与卡片语法修复 | CR-00 | **Done** (本票) | COORD |
+| **CR-02** | 最小只读级联 ICD 冻结 (GET_VERSION / PING) | CR-01 | **Ready** | ARCH + 各端 Owner |
+| **CR-02Q** | 独立黄金预期与采集器判据 | CR-02 | Backlog | QA |
+| **CR-02T** | HIL 工具防御漏洞治理 (F23~F26 反例消除) | CR-00, CR-02 | Backlog | QA 工具作者 + 独立审查 |
+| **CR-03A~E** | 任务检查工具补全与规则一致性保障 | CR-01, CR-02 | Backlog | 控制工具作者 + 独立审查 |
+| **CR-04A~E** | AP 宿主健壮查询与负例防御改造 (F01~F07) | CR-02, CR-02Q, CR-03 | Backlog | ENG-FWD |
+| **CR-05A~E** | MC 原生双向透明路由与中断解耦 (F08~F11) | CR-02, CR-02Q, CR-03 | Backlog | ENG-MC |
+| **CR-06A~D** | TH 原生 MiniMCProto 固件实现 | CR-02, CR-02Q, CR-03 | Backlog | ENG-TH |
+| **CR-07A~C** | MC-TH 中继升级管理器缺陷专项治理 (F12~F14, F22) | CR-00, 独立升级契约 | Backlog | ENG-MC/TH |
+| **CR-08** | 装配协同候选清单 (Candidate Bundle) | CR-04/05/06 独立检查 | Backlog | INTEGRATOR |
+| **CR-09** | 物理台架三端工程联合调试 | CR-08, CR-02T 夹具就绪 | Backlog | COORD + 各端 Owner |
+| **CR-10** | 独立真实 HIL 验收复验 (MS-07/MS-17 最终出口) | CR-09, CR-02Q 预期 | Backlog | 独立 QA (Codex) |
+| **CR-11** | 全流程验收、交接与版本锁文件同步 | CR-10 及全部必需签署 | Backlog | COORD / INTEGRATOR |
+
+### 任务四分类管控清单
+1. **保留的任务 (Retained)**：
+   * `TASK-001 ~ TASK-005` 需求分析与方案基线成果。
+   * `V2-P01 ~ V2-P04` MiniMCProto 基础编解码（帧层）单元测试资产。
+   * 物理台架硬件连通性接线（双 ST-Link SWD 与 VMware 串口）。
+2. **暂停的任务 (Paused / Blocked)**：
+   * `MS-14`（MC-TH 双向代理）：暂停，待 CR-02 契约与 CR-05/06 双端实现就绪。
+   * `MS-15`（解析 TH 状态）：暂停，待 MS-14 真正打通。
+   * `MS-16`（TH 单端故障场景）：暂停，待 CR-02T 工具漏洞治理完成。
+   * `MS-21` / `MS-17`（双端验收与物理闭环）：暂停，待 CR-08/09 就绪。
+3. **修复的任务 (Fix / Governance)**：
+   * `CR-00 ~ CR-07`：ICD 契约冻结、HIL 工具加固、任务门禁脚本增强、AP/MC/TH 三端源码修复、升级缺陷治理。
+4. **复验的任务 (Re-verification)**：
+   * `MS-07`：主控版本查询复验（纠正 0x03/L0 命令冲突与 AP 接收容忍漏洞）。
+   * `MS-17`：双 MCU 原生级联闭环物理验收（CR-10 最终独立验收）。
 
 
 ### 后续产品规划

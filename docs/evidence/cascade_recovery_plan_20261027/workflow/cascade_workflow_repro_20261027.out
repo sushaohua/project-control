@@ -1,0 +1,6 @@
+baseline_with_only_MS07_yaml_quoted {"errors": [], "count": 62, "MCQ_scanned": [], "MS07_Done": "Done", "MS07_prerequisites": {"MS-05": "Backlog", "MS-06": "Backlog", "MS-18": "Backlog", "V2-P0506": "Done"}}
+opaque_expired_blocked_readiness []
+bogus_dependency_binding_readiness []
+Done_with_self_rejected_missing_review_errors []
+glob_scope_overlap_errors []
+nonexistent_candidate_commits_artifact_errors []

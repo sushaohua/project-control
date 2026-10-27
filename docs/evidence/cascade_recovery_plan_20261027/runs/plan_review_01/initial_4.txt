@@ -1,0 +1,124 @@
+manifest_version: '1.0'
+timestamp: '2026-10-20T11:34:46+08:00'
+coordinator: COORD
+status: task-contracts-mapped-not-dispatched
+repositories:
+  project-control:
+    url: ssh://git@192.168.77.113:2222/sushaohua/project-control.git
+    local_path: ~/workspace/ai_soc_project/project-control
+    branch: main
+    base_commit: ba563026d2e5bcd35d5ccef7a420874e23dd9044
+    commit_source: The containing Git commit identifies this control snapshot; use git rev-parse HEAD after checkout.
+    status: active-canonical
+  soc-ap:
+    url: ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git
+    local_path: ~/workspace/ai_soc_project/soc-ap
+    commit: cf2dff40e8b9d7c94b41d01386f287be45afdb4d
+    branch: main
+    commit_status: local-host-build-and-smoke-verified-not-vmware-or-hil-validated
+  mcu-p3:
+    url: ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git
+    local_path: ~/workspace/ai_soc_project/mcu-p3
+    commit: 14b8057b04030bd659744c874c73ff8f09f29979
+    branch: feat/soc-debug
+    remote: origin
+    upstream_branch: origin/feat/soc-debug
+    commit_status: observed-source-snapshot-not-build-or-hil-validated
+    reference_check: Local HEAD and locally cached upstream ref match; remote server not contacted.
+    source_inventory: docs/baseline/ms01_source_inventory_20261020.md
+    inventory_status: source-config-and-existing-artifacts-recorded-pending-independent-review-no-mcu-build-or-hil
+    components:
+      mc:
+        path: motion-controller-mcu
+        chip: AT32F435VGT7
+        owner_role: ENG-MC
+      th:
+        path: color-engine-mcu/io_toggle
+        chip: AT32F423CCT7
+        owner_role: ENG-TH
+      mc_bootloader:
+        path: bootloader/435
+      th_bootloader:
+        path: bootloader/423
+    branch_scope: MC and TH share this repository branch and commit; they are directory-scoped components, not separate Git
+      repositories.
+  test_harness:
+    url: ssh://git@192.168.77.113:2222/sushaohua/test_harness.git
+    local_path: ~/workspace/ai_soc_project/test_harness
+    commit: ad0398e20d3645dbfa37bfd0550ded0828d018b2
+    branch: main
+hardware_environment:
+  mc_chip: AT32F435VGT7
+  th_chip: AT32F423CCT7
+  flasher_tool: probe-rs 0.32.0
+  soc_runtime: VMware Ubuntu VM simulating SoC/AP
+  ssh_alias: vmware
+  ssh_access: ssh vmware (user-provided; connectivity not independently verified)
+  soc_serial_port: /dev/ttyUSB0
+  soc_serial_format: 115200 8N1
+  serial_inputs: docs/baseline/serial_links.md
+  serial_links:
+    ap_mc:
+      source_status: user-confirmed-not-hil-validated
+      ap_device: /dev/ttyUSB0
+      mc_uart: USART2
+      mc_tx_pin: PA2
+      mc_rx_pin: PA3
+      baudrate: 115200
+      data_bits: 8
+      parity: none
+      stop_bits: 1
+      hardware_flow_control: false
+      replaces_dgus_display: true
+      dgus_display_on_usart2: false
+      firmware_migration_status: pending-dgus-to-ap-interface-migration
+    mc_th:
+      source_status: user-confirmed-not-hil-validated
+      mc_uart: USART6
+      mc_tx_pin: PA4
+      mc_rx_pin: PA5
+      th_uart: USART1
+      th_tx_pin: PB6
+      th_rx_pin: PB7
+      baudrate: 921600
+      data_bits: 8
+      parity: none
+      stop_bits: 1
+      hardware_flow_control: false
+  soc_serial_adapter: CH341 USB-to-UART (user-reported kernel attach)
+  soc_serial_kernel_log: '[92136.577564] usb 1-2.1: ch341-uart converter now attached to ttyUSB0'
+verification_20261020:
+  evidence_path: docs/evidence/20261020/
+  ap_host_build: local WSL2 configure/build exit 0; host_runtime_smoke 1/1; serial_opened=false
+  mcu_build: not executed; existing TH artifact internal checks only
+  server_sync: 'four ordinary pushes failed: socket Operation not permitted; script exit 1'
+  vmware_ssh: 'read-only true command failed before authentication: socket Operation not permitted; exit 255'
+  protocol_input: user selected local MiniMCProto v2.0 Rev 2.0.3; byte-identical source copy registered
+communication_protocol:
+  name: MiniMCProto v2.0
+  document_id: SPEC-PROTO-20261015-153000
+  revision: 2.0.3
+  status: user-selected-20261020-not-yet-implemented-or-hil-verified
+  local_path: docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md
+  sha256: 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
+  adoption_record: docs/specs/protocol_selection_20261020.md
+project_independence:
+  knowledge_base_role: reference-only-no-build-or-runtime-dependency
+  required_inputs: project-local-versioned-copies
+  guide: docs/guides/standalone_workspace.md
+  evidence: docs/evidence/20261020_protocol_import/
+task_orchestration:
+  plan_revision: marlin-r2-v2-offline-1
+  microtask_directory: .agents/kanban/microtasks/minimc_v2/
+  microtask_count: 20
+  first_task: V2-P01A
+  final_offline_candidate_task: V2-P0506
+  coord_session: Codex 主对话 /root（2026-10-20 本轮）
+  execution_guide: docs/guides/minimc_v2_task_execution.md
+  structure_report: docs/evidence/20261020_task_orchestration/structure_check.json
+  independent_review:
+    mode: user-assigned independent session; manual handoff
+    session: null
+    decision: null
+    handoff_prompt: docs/handoff/MINIMC_V2_PLANNING_REVIEW.md
+  status: mapped; all new cards Backlog; dispatch assignments/input bindings/leases pending

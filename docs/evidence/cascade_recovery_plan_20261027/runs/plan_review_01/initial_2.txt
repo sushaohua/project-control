@@ -1,0 +1,22 @@
+{
+  "project-control": {
+    "commit": "8a042927ea0c3b58ea26d3a7b197f5727a1b42fb",
+    "branch": "main",
+    "status": "?? docs/evidence/cascade_recovery_plan_20261027/\n?? docs/guides/feishu_cli_howto.md\n?? docs/guides/feishu_cli_user_access_experience_20261026.md\n?? docs/planning/ap_mc_th_cascade_recovery_implementationplan_20261027_162003.md\n?? tools/__pycache__/"
+  },
+  "soc-ap": {
+    "commit": "8d6c446cd3b0bac57054723ba7da9cd797ab4131",
+    "branch": "main",
+    "status": ""
+  },
+  "mcu-p3": {
+    "commit": "a679133204ecbb81ad48694f5372c125db2e749f",
+    "branch": "feat/soc-debug",
+    "status": ""
+  },
+  "test_harness": {
+    "commit": "1d0861f199b92f9eac7c2103dfe80b207dbe4838",
+    "branch": "main",
+    "status": ""
+  }
+}

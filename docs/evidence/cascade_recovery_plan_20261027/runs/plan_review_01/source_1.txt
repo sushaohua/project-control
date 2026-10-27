@@ -1,0 +1,240 @@
+#include "minimc_proto.h"
+#include "wk_dma.h"
+#include "wk_usart.h"
+#include <stddef.h>
+
+typedef enum {
+    PARSER_STATE_WAIT_SOF1 = 0,
+    PARSER_STATE_WAIT_SOF2,
+    PARSER_STATE_READ_HEADER,
+    PARSER_STATE_READ_PAYLOAD,
+    PARSER_STATE_READ_CRC
+} minimc_parser_state_t;
+
+static minimc_parser_state_t s_parser_state = PARSER_STATE_WAIT_SOF1;
+static uint8_t s_rx_buf[MINIMC_MAX_FRAME_SIZE];
+static uint16_t s_rx_idx = 0U;
+static uint16_t s_expected_payload_len = 0U;
+static uint8_t s_tx_buf[MINIMC_MAX_FRAME_SIZE];
+
+uint16_t minimc_crc16(const uint8_t *data, uint16_t len)
+{
+    if (data == NULL)
+    {
+        return 0xFFFFU;
+    }
+    uint16_t crc = 0xFFFFU;
+    for (uint16_t i = 0U; i < len; ++i)
+    {
+        crc ^= (uint16_t)((uint16_t)data[i] << 8U);
+        for (uint8_t bit = 0U; bit < 8U; ++bit)
+        {
+            if ((crc & 0x8000U) != 0U)
+            {
+                crc = (uint16_t)((crc << 1U) ^ 0x1021U);
+            }
+            else
+            {
+                crc = (uint16_t)(crc << 1U);
+            }
+        }
+    }
+    return crc;
+}
+
+static void parser_reset(void)
+{
+    s_parser_state = PARSER_STATE_WAIT_SOF1;
+    s_rx_idx = 0U;
+    s_expected_payload_len = 0U;
+}
+
+static bool is_header_valid(void)
+{
+    const uint8_t flags = s_rx_buf[4];
+    const uint8_t dst_id = s_rx_buf[3];
+    const bool is_v2 = ((flags & 0x0CU) == MINIMC_FLAG_PROTO_V2);
+    const bool is_valid_dst = (dst_id == MINIMC_NODE_MC) ||
+                              (dst_id == MINIMC_NODE_TH) ||
+                              (dst_id == 0xFFU);
+
+    if (!is_v2 || !is_valid_dst)
+    {
+        return false;
+    }
+
+    const uint16_t pay_lo = (uint16_t)s_rx_buf[10];
+    const uint16_t pay_hi = (uint16_t)s_rx_buf[11];
+    s_expected_payload_len = (uint16_t)(pay_lo | (pay_hi << 8U));
+
+    if (s_expected_payload_len > MINIMC_MAX_PAYLOAD_SIZE)
+    {
+        return false;
+    }
+    return true;
+}
+
+static void build_version_resp_header(uint8_t src_id, uint8_t cmd_id, uint16_t req_seq, uint8_t *buf)
+{
+    if (buf == NULL)
+    {
+        return;
+    }
+    buf[0] = MINIMC_SOF_1;
+    buf[1] = MINIMC_SOF_2;
+    buf[2] = src_id;
+    buf[3] = MINIMC_NODE_AP;
+    buf[4] = (uint8_t)(MINIMC_FLAG_IS_RESPONSE | MINIMC_FLAG_PROTO_V2);
+    buf[5] = cmd_id;
+    buf[6] = MINIMC_DEFAULT_HOP_LIMIT;
+    buf[7] = MINIMC_DEFAULT_ROUTE;
+    buf[8] = (uint8_t)(req_seq & 0xFFU);
+    buf[9] = (uint8_t)((req_seq >> 8U) & 0xFFU);
+    buf[10] = 0x04U;
+    buf[11] = 0x00U;
+}
+
+static void build_version_resp_payload(uint8_t fw_minor, uint8_t *buf)
+{
+    if (buf == NULL)
+    {
+        return;
+    }
+    buf[12] = 2U;
+    buf[13] = 0U;
+    buf[14] = 1U;
+    buf[15] = fw_minor;
+
+    const uint16_t crc = minimc_crc16(buf, 16U);
+    buf[16] = (uint8_t)(crc & 0xFFU);
+    buf[17] = (uint8_t)((crc >> 8U) & 0xFFU);
+}
+
+static void handle_mc_query(uint8_t cmd_id, uint16_t req_seq)
+{
+    uint8_t resp_buf[18];
+    build_version_resp_header(MINIMC_NODE_MC, cmd_id, req_seq, resp_buf);
+    build_version_resp_payload(9U, resp_buf);
+    (void)minimc_proto_send(resp_buf, 18U);
+}
+
+static void handle_th_query(uint8_t cmd_id, uint16_t req_seq)
+{
+    forward_uart_dma.forward_uart_rx_complete = 0U;
+    forward_uart_send_line("M115", 4U);
+
+    uint32_t timeout = 200000U;
+    while ((forward_uart_dma.forward_uart_rx_complete == 0U) && (timeout > 0U))
+    {
+        timeout--;
+    }
+
+    if (forward_uart_dma.forward_uart_rx_complete == 0U)
+    {
+        return;
+    }
+
+    uint8_t resp_buf[18];
+    build_version_resp_header(MINIMC_NODE_TH, cmd_id, req_seq, resp_buf);
+    build_version_resp_payload(0U, resp_buf);
+    (void)minimc_proto_send(resp_buf, 18U);
+    forward_uart_dma.forward_uart_rx_complete = 0U;
+}
+
+static void handle_rx_frame(void)
+{
+    const uint8_t dst_id = s_rx_buf[3];
+    const uint8_t cmd_id = s_rx_buf[5];
+    const uint16_t seq_lo = (uint16_t)s_rx_buf[8];
+    const uint16_t seq_hi = (uint16_t)s_rx_buf[9];
+    const uint16_t req_seq = (uint16_t)(seq_lo | (seq_hi << 8U));
+
+    const bool is_query = (cmd_id == MINIMC_CMD_VERSION_GET) ||
+                          (cmd_id == MINIMC_CMD_GET_VERSION);
+
+    if (!is_query)
+    {
+        return;
+    }
+
+    if ((dst_id == MINIMC_NODE_MC) || (dst_id == 0xFFU))
+    {
+        handle_mc_query(cmd_id, req_seq);
+    }
+    else if (dst_id == MINIMC_NODE_TH)
+    {
+        handle_th_query(cmd_id, req_seq);
+    }
+}
+
+static void process_crc_and_dispatch(void)
+{
+    const uint16_t total_calc_len = (uint16_t)(MINIMC_HEADER_SIZE + s_expected_payload_len);
+    const uint16_t calc_crc = minimc_crc16(s_rx_buf, total_calc_len);
+
+    const uint16_t rx_crc_lo = (uint16_t)s_rx_buf[s_rx_idx - 2U];
+    const uint16_t rx_crc_hi = (uint16_t)s_rx_buf[s_rx_idx - 1U];
+    const uint16_t rx_crc = (uint16_t)(rx_crc_lo | (rx_crc_hi << 8U));
+
+    if (calc_crc == rx_crc)
+    {
+        handle_rx_frame();
+    }
+    parser_reset();
+}
+
+static bool parse_sof_step(uint8_t byte)
+{
+    if (s_parser_state == PARSER_STATE_WAIT_SOF1)
+    {
+        if (byte == MINIMC_SOF_1)
+        {
+            s_rx_buf[0] = byte;
+            s_rx_idx = 1U;
+            s_parser_state = PARSER_STATE_WAIT_SOF2;
+        }
+        return true;
+    }
+    if (s_parser_state == PARSER_STATE_WAIT_SOF2)
+    {
+        if (byte == MINIMC_SOF_2)
+        {
+            s_rx_buf[1] = byte;
+            s_rx_idx = 2U;
+            s_parser_state = PARSER_STATE_READ_HEADER;
+        }
+        else if (byte != MINIMC_SOF_1)
+        {
+            parser_reset();
+        }
+        return true;
+    }
+    return false;
+}
+
+static void parse_body_step(uint8_t byte)
+{
+    s_rx_buf[s_rx_idx] = byte;
+    s_rx_idx++;
+
+    if (s_parser_state == PARSER_STATE_READ_HEADER)
+    {
+        if (s_rx_idx == MINIMC_HEADER_SIZE)
+        {
+            if (!is_header_valid())
+            {
+                parser_reset();
+                return;
+            }
+            s_parser_state = (s_expected_payload_len == 0U) ?
+                             PARSER_STATE_READ_CRC : PARSER_STATE_READ_PAYLOAD;
+        }
+        return;
+    }
+    if (s_parser_state == PARSER_STATE_READ_PAYLOAD)
+    {
+        const uint16_t target_len = (uint16_t)(MINIMC_HEADER_SIZE + s_expected_payload_len);
+        if (s_rx_idx >= target_len)
+        {
+            s_parser_state = PARSER_STATE_READ_CRC;
+        }

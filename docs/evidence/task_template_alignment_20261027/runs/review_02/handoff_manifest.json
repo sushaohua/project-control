@@ -1,0 +1,128 @@
+{
+  "actual_session": "/root/task_template_review",
+  "created_utc": "2026-10-27T09:18:48.243215+00:00",
+  "decision": "APPROVED",
+  "accepted_scope": "seven exact documentation candidates only",
+  "files": [
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_01.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_01.stdout.log",
+      "sha256": "b247fc7e8824044ed2081a19b8135ce14057bd24e12d19ccfa8e1baef15e5509"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_02.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_02.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_03.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_03.stdout.log",
+      "sha256": "205e2f5a43006dbe04d38a44eac23caef6e84aef64b842cb9b32f90f8e0d092c"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_04.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_04.stdout.log",
+      "sha256": "383af4d5a8e25ca8a3ce52306e0d465a473b24e6a67f91a108b089a577f291b3"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_05.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_05.stdout.log",
+      "sha256": "176ae5cece73c631f5b11b4facb089c042e15fdc7801d29e1be49a00b927024d"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_06.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_06.stdout.log",
+      "sha256": "4f36c23f24cabaceb250f26d7c50cc2b5ce0c621fbfc5396b8b7c26bdb02facd"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_07.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_07.stdout.log",
+      "sha256": "ac64ff9db09f385487d8ce26ad15567ee24e1a8cc3fb784e25678d9249620089"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_08.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/command_08.stdout.log",
+      "sha256": "d147afaac5a79ba8d202292a69b908d48012970bb4a7db132e1fe6a2adc33d84"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/commands.json",
+      "sha256": "12a96782f1164232a8668b445c7a1f3a6d364eca7ea60cb32032e49d64bff0a5"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/independent_candidate.patch",
+      "sha256": "6e58eed5756e61b6bc7ad5b282cf07cc5d5ab62f5fe1e3fa849b3cadb880e96f"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/independent_checks.py",
+      "sha256": "01fe2d02ce3f68e1724c90fd3521d0397291f0c99f244bb5fa70c7c8959f6281"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/qa_review_report.md",
+      "sha256": "89cb014a10df97f313647bd3bcdbab28e35d7195a57422425ff868626c5af882"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/reviewed_candidate_manifest.json",
+      "sha256": "1d5727d812df7f02bf6eb796c3780f98e13f4bd880790f185afe9228ed80744c"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/reviewed_snapshot/.agents/rules/codex_qa_review.md",
+      "sha256": "90d41e689ea9bf7d6943f987d6a54440141b2775033fbcd66a79895976ba4f4c"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/reviewed_snapshot/.agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+      "sha256": "747a464dcacaa4e5f342b0875e49de972b2dcbcb6abc6208204f037d93c34aa7"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/reviewed_snapshot/.agents/rules/templates/QA审查报告模板.md",
+      "sha256": "9f8687eb89eb2ad4b4a304709fbcfed47488b06073656204c841b559cbefbba6"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/reviewed_snapshot/.agents/rules/templates/任务卡模板.md",
+      "sha256": "6121c4a99a5e155b5bf56c25115f67bc61e56274e431390bc1c8ba0ddc486ce6"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/reviewed_snapshot/.agents/rules/templates/角色任务提示词.md",
+      "sha256": "aa2a3f07753bf90dc20ea4aca749b974514b2ddd9dc6844c7aa422e42fe1eda9"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/reviewed_snapshot/docs/guides/minimc_v2_task_execution.md",
+      "sha256": "1b0d51ba17f18369965e70f03caa71246bb27d07c13eee12df94c21ce3d67559"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/reviewed_snapshot/docs/guides/templates/task_run_record.md",
+      "sha256": "79b7132f1732ac453d690ba3450e5082f935e1d6be3d42d364f4e379383ed6c2"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/revision_delta.patch",
+      "sha256": "d147afaac5a79ba8d202292a69b908d48012970bb4a7db132e1fe6a2adc33d84"
+    },
+    {
+      "path": "docs/evidence/task_template_alignment_20261027/runs/review_02/run_commands.py",
+      "sha256": "ab467a307425301da8f16f7c46120791dc75303bf8fa429df79bf0bb86d7f61e"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+--- review_01/.agents/rules/templates/任务卡模板.md
++++ review_02/.agents/rules/templates/任务卡模板.md
+@@ -3,7 +3,7 @@
+ date: 2026-09-30
+ status: current-template
+ tags: [template, task]
+-updated: '2026-10-27T17:06:13+08:00'
++updated: '2026-10-27T17:16:02+08:00'
+ timezone: 北京时间（UTC+8）
+ plan_revision: marlin-r2
+ ---
+@@ -85,6 +85,7 @@
+   joint_debug_task: null
+   acceptance_task: null
+   not_applicable_reason: null
++scope_status: unmapped # Backlog可未映射；Ready前必须mapped并落实真实范围
+ allowed_repositories: []
+ write_scope: {} # 仓库 -> 仓内具体文件/有界路径
+ allowed_paths: [] # 与 write_scope 等价的“仓库/路径”展开
+@@ -173,6 +174,8 @@
+ 
+ 这些是人工必须核对的条件。现有 `check_task_graph.py` 仍有任务类型/阶段覆盖限制；结构检查绿灯不能代替本表，尚未实现的检查不得写成自动门禁已生效。
+ 
++本模板是通用任务字段约定，不等于现有工具写死的离线V2 schema。V2票还需按实际任务补专用适配字段（如readiness_pending、聚焦case组与证据目录）；若工具旧约束与真实任务冲突，登记工具缺口，不填造待办、版本或结果换绿灯。
++
+ 跨节点任务将“契约接受 → 各节点必要实现 → 工程联合调试 → 独立组合验收”显式关联。`coordination` 是协作目录，实际前置仍写 `depends_on/dependency_conditions`；最终验收票不能反过来作为单板实现开工前置。单板微步只验本票交付；最终组合需锁定 AP、MC、TH 中实际参与的全部版本和所需固件，不要求每张单板票重复产出所有节点制品。
+ 
+ ## 目标
+@@ -195,6 +198,8 @@
+ 
+ ## 谁做和谁检查
+ 
++按[公共规则§4.3的任务类型矩阵](../04_公共看板与读写协议.md#43-按任务类型安排检查)落实必需岗位。reviewer空数组、verifier/integrator空值只是Backlog占位，不表示这些环节统一免检；派单前按类型补齐，确实不适用时写理由与接受依据。
++
+ 独立 QA 平台统一为 Codex，规则见 [Codex QA 规则](../codex_qa_review.md)。Reviewer 为 QA 或承担 QA 作者产物 ARCH 复核时，在对应条目补 `platform: codex` 和 `planned_session_alias`；实际 `session` 由 COORD 落实会话后填写。QA Verifier 使用上述 verifier 字段。其他 Reviewer/Integrator/HUMAN 的岗位与批准要求保留。
+ 
+ 按本卡写作者、必需 Reviewer、额外运行验证、合入/装配、收件/状态登记五个环节；不适用项写原因。QA 作者由独立 Reviewer 检查方法与报告；多人 Reviewer 按角色逐项映射实际入口。具体规则见 [[AI_SoC_协作方案/04_公共看板与读写协议#4.3 按任务类型安排检查]]。
+--- review_01/.agents/rules/qa_audit_checklist_guide_20261013_115611.md
++++ review_02/.agents/rules/qa_audit_checklist_guide_20261013_115611.md
+@@ -8,7 +8,7 @@
+ tags: [qa, audit-checklist, process-audit, code-hygiene, verification]
+ created: '2026-10-13 11:56:11'
+ timezone: 北京时间（UTC+8）
+-updated: '2026-10-27T17:06:13+08:00'
++updated: '2026-10-27T17:16:02+08:00'
+ ---
+ 
+ # 独立 QA 审查清单与过程审计指引 (QA Audit Checklist & Guide)
+@@ -70,7 +70,7 @@
+ | **PA-3** | **代码卫生<br/>(Hygiene & Bypass)** | 是否存在任何绕过类型检查或逃避编译器的行径？ | • 滥用 `(void*)` 暴力强转；<br/>• 强行 `const_cast` 或移除 `const` 限定；<br/>• 添加 `#pragma GCC diagnostic ignored`；<br/>• 通信结构体缺少 `__attribute__((packed))`。 | `git diff` 源码检索 |
+ | **PA-4** | **构建配置篡改<br/>(Toolchain Integrity)** | 是否私自弱化了编译器的告警与安全检查开关？ | • 修改 CMakeLists.txt/Makefile 删除了 `-Wall`、`-Wextra` 或 `-Werror`；<br/>• 增加了任何 `-Wno-*` 告警屏蔽选项。 | 构建配置 Git Diff |
+ | **PA-5** | **熔断与试错合规<br/>(Fail-Safe Limit)** | 开发过程中若出现编译报错，是否遵守三步汇报与重试上限？ | • 未按“原文日志 $\to$ 物理根因 $\to$ 修复方案”三步记录；<br/>• 单步失败后盲目试错超过 2 次，未按本票快照/diff 回退本票差异（须保留原有修改）。 | 终端操作轨迹 |
+-| **PA-6** | **客观证据凭证<br/>(Objective Proof)** | 开发 Agent 是否提供了不可伪造的物理终端命令执行凭证？ | • 仅使用“逻辑已改完，应该正常”等主观推断声称完成；<br/>• 缺乏 Exit Code 0 和 0 Warning 的终端实际截图/日志。 | 开发填报工单 |
++| **PA-6** | **客观证据凭证<br/>(Objective Proof)** | 是否保存本票实际命令/cwd/退出码、原始输出、用例观察与适用告警记录？ | • 用主观推断或预期值代替实际记录；<br/>• 缺少可复核的执行证据，或实际结果不符合事先接受的判据。负例可预期非零/无响应；Exit0和零告警仅用于明确要求它们的构建/正常用例。 | 独立预期、实际运行记录与原始日志 |
+ | **PA-7** | **环境真实与防瞒报<br/>(Zero-Deception / HW-G5)** | 提测与验证是否使用了真实受测标的？是否存在使用伪终端/软件Mock代替真实物理硬件欺骗闭环的行为？ | • 在 HIL 硬件验收中使用伪终端（PTY）或 Loopback 伪造物理单片机响应；<br/>• 正常物理查询有效关联响应帧数 = 0 却宣称通过；<br/>• 将“过滤噪声未崩溃”偷换为“接口通信通过”。 | 提测脚本 / 进程调用 / 串口对账日志 |
+ 
+ ---
+--- review_01/.agents/rules/codex_qa_review.md
++++ review_02/.agents/rules/codex_qa_review.md
+@@ -3,7 +3,7 @@
+ status: current-rule
+ owner: COORD
+ effective_date: 2026-10-26
+-updated: '2026-10-27T17:06:13+08:00'
++updated: '2026-10-27T17:16:02+08:00'
+ authorization: 用户本轮明确要求“把所有的qa都独立成codex审查”
+ ---
+ 
+@@ -53,7 +53,7 @@
+    QA 独立评审员严禁“替受测方写测试桩促成通过”。若发现任何使用 PTY/Mock 替身绕过物理硬件验证的行为，一律判定为严重违规，其签发的 `APPROVED` 结论自始无效，由唯一COORD追加撤回记录、保留历史签署，并在现有生命周期内修正状态、设置`blocked: true`与恢复条件；`REJECTED`是报告决定，不是任务status。
+ 
+ 5. **端到端协议原生一致性（严禁转译伪造与拆单遗漏, HW-G6）**：
+-   凡规范定义为原生透明路由的跨节点链路，**中间路由节点严禁解包或将协议私自降级为旧文本协议（如 G-code），严禁在中间节点伪造下游应答**。跨节点工程必须落实“ARCH契约接受 → 各节点必要实现 → 工程联合调试 → 独立组合验收”，显式登记节点提供票及能力前置。单板微步按本票范围交付，不要求每张票产出双固件；最终MC＋TH组合必须锁定两端固件（fw_mc.bin＋fw_th.bin）及AP准确版本与实际部署证据。中间节点不得替未就绪的下游生成成功；缺少最终组合必需制品或物理证据时拒绝相应组合接受。
++   凡规范定义为原生透明路由的链路，中继必须按正式协议识别路由头、校验完整帧，并处理Hop、ROUTE_IS_ROUTED与CRC；“零业务解析”不禁止这些帧级操作。**中继转发路径严禁解析cmd_id的业务语义、解包Payload、修改业务seq，严禁私自降级为G-code等旧文本或伪造下游应答**。本机业务及协议规定的本机广播消费按契约处理，与中继转发职责分开。跨节点工程必须落实“ARCH契约接受 → 各节点必要实现 → 工程联合调试 → 独立组合验收”，显式登记节点提供票及能力前置。单板微步按本票范围交付，不要求每张票产出双固件；最终MC＋TH组合必须锁定两端固件（fw_mc.bin＋fw_th.bin）及AP准确版本与实际部署证据。中间节点不得替未就绪的下游生成成功；缺少最终组合必需制品或物理证据时拒绝相应组合接受。
+ 
+ ## 执行与签署
+ 
+--- review_01/docs/guides/minimc_v2_task_execution.md
++++ review_02/docs/guides/minimc_v2_task_execution.md
+@@ -4,7 +4,7 @@
+ 
+ 本约定覆盖首个AP离线协议增量，并与[有效任务索引](../../.agents/kanban/microtasks/minimc_v2/README.md)、[任务卡模板](../../.agents/rules/templates/任务卡模板.md)、[派单提示词](../../.agents/rules/templates/角色任务提示词.md)一起使用。模板与本约定只定义流程，不指定当前实际COORD、作者或正在运行会话；这些身份及反馈方式以准确任务卡和实际交接记录为准，旧会话记录保留其历史时间。
+ 
+-任务原件位于控制仓`.agents/kanban/`。V2原25张拆解后有6张移入superseded并由V2-P0506承接，当前有效目录为20张V2微步卡；具体状态只读卡片。任务索引/看板仍可能有旧投影，派单先核原件与替代关系。每张实际票只有一个primary_work_package；旧分组及已替代卡不直接派单。
++任务原件位于控制仓`.agents/kanban/`。V2原25张拆解后有6张移入superseded并由V2-P0506承接，2026-10-27目录采样为20张有效V2微步卡；后续数量、状态和替代关系只读准确卡片，本指南不是实时投影。任务索引/看板仍可能有旧投影，派单先核原件与替代关系。每张实际票只有一个primary_work_package；旧分组及已替代卡不直接派单。
+ 
+ 本批是离线编解码/组帧能力，不包含AP串口事务、MCU协议实现、OTA、物理急停或HIL。当前离线候选归档票为V2-P0506；原V2-P06B/P06C已替代，只保留历史来源。MS-05/07/11/17的固件/实测条件不因离线通过被解除。跨节点纠偏按[完整实施方案](../planning/ap_mc_th_cascade_recovery_implementationplan_20261027_162003.md)建立相关能力/验收票，不把该方案文档审查当成源码或硬件通过。
+ 

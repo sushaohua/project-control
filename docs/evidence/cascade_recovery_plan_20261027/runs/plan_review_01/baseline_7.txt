@@ -1,0 +1,31 @@
+
+规则/规划较多但不是一次全量重写；以撤回引用、修正矛盾和补可执行门禁为最小差异。根 `.agents` 不并行修改；先核对来源，后决定只读导航/可复现导出方案。MCU外部软链目标不在本轮写入范围。
+
+### 4.2 契约、AP与独立测试
+
+| 文件 | 操作与内容 | 票/主责 |
+| --- | --- | --- |
+| `project-control/docs/interfaces/ap_mc_th_readonly_cascade_icd.md`（新增） | 路由/帧容量/时序/身份/部署接口目录与接受记录；引用可执行契约，避免复制命令定义 | CR-02 / ARCH |
+| `soc-ap/contracts/minimcproto/v2-commands.md` | 沿用现有正确命令；如需补响应关联/身份用途，仅做经Owner接受的澄清，不为错误实现降级契约 | CR-02 / ARCH＋对应作者 |
+| `soc-ap/contracts/minimcproto/cascade-query.md`（新增） | 冻结生产查询状态、结果/退出码、日志字段与最低测试集合；声明与实现分票 | CR-02 / ARCH |
+| `soc-ap/core/host/main.cpp` | 命令/载荷、CLI完整解析、事务关联、忽略无关帧继续读、失败传播、时戳与日志 | CR-04B～D / ENG-FWD |
+| `soc-ap/core/host/query.h`、`query.cpp`（新增，若拆分所需） | 有界请求上下文、命令结果与校验辅助函数；避免main.cpp承载全部状态；无堆、函数≤50行/≤4参 | CR-04A～C / ENG-FWD |
+| `soc-ap/core/forward/transport/serial_posix.h`、`serial_posix.cpp` | 有界发送/可写等待；拒绝不支持配置；状态、部分字节及I/O错误传播；接口变更列全调用者 | CR-04A/B / ENG-FWD |
+| `soc-ap/CMakeLists.txt`、`soc-ap/README.md` | 新模块/测试注册、验收配置强制测试集、完整命令与实际能力说明；保留开发smoke用途 | CR-04E / ENG-FWD/INTEGRATOR |
+| `test_harness/test_cases/cascade/query_cases.json`（新增） | 实现前独立正常/错误响应、超时、回显、旧帧、批量帧及I/O判据 | CR-02Q / QA作者 |
+| `test_harness/static_checks/cascade/run_query_cases.py`（新增） | 调用真实宿主程序并比较独立预期；PTY结果标host-only；零case/超时/未知字段均报错 | CR-02Q / QA作者 |
+| `test_harness/static_checks/minimcproto/run_codec_cases.py`、`test_cases/minimcproto/vectors.json` | 原帧层测试保留；如扩展则明确参考判断和生产命令判断区别，不能通过改黄金值容忍错误实现 | CR-02Q/04E / QA作者 |
+
+既有codec/parser是帧层模块，不因它不做业务分发就认定有缺陷。冻结的历史5参数入口按规则保留ABI并使用合规内部辅助函数，避免无关接口重构。
+
+### 4.3 MC、TH与升级修复
+
+| 文件 | 操作与内容 | 票/主责 |
+| --- | --- | --- |
+| `mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h`、`project/src/minimc_proto.c` | 正确本机命令、原生路由、收包时序、缓冲/队列、错误计数；移除生成TH身份的代码 | CR-05A～D / ENG-MC |
+| `mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c` | gui_rx_callback只完成必要清标志/快照/入队，不在IRQ等待业务；避免同槽DMA覆盖 | CR-05B / ENG-MC |
+| `mcu-p3/motion-controller-mcu/project/src/main.c` | 主循环服务解析/路由/超时，明确每轮预算，不阻塞Marlin | CR-05C / ENG-MC |
+| `mcu-p3/motion-controller-mcu/project/src/wk_usart.c`、`project/inc/wk_usart.h`、`project/inc/wk_dma.h`、`project/src/wk_dma.c` | 有界二进制收发、slot交接、busy/完成/错误传递、运行/升级独占；不复用追加CRLF的文本接口 | CR-05A/B/D / ENG-MC |
+| `mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c`、`at32f435_437_wk_config.c` | 核查IRQ调用链和优先级；只改已证明必要的接点，不能靠改优先级绕开等待设计 | CR-05B / ENG-MC |
+| `mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h`、`src/app/minimc_proto.c`（新增） | TH有界原生解析及GET_VERSION/PING业务响应；结构布局编译期检查 | CR-06A～C / ENG-TH |
+| `mcu-p3/color-engine-mcu/io_toggle/src/bsp/usart.c`、`inc/usart.h`、`src/user/main.c` | 收发交接与周期处理；二进制业务口和调试口分流；核对现有端口占用 | CR-06B/C / ENG-TH |

@@ -1,0 +1,14 @@
+commit 1d0861f199b92f9eac7c2103dfe80b207dbe4838
+Author:     sushaohua <sushaohua@craftdance3d.com>
+AuthorDate: Tue Oct 27 16:24:52 2026 +0800
+Commit:     sushaohua <sushaohua@craftdance3d.com>
+CommitDate: Tue Oct 27 16:24:52 2026 +0800
+
+    feat(hil): add probe auto-discovery and non-intrusive fault injector tools
+
+ .gitignore                                      |   4 +
+ README.md                                       |  35 +++
+ hil/guides/probe_rs_hardware_fault_injection.md | 185 +++++++++++++++
+ hil/tools/device_discovery.py                   | 229 +++++++++++++++++++
+ hil/tools/probe_fault_injector.py               | 285 ++++++++++++++++++++++++
+ 5 files changed, 738 insertions(+)

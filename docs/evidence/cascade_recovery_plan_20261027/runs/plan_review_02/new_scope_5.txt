@@ -1,0 +1,185 @@
+# HIL 硬件在环测试：基于 probe-rs 的非侵入式外设寄存器操控与故障注入指南
+
+| 字段 | 属性 / 内容 |
+| :--- | :--- |
+| **文档 ID** | `DOC-HIL-FAULT-INJECTION-20261027` |
+| **版本** | `1.0.0` |
+| **维护角色** | QA / ENG-SIM / INTEGRATOR |
+| **支撑任务** | `TASK-006`（协调真实 MCU 台架和异常夹具） / `MS-16`（提供 TH 单端故障场景） |
+| **执行门禁** | `HW-G5`（零虚拟化真实台架验收）、`HW-G6`（端到端原生协议一致性） |
+| **适用芯片** | AT32F435VGT7 (MC) / AT32F423CCT7 (TH) |
+
+---
+
+## 1. 背景与核心价值
+
+在嵌入式整机级联通信系统（如 `AP <-> MC <-> TH`）的 HIL（Hardware-in-the-Loop，硬件在环）测试中，经常需要验证各类异常边界场景：
+* 工具头（TH）突发死机、掉电或通信总线断开。
+* 主控（MC）与从控（TH）之间的通信抖动与瞬态丢包。
+* 从机在通信中断数秒后重新恢复连接，整机能否自动重连并重新握手同步状态。
+
+### 传统做法的致命缺陷
+1. **人工拔插排线/杜邦线**：无法做毫秒级精确计时，无法进行高频压力疲劳测试，无法融入 CI/CD 无人值守自动化。
+2. **固件内插桩 Mock / 调试后门**：侵入被测固件，改变中断时序与代码体积，容易将调试代码遗漏在 Release 生产固件中。
+3. **整机重启复位**：违反 `MS-16` 任务门禁（*“断开 TH 不以重启整套 SoC/MC 程序代替”*）。
+
+### probe-rs SWD 寄存器操控方案的优势
+* **100% 零固件侵入**：被测 MCU 刷入的是完全未经修改的生产版固件。
+* **物理级纳秒/毫秒控制**：通过 SWD 硬件调试总线，直接读写 MCU 内存映射外设寄存器（MMIO），动态控制外设使能（UEN/TEN/REN）。
+* **全流程脚本化集成**：可通过 Python / CLI 工具一键开合物理通信通道，直接作为 Pytest 夹具（Fixture）运行。
+
+---
+
+## 2. 接口插乱与探针自动对账机制 (Auto-Discovery)
+
+在日常联调与台架维护中，由于 USB 线缆重新插拔、USB Hub 端口枚举顺序变动、部分 ST-Link 探针缺失序列号等原因，**探针序号 `[0]/[1]` 或串口号 `COM3/COM12`、`/dev/ttyUSB0` 会经常发生漂移**。
+
+为杜绝因硬编码导致的“测试刷错芯片”或“接口切错板子”，本体系建立了**“硅片硬件指纹自发现”**机制。
+
+### 2.1 硬件指纹判别标准（Silicon Fingerprints）
+
+| 判别维度 | 物理地址 | 访问宽度 | MC 主控板 (AT32F435VGT7) | TH 工具头 (AT32F423CCT7) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Flash 容量寄存器** | `0x1FFFF7E0` | 16-bit (`b16`) | `0x0400` (**1024 KB**) | `0x0100` (**256 KB**) |
+| **向量表 MSP 初始栈顶**| `0x08000000` | 32-bit (`b32`) | `0x20060000` (384 KB SRAM) | `0x2000C000` (48 KB SRAM) |
+| **96-bit 芯片全球 UID** | `0x1FFFF7E8` | 32-bit x 3   | 96-bit 硬件序列号 (唯一锁定) | 96-bit 硬件序列号 (唯一锁定) |
+
+### 2.2 自动寻址流程
+```mermaid
+flowchart TD
+    Start["执行 probe-rs list 扫描系统挂载探针"] --> Enumerate["遍历枚举挂载探针 Probe [0..N]"]
+    Enumerate --> ReadReg["通过 SWD 读取 0x1FFFF7E0 (Flash容量)"]
+    ReadReg --> Check{"Flash 容量判定"}
+    Check -- "1024 KB" --> MatchMC["锁定目标为 MC (主控 AT32F435)<br/>缓存 Probe ID 与 UID"]
+    Check -- "256 KB" --> MatchTH["锁定目标为 TH (从控 AT32F423)<br/>缓存 Probe ID 与 UID"]
+    Check -- "其它" --> Unknown["记录未知芯片"]
+    MatchMC --> Output["生成动态设备映射表 (JSON)"]
+    MatchTH --> Output
+    Unknown --> Output
+```
+
+---
+
+## 3. 外设接口寄存器物理映射表
+
+### 3.1 串口控制寄存器 1 (`USARTx_CTRL1`) 结构
+AT32 系列 MCU 串口控制寄存器 `CTRL1`（偏移 `+0x0C`）核心位域说明：
+* **Bit 13 (`UEN`)**：USART 全局使能位（`1` = 开启，`0` = 关闭外设）。
+* **Bit 5 (`RDBFIE`)**：接收数据缓冲区满中断使能。
+* **Bit 4 (`IDLEIEN`)**：空闲总线中断使能。
+* **Bit 3 (`TEN`)**：发送器使能位（`1` = 开启，`0` = 关闭）。
+* **Bit 2 (`REN`)**：接收器使能位（`1` = 开启，`0` = 关闭）。
+
+### 3.2 级联拓扑关键串口映射
+
+| 节点 | 外设名称 | 用途说明 | `CTRL1` 物理地址 | 正常工作配置值 | 关闭/切断配置值 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **MC** | `USART2` | 连接 SoC / AP 串口通道 | `0x4000440C` | `0x0000201C` | `0x00000000` |
+| **MC** | `USART6` | 连接 TH 工具头级联总线 | `0x4001140C` | `0x0000201C` | `0x00000000` |
+| **TH** | `USART1` | 连接 MC 主控级联通信 | `0x4001100C` | `0x0000202C` | `0x00000000` |
+
+> [!NOTE]
+> 写入 `0x00000000` 会同时关闭 UEN、TEN、REN 以及中断使能，外设在物理层立即停止数据接收与发送，向对端表现为物理线路静默/断开。恢复时写回原有值，外设即刻恢复正常通信。
+
+---
+
+## 4. 配套工具链与实操命令
+
+工程在 [`test_harness/hil/tools/`](file:///home/sushaohua/workspace/ai_soc_project/test_harness/hil/tools/) 下提供了开箱即用的自动化工具：
+
+### 4.1 设备与探针自发现：`device_discovery.py`
+自动扫描并识别当前连接的 ST-Link，输出角色匹配表：
+```bash
+# 查看人类友好的对账摘要
+python3 test_harness/hil/tools/device_discovery.py
+
+# 输出供自动化脚本解析的 JSON 格式
+python3 test_harness/hil/tools/device_discovery.py --json
+
+# 仅获取当前 MC 或 TH 的真实 Probe ID
+python3 test_harness/hil/tools/device_discovery.py --target MC
+```
+
+### 4.2 硬件外设故障注入工具：`probe_fault_injector.py`
+
+#### 1. 查看所有外设物理串口开合状态
+```bash
+python3 test_harness/hil/tools/probe_fault_injector.py list
+```
+
+#### 2. 切断/关闭指定物理串口（故障注入）
+```bash
+# 切断 MC 与 TH 之间的级联串口 (USART6)
+python3 test_harness/hil/tools/probe_fault_injector.py disable --target MC --uart USART6
+
+# 切断 TH 端接收与发送 (USART1)
+python3 test_harness/hil/tools/probe_fault_injector.py disable --target TH --uart USART1
+```
+
+#### 3. 恢复开通物理串口
+```bash
+# 恢复 MC 与 TH 之间的通信
+python3 test_harness/hil/tools/probe_fault_injector.py enable --target MC --uart USART6
+
+# 恢复 TH 端通信
+python3 test_harness/hil/tools/probe_fault_injector.py enable --target TH --uart USART1
+```
+
+#### 4. 瞬态抖动故障注入（Glitch Simulation）
+```bash
+# 切断 TH 串口 300 毫秒后自动恢复，模拟电磁干扰或接触不良
+python3 test_harness/hil/tools/probe_fault_injector.py glitch --target TH --uart USART1 --duration-ms 300
+```
+
+#### 5. 一键复位所有板卡外设
+```bash
+# 将 MC 与 TH 的所有串口全部重置为正常使能状态
+python3 test_harness/hil/tools/probe_fault_injector.py reset-all
+```
+
+---
+
+## 5. Pytest 自动化测试集成范例
+
+在编写 HIL 自动化测试用例时，可以将该工具作为 Pytest 夹具（Fixture）使用：
+
+```python
+import pytest
+import time
+from test_harness.hil.tools.probe_fault_injector import disable_uart, enable_uart, find_probe_rs_bin
+
+@pytest.fixture
+def th_fault_injector():
+    probe_rs_bin = find_probe_rs_bin()
+    yield probe_rs_bin
+    # 测试结束后无论成功失败，强制恢复所有硬件外设
+    enable_uart(probe_rs_bin, role="TH", uart="USART1")
+
+def test_ap_detects_th_disconnection(th_fault_injector):
+    """验证 TH 掉线后 AP 能在指定超时窗口内检测到状态异常并触发降级保护"""
+    probe_rs = th_fault_injector
+    
+    # 1. 注入故障：切断 TH 通信
+    disable_uart(probe_rs, role="TH", uart="USART1")
+    
+    # 2. 断言 AP / MC 表现
+    # TODO: 读取 AP 状态日志，校验心跳超时告警及重试计数器递增
+    
+    # 3. 恢复通信
+    enable_uart(probe_rs, role="TH", uart="USART1")
+    time.sleep(1.0)
+    
+    # 4. 断言链路重连握手成功
+    # TODO: 校验 AP 收到来自 TH 的 M115/状态应答
+```
+
+---
+
+## 6. WSL / Linux 环境避坑指南
+
+1. **Windows `.exe` 调用挂起保护**：
+   在 WSL 中通过跨环境调用 Windows 路径下的 `probe-rs.exe` 时，必须使用 `stdin=subprocess.DEVNULL`（Shell 下为 `< /dev/null`）。若不显式重定向输入流，Windows 控制台句柄在等待换行符时会导致自动化测试脚本永久挂死。
+2. **多进程探针互斥**：
+   同一 ST-Link 探针在同一时刻只能被一个 SWD 调试器会话独占。在故障注入脚本写入寄存器前后，确保没有长时间处于挂起停机状态（halted）的 GDB 客户端霸占会话。
+3. **寄存器读写安全边界**：
+   在线只修改指定外设控制位（如 `USART_CTRL1`、`CRM_APB1EN`），严禁在业务运行期间盲目全字擦除或修改时钟分频寄存器，以免导致主核总线失锁。

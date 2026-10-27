@@ -1,0 +1,647 @@
+10: > **架构基准原则**：**纯净绿地设计（Greenfield Architecture），无历史兼容包袱**。当前方案处于未开始编码的方案设计初期，全系统各节点（AP、MC、SCM/TH）统一步调基于本规范进行首发研发与部署。彻底剔除对历史草案的向后兼容，保持协议栈纯粹、轻量、高可靠。  
+11: > **第一阶段重点**：**系统维护与全网固件版本升级 (OTA)**。上位 SoC (AP) 作为全系统固件分发与版本控制中枢，**MC 与 TH 均统一从 SoC 获得固件版本并执行升级**：  
+12: > • **MC 升级路径**：AP 直连 MC (`DST=0x02`)，由 MC 本机接收校验并刷新 Flash；  
+13: > • **TH 升级路径**：AP 经 MC 网关路由寻址 TH (`SRC=0x01, DST=0x03`)，MC 无状态透明转发固件数据，TH 独立接收校验并刷新 Flash。  
+14: > **目标通信拓扑**：  
+15: > • **AP 端 (上位主控)**：Amlogic C302X / C308L (ARM Cortex-A35 / Linux OS)  
+16: > • **MC 端 (运动主控)**：ArteryTek AT32F435 系列 (兼容 AT32F435VMT7 / AT32F435VGT7，ARM Cortex-M4 @ 288MHz, Marlin 运控 + 核心路由网关)  
+
+11: > **第一阶段重点**：**系统维护与全网固件版本升级 (OTA)**。上位 SoC (AP) 作为全系统固件分发与版本控制中枢，**MC 与 TH 均统一从 SoC 获得固件版本并执行升级**：  
+12: > • **MC 升级路径**：AP 直连 MC (`DST=0x02`)，由 MC 本机接收校验并刷新 Flash；  
+13: > • **TH 升级路径**：AP 经 MC 网关路由寻址 TH (`SRC=0x01, DST=0x03`)，MC 无状态透明转发固件数据，TH 独立接收校验并刷新 Flash。  
+14: > **目标通信拓扑**：  
+15: > • **AP 端 (上位主控)**：Amlogic C302X / C308L (ARM Cortex-A35 / Linux OS)  
+16: > • **MC 端 (运动主控)**：ArteryTek AT32F435 系列 (兼容 AT32F435VMT7 / AT32F435VGT7，ARM Cortex-M4 @ 288MHz, Marlin 运控 + 核心路由网关)  
+17: > • **SCM/TH 端 (从控辅控一体板)**：多色供料与工具头一体从控机 (遵照 B0 方案基线 D21 决策，当前物理硬件中 SCM 与 TH 为同一物理从控板，分配统一节点地址 `0x03`，集成多色供料 MMU 与挤出/热端温控功能)  
+
+15: > • **AP 端 (上位主控)**：Amlogic C302X / C308L (ARM Cortex-A35 / Linux OS)  
+16: > • **MC 端 (运动主控)**：ArteryTek AT32F435 系列 (兼容 AT32F435VMT7 / AT32F435VGT7，ARM Cortex-M4 @ 288MHz, Marlin 运控 + 核心路由网关)  
+17: > • **SCM/TH 端 (从控辅控一体板)**：多色供料与工具头一体从控机 (遵照 B0 方案基线 D21 决策，当前物理硬件中 SCM 与 TH 为同一物理从控板，分配统一节点地址 `0x03`，集成多色供料 MMU 与挤出/热端温控功能)  
+18: > • **TH 扩展板 (预留)**：预留物理独立工具头扩展从机地址 `0x04` (`MINIMC_DEV_RESERVED_TH_EXT`)，支持未来多从机物理硬件解耦。  
+19: > **核心演进**：引入 **12 字节 32-bit 自然对齐路由帧头**，实现多串口设备透明寻址、端到端独立会话、中间节点零业务解析存储转发与广播防环。
+20: 
+21: ---
+
+16: > • **MC 端 (运动主控)**：ArteryTek AT32F435 系列 (兼容 AT32F435VMT7 / AT32F435VGT7，ARM Cortex-M4 @ 288MHz, Marlin 运控 + 核心路由网关)  
+17: > • **SCM/TH 端 (从控辅控一体板)**：多色供料与工具头一体从控机 (遵照 B0 方案基线 D21 决策，当前物理硬件中 SCM 与 TH 为同一物理从控板，分配统一节点地址 `0x03`，集成多色供料 MMU 与挤出/热端温控功能)  
+18: > • **TH 扩展板 (预留)**：预留物理独立工具头扩展从机地址 `0x04` (`MINIMC_DEV_RESERVED_TH_EXT`)，支持未来多从机物理硬件解耦。  
+19: > **核心演进**：引入 **12 字节 32-bit 自然对齐路由帧头**，实现多串口设备透明寻址、端到端独立会话、中间节点零业务解析存储转发与广播防环。
+20: 
+21: ---
+22: 
+
+17: > • **SCM/TH 端 (从控辅控一体板)**：多色供料与工具头一体从控机 (遵照 B0 方案基线 D21 决策，当前物理硬件中 SCM 与 TH 为同一物理从控板，分配统一节点地址 `0x03`，集成多色供料 MMU 与挤出/热端温控功能)  
+18: > • **TH 扩展板 (预留)**：预留物理独立工具头扩展从机地址 `0x04` (`MINIMC_DEV_RESERVED_TH_EXT`)，支持未来多从机物理硬件解耦。  
+19: > **核心演进**：引入 **12 字节 32-bit 自然对齐路由帧头**，实现多串口设备透明寻址、端到端独立会话、中间节点零业务解析存储转发与广播防环。
+20: 
+21: ---
+22: 
+23: ## 1. 物理帧定界与 12 字节硬件级自然对齐架构
+
+33: |  SOF_1 (0x55) |  SOF_2 (0xAA) |  SRC_ID (8-bit|  DST_ID (8-bit| <- Word 0: 物理定界与设备寻址
+34: +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+35: |  Flags (8-bit)|  Command ID   | Hop_Limit(8-b)| Route_Ctrl(8b)| <- Word 1: 控制标志与路由策略
+36: +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+37: |  Sequence Number (16-bit seq) | Payload Length (16-bit L)     | <- Word 2: 端到端序号与载荷长
+38: +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+39: | Payload Data (起始于 Offset 0x0C, 天然 32-bit 边界, 0 .. L-1) | <- 载荷起始
+
+50: | :---------- | :--------------- | :-- | :---------- | :------------------------------------------------------- |
+51: | `0x00`      | `sof_1`          | 1B  | `uint8_t`   | 固定同步魔数 `0x55`                                            |
+52: | `0x01`      | `sof_2`          | 1B  | `uint8_t`   | 固定同步魔数 `0xAA`                                            |
+53: | `0x02`      | `src_id`         | 1B  | `uint8_t`   | 源设备逻辑地址（见第 2 章全局地址表）                                     |
+54: | `0x03`      | `dst_id`         | 1B  | `uint8_t`   | 目的设备逻辑地址（单播、组播或 `0xFF` 广播）                               |
+55: | `0x04`      | `flags`          | 1B  | `uint8_t`   | 控制标志位（ACK 请求、响应标示、版本号、优先级）                               |
+56: | `0x05`      | `cmd_id`         | 1B  | `uint8_t`   | 操作码 (Command ID)                                         |
+
+51: | `0x00`      | `sof_1`          | 1B  | `uint8_t`   | 固定同步魔数 `0x55`                                            |
+52: | `0x01`      | `sof_2`          | 1B  | `uint8_t`   | 固定同步魔数 `0xAA`                                            |
+53: | `0x02`      | `src_id`         | 1B  | `uint8_t`   | 源设备逻辑地址（见第 2 章全局地址表）                                     |
+54: | `0x03`      | `dst_id`         | 1B  | `uint8_t`   | 目的设备逻辑地址（单播、组播或 `0xFF` 广播）                               |
+55: | `0x04`      | `flags`          | 1B  | `uint8_t`   | 控制标志位（ACK 请求、响应标示、版本号、优先级）                               |
+56: | `0x05`      | `cmd_id`         | 1B  | `uint8_t`   | 操作码 (Command ID)                                         |
+57: | `0x06`      | `hop_limit`      | 1B  | `uint8_t`   | 存活跳数 (TTL)：初始建议 `0x04`，每转发一跳减 1，为 0 丢弃防环路                |
+
+52: | `0x01`      | `sof_2`          | 1B  | `uint8_t`   | 固定同步魔数 `0xAA`                                            |
+53: | `0x02`      | `src_id`         | 1B  | `uint8_t`   | 源设备逻辑地址（见第 2 章全局地址表）                                     |
+54: | `0x03`      | `dst_id`         | 1B  | `uint8_t`   | 目的设备逻辑地址（单播、组播或 `0xFF` 广播）                               |
+55: | `0x04`      | `flags`          | 1B  | `uint8_t`   | 控制标志位（ACK 请求、响应标示、版本号、优先级）                               |
+56: | `0x05`      | `cmd_id`         | 1B  | `uint8_t`   | 操作码 (Command ID)                                         |
+57: | `0x06`      | `hop_limit`      | 1B  | `uint8_t`   | 存活跳数 (TTL)：初始建议 `0x04`，每转发一跳减 1，为 0 丢弃防环路                |
+58: | `0x07`      | `route_ctrl`     | 1B  | `uint8_t`   | 路由策略（Bit 0: 强制主链路, Bit 1: 允许故障改道, Bit 2: 已路由）            |
+
+53: | `0x02`      | `src_id`         | 1B  | `uint8_t`   | 源设备逻辑地址（见第 2 章全局地址表）                                     |
+54: | `0x03`      | `dst_id`         | 1B  | `uint8_t`   | 目的设备逻辑地址（单播、组播或 `0xFF` 广播）                               |
+55: | `0x04`      | `flags`          | 1B  | `uint8_t`   | 控制标志位（ACK 请求、响应标示、版本号、优先级）                               |
+56: | `0x05`      | `cmd_id`         | 1B  | `uint8_t`   | 操作码 (Command ID)                                         |
+57: | `0x06`      | `hop_limit`      | 1B  | `uint8_t`   | 存活跳数 (TTL)：初始建议 `0x04`，每转发一跳减 1，为 0 丢弃防环路                |
+58: | `0x07`      | `route_ctrl`     | 1B  | `uint8_t`   | 路由策略（Bit 0: 强制主链路, Bit 1: 允许故障改道, Bit 2: 已路由）            |
+59: | `0x08`      | `seq_lo`         | 1B  | `uint8_t`   | 16-bit 端到端流水号低 8 位；位于偶数偏移 `0x08`，天然 16-bit 对齐            |
+
+55: | `0x04`      | `flags`          | 1B  | `uint8_t`   | 控制标志位（ACK 请求、响应标示、版本号、优先级）                               |
+56: | `0x05`      | `cmd_id`         | 1B  | `uint8_t`   | 操作码 (Command ID)                                         |
+57: | `0x06`      | `hop_limit`      | 1B  | `uint8_t`   | 存活跳数 (TTL)：初始建议 `0x04`，每转发一跳减 1，为 0 丢弃防环路                |
+58: | `0x07`      | `route_ctrl`     | 1B  | `uint8_t`   | 路由策略（Bit 0: 强制主链路, Bit 1: 允许故障改道, Bit 2: 已路由）            |
+59: | `0x08`      | `seq_lo`         | 1B  | `uint8_t`   | 16-bit 端到端流水号低 8 位；位于偶数偏移 `0x08`，天然 16-bit 对齐            |
+60: | `0x09`      | `seq_hi`         | 1B  | `uint8_t`   | 16-bit 端到端流水号高 8 位 ($0 \le seq \le 65535$)，Little-Endian |
+61: | `0x0A`      | `payload_len_lo` | 1B  | `uint8_t`   | 16-bit 载荷长低 8 位；位于偶数偏移 `0x0A`，天然 16-bit 对齐               |
+
+78: ### 1.4 Flags 与 Route_Ctrl 详细位定义
+79: 
+80: #### 1. Flags (偏移 `0x04`)
+81: | Bit | 标识名称 | 含义与规约 |
+82: | :--- | :--- | :--- |
+83: | `Bit 0` | `WANTS_ACK` | 1 = 要求对端回送确认应答 (ACK)；0 = 单向遥测/广播，不回 ACK |
+84: | `Bit 1` | `IS_RESPONSE` | 1 = 本帧为应答报文 (ACK/NACK/查询回复)；0 = 主动请求 |
+
+83: | `Bit 0` | `WANTS_ACK` | 1 = 要求对端回送确认应答 (ACK)；0 = 单向遥测/广播，不回 ACK |
+84: | `Bit 1` | `IS_RESPONSE` | 1 = 本帧为应答报文 (ACK/NACK/查询回复)；0 = 主动请求 |
+85: | `Bit 2..3` | `PROTO_VERSION` | **协议主版本号：MiniMCProto v2.0 严格固定为 `0b01` (十进制 1，掩码 `0x04`)**。发送端构建物理帧时必须叠加此版本位（`flags |= 0x04`）；接收端做硬校验，非 `0b01` 直接作为非法帧丢弃 |
+86: | `Bit 4` | `IS_PRIORITY` | 1 = 高优先级特权报文 (如急停)；0 = 普通数据流 |
+87: | `Bit 5..7` | `RESERVED` | 发送端必须置 0，接收端做保留位清零断言 |
+88: 
+89: #### 2. Route_Ctrl (偏移 `0x07`)
+
+92: | `Bit 0` | `ROUTE_FORCE_PRIMARY` | 1 = 强制走主串口链路，禁止中间节点改道 |
+93: | `Bit 1` | `ROUTE_ALLOW_REROUTE` | 1 = 允许中间节点在主链路故障时改走备份链路 |
+94: | `Bit 2` | `ROUTE_IS_ROUTED` | 1 = 本帧已被中间节点中继转发过；0 = 直连原始帧 |
+95: | `Bit 3..7` | `ROUTE_RESERVED` | 保留位，发送端必须置 0 |
+96: 
+97: **路由标志裁决与互斥契约**：
+98: * 若 `ROUTE_FORCE_PRIMARY == 1`：优先级最高，强制主链路，禁止任何中间节点改道；
+
+99: * 若 `ROUTE_FORCE_PRIMARY == 0 && ROUTE_ALLOW_REROUTE == 1`：允许节点在主路径故障时路由至备份链路；
+100: * 若两者均为 0：执行系统默认静态路由表策略；
+101: * **非法标志组合**：若两者同时置 1（`0x03`），网关判定为非法控制组合，直接丢弃该帧并递增 `err_route_invalid_ctrl` 错误计数。
+102: * 任何中间网关转发数据包时，**必须将 `ROUTE_IS_ROUTED` (Bit 2) 置 1**，表明该帧已被中继。
+103: 
+104: ---
+105: 
+
+100: * 若两者均为 0：执行系统默认静态路由表策略；
+101: * **非法标志组合**：若两者同时置 1（`0x03`），网关判定为非法控制组合，直接丢弃该帧并递增 `err_route_invalid_ctrl` 错误计数。
+102: * 任何中间网关转发数据包时，**必须将 `ROUTE_IS_ROUTED` (Bit 2) 置 1**，表明该帧已被中继。
+103: 
+104: ---
+105: 
+106: ## 2. 设备寻址与多路径路由机制规范
+
+113: | :---------- | :--------------------------- | :------------------------------------------- |
+114: | `0x00`      | `MINIMC_DEV_INVALID`         | 非法/未初始化地址                                    |
+115: | `0x01`      | `MINIMC_DEV_AP`              | 上位主控 (Amlogic C302X/C308L / Linux 系统)        |
+116: | `0x02`      | `MINIMC_DEV_MC`              | 核心运动控制器 (AT32F435 / Marlin 运控 + 核心路由网关)      |
+117: | `0x03`      | `MINIMC_DEV_SCM_TH`          | **从控辅控一体板** (集成 MMU 多色供料与工具温控，经 MC 次级串口透明级联) |
+118: | `0x04`      | `MINIMC_DEV_RESERVED_TH_EXT` | **预留物理独立工具头扩展板** (用于未来硬件解耦架构)                |
+119: | `0x05`      | `MINIMC_DEV_CHAMBER`         | 机舱/热床/电源控制从机 MCU                             |
+
+114: | `0x00`      | `MINIMC_DEV_INVALID`         | 非法/未初始化地址                                    |
+115: | `0x01`      | `MINIMC_DEV_AP`              | 上位主控 (Amlogic C302X/C308L / Linux 系统)        |
+116: | `0x02`      | `MINIMC_DEV_MC`              | 核心运动控制器 (AT32F435 / Marlin 运控 + 核心路由网关)      |
+117: | `0x03`      | `MINIMC_DEV_SCM_TH`          | **从控辅控一体板** (集成 MMU 多色供料与工具温控，经 MC 次级串口透明级联) |
+118: | `0x04`      | `MINIMC_DEV_RESERVED_TH_EXT` | **预留物理独立工具头扩展板** (用于未来硬件解耦架构)                |
+119: | `0x05`      | `MINIMC_DEV_CHAMBER`         | 机舱/热床/电源控制从机 MCU                             |
+120: | `0x06~0xEF` | `MINIMC_DEV_EXPANSION`       | 预留后续扩展从机设备                                   |
+
+115: | `0x01`      | `MINIMC_DEV_AP`              | 上位主控 (Amlogic C302X/C308L / Linux 系统)        |
+116: | `0x02`      | `MINIMC_DEV_MC`              | 核心运动控制器 (AT32F435 / Marlin 运控 + 核心路由网关)      |
+117: | `0x03`      | `MINIMC_DEV_SCM_TH`          | **从控辅控一体板** (集成 MMU 多色供料与工具温控，经 MC 次级串口透明级联) |
+118: | `0x04`      | `MINIMC_DEV_RESERVED_TH_EXT` | **预留物理独立工具头扩展板** (用于未来硬件解耦架构)                |
+119: | `0x05`      | `MINIMC_DEV_CHAMBER`         | 机舱/热床/电源控制从机 MCU                             |
+120: | `0x06~0xEF` | `MINIMC_DEV_EXPANSION`       | 预留后续扩展从机设备                                   |
+121: | `0xF0~0xFE` | `MINIMC_DEV_MULTICAST`       | 多播组地址 (如 0xF1=所有从机执行器 MCU)                   |
+
+116: | `0x02`      | `MINIMC_DEV_MC`              | 核心运动控制器 (AT32F435 / Marlin 运控 + 核心路由网关)      |
+117: | `0x03`      | `MINIMC_DEV_SCM_TH`          | **从控辅控一体板** (集成 MMU 多色供料与工具温控，经 MC 次级串口透明级联) |
+118: | `0x04`      | `MINIMC_DEV_RESERVED_TH_EXT` | **预留物理独立工具头扩展板** (用于未来硬件解耦架构)                |
+119: | `0x05`      | `MINIMC_DEV_CHAMBER`         | 机舱/热床/电源控制从机 MCU                             |
+120: | `0x06~0xEF` | `MINIMC_DEV_EXPANSION`       | 预留后续扩展从机设备                                   |
+121: | `0xF0~0xFE` | `MINIMC_DEV_MULTICAST`       | 多播组地址 (如 0xF1=所有从机执行器 MCU)                   |
+122: | `0xFF`      | `MINIMC_DEV_BROADCAST`       | **全网广播地址**（全网急停、全局时间基准同步）                    |
+
+131:     B -->|"DST == 本机 ID"| C["交由本机业务引擎分发 (Dispatch)"]
+132:     B -->|"DST == 0xFF (广播) 或多播"| D["执行本机消费处理"]
+133:     D --> E{"Hop_Limit > 1 且有可转外设端口?"}
+134:     E -->|"否"| F["终止转发 (本机消费完毕)"]
+135:     E -->|"是"| G["Hop_Limit 递减 1, 置位 ROUTE_IS_ROUTED"]
+136:     G --> H["全量重算 CRC16"]
+137:     H --> I["依据无环转发表向非源端口并发发送 (水平分割)"]
+
+133:     D --> E{"Hop_Limit > 1 且有可转外设端口?"}
+134:     E -->|"否"| F["终止转发 (本机消费完毕)"]
+135:     E -->|"是"| G["Hop_Limit 递减 1, 置位 ROUTE_IS_ROUTED"]
+136:     G --> H["全量重算 CRC16"]
+137:     H --> I["依据无环转发表向非源端口并发发送 (水平分割)"]
+138:     B -->|"DST != 本机 ID 且非广播"| J{"检查 Hop_Limit"}
+139:     J -->|"Hop_Limit <= 1"| K["丢弃帧 (跳数耗尽防环, 累加 err_hop_exhausted)"]
+
+136:     G --> H["全量重算 CRC16"]
+137:     H --> I["依据无环转发表向非源端口并发发送 (水平分割)"]
+138:     B -->|"DST != 本机 ID 且非广播"| J{"检查 Hop_Limit"}
+139:     J -->|"Hop_Limit <= 1"| K["丢弃帧 (跳数耗尽防环, 累加 err_hop_exhausted)"]
+140:     J -->|"Hop_Limit > 1"| L["Hop_Limit 递减 1, 置位 ROUTE_IS_ROUTED"]
+141:     L --> M["全量重算 CRC16"]
+142:     M --> N["查静态路由表匹配目标端口 (UART)"]
+
+137:     H --> I["依据无环转发表向非源端口并发发送 (水平分割)"]
+138:     B -->|"DST != 本机 ID 且非广播"| J{"检查 Hop_Limit"}
+139:     J -->|"Hop_Limit <= 1"| K["丢弃帧 (跳数耗尽防环, 累加 err_hop_exhausted)"]
+140:     J -->|"Hop_Limit > 1"| L["Hop_Limit 递减 1, 置位 ROUTE_IS_ROUTED"]
+141:     L --> M["全量重算 CRC16"]
+142:     M --> N["查静态路由表匹配目标端口 (UART)"]
+143:     N --> O["拷贝至独立发送缓冲, 启动 DMA 直转"]
+
+138:     B -->|"DST != 本机 ID 且非广播"| J{"检查 Hop_Limit"}
+139:     J -->|"Hop_Limit <= 1"| K["丢弃帧 (跳数耗尽防环, 累加 err_hop_exhausted)"]
+140:     J -->|"Hop_Limit > 1"| L["Hop_Limit 递减 1, 置位 ROUTE_IS_ROUTED"]
+141:     L --> M["全量重算 CRC16"]
+142:     M --> N["查静态路由表匹配目标端口 (UART)"]
+143:     N --> O["拷贝至独立发送缓冲, 启动 DMA 直转"]
+144: ```
+
+147: 1. **中继免拆包与零业务解析**：当 `dst_id != local_id` 时，网关**严禁解析 `cmd_id`，严禁解包 Payload，严禁修改业务 `seq`**。
+148: 2. **防环路硬性兜底**：
+149:    * `hop_limit <= 1` 时禁止继续转发，网关就地销毁并累加 `err_hop_exhausted` 计数；
+150:    * **水平分割 (Split Horizon)**：广播与转发帧**严禁回发至接收该帧的入口端口**（即出口端口严格与入口端口互斥）；
+151:    * 首版采用树型静态无环转发表，中间节点可维护轻量级 `(src_id, seq)` 最近 16 条广播去重缓存环，彻底阻断环路泛洪。
+152: 3. **异构链路适配范围**：v2.0 首发版本限定为全 UART 串口拓扑（波特率建议 921600 或 115200）。CAN 总线级联由于涉及帧分段重组与 CAN-ID 映射，标识为 `[FUTURE_EXTENSION]`，在发布专项 CAN 适配子规范前暂不启用。
+153: 4. **原生端到端透明路由**：协议原生支持透明路由寻址，AP 访问从控辅控板 SCM/TH 时直接构建端到端标准物理帧（`SRC=0x01, DST=0x03`），中间网关 MC 根据目的地址无状态线速直转，杜绝任何应用层隧道封装或虚拟通道映射。
+
+151:    * 首版采用树型静态无环转发表，中间节点可维护轻量级 `(src_id, seq)` 最近 16 条广播去重缓存环，彻底阻断环路泛洪。
+152: 3. **异构链路适配范围**：v2.0 首发版本限定为全 UART 串口拓扑（波特率建议 921600 或 115200）。CAN 总线级联由于涉及帧分段重组与 CAN-ID 映射，标识为 `[FUTURE_EXTENSION]`，在发布专项 CAN 适配子规范前暂不启用。
+153: 4. **原生端到端透明路由**：协议原生支持透明路由寻址，AP 访问从控辅控板 SCM/TH 时直接构建端到端标准物理帧（`SRC=0x01, DST=0x03`），中间网关 MC 根据目的地址无状态线速直转，杜绝任何应用层隧道封装或虚拟通道映射。
+154: 
+155: ---
+156: 
+157: ## 3. CRC-16 校验规约与重算机制
+
+178: ### 3.3 快速查表法与网关全量重算
+179: 
+180: 中间节点修改了 `hop_limit` 与 `route_ctrl` 后，**必须对修改后的 12 字节帧头与原载荷执行全量查表重算**，将计算所得的新 CRC 小端写入末尾两字节后再提交 DMA 发送。
+181: 
+182: ```c
+183: // 256 项标准查表 (存储于 Flash)，Index 249 (0xF9) 严格修正为 0x7E36
+184: static const uint16_t crc16_table[256] = {
+
+185:     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
+186:     0x8108, 0x9129, 0xA14A, 0xB16B, 0xC18C, 0xD1AD, 0xE1CE, 0xF1EF,
+187:     0x1231, 0x0210, 0x3273, 0x2252, 0x52B5, 0x4294, 0x72F7, 0x62D6,
+188:     0x9339, 0x8318, 0xB37B, 0xA35A, 0xD3BD, 0xC39C, 0xF3FF, 0xE3DE,
+189:     0x2462, 0x3443, 0x0420, 0x1401, 0x64E6, 0x74C7, 0x44A4, 0x5485,
+190:     0xA56A, 0xB54B, 0x8528, 0x9509, 0xE5EE, 0xF5CF, 0xC5AC, 0xD58D,
+191:     0x3653, 0x2672, 0x1611, 0x0630, 0x76D7, 0x66F6, 0x5695, 0x46B4,
+
+187:     0x1231, 0x0210, 0x3273, 0x2252, 0x52B5, 0x4294, 0x72F7, 0x62D6,
+188:     0x9339, 0x8318, 0xB37B, 0xA35A, 0xD3BD, 0xC39C, 0xF3FF, 0xE3DE,
+189:     0x2462, 0x3443, 0x0420, 0x1401, 0x64E6, 0x74C7, 0x44A4, 0x5485,
+190:     0xA56A, 0xB54B, 0x8528, 0x9509, 0xE5EE, 0xF5CF, 0xC5AC, 0xD58D,
+191:     0x3653, 0x2672, 0x1611, 0x0630, 0x76D7, 0x66F6, 0x5695, 0x46B4,
+192:     0xB75B, 0xA77A, 0x9719, 0x8738, 0xF7DF, 0xE7FE, 0xD79D, 0xC7BC,
+193:     0x48C4, 0x58E5, 0x6886, 0x78A7, 0x0840, 0x1861, 0x2802, 0x3823,
+
+202:     0x1080, 0x00A1, 0x30C2, 0x20E3, 0x5004, 0x4025, 0x7046, 0x6067,
+203:     0x83B9, 0x9398, 0xA3FB, 0xB3DA, 0xC33D, 0xD31C, 0xE37F, 0xF35E,
+204:     0x02B1, 0x1290, 0x22F3, 0x32D2, 0x4235, 0x5214, 0x6277, 0x7256,
+205:     0xB5EA, 0xA5CB, 0x95A8, 0x8589, 0xF56E, 0xE54F, 0xD52C, 0xC50D,
+206:     0x34E2, 0x24C3, 0x14A0, 0x0481, 0x7466, 0x6447, 0x5424, 0x4405,
+207:     0xA7DB, 0xB7FA, 0x8799, 0x97B8, 0xE75F, 0xF77E, 0xC71D, 0xD73C,
+208:     0x26D3, 0x36F2, 0x0691, 0x16B0, 0x6657, 0x7676, 0x4615, 0x5634,
+
+204:     0x02B1, 0x1290, 0x22F3, 0x32D2, 0x4235, 0x5214, 0x6277, 0x7256,
+205:     0xB5EA, 0xA5CB, 0x95A8, 0x8589, 0xF56E, 0xE54F, 0xD52C, 0xC50D,
+206:     0x34E2, 0x24C3, 0x14A0, 0x0481, 0x7466, 0x6447, 0x5424, 0x4405,
+207:     0xA7DB, 0xB7FA, 0x8799, 0x97B8, 0xE75F, 0xF77E, 0xC71D, 0xD73C,
+208:     0x26D3, 0x36F2, 0x0691, 0x16B0, 0x6657, 0x7676, 0x4615, 0x5634,
+209:     0xD94C, 0xC96D, 0xF90E, 0xE92F, 0x99C8, 0x89E9, 0xB98A, 0xA9AB,
+210:     0x5844, 0x4865, 0x7806, 0x6827, 0x18C0, 0x08E1, 0x3882, 0x28A3,
+
+276: 
+277: * **$\text{diff} == 0$（预期有序新帧）**：业务校验通过，提交底层处理，记录受理结果，推进 `rx_expected_seq++`；
+278: * **$1 \le \text{diff} \le 32767$（超前乱序帧）**：丢弃该帧，回发 `CMD_NACK`（错误码 `0x03 ERR_SEQ_OUT_OF_WINDOW`，携带当前期望的 `expected_seq`）；
+279: * **$\text{diff} == 32768$（半空间中点歧义帧）**：序列号处于半周期正反盲区，判定为非法顺序，安全丢弃并回发 `CMD_NACK (0x09 ERR_SEQ_AMBIGUOUS)`；
+280: * **$32769 \le \text{diff} \le 65535$（历史重发包，等效 $-32767 \dots -1$）**：
+281:   * 若 `session->has_last_resp && seq_recv == session->last_req_seq && cmd_recv == session->last_req_cmd`：确凿命中最近一次已完成的事务，**立即重发缓存的响应帧，严禁将载荷二次提交给 Marlin 规划器或动作队列**；
+282:   * 若未命中缓存（更早的历史过时包）：已超出单在途缓存范围，回发 `CMD_NACK (0x08 ERR_STALE_REQUEST_EXPIRED)`，通知对端按当前最新状态同步，严禁编造 ACK。
+
+300: ### 5.1 统一命令总表
+301: 
+302: > **版本位说明**：下表中“必须置位 Flags”列出的是业务必须位；在物理线缆发送时，**所有 v2.0 帧均必须按 §1.4 叠加主版本号 `PROTO_VERSION=0b01`（即 `flags |= 0x04`）**。
+303: 
+304: | Cmd ID | 指令名称                   | 传输方向        | 业务必须 Flags    | 载荷长度        | 预期应答       | 功能描述                           |
+305: | :----- | :--------------------- | :---------- | :------------ | :---------- | :--------- | :----------------------------- |
+306: | `0x00` | `CMD_ACK`              | 双向          | `IS_RESPONSE` | 固定 4 字节     | 无          | 确认应答，携带接收端流控信用点                |
+
+306: | `0x00` | `CMD_ACK`              | 双向          | `IS_RESPONSE` | 固定 4 字节     | 无          | 确认应答，携带接收端流控信用点                |
+307: | `0x06` | `CMD_NACK`             | 双向          | `IS_RESPONSE` | 固定 3 字节     | 无          | 否定应答，携带标准错误码与期望流水号             |
+308: | `0x01` | `CMD_GET_VERSION`      | 主 $\to$ 从   | `WANTS_ACK`   | 0 字节        | `0x02`     | 查询固件版本、代次与协议能力                 |
+309: | `0x02` | `CMD_VERSION_REPORT`   | 从 $\to$ 主   | `IS_RESPONSE` | 固定 16 字节    | 无          | 回报版本号、Boot ID、Commit Hash 与能力集 |
+310: | `0x03` | `CMD_PING`             | 双向          | `WANTS_ACK`   | 固定 4 字节     | `0x04`     | 链路心跳与时延测量 (携带发起时间戳)            |
+311: | `0x04` | `CMD_PONG`             | 双向          | `IS_RESPONSE` | 固定 12 字节    | 无          | 心跳应答 (回显双时间戳与最新信用点)            |
+312: | `0x10` | `CMD_SYSTEM_CONTROL`   | 主 $\to$ 从   | `WANTS_ACK`   | 固定 3 字节     | `CMD_ACK`  | 系统控制 (Reboot / Bootloader 跳转)  |
+
+307: | `0x06` | `CMD_NACK`             | 双向          | `IS_RESPONSE` | 固定 3 字节     | 无          | 否定应答，携带标准错误码与期望流水号             |
+308: | `0x01` | `CMD_GET_VERSION`      | 主 $\to$ 从   | `WANTS_ACK`   | 0 字节        | `0x02`     | 查询固件版本、代次与协议能力                 |
+309: | `0x02` | `CMD_VERSION_REPORT`   | 从 $\to$ 主   | `IS_RESPONSE` | 固定 16 字节    | 无          | 回报版本号、Boot ID、Commit Hash 与能力集 |
+310: | `0x03` | `CMD_PING`             | 双向          | `WANTS_ACK`   | 固定 4 字节     | `0x04`     | 链路心跳与时延测量 (携带发起时间戳)            |
+311: | `0x04` | `CMD_PONG`             | 双向          | `IS_RESPONSE` | 固定 12 字节    | 无          | 心跳应答 (回显双时间戳与最新信用点)            |
+312: | `0x10` | `CMD_SYSTEM_CONTROL`   | 主 $\to$ 从   | `WANTS_ACK`   | 固定 3 字节     | `CMD_ACK`  | 系统控制 (Reboot / Bootloader 跳转)  |
+313: | `0x12` | `CMD_EMERGENCY_STOP`   | 主 $\to$ 全网  | `IS_PRIORITY` | 固定 2 字节     | **无即时ACK** | 全网广播急停 (携带原因码，禁止 WANTS_ACK)    |
+
+308: | `0x01` | `CMD_GET_VERSION`      | 主 $\to$ 从   | `WANTS_ACK`   | 0 字节        | `0x02`     | 查询固件版本、代次与协议能力                 |
+309: | `0x02` | `CMD_VERSION_REPORT`   | 从 $\to$ 主   | `IS_RESPONSE` | 固定 16 字节    | 无          | 回报版本号、Boot ID、Commit Hash 与能力集 |
+310: | `0x03` | `CMD_PING`             | 双向          | `WANTS_ACK`   | 固定 4 字节     | `0x04`     | 链路心跳与时延测量 (携带发起时间戳)            |
+311: | `0x04` | `CMD_PONG`             | 双向          | `IS_RESPONSE` | 固定 12 字节    | 无          | 心跳应答 (回显双时间戳与最新信用点)            |
+312: | `0x10` | `CMD_SYSTEM_CONTROL`   | 主 $\to$ 从   | `WANTS_ACK`   | 固定 3 字节     | `CMD_ACK`  | 系统控制 (Reboot / Bootloader 跳转)  |
+313: | `0x12` | `CMD_EMERGENCY_STOP`   | 主 $\to$ 全网  | `IS_PRIORITY` | 固定 2 字节     | **无即时ACK** | 全网广播急停 (携带原因码，禁止 WANTS_ACK)    |
+314: | `0x20` | `CMD_OTA_START`        | 主 $\to$ 从   | `WANTS_ACK`   | 固定 16 字节    | `CMD_ACK`  | 固件升级握手 (总长/CRC32/版本/组件类型)      |
+
+309: | `0x02` | `CMD_VERSION_REPORT`   | 从 $\to$ 主   | `IS_RESPONSE` | 固定 16 字节    | 无          | 回报版本号、Boot ID、Commit Hash 与能力集 |
+310: | `0x03` | `CMD_PING`             | 双向          | `WANTS_ACK`   | 固定 4 字节     | `0x04`     | 链路心跳与时延测量 (携带发起时间戳)            |
+311: | `0x04` | `CMD_PONG`             | 双向          | `IS_RESPONSE` | 固定 12 字节    | 无          | 心跳应答 (回显双时间戳与最新信用点)            |
+312: | `0x10` | `CMD_SYSTEM_CONTROL`   | 主 $\to$ 从   | `WANTS_ACK`   | 固定 3 字节     | `CMD_ACK`  | 系统控制 (Reboot / Bootloader 跳转)  |
+313: | `0x12` | `CMD_EMERGENCY_STOP`   | 主 $\to$ 全网  | `IS_PRIORITY` | 固定 2 字节     | **无即时ACK** | 全网广播急停 (携带原因码，禁止 WANTS_ACK)    |
+314: | `0x20` | `CMD_OTA_START`        | 主 $\to$ 从   | `WANTS_ACK`   | 固定 16 字节    | `CMD_ACK`  | 固件升级握手 (总长/CRC32/版本/组件类型)      |
+315: | `0x21` | `CMD_OTA_DATA`         | 主 $\to$ 从   | `WANTS_ACK`   | 8 ~ 1024 字节 | `CMD_ACK`  | 固件数据分块传输 (8B分块头 + 固件Bin数据)     |
+
+344: // 标准 NACK 错误码定义
+345: enum {
+346:     MINIMC_ERR_CRC                 = 0x01, // 帧校验和错误 (仅用于诊断统计)
+347:     MINIMC_ERR_MTU_EXCEEDED        = 0x02, // 载荷长度超过 1024 字节
+348:     MINIMC_ERR_SEQ_OUT_OF_WINDOW   = 0x03, // 序号超前越界 (乱序)
+349:     MINIMC_ERR_UNKNOWN_CMD         = 0x04, // 不支持的操作码
+350:     MINIMC_ERR_DEVICE_BUSY         = 0x05, // 接收端繁忙 (队列已满，稍后重试)
+
+345: enum {
+346:     MINIMC_ERR_CRC                 = 0x01, // 帧校验和错误 (仅用于诊断统计)
+347:     MINIMC_ERR_MTU_EXCEEDED        = 0x02, // 载荷长度超过 1024 字节
+348:     MINIMC_ERR_SEQ_OUT_OF_WINDOW   = 0x03, // 序号超前越界 (乱序)
+349:     MINIMC_ERR_UNKNOWN_CMD         = 0x04, // 不支持的操作码
+350:     MINIMC_ERR_DEVICE_BUSY         = 0x05, // 接收端繁忙 (队列已满，稍后重试)
+351:     MINIMC_ERR_COMMAND_REJECTED    = 0x06, // 命令参数校验失败被拒绝
+
+346:     MINIMC_ERR_CRC                 = 0x01, // 帧校验和错误 (仅用于诊断统计)
+347:     MINIMC_ERR_MTU_EXCEEDED        = 0x02, // 载荷长度超过 1024 字节
+348:     MINIMC_ERR_SEQ_OUT_OF_WINDOW   = 0x03, // 序号超前越界 (乱序)
+349:     MINIMC_ERR_UNKNOWN_CMD         = 0x04, // 不支持的操作码
+350:     MINIMC_ERR_DEVICE_BUSY         = 0x05, // 接收端繁忙 (队列已满，稍后重试)
+351:     MINIMC_ERR_COMMAND_REJECTED    = 0x06, // 命令参数校验失败被拒绝
+352:     MINIMC_ERR_ROUTING_CONGESTION  = 0x07, // 路由节点拥塞丢弃
+
+347:     MINIMC_ERR_MTU_EXCEEDED        = 0x02, // 载荷长度超过 1024 字节
+348:     MINIMC_ERR_SEQ_OUT_OF_WINDOW   = 0x03, // 序号超前越界 (乱序)
+349:     MINIMC_ERR_UNKNOWN_CMD         = 0x04, // 不支持的操作码
+350:     MINIMC_ERR_DEVICE_BUSY         = 0x05, // 接收端繁忙 (队列已满，稍后重试)
+351:     MINIMC_ERR_COMMAND_REJECTED    = 0x06, // 命令参数校验失败被拒绝
+352:     MINIMC_ERR_ROUTING_CONGESTION  = 0x07, // 路由节点拥塞丢弃
+353:     MINIMC_ERR_STALE_EXPIRED       = 0x08, // 历史重传已过时脱离缓存
+
+415: 
+416: 根据系统第一阶段维护规约，**上位 SoC (AP) 作为全系统固件分发与版本控制中枢，MC 与 TH 均直接从 SoC 获得固件版本**。
+417: * **MC 升级路径**：AP 直连 MC (`DST=0x02`)，MC 本机校验并烧录自身 Flash；
+418: * **TH 升级路径**：AP 通过 MC 网关透明路由中继至 TH (`SRC=0x01, DST=0x03`)，MC 零业务解包线速中继转发，TH 独立校验并烧录自身 Flash。
+419: 
+420: ```mermaid
+421: sequenceDiagram
+
+416: 根据系统第一阶段维护规约，**上位 SoC (AP) 作为全系统固件分发与版本控制中枢，MC 与 TH 均直接从 SoC 获得固件版本**。
+417: * **MC 升级路径**：AP 直连 MC (`DST=0x02`)，MC 本机校验并烧录自身 Flash；
+418: * **TH 升级路径**：AP 通过 MC 网关透明路由中继至 TH (`SRC=0x01, DST=0x03`)，MC 零业务解包线速中继转发，TH 独立校验并烧录自身 Flash。
+419: 
+420: ```mermaid
+421: sequenceDiagram
+422:     autonumber
+
+426: 
+427:     Note over AP,TH: === 场景 1: SoC 升级 MC 本机固件 ===
+428:     AP->>MC: CMD_OTA_START (DST=0x02, 大小/CRC32)
+429:     MC-->>AP: CMD_ACK (允许升级)
+430:     loop 分块推送固件
+431:         AP->>MC: CMD_OTA_DATA (DST=0x02, 偏移+分块)
+432:         MC-->>AP: CMD_ACK (写入成功)
+
+429:     MC-->>AP: CMD_ACK (允许升级)
+430:     loop 分块推送固件
+431:         AP->>MC: CMD_OTA_DATA (DST=0x02, 偏移+分块)
+432:         MC-->>AP: CMD_ACK (写入成功)
+433:     end
+434:     AP->>MC: CMD_OTA_FINISH (DST=0x02, 校验生效)
+435:     MC-->>AP: CMD_ACK (校验成功, 重启加载)
+
+432:         MC-->>AP: CMD_ACK (写入成功)
+433:     end
+434:     AP->>MC: CMD_OTA_FINISH (DST=0x02, 校验生效)
+435:     MC-->>AP: CMD_ACK (校验成功, 重启加载)
+436: 
+437:     Note over AP,TH: === 场景 2: SoC 经 MC 路由升级 TH 从机固件 ===
+438:     AP->>MC: CMD_OTA_START (DST=0x03, 经MC路由)
+
+436: 
+437:     Note over AP,TH: === 场景 2: SoC 经 MC 路由升级 TH 从机固件 ===
+438:     AP->>MC: CMD_OTA_START (DST=0x03, 经MC路由)
+439:     MC->>TH: 透明中继转发 (Hop-1)
+440:     TH-->>MC: CMD_ACK (DST=0x01)
+441:     MC-->>AP: 透明中继回传
+442:     loop 分块推送固件 (通过 MC 路由)
+
+437:     Note over AP,TH: === 场景 2: SoC 经 MC 路由升级 TH 从机固件 ===
+438:     AP->>MC: CMD_OTA_START (DST=0x03, 经MC路由)
+439:     MC->>TH: 透明中继转发 (Hop-1)
+440:     TH-->>MC: CMD_ACK (DST=0x01)
+441:     MC-->>AP: 透明中继回传
+442:     loop 分块推送固件 (通过 MC 路由)
+443:         AP->>MC: CMD_OTA_DATA (DST=0x03)
+
+438:     AP->>MC: CMD_OTA_START (DST=0x03, 经MC路由)
+439:     MC->>TH: 透明中继转发 (Hop-1)
+440:     TH-->>MC: CMD_ACK (DST=0x01)
+441:     MC-->>AP: 透明中继回传
+442:     loop 分块推送固件 (通过 MC 路由)
+443:         AP->>MC: CMD_OTA_DATA (DST=0x03)
+444:         MC->>TH: 透明中继转发
+
+439:     MC->>TH: 透明中继转发 (Hop-1)
+440:     TH-->>MC: CMD_ACK (DST=0x01)
+441:     MC-->>AP: 透明中继回传
+442:     loop 分块推送固件 (通过 MC 路由)
+443:         AP->>MC: CMD_OTA_DATA (DST=0x03)
+444:         MC->>TH: 透明中继转发
+445:         TH-->>MC: CMD_ACK (DST=0x01)
+
+441:     MC-->>AP: 透明中继回传
+442:     loop 分块推送固件 (通过 MC 路由)
+443:         AP->>MC: CMD_OTA_DATA (DST=0x03)
+444:         MC->>TH: 透明中继转发
+445:         TH-->>MC: CMD_ACK (DST=0x01)
+446:         MC-->>AP: 透明中继回传
+447:     end
+
+442:     loop 分块推送固件 (通过 MC 路由)
+443:         AP->>MC: CMD_OTA_DATA (DST=0x03)
+444:         MC->>TH: 透明中继转发
+445:         TH-->>MC: CMD_ACK (DST=0x01)
+446:         MC-->>AP: 透明中继回传
+447:     end
+448:     AP->>MC: CMD_OTA_FINISH (DST=0x03)
+
+443:         AP->>MC: CMD_OTA_DATA (DST=0x03)
+444:         MC->>TH: 透明中继转发
+445:         TH-->>MC: CMD_ACK (DST=0x01)
+446:         MC-->>AP: 透明中继回传
+447:     end
+448:     AP->>MC: CMD_OTA_FINISH (DST=0x03)
+449:     MC->>TH: 透明中继转发
+
+444:         MC->>TH: 透明中继转发
+445:         TH-->>MC: CMD_ACK (DST=0x01)
+446:         MC-->>AP: 透明中继回传
+447:     end
+448:     AP->>MC: CMD_OTA_FINISH (DST=0x03)
+449:     MC->>TH: 透明中继转发
+450:     TH-->>MC: CMD_ACK (校验成功, TH重启)
+
+446:         MC-->>AP: 透明中继回传
+447:     end
+448:     AP->>MC: CMD_OTA_FINISH (DST=0x03)
+449:     MC->>TH: 透明中继转发
+450:     TH-->>MC: CMD_ACK (校验成功, TH重启)
+451:     MC-->>AP: 透明中继回传
+452: ```
+
+447:     end
+448:     AP->>MC: CMD_OTA_FINISH (DST=0x03)
+449:     MC->>TH: 透明中继转发
+450:     TH-->>MC: CMD_ACK (校验成功, TH重启)
+451:     MC-->>AP: 透明中继回传
+452: ```
+453: 
+
+449:     MC->>TH: 透明中继转发
+450:     TH-->>MC: CMD_ACK (校验成功, TH重启)
+451:     MC-->>AP: 透明中继回传
+452: ```
+453: 
+454: ##### (1) 固件升级握手 (`CMD_OTA_START = 0x20`)
+455: 载荷固定为 **16 字节**（天然 4 字节自然对齐）：
+
+456: ```c
+457: struct __attribute__((packed)) minimc_payload_ota_start {
+458:     uint8_t  target_device;       // 目标设备地址: 0x02=MC, 0x03=TH/SCM
+459:     uint8_t  target_component;    // 目标分区类型: 1=Main App, 2=Bootloader, 3=Config
+460:     uint8_t  force_flag;          // 强制刷写标志: 0=常规校验, 1=忽略降级警告强制刷写
+461:     uint8_t  reserved;            // 对齐填充，置 0
+462:     uint32_t fw_size_bytes;       // 固件物理总字节数 (0 ~ 1048576)
+
+527:     // [0x00 ~ 0x0F] 4 个 32 位整型 (全部处于 4 字节整数倍自然对齐偏移: 0, 4, 8, 12)
+528:     int32_t  pos_x_um;           // 0x00: X 轴当前规划坐标 (微米 um)
+529:     int32_t  pos_y_um;           // 0x04: Y 轴当前规划坐标 (微米 um)
+530:     int32_t  pos_z_um;           // 0x08: Z 轴当前规划坐标 (微米 um)
+531:     int32_t  pos_e_um;           // 0x0C: E 轴当前规划坐标 (微米 um)
+532: 
+533:     // [0x10 ~ 0x19] 5 个 16 位整型 (全部处于 2 字节整数倍自然对齐偏移: 16, 18, 20, 22, 24)
+
+602: ## 7. 独立黄金测试向量 (Golden Test Vectors - 严格对齐 v2.0 版本位)
+603: 
+604: 编解码器与路由实现必须在独立无硬件测试夹具中 100% 跑通以下基准向量（**全部物理帧的 Flags 均严格包含 `PROTO_VERSION=0b01`，即 `flags |= 0x04`**）：
+605: 
+606: ### V01：AP $\to$ MC 版本查询空载请求 (14 字节)
+607: * **协议语义**：`SRC=0x01 (AP)`, `DST=0x02 (MC)`, `Flags=0x05 (WANTS_ACK | VER_2_0)`, `Cmd=0x01 (GET_VER)`, `Hop=0x04`, `Route=0x00`, `Seq=0x0000`, `Len=0x0000`
+608: * **完整物理线缆 Hex**：
+
+605: 
+606: ### V01：AP $\to$ MC 版本查询空载请求 (14 字节)
+607: * **协议语义**：`SRC=0x01 (AP)`, `DST=0x02 (MC)`, `Flags=0x05 (WANTS_ACK | VER_2_0)`, `Cmd=0x01 (GET_VER)`, `Hop=0x04`, `Route=0x00`, `Seq=0x0000`, `Len=0x0000`
+608: * **完整物理线缆 Hex**：
+609:   ```
+610:   55 AA 01 02 05 01 04 00 00 00 00 00 F9 1E
+611:   ```
+
+613: 
+614: ### V02 入站：AP 经 MC 转发至 SCM/TH 的心跳 Ping 请求 (18 字节)
+615: * **协议语义**：`SRC=0x01 (AP)`, `DST=0x03 (SCM_TH)`, `Flags=0x05 (WANTS_ACK | VER_2_0)`, `Cmd=0x03 (PING)`, `Hop=0x04`, `Route=0x00`, `Seq=0x0001`, `Len=0x0004`, 载荷时间戳 `0x12345678`
+616: * **完整物理线缆 Hex**：
+617:   ```
+618:   55 AA 01 03 05 03 04 00 01 00 04 00 78 56 34 12 66 B0
+619:   ```
+
+618:   55 AA 01 03 05 03 04 00 01 00 04 00 78 56 34 12 66 B0
+619:   ```
+620: * **校验断言**：计算所得 CRC-16 为 `0xB066` (低位 `0x66` 先发)；MC 网关识别 `DST=0x03` 进入中继转发流程。
+621: 
+622: ### V02 出站：MC 转发至次级串口的出站物理帧 (18 字节)
+623: * **转发动作**：`Hop_Limit` 由 `0x04` 减至 `0x03`，`Route_Ctrl` 叠加置位 `ROUTE_IS_ROUTED (0x04)`，全量重算 CRC-16 为 `0x3073`。
+624: * **完整物理线缆 Hex**：
+
+621: 
+622: ### V02 出站：MC 转发至次级串口的出站物理帧 (18 字节)
+623: * **转发动作**：`Hop_Limit` 由 `0x04` 减至 `0x03`，`Route_Ctrl` 叠加置位 `ROUTE_IS_ROUTED (0x04)`，全量重算 CRC-16 为 `0x3073`。
+624: * **完整物理线缆 Hex**：
+625:   ```
+626:   55 AA 01 03 05 03 03 04 01 00 04 00 78 56 34 12 73 30
+627:   ```
+
+629: 
+630: ### V03：AP $\to$ MC 切片数据块发送 (25 字节，CMD_STREAM_CHUNK)
+631: * **协议语义**：`SRC=0x01 (AP)`, `DST=0x02 (MC)`, `Flags=0x05 (WANTS_ACK | VER_2_0)`, `Cmd=0x31 (STREAM_CHUNK)`, `Hop=0x04`, `Route=0x00`, `Seq=0x0002`, `Len=0x000B (11字节)`, 载荷包含 8 字节事务头（Job=1, Chunk=0, TextLen=3）+ `"G28"`
+632: * **完整物理线缆 Hex**：
+633:   ```
+634:   55 AA 01 02 05 31 04 00 02 00 0B 00 01 00 00 00 03 00 00 00 47 32 38 A0 DA
+635:   ```
+
+638: 
+639: ### V04：全网特权急停广播请求 (14 字节)
+640: * **协议语义**：`SRC=0x01 (AP)`, `DST=0xFF (BROADCAST)`, `Flags=0x14 (IS_PRIORITY | VER_2_0)`, `Cmd=0x12 (EMERGENCY_STOP)`, `Hop=0x04`, `Route=0x00`, `Seq=0x0000`, `Len=0x0000`
+641: * **完整物理线缆 Hex**：
+642:   ```
+643:   55 AA 01 FF 14 12 04 00 00 00 00 00 3D C1
+644:   ```
+
+667: #define MINIMC_SOF2              0xAA
+668: 
+669: #define MINIMC_PROTO_VERSION_2   0x01   // Bit 2..3 = 0b01 -> 0x04 in Flags
+670: 
+671: // 核心命令代码枚举 (系统维护、固件升级与运控核心指令)
+672: typedef enum {
+673:     MINIMC_CMD_ACK              = 0x00, // 确认应答 (携带流控信用)
+
+672: typedef enum {
+673:     MINIMC_CMD_ACK              = 0x00, // 确认应答 (携带流控信用)
+674:     MINIMC_CMD_GET_VERSION      = 0x01, // 查询固件版本与代次
+675:     MINIMC_CMD_VERSION_REPORT   = 0x02, // 版本与能力回报
+676:     MINIMC_CMD_PING             = 0x03, // 链路心跳与时延测量
+677:     MINIMC_CMD_PONG             = 0x04, // 心跳应答 (回显双时间戳+信用)
+678:     MINIMC_CMD_NACK             = 0x06, // 否定应答 (携带错误码与期望seq)
+
+673:     MINIMC_CMD_ACK              = 0x00, // 确认应答 (携带流控信用)
+674:     MINIMC_CMD_GET_VERSION      = 0x01, // 查询固件版本与代次
+675:     MINIMC_CMD_VERSION_REPORT   = 0x02, // 版本与能力回报
+676:     MINIMC_CMD_PING             = 0x03, // 链路心跳与时延测量
+677:     MINIMC_CMD_PONG             = 0x04, // 心跳应答 (回显双时间戳+信用)
+678:     MINIMC_CMD_NACK             = 0x06, // 否定应答 (携带错误码与期望seq)
+679:     MINIMC_CMD_LOG_MESSAGE      = 0x07, // 异步调试日志输出
+
+674:     MINIMC_CMD_GET_VERSION      = 0x01, // 查询固件版本与代次
+675:     MINIMC_CMD_VERSION_REPORT   = 0x02, // 版本与能力回报
+676:     MINIMC_CMD_PING             = 0x03, // 链路心跳与时延测量
+677:     MINIMC_CMD_PONG             = 0x04, // 心跳应答 (回显双时间戳+信用)
+678:     MINIMC_CMD_NACK             = 0x06, // 否定应答 (携带错误码与期望seq)
+679:     MINIMC_CMD_LOG_MESSAGE      = 0x07, // 异步调试日志输出
+680:     MINIMC_CMD_SYSTEM_CONTROL   = 0x10, // 系统控制 (Reboot/Bootloader)
+
+675:     MINIMC_CMD_VERSION_REPORT   = 0x02, // 版本与能力回报
+676:     MINIMC_CMD_PING             = 0x03, // 链路心跳与时延测量
+677:     MINIMC_CMD_PONG             = 0x04, // 心跳应答 (回显双时间戳+信用)
+678:     MINIMC_CMD_NACK             = 0x06, // 否定应答 (携带错误码与期望seq)
+679:     MINIMC_CMD_LOG_MESSAGE      = 0x07, // 异步调试日志输出
+680:     MINIMC_CMD_SYSTEM_CONTROL   = 0x10, // 系统控制 (Reboot/Bootloader)
+681:     MINIMC_CMD_EMERGENCY_STOP   = 0x12, // 全网广播急停 (无即时ACK)
+
+691: // OTA 固件升级载荷定义
+692: struct __attribute__((packed)) minimc_payload_ota_start {
+693:     uint8_t  target_device;       // 0x02=MC, 0x03=TH/SCM
+694:     uint8_t  target_component;    // 1=Main App, 2=Bootloader, 3=Config
+695:     uint8_t  force_flag;          // 0=常规, 1=强制
+696:     uint8_t  reserved;            // 0
+697:     uint32_t fw_size_bytes;       // 总大小
+
+723: typedef struct __attribute__((packed)) {
+724:     uint8_t  sof_1;          // 0x00: 0x55
+725:     uint8_t  sof_2;          // 0x01: 0xAA
+726:     uint8_t  src_id;         // 0x02: 源设备地址
+727:     uint8_t  dst_id;         // 0x03: 目的设备地址
+728:     uint8_t  flags;          // 0x04: 控制标志 (包含版本位)
+729:     uint8_t  cmd_id;         // 0x05: 指令码
+
+724:     uint8_t  sof_1;          // 0x00: 0x55
+725:     uint8_t  sof_2;          // 0x01: 0xAA
+726:     uint8_t  src_id;         // 0x02: 源设备地址
+727:     uint8_t  dst_id;         // 0x03: 目的设备地址
+728:     uint8_t  flags;          // 0x04: 控制标志 (包含版本位)
+729:     uint8_t  cmd_id;         // 0x05: 指令码
+730:     uint8_t  hop_limit;      // 0x06: TTL 跳数
+
+725:     uint8_t  sof_2;          // 0x01: 0xAA
+726:     uint8_t  src_id;         // 0x02: 源设备地址
+727:     uint8_t  dst_id;         // 0x03: 目的设备地址
+728:     uint8_t  flags;          // 0x04: 控制标志 (包含版本位)
+729:     uint8_t  cmd_id;         // 0x05: 指令码
+730:     uint8_t  hop_limit;      // 0x06: TTL 跳数
+731:     uint8_t  route_ctrl;     // 0x07: 路由控制策略
+
+726:     uint8_t  src_id;         // 0x02: 源设备地址
+727:     uint8_t  dst_id;         // 0x03: 目的设备地址
+728:     uint8_t  flags;          // 0x04: 控制标志 (包含版本位)
+729:     uint8_t  cmd_id;         // 0x05: 指令码
+730:     uint8_t  hop_limit;      // 0x06: TTL 跳数
+731:     uint8_t  route_ctrl;     // 0x07: 路由控制策略
+732:     uint16_t seq;            // 0x08~0x09: 端到端流水号
+
+728:     uint8_t  flags;          // 0x04: 控制标志 (包含版本位)
+729:     uint8_t  cmd_id;         // 0x05: 指令码
+730:     uint8_t  hop_limit;      // 0x06: TTL 跳数
+731:     uint8_t  route_ctrl;     // 0x07: 路由控制策略
+732:     uint16_t seq;            // 0x08~0x09: 端到端流水号
+733:     uint16_t payload_len;    // 0x0A~0x0B: 载荷长度
+734: } minimc_header_t;
+
+769:     uint32_t          stat_timeout_resets;
+770:     uint32_t          stat_routed_frames;
+771:     uint32_t          stat_hop_exhausted;
+772: 
+773:     // 本机业务分发回调
+774:     void (*on_frame_dispatch)(struct minimc_fsm *fsm, const minimc_header_t *hdr, 
+775:                               const uint8_t *payload, uint16_t len);
+
+794: | 评审编号 | 优先级 | 评审提出问题核心 | 本修订稿闭环落实方案 | 对应章节 |
+795: | :--- | :--- | :--- | :--- | :--- |
+796: | **V2-01** | P0 | SCM 与 TH 被拆为两个实体，违背 D21 基线 | 遵循 D21 决策，统一物理地址为 `0x03 (SCM_TH)` 一体板；预留 `0x04` 供未来独立扩展；型号解耦 | §2.1 |
+797: | **V2-02** | P0 | 四个黄金帧缺少 v2.0 版本位，严格解析会被拒 | 修正 Flags：V01~V03 设为 `0x05`，V04 设为 `0x14`；同步重算 CRC 并提供出站中继向量 | §1.4, §7 |
+798: | **V2-03** | P0 | 广播分支绕过 Hop 检查，缺重复抑制与防环 | 重构 Mermaid 流程图；单播/广播/组播统一 Hop 检查递减、置位 routed、重算 CRC、水平分割 | §2.2 |
+799: | **V2-04** | P0 | 版本字段移位，缺旧版识别与切换契约 | **【架构裁决：绿地设计不适用】** 项目处于未编码的方案初期，全系统统一步调采用 v2.0 绿地设计，无需向后兼容 v1.x，彻底移除旧版探测、动态降级与协商包袱，协议格式全局唯一确定 | 概述, §1.4 |
+800: | **V2-05** | P0 | `(SRC,DST)` 无法隔离重启、会话复用及回绕 | 引入 `Session Epoch (Boot ID)` 隔离会话；改用无符号 16 位模减明确区分新帧、乱序、歧义与重传 | §4.1 |
+
+796: | **V2-01** | P0 | SCM 与 TH 被拆为两个实体，违背 D21 基线 | 遵循 D21 决策，统一物理地址为 `0x03 (SCM_TH)` 一体板；预留 `0x04` 供未来独立扩展；型号解耦 | §2.1 |
+797: | **V2-02** | P0 | 四个黄金帧缺少 v2.0 版本位，严格解析会被拒 | 修正 Flags：V01~V03 设为 `0x05`，V04 设为 `0x14`；同步重算 CRC 并提供出站中继向量 | §1.4, §7 |
+798: | **V2-03** | P0 | 广播分支绕过 Hop 检查，缺重复抑制与防环 | 重构 Mermaid 流程图；单播/广播/组播统一 Hop 检查递减、置位 routed、重算 CRC、水平分割 | §2.2 |
+799: | **V2-04** | P0 | 版本字段移位，缺旧版识别与切换契约 | **【架构裁决：绿地设计不适用】** 项目处于未编码的方案初期，全系统统一步调采用 v2.0 绿地设计，无需向后兼容 v1.x，彻底移除旧版探测、动态降级与协商包袱，协议格式全局唯一确定 | 概述, §1.4 |
+800: | **V2-05** | P0 | `(SRC,DST)` 无法隔离重启、会话复用及回绕 | 引入 `Session Epoch (Boot ID)` 隔离会话；改用无符号 16 位模减明确区分新帧、乱序、歧义与重传 | §4.1 |
+801: | **V2-06** | P0 | 任意旧 seq 回原结果与 4 字节单条缓存矛盾 | 规范 Stop-and-Wait 停等传输；扩充缓存至 16B 记录命令码与响应，过期旧请求回 NACK | §4.1 |
+802: | **V2-07** | P0 | 请求、应答、通知共用 seq 导致死锁或混乱 | 明确权责：请求自增 seq；响应回显原 seq 不消耗计数；通知与广播不纳入有序窗口 | §4.1 |

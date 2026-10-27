@@ -1,0 +1,211 @@
+  }
+
+  f_lseek(&s_file, fsize - TRAILER_SIZE_BYTES);
+  f_read(&s_file, &s_trailer, TRAILER_SIZE_BYTES, &br);
+  if (br != TRAILER_SIZE_BYTES || s_trailer.magic != TRAILER_MAGIC_ATSG || s_trailer.board_id != BOARD_ID_TH_AT32F423)
+  {
+    mc_debug_printf("[MC_APP][UPG] Trailer invalid! Magic=0x%08lX BoardID=0x%08lX\r\n",
+           s_trailer.magic, s_trailer.board_id);
+    f_close(&s_file);
+    return false;
+  }
+
+  s_total_chunks = (s_trailer.payload_len + TH_CHUNK_SIZE - 1U) / TH_CHUNK_SIZE;
+  mc_debug_printf("[MC_APP][UPG] 'fw_th.bin' Verified! Payload=%lu B, Chunks=%lu\r\n",
+         s_trailer.payload_len, s_total_chunks);
+  return true;
+}
+
+static void th_upg_trigger_reboot(void)
+{
+  mc_debug_print("[MC_APP][UPG] Triggering TH Bootloader via M997 S0...\r\n");
+  forward_uart_send_line("M997 S0", 7U);
+  forward_uart_mode_set(FORWARD_UART_MODE_UPGRADE);
+}
+
+static bool th_upg_wait_ack(uint8_t exp_ack, uint8_t *out_payload, uint16_t *out_len, uint32_t timeout_ms)
+{
+  uint32_t start_tick = wk_timebase_get();
+  uint8_t cmd = 0;
+
+  while ((wk_timebase_get() - start_tick) < timeout_ms)
+  {
+    forward_uart_rx_poll();
+    if (forward_uart_recv_frame(&cmd, out_payload, out_len, 32U))
+    {
+      if (cmd == exp_ack)
+      {
+        return true;
+      }
+    }
+    wk_delay_ms(1);
+  }
+  return false;
+}
+
+static bool th_upg_wait_for_hello(uint32_t timeout_ms)
+{
+  uint32_t start_tick = wk_timebase_get();
+  uint8_t payload[32];
+  uint8_t cmd = 0;
+  uint16_t len = 0;
+
+  while ((wk_timebase_get() - start_tick) < timeout_ms)
+  {
+    forward_uart_rx_poll();
+    if (forward_uart_recv_frame(&cmd, payload, &len, sizeof(payload)))
+    {
+      if (cmd == CMD_TH_HELLO)
+      {
+        mc_debug_print("[MC_APP][UPG] Captured CMD_TH_HELLO from TH Bootloader!\r\n");
+        return true;
+      }
+    }
+    wk_delay_ms(2);
+  }
+  return false;
+}
+
+static bool th_upg_do_handshake(void)
+{
+  uint8_t ack_payload[8];
+  uint16_t ack_len = 0;
+
+  mc_debug_print("[MC_APP][UPG] Sending 128B Trailer for Handshake (CMD 0x11)...\r\n");
+  forward_uart_send_frame(CMD_TH_START_UPG, (const uint8_t *)&s_trailer, TRAILER_SIZE_BYTES);
+
+  if (th_upg_wait_ack(ACK_TH_START_UPG, ack_payload, &ack_len, 2500U))
+  {
+    uint8_t status = (ack_len > 0U) ? ack_payload[0] : 0xFFU;
+    if (status == 0x00U)
+    {
+      mc_debug_print("[MC_APP][UPG] Handshake SUCCESS: TH accepted upgrade. Flash ready.\r\n");
+      return true;
+    }
+  }
+  return false;
+}
+
+static void th_upg_prepare_chunk_payload(uint32_t chunk_idx, uint8_t *tx_buf)
+{
+  UINT br = 0;
+  f_lseek(&s_file, chunk_idx * TH_CHUNK_SIZE);
+  f_read(&s_file, s_chunk_buf, TH_CHUNK_SIZE, &br);
+
+  uint32_t remain = (s_trailer.payload_len > chunk_idx * TH_CHUNK_SIZE) ?
+                    (s_trailer.payload_len - chunk_idx * TH_CHUNK_SIZE) : 0U;
+  uint32_t valid_bytes = (remain >= TH_CHUNK_SIZE) ? TH_CHUNK_SIZE : remain;
+  s_running_crc32 = crc32_calculate(s_running_crc32, s_chunk_buf, valid_bytes);
+
+  if (br < TH_CHUNK_SIZE)
+  {
+    memset(&s_chunk_buf[br], 0xFF, TH_CHUNK_SIZE - br);
+  }
+
+  tx_buf[0] = (uint8_t)(chunk_idx & 0xFFU);
+  tx_buf[1] = (uint8_t)((chunk_idx >> 8) & 0xFFU);
+  tx_buf[2] = (uint8_t)((chunk_idx >> 16) & 0xFFU);
+  tx_buf[3] = (uint8_t)((chunk_idx >> 24) & 0xFFU);
+  memcpy(&tx_buf[4], s_chunk_buf, TH_CHUNK_SIZE);
+}
+
+static bool th_upg_send_one_chunk(uint32_t chunk_idx)
+{
+  uint8_t tx_frame_buf[4 + TH_CHUNK_SIZE];
+  uint8_t ack_payload[8];
+  uint16_t ack_len = 0;
+
+  th_upg_prepare_chunk_payload(chunk_idx, tx_frame_buf);
+
+  for (uint8_t retry = 0U; retry < 3U; retry++)
+  {
+    forward_uart_send_frame(CMD_TH_PUSH_CHUNK, tx_frame_buf, (uint16_t)sizeof(tx_frame_buf));
+    if (th_upg_wait_ack(ACK_TH_PUSH_CHUNK, ack_payload, &ack_len, 800U))
+    {
+      if (ack_len >= 5U && ack_payload[4] == 0x00U)
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+static bool th_fs_rename_and_check(const char *p_old, const char *p_new, uint32_t exp_size)
+{
+  FILINFO fno;
+  FRESULT fr;
+
+  if (p_old == NULL || p_new == NULL)
+  {
+    return false;
+  }
+
+  f_unlink(p_new);
+  fr = f_rename(p_old, p_new);
+  if (fr != FR_OK)
+  {
+    mc_debug_printf("[MC_APP][UPG] Rename failed (%s -> %s, err=%d)\r\n", p_old, p_new, (int)fr);
+    return false;
+  }
+
+  f_mount(NULL, "0:/", 0);
+  wk_delay_ms(50);
+
+  fr = f_mount(&s_fs, "0:/", 1);
+  if (fr != FR_OK || f_stat(p_old, &fno) != FR_NO_FILE)
+  {
+    return false;
+  }
+
+  if (f_stat(p_new, &fno) != FR_OK || (exp_size > 0U && fno.fsize != (FSIZE_t)exp_size))
+  {
+    return false;
+  }
+
+  mc_debug_printf("[MC_APP][UPG] FS Check PASSED: %s -> %s verified (Size=%lu B).\r\n",
+         p_old, p_new, (uint32_t)fno.fsize);
+  return true;
+}
+
+static bool th_upg_do_finish(void)
+{
+  uint8_t crc_payload[4];
+  uint8_t ack_payload[8];
+  uint16_t ack_len = 0;
+
+  crc_payload[0] = (uint8_t)(s_running_crc32 & 0xFFU);
+  crc_payload[1] = (uint8_t)((s_running_crc32 >> 8) & 0xFFU);
+  crc_payload[2] = (uint8_t)((s_running_crc32 >> 16) & 0xFFU);
+  crc_payload[3] = (uint8_t)((s_running_crc32 >> 24) & 0xFFU);
+
+  mc_debug_printf("[MC_APP][UPG] Sending CMD_TH_FINISH with CRC32=0x%08lX...\r\n", s_running_crc32);
+  forward_uart_send_frame(CMD_TH_FINISH, crc_payload, 4U);
+
+  if (th_upg_wait_ack(ACK_TH_FINISH, ack_payload, &ack_len, 3000U))
+  {
+    if (ack_len > 0U && ack_payload[0] == 0x00U)
+    {
+      mc_debug_print("[MC_APP][UPG] TH Finish ACK: Verification PASSED! TH jumping to App.\r\n");
+      f_close(&s_file);
+#if (CONFIG_ENABLE_TH_FW_RENAME == 1)
+      const char *p_target_cur = "0:/fw_th.cur";
+      if (strstr(s_th_src_filename, "FW_TH.BIN") != NULL)
+      {
+        p_target_cur = "0:/FW_TH.CUR";
+      }
+      th_fs_rename_and_check(s_th_src_filename, p_target_cur, s_th_file_size);
+#endif
+      return true;
+    }
+  }
+  f_close(&s_file);
+  return false;
+}
+
+void th_upgrade_mgr_init(void)
+{
+  s_state = TH_UPG_STATE_IDLE;
+  s_fs_mounted = false;
+  s_total_chunks = 0;
+  s_current_chunk = 0;

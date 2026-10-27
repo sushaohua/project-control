@@ -1,0 +1,98 @@
+[
+  {
+    "path": "host/cascade_host_gap_audit_20261027.md",
+    "expected": "a3fb946a1097795e657248cfb7a7f0329c5ed8f64e8c815e5580bf2463339803",
+    "copy": "a3fb946a1097795e657248cfb7a7f0329c5ed8f64e8c815e5580bf2463339803",
+    "source": "a3fb946a1097795e657248cfb7a7f0329c5ed8f64e8c815e5580bf2463339803",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "host/cascade_host_gap_probes_20261027.log",
+    "expected": "67380e8bc8412977fd3465c732f957022e4e9cee89f4ca17ef171f0c48d92750",
+    "copy": "67380e8bc8412977fd3465c732f957022e4e9cee89f4ca17ef171f0c48d92750",
+    "source": "67380e8bc8412977fd3465c732f957022e4e9cee89f4ca17ef171f0c48d92750",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "host/cascade_host_gap_probes.py",
+    "expected": "417850faa415f77bf1f99c39a2407e2ecdcaae888a699bc6e3b2aa7fb0602dbb",
+    "copy": "417850faa415f77bf1f99c39a2407e2ecdcaae888a699bc6e3b2aa7fb0602dbb",
+    "source": "417850faa415f77bf1f99c39a2407e2ecdcaae888a699bc6e3b2aa7fb0602dbb",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "host/cascade_transport_gap_probe.cpp",
+    "expected": "32316f6e2fd068ba9f99e1509dffe6d086991db8c2f5fcf93e637d1f2695f8e9",
+    "copy": "32316f6e2fd068ba9f99e1509dffe6d086991db8c2f5fcf93e637d1f2695f8e9",
+    "source": "32316f6e2fd068ba9f99e1509dffe6d086991db8c2f5fcf93e637d1f2695f8e9",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "host/initial_query_negative_cases.py",
+    "expected": "ce6871e684d021c327276bec2c59c2ae0f810b43eea5e4c05dfac18aca24a4d7",
+    "copy": "ce6871e684d021c327276bec2c59c2ae0f810b43eea5e4c05dfac18aca24a4d7",
+    "source": "ce6871e684d021c327276bec2c59c2ae0f810b43eea5e4c05dfac18aca24a4d7",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "host/LastTest.log",
+    "expected": "bfa457a620baf6014dd073cf90806b26521b2d60eef2942b8284446d12efaa4f",
+    "copy": "bfa457a620baf6014dd073cf90806b26521b2d60eef2942b8284446d12efaa4f",
+    "source": "bfa457a620baf6014dd073cf90806b26521b2d60eef2942b8284446d12efaa4f",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "workflow/cascade_workflow_gap_audit_20261027.md",
+    "expected": "6a768003ea790dbc2a27309b6cd5ce163361800eb4d7e10d80461252d3616722",
+    "copy": "6a768003ea790dbc2a27309b6cd5ce163361800eb4d7e10d80461252d3616722",
+    "source": "6a768003ea790dbc2a27309b6cd5ce163361800eb4d7e10d80461252d3616722",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "workflow/cascade_workflow_repro_20261027.py",
+    "expected": "50431d8f4282b2eec702f5789a894c56b767ded5f16f4d0513b1009c6b6a7509",
+    "copy": "50431d8f4282b2eec702f5789a894c56b767ded5f16f4d0513b1009c6b6a7509",
+    "source": "50431d8f4282b2eec702f5789a894c56b767ded5f16f4d0513b1009c6b6a7509",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "workflow/cascade_workflow_repro_20261027.out",
+    "expected": "7cd9a3864747abd30af376ea1e5ef33f86f4c9627d0f88cb769263285db5738c",
+    "copy": "7cd9a3864747abd30af376ea1e5ef33f86f4c9627d0f88cb769263285db5738c",
+    "source": "7cd9a3864747abd30af376ea1e5ef33f86f4c9627d0f88cb769263285db5738c",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "workflow/cascade_task_graph_baseline_20261027.json",
+    "expected": "7d3def420d0faaafeadb11bd716839a22a7012449019fba08a19d86a44b58b1f",
+    "copy": "7d3def420d0faaafeadb11bd716839a22a7012449019fba08a19d86a44b58b1f",
+    "source": "7d3def420d0faaafeadb11bd716839a22a7012449019fba08a19d86a44b58b1f",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "workflow/cascade_task_graph_baseline_20261027.stdout",
+    "expected": "7d3def420d0faaafeadb11bd716839a22a7012449019fba08a19d86a44b58b1f",
+    "copy": "7d3def420d0faaafeadb11bd716839a22a7012449019fba08a19d86a44b58b1f",
+    "source": "7d3def420d0faaafeadb11bd716839a22a7012449019fba08a19d86a44b58b1f",
+    "copy_match": true,
+    "source_match": true
+  },
+  {
+    "path": "firmware/cascade_firmware_gap_audit_20261027.md",
+    "expected": "37e0c408ec03801fd4738429bada4f1e540212ef9b698eebcbecccb1617ac4ef",
+    "copy": "37e0c408ec03801fd4738429bada4f1e540212ef9b698eebcbecccb1617ac4ef",
+    "source": "37e0c408ec03801fd4738429bada4f1e540212ef9b698eebcbecccb1617ac4ef",
+    "copy_match": true,
+    "source_match": true
+  }
+]

@@ -1,0 +1,2 @@
+f5c470e689d4a96e5d71750ced77a5879aa00618 2026-10-27T16:25:23+08:00 chore(workspace): sync test_harness recovery commit for hil tools
+9cf4f7c281345941904e042b5ae7494fdccda1a7 2026-10-27T15:55:12+08:00 chore(workspace): pin latest verified child repository commits

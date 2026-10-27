@@ -1,0 +1,191 @@
+	}
+	memcpy(dst, forward_uart_dma.forward_uart_rx_buf, rx_len);
+	forward_uart_dma.forward_uart_rx_complete = 0;
+	return rx_len;
+}
+
+/* ==============================================================================
+ * Step 3: USART6 板间独占模式与二进制帧流式通道实现
+ * ============================================================================== */
+
+void forward_uart_mode_set(forward_uart_mode_t mode)
+{
+	s_forward_mode = mode;
+}
+
+forward_uart_mode_t forward_uart_mode_get(void)
+{
+	return s_forward_mode;
+}
+
+static bool forward_uart_send_raw_byte(uint8_t byte)
+{
+	uint32_t timeout = 50000U;
+	while (usart_flag_get(USART6, USART_TDBE_FLAG) == RESET)
+	{
+		timeout--;
+		if (timeout == 0U)
+		{
+			return false;
+		}
+	}
+	usart_data_transmit(USART6, (uint16_t)byte);
+	return true;
+}
+
+static bool forward_uart_send_header(uint8_t cmd, uint16_t len)
+{
+	if (!forward_uart_send_raw_byte(0x5AU) || !forward_uart_send_raw_byte(0xA5U) ||
+	    !forward_uart_send_raw_byte(cmd) ||
+	    !forward_uart_send_raw_byte((uint8_t)(len & 0xFFU)) ||
+	    !forward_uart_send_raw_byte((uint8_t)((len >> 8) & 0xFFU)))
+	{
+		return false;
+	}
+	return true;
+}
+
+static bool forward_uart_wait_tdc(void)
+{
+	uint32_t timeout = 50000U;
+	while (usart_flag_get(USART6, USART_TDC_FLAG) == RESET)
+	{
+		timeout--;
+		if (timeout == 0U)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool forward_uart_send_frame(uint8_t cmd, const uint8_t *payload, uint16_t len)
+{
+	if (len > 0U && payload == NULL)
+	{
+		return false;
+	}
+
+	uint32_t timeout = 100000U;
+	while (forward_uart_dma.forward_uart_tx_busy)
+	{
+		timeout--;
+		if (timeout == 0U)
+		{
+			return false;
+		}
+	}
+
+	uint8_t checksum = (uint8_t)(cmd + (len & 0xFFU) + ((len >> 8) & 0xFFU));
+	for (uint16_t i = 0U; i < len; i++)
+	{
+		checksum = (uint8_t)(checksum + payload[i]);
+	}
+
+	if (!forward_uart_send_header(cmd, len))
+	{
+		return false;
+	}
+
+	for (uint16_t i = 0U; i < len; i++)
+	{
+		if (!forward_uart_send_raw_byte(payload[i]))
+		{
+			return false;
+		}
+	}
+
+	if (!forward_uart_send_raw_byte(checksum))
+	{
+		return false;
+	}
+
+	return forward_uart_wait_tdc();
+}
+
+static int16_t forward_uart_find_sync(const uint8_t *buf, uint16_t len)
+{
+	for (uint16_t i = 0U; i + 5U < len; i++)
+	{
+		if (buf[i] == 0x5AU && buf[i + 1U] == 0xA5U)
+		{
+			return (int16_t)i;
+		}
+	}
+	return -1;
+}
+
+static bool forward_uart_verify_checksum(const uint8_t *buf, int16_t sync, uint8_t cmd, uint16_t p_len)
+{
+	uint8_t sum = (uint8_t)(cmd + (p_len & 0xFFU) + ((p_len >> 8) & 0xFFU));
+	for (uint16_t i = 0U; i < p_len; i++)
+	{
+		sum = (uint8_t)(sum + buf[sync + 5 + i]);
+	}
+	return (sum == buf[sync + 5 + p_len]);
+}
+
+bool forward_uart_recv_frame(uint8_t *cmd, uint8_t *payload, uint16_t *len, uint16_t max_len)
+{
+	if (cmd == NULL || payload == NULL || len == NULL || forward_uart_dma.forward_uart_rx_complete == 0)
+	{
+		return false;
+	}
+
+	const uint8_t *rx_buf = (const uint8_t *)forward_uart_dma.forward_uart_rx_buf;
+	uint16_t rx_len = forward_uart_dma.forward_uart_rx_len;
+	if (rx_len < 6U)
+	{
+		forward_uart_dma.forward_uart_rx_complete = 0;
+		return false;
+	}
+
+	int16_t sync_idx = forward_uart_find_sync(rx_buf, rx_len);
+	if (sync_idx < 0)
+	{
+		forward_uart_dma.forward_uart_rx_complete = 0;
+		return false;
+	}
+
+	uint8_t rx_cmd = rx_buf[sync_idx + 2];
+	uint16_t p_len = (uint16_t)(rx_buf[sync_idx + 3] | ((uint16_t)rx_buf[sync_idx + 4] << 8));
+	if (p_len > 64U || p_len > max_len || ((uint16_t)sync_idx + 6U + p_len) > rx_len)
+	{
+		forward_uart_dma.forward_uart_rx_complete = 0;
+		return false;
+	}
+
+	if (!forward_uart_verify_checksum(rx_buf, sync_idx, rx_cmd, p_len))
+	{
+		forward_uart_dma.forward_uart_rx_complete = 0;
+		return false;
+	}
+
+	*cmd = rx_cmd;
+	*len = p_len;
+	for (uint16_t i = 0U; i < p_len; i++)
+	{
+		payload[i] = rx_buf[sync_idx + 5 + i];
+	}
+	forward_uart_dma.forward_uart_rx_complete = 0;
+	return true;
+}
+
+static bool mc_th_perf_send_and_wait(const char *cmd, uint16_t len, uint32_t *out_rtt_us)
+{
+  uint32_t t_start_cyc;
+  uint32_t poll_timeout_ms = 100U;
+  uint32_t poll_start_ms;
+
+  if (cmd == NULL || len == 0U || out_rtt_us == NULL)
+  {
+    return false;
+  }
+
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+  forward_uart_dma.forward_uart_rx_complete = 0;
+
+  t_start_cyc = DWT->CYCCNT;
+  forward_uart_send_line(cmd, len);
+

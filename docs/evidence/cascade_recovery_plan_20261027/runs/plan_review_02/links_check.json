@@ -1,0 +1,32 @@
+[
+  {
+    "label": "AP-MC-TH 联调偏差复盘",
+    "target": "../analysis/ap_mc_th_cascade_verification_issues_and_root_cause_analysis_20261027.md",
+    "exists": true
+  },
+  {
+    "label": "AP 宿主",
+    "target": "../../../soc-ap/core/host/main.cpp",
+    "exists": true
+  },
+  {
+    "label": "串口适配",
+    "target": "../../../soc-ap/core/forward/transport/serial_posix.cpp",
+    "exists": true
+  },
+  {
+    "label": "CMake",
+    "target": "../../../soc-ap/CMakeLists.txt",
+    "exists": true
+  },
+  {
+    "label": "参考运行器",
+    "target": "../../../test_harness/static_checks/minimcproto/run_codec_cases.py",
+    "exists": true
+  },
+  {
+    "label": "cascade_recovery_plan_20261027",
+    "target": "../evidence/cascade_recovery_plan_20261027/README.md",
+    "exists": true
+  }
+]

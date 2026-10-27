@@ -1,0 +1,5 @@
+.gitignore
+README.md
+hil/guides/probe_rs_hardware_fault_injection.md
+hil/tools/device_discovery.py
+hil/tools/probe_fault_injector.py

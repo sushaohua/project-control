@@ -1,0 +1,240 @@
+# MiniMCProto v2.0 版本协商与心跳命令契约 (Version & Heartbeat Command Contract)
+
+> **任务标识**: `V2-P01B` (Revision 1)  
+> **前置依赖契约**: `V2-P01A` (`soc-ap/contracts/minimcproto/v2-minimal.md`, SHA256: `5fc11e865fde44d780db94487855a7d762092a38362e9be66491b66626ad5ade`)  
+> **上游通信规范权威基线**: `SPEC-PROTO-20261015-153000` (Rev 2.0.3 - Active Master Baseline)  
+> **基线文件路径**: `project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md`  
+> **基线内容哈希**: `sha256:9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54`  
+> **设计模式与架构原则**: 纯净绿地设计 (Greenfield Architecture, B0_方案基线 D20)，无历史版本兼容包袱；本机离线协议命令级最小抽象。
+
+---
+
+## 1. 范围与边界声明 (Scope & Boundaries)
+
+1. **契约范围**:
+   - 本契约在 `V2-P01A` 帧格式最小契约的基础上，进一步提取 AP 端离线实现所必需的**版本协商命令 (`CMD_GET_VERSION`, `CMD_VERSION_REPORT`)** 与 **链路心跳探活命令 (`CMD_PING`, `CMD_PONG`)** 的逐字段内存布局、线缆端序、标志位响应关系以及判定分层规则。
+   - 适用于 `soc-ap` 内部的独立离线协议命令编解码逻辑。
+
+2. **明确非目标与实现隔离 (Negative Cases & Non-Goals)**:
+   - **排除高级业务命令**: 急停 (`CMD_EMERGENCY_STOP`)、OTA 固件升级 (`CMD_OTA_*`)、切片数据流 (`CMD_STREAM_CHUNK`)、遥测与告警 (`CMD_TELEMETRY_REPORT`, `CMD_ALARM_EVENT`) 等高级业务指令**不属于本卡范围**，本增量不实现、不伪造对其的支持。
+   - **排除复杂会话运行时**: 会话重试定时器、指数退避、重启隔离在途事务清空及路由转发表的具体状态机执行逻辑留待后续实现票（P02/P03/P05），本卡仅约束静态字段布局与数据契约。
+   - **禁止硬件时钟与外设交互**: 时间戳参数均为离线逻辑变量，由测试夹具或上层调用方显式传入模拟时钟，不调用硬件 RTC 或硬件定时器。
+
+---
+
+## 2. 帧级与命令级判定分层规约 (Two-Layer Validation Architecture)
+
+通信处理严格分为**帧级物理验证**与**命令业务级验证**两层，两层权责独立、互不混淆：
+
+```text
++-------------------------------------------------------------------------+
+| [第 1 层] 帧级物理验证 (Frame-Level, 依据 V2-P01A 契约)                  |
+| • SOF 同步魔数 (0x55, 0xAA)                                             |
+| • 物理帧长恒等式 Total = L + 14                                         |
+| • 载荷 MTU 物理边界 (0 <= L <= 1024)                                    |
+| • 协议主版本硬校验 ((flags & 0x0C) == 0x04)                             |
+| • 帧头保留位清零断言 ((flags & 0xE0) == 0)                              |
+| • 小端 CRC-16/CCITT-FALSE 全量显式比对                                  |
++------------------------------------+------------------------------------+
+                                     |
+                                     v [帧级通过: 提交命令业务分发]
++------------------------------------+------------------------------------+
+| [第 2 层] 命令业务级验证 (Command-Level, 本契约规范)                    |
+| • 操作码支持性检查 (cmd_id 是否在当前已支持集合内)                       |
+| • 载荷长度一致性强校验 (L 是否严格等于该指令的固定规约长度)              |
+| • 控制标志语义检查 (请求必须 WANTS_ACK=1, 响应必须 IS_RESPONSE=1)        |
+| • 响应序列号一致性检查 (响应帧的 seq 必须回显原请求 seq)                |
+| • 保留填充字节全零断言 (PONG 载荷中的 reserved == 0)                    |
++-------------------------------------------------------------------------+
+```
+
+### 2.1 错误处置与反馈原则
+1. **帧级物理校验失败**:
+   - 包含 CRC 错误、魔数不匹配、长度超限 ($L > 1024$)、版本位非 `0b01` 等。
+   - **处置动作**: 静默丢弃，累加底层统计计数，状态机复位至 `STATE_WAIT_SOF1`。**严禁**向对端回送任何应答（防止对端信道噪声引发垃圾报文风暴）。
+2. **命令业务级校验失败**:
+   - 包含未知操作码、载荷长度与命令定义冲突、保留位非零等。
+   - **处置动作**: 若收到的是非响应请求帧（`IS_RESPONSE=0` 且 `WANTS_ACK=1`），接收端构建并回发标准 `CMD_NACK` 报文，携带对应标准错误码：
+     - 未知操作码: `MINIMC_ERR_UNKNOWN_CMD (0x04)`
+     - 载荷长度冲突/参数非法: `MINIMC_ERR_COMMAND_REJECTED (0x06)`
+
+---
+
+## 3. 版本协商与心跳探活命令精确规约 (Command Specifications)
+
+所有多字节数值在线缆传输和结构体表示中**均采用小端序 (Little-Endian)**，且物理结构体使用 `__attribute__((packed))` 约束紧凑对齐。
+
+### 3.1 `CMD_GET_VERSION` (操作码 `0x01` - 查询版本与能力)
+
+- **传输方向**: 上位主控 (AP) $\to$ 下位从机 (MC / TH)
+- **业务语义**: AP 启动后或周期探测时主动下发，查询从机固件版本、启动代次及能力集。
+- **帧头约束**:
+  - `src_id`: 发起方地址 (AP 为 `0x01`)
+  - `dst_id`: 目标从机地址 (MC 为 `0x02`, SCM/TH 为 `0x03`)
+  - `flags`: 必须置位 `WANTS_ACK (0x01)`，叠加版本位 `0x04`，发送时 `flags = 0x05`
+  - `cmd_id`: `0x01`
+  - `seq`: 发送端单调自增流水号
+  - `payload_len`: 必须为 `0x0000` ($L = 0$)
+- **载荷定义**: **空载荷 ($L = 0$)**。物理帧总长固定为 **14 字节**。
+- **预期应答**: 目标从机在正常状态下回送 `CMD_VERSION_REPORT` (`0x02`)。
+
+### 3.2 `CMD_VERSION_REPORT` (操作码 `0x02` - 版本与能力回报)
+
+- **传输方向**: 下位从机 (MC / TH) $\to$ 上位主控 (AP)
+- **业务语义**: 响应 `CMD_GET_VERSION` 请求，回报自身版本、启动会话代次、代码 Commit 与能力集。
+- **帧头约束**:
+  - `src_id`: 从机自身地址 (`0x02` 或 `0x03`)
+  - `dst_id`: 原请求发起方地址 (`0x01`)
+  - `flags`: 必须置位 `IS_RESPONSE (0x02)`，`WANTS_ACK = 0`，叠加版本位 `0x04`，发送时 `flags = 0x06`
+  - `cmd_id`: `0x02`
+  - `seq`: **严格回显对应 `GET_VERSION` 原请求的 `seq`**，不消耗从机自身的独立请求流水号
+  - `payload_len`: 必须固定为 `0x0010` ($L = 16$)
+- **载荷定义 (固定 16 字节，天然 4 字节自然对齐)**:
+
+```c
+struct __attribute__((packed)) minimc_payload_version_report {
+    uint8_t  proto_ver_major;     // 偏移 0x00: 协议主版本 (固定为 2)
+    uint8_t  proto_ver_minor;     // 偏移 0x01: 协议次版本 (固定为 0)
+    uint8_t  firmware_major;      // 偏移 0x02: 固件主版本号
+    uint8_t  firmware_minor;      // 偏移 0x03: 固件次版本号
+    uint32_t boot_id;             // 偏移 0x04: 启动会话代次标识 (Session Epoch, Little-Endian)
+    uint32_t git_commit_short;    // 偏移 0x08: Git Commit 缩写哈希整数 (Little-Endian)
+    uint32_t capability_flags;    // 偏移 0x0C: 节点能力集位图 (Little-Endian)
+};
+```
+
+- **逐字节偏移映射表**:
+  | 偏移 (Offset) | 字段名称 | 宽度 | 类型 | 说明与合法性约束 |
+  | :--- | :--- | :--- | :--- | :--- |
+  | `0x00` | `proto_ver_major` | 1 字节 | `uint8_t` | 协议主版本，必须为 `2` |
+  | `0x01` | `proto_ver_minor` | 1 字节 | `uint8_t` | 协议次版本，必须为 `0` |
+  | `0x02` | `firmware_major` | 1 字节 | `uint8_t` | 固件主版本号 (例如 `1`) |
+  | `0x03` | `firmware_minor` | 1 字节 | `uint8_t` | 固件次版本号 (例如 `0`) |
+  | `0x04..0x07` | `boot_id` | 4 字节 | `uint32_t` | 启动代次 (Session Epoch)，重启后变更 |
+  | `0x08..0x0B` | `git_commit_short`| 4 字节 | `uint32_t` | 编译版本 Commit Hash 前 4 字节 |
+  | `0x0C..0x0F` | `capability_flags`| 4 字节 | `uint32_t` | 节点能力位图 (Bit0=运控, Bit1=温控, Bit2=MMU...) |
+
+- **物理总长**: 12B 头 + 16B 载荷 + 2B CRC = **30 字节**。
+- **预期应答**: 终端应答报文，无后续响应。
+
+### 3.3 `CMD_PING` (操作码 `0x03` - 链路心跳与时延测量)
+
+- **传输方向**: 双向 (AP $\to$ MC, AP $\to$ TH 等)
+- **业务语义**: 测量通信往返时延 (RTT)，探测端到端链路活跃状态与节点存活。
+- **帧头约束**:
+  - `flags`: 必须置位 `WANTS_ACK (0x01)`，叠加版本位 `0x04`，发送时 `flags = 0x05`
+  - `cmd_id`: `0x03`
+  - `seq`: 发送端自增消耗 `tx_seq`
+  - `payload_len`: 必须固定为 `0x0004` ($L = 4$)
+- **载荷定义 (固定 4 字节)**:
+
+```c
+struct __attribute__((packed)) minimc_payload_ping {
+    uint32_t t_originate_ms;      // 偏移 0x00: 发送端发起毫秒时间戳 (Little-Endian)
+};
+```
+
+- **逐字节偏移映射表**:
+  | 偏移 (Offset) | 字段名称 | 宽度 | 类型 | 说明与合法性约束 |
+  | :--- | :--- | :--- | :--- | :--- |
+  | `0x00..0x03` | `t_originate_ms` | 4 字节 | `uint32_t` | 发送端发起毫秒时间戳 (Little-Endian) |
+
+- **物理总长**: 12B 头 + 4B 载荷 + 2B CRC = **18 字节**。
+- **预期应答**: 对端收到后必须回送 `CMD_PONG` (`0x04`)。
+
+### 3.4 `CMD_PONG` (操作码 `0x04` - 心跳应答与信用同步)
+
+- **传输方向**: 双向响应报文 (作为 `CMD_PING` 的对应响应)
+- **业务语义**: 原样回显发起时间戳、填入本端接收时间戳，并同步回送运控与底层 FIFO 信用点。
+- **帧头约束**:
+  - `flags`: 必须置位 `IS_RESPONSE (0x02)`，`WANTS_ACK = 0`，叠加版本位 `0x04`，发送时 `flags = 0x06`
+  - `cmd_id`: `0x04`
+  - `seq`: **严格回显对应 `PING` 原请求的 `seq`**，不消耗独立请求流水号
+  - `payload_len`: 必须固定为 `0x000C` ($L = 12$)
+- **载荷定义 (固定 12 字节，内嵌信用字段，天然 4 字节自然对齐)**:
+
+```c
+struct __attribute__((packed)) minimc_payload_pong {
+    uint32_t t_originate_ms;      // 偏移 0x00: 原样回显发送端时间戳 (Little-Endian)
+    uint32_t t_receive_ms;        // 偏移 0x04: 接收端响应生成时间戳 (Little-Endian)
+    uint8_t  planner_buf_free;    // 偏移 0x08: Marlin 运控规划器空闲槽位 (0~32)
+    uint8_t  rx_fifo_free_units;  // 偏移 0x09: 串口底层接收缓冲空闲量 (以 64B 为单位)
+    uint16_t reserved;            // 偏移 0x0A: 对齐填充，发送端置 0，接收端断言 0 (Little-Endian)
+};
+```
+
+- **逐字节偏移映射表**:
+  | 偏移 (Offset) | 字段名称 | 宽度 | 类型 | 说明与合法性约束 |
+  | :--- | :--- | :--- | :--- | :--- |
+  | `0x00..0x03` | `t_originate_ms` | 4 字节 | `uint32_t` | 原样回显发送端时间戳 (Little-Endian) |
+  | `0x04..0x07` | `t_receive_ms` | 4 字节 | `uint32_t` | 响应端时间戳 (Little-Endian) |
+  | `0x08` | `planner_buf_free` | 1 字节 | `uint8_t` | Marlin 规划器空闲块 (0~32) |
+  | `0x09` | `rx_fifo_free_units`| 1 字节 | `uint8_t` | 接收缓冲区空闲量 (单位: 64 字节) |
+  | `0x0A..0x0B` | `reserved` | 2 字节 | `uint16_t` | 对齐填充，发送端置 0，接收端必须为 0 |
+
+- **物理总长**: 12B 头 + 12B 载荷 + 2B CRC = **26 字节**。
+- **预期应答**: 终端应答报文，无后续响应。
+
+---
+
+## 4. 关键字段语义与系统用途规约 (Key Field Semantics)
+
+### 4.1 `boot_id` 用途规约 (Session Epoch)
+
+1. **唯一性与生成**:
+   - 节点每次冷启动或软复位时，必须重新生成一个 32-bit `boot_id`（由硬件真随机数发生器或单调累加持久化寄存器提供）。
+2. **会话同步契约**:
+   - 上位机通过下发 `CMD_GET_VERSION` 获取对端 `boot_id`，并记录在对应 Peer 的 `session_epoch` 中。
+3. **重启隔离与清零机制 (Reboot Isolation)**:
+   - 若通信过程中收到的 `CMD_VERSION_REPORT` 中的 `boot_id` 与本端此前记录的 `session_epoch` 不一致，表明对端发生了非预期重启；
+   - 本端必须立即触发**会话重置**：清空与该节点相关的所有未决可靠请求、清除上一事务应答缓存，将流水号序列重置为初始状态重新建立会话。
+
+### 4.2 `seq` 用途规约 (Sequence Number)
+
+1. **模 65536 单调自增**:
+   - 请求方发起的可靠请求 (`WANTS_ACK=1, IS_RESPONSE=0`) 严格按照 16-bit 模 65536 单调自增消耗本端 `tx_seq`。
+2. **停等控制 (Stop-and-Wait)**:
+   - 首版协议遵循单在途事务模型（In-Flight Limit = 1）。未收到对端针对当前 `seq` 的响应报文前，严禁发起同一 Peer 的下一个可靠请求。
+3. **响应帧严格回显**:
+   - 响应报文 (`IS_RESPONSE=1`) 必须回显原请求的序列号，即 `resp.seq = req.seq`，用于发送端事务匹配；
+   - 响应报文不消耗独立的请求序列号。
+4. **防重与幂等处理**:
+   - 接收端通过无符号 16 位模减运算 $\text{diff} = (\text{uint16\_t})(seq_{\text{recv}} - seq_{\text{expected}})$：
+     - $\text{diff} == 0$: 预期有序新请求，处理并递增 `rx_expected_seq`；
+     - $1 \le \text{diff} \le 32767$: 超前乱序，丢弃并回发 `MINIMC_ERR_SEQ_OUT_OF_WINDOW`；
+     - $\text{diff} == 32768$: 半空间歧义帧，丢弃并回送 `MINIMC_ERR_SEQ_AMBIGUOUS`；
+     - $32769 \le \text{diff} \le 65535$: 历史重发请求，命中缓存直接重发响应，未命中回送 `MINIMC_ERR_STALE_EXPIRED`。
+
+---
+
+## 5. 黄金测试向量映射与校验
+
+引自原稿 §7 及 `V2-P01A` 契约，本契约命令涉及以下两个完整测试向量：
+
+### 5.1 V01: `CMD_GET_VERSION` 空载请求
+- **物理 Hex (14 字节)**:
+  ```text
+  55 AA 01 02 05 01 04 00 00 00 00 00 F9 1E
+  ```
+- **字段语义与断言**:
+  - `SOF = 0x55 0xAA`
+  - `SRC = 0x01 (AP)`, `DST = 0x02 (MC)`
+  - `Flags = 0x05 (WANTS_ACK | PROTO_VERSION_2)`
+  - `Cmd ID = 0x01 (CMD_GET_VERSION)`
+  - `Hop = 0x04`, `Route = 0x00`
+  - `Seq = 0x0000`
+  - `Payload Len = 0x0000` ($L = 0$)
+  - `CRC16 = 0x1EF9` (小端 `F9 1E` 先发低字节)
+
+### 5.2 V02 入站: `CMD_PING` 请求
+- **物理 Hex (18 字节)**:
+  ```text
+  55 AA 01 03 05 03 04 00 01 00 04 00 78 56 34 12 66 B0
+  ```
+- **字段语义与断言**:
+  - `SOF = 0x55 0xAA`
+  - `SRC = 0x01 (AP)`, `DST = 0x03 (SCM_TH)`
+  - `Flags = 0x05 (WANTS_ACK | PROTO_VERSION_2)`
+  - `Cmd ID = 0x03 (CMD_PING)`
+  - `Hop = 0x04`, `Route = 0x00`
+  - `Seq = 0x0001`

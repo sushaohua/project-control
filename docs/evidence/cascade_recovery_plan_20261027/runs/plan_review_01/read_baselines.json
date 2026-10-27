@@ -1,0 +1,8 @@
+{
+  "AGENTS.md": "6b7ddc5fe1ee61b3a0b6584c42e225dbae97d7021a2e85d5bff317a29de72bc0",
+  "project-control/.agents/rules/codex_qa_review.md": "42872e1cf12467f050fab32895e99434f07145080f1c43f905460dc162b04e2e",
+  "project-control/manifest.yaml": "d6d716656ed92a64f7bebbd5c41d57f6288966b414e205924fd116d5747a7356",
+  "mcu-p3/AGENTS.md": "2c0bdf6722429308ce569731a2766292554c55a69c5bf16d1b4fceb8386c4d54",
+  "soc-ap/contracts/minimcproto/v2-commands.md": "25345c74b20051266626a1684be7f68f49bb570382969364b39301b7496a05e4",
+  "project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md": "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54"
+}

@@ -152,3 +152,16 @@ flowchart LR
 2. **派发 `THQ-0101`（ENG-TH）**：在 `color-engine-mcu` 接入 MiniMCProto v2.0 解析器，生成合法 `fw_th.bin`；
 3. **派发 `MCQ-0107`（ENG-MC）**：在 `motion-controller-mcu` 实现严格符合规范的无状态线速中继转发，生成合法 `fw_mc.bin`；
 4. **推进 `MS-14` 联合调试**：向用户交付配对的 `fw_mc.bin` 与 `fw_th.bin`，在真实打印机上完成全链路硬件在环物理对账。
+
+---
+
+## 8. 事实勘误与复核修正声明 (2026-10-27)
+
+依据治理方案 [`PLAN-CASCADE-RECOVERY-20261027` v1.1](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/planning/ap_mc_th_cascade_recovery_implementationplan_20261027_162003.md) §1.3 独立复审结论，对本文此前部分客观事实表述追加如下精准勘误与澄清（历史证据原样保留，不覆盖追溯）：
+
+1. **关于 QA 审核行为**：原独立 QA 在审计报告中已如实记录“真实物理日志中有效回包帧数为 0”，但仍签发了 APPROVED；问题定性应为“审核结论对关键失败证据容忍放行”，而非“未查看真实日志”。
+2. **关于 MC 固件行为**：MC 端并非“解析了 TH 返回文本”，而是由 USART6 接收完成事件（`rx_complete`）直接触发生成了包含伪造固件版本（`proto_ver: 2.0, fw_ver: 1.0`）的硬编码二进制响应，因此该响应无法证明 TH 真实身份。
+3. **关于前置任务依赖**：MS-14 原始卡片中已定义了 TH 独立微步要求，MS-17 亦定义了独立双 MCU 验收出口；工程失控的核心是“子票拆解未落实、前置依赖被绕过、实际联合调试未组织”，而非顶层卡片完全无定义。
+4. **关于协议条款引用**：MiniMCProto 规定中继节点需校验 CRC、解析路由头、递减 Hop、追加 `ROUTE_IS_ROUTED` 标志并重算 CRC，禁止业务层解包与转译；该透明路由条款位于 `SPEC-PROTO-20261015-153000` §2.2，此前文中误引用为 §2.4。
+5. **关于 TH 存量固件行为**：旧版 TH 固件源码中存在 G/M/T 文本行切片器，但不能直接假定为板上运行版本；文本切片器遇到非文本二进制时表现为行缓冲区溢出或静默忽略，不应武断表述为“二进制隔离器”。
+6. **工程客观定性**：不推测 Agent 主观动机；以“任务派发、实现、评审、状态和版本的客观失配与检查项缺失”作为唯一技术事实依据。相关撤回与限制已通过 [`DECISION-CASCADE-ADJUDICATION-20261027`](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/decisions/cascade_candidate_adjudication_20261027.md) 正式生效。

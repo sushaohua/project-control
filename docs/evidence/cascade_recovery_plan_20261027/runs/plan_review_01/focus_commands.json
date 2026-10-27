@@ -1,0 +1,85 @@
+[
+  {
+    "command": [
+      "git",
+      "-C",
+      "test_harness",
+      "show",
+      "--stat",
+      "--format=fuller",
+      "1d0861f199b92f9eac7c2103dfe80b207dbe4838"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "focus_0.txt"
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "test_harness",
+      "diff",
+      "--name-only",
+      "5a2ebe49e26ffb76a55ab74de652142ce9961de7",
+      "1d0861f199b92f9eac7c2103dfe80b207dbe4838"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "focus_1.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "140,350p",
+      "mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "focus_2.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "470,540p",
+      "mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "focus_3.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "470,660p",
+      "mcu-p3/motion-controller-mcu/project/src/wk_usart.c"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "focus_4.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "210,300p",
+      "mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "focus_5.txt"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "20,70p",
+      "mcu-p3/motion-controller-mcu/project/src/at32f435_437_wk_config.c"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "focus_6.txt"
+  }
+]

@@ -1,0 +1,126 @@
+[
+  {
+    "command": [
+      "python3",
+      "-B",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/task_template_alignment_20261027/runs/review_01/independent_checks.py"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+    "started": "2026-10-27T09:12:56.653657+00:00",
+    "ended": "2026-10-27T09:12:56.691862+00:00",
+    "exit_code": 0,
+    "stdout_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_01.stdout.log",
+    "stderr_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_01.stderr.log",
+    "stdout_sha256": "02e751a0c165cbb7b63df88451ea1792bc0eacbfc07837c927eaf69264b4f054",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "git",
+      "-c",
+      "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol",
+      "diff",
+      "--check",
+      "--",
+      ".agents/rules/templates/任务卡模板.md",
+      ".agents/rules/templates/角色任务提示词.md",
+      "docs/guides/templates/task_run_record.md",
+      ".agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+      ".agents/rules/codex_qa_review.md",
+      "docs/guides/minimc_v2_task_execution.md",
+      ".agents/rules/templates/QA审查报告模板.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+    "started": "2026-10-27T09:12:56.692020+00:00",
+    "ended": "2026-10-27T09:12:56.695239+00:00",
+    "exit_code": 0,
+    "stdout_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_02.stdout.log",
+    "stderr_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_02.stderr.log",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "cat",
+      "../AGENTS.md",
+      "manifest.yaml",
+      ".agents/rules/codex_qa_review.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+    "started": "2026-10-27T09:12:56.695363+00:00",
+    "ended": "2026-10-27T09:12:56.696189+00:00",
+    "exit_code": 0,
+    "stdout_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_03.stdout.log",
+    "stderr_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_03.stderr.log",
+    "stdout_sha256": "6768eecd93a116ee34830a642f23b083d963b7e7af649535be2373239327f5ad",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "cat",
+      ".agents/rules/templates/任务卡模板.md",
+      ".agents/rules/templates/角色任务提示词.md",
+      "docs/guides/templates/task_run_record.md",
+      ".agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+      ".agents/rules/codex_qa_review.md",
+      "docs/guides/minimc_v2_task_execution.md",
+      ".agents/rules/templates/QA审查报告模板.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+    "started": "2026-10-27T09:12:56.696320+00:00",
+    "ended": "2026-10-27T09:12:56.697112+00:00",
+    "exit_code": 0,
+    "stdout_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_04.stdout.log",
+    "stderr_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_04.stderr.log",
+    "stdout_sha256": "baece0e638ffaf76b88a29b25ba7e78661c99fc1d221225aaef5c47c18c04e1f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "68,96p",
+      "tools/check_task_graph.py"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+    "started": "2026-10-27T09:12:56.697257+00:00",
+    "ended": "2026-10-27T09:12:56.698860+00:00",
+    "exit_code": 0,
+    "stdout_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_05.stdout.log",
+    "stderr_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_05.stderr.log",
+    "stdout_sha256": "176ae5cece73c631f5b11b4facb089c042e15fdc7801d29e1be49a00b927024d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "80,119p",
+      ".agents/rules/04_公共看板与读写协议.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+    "started": "2026-10-27T09:12:56.698977+00:00",
+    "ended": "2026-10-27T09:12:56.699911+00:00",
+    "exit_code": 0,
+    "stdout_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_06.stdout.log",
+    "stderr_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_06.stderr.log",
+    "stdout_sha256": "4f36c23f24cabaceb250f26d7c50cc2b5ce0c621fbfc5396b8b7c26bdb02facd",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "sed",
+      "-n",
+      "124,155p;176,181p",
+      "docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+    "started": "2026-10-27T09:12:56.700029+00:00",
+    "ended": "2026-10-27T09:12:56.700968+00:00",
+    "exit_code": 0,
+    "stdout_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_07.stdout.log",
+    "stderr_path": "docs/evidence/task_template_alignment_20261027/runs/review_01/command_07.stderr.log",
+    "stdout_sha256": "ac64ff9db09f385487d8ce26ad15567ee24e1a8cc3fb784e25678d9249620089",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

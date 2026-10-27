@@ -1,0 +1,9 @@
+{
+  "candidate_sha256": "aca5b186e073d9117cbba265be8231c0bb11223e293cfdafbccc096352eb6a5d",
+  "prior_report_sha256": "a7be7a8be8f447d98fc1e66ace83402c07f9c18e3edf2115ff126264dc185da3",
+  "snapshot_mtime_ns": 1793089645157975892,
+  "software_repro_output_matches_archived": true,
+  "copies_checked": 15,
+  "software_repro_only": true,
+  "hardware_operations": false
+}

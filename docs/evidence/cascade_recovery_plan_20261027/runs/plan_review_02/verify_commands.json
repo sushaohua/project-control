@@ -1,0 +1,73 @@
+[
+  {
+    "command": [
+      "python3",
+      "-B",
+      "project-control/docs/evidence/cascade_recovery_plan_20261027/hil_tools/cascade_new_hil_tools_repro_20261027.py"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "verify_0.txt"
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "test_harness",
+      "log",
+      "-2",
+      "--format=%H %cI %s"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "verify_1.txt"
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "test_harness",
+      "diff",
+      "--name-only",
+      "5a2ebe49e26ffb76a55ab74de652142ce9961de7",
+      "1d0861f199b92f9eac7c2103dfe80b207dbe4838"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "verify_2.txt"
+  },
+  {
+    "command": [
+      "git",
+      "-C",
+      "test_harness",
+      "status",
+      "--short",
+      "--branch"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "verify_3.txt"
+  },
+  {
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "log",
+      "-2",
+      "--format=%H %cI %s"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "verify_4.txt"
+  },
+  {
+    "command": [
+      "cat",
+      "workspace.json"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "verify_5.txt"
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "workspace_project": {
+    "namespace": "sushaohua",
+    "path": "ai-soc-workspace",
+    "branch": "main"
+  },
+  "gitlab_url": "http://192.168.77.113",
+  "repositories": [
+    {
+      "path": "project-control",
+      "branch": "main",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "commit": "8a042927ea0c3b58ea26d3a7b197f5727a1b42fb"
+    },
+    {
+      "path": "soc-ap",
+      "branch": "main",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+      "commit": "8d6c446cd3b0bac57054723ba7da9cd797ab4131"
+    },
+    {
+      "path": "mcu-p3",
+      "branch": "feat/soc-debug",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+      "commit": "a679133204ecbb81ad48694f5372c125db2e749f"
+    },
+    {
+      "path": "test_harness",
+      "branch": "main",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+      "commit": "1d0861f199b92f9eac7c2103dfe80b207dbe4838"
+    }
+  ]
+}
