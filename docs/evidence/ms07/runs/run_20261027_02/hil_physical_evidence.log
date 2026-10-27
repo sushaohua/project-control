@@ -1,0 +1,55 @@
+=== HIL Physical Hardware-in-the-Loop Test Log (run_20261027_02) ===
+Date: 2026-10-27T13:30:44+08:00
+Host Environment: VMware Ubuntu Guest (192.168.77.134)
+Device: /dev/ttyUSB0 (QinHeng Electronics CH340 serial converter, 115200 8N1)
+Target MCU: Physical AT32F435VGT7 (Motion Controller)
+Firmware: fw_mc.bin with MCQ-0105 MiniMCProto v2.0 (mcu-p3 commit 23e8d5c8)
+Flasher SOP: U-disk cold-boot Bootloader flash confirmed by user
+
+--- 1. Baseline Quiet Bus Check (1000ms read without TX) ---
+Read 0 bytes. DWIN DGUS screen temperature noise is 100% eliminated.
+
+--- 2. Single Query/Response Hex Trace ---
+TX (14 bytes): 55 AA 01 02 05 03 04 00 01 00 00 00 AE 08
+RX (18 bytes): 55 AA 02 01 06 03 04 00 01 00 04 00 02 00 01 09 16 2D
+Frame Dissection:
+  SOF: 0x55 0xAA
+  src_id: 0x02 (MC)
+  dst_id: 0x01 (AP)
+  flags: 0x06 (IS_RESPONSE | PROTO_V2)
+  cmd_id: 0x03 (CMD_VERSION_GET)
+  hop_limit: 0x04
+  route_ctrl: 0x00
+  seq: 0x0001 (little-endian: 01 00)
+  payload_len: 0x0004 (little-endian: 04 00)
+  payload: 02 00 01 09 (proto_ver=2.0, firmware_ver=1.9)
+  crc16: 0x2D16 (little-endian: 16 2D, CRC-16/CCITT-FALSE verified)
+
+--- 3. 10-Cycle Stability & RTT Measurement ---
+Cycle 1: RTT = 6.31 ms | RX Hex: 55aa0201060304000100040002000109162d
+Cycle 2: RTT = 6.80 ms | RX Hex: 55aa0201060304000100040002000109162d
+Cycle 3: RTT = 5.80 ms | RX Hex: 55aa0201060304000100040002000109162d
+Cycle 4: RTT = 5.52 ms | RX Hex: 55aa0201060304000100040002000109162d
+Cycle 5: RTT = 6.33 ms | RX Hex: 55aa0201060304000100040002000109162d
+Cycle 6: RTT = 7.18 ms | RX Hex: 55aa0201060304000100040002000109162d
+Cycle 7: RTT = 5.21 ms | RX Hex: 55aa0201060304000100040002000109162d
+Cycle 8: RTT = 5.41 ms | RX Hex: 55aa0201060304000100040002000109162d
+Cycle 9: RTT = 6.48 ms | RX Hex: 55aa0201060304000100040002000109162d
+Cycle 10: RTT = 6.35 ms | RX Hex: 55aa0201060304000100040002000109162d
+Summary:
+  Success Rate: 10/10 (100.0%)
+  Packet Loss: 0 / 10 (0.0%)
+  Min RTT: 5.21 ms
+  Max RTT: 7.18 ms
+  Average RTT: 6.14 ms
+
+--- 4. Official C++ Application Execution Output ---
+$ ./soc-ap --query-version --serial-port /dev/ttyUSB0
+soc-ap: executing version query on /dev/ttyUSB0 (baud=115200 8N1, timeout=2000ms)...
+TX Query Frame (14 bytes): 55 AA 01 02 05 03 04 00 01 00 00 00 AE 08 
+SUCCESS: Valid response frame received from MCU!
+  src_id: 0x2  dst_id: 0x1  cmd_id: 0x3  seq: 1  payload_len: 4  crc16: 0x2D16
+  Firmware Version Report:
+    proto_ver: 2.0
+    firmware_ver: 1.9
+Exit Code: 0
