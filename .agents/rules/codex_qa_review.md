@@ -3,7 +3,7 @@ title: 独立 QA 统一使用 Codex 的执行规则
 status: current-rule
 owner: COORD
 effective_date: 2026-10-26
-updated: '2026-10-27T17:16:02+08:00'
+updated: '2026-10-27T20:16:05+08:00'
 authorization: 用户本轮明确要求“把所有的qa都独立成codex审查”
 ---
 
@@ -23,11 +23,14 @@ authorization: 用户本轮明确要求“把所有的qa都独立成codex审查�
 
 每张适用任务卡引用 `qa_review_policy: project-control/.agents/rules/codex_qa_review.md`。Codex Reviewer 登记格式：
 
+默认模型统一为 `gpt-6-luna`，包括独立 QA、QA 作者产物的独立 ARCH 复核以及 QA Verifier。派单/启动独立 Codex 时显式使用该模型；任务卡记录计划模型，报告记录实际模型。只有 COORD 在任务卡 `model_policy.approved_overrides` 中登记角色、会话、实际模型、原因及批准证据后，才允许该任务临时覆盖默认值。该条约束项目任务调度，不代表已修改工作区外的用户级 Codex 配置。
+
 ```yaml
 review_assignments:
   reviewer_sessions:
   - role: QA # QA 作者产物的复核保留原 ARCH 岗位
     platform: codex
+    model: gpt-6-luna
     planned_session_alias: codex-qa-<task-id>-review
     session: null
     decision: null
@@ -37,7 +40,7 @@ review_assignments:
     report_sha256: null
 ```
 
-独立Verifier在`review_assignments`登记platform/计划别名；实际`verifier_session`落实后填写。提交时分别绑定`verifier_reviewed_task_revision`、`verifier_artifact_version`、`verifier_decision`、`verifier_evidence`、`verifier_report_sha256`。所有必需Reviewer逐项填写同等信息，单个报告不能默默覆盖其他岗位。
+独立Verifier在`review_assignments`登记platform/计划别名、`verifier_model: gpt-6-luna`和空的`verifier_actual_model`；实际`verifier_session`落实后填写。提交时分别绑定`verifier_reviewed_task_revision`、`verifier_artifact_version`、`verifier_decision`、`verifier_evidence`、`verifier_report_sha256`及实际模型。模型例外必须引用`model_policy.approved_overrides`中含原因和COORD批准证据的对应记录。所有必需Reviewer逐项填写同等信息，单个报告不能默默覆盖其他岗位。
 
 `planned_session_alias` 只是计划名称，不代表会话已创建或通过 Ready。尚未落实的实际 `session` 保持 null；COORD 实际安排独立 Codex 会话后，填写可定位的会话标识。用户已指定的 `codex-qa-session-01` 保留为 V2-P01C 的会话别名，不能据此宣称已经审核。通过 CLI 执行时，从真实运行事件记录 CLI 会话 ID 及其与别名的对应关系，不编造 ID。
 

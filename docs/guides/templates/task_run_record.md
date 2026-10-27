@@ -8,6 +8,8 @@ task_id: null
 task_revision: null
 actual_run_id: null
 actor_role: null
+actor_model: null # AI执行者实际模型；HUMAN填null；默认请求模型见任务卡，偏离须关联批准记录
+model_override_ref: null # 仅模型例外时引用任务卡model_policy.approved_overrides条目
 actor_session: null
 lease_id: null
 start_time: null # UTC或明确时区；不得猜秒数
@@ -35,7 +37,7 @@ failures_and_corrections: []
 actual_result: not-executed # not-executed / passed / failed；不是任务Done或QA决定
 unverified: []
 not_applicable: [] # 环节、理由和接受依据；不适用不填PASS
-independent_reviews: [] # 每项角色、实际会话、同一候选/revision、报告路径/SHA256/决定
+independent_reviews: [] # 每项角色、平台、实际模型/会话、同一候选/revision、报告路径/SHA256/决定、例外批准引用
 handoff:
   receiver_session: null
   acknowledgement_path: null

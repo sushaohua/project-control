@@ -2,7 +2,7 @@
 title: 独立 QA 与 QA 作者产物复核报告模板
 status: current-template
 template_version: '2026-10-27'
-updated: '2026-10-27T17:07:21+08:00'
+updated: '2026-10-27T20:16:05+08:00'
 ---
 
 # 独立审查报告模板
@@ -15,6 +15,9 @@ review_id: null
 review_status: pending # pending / completed；不是正式任务status
 reviewer_role: null # QA 或 QA作者产物的ARCH复核
 platform: codex
+requested_model: gpt-6-luna
+actual_model: null # 实际运行后填写；偏离默认须关联任务卡批准记录
+model_override_ref: null # 仅模型例外时，引用任务卡model_policy.approved_overrides条目
 planned_session_alias: null
 actual_session: null
 author_session: null
