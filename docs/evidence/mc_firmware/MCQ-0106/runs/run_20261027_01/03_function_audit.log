@@ -1,0 +1,23 @@
+=== Self-Developed Function Audit: MCQ-0106 (c_cpp_coding_standard.md) ===
+Standard 1: Function length <= 50 lines
+Standard 2: Parameter count <= 4 params
+------------------------------------------------------------------------------------------
+Function Signature                                                | Lines | Params | Result
+------------------------------------------------------------------------------------------
+uint16_t minimc_crc16(const uint8_t *data, uint16_t len)          | 24    | 2      | PASS  
+static void parser_reset(void)                                    | 6     | 0      | PASS  
+static bool is_header_valid(void)                                 | 24    | 0      | PASS  
+static void build_version_resp_header(uint8_t src_id, uint8_t cmd_id, uint16_t req_seq, uint8_t *buf) | 19    | 4      | PASS  
+static void build_version_resp_payload(uint8_t fw_minor, uint8_t *buf) | 15    | 2      | PASS  
+static void handle_mc_query(uint8_t cmd_id, uint16_t req_seq)     | 7     | 2      | PASS  
+static void handle_th_query(uint8_t cmd_id, uint16_t req_seq)     | 22    | 2      | PASS  
+static void handle_rx_frame(void)                                 | 25    | 0      | PASS  
+static void process_crc_and_dispatch(void)                        | 15    | 0      | PASS  
+static bool parse_sof_step(uint8_t byte)                          | 28    | 1      | PASS  
+static void parse_body_step(uint8_t byte)                         | 37    | 1      | PASS  
+static void parse_rx_byte(uint8_t byte)                           | 8     | 1      | PASS  
+void minimc_proto_process_rx(const uint8_t *data, uint16_t len)   | 11    | 2      | PASS  
+bool minimc_proto_send(const uint8_t *data, uint16_t len)         | 26    | 2      | PASS  
+void minimc_proto_init(void)                                      | 5     | 0      | PASS  
+------------------------------------------------------------------------------------------
+Audit Conclusion: 100% compliant with c_cpp_coding_standard.md

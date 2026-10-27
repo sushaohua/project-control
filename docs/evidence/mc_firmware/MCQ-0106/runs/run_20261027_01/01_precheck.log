@@ -1,0 +1,19 @@
+=== Precheck Environment & Git Repositories (MCQ-0106) ===
+2026-10-27T13:56:36+08:00
+--- mcu-p3 status ---
+On branch feat/soc-debug
+Your branch is ahead of 'origin/feat/soc-debug' by 2 commits.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+--- mcu-p3 HEAD ---
+a679133 feat(mc): implement TH proxy routing and version query forwarding via USART6
+23e8d5c feat(mc): implement MiniMCProto v2.0 on USART2 and bypass DWIN screen updates
+--- soc-ap status ---
+--- test_harness status ---
+?? static_checks/minimcproto/__pycache__/
+--- project-control status ---
+?? docs/evidence/mc_firmware/MCQ-0106/
+?? docs/guides/feishu_cli_howto.md
+?? docs/guides/feishu_cli_user_access_experience_20261026.md
+?? tools/__pycache__/
