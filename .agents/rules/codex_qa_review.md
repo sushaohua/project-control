@@ -38,7 +38,7 @@ review_assignments:
 
 `planned_session_alias` 只是计划名称，不代表会话已创建或通过 Ready。尚未落实的实际 `session` 保持 null；COORD 实际安排独立 Codex 会话后，填写可定位的会话标识。用户已指定的 `codex-qa-session-01` 保留为 V2-P01C 的会话别名，不能据此宣称已经审核。通过 CLI 执行时，从真实运行事件记录 CLI 会话 ID 及其与别名的对应关系，不编造 ID。
 
-## 硬件在环（HIL）零虚拟化红线与防瞒报审计铁律（HW-G5）
+## 硬件在环（HIL）零虚拟化与端到端协议原生审计铁律（HW-G5 / HW-G6）
 
 1. **真实硬件回环绝对性（Zero Virtualization in HIL）**：
    凡任务定义中包含 `required_evidence_level: hardware-verified`、`verification_environment` 涉及真实物理板卡（如 `real-mcu-hil`、`/dev/ttyUSB0`）的，验收必须严格执行物理在环测试。**严禁以伪终端（PTY）、本地回环（Loopback）、Socket 模拟器或软件 Mock 代替物理单片机应答**。
@@ -48,6 +48,9 @@ review_assignments:
    HIL 验收证据必须包含物理串口设备路径、波特率设置、精确到毫秒的真实时戳，以及原始的双向收发十六进制报文（Raw Hex TX 与 Raw Hex RX 逐帧对账记录）。缺少物理硬件原始应答对账证据的，COORD 严禁采纳。
 4. **反作弊与虚假结论作废**：
    QA 独立评审员严禁“替受测方写测试桩促成通过”。若发现任何使用 PTY/Mock 替身绕过物理硬件验证的行为，一律判定为严重违规，其签发的 `APPROVED` 结论自始无效，任务状态强制回退至 `Blocked / Rejected`。
+
+5. **端到端协议原生一致性（严禁转译伪造与拆单遗漏, HW-G6）**：
+   凡规范定义为原生透明路由的跨节点链路，**中间路由节点严禁解包或将协议私自降级为旧文本协议（如 G-code），严禁在中间节点伪造下游应答**。跨物理节点工程必须强制采用“ARCH 契约冻结 → 双端并行实施 → 联合调试验收”三段式拆解；若发现仅由单板工程师单边兜底造假或未配对交付双固件（`fw_mc.bin` + `fw_th.bin`）的，QA 必须直接判定为 `REJECTED`。
 
 ## 执行与签署
 
