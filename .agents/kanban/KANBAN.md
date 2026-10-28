@@ -24,7 +24,7 @@ execution_mode: 按卡落实实际会话与授权；未派单不表示运行
 | MS里程碑 | 22 | Backlog 21、Done 1 |
 | PL规划 | 2 | Backlog 2 |
 | V2有效微步 | 20 | Done 20 |
-| CR治理/交付 | 15 | Backlog 4、Done 11 |
+| CR治理/交付 | 15 | Backlog 3、Done 12 |
 | MCQ微步 | 2 | Done 2 |
 
 V2 原始 25 张经 6 张归档、1 张收敛票后为 20 张有效卡，全部标记 Done。MCQ-0106 的旧级联候选已撤回；MS-07 的历史 Done 仅保留已裁决范围。CR-02/02Q/02T/03/04/05/06 的当前消费关系须先由 CR-12 逐产物对账，不能用方案 review-02 或 `sha256:verified` 认作各端实现接受。
@@ -39,7 +39,7 @@ CR-12 → CR-08 → CR-09 → CR-10 → CR-11。CR-07 升级专项按部署路�
 | [CR-07](microtasks/cascade_recovery/CR-07.md) | ENG-MC；按需 ENG-TH | 升级容量/ACK/文件预检及隔离治理 |
 | [CR-08](microtasks/cascade_recovery/CR-08.md) | INTEGRATOR；ARCH/端 Owner/QA | AP/MC/TH 准确候选清单装配与部署 SOP 发布闭环（Done） |
 | [CR-09](microtasks/cascade_recovery/CR-09.md) | INTEGRATOR 主持，单一操作者 | 物理台架三端工程联调通过，真实在环双跳穿透成功与时延度量闭环（Done） |
-| [CR-10](microtasks/cascade_recovery/CR-10.md) | 独立 Codex QA，非作者复核报告 | 真实 HIL 正常、失联及恢复复验 |
+| [CR-10](microtasks/cascade_recovery/CR-10.md) | 独立 Codex QA，非作者复核报告 | 真实 HIL 正常、失联及恢复复验，40轮实测 0 丢包闭环（Done） |
 | [CR-11](microtasks/cascade_recovery/CR-11.md) | COORD＋INTEGRATOR | 按原始任务范围接受、列剩余项、交接与版本锁定 |
 
 最多两张实现卡并行，评审按资源安排；不为所有长期角色永久启动 Agent。真实 UART/探针/台架只登记一个实际操作者与占用窗口。[联合调试约定](../../docs/operations/ap_mc_th_joint_debug.md)是计划，未执行动作不计为证据。
