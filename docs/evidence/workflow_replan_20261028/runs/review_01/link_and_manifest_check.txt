@@ -1,0 +1,8 @@
+manifest_files: 34
+manifest_missing_or_hash_mismatch: 0
+local_markdown_links_checked: 88
+missing_or_escaping_links: 4
+LINK | project-control/.agents/kanban/microtasks/mc_firmware/MCQ-0106.md | ../../../docs/decisions/cascade_candidate_adjudication_20261027.md | missing
+LINK | project-control/.agents/kanban/milestones/marlin_ms07_20261007_214108.md | ../microtasks/minimc_v2/V2-P06C.md | missing
+LINK | project-control/docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md | ../../../.agents/kanban/microtasks/minimc_v2/V2-P06C.md | missing
+LINK | project-control/docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md | ../../../.agents/kanban/microtasks/minimc_v2/V2-P06B.md | missing

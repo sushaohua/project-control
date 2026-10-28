@@ -1,0 +1,6 @@
+v3_manifest_sha256 ee83351d6a4e9f569a78c896e21a189ad88d86f620b82bf37d723d50fa508c08
+file_counts 34 34 added [] removed []
+changed_paths ['README.md']
+unchanged_33_hash_errors []
+README_sha256_matches_v3 True 613b2f9628b35ab1d7f9222e104ba7195d888cb5c1244d827aba0d270f05ed1a
+README_local_relative_links 25 missing []

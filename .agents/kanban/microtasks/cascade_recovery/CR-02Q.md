@@ -107,6 +107,14 @@ verification:
   - CR-02Q 正向验收条件达成
   negative_cases:
   - CR-02Q 异常边界防御通过
+evidence_updates:
+- date: '2026-10-28'
+  scope: current-candidate-consumption
+  reason: 历史Done与当前可消费能力分开；已有撤回/限制继续有效，CR-12核准确版本与接受范围
+  reconciliation_task: CR-12
+current_consumption_hold: true
+current_consumption_recovery: CR-12逐产物及用例核准可复用范围；MS受限及MCQ-0106已撤回记录继续有效
+
 ---
 
 # CR-02Q 独立黄金预期与采集器判据

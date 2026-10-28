@@ -1,0 +1,7 @@
+{
+  "candidate": "candidate_manifest_v2.json",
+  "checked_files": 34,
+  "yaml_parse": "passed",
+  "missing_relative_links": [],
+  "source_or_hardware_tests_run": false
+}

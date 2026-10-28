@@ -1,0 +1,147 @@
+{
+  "scope": "documentation replan only; excludes pre-existing baseline synchronization and other user work",
+  "author": "Codex /root current main conversation",
+  "actual_model": "gpt-6.1-sol",
+  "model_override_reason": "COORD approves current-session orchestration/planning override; independent QA remains gpt-6-luna",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "613b2f9628b35ab1d7f9222e104ba7195d888cb5c1244d827aba0d270f05ed1a"
+    },
+    {
+      "path": "project-control/.agents/kanban/KANBAN.md",
+      "sha256": "f92d5375a2c4d98b8e9e5c893997152d966b09eef8575e7e98779e931dc26e22"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-02.md",
+      "sha256": "bc2decedbe61df81a548b367a0097b07257cdd25dfec8bc28e050b381ede412d"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-02Q.md",
+      "sha256": "323448f39e6a98fbb57e91e31ecbd2803f88c86561f1a5becc39c07fe34c5a6d"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-02T.md",
+      "sha256": "e7cbaf43524109f9089d0c31a665edb481ebf0852c556e1e6b5fa86e09dbbd04"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-03.md",
+      "sha256": "5c78d98806a67d4d38904eb36b36dd1c4559f0202eeb9e310e55ab770f22903f"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-04.md",
+      "sha256": "1f03860a320a0ccd2e23d98a3679358f9406ec82de473ea06d7e5f8c7110fedb"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-05.md",
+      "sha256": "1c483212fc47c696e2f3a7d901b1a2a22b8f10f3630267775961b41c62ef5482"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-06.md",
+      "sha256": "9e589a7baf794276449596a12427fd7e6cb2662ef95a0160d45233ad9a4efa82"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-07.md",
+      "sha256": "4ba975ccac38058a3554b842d88749cc03c7661e356041ae451c19465c05ae4f"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-08.md",
+      "sha256": "eb563b51e987781e8c7245f94f8531fd4b0da41a7cc35bad89c0f7175513beeb"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-09.md",
+      "sha256": "a9e02ab27e868abe5c1fdbe79e94cc8290f0eb87dbdf93dcf9eb6d9e09951976"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-10.md",
+      "sha256": "4175295d11b512e437a1cc13af8992cce380831ec5bf898d31abefacb5160b32"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-11.md",
+      "sha256": "45fffdc2f9f09a8ea1ff37a8cccf5967d08e647c3d5f7843b56d2920519a8c6c"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-12.md",
+      "sha256": "c2b65d60f5a3504bbd4acae3363e2a8a03307df4572f4f84d0ad2188ecaa400e"
+    },
+    {
+      "path": "project-control/.agents/kanban/microtasks/mc_firmware/MCQ-0106.md",
+      "sha256": "adf30755336309f9aa7f481cf15da7d4a5a1204db7e7e759f051c7740654a7bf"
+    },
+    {
+      "path": "project-control/.agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+      "sha256": "5845138996b182b26eac2744eba0dd941a065f1066f7b15b49a6296a533d6f1c"
+    },
+    {
+      "path": "project-control/.agents/kanban/milestones/marlin_ms14_20261007_214108.md",
+      "sha256": "9b9eb19cfc3457e4a71b7637edebf15d3bdc86b2466256c20fc1f424d4cad105"
+    },
+    {
+      "path": "project-control/.agents/kanban/milestones/marlin_ms15_20261007_214108.md",
+      "sha256": "e67ef438b066b8f8551d13d6e44fc5bef87d3cbcfc26a4d78e5631b008120553"
+    },
+    {
+      "path": "project-control/.agents/kanban/milestones/marlin_ms16_20261007_214108.md",
+      "sha256": "5407ef6b74540f26e5f8e167ea0e46f5a51786c0412911b93a245d972456ee62"
+    },
+    {
+      "path": "project-control/.agents/kanban/milestones/marlin_ms17_20261007_214108.md",
+      "sha256": "0c921767acb956dd8fe0441a5f389fd0aec84d9168a1eef5140f41a70c129a0b"
+    },
+    {
+      "path": "project-control/.agents/kanban/milestones/marlin_ms21_20261008_083854.md",
+      "sha256": "2f8cc504d6b5b019e7376b8cde4054dddf8bdf0bd5d2d282ea4ab7c6eb701dfe"
+    },
+    {
+      "path": "project-control/.agents/rules/02_模块与Agent职责.md",
+      "sha256": "911d90ddbe9adc72552301562dd969ac3c98736cb69fd961b97b0fc256dcdc59"
+    },
+    {
+      "path": "project-control/.agents/rules/04_公共看板与读写协议.md",
+      "sha256": "1a707063e04e79381a37fdd20f3faf2cb5c639d4239b419e94f533e0616eb095"
+    },
+    {
+      "path": "project-control/.agents/rules/templates/角色任务提示词.md",
+      "sha256": "2e1ea255eace484e0e12b320b57cf4b406bef09668ed0bbc93ca14520bcc8890"
+    },
+    {
+      "path": "project-control/docs/guides/minimc_v2_task_execution.md",
+      "sha256": "ff328262f2f1dbe69ab473e39018befbeea0d2ee5e10226f48519ea17ee743a4"
+    },
+    {
+      "path": "project-control/docs/operations/ap_mc_th_joint_debug.md",
+      "sha256": "291dc303215a9cf76890620536c668423e371150f6db4a57710f1de3d0073af0"
+    },
+    {
+      "path": "project-control/docs/planning/ap_mc_th_cascade_recovery_implementationplan_20261027_162003.md",
+      "sha256": "fe3c3029e8729e435e7cd3c17dcf72b9a4c66e2af519652e3b1f5b6bfe7341c7"
+    },
+    {
+      "path": "project-control/docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+      "sha256": "fd94b496c697073127f81cf083285b91d99d558c6f5579e709b4ca7ced3162bc"
+    },
+    {
+      "path": "project-control/docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+      "sha256": "57792bb0494e4f82311a8d181375b4e417564103f5adad4171b153f5fc585794"
+    },
+    {
+      "path": "project-control/docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md",
+      "sha256": "a72dc7b139a2cb9b78fad5d7348d9a0b5e14c2a7104f0a77d789793925505e4a"
+    },
+    {
+      "path": "project-control/docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+      "sha256": "696a1658ecab57d019efa2a253acdbfedd88d1be837af6a6f76f2bd518ddaa34"
+    },
+    {
+      "path": "project-control/docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md",
+      "sha256": "b31c3a0e3a6590c9385269e26ef74cb4e1083c8d3f83effa7fa7e6dfb32cf63e"
+    },
+    {
+      "path": "project-control/docs/planning/workflow_replan_20261028.md",
+      "sha256": "618653ec5ee1d9e3650db8c8eb214a64d84110ff3dd752ec0ec82088fe7accbc"
+    }
+  ],
+  "revision": 3,
+  "supersedes": "candidate_manifest_v2.json",
+  "changes": "v2 fixes preserved; README current-state paragraphs now distinguish dated 2026-10-20 inputs from later implementation records and CR-12 acceptance reconciliation"
+}

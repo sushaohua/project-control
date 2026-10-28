@@ -1,0 +1,974 @@
+{
+  "captured_at": "2026-10-28T02:46:16.443299+00:00",
+  "author": "Codex /root current conversation",
+  "scope": "documentation and scheduling review; no implementation/hardware revalidation",
+  "repositories": {
+    "project-control": {
+      "head": "d2d175fd6773c49e9a3f9c3c5812660e245c1bea",
+      "status": "M \"docs/baseline/B0_\\346\\226\\271\\346\\241\\210\\345\\237\\272\\347\\272\\277.md\"\n M docs/planning/product/product_feature_catalog_baseline.md\n M docs/planning/product/product_pl01_20261008_083854.md\n M docs/planning/product/product_pl02_20261008_083854.md\n M \"docs/planning/work_packages/TASK-001_\\346\\224\\266\\346\\225\\233 FDM \\344\\272\\247\\345\\223\\201\\351\\234\\200\\346\\261\\202\\345\\222\\214\\351\\252\\214\\346\\224\\266.md\"\n?? docs/baseline/product_feature_catalog_sync_20261028.md\n?? docs/evidence/workflow_replan_20261028/\n?? docs/guides/feishu_cli_howto.md\n?? docs/guides/feishu_cli_user_access_experience_20261026.md\n?? docs/planning/product/full_color_3d_printer_feature_catalog_baseline.md\n?? tools/__pycache__/"
+    },
+    "soc-ap": {
+      "head": "4445c8fedc21bafef5e6c971fcb54cec703f0e71",
+      "status": ""
+    },
+    "mcu-p3": {
+      "head": "af279a8c24dde92a0145d767c1c6478cfef05994",
+      "status": ""
+    },
+    "test_harness": {
+      "head": "6c61ce6e51cf83d7fb58d319c23cb91bf95786cb",
+      "status": ""
+    }
+  },
+  "cards": [
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-00.md",
+      "sha256": "3543321f481fa8e90229ae03364f1f98e54389f622ab9b39263c2712d80822f1",
+      "id": "CR-00",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "V2-P0506",
+        "MCQ-0106"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-01.md",
+      "sha256": "14b502be979f09159cc7d95b5504c41d59cf45109664fb2d2fec9a2ca0282ca0",
+      "id": "CR-01",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-00"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-02.md",
+      "sha256": "8bc1ef082070012d9929bd63dd79be5ff3eb3daceea46787db24e8c0ebfc57ac",
+      "id": "CR-02",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-01"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-02Q.md",
+      "sha256": "6d7f9bef9b88c39e6ff7a3ce1036d86d552de7760407fa853c9bab9eed08014e",
+      "id": "CR-02Q",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-02"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-02T.md",
+      "sha256": "c64db07b6fc7957c1486ef475139d50c64890bebae29b93120aafb36d3b90e38",
+      "id": "CR-02T",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-00",
+        "CR-02"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-03.md",
+      "sha256": "efdd945a2ad36bc941910d537e05b63aad13818f80140ea99a587192119db73e",
+      "id": "CR-03",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-01",
+        "CR-02"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-04.md",
+      "sha256": "9cec0fbf1dc062337ecb7761ee5c57b5c6040de745876b1fec5a98662d15f812",
+      "id": "CR-04",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-02",
+        "CR-02Q",
+        "CR-03"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-05.md",
+      "sha256": "772c8b36542ff9d2b4c9a04dd4e9d7834ad0735a9a7508ef10c80767bf30942d",
+      "id": "CR-05",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-02",
+        "CR-02Q",
+        "CR-03"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-06.md",
+      "sha256": "765d6a8e401de8ac453b511c9df54d26725dff082d8438a70ac23f13d26d7b70",
+      "id": "CR-06",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-02",
+        "CR-02Q",
+        "CR-03"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-07.md",
+      "sha256": "35529f21fd5efb5cd914563eb3920374a7945ea72f7e5441140ee313d135d06e",
+      "id": "CR-07",
+      "status": "Ready",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-00",
+        "CR-05"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-08.md",
+      "sha256": "fb5f8272ccc936a30814680c0401b7241667cf62468131ebcbae7a504e91c5b6",
+      "id": "CR-08",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-04",
+        "CR-05",
+        "CR-06"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-09.md",
+      "sha256": "48f27551961b732f2662b4bbe31e8e27b022c672929ef729035a998b9cc8ff26",
+      "id": "CR-09",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-08",
+        "CR-02T"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-10.md",
+      "sha256": "af4629fd0963f91e76d534caa6af07a4e0825775d6a5832e87127b076e73e6e7",
+      "id": "CR-10",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-09",
+        "CR-02Q"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/cascade_recovery/CR-11.md",
+      "sha256": "45d7787436a1858d7cc332d038b7fa34ce7ab86bb9087e4f311c268a10a5c8f8",
+      "id": "CR-11",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 1,
+      "role": "COORD",
+      "depends_on": [
+        "CR-10"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/mc_firmware/MCQ-0105.md",
+      "sha256": "cad9f8145fdb4342819b9e7ce0c34bc41adb6de96dce7002d5b1f7b60372416c",
+      "id": "MCQ-0105",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-MC",
+      "depends_on": []
+    },
+    {
+      "path": ".agents/kanban/microtasks/mc_firmware/MCQ-0106.md",
+      "sha256": "0c9dfc85035ec121d20ec9f72a35ff03c0672c801ba82710a05a52e715ef6b55",
+      "id": "MCQ-0106",
+      "status": "Done",
+      "blocked": true,
+      "revision": 1,
+      "role": "ENG-MC",
+      "depends_on": [
+        "MCQ-0105"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P01A.md",
+      "sha256": "86d5697e6ed345fb9ee2f0ad814e2a762bc623c21a3d544e5544309c09245712",
+      "id": "V2-P01A",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ARCH",
+      "depends_on": []
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P01B.md",
+      "sha256": "2d0e5b6d6304182ac69672a15d8cec0e50af97080ce313f0efeb14e31e7e0049",
+      "id": "V2-P01B",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ARCH",
+      "depends_on": [
+        "V2-P01A"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P01C.md",
+      "sha256": "8c646bec7ee93c4d8f2896541fa5e325c1f15da9f3e8ade7a62d0f7a2e7304bf",
+      "id": "V2-P01C",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "QA",
+      "depends_on": [
+        "V2-P01A",
+        "V2-P01B"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P01D.md",
+      "sha256": "fc34bc681e21b1c3b5c5e2a5eafabdc70040a9ef47e99d7e4279b7655ffbd8ed",
+      "id": "V2-P01D",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "QA",
+      "depends_on": [
+        "V2-P01C"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P02A.md",
+      "sha256": "c3bc6072941888c525a17d8820a7af0a19668602ad9819a6ba122c65cd033f4f",
+      "id": "V2-P02A",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P01A",
+        "V2-P01B",
+        "V2-P01D"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P02B.md",
+      "sha256": "8070b38616a81fc083c13e4e98421d5a192eb19efd607d3879c69e15766560c5",
+      "id": "V2-P02B",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P02A"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P02C.md",
+      "sha256": "1f112c304369d07bf37c256c5e70c1374d2075e8cf3f598c6c59447a6509f62d",
+      "id": "V2-P02C",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ARCH",
+      "depends_on": [
+        "V2-P02A",
+        "V2-P02B",
+        "V2-P01D"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P03A.md",
+      "sha256": "9eab9b205ea211acde8033501a6dd19472c96bc9d3e38a4a4cea5bfa9c830813",
+      "id": "V2-P03A",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P02A"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P03B.md",
+      "sha256": "67c3c089175849788b4b1a04145bc877e52df59ba60a3c7fb7328689ad699d3b",
+      "id": "V2-P03B",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P02B",
+        "V2-P03A"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P03C.md",
+      "sha256": "e4458b1fde2de3f7838e061d3feb0f41d7ac97cc009ee46470dff4f5a8e95103",
+      "id": "V2-P03C",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "INTEGRATOR",
+      "depends_on": [
+        "V2-P03A",
+        "V2-P03B"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P03D.md",
+      "sha256": "30227f25f1253b3acec81465289a631ccf4155053d5dead463703a634472f289",
+      "id": "V2-P03D",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-SIM",
+      "depends_on": [
+        "V2-P03C",
+        "V2-P02C"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P03E.md",
+      "sha256": "43ff0546726f80cbf1dabc6bf461d4f62d757d2f686a32e12f108b55f394a227",
+      "id": "V2-P03E",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "INTEGRATOR",
+      "depends_on": [
+        "V2-P03D"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P03F.md",
+      "sha256": "bd78301183bf01dc79b5fb1918820f058850903593322a85e79f14222ff3159f",
+      "id": "V2-P03F",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "QA",
+      "depends_on": [
+        "V2-P01D",
+        "V2-P02C",
+        "V2-P03E"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P04A.md",
+      "sha256": "0e82f1db8945b012a7ca476fdb8644cf63be41e609ebe0cb372d3a18e0ba6eea",
+      "id": "V2-P04A",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P03F"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P04B.md",
+      "sha256": "32a03cf6b5d090814cd073156148e0653450c1e75d70ec1cc10bea319ebbbca8",
+      "id": "V2-P04B",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P04A"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P04C.md",
+      "sha256": "13701f78c4733c061f619a0f8665bcbd6521e9b6914db3114ee6906e9bcc3642",
+      "id": "V2-P04C",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P04B"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P04D.md",
+      "sha256": "9b0b5a3ee147980e89bed9b9e9f8d010a0d474ec730bc6a6ba00af4fba5e2be9",
+      "id": "V2-P04D",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P04C"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P0506.md",
+      "sha256": "5084ed65db590738aae0299f37331b2e5f89427125203bb46ccd407ea98fb4f9",
+      "id": "V2-P0506",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P05B"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P05A.md",
+      "sha256": "e3e602228375eb5e847eacc325417487a9ba34e107cae4c572f6dbcf6e8f7936",
+      "id": "V2-P05A",
+      "status": "Done",
+      "blocked": false,
+      "revision": 1,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P04D"
+      ]
+    },
+    {
+      "path": ".agents/kanban/microtasks/minimc_v2/V2-P05B.md",
+      "sha256": "3b89d58da8744b47e0a1d0c1f4384368edd362d5efa89bf029bc68f0514629f2",
+      "id": "V2-P05B",
+      "status": "Done",
+      "blocked": false,
+      "revision": 2,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "V2-P05A"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms01_20261007_214108.md",
+      "sha256": "30d57f060fba4e589561a622e1cb288fe2943ba9ae0dd3f17c24f51675347e19",
+      "id": "MS-01",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 7,
+      "role": "INTEGRATOR",
+      "depends_on": []
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms02_20261007_214108.md",
+      "sha256": "ea1eb5bfb8cdc250f92e24ed78e2a0506b99ed6283a5c87fe9f4d082ea43da4c",
+      "id": "MS-02",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "QA",
+      "depends_on": [
+        "MS-01"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms03_20261007_214108.md",
+      "sha256": "2a67b2b4d56c4d24f57220263f5ec6ed06a431731e41fbaf57e99b0cb1893326",
+      "id": "MS-03",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "ARCH",
+      "depends_on": [
+        "MS-02"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms04_20261007_214108.md",
+      "sha256": "63c1984c6de491fb0e78feb06b1dda111ba39ff3fe101fe5336094012703cddb",
+      "id": "MS-04",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "MS-02",
+        "MS-03"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms05_20261007_214108.md",
+      "sha256": "99a721d9f1fac34ba46e11afeff0685355ce9b19a65c81b284f7be6ad902ae64",
+      "id": "MS-05",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 5,
+      "role": "ARCH",
+      "depends_on": [
+        "MS-03",
+        "MS-04",
+        "V2-P01B"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms06_20261007_214108.md",
+      "sha256": "07f5af0e56ec0d392d353aadda20a349283b6f47b304ebd613085a050f0d302a",
+      "id": "MS-06",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 5,
+      "role": "QA",
+      "depends_on": [
+        "MS-05",
+        "V2-P01D"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+      "sha256": "9d32881cb3c16fc0a78f9365737684d46bb75e75aa68b779b02ad27274c8d9b4",
+      "id": "MS-07",
+      "status": "Done",
+      "blocked": false,
+      "revision": 5,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "MS-05",
+        "MS-06",
+        "MS-18",
+        "V2-P0506"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms08_20261007_214108.md",
+      "sha256": "c5c83f78c50607d867634eede05218a251e1c4bd0b259ec1d79d58f682e60e67",
+      "id": "MS-08",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "MS-07"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms09_20261007_214108.md",
+      "sha256": "66b4c684b43b9d66bc271fee0aa7c0416dc73fc137fcf2e7b6553265e02c02c3",
+      "id": "MS-09",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "ENG-SIM",
+      "depends_on": [
+        "MS-04",
+        "MS-05",
+        "MS-06"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms10_20261007_214108.md",
+      "sha256": "9230959aaf9525877560fbd548ed01fd0cb465b530bcf601b3095b07a6bdbd37",
+      "id": "MS-10",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "MS-08",
+        "MS-09",
+        "MS-06"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms11_20261007_214108.md",
+      "sha256": "11edac56fa76ad154d69bfd2138f8da02e3b42f6fb6b69c66c48c08c1a2f20ae",
+      "id": "MS-11",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "QA",
+      "depends_on": [
+        "MS-06",
+        "MS-08",
+        "MS-10",
+        "MS-20"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms12_20261007_214108.md",
+      "sha256": "2642930e9fd1f25a11ef3a07acaf12954ed64aa020cf46eb98716fe107ff6c96",
+      "id": "MS-12",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "ARCH",
+      "depends_on": [
+        "MS-01"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms13_20261007_214108.md",
+      "sha256": "f6cdc49b22feffb001cdaead4ad2fc36c309fbf3022535252665386e2a35fca0",
+      "id": "MS-13",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "ENG-MC",
+      "depends_on": [
+        "MS-12",
+        "MS-02"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms14_20261007_214108.md",
+      "sha256": "6ad5b0784aff5199bc9866abb0b08b6c81f0899955d08a7772da654f8e4de2f6",
+      "id": "MS-14",
+      "status": "Blocked",
+      "blocked": true,
+      "revision": 4,
+      "role": "ENG-MC",
+      "depends_on": [
+        "MS-05",
+        "MS-12",
+        "MS-13",
+        "MS-11",
+        "MS-19"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms15_20261007_214108.md",
+      "sha256": "439e40c1ab9d001f0354b182c9e63b9a2bf2d722d2693717dc3ed9263994b092",
+      "id": "MS-15",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "ENG-FWD",
+      "depends_on": [
+        "MS-07",
+        "MS-14",
+        "MS-19"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms16_20261007_214108.md",
+      "sha256": "7deb0ee07b9c6026b0b15a501d69b389343c520e3227744d974937cd755b9932",
+      "id": "MS-16",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": "ENG-SIM",
+      "depends_on": [
+        "MS-14",
+        "MS-19"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms17_20261007_214108.md",
+      "sha256": "ae5a7f43cc5dcfdbbd8dc0cbc41474853d16fbbe1f3855ca9cbf6a45acfc2cba",
+      "id": "MS-17",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 5,
+      "role": "QA",
+      "depends_on": [
+        "MS-11",
+        "MS-15",
+        "MS-16",
+        "MS-19",
+        "MS-21"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms18_20261008_083854.md",
+      "sha256": "e6791af30cc003bea2cbe5d3813be389df61766c558bdcc875e7d0f8ccf3e042",
+      "id": "MS-18",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 3,
+      "role": "INTEGRATOR",
+      "depends_on": [
+        "MS-01"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms19_20261008_083854.md",
+      "sha256": "fd0e88de8829f54d2c82bf5de2a426805ccfa6b5759fe071e36c1cca7ec81097",
+      "id": "MS-19",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 2,
+      "role": "QA",
+      "depends_on": [
+        "MS-12",
+        "MS-13"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms20_20261008_083854.md",
+      "sha256": "5c17bad5a0c1472d029ce57194f781734e76b68f3aafa04d618be3be1efbff6a",
+      "id": "MS-20",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 2,
+      "role": "INTEGRATOR",
+      "depends_on": [
+        "MS-06",
+        "MS-10"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms21_20261008_083854.md",
+      "sha256": "eb09a7e9b4876264c257673760e319d4afbc3b411231fdefd2604a7a0ab5ab35",
+      "id": "MS-21",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 2,
+      "role": "INTEGRATOR",
+      "depends_on": [
+        "MS-11",
+        "MS-15",
+        "MS-16",
+        "MS-19"
+      ]
+    },
+    {
+      "path": ".agents/kanban/milestones/marlin_ms22_20261008_083854.md",
+      "sha256": "10c817fbe2560be0e8e486826550e158002e7e1238b1bdcab918212a730096cb",
+      "id": "MS-22",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 2,
+      "role": "QA",
+      "depends_on": [
+        "MS-02"
+      ]
+    },
+    {
+      "path": "docs/planning/product/product_pl01_20261008_083854.md",
+      "sha256": "8aa299e71f9cebf597b44d56dda8c7290d75b2c12b87736538329fb274626d83",
+      "id": "PL-01",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 3,
+      "role": "PM",
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/product/product_pl02_20261008_083854.md",
+      "sha256": "c6c4ddd9313dddebf909f71a33e62108fdddcfd71e6630327ce9370082b6c7e7",
+      "id": "PL-02",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 3,
+      "role": "ARCH",
+      "depends_on": [
+        "PL-01"
+      ]
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md",
+      "sha256": "c2ccbe002e7e5dce1dc65956e4a95419864037a3cfaaff339bb276ba95187d0e",
+      "id": "TASK-001",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 6,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md",
+      "sha256": "9f8ffebcf8623e4a7617f5618b7fe72fb2ab59b15209db598b1ff1efe9600354",
+      "id": "TASK-002",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 5,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md",
+      "sha256": "32be27fa0e3945ba7774bed447e8d5f002148b574a2c5d72a1c500ee0036d569",
+      "id": "TASK-003",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+      "sha256": "44c68a0b18c1540bc1a276f71554813cfb61a29f3360a2f2e339b2e6be88d87f",
+      "id": "TASK-004",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 5,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+      "sha256": "01798962be9d8d8ee5d036b9ebe2292d5bb68482c5c44e63e18657a1de08d7b1",
+      "id": "TASK-005",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 7,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md",
+      "sha256": "5b0dd3d2651aa111071ebc98cc7aef4f226269f8e675cbe4e05b6c570db508be",
+      "id": "TASK-006",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 6,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md",
+      "sha256": "dc1ad7de3d69115f13714575cbc04f8e7358e16db5955336a017a1114197fedf",
+      "id": "TASK-007",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 7,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md",
+      "sha256": "93771a0d76335828e52b4b240eec3186435c1d225b99a67a00360dd9f6f64173",
+      "id": "TASK-008",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 5,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md",
+      "sha256": "0b82ffc55e2c3d2e95fdb5ab0858e9f30a7a25abf3b51e986a4b7fb3d48b25f4",
+      "id": "TASK-009",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 5,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+      "sha256": "4c5e80904ddfd63d52aba8b93f06045d903355ce8e0d53e2bcb629b2726404a0",
+      "id": "TASK-010",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 8,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md",
+      "sha256": "5fe2686ec9f115808d33c00e28421472e6238c6b884bd5acda73010149f360ef",
+      "id": "TASK-011",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 6,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md",
+      "sha256": "a213b4b9ff1b046d31107ad6229d75762fa338208350d89ee3fe290fe8f777c7",
+      "id": "TASK-012",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 6,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md",
+      "sha256": "78b7d4d6ddfa5b08c91508940b5e13ea331eb903f25839e5eeaf5a2791c190eb",
+      "id": "TASK-013",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md",
+      "sha256": "c1da3fe3c28b07815f51cf76314377ae16f72524f9ffff17ea485b6052d78abe",
+      "id": "TASK-014",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md",
+      "sha256": "7741a1acba4e19a6a2071ae1acc1198624ce6f76f16792c0e062dfd4a20faca2",
+      "id": "TASK-015",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md",
+      "sha256": "a1703bba6d81b8069f1cdfb7a1e448be3132726535470f27846bb76748f13262",
+      "id": "TASK-016",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md",
+      "sha256": "c44036490333363ecd1a6822e02fcb09cd70f8ec33be0fc2b40f96208a3f334c",
+      "id": "TASK-017",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": null,
+      "depends_on": []
+    },
+    {
+      "path": "docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md",
+      "sha256": "56d7e42762da12f986643a74aa4a5a1e793a12b32ef0af19bb96cb085982c9c4",
+      "id": "TASK-018",
+      "status": "Backlog",
+      "blocked": false,
+      "revision": 4,
+      "role": null,
+      "depends_on": []
+    }
+  ],
+  "token_usage": null,
+  "elapsed_execution_history": null
+}

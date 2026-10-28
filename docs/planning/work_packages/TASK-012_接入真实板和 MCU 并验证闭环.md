@@ -2,7 +2,7 @@
 title: "TASK-012 接入真实板和 MCU 并验证闭环"
 date: 2026-09-30
 id: TASK-012
-revision: 6
+revision: 7
 status: Backlog
 blocked: false
 owner: null
@@ -20,12 +20,15 @@ candidate_commit: null
 merged_commit: null
 depends_on: []
 tags: [soc, task]
-updated: '2026-10-13 12:19:12'
+updated: '2026-10-28'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 task_kind: work_package
 dispatchable: false
-child_tasks: []
+child_tasks:
+- CR-07
+- CR-09
+
 planning_relations:
 - TASK-003
 - TASK-004

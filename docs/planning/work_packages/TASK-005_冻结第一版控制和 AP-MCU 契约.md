@@ -2,7 +2,7 @@
 title: TASK-005 冻结第一版控制和 AP-MCU 契约
 date: 2026-09-30
 id: TASK-005
-revision: 7
+revision: 8
 status: Backlog
 blocked: false
 owner: null
@@ -22,12 +22,13 @@ depends_on: []
 tags:
 - soc
 - task
-updated: '2026-10-20 11:26:37'
+updated: '2026-10-28'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 task_kind: work_package
 dispatchable: false
 child_tasks:
+- CR-12
 - MS-03
 - MS-05
 - PL-02

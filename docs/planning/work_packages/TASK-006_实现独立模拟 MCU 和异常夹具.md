@@ -2,7 +2,7 @@
 title: "TASK-006 协调真实 MCU 台架和异常夹具"
 date: 2026-09-30
 id: TASK-006
-revision: 6
+revision: 7
 status: Backlog
 blocked: false
 owner: null
@@ -20,7 +20,7 @@ candidate_commit: null
 merged_commit: null
 depends_on: []
 tags: [soc, task]
-updated: '2026-10-13 12:19:12'
+updated: '2026-10-28'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 task_kind: work_package
@@ -41,11 +41,6 @@ child_tasks:
 - CR-04
 - CR-05
 - CR-06
-- CR-07
-- CR-08
-- CR-09
-- CR-10
-- CR-11
 planning_relations: []
 related_tasks:
 - MS-19

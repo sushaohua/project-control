@@ -2,7 +2,7 @@
 title: TASK-004 锁定源码和可复现构建
 date: 2026-09-30
 id: TASK-004
-revision: 5
+revision: 6
 status: Backlog
 blocked: false
 owner: null
@@ -22,7 +22,7 @@ depends_on: []
 tags:
 - soc
 - task
-updated: '2026-10-20 11:26:37'
+updated: '2026-10-28'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 task_kind: work_package
@@ -33,6 +33,8 @@ child_tasks:
 - MS-18
 - MS-20
 - MS-21
+- CR-08
+
 planning_relations: []
 related_tasks: []
 ---
@@ -77,6 +79,6 @@ MS-01/02 交接复现主控；MS-18 提供 SoC 主机工程；MS-20/21 分别提
 
 2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
 
-[V2-P06C](../../../.agents/kanban/microtasks/minimc_v2/V2-P06C.md)。
+历史关联：[V2-P06C（已替代归档）](../../../.agents/kanban/microtasks/minimc_v2/superseded/V2-P06C.md)。当前离线候选由 [V2-P0506](../../../.agents/kanban/microtasks/minimc_v2/V2-P0506.md) 承接，作为范围关联，不重复主归属。
 
 这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。

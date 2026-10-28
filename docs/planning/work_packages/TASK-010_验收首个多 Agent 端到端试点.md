@@ -2,7 +2,7 @@
 title: TASK-010 验收首个多 Agent 端到端试点
 date: 2026-09-30
 id: TASK-010
-revision: 8
+revision: 9
 status: Backlog
 blocked: false
 owner: null
@@ -22,7 +22,7 @@ depends_on: []
 tags:
 - soc
 - task
-updated: '2026-10-20 11:26:37'
+updated: '2026-10-28'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 task_kind: work_package
@@ -33,6 +33,9 @@ child_tasks:
 - MS-17
 - MS-19
 - MS-22
+- CR-10
+- CR-11
+
 planning_relations:
 - MS-06
 - MS-08
@@ -86,6 +89,6 @@ MS-11/17 必须有 Ubuntu 宿主程序＋真实 MC/TH 候选、原始报文与�
 
 2026-10-20 用户要求继续落实任务拆解、闭环与回溯，本工作包接入以下实际微步卡：
 
-[V2-P06B](../../../.agents/kanban/microtasks/minimc_v2/V2-P06B.md)。
+历史关联：[V2-P06B（已替代归档）](../../../.agents/kanban/microtasks/minimc_v2/superseded/V2-P06B.md)。当前离线复验/归档由 [V2-P0506](../../../.agents/kanban/microtasks/minimc_v2/V2-P0506.md) 承接；本工作包只保留范围关联。
 
 这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。

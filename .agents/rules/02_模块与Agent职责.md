@@ -10,6 +10,8 @@ plan_revision: marlin-r2
 
 # 模块与 Agent 职责
 
+2026-10-28 当前执行分工见[任务重排](../../docs/planning/workflow_replan_20261028.md)：COORD 可兼 INTEGRATOR 做组织与候选装配，AP/MC/TH 由各端 Owner 负责；ARCH 按需协调契约与责任，QA 保持独立。最多两张实现卡并行；台架登记一名操作者。长期岗位表不是必须同时运行的 Agent 清单，方案签署不能复用成各端实现验收。
+
 ## 1. 先分清：角色、工程师、模块、任务和 Agent
 
 **“角色”就是岗位。产品经理、架构师、协调员，以及各类工程师，都是角色。“工程师”是其中一类岗位；Agent 是实际执行某次任务的 AI 会话或子 Agent。**
