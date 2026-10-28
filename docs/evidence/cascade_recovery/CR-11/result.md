@@ -7,7 +7,7 @@
 | **执行角色** | `COORD` ＋ `INTEGRATOR` |
 | **独立审阅会话** | `codex-cr-11-qa` (Model: `gpt-6-luna`, Role: `QA`) |
 | **复核审阅会话** | `codex-cr-11-arch` (Model: `gpt-6-luna`, Role: `ARCH`) |
-| **交付物清单** | 1. 详细对账记录: [`runs/run_01/result.md`](runs/run_01/result.md) (SHA256: `68f643089535f3b79b8a19fa82d9179645bd65b04e74574fbe7e6f2922b9b706`)<br>2. 正式交接文档: [`docs/handoff/HANDOFF_20261028.md`](../../../../docs/handoff/HANDOFF_20261028.md)<br>3. 顶层锁文件: `workspace.json` (五仓 HEAD 提交锁定) |
+| **交付物清单** | 1. 详细对账记录: [`runs/run_01/result.md`](runs/run_01/result.md) (SHA256: `dcc4060fa4cb93c5d543ce44477db6df3afe19e954a022ca983794b24a3fca57`)<br>2. 正式交接文档: [`docs/handoff/HANDOFF_20261028.md`](../../../../docs/handoff/HANDOFF_20261028.md)<br>3. 顶层锁文件: `workspace.json` (五仓 HEAD 提交锁定)<br>4. RC2候选清单: [`docs/releases/ap_mc_th_readonly_candidate.yaml`](../../../../docs/releases/ap_mc_th_readonly_candidate.yaml) |
 | **验收结论** | **APPROVED (级联纠偏恢复流水线全量闭环，版本锁文件已同步锁定，具备开启下一增量条件)** |
 
 ---

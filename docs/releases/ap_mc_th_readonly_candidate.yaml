@@ -1,10 +1,12 @@
-candidate_id: ap-mc-th-readonly-cascade-candidate-20261028-01
-release_tag: v2.0.3-cascade-readonly-rc1
-created: '2026-10-28T16:10:00+08:00'
-status: frozen-for-joint-debug
+candidate_id: ap-mc-th-readonly-cascade-candidate-20261028-02
+release_tag: v2.0.3-cascade-readonly-rc2
+created: '2026-10-28T18:20:00+08:00'
+status: accepted-by-cr10-hil
+supersedes: ap-mc-th-readonly-cascade-candidate-20261028-01
+supersedes_reason: "CR-08候选包(rc1)在CR-09物理在环联调中暴露出4项工程缺陷(ModemManager串口竞争、TH扇区127锚点缺失、MC DMA完成标志丢失、Marlin文本流吞帧竞态)；修复后mcu-p3源码推进至1246ea9，重新构建fw_mc.bin并追加140B TH锚点，重构锁定为rc2候选包。"
 
 scope:
-  description: AP-MC-TH 三端协同只读级联候选包，支持单跳/双跳 GET_VERSION 与 PING，用于 CR-09 物理台架联合调试与往返时延度量
+  description: AP-MC-TH 三端协同只读级联候选包 (RC2)，支持单跳/双跳 GET_VERSION 与 PING，用于 CR-09 物理台架联合调试与 CR-10 独立 HIL 验收
   capability: ap-mc-th-readonly-cascade-and-rtt
   hardware_bound: true
   primary_work_package: TASK-004
@@ -23,35 +25,49 @@ repositories:
         sha256: c45678460184306d4902a23c23482204d0a5dbd6db7283d1ffb155a4494ea493
         size_bytes: 60488
   mcu-p3:
-    commit: af279a8c24dde92a0145d767c1c6478cfef05994
+    commit: 1246ea9cb441d074ea444f53320f5632fefcd503
     branch: feat/soc-debug
     artifacts:
       - path: motion-controller-mcu/build/fw_mc.bin
-        sha256: 74ad2bd0861cebf7f6964ca81f83cf41ac850e8adfa21379073f51e218d78f99
-        size_bytes: 369516
+        sha256: 8cddff04aab41506fa2d87e3f352549b068c0c13d3e5ba4cd937b741ea0118d0
+        size_bytes: 369724
+        raw_payload_bin: motion-controller-mcu/build/Marlin_AT32.bin
+        raw_payload_sha256: ff30795e8746a8344ecae4020640a63e43d1388b588cbcca449c2b680fb5963a
+        raw_payload_size_bytes: 369596
         role: MC (Motion Controller)
         chip: AT32F435VGT7
+        chip_uid: "053023904C96C0000D819709"
+        probe_id: "0483:3748:75003800120000334C41534E"
         flash_base_address: '0x08020000'
         uart_upstream: USART2 (PA2/PA3 @ 115200 8N1)
-        uart_downstream: USART6 (PA4/PA5 @ 921600 8N1)
+        uart_downstream: USART6 (PC6/PC7 @ 921600 8N1)
       - path: color-engine-mcu/io_toggle/build/fw_th.bin
         sha256: 5eaeb608cd22b5ec3041672db08fc865cb7b539620fb7b21de1a0925d4df9d3d
         size_bytes: 71176
         role: TH (Toolhead Controller)
         chip: AT32F423CCT7
+        chip_uid: "053173C58023C000127C0707"
+        probe_id: "0483:3748:"
         flash_base_address: '0x08004000'
-        uart_cascade: USART1 (PB6/PB7 @ 921600 8N1)
+        uart_cascade: USART1 (PA9/PA10 @ 921600 8N1)
+      - path: color-engine-mcu/io_toggle/build/anchor.bin
+        sha256: 660d9e6f341c8207a4caac8903f4666a4d67e55107dc4300cf4bd9411ead2352
+        size_bytes: 140
+        role: TH Sector 127 Signature Anchor
+        chip: AT32F423CCT7
+        flash_base_address: '0x0803F800'
+        purpose: "AT32F423 Bootloader App 跳转有效性校验锚点"
   test_harness:
     commit: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
     branch: main
     artifacts:
       - path: test_cases/cascade/query_cases.json
-        sha256: 18f7d9d5f04a91a9f14371fa7a49339e1bf6ebbf15e181467406a6b5a3bbfe5d
+        sha256: 64d1377ae46bff3795eab51d4829b4a50fd8a99b668f0c853046ddc0d878fcd2
       - path: static_checks/cascade/run_query_cases.py
       - path: hil/tools/probe_fault_injector.py
       - path: hil/tools/device_discovery.py
   project-control:
-    commit: a3b91535765ba897a9d555f39d6dc8acd1ad4a8a
+    commit: f8594876556a4aac39ed870f59ebe461471f3dd2
     branch: main
     artifacts:
       - path: docs/interfaces/ap_mc_th_readonly_cascade_icd.md
@@ -80,22 +96,17 @@ verification:
     suite: test_harness/hil/tests/test_probe_tools.py
     tests_run: 10
     tests_passed: 10
-  mcu_firmware_checks:
-    mc_routing_relay_vector_match: true
-    th_static_assert_memory_alignment: true
-    th_golden_vector_match_cas_pos_002: true
-    th_golden_vector_match_cas_pos_004: true
-    th_dma_stream_demux_isolated: true
+  hil_raw_evidence_dir: project-control/docs/evidence/cascade_recovery/CR-10/runs/run_01/raw_capture
 
 limitations:
   - 当前候选仅涵盖只读级联查询 (GET_VERSION, PING)，不包含混色运控 G-code 执行与长文本作业传输
   - 不包含 U 盘中继固件升级闭环 (CR-07 升级安全治理专项维持解耦，当前部署路径统一使用 probe-rs SWD 硬件刷写)
-  - 真实物理硬件在环往返时延度量结果绑定 CR-09 台架实测产出
+  - 真实物理硬件在环往返时延度量结果绑定 CR-09 台架实测产出与 CR-10 40 轮 HIL 样本
 
 handoff:
   producer_role: INTEGRATOR
   producer_session: INTEGRATOR-SESSION-20261028
   receiver_role: COORD
-  receiver_session: 9e5411f4-acad-421e-b487-9e68b9483320
+  receiver_session: main
   task_id: CR-08
   evidence_location: project-control/docs/evidence/cascade_recovery/CR-08/

@@ -63,12 +63,13 @@
    - Commit: `6c61ce6e51cf83d7fb58d319c23cb91bf95786cb`
    - Remote: `ssh://git@192.168.77.113:2222/sushaohua/test_harness.git`
 
-### 3.2 交付物与可执行二进制制品 SHA-256
-- `soc-ap/build/host/bin/soc-ap`: `1e0e0263c90c658e8026e1d5a5dd51349b411831575d4be2b7aec42fbd62d6e1`
-- `mcu-p3/motion-controller-mcu/build/fw_mc.bin`: `32bc837e28b14a9fc96f2e825a0756e01a141870bb122247fb72a3e0f46f5b3a`
-- `mcu-p3/color-engine-mcu/io_toggle/build/fw_th.bin`: `5eaeb608cd22b5ec3041672db08fc865cb7b539620fb7b21de1a0925d4df9d3d`
-- `mcu-p3/color-engine-mcu/io_toggle/build/anchor.bin`: `456b3e6ea1f66cb7daae8c62c96c406b7aa04e0e5a9ee69a19491fa9a5e840ee`
-- `test_harness/test_cases/cascade/query_cases.json`: `18f7d9d58ca9d7f4be495f26941198651a56644bb3caef1867c21ae9b433e147`
+### 3.2 交付物与可执行二进制制品 SHA-256 (锁定对应 RC2 候选清单)
+- `soc-ap/build/host/bin/soc-ap`: `1e0e0263c90c658e8026e1d5a5dd51349b411831575d4be2b7aec42fbd62d6e1` (41,720 字节)
+- `mcu-p3/motion-controller-mcu/build/fw_mc.bin`: `8cddff04aab41506fa2d87e3f352549b068c0c13d3e5ba4cd937b741ea0118d0` (369,724 字节，含 128B Trailer)
+- `mcu-p3/motion-controller-mcu/build/Marlin_AT32.bin`: `ff30795e8746a8344ecae4020640a63e43d1388b588cbcca449c2b680fb5963a` (369,596 字节代码载荷)
+- `mcu-p3/color-engine-mcu/io_toggle/build/fw_th.bin`: `5eaeb608cd22b5ec3041672db08fc865cb7b539620fb7b21de1a0925d4df9d3d` (71,176 字节)
+- `mcu-p3/color-engine-mcu/io_toggle/build/anchor.bin`: `660d9e6f341c8207a4caac8903f4666a4d67e55107dc4300cf4bd9411ead2352` (140 字节，Sector 127 签名锚点)
+- `test_harness/test_cases/cascade/query_cases.json`: `64d1377ae46bff3795eab51d4829b4a50fd8a99b668f0c853046ddc0d878fcd2`
 
 ---
 

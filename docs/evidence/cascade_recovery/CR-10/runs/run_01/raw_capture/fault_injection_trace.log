@@ -1,0 +1,46 @@
+=== STEP 1: Disable TH USART1 ===
+[OK] 已成功切断 [TH] USART1 物理通信!
+{
+  "raw_hex": "0x00000000",
+  "status": "CLOSED (已切断/去使能)",
+  "UEN": false,
+  "TEN": false,
+  "REN": false,
+  "IDLEIEN": false,
+  "RDBFIE": false,
+  "role": "TH",
+  "uart": "USART1",
+  "desc": "TH-MC 级联通信串口 (连接主控)",
+  "probe_id": "0483:3748:",
+  "ctrl1_addr": "0x4001100C"
+}
+
+=== STEP 2: Query TH (expect timeout) ===
+Exit code: 1
+Output: {"status":"TIMEOUT","exit_code":1,"utc_time_ms":1793182865345,"target":"TH","cmd":"GET_VERSION","req_seq":2,"error_msg":"Timeout waiting for response from target 0x03 after 300 ms"}
+
+=== STEP 3: Query MC (expect success, isolation verified) ===
+Exit code: 0
+Output: {"status":"SUCCESS","exit_code":0,"utc_time_ms":1793182865813,"monotonic_rtt_us":7421,"target":"MC","target_id":2,"cmd":"GET_VERSION","req_seq":0,"resp_seq":0,"version_info":{"proto_ver":"2.0","firmware_ver":"1.0","boot_id":"0x01020304","git_commit":"0xA6791332","capabilities":"0x00000003"}}
+
+=== STEP 4: Enable TH USART1 ===
+[OK] 已成功开通恢复 [TH] USART1 物理通信!
+{
+  "raw_hex": "0x0000202C",
+  "status": "OPEN (正常使能)",
+  "UEN": true,
+  "TEN": true,
+  "REN": true,
+  "IDLEIEN": false,
+  "RDBFIE": true,
+  "role": "TH",
+  "uart": "USART1",
+  "desc": "TH-MC 级联通信串口 (连接主控)",
+  "probe_id": "0483:3748:",
+  "ctrl1_addr": "0x4001100C"
+}
+
+=== STEP 5: Query TH (expect recovery) ===
+Exit code: 0
+Output: {"status":"SUCCESS","exit_code":0,"utc_time_ms":1793182867555,"monotonic_rtt_us":8187,"target":"TH","target_id":3,"cmd":"GET_VERSION","req_seq":2,"resp_seq":2,"version_info":{"proto_ver":"2.0","firmware_ver":"1.0","boot_id":"0x8877AA55","git_commit":"0x6356C05A","capabilities":"0x00000007"}}
+
