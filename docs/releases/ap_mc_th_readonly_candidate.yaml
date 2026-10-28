@@ -1,0 +1,101 @@
+candidate_id: ap-mc-th-readonly-cascade-candidate-20261028-01
+release_tag: v2.0.3-cascade-readonly-rc1
+created: '2026-10-28T16:10:00+08:00'
+status: frozen-for-joint-debug
+
+scope:
+  description: AP-MC-TH 三端协同只读级联候选包，支持单跳/双跳 GET_VERSION 与 PING，用于 CR-09 物理台架联合调试与往返时延度量
+  capability: ap-mc-th-readonly-cascade-and-rtt
+  hardware_bound: true
+  primary_work_package: TASK-004
+
+repositories:
+  soc-ap:
+    commit: 4445c8fedc21bafef5e6c971fcb54cec703f0e71
+    branch: main
+    artifacts:
+      - path: build/host/bin/soc-ap
+        sha256: 1e0e0263c90c658e8026e1d5a5dd51349b411831575d4be2b7aec42fbd62d6e1
+        size_bytes: 41720
+        role: AP (Host Application)
+        execution_env: VMware Ubuntu Linux (/dev/ttyUSB0 @ 115200 8N1)
+      - path: build/host/bin/minimc-probe
+        sha256: c45678460184306d4902a23c23482204d0a5dbd6db7283d1ffb155a4494ea493
+        size_bytes: 60488
+  mcu-p3:
+    commit: af279a8c24dde92a0145d767c1c6478cfef05994
+    branch: feat/soc-debug
+    artifacts:
+      - path: motion-controller-mcu/build/fw_mc.bin
+        sha256: 74ad2bd0861cebf7f6964ca81f83cf41ac850e8adfa21379073f51e218d78f99
+        size_bytes: 369516
+        role: MC (Motion Controller)
+        chip: AT32F435VGT7
+        flash_base_address: '0x08020000'
+        uart_upstream: USART2 (PA2/PA3 @ 115200 8N1)
+        uart_downstream: USART6 (PA4/PA5 @ 921600 8N1)
+      - path: color-engine-mcu/io_toggle/build/fw_th.bin
+        sha256: 5eaeb608cd22b5ec3041672db08fc865cb7b539620fb7b21de1a0925d4df9d3d
+        size_bytes: 71176
+        role: TH (Toolhead Controller)
+        chip: AT32F423CCT7
+        flash_base_address: '0x08004000'
+        uart_cascade: USART1 (PB6/PB7 @ 921600 8N1)
+  test_harness:
+    commit: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
+    branch: main
+    artifacts:
+      - path: test_cases/cascade/query_cases.json
+        sha256: 18f7d9d5f04a91a9f14371fa7a49339e1bf6ebbf15e181467406a6b5a3bbfe5d
+      - path: static_checks/cascade/run_query_cases.py
+      - path: hil/tools/probe_fault_injector.py
+      - path: hil/tools/device_discovery.py
+  project-control:
+    commit: a3b91535765ba897a9d555f39d6dc8acd1ad4a8a
+    branch: main
+    artifacts:
+      - path: docs/interfaces/ap_mc_th_readonly_cascade_icd.md
+      - path: docs/evidence/cascade_recovery/CR-12/reuse_matrix.md
+      - path: docs/operations/ap_mc_th_joint_debug.md
+
+protocol:
+  specification: project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md
+  revision: 2.0.3
+  sha256: 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
+  icd_version: MiniMCProto v2.0 Rev 2.0.3 (Read-Only Cascade ICD)
+
+verification:
+  test_environment: hybrid-host-and-hil
+  host_validation:
+    host_binary: soc-ap/build/host/bin/soc-ap
+    cases_run: 14
+    cases_passed: 14
+    runner: test_harness/static_checks/cascade/run_query_cases.py
+  codec_validation:
+    probe_binary: soc-ap/build/host/bin/minimc-probe
+    cases_run: 60
+    cases_passed: 60
+    runner: test_harness/static_checks/minimcproto/run_codec_cases.py
+  fault_tools_validation:
+    suite: test_harness/hil/tests/test_probe_tools.py
+    tests_run: 10
+    tests_passed: 10
+  mcu_firmware_checks:
+    mc_routing_relay_vector_match: true
+    th_static_assert_memory_alignment: true
+    th_golden_vector_match_cas_pos_002: true
+    th_golden_vector_match_cas_pos_004: true
+    th_dma_stream_demux_isolated: true
+
+limitations:
+  - 当前候选仅涵盖只读级联查询 (GET_VERSION, PING)，不包含混色运控 G-code 执行与长文本作业传输
+  - 不包含 U 盘中继固件升级闭环 (CR-07 升级安全治理专项维持解耦，当前部署路径统一使用 probe-rs SWD 硬件刷写)
+  - 真实物理硬件在环往返时延度量结果绑定 CR-09 台架实测产出
+
+handoff:
+  producer_role: INTEGRATOR
+  producer_session: INTEGRATOR-SESSION-20261028
+  receiver_role: COORD
+  receiver_session: 9e5411f4-acad-421e-b487-9e68b9483320
+  task_id: CR-08
+  evidence_location: project-control/docs/evidence/cascade_recovery/CR-08/
