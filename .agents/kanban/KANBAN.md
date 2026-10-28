@@ -38,7 +38,7 @@ CR-12 → CR-08 → CR-09 → CR-10 → CR-11。CR-07 升级专项按部署路�
 | [CR-12](microtasks/cascade_recovery/CR-12.md) | ARCH＋非作者独立 Codex | 已有产物、接受证据与复用范围集中对账闭环，评定【全量可复用】（Done） |
 | [CR-07](microtasks/cascade_recovery/CR-07.md) | ENG-MC；按需 ENG-TH | 升级容量/ACK/文件预检及隔离治理 |
 | [CR-08](microtasks/cascade_recovery/CR-08.md) | INTEGRATOR；ARCH/端 Owner/QA | AP/MC/TH 准确候选清单装配与部署 SOP 发布闭环（Done） |
-| [CR-09](microtasks/cascade_recovery/CR-09.md) | INTEGRATOR 主持，单一操作者 | 分段及全链路工程联合调试；修复回各端 Owner |
+| [CR-09](microtasks/cascade_recovery/CR-09.md) | INTEGRATOR 主持，单一操作者 | 物理台架三端工程联调通过，真实在环双跳穿透成功与时延度量闭环（Done） |
 | [CR-10](microtasks/cascade_recovery/CR-10.md) | 独立 Codex QA，非作者复核报告 | 真实 HIL 正常、失联及恢复复验 |
 | [CR-11](microtasks/cascade_recovery/CR-11.md) | COORD＋INTEGRATOR | 按原始任务范围接受、列剩余项、交接与版本锁定 |
 
