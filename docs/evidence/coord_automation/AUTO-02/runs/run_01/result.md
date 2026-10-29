@@ -76,9 +76,21 @@ actual_result: passed
 5. **[P1 AUTO02-R2-04] 函数入参重构 (`check_task_graph.py`)**：
    - 将 `check_task_graph.py:done_acceptance_errors` 重构为 `(task_id, card, cards, workspace=None)`，严格 $\le 4$ 参数。
 
-6. **方法论硬性门禁 100% 达标**：
+7. **[P0 AUTO02-R3-01] 生产环境 Agent 执行器接通 (`runner.py`)**：
+   - 实现 `default_agent_executor(self, task_id, record)`：通过 `_resolve_task_repo` 定位任务所属仓库（`soc-ap`、`mcu-p3`、`test_harness` 或 `project-control`），调用 `git -C <repo_dir> rev-parse HEAD` 获取真实最新 Commit，校验合法后返回。
+   - 在 `wire_production_executors(self)` 中同步组装 `self.agent_executor = self.default_agent_executor`，保证生产运行环境下三类执行器（Agent、QA、Review）全量自动接通。
+   - 在 `test_coord_runner.py` 中新增单元测试断言 `runner.agent_executor == runner.default_agent_executor` 及真实 HEAD 解析校验。
+
+8. **[P1 AUTO02-R3-02] 进程级崩溃与跨进程重启恢复真实演练 (`test_coord_runner.py`)**：
+   - 实现 `test_process_level_kill_and_restart_recovery_drill`：
+     - 子进程通过 `subprocess.Popen([sys.executable, "-c", ...])` 启动 `CoordRunner`，将任务置入 `SandboxQA` 状态并持久化落盘至 `coord_state_proc.json`。
+     - 子进程紧接着触发硬杀死（`os.kill(os.getpid(), signal.SIGKILL)`）模拟真实进程意外崩溃。
+     - 父进程验证子进程非正常退出（`returncode == -SIGKILL`），随后在父进程中拉起全新的 `CoordRunner` 实例并调用 `restore_from_checkpoint`。
+     - 验证任务自 `SandboxQA` 状态成功恢复，接通 QA 和 Review 判定后无缝推进至 `Done` 状态，最终持久化落盘。
+
+9. **方法论硬性门禁 100% 达标**：
    - 经 AST 静态扫描，所有 18 个白名单及工具文件（包括 `runner.py`、`state_machine.py`、`qa_runner.py`、`delivery_checks.py`、`check_task_graph.py`、各测试套件等）中的自研函数**行数全部严格 $\le 50$ 行**，**入参全部严格 $\le 4$ 个**，违规数为 0。
-   - 运行 92 项单元测试 100% 通过（`test_coord_runner.py` 40 项、`test_qa_runner.py` 20 项、`test_delivery_checks.py` 20 项、`test_check_task_graph.py` 12 项）。
+   - 运行 94 项单元测试 100% 通过（`test_coord_runner.py` 42 项、`test_qa_runner.py` 20 项、`test_delivery_checks.py` 20 项、`test_check_task_graph.py` 12 项）。
 
 ---
 
@@ -94,10 +106,10 @@ actual_result: passed
 | `project-control/tools/coord_runner/state_machine.py` | `36631c9b1e30ad454b093ed2c9be1059f98e672d3ba5806b2b920b76fdc5d88f` |
 | `project-control/tools/coord_runner/checkpoint.py` | `5e38f357b573570a27cd718e296b694c8cb6671bacd5a67a834ff796b5f56ed6` |
 | `project-control/tools/coord_runner/scheduler.py` | `c015900d4ee81e421da333aec2b0e49d0066158c9dffa3f1c23037083095e884` |
-| `project-control/tools/coord_runner/runner.py` | `32e73dc4f8a46e71b425829f8bd2be879612777c31e7a21d4844f3333beb51a0` |
+| `project-control/tools/coord_runner/runner.py` | `6f61f8af413138a637d761aef6a5b2bbc85305c3dc3a27e673a4fe8ee99f2ec4` |
 | `project-control/tools/coord_runner/codex_adapter.py` | `5e571fbd94cc38486d3b7ba892adf425d7ed0f750384e0e793827e63f948d9a0` |
 | `project-control/tools/coord_queue.py` | `cb803af84686e7b98e9e3818b7050cfb99427e1d3b0482e3213f8d98919fe995` |
 | `project-control/tools/delivery_checks.py` | `7c72354037f0a5e3fdbf6e8bed5522f8029b1ec5f957842bba06645ef32ecc0e` |
 | `project-control/tools/check_task_graph.py` | `4fdb9b6fc7f4eac35c7ef0cf65aa7636c7ba4075e52f9f335a25f2273162e11e` |
 | `project-control/tools/qa_runner/qa_runner.py` | `dc03452ee672e82eabc06ce2fb9c77adc9b079bdbd8c7723293bec6461b795c9` |
-| `project-control/tools/test_coord_runner.py` | `2c23ba1bea87aa7ef92121ac1ca2b8963a7767b05d71a14a626df282401b0fe9` |
+| `project-control/tools/test_coord_runner.py` | `3b262223b92ab0bcc6d9b52a678084483f4752b604c4af9ee7aee3575cef18e3` |

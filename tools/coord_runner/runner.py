@@ -174,13 +174,31 @@ class CoordRunner:
             "error": stderr.strip() or stdout.strip(),
         }
 
+    def _resolve_task_repo(self, task_id: str) -> str:
+        if task_id.startswith("SOC"):
+            return "soc-ap"
+        if task_id.startswith(("MC", "TH")):
+            return "mcu-p3"
+        if task_id.startswith("HARNESS"):
+            return "test_harness"
+        return "project-control"
+
+    def default_agent_executor(self, task_id: str, record: TaskExecutionRecord) -> str:
+        repo_name = self._resolve_task_repo(task_id)
+        repo_dir = self.config.workspace_root / repo_name
+        if not repo_dir.is_dir():
+            repo_dir = self.config.workspace_root
+        cmd = ["git", "-C", str(repo_dir), "rev-parse", "HEAD"]
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+        if proc.returncode != 0:
+            raise CoordRunnerError(f"Failed to resolve git HEAD in {repo_dir}: {proc.stderr.strip()}")
+        commit = proc.stdout.strip()
+        self.state_machine.validate_commit_sha(commit)
+        return commit
+
     def default_qa_executor(self, task_id: str, candidate_commit: str) -> dict:
         qa_script = self.config.workspace_root / "project-control" / "tools" / "qa_runner" / "qa_runner.py"
-        repo = "soc-ap" if task_id.startswith("SOC") else (
-            "mcu-p3" if task_id.startswith(("MC", "TH")) else (
-                "test_harness" if task_id.startswith("HARNESS") else "project-control"
-            )
-        )
+        repo = self._resolve_task_repo(task_id)
         cmd = [
             sys.executable, str(qa_script),
             "--task", task_id,
@@ -225,6 +243,8 @@ class CoordRunner:
         }
 
     def wire_production_executors(self) -> None:
+        if self.agent_executor is None:
+            self.agent_executor = self.default_agent_executor
         if self.qa_executor is None:
             self.qa_executor = self.default_qa_executor
         if self.review_executor is None:

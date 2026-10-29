@@ -5,6 +5,7 @@ import ast
 import json
 from pathlib import Path
 import signal
+import subprocess
 import sys
 import tempfile
 import time
@@ -346,6 +347,48 @@ class CheckpointAndRecoveryTest(unittest.TestCase):
         saved_state = self.mgr.load_checkpoint(cfile)
         self.assertIn("T1", saved_state.completed_tasks)
 
+    def test_process_level_kill_and_restart_recovery_drill(self):
+        qfile = self.base / "queue_proc.yaml"
+        qfile.write_text("bootstrap: [T1]\norder: []\n", encoding="utf-8")
+        cfile = self.base / "coord_state_proc.json"
+        commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        tools_path = str(Path(__file__).resolve().parent)
+        child_code = (
+            f"import sys, os, signal; sys.path.insert(0, {tools_path!r}); "
+            f"from pathlib import Path; "
+            f"from coord_runner.models import CoordRunnerConfig, TaskExecutionRecord, TaskState; "
+            f"from coord_runner.runner import CoordRunner; "
+            f"cfg = CoordRunnerConfig(workspace_root=Path({str(self.base)!r}), "
+            f"queue_file=Path({str(qfile)!r}), checkpoint_file=Path({str(cfile)!r})); "
+            f"r = CoordRunner(cfg); "
+            f"r.in_flight_tasks['T1'] = TaskExecutionRecord('T1', state=TaskState.SANDBOX_QA.value, "
+            f"candidate_commit={commit!r}, session_id='proc-sess'); "
+            f"r.cursor = 'T1'; r.save_checkpoint(); "
+            f"os.kill(os.getpid(), signal.SIGKILL)"
+        )
+        proc = subprocess.Popen([sys.executable, "-c", child_code])
+        ret = proc.wait(timeout=10)
+        self.assertTrue(ret == -signal.SIGKILL or ret != 0)
+        self.assertTrue(cfile.is_file())
+
+        cfg = CoordRunnerConfig(workspace_root=self.base, queue_file=qfile, checkpoint_file=cfile)
+        r2 = CoordRunner(cfg)
+        r2.restore_from_checkpoint()
+        self.assertIn("T1", r2.in_flight_tasks)
+        self.assertEqual(r2.in_flight_tasks["T1"].state, TaskState.SANDBOX_QA.value)
+        r2.qa_executor = lambda tid, c: {
+            "passed": True, "candidate_commit": c,
+            "server_qa": {"path": "s.json", "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                          "sandbox": {"kind": "container"}},
+        }
+        r2.review_executor = lambda tid, c: {"session": "rev-proc", "decision": "APPROVED"}
+        card = {"id": "T1", "review_assignments": {"reviewer_sessions": []}}
+        state = r2.process_task("T1", card)
+        self.assertEqual(state, TaskState.DONE.value)
+        self.assertIn("T1", r2.completed_tasks)
+        r2.save_checkpoint()
+        self.assertIn("T1", self.mgr.load_checkpoint(cfile).completed_tasks)
+
 
 class ExecutionModesTest(unittest.TestCase):
     def setUp(self):
@@ -375,11 +418,20 @@ class ExecutionModesTest(unittest.TestCase):
 
     def test_production_executors_wiring(self):
         runner = CoordRunner(self.cfg)
+        self.assertIsNone(runner.agent_executor)
         self.assertIsNone(runner.qa_executor)
         self.assertIsNone(runner.review_executor)
         runner.wire_production_executors()
+        self.assertEqual(runner.agent_executor, runner.default_agent_executor)
         self.assertEqual(runner.qa_executor, runner.default_qa_executor)
         self.assertEqual(runner.review_executor, runner.default_review_executor)
+
+    def test_default_agent_executor_resolves_head(self):
+        runner = CoordRunner(CoordRunnerConfig(workspace_root=WORKSPACE_ROOT))
+        rec = TaskExecutionRecord("AUTO-02", state=TaskState.IN_PROGRESS.value)
+        commit = runner.default_agent_executor("AUTO-02", rec)
+        self.assertEqual(len(commit), 40)
+        runner.state_machine.validate_commit_sha(commit)
 
     def test_missing_executor_fails_closed(self):
         runner = CoordRunner(self.cfg)

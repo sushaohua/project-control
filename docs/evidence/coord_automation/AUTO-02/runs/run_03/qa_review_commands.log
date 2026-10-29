@@ -1,0 +1,59 @@
+2026-10-29T08:54:58Z
+/home/sushaohua/workspace/ai_soc_project/project-control
+fdda7c271e0cb2739e74bff4c36b918e7e8dade1	refs/heads/main
+434d04ac7e80e4dde38fa4cc8655576155c5551954b0eb8453b450ac4d57d106  docs/evidence/coord_automation/AUTO-02/runs/run_03/result.md
+a37d3c2301d5bb8b0cf6b375882d70b1996637eebd4249c8451f5cc8d40befc8  docs/evidence/coord_automation/AUTO-02/runs/run_03/server_qa.json
+32e73dc4f8a46e71b425829f8bd2be879612777c31e7a21d4844f3333beb51a0  tools/coord_runner/runner.py
+36631c9b1e30ad454b093ed2c9be1059f98e672d3ba5806b2b920b76fdc5d88f  tools/coord_runner/state_machine.py
+2c23ba1bea87aa7ef92121ac1ca2b8963a7767b05d71a14a626df282401b0fe9  tools/test_coord_runner.py
+4fdb9b6fc7f4eac35c7ef0cf65aa7636c7ba4075e52f9f335a25f2273162e11e  tools/check_task_graph.py
+            "model": adapter.default_model,
+            "commit_sha": candidate_commit,
+            "task_id": task_id,
+            "tokens_used": res.tokens_used,
+            "summary": res.output_text[:200] if res.output_text else "",
+        }
+
+    def wire_production_executors(self) -> None:
+        if self.qa_executor is None:
+            self.qa_executor = self.default_qa_executor
+        if self.review_executor is None:
+            self.review_executor = self.default_review_executor
+
+    def process_task(self, task_id: str, card: dict) -> str:
+        record = self.in_flight_tasks[task_id]
+        if record.state == TaskState.IN_PROGRESS.value:
+    def test_crash_and_restart_recovery_drill_from_disk_sandbox_qa(self):
+        qfile = self.base / "queue.yaml"
+        qfile.write_text("bootstrap: [T1]\norder: []\n", encoding="utf-8")
+        cfile = self.base / "coord_state.json"
+        cfg = CoordRunnerConfig(workspace_root=self.base, queue_file=qfile, checkpoint_file=cfile)
+        commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        r1 = CoordRunner(cfg)
+        r1.in_flight_tasks["T1"] = TaskExecutionRecord(
+            task_id="T1", state=TaskState.SANDBOX_QA.value, candidate_commit=commit, session_id="author-s"
+        )
+        r1.cursor = "T1"
+        r1.save_checkpoint()
+        del r1
+
+        r2 = CoordRunner(cfg)
+        r2.restore_from_checkpoint()
+        self.assertIn("T1", r2.in_flight_tasks)
+        self.assertEqual(r2.in_flight_tasks["T1"].state, TaskState.SANDBOX_QA.value)
+        r2.qa_executor = lambda tid, c: {
+            "passed": True,
+            "candidate_commit": c,
+            "server_qa": {
+                "path": "server_qa.json",
+                "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                "sandbox": {"kind": "container"},
+            },
+        }
+        r2.review_executor = lambda tid, c: {"session": "independent-codex-session", "decision": "APPROVED"}
+        card = {"id": "T1", "review_assignments": {"reviewer_sessions": []}}
+        state = r2.process_task("T1", card)
+        self.assertEqual(state, TaskState.DONE.value)
+        self.assertIn("T1", r2.completed_tasks)
+        self.assertNotIn("T1", r2.in_flight_tasks)
+        r2.save_checkpoint()

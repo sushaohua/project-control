@@ -1,0 +1,86 @@
+{
+  "task_id": "AUTO-02",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "4887ee4a79c2",
+    "id": "AUTO-02_run_165246_20261029_085246",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/AUTO-02_run_165246_20261029_085246",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "4887ee4a79c27af5c85753b605fd5ece077b110b9b2d261c371240a8ca16a27b",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:ffad80edee935d754f94227ea29211eb762beb3fa2c55a73d4c229f08a4db492",
+      "created": "2026-10-29T08:52:46.518600679Z",
+      "state": "running",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/AUTO-02_run_165246_20261029_085246",
+          "Destination": "/workspace",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/coord_automation/AUTO-02/runs/run_03/server_lock.json",
+    "sha256": "e28124d949f437047bfa96bb7cd7588bc30d3f87f98c0872196752790a477c4f"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/coord_automation/AUTO-02/runs/run_03/checkout.log",
+    "sha256": "657a7e2c6a9bb01ee2c05607b11b39f2191e8127c8da97dfa978a2660f7372c1"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/coord_automation/AUTO-02/runs/run_03/runtime.log",
+    "sha256": "8974f759551ac02de714214a8f5f796dda87db9d8ae26ff2b9d7d8dbcd7133d7"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/coord_automation/AUTO-02/runs/run_03/server_verdict.json",
+    "sha256": "e55dd62bc1d263033b1dc317114d82253391dc7129a2746d01062dc3f674720c"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "python3 tools/test_coord_runner.py",
+      "exit_code": "0",
+      "duration": "0.21s",
+      "output": "........................................\n----------------------------------------------------------------------\nRan 40 tests in 0.023s\n\nOK"
+    },
+    {
+      "command": "python3 tools/test_qa_runner.py",
+      "exit_code": "0",
+      "duration": "0.15s",
+      "output": "....................\n----------------------------------------------------------------------\nRan 20 tests in 0.016s\n\nOK"
+    },
+    {
+      "command": "python3 tools/test_delivery_checks.py",
+      "exit_code": "0",
+      "duration": "0.20s",
+      "output": "....................\n----------------------------------------------------------------------\nRan 20 tests in 0.082s\n\nOK"
+    },
+    {
+      "command": "python3 tools/test_check_task_graph.py",
+      "exit_code": "0",
+      "duration": "0.14s",
+      "output": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.009s\n\nOK"
+    },
+    {
+      "command": "./runner/qa_entrypoint.sh --suite all",
+      "exit_code": "0",
+      "duration": "0.16s",
+      "output": "=== QA Test Harness Entrypoint ===\nTimestamp: 2026-10-29T08:52:50Z\nHarness Root: /workspace/test_harness\n>> Running suite [cascade_vectors]: /usr/bin/python3 static_checks/cascade/run_query_cases.py --check-vectors --cases test_cases/cascade/query_cases.json\n   [PASSED] in 0.02s\n>> Running suite [hil_unit]: /usr/bin/python3 -m unittest hil/tests/test_probe_tools.py\n   [PASSED] in 0.04s"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-29T08:52:51.092405+00:00"
+}
