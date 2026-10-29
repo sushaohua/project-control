@@ -175,7 +175,12 @@ class CoordRunner:
             "report_sha256": rep_sha,
             "review_kind": "qa_report",
         }
-        return self.review_executor(record.task_id, record.candidate_commit, req)
+        try:
+            return self.review_executor(record.task_id, record.candidate_commit, req)
+        except TypeError as err:
+            raise CoordRunnerError(
+                f"Dedicated QA report reviewer failed with TypeError: {err} (fail-closed, fallback strictly prohibited)"
+            ) from err
 
     def _ensure_qa_report_review(
         self,

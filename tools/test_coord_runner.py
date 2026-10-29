@@ -957,6 +957,78 @@ class ExecutionModesTest(unittest.TestCase):
         self.assertTrue(ok)
         self.assertEqual(rec.state, TaskState.REVIEW.value)
 
+    def test_execute_review_phase_dedicated_reviewer_typeerror_fails_without_fallback(self):
+        runner = CoordRunner(self.cfg)
+        rep = self.base / "qa_review_report.md"
+        rep.write_text("# Valid QA Report\n", encoding="utf-8")
+        r_sha = hashlib.sha256(b"# Valid QA Report\n").hexdigest()
+        calls = []
+        def mock_executor(tid, commit, arg="QA"):
+            calls.append(arg)
+            if arg == "QA":
+                return {"role": "QA", "session": "s_qa", "decision": "APPROVED",
+                        "report_path": "qa_review_report.md", "report_sha256": r_sha}
+            if isinstance(arg, dict) and arg.get("review_kind") == "qa_report":
+                raise TypeError("mock executor takes role string only")
+            return {"role": "ARCH", "session": "s_arch", "decision": "APPROVED"}
+        runner.review_executor = mock_executor
+        rec = TaskExecutionRecord("T1", state=TaskState.REVIEW.value,
+                                  candidate_commit="a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819")
+        card = {"id": "T1", "reviewer": ["QA"]}
+        with self.assertRaises(CoordRunnerError) as ctx:
+            runner._execute_review_phase(rec, card)
+        self.assertIn("Dedicated QA report reviewer failed with TypeError", str(ctx.exception))
+        self.assertFalse(any(c == "ARCH" for c in calls if not isinstance(c, dict)))
+        self.assertNotEqual(rec.state, TaskState.DONE.value)
+
+    def test_execute_review_phase_preexisting_invalid_report_review_rejected(self):
+        runner = CoordRunner(self.cfg)
+        runner.review_executor = lambda tid, c, r: {"session": "s_qa", "decision": "APPROVED"}
+        rep = self.base / "qa_review_report.md"
+        rep.write_text("# Valid QA Report\n", encoding="utf-8")
+        r_sha = hashlib.sha256(b"# Valid QA Report\n").hexdigest()
+        bad_cases = [
+            ("self_author", "author_s", "APPROVED", "qa_review_report.md", r_sha),
+            ("not_approved", "s_arch", "REJECTED", "qa_review_report.md", r_sha),
+            ("missing_file", "s_arch", "APPROVED", "non_existent.md", r_sha),
+            ("sha_mismatch", "s_arch", "APPROVED", "qa_review_report.md", "0" * 64),
+        ]
+        for name, r_rev, dec, r_p, r_s in bad_cases:
+            rec = TaskExecutionRecord("T1", state=TaskState.REVIEW.value, session_id="author_s")
+            sessions = [{
+                "role": "QA", "session": "s_qa", "decision": "APPROVED",
+                "report_path": "qa_review_report.md", "report_sha256": r_sha,
+                "report_review": {"session": r_rev, "decision": dec, "report_path": r_p, "report_sha256": r_s}
+            }]
+            card = {"id": "T1", "reviewer": ["QA"], "review_assignments": {"reviewer_sessions": sessions}}
+            ok = runner._execute_review_phase(rec, card)
+            self.assertFalse(ok, f"Case {name} should be rejected")
+            self.assertEqual(rec.state, TaskState.IN_PROGRESS.value)
+            self.assertGreaterEqual(rec.corrections_count, 1)
+
+    def test_execute_review_phase_valid_report_review_approved_to_done(self):
+        runner = CoordRunner(self.cfg)
+        rep = self.base / "qa_review_report.md"
+        rep.write_text("# Real QA Report Content\n", encoding="utf-8")
+        r_sha = hashlib.sha256(b"# Real QA Report Content\n").hexdigest()
+        runner.review_executor = lambda tid, c, req: {
+            "session": "s_arch_independent",
+            "role": "ARCH",
+            "decision": "APPROVED",
+        } if (isinstance(req, dict) and req.get("review_kind") == "qa_report") else {
+            "session": "s_qa_independent",
+            "role": "QA",
+            "decision": "APPROVED",
+            "report_path": "qa_review_report.md",
+            "report_sha256": r_sha,
+        }
+        rec = TaskExecutionRecord("T1", state=TaskState.REVIEW.value, session_id="s_author")
+        card = {"id": "T1", "reviewer": ["QA"]}
+        ok = runner._execute_review_phase(rec, card)
+        self.assertTrue(ok)
+        self.assertEqual(rec.state, TaskState.DONE.value)
+        runner.state_machine.validate_done_acceptance(card, runner.config.workspace_root)
+
 
 class CodexAndSandboxIsolationGateTest(unittest.TestCase):
     def setUp(self):
