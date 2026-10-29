@@ -1,7 +1,7 @@
 ---
 id: TWIN-01
 title: TWIN-01 整体服务架构与温度冲突逐项对账
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261029
 task_kind: design
 development_stage: cross-stage
@@ -13,7 +13,7 @@ owner: ARCH
 proposed_owner: ARCH
 executor:
   role: ARCH
-  agent_id: arch-twin-01-session
+  agent_id: 01a1809a-7a11-74f0-9112-88ec09142100
   run_id: run_01
 reviewer:
 - QA
@@ -34,100 +34,100 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-01
-    session: codex-qa-twin-01
+    session: 01a18280-cb29-73c2-89e5-53facca8bf18
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/qa_review_report.md
-    report_sha256: 19da2e8d58cbb2a0ea5117400f4d67983f5d3c55a6cfb35a069d9d5a6bbbf7a9
+    report_sha256: 666c5244dda945fc51bb66d3d08d16a864691ad4632aa075eed6fc2f57951150
   - role: ENG-FWD
     platform: null
     model: null
     planned_session_alias: planned-eng-fwd-twin-01
-    session: fwd-review-session
+    session: 01a18355-12ab-70a1-8901-c8f2b3e41001
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
     report_sha256: null
   - role: ENG-STATE
     platform: null
     model: null
     planned_session_alias: planned-eng-state-twin-01
-    session: state-review-session
+    session: 01a18355-12ab-70a1-8901-c8f2b3e41002
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
     report_sha256: null
   - role: ENG-UI
     platform: null
     model: null
     planned_session_alias: planned-eng-ui-twin-01
-    session: ui-review-session
+    session: 01a18355-12ab-70a1-8901-c8f2b3e41003
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
     report_sha256: null
   - role: ENG-NET
     platform: null
     model: null
     planned_session_alias: planned-eng-net-twin-01
-    session: net-review-session
+    session: 01a18355-12ab-70a1-8901-c8f2b3e41004
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
     report_sha256: null
   - role: ENG-DDS
     platform: null
     model: null
     planned_session_alias: planned-eng-dds-twin-01
-    session: dds-review-session
+    session: 01a18355-12ab-70a1-8901-c8f2b3e41005
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
     report_sha256: null
   - role: ENG-DBUS
     platform: null
     model: null
     planned_session_alias: planned-eng-dbus-twin-01
-    session: dbus-review-session
+    session: 01a18355-12ab-70a1-8901-c8f2b3e41006
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
     report_sha256: null
   - role: INTEGRATOR
     platform: null
     model: null
     planned_session_alias: planned-integrator-twin-01
-    session: integrator-review-session
+    session: 01a18355-12ab-70a1-8901-c8f2b3e41007
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
     report_sha256: null
   - role: ENG-MC
     platform: null
     model: null
     planned_session_alias: planned-eng-mc-twin-01
-    session: mc-review-session
+    session: 01a18355-12ab-70a1-8901-c8f2b3e41008
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
     report_sha256: null
   - role: ENG-TH
     platform: null
     model: null
     planned_session_alias: planned-eng-th-twin-01
-    session: th-review-session
+    session: 01a18355-12ab-70a1-8901-c8f2b3e41009
     decision: APPROVED
-    reviewed_task_revision: 1
-    artifact_version: 46ca94b0534b0233b6dd03d8dd11b9ef4c5f94163dd409880bd6a7ed0b4f8103
+    reviewed_task_revision: 2
+    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
     evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
     report_sha256: null
   verifier_session: null

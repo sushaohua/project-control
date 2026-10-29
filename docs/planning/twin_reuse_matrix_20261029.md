@@ -1,7 +1,7 @@
 ---
 id: MATRIX-VMWARE-SOC-TWIN-20261029
 title: VMware至SoC两阶段孪生资产复用与平台适配矩阵
-revision: 1
+revision: 2
 date: 2026-10-29
 status: baselined
 author_role: ARCH
@@ -11,46 +11,81 @@ references:
   - project-control/docs/interfaces/vmware_soc_twin_architecture_icd_20261029.md
   - project-control/docs/planning/vmware_soc_twin_development_plan_20261029.md
   - project-control/docs/planning/soc_system_architecture_input_register_20261029.md
+  - project-control/manifest.yaml
 ---
 
 # VMware至SoC两阶段孪生资产复用与平台适配矩阵
 
-## 1. 复用战略与总体方针
+## 1. 资产复用方针与“有条件设计目标”原则
 
-为了彻底消除嵌入式软件开发中“仿真环境写一套、真机移植重写一套”的返工损耗，本项目确立了**“1:1 同构软件架构”**方针。
+> [!IMPORTANT]
+> **拒绝无依据的绝对保证**：
+> 针对从虚拟机（VMware）到目标嵌入式硬件（SoC）的迁移，本项目确立**“有条件的设计目标（Conditional Design Targets）”**。
+> 架构设计通过解耦平台差异，致力于最大化复用核心代码与界面资产；但在目标板硬件资料（芯片、ABI、sysroot、GPU/屏幕驱动）到位并经物理实测之前，**严禁将“100% 源码直接搬移”或“生产硬实时性能”作为无条件的既定保证**。
 
-- **原则**：业务逻辑、进程拓扑、IPC 通信协议与人机交互前端在两阶段中**保持 100% 源码级与契约级复用**。
-- **差异隔离**：将底层硬件依赖（串口设备名、编译工具链、启动守护进程配置、显示后端）收敛在专用的构建配置层与适配层，严禁在业务逻辑中编写条件宏分歧。
-
----
-
-## 2. 核心组件复用与适配明细表
-
-| 资产名称 / 模块 | 归属仓 / 路径 | VMware 第一阶段 (数字孪生) | SoC 第二阶段 (真机迁移) | 复用比例与代码改动预算 | 平台适配点与外部依赖 |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **通信契约 (ICD/IDL)** | `project-control/docs/interfaces/` | Fast DDS IDL<br/>D-Bus XML<br/>REST/SSE 契约 | **完全一致，原样复用** | **100% 复用** (0 行改动) | 无。契约作为全阶段单一事实源（Single Source of Truth）。 |
-| **forward-service** | `soc-ap/core/forward/` | 独占宿主机串口（如 `/dev/ttyUSB0`），处理 MiniMCProto 事务与 DDS/D-Bus 转换 | 独占 SoC 板载 UART（如 `/dev/ttyS1`），处理相同协议 | **$\ge 95\%$ 源码复用** | 仅通过启动配置文件 (`/etc/aisoc/forward.conf`) 修改串口设备路径与波特率，C++ 源码保持不变。 |
-| **device-manager** | `soc-ap/core/state/` | 运行状态机聚合、准入控制、DDS 状态广播与 D-Bus 快照 | 运行完全相同的状态机逻辑与准入控制 | **100% 源码复用** | 无硬件直接依赖，纯逻辑服务。 |
-| **ui-gateway** | `soc-ap/core/gateway/` | 监听 HTTP 8080，转换 HTTP ↔ D-Bus/DDS，分发 Web 静态资源 | 监听相同端口或 Unix Domain Socket，执行相同网关功能 | **100% 源码复用** | 可选针对嵌入式资源调整静态文件压缩与缓存策略。 |
-| **Browser HMI (前端)** | `soc-ap/ui/` | 运行于外部/宿主机桌面浏览器 (Chrome / Firefox)，连接网关实时推流 | 运行于 SoC 本地 Weston/Wayland 桌面内置的轻量 Kiosk 浏览器或远程 Web | **100% 资产复用** | 界面布局自适应屏幕分辨率；业务交互与 API 路径完全一致。 |
-| **MC 固件** | `mcu-p3/mc/` | 运行于真实 MC STM32 单片机，负责热床控温与透明路由 | 保持同一硬件，无需额外变更 | **100% 复用** | 仅针对 C1～C6 终局决议微调 flags (`0x05`/`0x06`) 与 0.1°C 解码。 |
-| **TH 固件** | `mcu-p3/th/` | 运行于真实 TH STM32 单片机，负责喷头控温 | 保持同一硬件，无需额外变更 | **100% 复用** | 遵循 C1～C6 终局决议保持与 MC 协议一致。 |
-| **构建系统 (CMake)** | `soc-ap/CMakeLists.txt` | 使用 x86_64-linux-gnu 原生 GCC 11+ 编译 | 使用 aarch64-linux-gnu 交叉编译工具链与 SoC sysroot | **构建逻辑 90% 复用** | 增加 `toolchain-aarch64.cmake`，业务 target 声明完全一致。 |
-| **进程管理 (systemd)** | `soc-ap/deploy/systemd/` | VMware Ubuntu 用户会话服务或系统守护单元 | SoC 根文件系统标准守护服务 | **服务声明 95% 复用** | 适配不同运行账户 (root/aisoc) 与日志持久化路径。 |
+- **设计目标**：
+  - 核心通信契约（IDL/XML）、前端交互资产保持 100% 复用；
+  - 业务逻辑代码（`forward-service`、`device-manager`、`ui-gateway`）保持 $\ge 90\%$ 源码级复用；
+  - 差异集中收敛在编译配置、设备树节点名称、systemd 服务环境参数与显示后端启动脚本中。
 
 ---
 
-## 3. 目标 SoC 资料缺口与解耦策略
+## 2. 核心组件复用、芯片对账与任务白名单明细
 
-在架构登记表（`INPUT-SOC-SYSTEM-ARCH-20261029.md`）中，部分目标 SoC 参数（P01 芯片型号/ABI、P02 BSP/sysroot、U02 屏幕分辨率/GPU 驱动）仍待硬件团队补充。
+根据 `project-control/manifest.yaml` 的权威硬件登记，MC 与 TH 采用雅特力（Artery Tek）单片机，而非 STM32。下表准确对账硬件芯片、源码路径与后续任务白名单：
 
-本复用矩阵确立了**严格解耦策略**：
-1. **VMware 阶段不等待 SoC 硬件资料**：
-   - 业务逻辑以 POSIX 标准接口、标准 Fast DDS 3.6.x LTS、标准 D-Bus 1.16.x 与标准 HTML5/ES6 为开发基线。
-   - 所有通信报文使用固定字节宽度与明确端序定义（大端序/网络序在通信层显式转换），消除 x86_64 与 aarch64 的数据布局分歧。
-2. **缺口封闭时间节点**：
-   - 目标 SoC/BSP 资料仅在进入 **TWIN-13 (SoC 平台迁移)** 前作为前置开工门卡点。
-   - 在完成 TWIN-12（VMware 原生系统与真实 MCU 完整在环验收）之前，任何目标板硬件资料缺失均**不得阻塞 VMware 阶段的研发与交付**。
+| 资产名称 / 模块 | 真实源码路径 (准确核实) | 硬件载体 / 芯片型号 | VMware 阶段角色 | SoC 迁移设计目标 | 平台适配点与待确认项 | 后续开发任务与唯一写白名单 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **通信契约 (ICD/IDL)** | `soc-ap/contracts/twin/` | 跨平台纯文本/代码 | 契约基线 | 100% 原样复用 | 无硬件依赖；全阶段单一事实源 | `TWIN-02`<br/>`soc-ap/contracts/twin/**` |
+| **forward-service** | `soc-ap/core/forward/` | AP 主机 / SoC | 独占宿主机串口 `/dev/ttyUSB0` | 源码复用率 $\ge 90\%$ | 需适配 SoC 实际串口设备路径（如 `/dev/ttyS1`）及波特率配置 | `TWIN-07`<br/>`soc-ap/core/forward/**` |
+| **device-manager** | `soc-ap/core/state/` | AP 主机 / SoC | 状态机权威聚合与准入控制 | 源码复用率 $\ge 95\%$ | 纯逻辑服务，无硬件直接依赖；注意 CPU 字节序对齐 | `TWIN-08`<br/>`soc-ap/core/state/**` |
+| **ui-gateway** | `soc-ap/core/gateway/` | AP 主机 / SoC | 监听 HTTP 8080，转接 D-Bus/DDS | 源码复用率 $\ge 95\%$ | 需评估嵌入式系统静态资源 gzip 压缩与连接数上限 | `TWIN-09`<br/>`soc-ap/core/gateway/**` |
+| **Browser HMI (前端)** | `soc-ap/ui/` | 宿主机浏览器 / SoC 本地屏 | 宿主机 Chrome/Firefox 展现真实数据 | 静态资产 100% 复用 | 需适配目标屏分辨率与触摸屏事件（见 U02 待确认项） | `TWIN-10`<br/>`soc-ap/ui/**` |
+| **MC 固件** | `mcu-p3/motion-controller-mcu/` | **AT32F435VGT7**<br/>(雅特力，非STM32) | 负责热床温控与透明路由 (原生运行) | 保持同一硬件与固件架构 | 针对 C1~C6 终局决议修订 0.1°C 解码，保持与 TH 协同 | `TWIN-15`<br/>`mcu-p3/motion-controller-mcu/**` |
+| **TH 固件** | `mcu-p3/color-engine-mcu/io_toggle/` | **AT32F423CCT7**<br/>(雅特力，非STM32) | 负责喷头温控采样 (原生运行) | 保持同一硬件与固件架构 | 针对 C1~C6 终局决议修订 0.1°C 解码与超时保护 | `TWIN-16`<br/>`mcu-p3/color-engine-mcu/io_toggle/**` |
+| **构建系统 (CMake)** | `soc-ap/CMakeLists.txt` | x86_64 GCC / aarch64 交叉工具链 | 主机编译入口 | 构建逻辑复用 $\ge 80\%$ | 需引入 `toolchain-aarch64.cmake` 与 SoC sysroot 链接库 | `TWIN-04`<br/>`soc-ap/CMakeLists.txt` |
+| **进程守护 (systemd)** | `soc-ap/deploy/systemd/` | systemd 用户服务 / 系统守护 | VMware 服务单元 | 模板复用 $\ge 90\%$ | 适配 SoC 目标根文件系统用户组、安全策略与 cgroups 限制 | `TWIN-04`<br/>`soc-ap/deploy/**` |
+
+---
+
+## 3. 目标 SoC 参数待确认项 (P01/P02/U02) 与验证方法
+
+当前开发阶段严格隔离目标硬件未决风险，避免因硬件参数未定阻碍 VMware 阶段的真实软件与通信开发：
+
+```mermaid
+flowchart TD
+    subgraph Phase1 [第一阶段：VMware 孪生验证 (已隔离未决项)]
+        DEV["标准 POSIX / C++17 研发"]
+        IPC["真实 Fast DDS / D-Bus / HTTP 跨进程通信"]
+        HIL["直连真实 AT32F435 / AT32F423 硬件在环"]
+    end
+
+    subgraph Inputs [待硬件/BSP团队补充的输入项]
+        P01["P01: 目标 SoC 型号、ABI、RAM 容量"]
+        P02["P02: 目标 Linux 内核、sysroot、libc"]
+        U02["U02: 目标屏幕分辨率、GPU 驱动、Weston"]
+    end
+
+    subgraph Phase2 [第二阶段：SoC 迁移与物理验证 (TWIN-13/14)]
+        CROSS["基于准确 sysroot 交叉编译"]
+        BOOT["冷启动与内存 RSS 实测"]
+        PHYS_TEST["实屏触摸、GPU 渲染与示波器物理测时"]
+    end
+
+    Phase1 --> CROSS
+    Inputs -.->|"TWIN-13 开工前前置注入"| CROSS
+    CROSS --> BOOT --> PHYS_TEST
+```
+
+### 待确认项与验证方法明细表
+
+| 编号 | 待确认参数 | 现状与风险点 | 设计假设 (当前依据) | 第二阶段验证方法 (TWIN-13/14) |
+| :--- | :--- | :--- | :--- | :--- |
+| **P01** | 目标 SoC 芯片、CPU 架构/ABI、RAM 容量 | 芯片型号待定；ABI 存在 64位 aarch64 或 32位 armhf 差异；内存余量未知 | 假设为标准 64位 ARM (aarch64)；通信报文均采用明确的显式宽度（如 `int32_t`）与端序转换宏 | 在真实 SoC 上读取 `/proc/cpuinfo`，使用 `valgrind` / `free -m` 测量实际运行 RSS 内存 |
+| **P02** | 目标 Linux 发行版、libc 版本、编译器与 sysroot | 尚未提供 SoC 交叉编译工具链与 sysroot；libc 若为 musl 则需注意头文件差异 | 假设支持 glibc 2.31+ 与 GCC 9+，仅依赖标准 POSIX 与开源中间件 | 建立 Docker 交叉编译环境，执行全量 target 编译并在目标板上挂载运行 smoke 测试 |
+| **P03** | 系统启动管理与守护权限 | 根文件系统是否为只读分区；守护进程是否具备 `/dev/tty` 读写权限 | 假设具备标准 systemd 守护环境，服务运行于 `aisoc` 专有账户并属于 `dialout` 组 | 部署 systemd 单元，断电拔插测试自启动与权限拦截，检查 systemd 日志 (`journalctl`) |
+| **U01/U02**| 目标屏幕物理尺寸、分辨率、触控与 GPU 驱动 | 屏幕是否支持硬件 GPU 加速；Weston/Wayland 环境下运行 Kiosk 浏览器的内存压力 | 假设分辨率为 $800\times 480$ 或 $1024\times 600$；Web 界面采用流式自适应排版 | 真实屏幕接驳，测试触摸点击延迟、CSS 动画帧率 (目标 30~60 FPS) 及长时间运行内存泄露 |
+| **T01** | 生产物理延迟与通信 RTT 指标 | 物理板载 UART 布线抗干扰能力；MCU 任务负载下对 AP 轮询的响应延迟 | 目标设定为单向链路 $\le 3\text{ ms}$，整机 RTT 典型值 $\le 8\text{ ms}$ | 逻辑分析仪/示波器挂接 AP-MC USART2 物理引脚，连续采集 1000 次查询测量高分位 RTT |
 
 ---
 
@@ -58,10 +93,10 @@ references:
 
 | 验收维度 | 第一阶段：VMware 应用孪生验收 (TWIN-12) | 第二阶段：SoC 真机实板验收 (TWIN-14) |
 | :--- | :--- | :--- |
-| **执行环境** | VMware Ubuntu 22.04 虚拟机 + 真实 MC/TH 硬件链路 | 真实 SoC 开发板 + 真实本地屏幕 + 真实 MC/TH 硬件链路 |
+| **执行环境** | VMware Ubuntu 22.04 虚拟机 + 真实 AT32F435/AT32F423 硬件链路 | 真实 SoC 开发板 + 真实目标屏幕 + 真实 AT32F435/AT32F423 硬件链路 |
 | **验证对象** | 跨进程 IPC、状态聚合算法、Web 前端可见交互、异常断线自愈 | 交叉编译二进制产物、板级驱动加载、GPU/触控响应、系统冷启动时间 |
-| **性能基准** | 验证功能语义正确性（Soft Real-time 容许 200ms 抖动） | 严格验证生产资源约束（CPU $\le 15\%$, RAM $\le 128\text{MB}$, RTT $\le 8\text{ms}$） |
+| **性能基准** | 验证功能语义正确性（Soft Real-time 容许 200ms 抖动） | 严格验证生产资源约束（结合 P01/P02 确定准确门限，通过实测收件） |
 | **交付凭证** | 真实浏览器交互录屏/截图、双向 Raw Hex 通信报文、D-Bus/DDS 调用日志 | 板载实拍交互照片/视频、硬件示波器/串口测时数据、资源监测 dump 记录 |
 
 ---
-*本资产复用矩阵确立了两阶段同构实施路径，已提交 COORD 与相关工程师作为后续开工基准。*
+*本资产复用矩阵确立了两阶段同构实施路径与硬件芯片基准，已提交 COORD 与相关工程师作为后续开工基准。*

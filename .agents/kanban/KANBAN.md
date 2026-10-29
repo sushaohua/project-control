@@ -25,7 +25,7 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 
 ## 当前顺序与责任
 
-第一张[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)已由ARCH完成架构与C1～C6对账并经独立QA审查通过（Done）；下一张[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)交ARCH制定双环境可执行通信契约与生成规则；04构建/进程管理与03独立预期按依赖推进，再05/06通信SDK、07/08/09常驻业务/网关、10真实浏览器界面。15/16分别由MC/TH处理温度争议及必要修订，均为11候选前置；11联调、12独立接受VM阶段；13迁移SoC、14实板实屏接受。
+第一张[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)已由ARCH完成架构与C1～C6对账并经独立QA审查通过（Done）；下一张[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)交ARCH制定双环境可执行通信契约与生成规则（当前任务已暂停，等待用户指令启动）；04构建/进程管理与03独立预期按依赖推进，再05/06通信SDK、07/08/09常驻业务/网关、10真实浏览器界面。15/16分别由MC/TH处理温度争议及必要修订，均为11候选前置；11联调、12独立接受VM阶段；13迁移SoC、14实板实屏接受。
 
 最多两张实现卡并行；实际会话、前置接受、写白名单、隔离输出、租约与资源待Ready前落实。台架/串口/探针只登记一名实际操作者，CLI不能与常驻FWD抢UART。QA独立Codex、QA作者产物由非作者ARCH复核；COORD按准确候选收件，不因结构exit0自动推进。
 
