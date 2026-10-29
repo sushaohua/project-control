@@ -1,0 +1,100 @@
+{
+  "candidate_commit": "e9f98cdac044cb518ab6fd871ce7871361329ebf",
+  "reviews": [
+    {
+      "run": "qa_01",
+      "candidate_commit": "5b27106a08212b7d1e5d0f3be615a9f600d930e7",
+      "session_id": "01a1878a-efb6-7272-be24-57936dca6e56",
+      "observed_model": "gpt-6-luna",
+      "usage": {
+        "input_tokens": 560409,
+        "cached_input_tokens": 484352,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 6473,
+        "reasoning_output_tokens": 2950
+      },
+      "decision": "APPROVED",
+      "report_path": "runs/qa_01/qa_review_report.md",
+      "report_sha256": "9157a0a8093f977fba1ce3c6126d7a91e153b2ada08bcf80888563e72f30da76"
+    },
+    {
+      "run": "report_review_01",
+      "candidate_commit": "5b27106a08212b7d1e5d0f3be615a9f600d930e7",
+      "session_id": "01a1878c-9a85-7791-9c4c-a47b616caa11",
+      "observed_model": "gpt-6-luna",
+      "usage": {
+        "input_tokens": 780827,
+        "cached_input_tokens": 716032,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 7252,
+        "reasoning_output_tokens": 3797
+      },
+      "decision": "REJECTED",
+      "report_path": "runs/report_review_01/qa_report_arch_review.md",
+      "report_sha256": "16e4eb569f4ca488cc0f000d17967b064df5ee4ba2b21851578461c28aaecc27"
+    },
+    {
+      "run": "qa_02",
+      "candidate_commit": "e9f98cdac044cb518ab6fd871ce7871361329ebf",
+      "session_id": "01a1878f-48d3-7642-b5e5-eb922e7f7f23",
+      "observed_model": "gpt-6-luna",
+      "usage": {
+        "input_tokens": 232382,
+        "cached_input_tokens": 183808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 4013,
+        "reasoning_output_tokens": 1224
+      },
+      "decision": "APPROVED",
+      "report_path": "runs/qa_02/qa_review_report.md",
+      "report_sha256": "3ca64685d5e947a8082a29d7d43e7ae1776131a4cf5b45b202eaceb3cf69c02b"
+    },
+    {
+      "run": "report_review_02",
+      "candidate_commit": "e9f98cdac044cb518ab6fd871ce7871361329ebf",
+      "session_id": "01a18790-65c5-7461-9b34-dace691af446",
+      "observed_model": "gpt-6-luna",
+      "usage": {
+        "input_tokens": 267027,
+        "cached_input_tokens": 225408,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 5008,
+        "reasoning_output_tokens": 1795
+      },
+      "decision": "APPROVED",
+      "report_path": "runs/report_review_02/qa_report_arch_review.md",
+      "report_sha256": "c72731bb43d37d1a357560c508729701c64dd64cc4f20c3b4b3caf1d3e13fee1"
+    }
+  ],
+  "file_sha256": {
+    "result.md": "5cc9b7300f33b61fb97542af44adc075c9e7ad4990ebbbd293547eb690e91a6b",
+    "runs/report_review_01/stderr.log": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+    "runs/report_review_01/exit_code.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "runs/report_review_01/prompt.txt": "151faae9fc325ec9b3f5bcfe7b7419246a5e1f5ad14b8cc53c59727b254fe9bf",
+    "runs/report_review_01/launch.json": "ebca4a53b15a1386b65d0bbc2fa282ddc1e8dda3fb58fe64ea5c72a7f85d1df8",
+    "runs/report_review_01/codex_session.jsonl": "93c065b8dc9cccf8922a463c55f5423adebaa296b7669b7dc752dfc324cad49c",
+    "runs/report_review_01/model_observation.json": "cc1491df87c63c033784b6d958eca51ef5a72f6bee1cb87b072b8d3a77dd3346",
+    "runs/report_review_01/qa_report_arch_review.md": "16e4eb569f4ca488cc0f000d17967b064df5ee4ba2b21851578461c28aaecc27",
+    "runs/report_review_02/stderr.log": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+    "runs/report_review_02/exit_code.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "runs/report_review_02/prompt.txt": "82b8a2d5f88d65186baea3381bb4660854d6cb2cd93d457e0789e331d3bc7bad",
+    "runs/report_review_02/launch.json": "d69dbfd5d1923d6ec602952a329ddddd4840d06ebdc6bd0132c8e8b7c8eaae29",
+    "runs/report_review_02/codex_session.jsonl": "5b947a40c014c7c2ab2a19cc84cea78802eecd5f96b3a5e95504baa236a17dca",
+    "runs/report_review_02/model_observation.json": "8f93febd81c1adce2b8385995e96b742f4d72abb068ec9cada2bb58a35c4a123",
+    "runs/report_review_02/qa_report_arch_review.md": "c72731bb43d37d1a357560c508729701c64dd64cc4f20c3b4b3caf1d3e13fee1",
+    "runs/qa_02/stderr.log": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+    "runs/qa_02/exit_code.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "runs/qa_02/prompt.txt": "72df6bc6534b430845aed0d11b46a1f15090a8d31b1977a51051553683b17a20",
+    "runs/qa_02/launch.json": "6eaa649bdd65fa3f0500a5aefa005bf0e31afdf1985e11e7234283ffc9c1df56",
+    "runs/qa_02/codex_session.jsonl": "f6eb4479b851238a1edf880b16c6b3253939eb5f094ee97025af7b763e8331c9",
+    "runs/qa_02/model_observation.json": "41c884d57877cdc98dbf5866b130ee607acb0ea0dc53526ec3f35bc65724e0ce",
+    "runs/qa_02/qa_review_report.md": "3ca64685d5e947a8082a29d7d43e7ae1776131a4cf5b45b202eaceb3cf69c02b",
+    "runs/qa_01/stderr.log": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721",
+    "runs/qa_01/exit_code.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "runs/qa_01/prompt.txt": "ed64b509d1edfba1d6dfccccfa07cfce3a12f547863240871f51efc303893e3b",
+    "runs/qa_01/launch.json": "1ccfc7ed47ca010be4aa321f00f342c04186190af6c8c1244cf7192e4e0e17ac",
+    "runs/qa_01/codex_session.jsonl": "720bd05333c61a555c31225712950d9f9d0af53cea10b5d3fc574088925e3c63",
+    "runs/qa_01/model_observation.json": "5e7d52a6bbed0f35a0ccdaa241a7f778fe0e808ddbabdcad3c6bc7771152bc00",
+    "runs/qa_01/qa_review_report.md": "9157a0a8093f977fba1ce3c6126d7a91e153b2ada08bcf80888563e72f30da76"
+  }
+}

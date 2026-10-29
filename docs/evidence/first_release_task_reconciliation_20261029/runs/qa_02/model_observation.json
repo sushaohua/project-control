@@ -1,0 +1,11 @@
+{
+  "session_id": "01a1878f-48d3-7642-b5e5-eb922e7f7f23",
+  "source_kind": "qa-session-turn-context",
+  "observations": [
+    {
+      "model": "gpt-6-luna",
+      "cwd": "/tmp/release-scope-qa2-z5tzejoz/project-control",
+      "timestamp": "2026-10-29T12:07:58.986Z"
+    }
+  ]
+}

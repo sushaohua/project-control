@@ -1,0 +1,21 @@
+{
+  "candidate_commit": "e9f98cdac044cb518ab6fd871ce7871361329ebf",
+  "reviewed_report_sha256": "3ca64685d5e947a8082a29d7d43e7ae1776131a4cf5b45b202eaceb3cf69c02b",
+  "source_checkout": "/tmp/release-scope-qa2-z5tzejoz/project-control",
+  "requested_model": "gpt-6-luna",
+  "command": [
+    "codex",
+    "exec",
+    "-m",
+    "gpt-6-luna",
+    "--sandbox",
+    "read-only",
+    "-C",
+    "/tmp/release-scope-qa2-z5tzejoz/project-control",
+    "--json",
+    "-o",
+    "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/first_release_task_reconciliation_20261029/runs/report_review_02/qa_report_arch_review.md",
+    "<prompt.txt>"
+  ],
+  "started_at": "2026-10-29T12:09:09.634300+00:00"
+}

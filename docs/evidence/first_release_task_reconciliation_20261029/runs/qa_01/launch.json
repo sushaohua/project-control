@@ -1,0 +1,24 @@
+{
+  "candidate_commit": "5b27106a08212b7d1e5d0f3be615a9f600d930e7",
+  "remote_commit": "5b27106a08212b7d1e5d0f3be615a9f600d930e7",
+  "source_checkout": "/tmp/release-scope-qa-iplc2_px/project-control",
+  "requested_model": "gpt-6-luna",
+  "cli_version": "codex-cli 0.165.0",
+  "command": [
+    "codex",
+    "exec",
+    "-m",
+    "gpt-6-luna",
+    "--sandbox",
+    "read-only",
+    "-C",
+    "/tmp/release-scope-qa-iplc2_px/project-control",
+    "--json",
+    "-o",
+    "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/first_release_task_reconciliation_20261029/runs/qa_01/qa_review_report.md",
+    "<prompt.txt>"
+  ],
+  "started_at": "2026-10-29T12:03:11.652104+00:00",
+  "reviewer_role": "QA",
+  "execution_kind": "independent-codex-cli-host-read-only"
+}

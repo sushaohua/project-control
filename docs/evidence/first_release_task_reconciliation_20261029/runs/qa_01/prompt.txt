@@ -1,0 +1,4 @@
+你是独立QA Reviewer，只读审查本Git服务器检出的文档候选，不是作者。核对HEAD和文件内容，审查以下三文件：docs/planning/product/first_release_scope_decision_20261029.md、docs/planning/product/product_feature_task_traceability_20261029.md、docs/planning/soc_system_architecture_input_register_20261029.md。读取相关PM原目录、PL-01温度范围、两阶段方案和被引用的任务/工作包以核验。
+真实用户决定摘要：先开发本地可正常打印的整机；按表中PM建议分期（不是44项都首版）；明确把七项软件开发/接口调查子范围纳入首版：COL-007、MOT-001、MOT-002、HMI-004、SAF-005、HMI-005、NET-001，要求MC/TH工程师参与。PM建议5首版、24后续、4暂不做、11待决定；七项子范围优先，其完整产品范围并不因此全批准。已确认温度只读、VMware真实模块/进程/IPC/浏览器界面和SoC迁移方向继续有效。用户要求review任务卡对账草案并推送，然后独立QA；当前并未生成新的正式任务卡。
+检查44项覆盖、分类/决定一致性、MC/TH分工、任务映射准确且不夸大既有完成状态、需求/实现/QA/产品批准的区别，链接可用性及明显矛盾。是文档审查，不执行构建/自动化测试，不要求本提案证明实际硬件通过，不要求尚未生成的任务卡已生成。来源无法确认时明确限制；勿编造会话ID、模型或测试。
+最终返回中文Markdown QA报告：决策APPROVED/REJECTED/BLOCKED、准确候选commit、检查范围和证据、逐项发现（阻断/建议分开、准确路径）、限制、下一步。必须审查实际文件，不仅复述提示词。候选commit：5b27106a08212b7d1e5d0f3be615a9f600d930e7

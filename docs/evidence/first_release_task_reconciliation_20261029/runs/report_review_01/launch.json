@@ -1,0 +1,23 @@
+{
+  "candidate_commit": "5b27106a08212b7d1e5d0f3be615a9f600d930e7",
+  "reviewed_report_sha256": "9157a0a8093f977fba1ce3c6126d7a91e153b2ada08bcf80888563e72f30da76",
+  "reviewed_report_path": "docs/evidence/first_release_task_reconciliation_20261029/runs/qa_01/qa_review_report.md",
+  "source_checkout": "/tmp/release-scope-qa-iplc2_px/project-control",
+  "requested_model": "gpt-6-luna",
+  "command": [
+    "codex",
+    "exec",
+    "-m",
+    "gpt-6-luna",
+    "--sandbox",
+    "read-only",
+    "-C",
+    "/tmp/release-scope-qa-iplc2_px/project-control",
+    "--json",
+    "-o",
+    "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/first_release_task_reconciliation_20261029/runs/report_review_01/qa_report_arch_review.md",
+    "<prompt.txt>"
+  ],
+  "started_at": "2026-10-29T12:05:00.961499+00:00",
+  "reviewer_role": "ARCH-report-review"
+}
