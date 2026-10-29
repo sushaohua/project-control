@@ -1,0 +1,87 @@
+QA review command log; execution time 2026-10-29T08:33Z (UTC); cwd=/home/sushaohua/workspace/ai_soc_project; reviewer-side checks, not sandbox runtime proof.
+
+$ git -C project-control ls-remote origin refs/heads/main
+exit_code=0
+stdout:
+eb3de6a6d370a5bd069c72bcdebfafd4c207a50e	refs/heads/main
+
+stderr:
+
+
+$ git -C test_harness ls-remote origin refs/heads/main
+exit_code=0
+stdout:
+210ddd1c3f6f59594836c91b68aae55fb7a35181	refs/heads/main
+
+stderr:
+
+
+$ docker inspect 32da38cfe4c6 --format {{.Id}} {{.Config.Image}} {{.State.Status}} {{json .Mounts}}
+exit_code=1
+stdout:
+
+
+stderr:
+Error: No such object: 32da38cfe4c6
+
+
+$ sha256sum project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/result.md project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/server_qa.json project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/server_lock.json project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/checkout.log project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/runtime.log project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/server_verdict.json
+exit_code=0
+stdout:
+7f036835b1357cc8fa9bbeaa7a6ae51540d36d9ef98ff63e387aa1163e9a2dfd  project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/result.md
+48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946  project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/server_qa.json
+7186891500d119b8b3f3c7711c933771dca6426cd43031b275386854e9d6a123  project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/server_lock.json
+ad529878ede4286fc0b05ed7b03fbba1e9b4995ce5f1c1284eb22c41e7b67f84  project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/checkout.log
+fdda2e392ea0043600df03b529b3634d62cc750b1f9569ffbd2f5bd4cd25d03d  project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/runtime.log
+fffacd146a2dcfbac78aeffc90e0ce44109fc7747767e1677baa12f641ec86df  project-control/docs/evidence/coord_automation/AUTO-02/runs/run_02/server_verdict.json
+
+stderr:
+
+
+$ sha256sum project-control/tools/coord_runner/__init__.py project-control/tools/coord_runner/models.py project-control/tools/coord_runner/errors.py project-control/tools/coord_runner/lease_manager.py project-control/tools/coord_runner/state_machine.py project-control/tools/coord_runner/checkpoint.py project-control/tools/coord_runner/scheduler.py project-control/tools/coord_runner/runner.py project-control/tools/coord_runner/codex_adapter.py project-control/config/coord_runner/coord_config.yaml project-control/tools/coord_queue.py
+exit_code=0
+stdout:
+c1806f909a8c9c891c17c9f9a2824851a7a70d289ab087502794bff5796de7fa  project-control/tools/coord_runner/__init__.py
+e2db6126d84ef12a007f83a89ddd472e5569e0ca7ba28b0f20a09d5f4a18ce78  project-control/tools/coord_runner/models.py
+1407cc0ddd7dc5a954dc024f2be1e2689274a0735bef37d8e8effd22ccef07e3  project-control/tools/coord_runner/errors.py
+e65e24a97af415303c7193e6c0c1d0264aac7aa9e90c43f4e0a657676680a96d  project-control/tools/coord_runner/lease_manager.py
+93150cac90cd9254f37306552900e14b6480382dad3648c5d7317e36a50d3c91  project-control/tools/coord_runner/state_machine.py
+5e38f357b573570a27cd718e296b694c8cb6671bacd5a67a834ff796b5f56ed6  project-control/tools/coord_runner/checkpoint.py
+c015900d4ee81e421da333aec2b0e49d0066158c9dffa3f1c23037083095e884  project-control/tools/coord_runner/scheduler.py
+468fd313e899a3788360d2e3d4b5c4e9197e2a26ec900e21f1216798f2c34f05  project-control/tools/coord_runner/runner.py
+5e571fbd94cc38486d3b7ba892adf425d7ed0f750384e0e793827e63f948d9a0  project-control/tools/coord_runner/codex_adapter.py
+75d43276a3da0fab4640b1f516045bea0d77142638be0d2f47a85a50c86a54f2  project-control/config/coord_runner/coord_config.yaml
+cb803af84686e7b98e9e3818b7050cfb99427e1d3b0482e3213f8d98919fe995  project-control/tools/coord_queue.py
+
+stderr:
+
+
+$ python3 -c import ast,subprocess; from pathlib import Path; r="project-control"; ps=subprocess.check_output(["git","-C",r,"diff","--name-only","a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819","eb3de6a6d370a5bd069c72bcdebfafd4c207a50e","--","*.py"],text=True).splitlines(); bad=[]; n=0;
+for rel in ps:
+ t=ast.parse((Path(r)/rel).read_text(encoding="utf-8"));
+ for f in ast.walk(t):
+  if isinstance(f,(ast.FunctionDef,ast.AsyncFunctionDef)):
+   n+=1; a=f.args; p=len(a.posonlyargs)+len(a.args)+len(a.kwonlyargs)+int(a.vararg is not None)+int(a.kwarg is not None); p-=int(bool(a.args and a.args[0].arg in {"self","cls"})); lines=f.end_lineno-f.lineno+1;
+   if lines>50 or p>4: bad.append((rel,f.name,lines,p))
+print("changed_python_files=%d functions=%d violations=%r"%(len(ps),n,bad))
+exit_code=0
+stdout:
+changed_python_files=18 functions=249 violations=[('tools/check_task_graph.py', 'done_acceptance_errors', 37, 5)]
+
+stderr:
+
+
+$ rg -n CodexReviewAdapter|agent_executor\s*=|qa_executor\s*=|review_executor\s*= project-control/tools project-control/config/coord_runner --glob *.py --glob *.yaml
+exit_code=0
+stdout:
+project-control/tools/test_coord_runner.py:24:    CodexReviewAdapter,
+project-control/tools/test_coord_runner.py:291:        runner.agent_executor = lambda tid, r: "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+project-control/tools/test_coord_runner.py:292:        runner.qa_executor = lambda tid, c: {"passed": True, "sandbox": {"kind": "container", "id": "c1"}}
+project-control/tools/test_coord_runner.py:293:        runner.review_executor = lambda tid, c: {"session": f"rev_{tid}", "decision": "APPROVED"}
+project-control/tools/test_coord_runner.py:355:        adapter = CodexReviewAdapter(codex_bin=self.root / "missing_codex")
+project-control/tools/test_coord_runner.py:365:        adapter = CodexReviewAdapter(codex_bin=fake_codex)
+project-control/tools/coord_runner/codex_adapter.py:32:class CodexReviewAdapter:
+project-control/tools/coord_runner/__init__.py:5:from .codex_adapter import CodexReviewAdapter, CodexReviewResult
+project-control/tools/coord_runner/__init__.py:32:    "CodexReviewAdapter",
+
+stderr:

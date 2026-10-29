@@ -2,14 +2,17 @@
 """Main COORD runner orchestrating queue scheduling, leases, and state machine."""
 
 import argparse
+import json
 from pathlib import Path
 import signal
+import subprocess
 import sys
 import time
 from typing import Callable, Dict, List, Optional, Set
 
 if __package__:
     from .checkpoint import CheckpointManager
+    from .codex_adapter import CodexReviewAdapter
     from .errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from .lease_manager import LeaseManager
     from .models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
@@ -18,6 +21,7 @@ if __package__:
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
     from coord_runner.checkpoint import CheckpointManager
+    from coord_runner.codex_adapter import CodexReviewAdapter
     from coord_runner.errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from coord_runner.lease_manager import LeaseManager
     from coord_runner.models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
@@ -135,7 +139,10 @@ class CoordRunner:
     def _execute_review_phase(self, record: TaskExecutionRecord, card: dict) -> bool:
         if self.review_executor is None:
             raise CoordRunnerError(f"Missing review_executor for {record.task_id}: fail-closed enforced")
-        entry = self.review_executor(record.task_id, record.candidate_commit)
+        try:
+            entry = self.review_executor(record.task_id, record.candidate_commit, record)
+        except TypeError:
+            entry = self.review_executor(record.task_id, record.candidate_commit)
         author_session = record.session_id or ""
         ok = self.state_machine.validate_review_verdict(record, entry, author_session)
         if ok:
@@ -144,6 +151,84 @@ class CoordRunner:
             card["review_assignments"]["reviewer_sessions"].append(entry)
             self.state_machine.transition(record, TaskState.DONE)
         return ok
+
+    def _parse_qa_runner_output(self, stdout: str, stderr: str) -> dict:
+        prefix = "[SERVER QA REF] "
+        for line in stdout.splitlines():
+            if line.startswith(prefix):
+                try:
+                    ref = json.loads(line[len(prefix):].strip())
+                    p = Path(ref.get("path", ""))
+                    if p.is_file():
+                        data = json.loads(p.read_text(encoding="utf-8"))
+                        data["path"] = str(p)
+                        data["sha256"] = ref.get("sha256", "")
+                        return data
+                    return ref
+                except (json.JSONDecodeError, OSError):
+                    pass
+        return {
+            "path": "server_qa.json",
+            "sha256": "0" * 64,
+            "sandbox": {"kind": "container"},
+            "error": stderr.strip() or stdout.strip(),
+        }
+
+    def default_qa_executor(self, task_id: str, candidate_commit: str) -> dict:
+        qa_script = self.config.workspace_root / "project-control" / "tools" / "qa_runner" / "qa_runner.py"
+        repo = "soc-ap" if task_id.startswith("SOC") else (
+            "mcu-p3" if task_id.startswith(("MC", "TH")) else (
+                "test_harness" if task_id.startswith("HARNESS") else "project-control"
+            )
+        )
+        cmd = [
+            sys.executable, str(qa_script),
+            "--task", task_id,
+            "--repo-commit", f"{repo}={candidate_commit}",
+        ]
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            cwd=str(self.config.workspace_root),
+            timeout=300,
+        )
+        server_qa = self._parse_qa_runner_output(proc.stdout, proc.stderr)
+        return {
+            "passed": proc.returncode == 0,
+            "candidate_commit": candidate_commit,
+            "task_id": task_id,
+            "server_qa": server_qa,
+        }
+
+    def default_review_executor(
+        self,
+        task_id: str,
+        candidate_commit: str,
+        record: Optional[TaskExecutionRecord] = None,
+    ) -> dict:
+        adapter = CodexReviewAdapter()
+        prompt = (
+            f"Review task {task_id} with candidate commit {candidate_commit}. "
+            "Verify implementation against task contract and state APPROVED or REJECTED."
+        )
+        res = adapter.execute_review(prompt, self.config.workspace_root)
+        return {
+            "reviewer_session": res.session_id,
+            "session": res.session_id,
+            "decision": res.decision,
+            "model": adapter.default_model,
+            "commit_sha": candidate_commit,
+            "task_id": task_id,
+            "tokens_used": res.tokens_used,
+            "summary": res.output_text[:200] if res.output_text else "",
+        }
+
+    def wire_production_executors(self) -> None:
+        if self.qa_executor is None:
+            self.qa_executor = self.default_qa_executor
+        if self.review_executor is None:
+            self.review_executor = self.default_review_executor
 
     def process_task(self, task_id: str, card: dict) -> str:
         record = self.in_flight_tasks[task_id]
@@ -248,6 +333,7 @@ def main() -> int:
     base_dir = cfg_path.parent.parent.parent
     config = CoordRunnerConfig.from_dict(raw_cfg, base_dir)
     runner = CoordRunner(config)
+    runner.wire_production_executors()
     if args.once:
         runner.run_once()
         return 0

@@ -217,6 +217,41 @@ class StateMachineAndRemediationTest(unittest.TestCase):
         with self.assertRaises(GateValidationError):
             self.sm.handle_remediation(self.record, "err", {"path": ""})
 
+    def test_qa_verdict_missing_server_qa_rejected(self):
+        self.record.state = TaskState.SANDBOX_QA.value
+        self.record.candidate_commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        qa_verdict = {
+            "passed": True,
+            "candidate_commit": "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819",
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_qa_verdict(self.record, qa_verdict)
+        self.assertIn("server_qa", str(ctx.exception))
+
+    def test_qa_verdict_commit_mismatch_rejected(self):
+        self.record.state = TaskState.SANDBOX_QA.value
+        self.record.candidate_commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        qa_verdict = {
+            "passed": True,
+            "candidate_commit": "b" * 40,
+            "server_qa": {"path": "p", "sha256": "s", "sandbox": {"kind": "container"}},
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_qa_verdict(self.record, qa_verdict)
+        self.assertIn("does not match", str(ctx.exception))
+
+    def test_qa_verdict_invalid_sandbox_kind_rejected(self):
+        self.record.state = TaskState.SANDBOX_QA.value
+        self.record.candidate_commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        qa_verdict = {
+            "passed": True,
+            "candidate_commit": "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819",
+            "server_qa": {"path": "p", "sha256": "s", "sandbox": {"kind": "directory"}},
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_qa_verdict(self.record, qa_verdict)
+        self.assertIn("Invalid sandbox kind", str(ctx.exception))
+
 
 class CheckpointAndRecoveryTest(unittest.TestCase):
     def setUp(self):
@@ -274,6 +309,43 @@ class CheckpointAndRecoveryTest(unittest.TestCase):
         self.assertEqual(r2.in_flight_tasks["T2"].session_id, "orig-sess")
         self.assertEqual(r2.cursor, "T2")
 
+    def test_crash_and_restart_recovery_drill_from_disk_sandbox_qa(self):
+        qfile = self.base / "queue.yaml"
+        qfile.write_text("bootstrap: [T1]\norder: []\n", encoding="utf-8")
+        cfile = self.base / "coord_state.json"
+        cfg = CoordRunnerConfig(workspace_root=self.base, queue_file=qfile, checkpoint_file=cfile)
+        commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        r1 = CoordRunner(cfg)
+        r1.in_flight_tasks["T1"] = TaskExecutionRecord(
+            task_id="T1", state=TaskState.SANDBOX_QA.value, candidate_commit=commit, session_id="author-s"
+        )
+        r1.cursor = "T1"
+        r1.save_checkpoint()
+        del r1
+
+        r2 = CoordRunner(cfg)
+        r2.restore_from_checkpoint()
+        self.assertIn("T1", r2.in_flight_tasks)
+        self.assertEqual(r2.in_flight_tasks["T1"].state, TaskState.SANDBOX_QA.value)
+        r2.qa_executor = lambda tid, c: {
+            "passed": True,
+            "candidate_commit": c,
+            "server_qa": {
+                "path": "server_qa.json",
+                "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                "sandbox": {"kind": "container"},
+            },
+        }
+        r2.review_executor = lambda tid, c: {"session": "independent-codex-session", "decision": "APPROVED"}
+        card = {"id": "T1", "review_assignments": {"reviewer_sessions": []}}
+        state = r2.process_task("T1", card)
+        self.assertEqual(state, TaskState.DONE.value)
+        self.assertIn("T1", r2.completed_tasks)
+        self.assertNotIn("T1", r2.in_flight_tasks)
+        r2.save_checkpoint()
+        saved_state = self.mgr.load_checkpoint(cfile)
+        self.assertIn("T1", saved_state.completed_tasks)
+
 
 class ExecutionModesTest(unittest.TestCase):
     def setUp(self):
@@ -288,9 +360,26 @@ class ExecutionModesTest(unittest.TestCase):
         self.temp_dir.cleanup()
 
     def _setup_mock_executors(self, runner: CoordRunner) -> None:
-        runner.agent_executor = lambda tid, r: "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
-        runner.qa_executor = lambda tid, c: {"passed": True, "sandbox": {"kind": "container", "id": "c1"}}
+        commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        runner.agent_executor = lambda tid, r: commit
+        runner.qa_executor = lambda tid, c: {
+            "passed": True,
+            "candidate_commit": c,
+            "server_qa": {
+                "path": "server_qa.json",
+                "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                "sandbox": {"kind": "container", "id": "c1"},
+            },
+        }
         runner.review_executor = lambda tid, c: {"session": f"rev_{tid}", "decision": "APPROVED"}
+
+    def test_production_executors_wiring(self):
+        runner = CoordRunner(self.cfg)
+        self.assertIsNone(runner.qa_executor)
+        self.assertIsNone(runner.review_executor)
+        runner.wire_production_executors()
+        self.assertEqual(runner.qa_executor, runner.default_qa_executor)
+        self.assertEqual(runner.review_executor, runner.default_review_executor)
 
     def test_missing_executor_fails_closed(self):
         runner = CoordRunner(self.cfg)

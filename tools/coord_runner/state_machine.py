@@ -82,6 +82,15 @@ class CoordStateMachine:
         ev_tag = f":evidence={evidence.get('sha256')[:8]}" if evidence else ""
         record.waiting_events.append(f"remediation:{record.corrections_count}:{reason}{ev_tag}")
 
+    def _validate_server_qa_proof(self, server_qa: object) -> None:
+        if not server_qa or not isinstance(server_qa, dict):
+            raise GateValidationError("Missing mandatory server_qa evidence dictionary in QA verdict")
+        if not server_qa.get("path") or not server_qa.get("sha256"):
+            raise GateValidationError("server_qa evidence reference requires non-empty path and sha256")
+        sbox = server_qa.get("sandbox", {})
+        if sbox.get("kind") not in {"container", "vm"}:
+            raise GateValidationError(f"Invalid sandbox kind in server_qa: {sbox.get('kind')}")
+
     def validate_qa_verdict(self, record: TaskExecutionRecord, qa_verdict: dict) -> bool:
         if not isinstance(qa_verdict, dict):
             self.handle_remediation(record, "QA verdict must be a valid dictionary")
@@ -91,16 +100,15 @@ class CoordStateMachine:
             err = qa_verdict.get("summary", "QA verification failed or passed not boolean True")
             self.handle_remediation(record, f"Server QA failure: {err}")
             return False
-        mounts = qa_verdict.get("developer_mounts", [])
-        if mounts:
+        if qa_verdict.get("developer_mounts"):
             self.handle_remediation(record, "Sandbox security violation: developer mounts present")
             return False
-        server_qa = qa_verdict.get("server_qa")
-        if server_qa and isinstance(server_qa, dict):
-            sbox = server_qa.get("sandbox", {})
-            if sbox.get("kind") not in {"container", "vm"}:
-                self.handle_remediation(record, f"Invalid sandbox kind: {sbox.get('kind')}")
-                return False
+        v_commit = qa_verdict.get("candidate_commit") or qa_verdict.get("commit_sha")
+        if not v_commit or v_commit != record.candidate_commit:
+            raise GateValidationError(
+                f"QA verdict commit ({v_commit}) does not match candidate commit ({record.candidate_commit})"
+            )
+        self._validate_server_qa_proof(qa_verdict.get("server_qa"))
         return True
 
     def validate_review_verdict(

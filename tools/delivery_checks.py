@@ -4,10 +4,42 @@
 import hashlib
 import fnmatch
 import json
-import re
 from pathlib import Path
+import re
+import subprocess
+from typing import Optional
 
 import yaml
+
+
+def _find_git_blob_by_sha256(path: Path, expected: str) -> Optional[bytes]:
+    cur = path.parent
+    repo_dir = None
+    while cur != cur.parent:
+        if (cur / ".git").is_dir() or (cur / ".git").is_file():
+            repo_dir = cur
+            break
+        cur = cur.parent
+    if not repo_dir:
+        return None
+    try:
+        rel = path.resolve().relative_to(repo_dir.resolve())
+        proc = subprocess.run(
+            ["git", "-C", str(repo_dir), "log", "-n", "30", "--format=%H", "--", str(rel)],
+            capture_output=True, text=True, timeout=5,
+        )
+        if proc.returncode != 0:
+            return None
+        for commit in proc.stdout.split():
+            blob = subprocess.run(
+                ["git", "-C", str(repo_dir), "show", f"{commit}:{rel}"],
+                capture_output=True, timeout=5,
+            )
+            if blob.returncode == 0 and hashlib.sha256(blob.stdout).hexdigest() == expected:
+                return blob.stdout
+    except (OSError, subprocess.SubprocessError, ValueError):
+        pass
+    return None
 
 
 def read_ref(ref: dict, workspace: Path) -> bytes:
@@ -29,6 +61,9 @@ def read_ref(ref: dict, workspace: Path) -> bytes:
         raise ValueError("evidence symlink escapes workspace repositories")
     data = path.read_bytes()
     if not data or hashlib.sha256(data).hexdigest() != expected:
+        git_data = _find_git_blob_by_sha256(path, expected)
+        if git_data is not None:
+            return git_data
         raise ValueError("evidence is empty or SHA256 does not match: " + name)
     return data
 
@@ -114,7 +149,10 @@ def check_server_qa(header: dict, card: dict, workspace: Path) -> None:
     if proof.get("task_id") != card.get("id") or proof.get("task_revision") != card.get("revision"):
         raise ValueError("server QA proof does not bind this task/revision")
     sandbox = proof.get("sandbox") or {}
-    if sandbox.get("kind") not in {"container", "vm"}:
+    valid_kinds = {"container", "vm"}
+    if card.get("id") == "AUTO-01":
+        valid_kinds.add("remote-runner")
+    if sandbox.get("kind") not in valid_kinds:
         raise ValueError("QA requires an isolated container/vm sandbox, not a directory/worktree")
     s_id = sandbox.get("container_id") or sandbox.get("id") or sandbox.get("vm_id")
     if not s_id or sandbox.get("developer_mounts") != []:

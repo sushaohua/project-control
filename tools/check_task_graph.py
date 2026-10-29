@@ -10,6 +10,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 from delivery_checks import closure_errors
 
@@ -301,8 +302,12 @@ def readiness_blockers(card: dict, cards: dict, *args, **kw) -> list:
     return blockers
 
 
-def done_acceptance_errors(task_id: str, card: dict, cards: dict, *args, **kw) -> list:
-    workspace = args[0] if len(args) > 0 else kw.get("workspace")
+def done_acceptance_errors(
+    task_id: str,
+    card: dict,
+    cards: dict,
+    workspace: Optional[Path] = None,
+) -> list:
     errors = []
     for pred in card.get("depends_on", []):
         if cards.get(pred, {}).get("status") != "Done":

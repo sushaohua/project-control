@@ -71,6 +71,7 @@ class QARunResult:
     summary: str = ""
     container_id: str = ""
     container_image: str = "ubuntu:20.04"
+    container_inspect: Dict[str, object] = field(default_factory=dict)
 
 
 def redact_token(text: str) -> str:
@@ -392,6 +393,7 @@ def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str
             "image": img,
             "path": run_result.sandbox_path,
             "developer_mounts": [],
+            "container_inspect": run_result.container_inspect,
         },
         "server_lock": refs["server_lock"],
         "checkout_log": refs["checkout_log"],
@@ -463,6 +465,28 @@ def stop_docker_sandbox(container_id: str) -> None:
     subprocess.run(["docker", "rm", "-f", container_id], text=True, capture_output=True, timeout=30)
 
 
+def inspect_docker_sandbox(container_id: str) -> dict:
+    """Inspect docker container to capture provenance evidence."""
+    cmd = ["docker", "inspect", container_id]
+    proc = subprocess.run(cmd, text=True, capture_output=True, timeout=15)
+    if proc.returncode == 0:
+        try:
+            data = json.loads(proc.stdout)
+            if isinstance(data, list) and data:
+                entry = data[0]
+                return {
+                    "id": entry.get("Id", container_id),
+                    "image": entry.get("Config", {}).get("Image", ""),
+                    "image_digest": entry.get("Image", ""),
+                    "created": entry.get("Created", ""),
+                    "state": entry.get("State", {}).get("Status", ""),
+                    "mounts": entry.get("Mounts", []),
+                }
+        except json.JSONDecodeError:
+            pass
+    return {"id": container_id, "status": "inspect-failed"}
+
+
 class QARunner:
     """Core QA runner orchestrating remote verification and sandbox execution."""
 
@@ -528,12 +552,14 @@ class QARunner:
         c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
         img = self.config.get("sandbox", {}).get("image", "qa-sandbox:20261029")
         cid = start_docker_sandbox(c_name, img, sandbox_dir)
+        inspect_data = inspect_docker_sandbox(cid)
         try:
             c_logs, r_logs, b_res, t_res, ok = self._run_sandbox_steps(sandbox_dir, req, cid)
+            r_logs.insert(0, f"=== Docker Container Inspect: {cid} ===\n{json.dumps(inspect_data, indent=2)}")
             res = QARunResult(
                 task_id=req.task_id, task_revision=req.task_revision, run_id=run_id,
                 sandbox_id=sandbox_dir.name, sandbox_path=str(sandbox_dir),
-                container_id=cid, container_image=img, passed=ok,
+                container_id=cid, container_image=img, container_inspect=inspect_data, passed=ok,
                 tool_versions=collect_tool_versions(), build_results=b_res, test_results=t_res,
                 summary="All sandbox tests passed" if ok else "Sandbox QA execution failed",
             )
