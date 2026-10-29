@@ -78,7 +78,7 @@ architecture_review: ARCH（初步对账，正式独立QA及收件待完成）
 
 ## 已找到的局部任务及证据入口
 
-- [TEMP-06](../../../.agents/kanban/microtasks/temperature_telemetry/TEMP-06.md)、[TEMP-07](../../../.agents/kanban/microtasks/temperature_telemetry/TEMP-07.md)：卡面记录 Done；[TEMP-06 实际记录](../../evidence/temperature_increment/TEMP-06/runs/run_01/result.md)及卡内审查链接按原版本、原范围检查。本次未重新执行实物验收，不把卡面状态扩大成整机能力。
+- [TEMP-06](../../../.agents/kanban/microtasks/temperature_telemetry/TEMP-06.md)、[TEMP-07](../../../.agents/kanban/microtasks/temperature_telemetry/TEMP-07.md)：卡面记录 Done；实际记录线索为 `docs/evidence/temperature_increment/TEMP-06/runs/run_01/result.md`，但该文件未纳入本次服务器候选，卡内其他证据链接也须逐项核对可取得性。本次无法仅凭服务器候选复核该局部验收，未重新执行实物测试，不把卡面状态扩大成整机能力。
 - [TWIN-09](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-09.md)、[TWIN-10](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-10.md)：网关与浏览器温度数据；[TWIN-13](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-13.md)、[TWIN-14](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-14.md)：迁移与实板验收计划。卡面状态为本次只读快照，实际执行以卡片为准。
 - [TWIN-15](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-15.md)、[TWIN-16](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-16.md)：MC/TH 温度契约复核；与混色成品能力不同。
 - [TASK-011 作业与混色样例](../work_packages/TASK-011_实现离线作业引擎和混色样例.md)、[TASK-016 MQTT 底座](../work_packages/TASK-016_实现%20MQTT%20传输底座和会话恢复.md)、[TASK-018 MQTT 网关](../work_packages/TASK-018_接入%20MQTT%20网关业务映射和授权.md)：相关规划入口，须按实际工作包状态和范围判断，不能证明已派单或实现完整产品功能。

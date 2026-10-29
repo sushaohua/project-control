@@ -26,7 +26,7 @@ author_role: ARCH
 | AP↔MC / MC↔TH参数 | AP↔MC 115200 8N1；MC↔TH 921600 8N1；相关UART与引脚已有登记 | [串口链路登记](../baseline/serial_links.md)；目标接线与本次实际设备/部署身份分开核验 |
 | MCU正式基础协议 | MiniMCProto v2.0 Rev 2.0.3 | [协议采用记录与原稿目录](../specs/README.md)；扩展仍需三端契约一致 |
 | 当前产品增量 | PL-01记录双端温度只读遥测；用户另确认首版目标为本地正常打印的整机及七项已列子范围，用户已确认按 PM 建议分期；原待决定项及未明确指标仍需逐项选择 | [PL-01范围](product/next_increment_scope_pl01.md)、[首版范围决定 U-D01/U-D02](product/first_release_scope_decision_20261029.md)、[PM目录](product/full_color_3d_printer_feature_catalog_baseline.md)、[SOC目录](product/product_feature_catalog_baseline.md)；不以温度增量完成代表整机打印完成 |
-| 温度契约与既有实现输入 | 有温度ICD、共享头、AP查询CLI及JSON输出等输入 | [板端温度ICD](../interfaces/ap_mc_th_telemetry_icd.md)、[AP CLI源码](../../../soc-ap/core/host/main.cpp)、[查询模块](../../../soc-ap/core/host/query.h)；可复用版本和真实运行能力须对账，不等于已有常驻STATE公共服务 |
+| 温度契约与既有实现输入 | 有温度ICD、共享头、AP查询CLI及JSON输出等输入线索 | [板端温度ICD](../interfaces/ap_mc_th_telemetry_icd.md)；跨仓源码路径线索为 `soc-ap/core/host/main.cpp`、`soc-ap/core/host/query.h`，须另行从 soc-ap 服务器锁定提交恢复后核对；单独检出 project-control 不包含这些文件。本次不以本机文件证明服务器候选中的源码或运行能力，不等于已有常驻STATE公共服务 |
 | 模块职责及通信分工 | FWD、STATE、JOB、UI、NET、MEDIA等职责已有规划；DDS/D-Bus/MQTT已有岗位边界 | [模块职责](../../.agents/rules/02_模块与Agent职责.md)、[通信边界](../../.agents/rules/06_通信工程师职责与接口边界.md)；逻辑目录/岗位不能视作现有进程或可调用API |
 | 局部架构提案 | 温度FORWARD→STATE→显示的语义、生命周期、故障与候选IPC | [温度架构提案](../interfaces/soc_temperature_module_architecture_icd_draft_20261028.md)；revision 2按两阶段同构方向修订，旧同进程CLI建议已被替代，具体接口仍待Owner接受 |
 | D-Bus / DDS版本 | 已记录D-Bus 1.16.x、Fast DDS 3.6.x LTS等候选及条件 | [选型记录](soc_ipc_selection_and_hmi_prototype_20261029.md)；属于推荐，不是已部署或已冻结版本 |
