@@ -11,6 +11,8 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from delivery_checks import closure_errors
+
 try:
     import yaml
 except ImportError:
@@ -81,7 +83,7 @@ def has_ancestor(cards: dict, task_id: str, target: str, visited=None) -> bool:
 
 
 def is_microtask(task_id: str, card: dict) -> bool:
-    return task_id.startswith(("V2-", "MCQ-", "THQ-", "CR-"))
+    return task_id.startswith(("V2-", "MCQ-", "THQ-", "CR-", "TEMP-", "TWIN-", "AUTO-"))
 
 
 def _check_task_fields(task_id: str, card: dict) -> list:
@@ -261,14 +263,17 @@ def _check_dependency_conditions_readiness(card: dict, cards: dict, workspace: P
         pred = cond.get("task")
         if cards.get(pred, {}).get("status") != "Done":
             blockers.append(pred + " is not Done")
-        av = str(cond.get("accepted_version", ""))
-        ae = str(cond.get("acceptance_evidence", ""))
+        av = str(cond.get("accepted_version") or "")
+        ae = str(cond.get("acceptance_evidence") or "")
         if not av or av.startswith("not-an-accepted"):
             blockers.append(pred + " accepted deliverable/version is not bound")
         if not ae:
             blockers.append(pred + " acceptance evidence path is missing")
         elif workspace and not (workspace / ae).is_file() and not (workspace / "project-control" / ae).is_file():
             blockers.append(pred + " acceptance evidence file does not exist: " + ae)
+        if workspace and str(pred).startswith(("TWIN-", "AUTO-")) and cards.get(pred, {}).get("status") == "Done":
+            blockers.extend(pred + " closure evidence: " + item
+                            for item in closure_errors(cards[pred], workspace))
     return blockers
 
 
@@ -302,14 +307,17 @@ def done_acceptance_errors(task_id: str, card: dict, cards: dict, *args, **kw) -
     for pred in card.get("depends_on", []):
         if cards.get(pred, {}).get("status") != "Done":
             errors.append(f"{task_id}: marked Done but predecessor {pred} is {cards.get(pred, {}).get('status')}")
-    author = card.get("owner") or (card.get("executor") or {}).get("agent_id")
+    author_identities = {
+        card.get("owner"),
+        (card.get("executor") or {}).get("agent_id")
+    } - {None, ""}
     assignments = (card.get("review_assignments") or {}).get("reviewer_sessions", [])
     if not assignments:
         errors.append(f"{task_id}: marked Done without review assignments")
     for rev in assignments:
         session = rev.get("session")
-        if session and session == author:
-            errors.append(f"{task_id}: author cannot be own independent reviewer")
+        if session and session in author_identities:
+            errors.append(f"{task_id}: author ({session}) cannot be own independent reviewer")
         dec = str(rev.get("decision", "")).upper()
         if dec not in {"APPROVED", "ACCEPTED"}:
             errors.append(f"{task_id}: review decision is not accepted (found {rev.get('decision')})")
@@ -320,6 +328,15 @@ def done_acceptance_errors(task_id: str, card: dict, cards: dict, *args, **kw) -
             errors.append(f"{task_id}: review evidence path is missing")
         elif workspace and not (workspace / ev).is_file() and not (workspace / "project-control" / ev).is_file():
             errors.append(f"{task_id}: review evidence file does not exist: {ev}")
+        elif workspace and rev.get("report_sha256"):
+            ev_file = workspace / ev if (workspace / ev).is_file() else workspace / "project-control" / ev
+            actual_sha = hashlib.sha256(ev_file.read_bytes()).hexdigest()
+            if actual_sha != rev.get("report_sha256"):
+                errors.append(
+                    f"{task_id}: review report SHA256 mismatch (recorded {rev.get('report_sha256')}, actual {actual_sha})"
+                )
+    if workspace is not None:
+        errors.extend(task_id + ": " + item for item in closure_errors(card, workspace))
     return errors
 
 

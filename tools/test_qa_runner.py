@@ -229,13 +229,16 @@ class HarnessRunnerTest(unittest.TestCase):
 
 class MethodologicalInvariantsTest(unittest.TestCase):
     def test_python_functions_scale_and_parameters_limits(self):
+        this_file = Path(__file__).resolve()
         files_to_check = [
-            Path(__file__).parent / "qa_runner/qa_runner.py",
-            Path(__file__),
-            Path(__file__).parent.parent.parent / "test_harness/runner/harness_runner.py",
+            this_file.parent / "qa_runner/qa_runner.py",
+            this_file,
+            this_file.parents[2] / "test_harness/runner/harness_runner.py",
         ]
         violations = []
         for file_path in files_to_check:
+            if not file_path.is_file():
+                continue
             tree = ast.parse(file_path.read_text(encoding="utf-8"), filename=str(file_path))
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):

@@ -5,9 +5,12 @@ import ast
 import copy
 import hashlib
 import json
+import sys
 from pathlib import Path
 import tempfile
 import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import yaml
 
