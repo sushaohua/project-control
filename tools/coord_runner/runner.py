@@ -152,24 +152,36 @@ class CoordRunner:
 
     def _resolve_qa_report_ref(self, record: TaskExecutionRecord, qa_entry: dict) -> tuple:
         rep_path = qa_entry.get("report_path")
-        if not rep_path:
-            runs_dir = self.config.workspace_root / "project-control" / "docs" / "evidence" / "coord_automation" / record.task_id / "runs"
-            if runs_dir.is_dir():
-                found = sorted(runs_dir.glob("run_*/qa_review_report.md"))
-                if found:
-                    rep_path = str(found[-1].relative_to(self.config.workspace_root))
-            if not rep_path:
-                rep_path = f"project-control/docs/evidence/coord_automation/{record.task_id}/runs/run_{record.task_revision:02d}/qa_review_report.md"
+        rep_sha = qa_entry.get("report_sha256")
+        if not rep_path or not rep_sha:
+            raise CoordRunnerError("QA review entry missing mandatory report_path or report_sha256")
         full_p = Path(rep_path) if Path(rep_path).is_absolute() else (self.config.workspace_root / rep_path)
         if not full_p.is_file():
             raise CoordRunnerError(f"QA report file not found on disk at {full_p}")
         real_sha = hashlib.sha256(full_p.read_bytes()).hexdigest()
-        prefill = qa_entry.get("report_sha256")
-        if prefill and prefill != real_sha:
-            raise CoordRunnerError(f"QA entry report_sha256 {prefill} does not match physical file sha {real_sha}")
-        qa_entry["report_path"] = rep_path
-        qa_entry["report_sha256"] = real_sha
+        if rep_sha != real_sha:
+            raise CoordRunnerError(f"QA entry report_sha256 {rep_sha} does not match physical file sha {real_sha}")
         return rep_path, real_sha
+
+    def _invoke_report_reviewer(
+        self,
+        record: TaskExecutionRecord,
+        rep_path: str,
+        rep_sha: str,
+    ) -> dict:
+        req = {
+            "role": "ARCH",
+            "report_path": rep_path,
+            "report_sha256": rep_sha,
+            "review_kind": "qa_report",
+        }
+        try:
+            return self.review_executor(record.task_id, record.candidate_commit, req)
+        except TypeError:
+            try:
+                return self.review_executor(record.task_id, record.candidate_commit, "ARCH")
+            except TypeError:
+                return self.review_executor(record.task_id, record.candidate_commit)
 
     def _ensure_qa_report_review(
         self,
@@ -181,22 +193,25 @@ class CoordRunner:
         if not qa_entry or qa_entry.get("report_review"):
             return True
         rep_path, rep_sha = self._resolve_qa_report_ref(record, qa_entry)
-        non_author = next(
-            (e for e in sessions if e.get("role") != "QA" and e.get("decision") == "APPROVED"),
-            None,
-        )
-        if not non_author:
-            arch_entry = self._invoke_reviewer("ARCH", record)
-            arch_entry.setdefault("role", "ARCH")
-            if not self.state_machine.validate_review_verdict(record, arch_entry, author):
-                return False
-            sessions.append(arch_entry)
-            non_author = arch_entry
+        report_res = self._invoke_report_reviewer(record, rep_path, rep_sha)
+        report_res.setdefault("role", "ARCH")
+        rev_id = report_res.get("reviewer") or report_res.get("session") or report_res.get("reviewer_session")
+        qa_rev = qa_entry.get("reviewer") or qa_entry.get("session") or qa_entry.get("reviewer_session")
+        if not rev_id or rev_id == qa_rev or (author and rev_id == author):
+            ev = self.state_machine._extract_review_failure_evidence(report_res)
+            self.state_machine.handle_remediation(record, "QA report reviewer cannot be self or author", ev)
+            return False
+        if report_res.get("decision") != "APPROVED":
+            ev = self.state_machine._extract_review_failure_evidence(report_res)
+            self.state_machine.handle_remediation(
+                record, f"QA report review rejected: {report_res.get('decision')}", ev
+            )
+            return False
         qa_entry["report_review"] = {
-            "reviewer": non_author.get("reviewer") or non_author.get("session"),
-            "session": non_author.get("session"),
-            "role": non_author.get("role", "ARCH"),
-            "decision": "APPROVED",
+            "reviewer": rev_id,
+            "session": report_res.get("session", rev_id),
+            "role": report_res.get("role", "ARCH"),
+            "decision": report_res.get("decision"),
             "report_path": rep_path,
             "report_sha256": rep_sha,
         }
@@ -322,10 +337,19 @@ class CoordRunner:
         candidate_commit: str,
         role_or_record: object = "QA",
     ) -> dict:
-        role = role_or_record if isinstance(role_or_record, str) else "QA"
+        role = "QA"
+        extra = ""
+        if isinstance(role_or_record, dict):
+            role = role_or_record.get("role", "ARCH")
+            if role_or_record.get("report_path"):
+                p = role_or_record.get("report_path")
+                s = role_or_record.get("report_sha256")
+                extra = f" Review QA report at {p} (sha256: {s})."
+        elif isinstance(role_or_record, str):
+            role = role_or_record
         adapter = CodexReviewAdapter()
         prompt = (
-            f"Review task {task_id} as role {role} with candidate commit {candidate_commit}. "
+            f"Review task {task_id} as role {role} with candidate commit {candidate_commit}.{extra} "
             "Verify implementation against task contract and state APPROVED or REJECTED."
         )
         res = adapter.execute_review(prompt, self.config.workspace_root)

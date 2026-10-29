@@ -107,9 +107,14 @@ actual_result: passed
     - **生产 Runner 杜绝假数据兜底并校验 Prefill (`runner.py`)**：在 `_resolve_qa_report_ref(self, record, qa_entry)` 中，严禁使用 `json.dumps` 内存伪造哈希；优先按规范路径检索物理文件并核查物理存在性，缺失立即抛出 `CoordRunnerError` 拦截；若 `qa_entry` 中预填了 `report_sha256`，强制要求与物理读取字节计算的真实 SHA 比对，不一致立即抛错拦截。
     - **全方位负例测试与覆盖率闭环 (`test_coord_runner.py`)**：新增 `test_done_rejected_when_qa_report_file_not_found_on_disk`、`test_done_rejected_when_qa_report_file_tampered_or_sha_mismatch`、`test_runner_resolve_qa_report_missing_file_rejected` 及 `test_runner_resolve_qa_report_prefill_mismatch_rejected` 专项负例测试。
 
-13. **方法论硬性门禁 100% 达标**：
+13. **[AUTO02-R10-01 / R10-02 / R10-03] run_10 审查三大阻断项彻底加固**：
+    - **Runner 入口严禁补写缺省 report_sha256 (`runner.py`)**：在 `_resolve_qa_report_ref` 中，若 `qa_entry` 中缺失 `report_path` 或缺失 `report_sha256`，严禁 runner 自动补写，强制抛出 `CoordRunnerError("QA review entry missing mandatory report_path or report_sha256")`；若物理文件不存在或磁盘重算哈希与 prefill 不一致，严格拦截。新增专项负例测试 `test_runner_resolve_qa_report_missing_entry_sha_rejected` 与 `test_runner_resolve_qa_report_missing_entry_path_rejected`。
+    - **ARCH QA 报告复审专属独立会话调用 (`runner.py`)**：在 `_ensure_qa_report_review` 中，彻底移除复用代码审查 session 的假批准逻辑；通过 `_invoke_report_reviewer` 单独调用审阅执行器执行对 QA 报告的专属独立复核（传递 `review_kind="qa_report"`、`report_path` 与 `report_sha256`），仅当返回独立 session 且 `decision == "APPROVED"` 时才注入 `qa_entry["report_review"]`；若被拒绝则立刻触发 `handle_remediation` fail-closed 退出。新增专项测试 `test_execute_review_phase_qa_report_review_rejected`。
+    - **保留 Docker 容器沙箱 inspect 物证 (`qa_runner.py`)**：在 `stop_docker_sandbox` 中，改为执行 `docker stop -t 2 {container_id}`，严禁直接执行 `docker rm -f`，确保容器保留在 Docker daemon 的 exited 状态，供独立审阅会话执行 `docker inspect` 验证运行物证真实性。新增测试 `test_stop_docker_sandbox_preserves_container_state`。
+
+14. **方法论硬性门禁 100% 达标**：
     - 经 AST 静态扫描，所有 18 个白名单及工具文件（包括 `runner.py`、`state_machine.py`、`qa_runner.py`、`delivery_checks.py`、`check_task_graph.py`、各测试套件等）中的自研函数**行数全部严格 $\le 50$ 行**，**入参全部严格 $\le 4$ 个**，违规数为 0。
-    - 运行 112 项单元测试 100% 通过（`test_coord_runner.py` 60 项、`test_qa_runner.py` 20 项、`test_delivery_checks.py` 20 项、`test_check_task_graph.py` 12 项）。
+    - 运行 117 项单元测试 100% 通过（`test_coord_runner.py` 64 项、`test_qa_runner.py` 21 项、`test_delivery_checks.py` 20 项、`test_check_task_graph.py` 12 项）。
 
 ---
 
@@ -122,13 +127,14 @@ actual_result: passed
 | `project-control/tools/coord_runner/models.py` | `6624e3bf13099f0c59085c72d99262ee9f88920ae87c7e8e26fa846126fc9bc5` |
 | `project-control/tools/coord_runner/errors.py` | `1407cc0ddd7dc5a954dc024f2be1e2689274a0735bef37d8e8effd22ccef07e3` |
 | `project-control/tools/coord_runner/lease_manager.py` | `e65e24a97af415303c7193e6c0c1d0264aac7aa9e90c43f4e0a657676680a96d` |
-| `project-control/tools/coord_runner/state_machine.py` | `8830882234ad95cf38c969212a526355dacc87a1bfe8b3faddbbae62d05090d6` |
+| `project-control/tools/coord_runner/state_machine.py` | `23d01b6473e6a1672f39b1ce623c5d6cc37574fd2f82850a094e3039c55e202a` |
 | `project-control/tools/coord_runner/checkpoint.py` | `5e38f357b573570a27cd718e296b694c8cb6671bacd5a67a834ff796b5f56ed6` |
 | `project-control/tools/coord_runner/scheduler.py` | `c015900d4ee81e421da333aec2b0e49d0066158c9dffa3f1c23037083095e884` |
-| `project-control/tools/coord_runner/runner.py` | `3b3d15f7b70a2aea5f1d04823af42d87802c3f19920f6f9c549a80a47b64bda5` |
+| `project-control/tools/coord_runner/runner.py` | `07b6f9b051346212829cc4921c6ee490c4fd49eaff8a02754c8e8362518ae33c` |
 | `project-control/tools/coord_runner/codex_adapter.py` | `5e571fbd94cc38486d3b7ba892adf425d7ed0f750384e0e793827e63f948d9a0` |
 | `project-control/tools/coord_queue.py` | `cb803af84686e7b98e9e3818b7050cfb99427e1d3b0482e3213f8d98919fe995` |
 | `project-control/tools/delivery_checks.py` | `7c72354037f0a5e3fdbf6e8bed5522f8029b1ec5f957842bba06645ef32ecc0e` |
 | `project-control/tools/check_task_graph.py` | `4fdb9b6fc7f4eac35c7ef0cf65aa7636c7ba4075e52f9f335a25f2273162e11e` |
-| `project-control/tools/qa_runner/qa_runner.py` | `d7f66513f50d895d839b9cd4fd324fd984af8db28c601b7e4f94feaee5301306` |
-| `project-control/tools/test_coord_runner.py` | `ffed9f0fede4fcca50d4829af28c66ee3359a79763ba4fc81248debc5ca73dce` |
+| `project-control/tools/qa_runner/qa_runner.py` | `6918544993dedf479bb60ff857e05e5dc331542bbeb11fc1d892274b363da69c` |
+| `project-control/tools/test_coord_runner.py` | `3278ddd7902f1a5f673c644d7de7c2109c78e5b0e54f04a48608fef8b5fe9432` |
+| `project-control/tools/test_qa_runner.py` | `b580269e53884994168dbc37b17d0abf95d34e4c7efbe711600a5eb67fbcf16a` |

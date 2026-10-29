@@ -152,6 +152,16 @@ class SandboxIsolationTest(unittest.TestCase):
             with self.assertRaises(QARunnerError):
                 verify_clean_worktree(self.base_dir)
 
+    def test_stop_docker_sandbox_preserves_container_state(self):
+        from qa_runner.qa_runner import stop_docker_sandbox
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=0)
+            stop_docker_sandbox("dummy-cid-12345")
+            mock_run.assert_called_once_with(
+                ["docker", "stop", "-t", "2", "dummy-cid-12345"],
+                text=True, capture_output=True, timeout=30
+            )
+
 
 class CommandAndEvidenceTest(unittest.TestCase):
     def setUp(self):

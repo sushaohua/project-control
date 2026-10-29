@@ -468,8 +468,8 @@ def start_docker_sandbox(name: str, image: str, mount_dir: Path) -> str:
 
 
 def stop_docker_sandbox(container_id: str) -> None:
-    """Stop and forcefully remove docker container."""
-    subprocess.run(["docker", "rm", "-f", container_id], text=True, capture_output=True, timeout=30)
+    """Stop container preserving inspect provenance in exited state."""
+    subprocess.run(["docker", "stop", "-t", "2", container_id], text=True, capture_output=True, timeout=30)
 
 
 def inspect_docker_sandbox(container_id: str) -> dict:

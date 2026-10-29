@@ -628,8 +628,8 @@ class CheckpointAndRecoveryTest(unittest.TestCase):
         rep.write_text("# QA Review Report\n", encoding="utf-8")
         r_sha = hashlib.sha256(b"# QA Review Report\n").hexdigest()
         r2.review_executor = lambda tid, c, role="QA": {
-            "session": f"rev_{tid}_{role}",
-            "role": role,
+            "session": f"rev_{tid}_{role if isinstance(role, str) else 'ARCH_REPORT'}",
+            "role": role if isinstance(role, str) else role.get("role", "ARCH"),
             "decision": "APPROVED",
             "report_path": "qa_review_report.md",
             "report_sha256": r_sha,
@@ -681,8 +681,8 @@ class CheckpointAndRecoveryTest(unittest.TestCase):
         rep2.write_text("# QA Review Report\n", encoding="utf-8")
         r_sha2 = hashlib.sha256(b"# QA Review Report\n").hexdigest()
         r2.review_executor = lambda tid, c, role="QA": {
-            "session": f"rev_{tid}_{role}",
-            "role": role,
+            "session": f"rev_{tid}_{role if isinstance(role, str) else 'ARCH_REPORT'}",
+            "role": role if isinstance(role, str) else role.get("role", "ARCH"),
             "decision": "APPROVED",
             "report_path": "qa_review_report.md",
             "report_sha256": r_sha2,
@@ -724,8 +724,8 @@ class ExecutionModesTest(unittest.TestCase):
         rep.write_text("# QA Review Report\n", encoding="utf-8")
         r_sha = hashlib.sha256(b"# QA Review Report\n").hexdigest()
         runner.review_executor = lambda tid, c, role="QA": {
-            "session": f"rev_{tid}_{role}",
-            "role": role,
+            "session": f"rev_{tid}_{role if isinstance(role, str) else 'ARCH_REPORT'}",
+            "role": role if isinstance(role, str) else role.get("role", "ARCH"),
             "decision": "APPROVED",
             "report_path": "qa_review_report.md",
             "report_sha256": r_sha,
@@ -847,10 +847,28 @@ class ExecutionModesTest(unittest.TestCase):
     def test_runner_resolve_qa_report_missing_file_rejected(self):
         runner = CoordRunner(self.cfg)
         rec = TaskExecutionRecord("T1")
-        qa_entry = {"role": "QA", "report_path": "missing_report.md"}
+        qa_entry = {"role": "QA", "report_path": "missing_report.md", "report_sha256": "0" * 64}
         with self.assertRaises(CoordRunnerError) as ctx:
             runner._resolve_qa_report_ref(rec, qa_entry)
         self.assertIn("QA report file not found on disk", str(ctx.exception))
+
+    def test_runner_resolve_qa_report_missing_entry_sha_rejected(self):
+        runner = CoordRunner(self.cfg)
+        rep = self.base / "qa_rep.md"
+        rep.write_text("content", encoding="utf-8")
+        rec = TaskExecutionRecord("T1")
+        qa_entry = {"role": "QA", "report_path": "qa_rep.md"}
+        with self.assertRaises(CoordRunnerError) as ctx:
+            runner._resolve_qa_report_ref(rec, qa_entry)
+        self.assertIn("missing mandatory report_path or report_sha256", str(ctx.exception))
+
+    def test_runner_resolve_qa_report_missing_entry_path_rejected(self):
+        runner = CoordRunner(self.cfg)
+        rec = TaskExecutionRecord("T1")
+        qa_entry = {"role": "QA", "report_sha256": "0" * 64}
+        with self.assertRaises(CoordRunnerError) as ctx:
+            runner._resolve_qa_report_ref(rec, qa_entry)
+        self.assertIn("missing mandatory report_path or report_sha256", str(ctx.exception))
 
     def test_runner_resolve_qa_report_prefill_mismatch_rejected(self):
         runner = CoordRunner(self.cfg)
@@ -861,6 +879,26 @@ class ExecutionModesTest(unittest.TestCase):
         with self.assertRaises(CoordRunnerError) as ctx:
             runner._resolve_qa_report_ref(rec, qa_entry)
         self.assertIn("does not match physical file sha", str(ctx.exception))
+
+    def test_execute_review_phase_qa_report_review_rejected(self):
+        runner = CoordRunner(self.cfg)
+        self._setup_mock_executors(runner)
+        rep = self.base / "qa_review_report.md"
+        r_sha = hashlib.sha256(rep.read_bytes()).hexdigest()
+        runner.review_executor = lambda tid, c, role="QA": {
+            "session": "rev_qa" if role == "QA" else "rev_arch_rep",
+            "role": "QA" if role == "QA" else "ARCH",
+            "decision": "REJECTED" if (isinstance(role, dict) and role.get("review_kind") == "qa_report") else "APPROVED",
+            "report_path": "qa_review_report.md",
+            "report_sha256": r_sha,
+        }
+        rec = TaskExecutionRecord("T1", state=TaskState.REVIEW.value,
+                                  candidate_commit="a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819")
+        card = {"id": "T1", "reviewer": ["QA"]}
+        ok = runner._execute_review_phase(rec, card)
+        self.assertFalse(ok)
+        self.assertEqual(rec.state, TaskState.IN_PROGRESS.value)
+        self.assertEqual(rec.corrections_count, 1)
 
 
 class CodexAndSandboxIsolationGateTest(unittest.TestCase):
