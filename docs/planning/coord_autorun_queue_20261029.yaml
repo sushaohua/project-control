@@ -1,0 +1,63 @@
+schema_version: 1
+id: COORD-QUEUE-20261029
+rule: project-control/.agents/rules/delivery_and_coord_gate.md
+task_source: canonical-task-cards
+coord_mode: bounded-session-loop-until-runner-accepted
+runner_status: not-deployed
+qa_policy:
+  platform: codex
+  requested_model: gpt-6-luna
+  independent_session: true
+  independent_sandbox: true
+  source: server-pinned-commits
+  qa_report_independent_review: true
+limits:
+  max_parallel_implementation: 2
+  max_evidence_based_corrections: 2
+  physical_operator_per_resource: 1
+bootstrap:
+  - AUTO-01
+  - AUTO-02
+revalidate_before_consumption:
+  - TWIN-01
+order:
+  - TWIN-01
+  - TWIN-02
+  - TWIN-03
+  - TWIN-04
+  - TWIN-05
+  - TWIN-06
+  - TWIN-15
+  - TWIN-16
+  - TWIN-07
+  - TWIN-08
+  - TWIN-09
+  - TWIN-10
+  - TWIN-11
+  - TWIN-12
+  - TWIN-13
+  - TWIN-14
+stage_exit:
+  vmware: TWIN-12
+  soc: TWIN-14
+
+module_ownership:
+  fastdds:
+    owner_role: ENG-DDS
+    task: TWIN-05
+    repository: soc-ap
+    sdk_root: middleware/dds
+    dependency_metadata_root: third_party/dds
+  dbus:
+    owner_role: ENG-DBUS
+    task: TWIN-06
+    repository: soc-ap
+    sdk_root: middleware/dbus
+    dependency_metadata_root: third_party/dbus
+shared_dependency_entry_owner:
+  role: INTEGRATOR
+  task: TWIN-04
+  paths:
+    - soc-ap/third_party/build.sh
+    - soc-ap/third_party/README.md
+    - soc-ap/third_party/archives/checksums.sha256

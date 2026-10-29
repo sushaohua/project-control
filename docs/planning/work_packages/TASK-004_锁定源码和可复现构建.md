@@ -2,7 +2,7 @@
 title: TASK-004 锁定源码和可复现构建
 date: 2026-09-30
 id: TASK-004
-revision: 6
+revision: 8
 status: Backlog
 blocked: false
 owner: null
@@ -22,9 +22,9 @@ depends_on: []
 tags:
 - soc
 - task
-updated: '2026-10-28'
+updated: '2026-10-29T13:52:16+08:00'
 timezone: 北京时间（UTC+8）
-plan_revision: marlin-r2
+plan_revision: vmware-soc-twin-20261029
 task_kind: work_package
 dispatchable: false
 child_tasks:
@@ -34,14 +34,20 @@ child_tasks:
 - MS-20
 - MS-21
 - CR-08
-
+- TWIN-04
+- AUTO-01
 planning_relations: []
 related_tasks: []
+development_stages:
+- vmware-twin
+- soc-migration
+execution_plan: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
+historical_acceptance_scope: 原有签署仅适用其原版本；本次规划修订不继承批准
 ---
 
 # TASK-004 锁定源码和可复现构建（工作包）
 
-**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前可派单入口是 MS 小卡，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
+**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前增量派单入口是TWIN能力卡，MS原范围保留，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
 
 ## 目标与范围
 
@@ -82,3 +88,19 @@ MS-01/02 交接复现主控；MS-18 提供 SoC 主机工程；MS-20/21 分别提
 历史关联：[V2-P06C（已替代归档）](../../../.agents/kanban/microtasks/minimc_v2/superseded/V2-P06C.md)。当前离线候选由 [V2-P0506](../../../.agents/kanban/microtasks/minimc_v2/V2-P0506.md) 承接，作为范围关联，不重复主归属。
 
 这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。
+
+
+## 2026-10-29 两阶段孪生开发范围更新
+
+TWIN-04提供同一业务构建入口、VMware profile及真实进程生命周期；SoC profile由TWIN-13适配，禁止平台分叉业务源码。
+
+依据[执行总表](../vmware_soc_twin_task_execution_20261029.md)和[两阶段方案](../vmware_soc_twin_development_plan_20261029.md)。旧文中的“首轮不等UI/总线”和CLI目标仅指历史MS/CR最小链路，不能作为本轮阶段一出口。工作包仍不可直接派单，历史子票状态不变。
+
+| 新子票 | 责任岗位 | 当前状态 |
+| --- | --- | --- |
+| [TWIN-04](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-04.md) | INTEGRATOR | Backlog，未派单 |
+
+
+## 2026-10-29 连续调度准备
+
+新增主归属AUTO-01，由INTEGRATOR实现并经独立服务器沙箱QA与非作者报告复核后收件。详见[总控执行清单](../coord_autorun_tasklist_20261029.md)。现有子票状态/签署保留，不代表运行器已经部署。

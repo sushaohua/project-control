@@ -40,6 +40,15 @@ class TestTaskGraphNegativeCases(unittest.TestCase):
         content = "---\n" + yaml.safe_dump(data, allow_unicode=True, sort_keys=False) + "---\n# Test Card\n"
         path.write_text(content, encoding="utf-8")
 
+    def test_twin_cards_use_full_microtask_gates(self):
+        """新任务族不得绕过结构、依赖和Ready门禁。"""
+        self.assertTrue(ctg.is_microtask("TWIN-01", {}))
+        path = self.control / ".agents/kanban/microtasks/vmware_soc_twin/TWIN-01.md"
+        self._create_minimal_card(path, {"id": "TWIN-01", "status": "Backlog"})
+        cards, report = ctg.check(self.workspace)
+        self.assertIn("TWIN-01: missing write_scope", report["errors"])
+        self.assertIn("TWIN-01", report["readiness_blockers"])
+
     def test_unquoted_colon_yaml_causes_error(self):
         """反例 1: YAML 含未引用冒号导致解析异常，工具必须报错并定位"""
         bad_card = self.control / ".agents/kanban/milestones/bad_ms.md"
@@ -117,7 +126,7 @@ class TestTaskGraphNegativeCases(unittest.TestCase):
             }
         }
         errs = ctg.done_acceptance_errors("CR-02", card, {})
-        self.assertTrue(any("author cannot be own independent reviewer" in e for e in errs))
+        self.assertTrue(any("author (agent-author) cannot be own independent reviewer" in e for e in errs))
 
     def test_done_acceptance_rejects_rejected_decision(self):
         """反例 8: 独立评审结论为 REJECTED 必须拒绝 Done 验收"""
