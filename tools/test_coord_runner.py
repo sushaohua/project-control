@@ -235,7 +235,7 @@ class StateMachineAndRemediationTest(unittest.TestCase):
         qa_verdict = {
             "passed": True,
             "candidate_commit": "b" * 40,
-            "server_qa": {"path": "p", "sha256": "s", "sandbox": {"kind": "container"}},
+            "server_qa": {"path": "p", "sha256": "s", "sandbox": {"kind": "container"}, "task_revision": 1},
         }
         with self.assertRaises(GateValidationError) as ctx:
             self.sm.validate_qa_verdict(self.record, qa_verdict)
@@ -247,7 +247,7 @@ class StateMachineAndRemediationTest(unittest.TestCase):
         qa_verdict = {
             "passed": True,
             "candidate_commit": "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819",
-            "server_qa": {"path": "p", "sha256": "s", "sandbox": {"kind": "directory"}},
+            "server_qa": {"path": "p", "sha256": "s", "sandbox": {"kind": "directory"}, "task_revision": 1},
         }
         with self.assertRaises(GateValidationError) as ctx:
             self.sm.validate_qa_verdict(self.record, qa_verdict)
@@ -292,7 +292,12 @@ class StateMachineAndRemediationTest(unittest.TestCase):
                         "session": "sess-qa",
                         "role": "QA",
                         "decision": "APPROVED",
-                        "report_review": {"session": "sess-arch", "decision": "REJECTED"},
+                        "report_review": {
+                            "session": "sess-arch",
+                            "decision": "REJECTED",
+                            "report_path": "qa_review_report.md",
+                            "report_sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                        },
                     }
                 ]
             },
@@ -334,7 +339,12 @@ class StateMachineAndRemediationTest(unittest.TestCase):
                         "session": "sess-qa",
                         "role": "QA",
                         "decision": "APPROVED",
-                        "report_review": {"session": "sess-qa", "decision": "APPROVED"},
+                        "report_review": {
+                            "session": "sess-qa",
+                            "decision": "APPROVED",
+                            "report_path": "qa_review_report.md",
+                            "report_sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                        },
                     }
                 ]
             },
@@ -354,7 +364,12 @@ class StateMachineAndRemediationTest(unittest.TestCase):
                         "session": "sess-qa",
                         "role": "QA",
                         "decision": "APPROVED",
-                        "report_review": {"session": "author-sess", "decision": "APPROVED"},
+                        "report_review": {
+                            "session": "author-sess",
+                            "decision": "APPROVED",
+                            "report_path": "qa_review_report.md",
+                            "report_sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                        },
                     }
                 ]
             },
@@ -362,6 +377,67 @@ class StateMachineAndRemediationTest(unittest.TestCase):
         with self.assertRaises(GateValidationError) as ctx:
             self.sm.validate_done_acceptance(card, Path("."))
         self.assertIn("QA reviewer missing mandatory non-author report_review", str(ctx.exception))
+
+    def test_done_rejected_when_qa_report_review_missing_report_path_or_sha(self):
+        card = {
+            "id": "T1",
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {
+                        "session": "sess-qa",
+                        "role": "QA",
+                        "decision": "APPROVED",
+                        "report_review": {"session": "sess-arch", "decision": "APPROVED"},
+                    }
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, Path("."))
+        self.assertIn("missing mandatory report_path or report_sha256", str(ctx.exception))
+
+    def test_done_rejected_when_qa_report_review_sha_mismatch(self):
+        card = {
+            "id": "T1",
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {
+                        "session": "sess-qa",
+                        "role": "QA",
+                        "decision": "APPROVED",
+                        "report_sha256": "1" * 64,
+                        "report_review": {
+                            "session": "sess-arch",
+                            "decision": "APPROVED",
+                            "report_path": "qa_review_report.md",
+                            "report_sha256": "2" * 64,
+                        },
+                    }
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, Path("."))
+        self.assertIn("does not match QA report_sha256", str(ctx.exception))
+
+    def test_qa_verdict_missing_task_revision_rejected(self):
+        self.record.state = TaskState.SANDBOX_QA.value
+        self.record.candidate_commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        self.record.task_revision = 1
+        qa_verdict = {
+            "passed": True,
+            "candidate_commit": "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819",
+            "server_qa": {
+                "path": "server_qa.json",
+                "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                "sandbox": {"kind": "container"},
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_qa_verdict(self.record, qa_verdict)
+        self.assertIn("Task revision mismatch", str(ctx.exception))
 
     def test_qa_verdict_task_revision_mismatch_rejected(self):
         self.record.state = TaskState.SANDBOX_QA.value
@@ -463,9 +539,10 @@ class CheckpointAndRecoveryTest(unittest.TestCase):
                 "path": "server_qa.json",
                 "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
                 "sandbox": {"kind": "container"},
+                "task_revision": 1,
             },
         }
-        r2.review_executor = lambda tid, c: {"session": "independent-codex-session", "decision": "APPROVED"}
+        r2.review_executor = lambda tid, c, role="QA": {"session": f"rev_{tid}_{role}", "role": role, "decision": "APPROVED"}
         card = {"id": "T1", "review_assignments": {"reviewer_sessions": []}}
         state = r2.process_task("T1", card)
         self.assertEqual(state, TaskState.DONE.value)
@@ -507,9 +584,9 @@ class CheckpointAndRecoveryTest(unittest.TestCase):
         r2.qa_executor = lambda tid, c: {
             "passed": True, "candidate_commit": c,
             "server_qa": {"path": "s.json", "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
-                          "sandbox": {"kind": "container"}},
+                          "sandbox": {"kind": "container"}, "task_revision": 1},
         }
-        r2.review_executor = lambda tid, c: {"session": "rev-proc", "decision": "APPROVED"}
+        r2.review_executor = lambda tid, c, role="QA": {"session": f"rev_{tid}_{role}", "role": role, "decision": "APPROVED"}
         card = {"id": "T1", "review_assignments": {"reviewer_sessions": []}}
         state = r2.process_task("T1", card)
         self.assertEqual(state, TaskState.DONE.value)
@@ -540,6 +617,7 @@ class ExecutionModesTest(unittest.TestCase):
                 "path": "server_qa.json",
                 "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
                 "sandbox": {"kind": "container", "id": "c1"},
+                "task_revision": 1,
             },
         }
         runner.review_executor = lambda tid, c, role="QA": {
@@ -604,6 +682,9 @@ class ExecutionModesTest(unittest.TestCase):
         self.assertIn("report_review", qa_entry)
         self.assertEqual(qa_entry["report_review"]["decision"], "APPROVED")
         self.assertEqual(qa_entry["report_review"]["role"], "ARCH")
+        self.assertTrue(qa_entry["report_review"].get("report_path"))
+        self.assertTrue(qa_entry["report_review"].get("report_sha256"))
+        self.assertEqual(qa_entry["report_review"]["report_sha256"], qa_entry.get("report_sha256"))
         runner.state_machine.validate_done_acceptance(card, self.base)
 
     def test_missing_executor_fails_closed(self):

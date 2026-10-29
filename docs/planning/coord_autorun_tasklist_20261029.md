@@ -4,18 +4,20 @@ revision: 1
 date: 2026-10-29
 status: queue-defined-runner-not-deployed
 owner: COORD
-authorization: 用户要求COORD按tasklist逐卡拉起Agent自闭环，独立Codex QA在独立沙箱消费服务器代码
+authorization: 用户要求COORD逐卡闭环；独立容器检出、构建和测试服务器候选，宿主机独立Codex审查同一候选和证据
 ---
 
 # COORD 总控执行清单
 
-这是现有COORD的统一执行入口，配套[验收门禁](../../.agents/rules/delivery_and_coord_gate.md)及[机器队列](coord_autorun_queue_20261029.yaml)。角色和任务由COORD实际拉起，不需要用户逐个转发。当前建立了队列和检查入口，AUTO-01/02尚未实现；不得声称自动后台服务或服务器沙箱QA已经运行。
+这是现有COORD的统一执行入口，配套[验收门禁](../../.agents/rules/delivery_and_coord_gate.md)及[机器队列](coord_autorun_queue_20261029.yaml)。角色和任务由COORD实际拉起，不需要用户逐个转发。AUTO-01/02的实际状态和能力以任务卡、准确候选和运行证据为准；不得仅凭规则或代码声称自动后台服务或服务器沙箱QA已经运行。
+
+**当前 QA 分工：**按用户确认的方案 1，独立容器从服务器检出锁定候选并构建、执行自动化测试；独立 Codex Reviewer 在宿主机专属会话中只读检查可核验的同一源码快照及容器证据。版本、会话、容器和证据绑定、非作者复核以及历史记录处理均按[权威门禁](../../.agents/rules/delivery_and_coord_gate.md)执行。旧任务卡关于 Codex 在容器内运行的历史表述不再作为当前执行要求；不因此改写历史验收。
 
 ## 1. 先准备执行环境，再接续业务任务
 
 | 顺序 | 任务 | COORD派给谁 | 必交与独立验收 |
 | --- | --- | --- | --- |
-| 1 | [AUTO-01](../../.agents/kanban/microtasks/coord_automation/AUTO-01.md) 服务器候选与独立QA沙箱运行器 | INTEGRATOR主责；独立Codex QA与非作者ARCH复核 | 核实GitLab/授权/runner实际能力；准确候选推送和服务端验证；新沙箱从服务器恢复锁定源码；Codex实际在沙箱运行；真实job、会话、隔离和构建记录；拒绝本机未提交覆盖。首次用可信系统工具独立准备验证环境，避免自制启动器自证 |
+| 1 | [AUTO-01](../../.agents/kanban/microtasks/coord_automation/AUTO-01.md) 服务器候选与独立QA沙箱运行器 | INTEGRATOR主责；独立Codex QA与非作者ARCH复核 | 核实GitLab/授权/runner实际能力；容器从服务器检出锁定候选并构建测试；宿主机独立Codex只读审查同一候选和容器证据；核对真实job、会话、隔离和构建记录，拒绝本机未提交覆盖。首次用可信系统工具独立准备验证环境，避免自制启动器自证 |
 | 2 | [AUTO-02](../../.agents/kanban/microtasks/coord_automation/AUTO-02.md) COORD有限循环与恢复 | INTEGRATOR主责；独立QA/ARCH | 依赖感知选卡、实际拉起/等待Agent、调用AUTO-01、读真实服务端判定、收件后推进下一卡、退修上限、资源排他、会话/进程重启恢复与日志；有限循环与常驻模式分别验收 |
 | 3 | TWIN-01当前候选复核 | ARCH修订；真正独立的Codex及各必需Owner审阅 | 保留原报告，新run核会话/Owner/报告复核证据、AT32芯片及路径、温度单位兼容、未实测预算和迁移承诺。COORD按证据处理正式状态，解除对应字段消费限制 |
 | 4 | TWIN-02～12 | 见下表 | 按依赖和每票闭环推进VMware真实应用、真实MC/TH；代码与QA输入一律是服务器锁定候选 |
@@ -75,7 +77,7 @@ INTEGRATOR在TWIN-04单点维护共享构建脚本、总校验索引和公共装
 ```text
 你继续担任唯一COORD。读取README、delivery_and_coord_gate.md和本总控执行清单。
 核对已有在途Agent/任务和授权，按AUTO-01、AUTO-02及TWIN业务依赖落实执行。
-由你实际拉起对应作者Agent和独立Codex QA；QA Agent必须在独立沙箱中，从服务器锁定提交取得源码/契约/测试工具并重新构建验证。
+由你实际拉起对应作者Agent和独立Codex QA；在独立容器中从服务器锁定提交取得源码/契约/测试工具并重新构建验证，宿主机独立Codex只读审查可核验的同一候选及容器证据。
 每张任务完成作者自检、准确候选推送核实、独立QA、QA报告非作者复核、必需Owner接受及收件后，按依赖自动接续下一张。
 先处理TWIN-01当前疑点，保留原报告和签署，未解除的字段不进入TWIN-02冻结。
 既有授权不重复询问，技术问题由团队解决；遇必要资料/授权缺失或达到失败上限才向我提出具体问题。

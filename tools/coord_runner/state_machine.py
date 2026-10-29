@@ -83,31 +83,47 @@ class CoordStateMachine:
         ev_tag = f":evidence={evidence.get('sha256')[:8]}"
         record.waiting_events.append(f"remediation:{record.corrections_count}:{reason}{ev_tag}")
 
+    def _find_or_create_evidence(self, candidates: list, fallback_name: str, raw_bytes: bytes) -> dict:
+        for c in candidates:
+            if c:
+                p = Path(c)
+                if p.is_file():
+                    try:
+                        data = p.read_bytes()
+                        return {"path": str(p), "sha256": hashlib.sha256(data).hexdigest()}
+                    except OSError:
+                        pass
+        out = Path("/tmp") / fallback_name
+        out.write_bytes(raw_bytes)
+        return {"path": str(out), "sha256": hashlib.sha256(raw_bytes).hexdigest()}
+
     def _extract_qa_failure_evidence(self, qa_verdict: object) -> dict:
+        candidates = ["server_qa.json", "runtime.log", "server_verdict.json"]
         if isinstance(qa_verdict, dict):
             ev = qa_verdict.get("evidence")
             if isinstance(ev, dict) and ev.get("path") and ev.get("sha256"):
                 return ev
             sqa = qa_verdict.get("server_qa")
-            if isinstance(sqa, dict) and sqa.get("path") and sqa.get("sha256"):
-                return {"path": sqa["path"], "sha256": sqa["sha256"]}
+            if isinstance(sqa, dict) and sqa.get("path"):
+                candidates.insert(0, sqa["path"])
             raw = json.dumps(qa_verdict, sort_keys=True).encode("utf-8")
-            return {"path": "qa_verdict.json", "sha256": hashlib.sha256(raw).hexdigest()}
-        raw_s = str(qa_verdict).encode("utf-8")
-        return {"path": "qa_verdict_malformed.log", "sha256": hashlib.sha256(raw_s).hexdigest()}
+        else:
+            raw = str(qa_verdict).encode("utf-8")
+        return self._find_or_create_evidence(candidates, "qa_failure_verdict.json", raw)
 
     def _extract_review_failure_evidence(self, review_entry: object) -> dict:
+        candidates = ["review_report.md", "server_qa.json", "runtime.log"]
         if isinstance(review_entry, dict):
             ev = review_entry.get("evidence")
             if isinstance(ev, dict) and ev.get("path") and ev.get("sha256"):
                 return ev
             rep = review_entry.get("report_ref")
-            if isinstance(rep, dict) and rep.get("path") and rep.get("sha256"):
-                return {"path": rep["path"], "sha256": rep["sha256"]}
+            if isinstance(rep, dict) and rep.get("path"):
+                candidates.insert(0, rep["path"])
             raw = json.dumps(review_entry, sort_keys=True).encode("utf-8")
-            return {"path": "review_report.md", "sha256": hashlib.sha256(raw).hexdigest()}
-        raw_s = str(review_entry).encode("utf-8")
-        return {"path": "review_malformed.log", "sha256": hashlib.sha256(raw_s).hexdigest()}
+        else:
+            raw = str(review_entry).encode("utf-8")
+        return self._find_or_create_evidence(candidates, "review_failure_report.md", raw)
 
     def _validate_server_qa_proof(self, server_qa: object, record: TaskExecutionRecord) -> None:
         if not server_qa or not isinstance(server_qa, dict):
@@ -118,7 +134,7 @@ class CoordStateMachine:
         if sbox.get("kind") not in {"container", "vm"}:
             raise GateValidationError(f"Invalid sandbox kind in server_qa: {sbox.get('kind')}")
         qa_rev = server_qa.get("task_revision")
-        if qa_rev is not None and qa_rev != record.task_revision:
+        if qa_rev is None or qa_rev != record.task_revision:
             raise GateValidationError(
                 f"Task revision mismatch in server QA evidence: expected {record.task_revision}, got {qa_rev}"
             )
@@ -178,6 +194,15 @@ class CoordStateMachine:
         rep_rev_id = rep_rev.get("reviewer") or rep_rev.get("session") or rep_rev.get("reviewer_session")
         if not rep_rev_id or rep_rev_id == qa_rev or (author and rep_rev_id == author):
             raise GateValidationError("Fake Done rejected: QA reviewer missing mandatory non-author report_review")
+        r_path = rep_rev.get("report_path")
+        r_sha = rep_rev.get("report_sha256")
+        if not r_path or not isinstance(r_path, str) or not r_sha or not isinstance(r_sha, str):
+            raise GateValidationError(
+                "Fake Done rejected: QA report_review missing mandatory report_path or report_sha256 binding"
+            )
+        entry_sha = entry.get("report_sha256")
+        if entry_sha and r_sha != entry_sha:
+            raise GateValidationError("Fake Done rejected: report_review sha256 does not match QA report_sha256")
 
     def validate_done_acceptance(self, card: dict, workspace: Path) -> None:
         assignments = (card.get("review_assignments") or {}).get("reviewer_sessions") or []

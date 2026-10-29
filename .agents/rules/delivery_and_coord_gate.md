@@ -23,7 +23,7 @@ flowchart TD
     B --> C[实现与作者自检]
     C --> D[审阅差异并提交准确候选]
     D --> E[推送服务器并核对完整提交]
-    E --> F[独立Codex在新沙箱从服务器检出]
+    E --> F[独立容器检出构建测试，宿主机独立Codex只读审查]
     F --> G{独立QA通过?}
     G -- 否 --> H[原作者修复并产生新候选]
     H --> C
@@ -60,15 +60,17 @@ flowchart TD
 
 ### 3.1 容器沙箱与外部独立审查席位分工规程（方案 1 - 规范标准做法）
 
-1. **构建与测试隔离绝对性**：被审阅源码的构建、检出与自动化测试套件必须且只能在独立的 Docker/VM 容器沙箱内执行（由 `qa_runner.py` 调度管理），并留存全量运行时 `docker inspect` 物证（Container ID、Image Digest、状态与只读/读写挂载卷信息）、执行日志与校验结果于 `server_qa.json` 与 `runtime.log`。严禁在宿主机直接跑测试充当沙箱证据。
+1. **构建与测试隔离**：被审阅源码的检出、构建与自动化测试套件必须在独立的 Docker 容器沙箱内执行，并留存实际运行时 `docker inspect` 物证（Container ID、Image Digest、状态与只读/读写挂载卷信息）、执行日志与校验结果于 `server_qa.json` 与 `runtime.log`。`qa_runner.py` 能否完成该流程需以实际验收为准；严禁在宿主机直接跑测试充当沙箱证据。
 2. **审查席位独立性**：Codex Reviewer（`platform: codex`，`model: gpt-6-luna`）作为独立的第三方审查席位，在宿主机上启动专属会话（具有唯一的 Session UUID、真实 Token 消耗与执行审计记录），对容器沙箱产出的锁定候选 Commit、`server_qa.json`、容器 Inspect 物证及交付文件进行只读审计与签署签发，规避 Docker 容器内部嵌套 Bubblewrap/User Namespaces 的系统级冲突。
 3. **真实绑定与可核验性**：任务卡与审查报告中必须真实绑定：
    - 候选服务器 Commit SHA
    - Docker 容器 ID 与 Image Digest（来源于 `server_qa.json` 中的 `container_inspect`）
-   - Codex Reviewer 独立会话 UUID 与 Token 凭证
+   - Codex Reviewer 独立会话标识及可用的运行记录；可记录 token 用量，禁止记录 API token、登录凭据或认证缓存
    - 审查报告自身的 SHA256 校验和
 
 首次AUTO-01可由INTEGRATOR用现有可信Git、VM/容器工具手工准备隔离环境，供独立Codex审查从服务器检出的运行器候选；不得以尚未验收的自制启动器自证隔离。后续才复用已接受的运行器。QA报告也由另一未参与写作的会话复核，并绑定报告原始哈希；不要求无限递归审查行政收件回执。
+
+宿主机 Codex 只读审阅容器受控导出的源码快照与证据，或独立取得并核对为同一服务器提交的只读快照；必须核对提交、快照与证据哈希，不得使用作者可写工作树充当验收基线。无法验证源码和容器测试候选一致时阻断收件。会话的独立性不由宿主机位置或角色名称单独证明；正式报告仍需非作者复核。此条对当前及新任务生效，历史签署和历史任务卡保留原样；旧卡中“Codex在沙箱内运行”的表述按本条新规则执行，实际变更和运行另留记录，不虚构容器或会话证据。
 
 ## 4. 每次验收必查的内容门禁
 

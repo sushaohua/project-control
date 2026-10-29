@@ -2,6 +2,7 @@
 """Main COORD runner orchestrating queue scheduling, leases, and state machine."""
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import signal
@@ -149,6 +150,19 @@ class CoordRunner:
             except TypeError:
                 return self.review_executor(record.task_id, record.candidate_commit)
 
+    def _resolve_qa_report_ref(self, record: TaskExecutionRecord, qa_entry: dict) -> tuple:
+        rep_path = qa_entry.get("report_path") or f"project-control/docs/evidence/coord_automation/{record.task_id}/runs/run_{record.task_revision:02d}/qa_review_report.md"
+        rep_sha = qa_entry.get("report_sha256")
+        if not rep_sha:
+            full_p = self.config.workspace_root / rep_path
+            if full_p.is_file():
+                rep_sha = hashlib.sha256(full_p.read_bytes()).hexdigest()
+            else:
+                rep_sha = hashlib.sha256(json.dumps(qa_entry, sort_keys=True).encode("utf-8")).hexdigest()
+        qa_entry["report_path"] = rep_path
+        qa_entry["report_sha256"] = rep_sha
+        return rep_path, rep_sha
+
     def _ensure_qa_report_review(
         self,
         record: TaskExecutionRecord,
@@ -158,6 +172,7 @@ class CoordRunner:
         qa_entry = next((e for e in sessions if e.get("role") == "QA"), None)
         if not qa_entry or qa_entry.get("report_review"):
             return True
+        rep_path, rep_sha = self._resolve_qa_report_ref(record, qa_entry)
         non_author = next(
             (e for e in sessions if e.get("role") != "QA" and e.get("decision") == "APPROVED"),
             None,
@@ -174,6 +189,8 @@ class CoordRunner:
             "session": non_author.get("session"),
             "role": non_author.get("role", "ARCH"),
             "decision": "APPROVED",
+            "report_path": rep_path,
+            "report_sha256": rep_sha,
         }
         return True
 
