@@ -71,6 +71,7 @@ class TaskExecutionRecord:
     state: str = TaskState.BACKLOG.value
     session_id: Optional[str] = None
     candidate_commit: Optional[str] = None
+    task_revision: int = 1
     corrections_count: int = 0
     waiting_events: List[str] = field(default_factory=list)
     leases: List[str] = field(default_factory=list)
@@ -83,6 +84,7 @@ class TaskExecutionRecord:
             "state": self.state,
             "session_id": self.session_id,
             "candidate_commit": self.candidate_commit,
+            "task_revision": self.task_revision,
             "corrections_count": self.corrections_count,
             "waiting_events": list(self.waiting_events),
             "leases": list(self.leases),
@@ -97,6 +99,7 @@ class TaskExecutionRecord:
             state=data.get("state", TaskState.BACKLOG.value),
             session_id=data.get("session_id"),
             candidate_commit=data.get("candidate_commit"),
+            task_revision=int(data.get("task_revision", 1)),
             corrections_count=int(data.get("corrections_count", 0)),
             waiting_events=list(data.get("waiting_events", [])),
             leases=list(data.get("leases", [])),

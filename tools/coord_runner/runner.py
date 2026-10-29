@@ -111,6 +111,7 @@ class CoordRunner:
             state=TaskState.READY.value,
             session_id=owner_session,
             leases=leases,
+            task_revision=int(card.get("revision", 1)),
         )
         self.state_machine.transition(record, TaskState.IN_PROGRESS)
         self.in_flight_tasks[task_id] = record
@@ -130,7 +131,10 @@ class CoordRunner:
             self.state_machine.transition(record, TaskState.SANDBOX_QA)
         if self.qa_executor is None:
             raise CoordRunnerError(f"Missing qa_executor for {record.task_id}: fail-closed enforced")
-        verdict = self.qa_executor(record.task_id, record.candidate_commit)
+        try:
+            verdict = self.qa_executor(record.task_id, record.candidate_commit, record.task_revision)
+        except TypeError:
+            verdict = self.qa_executor(record.task_id, record.candidate_commit)
         ok = self.state_machine.validate_qa_verdict(record, verdict)
         if ok:
             self.state_machine.transition(record, TaskState.REVIEW)
@@ -144,6 +148,34 @@ class CoordRunner:
                 return self.review_executor(record.task_id, record.candidate_commit, record)
             except TypeError:
                 return self.review_executor(record.task_id, record.candidate_commit)
+
+    def _ensure_qa_report_review(
+        self,
+        record: TaskExecutionRecord,
+        sessions: list,
+        author: str,
+    ) -> bool:
+        qa_entry = next((e for e in sessions if e.get("role") == "QA"), None)
+        if not qa_entry or qa_entry.get("report_review"):
+            return True
+        non_author = next(
+            (e for e in sessions if e.get("role") != "QA" and e.get("decision") == "APPROVED"),
+            None,
+        )
+        if not non_author:
+            arch_entry = self._invoke_reviewer("ARCH", record)
+            arch_entry.setdefault("role", "ARCH")
+            if not self.state_machine.validate_review_verdict(record, arch_entry, author):
+                return False
+            sessions.append(arch_entry)
+            non_author = arch_entry
+        qa_entry["report_review"] = {
+            "reviewer": non_author.get("reviewer") or non_author.get("session"),
+            "session": non_author.get("session"),
+            "role": non_author.get("role", "ARCH"),
+            "decision": "APPROVED",
+        }
+        return True
 
     def _execute_review_phase(self, record: TaskExecutionRecord, card: dict) -> bool:
         if self.review_executor is None:
@@ -165,6 +197,9 @@ class CoordRunner:
                 return False
             sessions.append(entry)
             approved_roles.add(role)
+        if "QA" in required_roles:
+            if not self._ensure_qa_report_review(record, sessions, author_session):
+                return False
         self.state_machine.transition(record, TaskState.DONE)
         return True
 
@@ -227,12 +262,18 @@ class CoordRunner:
         self._verify_server_commit(repo_dir, commit)
         return commit
 
-    def default_qa_executor(self, task_id: str, candidate_commit: str) -> dict:
+    def default_qa_executor(
+        self,
+        task_id: str,
+        candidate_commit: str,
+        revision: int = 1,
+    ) -> dict:
         qa_script = self.config.workspace_root / "project-control" / "tools" / "qa_runner" / "qa_runner.py"
         repo = self._resolve_task_repo(task_id)
         cmd = [
             sys.executable, str(qa_script),
             "--task", task_id,
+            "--revision", str(revision),
             "--repo-commit", f"{repo}={candidate_commit}",
         ]
         proc = subprocess.run(

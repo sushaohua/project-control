@@ -301,6 +301,86 @@ class StateMachineAndRemediationTest(unittest.TestCase):
             self.sm.validate_done_acceptance(card, Path("."))
         self.assertIn("QA report review not approved", str(ctx.exception))
 
+    def test_remediation_missing_evidence_rejected(self):
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.handle_remediation(self.record, "err", None)  # type: ignore
+        self.assertIn("mandatory evidence dict", str(ctx.exception))
+        with self.assertRaises(GateValidationError) as ctx2:
+            self.sm.handle_remediation(self.record, "err", {})
+        self.assertIn("mandatory evidence dict", str(ctx2.exception))
+
+    def test_done_rejected_when_qa_missing_report_review(self):
+        card = {
+            "id": "T1",
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {"session": "sess-qa", "role": "QA", "decision": "APPROVED"}
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, Path("."))
+        self.assertIn("QA reviewer missing mandatory non-author report_review", str(ctx.exception))
+
+    def test_done_rejected_when_qa_report_review_self_reviewed(self):
+        card = {
+            "id": "T1",
+            "owner": "author-sess",
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {
+                        "session": "sess-qa",
+                        "role": "QA",
+                        "decision": "APPROVED",
+                        "report_review": {"session": "sess-qa", "decision": "APPROVED"},
+                    }
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, Path("."))
+        self.assertIn("QA reviewer missing mandatory non-author report_review", str(ctx.exception))
+
+    def test_done_rejected_when_qa_report_review_by_author(self):
+        card = {
+            "id": "T1",
+            "owner": "author-sess",
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {
+                        "session": "sess-qa",
+                        "role": "QA",
+                        "decision": "APPROVED",
+                        "report_review": {"session": "author-sess", "decision": "APPROVED"},
+                    }
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, Path("."))
+        self.assertIn("QA reviewer missing mandatory non-author report_review", str(ctx.exception))
+
+    def test_qa_verdict_task_revision_mismatch_rejected(self):
+        self.record.state = TaskState.SANDBOX_QA.value
+        self.record.candidate_commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        self.record.task_revision = 1
+        qa_verdict = {
+            "passed": True,
+            "candidate_commit": "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819",
+            "server_qa": {
+                "path": "server_qa.json",
+                "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                "sandbox": {"kind": "container"},
+                "task_revision": 6,
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_qa_verdict(self.record, qa_verdict)
+        self.assertIn("Task revision mismatch", str(ctx.exception))
+
 
 class CheckpointAndRecoveryTest(unittest.TestCase):
     def setUp(self):
@@ -520,6 +600,11 @@ class ExecutionModesTest(unittest.TestCase):
         sessions = card["review_assignments"]["reviewer_sessions"]
         roles = {s.get("role") for s in sessions}
         self.assertEqual(roles, {"QA", "ARCH"})
+        qa_entry = next(s for s in sessions if s.get("role") == "QA")
+        self.assertIn("report_review", qa_entry)
+        self.assertEqual(qa_entry["report_review"]["decision"], "APPROVED")
+        self.assertEqual(qa_entry["report_review"]["role"], "ARCH")
+        runner.state_machine.validate_done_acceptance(card, self.base)
 
     def test_missing_executor_fails_closed(self):
         runner = CoordRunner(self.cfg)

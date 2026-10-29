@@ -2,6 +2,8 @@
 """State machine and gate enforcement for COORD delivery tasks."""
 
 from pathlib import Path
+import hashlib
+import json
 import re
 from typing import Dict, Optional, Set
 
@@ -67,11 +69,10 @@ class CoordStateMachine:
         self,
         record: TaskExecutionRecord,
         reason: str,
-        evidence: Optional[dict] = None,
+        evidence: dict,
     ) -> None:
-        if evidence is not None:
-            if not isinstance(evidence, dict) or not evidence.get("path") or not evidence.get("sha256"):
-                raise GateValidationError("Remediation evidence requires non-empty path and sha256")
+        if not evidence or not isinstance(evidence, dict) or not evidence.get("path") or not evidence.get("sha256"):
+            raise GateValidationError("Remediation requires mandatory evidence dict with non-empty path and sha256")
         record.corrections_count += 1
         if record.corrections_count > self.max_corrections:
             record.state = TaskState.ESCALATED.value
@@ -79,10 +80,36 @@ class CoordStateMachine:
                 f"Task {record.task_id} exceeded max corrections ({self.max_corrections}): {reason}"
             )
         record.state = TaskState.IN_PROGRESS.value
-        ev_tag = f":evidence={evidence.get('sha256')[:8]}" if evidence else ""
+        ev_tag = f":evidence={evidence.get('sha256')[:8]}"
         record.waiting_events.append(f"remediation:{record.corrections_count}:{reason}{ev_tag}")
 
-    def _validate_server_qa_proof(self, server_qa: object) -> None:
+    def _extract_qa_failure_evidence(self, qa_verdict: object) -> dict:
+        if isinstance(qa_verdict, dict):
+            ev = qa_verdict.get("evidence")
+            if isinstance(ev, dict) and ev.get("path") and ev.get("sha256"):
+                return ev
+            sqa = qa_verdict.get("server_qa")
+            if isinstance(sqa, dict) and sqa.get("path") and sqa.get("sha256"):
+                return {"path": sqa["path"], "sha256": sqa["sha256"]}
+            raw = json.dumps(qa_verdict, sort_keys=True).encode("utf-8")
+            return {"path": "qa_verdict.json", "sha256": hashlib.sha256(raw).hexdigest()}
+        raw_s = str(qa_verdict).encode("utf-8")
+        return {"path": "qa_verdict_malformed.log", "sha256": hashlib.sha256(raw_s).hexdigest()}
+
+    def _extract_review_failure_evidence(self, review_entry: object) -> dict:
+        if isinstance(review_entry, dict):
+            ev = review_entry.get("evidence")
+            if isinstance(ev, dict) and ev.get("path") and ev.get("sha256"):
+                return ev
+            rep = review_entry.get("report_ref")
+            if isinstance(rep, dict) and rep.get("path") and rep.get("sha256"):
+                return {"path": rep["path"], "sha256": rep["sha256"]}
+            raw = json.dumps(review_entry, sort_keys=True).encode("utf-8")
+            return {"path": "review_report.md", "sha256": hashlib.sha256(raw).hexdigest()}
+        raw_s = str(review_entry).encode("utf-8")
+        return {"path": "review_malformed.log", "sha256": hashlib.sha256(raw_s).hexdigest()}
+
+    def _validate_server_qa_proof(self, server_qa: object, record: TaskExecutionRecord) -> None:
         if not server_qa or not isinstance(server_qa, dict):
             raise GateValidationError("Missing mandatory server_qa evidence dictionary in QA verdict")
         if not server_qa.get("path") or not server_qa.get("sha256"):
@@ -90,25 +117,33 @@ class CoordStateMachine:
         sbox = server_qa.get("sandbox", {})
         if sbox.get("kind") not in {"container", "vm"}:
             raise GateValidationError(f"Invalid sandbox kind in server_qa: {sbox.get('kind')}")
+        qa_rev = server_qa.get("task_revision")
+        if qa_rev is not None and qa_rev != record.task_revision:
+            raise GateValidationError(
+                f"Task revision mismatch in server QA evidence: expected {record.task_revision}, got {qa_rev}"
+            )
 
     def validate_qa_verdict(self, record: TaskExecutionRecord, qa_verdict: dict) -> bool:
         if not isinstance(qa_verdict, dict):
-            self.handle_remediation(record, "QA verdict must be a valid dictionary")
+            ev = self._extract_qa_failure_evidence(qa_verdict)
+            self.handle_remediation(record, "QA verdict must be a valid dictionary", ev)
             return False
         passed = qa_verdict.get("passed")
         if passed is not True:
             err = qa_verdict.get("summary", "QA verification failed or passed not boolean True")
-            self.handle_remediation(record, f"Server QA failure: {err}")
+            ev = self._extract_qa_failure_evidence(qa_verdict)
+            self.handle_remediation(record, f"Server QA failure: {err}", ev)
             return False
         if qa_verdict.get("developer_mounts"):
-            self.handle_remediation(record, "Sandbox security violation: developer mounts present")
+            ev = self._extract_qa_failure_evidence(qa_verdict)
+            self.handle_remediation(record, "Sandbox security violation: developer mounts present", ev)
             return False
         v_commit = qa_verdict.get("candidate_commit") or qa_verdict.get("commit_sha")
         if not v_commit or v_commit != record.candidate_commit:
             raise GateValidationError(
                 f"QA verdict commit ({v_commit}) does not match candidate commit ({record.candidate_commit})"
             )
-        self._validate_server_qa_proof(qa_verdict.get("server_qa"))
+        self._validate_server_qa_proof(qa_verdict.get("server_qa"), record)
         return True
 
     def validate_review_verdict(
@@ -126,9 +161,23 @@ class CoordStateMachine:
             )
         decision = review_entry.get("decision", "").upper()
         if decision != "APPROVED":
-            self.handle_remediation(record, f"Review rejected: decision was {decision}")
+            ev = self._extract_review_failure_evidence(review_entry)
+            self.handle_remediation(record, f"Review rejected: decision was {decision}", ev)
             return False
         return True
+
+    def _validate_qa_report_review(self, entry: dict, author: Optional[str]) -> None:
+        rep_rev = entry.get("report_review")
+        if not rep_rev or not isinstance(rep_rev, dict):
+            raise GateValidationError("Fake Done rejected: QA reviewer missing mandatory non-author report_review")
+        if rep_rev.get("decision") != "APPROVED":
+            raise GateValidationError(
+                "Fake Done rejected: QA reviewer missing mandatory non-author report_review (QA report review not approved)"
+            )
+        qa_rev = entry.get("reviewer") or entry.get("session") or entry.get("reviewer_session")
+        rep_rev_id = rep_rev.get("reviewer") or rep_rev.get("session") or rep_rev.get("reviewer_session")
+        if not rep_rev_id or rep_rev_id == qa_rev or (author and rep_rev_id == author):
+            raise GateValidationError("Fake Done rejected: QA reviewer missing mandatory non-author report_review")
 
     def validate_done_acceptance(self, card: dict, workspace: Path) -> None:
         assignments = (card.get("review_assignments") or {}).get("reviewer_sessions") or []
@@ -143,10 +192,10 @@ class CoordStateMachine:
             role = entry.get("role")
             if role:
                 approved_roles.add(role)
-            if role == "QA" and "report_review" in entry:
-                rep_rev = entry.get("report_review") or {}
-                if rep_rev.get("decision") != "APPROVED":
-                    raise GateValidationError("Fake Done rejected: QA report review not approved")
         for r in required_roles:
             if r not in approved_roles:
                 raise GateValidationError(f"Fake Done rejected: required reviewer role {r} missing or not approved")
+        author = card.get("session_id") or card.get("author_session") or card.get("owner")
+        for entry in assignments:
+            if entry.get("role") == "QA" and "QA" in required_roles:
+                self._validate_qa_report_review(entry, author)
