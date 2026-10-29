@@ -9,7 +9,10 @@ authorization: 用户本轮明确要求“把所有的qa都独立成codex审查�
 
 # 独立 QA 统一使用 Codex
 
-> **2026-10-29 新增要求：** 用户明确要求独立Codex QA同时使用独立沙箱，并以推送到服务器的准确代码为基准。按[连续调度与服务器沙箱QA门禁](delivery_and_coord_gate.md)执行；新开会话或Git worktree本身不等于独立沙箱。保存真实会话/沙箱/远端commit/job/日志绑定，QA报告须非作者复核。当前规范不代表运行器已经部署，AUTO-01/02负责落地。
+> **2026-10-29 新增要求（方案 1 规范标准做法）：**
+> 1. **分工明确**：被审阅源码的构建、检出与自动化测试套件必须且只能在独立的 Docker/VM 容器沙箱内执行，运行时全量记录并归档容器 Inspect 物证（Container ID、Image Digest、状态与挂载）至 `server_qa.json` 与 `runtime.log`；
+> 2. **独立审阅席位**：Codex Reviewer 作为独立的第三方审查席位，在宿主机上启动专属会话（具有唯一的 Session UUID、真实 Token 消耗与执行审计记录），对容器沙箱产出的锁定候选 Commit、`server_qa.json`、容器 Inspect 物证及交付文件进行独立审计与签署签发，规避 Docker 内部嵌套 Bubblewrap 的系统级命名空间冲突；
+> 3. **真实绑定与可核验性**：任务卡与审查报告中必须真实绑定候选服务器 Commit SHA、Docker 容器 ID 与 Image Digest、Codex Reviewer 独立会话 UUID 与 Token 凭证及审查报告自身的 SHA256 校验和。按[连续调度与服务器沙箱QA门禁](delivery_and_coord_gate.md)执行，保存真实会话/沙箱/远端commit/job/日志绑定，QA报告须非作者复核。AUTO-01/02负责落地。
 
 本规则是后续 QA 审查与验收的执行方式原件，适用于所有未完成任务和新建任务。已经完成的评审及原始报告保留原会话、版本、结论；重新检查时另建 run，不将历史签署改名为 Codex 签署。
 
