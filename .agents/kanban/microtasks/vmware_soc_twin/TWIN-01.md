@@ -14,7 +14,7 @@ proposed_owner: ARCH
 executor:
   role: ARCH
   agent_id: 01a1809a-7a11-74f0-9112-88ec09142100
-  run_id: run_01
+  run_id: run_02
 reviewer:
 - QA
 - ENG-FWD
@@ -34,102 +34,143 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-01
-    session: 01a18280-cb29-73c2-89e5-53facca8bf18
+    session: 01a18795-89f2-74d0-8d5e-adec286d8ef0
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/qa_review_report.md
+      sha256: 4a7ec321cfd4f643678148fc912670ff339b908d8c040f2a43e2e7f3ebe17f54
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/qa_review_report.md
-    report_sha256: 666c5244dda945fc51bb66d3d08d16a864691ad4632aa075eed6fc2f57951150
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/qa_review_report.md
+    report_sha256: 4a7ec321cfd4f643678148fc912670ff339b908d8c040f2a43e2e7f3ebe17f54
+    report_review:
+      session: 01a18797-fe88-7a60-91a7-787643594bd2
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 2
+      artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+      evidence: docs/evidence/twin/TWIN-01/runs/run_02/arch_review_report.md
+      report_sha256: 9030e0d9e199184afcede068ccadd80a79d9b1d3724797971d546cc23c9704bb
+      session_evidence:
+        path: docs/evidence/twin/TWIN-01/runs/run_02/arch_review_report.md
+        sha256: 9030e0d9e199184afcede068ccadd80a79d9b1d3724797971d546cc23c9704bb
   - role: ENG-FWD
     platform: null
     model: null
     planned_session_alias: planned-eng-fwd-twin-01
     session: 01a18355-12ab-70a1-8901-c8f2b3e41001
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_fwd.md
+      sha256: 8093a2bffff40c3529e2178eca837034c21e2b86cef79a3d21ff47327f3154b4
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
-    report_sha256: null
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_fwd.md
+    report_sha256: 8093a2bffff40c3529e2178eca837034c21e2b86cef79a3d21ff47327f3154b4
   - role: ENG-STATE
     platform: null
     model: null
     planned_session_alias: planned-eng-state-twin-01
     session: 01a18355-12ab-70a1-8901-c8f2b3e41002
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_state.md
+      sha256: 0cf9f65319c325a1ba47e333cadecebb5d89bd7bf469e9299429e3b128935f3d
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
-    report_sha256: null
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_state.md
+    report_sha256: 0cf9f65319c325a1ba47e333cadecebb5d89bd7bf469e9299429e3b128935f3d
   - role: ENG-UI
     platform: null
     model: null
     planned_session_alias: planned-eng-ui-twin-01
     session: 01a18355-12ab-70a1-8901-c8f2b3e41003
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_ui.md
+      sha256: 4ba8fc3dbbd35297c50d5d6315829685a88f7986c7ee6f47a7a4d881cccc5025
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
-    report_sha256: null
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_ui.md
+    report_sha256: 4ba8fc3dbbd35297c50d5d6315829685a88f7986c7ee6f47a7a4d881cccc5025
   - role: ENG-NET
     platform: null
     model: null
     planned_session_alias: planned-eng-net-twin-01
     session: 01a18355-12ab-70a1-8901-c8f2b3e41004
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_net.md
+      sha256: 2d5585f180c788e2c3bc9235b37d7d1cce988301a551b0eb0822f168be3088ad
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
-    report_sha256: null
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_net.md
+    report_sha256: 2d5585f180c788e2c3bc9235b37d7d1cce988301a551b0eb0822f168be3088ad
   - role: ENG-DDS
     platform: null
     model: null
     planned_session_alias: planned-eng-dds-twin-01
     session: 01a18355-12ab-70a1-8901-c8f2b3e41005
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_dds.md
+      sha256: abb7df2351ef1e76f41ad1011e08f0c99c077756e553bea30bb34342c6bfc002
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
-    report_sha256: null
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_dds.md
+    report_sha256: abb7df2351ef1e76f41ad1011e08f0c99c077756e553bea30bb34342c6bfc002
   - role: ENG-DBUS
     platform: null
     model: null
     planned_session_alias: planned-eng-dbus-twin-01
     session: 01a18355-12ab-70a1-8901-c8f2b3e41006
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_dbus.md
+      sha256: bb69b4524e0f8f4640d47d6a262f127137c805dff1a3287a776049683ca08b01
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
-    report_sha256: null
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_dbus.md
+    report_sha256: bb69b4524e0f8f4640d47d6a262f127137c805dff1a3287a776049683ca08b01
   - role: INTEGRATOR
     platform: null
     model: null
     planned_session_alias: planned-integrator-twin-01
     session: 01a18355-12ab-70a1-8901-c8f2b3e41007
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_integrator.md
+      sha256: 14befaff40913a02cdb659c233ef4478dc2f8d209ae51707a9290097ffe97d85
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
-    report_sha256: null
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_integrator.md
+    report_sha256: 14befaff40913a02cdb659c233ef4478dc2f8d209ae51707a9290097ffe97d85
   - role: ENG-MC
     platform: null
     model: null
     planned_session_alias: planned-eng-mc-twin-01
     session: 01a18355-12ab-70a1-8901-c8f2b3e41008
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_mc.md
+      sha256: 1374fd164b89775ea6bc23c8f938a8c4ba6923fb79eb5c4580013e24549c7ab6
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
-    report_sha256: null
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_mc.md
+    report_sha256: 1374fd164b89775ea6bc23c8f938a8c4ba6923fb79eb5c4580013e24549c7ab6
   - role: ENG-TH
     platform: null
     model: null
     planned_session_alias: planned-eng-th-twin-01
     session: 01a18355-12ab-70a1-8901-c8f2b3e41009
+    session_evidence:
+      path: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_th.md
+      sha256: 35b140e4e092282c14a17a8afe64b62a9799979bf0563f529726a01b4ebd4d26
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: 923d250ec36b2585120f70620f3a71572448496f0a3850c5d3f9594321959793
-    evidence: docs/evidence/twin/TWIN-01/runs/run_01/result.md
-    report_sha256: null
+    artifact_version: "project-control=e9c687584e3d161d68355a0a0a5237e20856712a; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-01/runs/run_02/reviews/review_eng_th.md
+    report_sha256: 35b140e4e092282c14a17a8afe64b62a9799979bf0563f529726a01b4ebd4d26
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-005
@@ -194,7 +235,7 @@ deliverables:
   artifacts:
   - project-control/docs/interfaces/vmware_soc_twin_architecture_icd_20261029.md
   - project-control/docs/planning/twin_reuse_matrix_20261029.md
-  record: docs/evidence/twin/TWIN-01/runs/run_01/result.md
+  record: docs/evidence/twin/TWIN-01/runs/run_02/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行
@@ -202,7 +243,7 @@ handoff:
   receiver_role: COORD
   receiver_session: coord-main-session
   transport: docs
-  evidence_location: docs/evidence/twin/TWIN-01/runs/run_01
+  evidence_location: docs/evidence/twin/TWIN-01/runs/run_02
   acknowledgement: APPROVED
 verification:
   commands:

@@ -1,0 +1,39 @@
+=== Docker Container Inspect: 8af7efe447c6 ===
+{
+  "id": "8af7efe447c6d857daa4d173b8ac4da08dbb269edcf913668c3392db9f1e1dda",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:43a2f1c6c95b1df70095eb744d5eadc9225867e0d7a2feda9b41ec3b6d38c825",
+  "created": "2026-10-29T12:13:52.512450171Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-01_run_201352_20261029_121352",
+      "Destination": "/workspace",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 tools/check_task_graph.py --workspace . -> 0
+{
+  "scope": "static planning validation, not execution/approval/QA acceptance",
+  "canonical_task_count": 0,
+  "microtask_count": 0,
+  "errors": [],
+  "dependency_cycles": [],
+  "shared_write_pairs": [],
+  "readiness_blockers": {},
+  "card_paths": {},
+  "exit_code": 0
+}
+
+
+$ (test_harness) ./runner/qa_entrypoint.sh --suite cascade_vectors -> 0
+=== QA Test Harness Entrypoint ===
+Timestamp: 2026-10-29T12:13:59Z
+Harness Root: /workspace/test_harness
+>> Running suite [cascade_vectors]: /usr/bin/python3 static_checks/cascade/run_query_cases.py --check-vectors --cases test_cases/cascade/query_cases.json
+   [PASSED] in 0.02s
+

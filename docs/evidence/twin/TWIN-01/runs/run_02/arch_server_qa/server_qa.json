@@ -1,0 +1,68 @@
+{
+  "task_id": "TWIN-01",
+  "task_revision": 2,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "8af7efe447c6",
+    "id": "TWIN-01_run_201352_20261029_121352",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-01_run_201352_20261029_121352",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "8af7efe447c6d857daa4d173b8ac4da08dbb269edcf913668c3392db9f1e1dda",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:43a2f1c6c95b1df70095eb744d5eadc9225867e0d7a2feda9b41ec3b6d38c825",
+      "created": "2026-10-29T12:13:52.512450171Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-01_run_201352_20261029_121352",
+          "Destination": "/workspace",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-01/runs/run_02/arch_server_qa/server_lock.json",
+    "sha256": "6ebf13364866fd0a9c16e682ca83fd2b3fde931365400284a53983468f129e88"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-01/runs/run_02/arch_server_qa/checkout.log",
+    "sha256": "989bd4713c2bf2699ed599c5e4c759b192141bdfc10deee82c7c0db57c3a751b"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-01/runs/run_02/arch_server_qa/runtime.log",
+    "sha256": "7c7b8ed4448c49403fe92c6a6a0fda57f925f1bc119e271629324ea1418491f6"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-01/runs/run_02/arch_server_qa/server_verdict.json",
+    "sha256": "9b53657c36e7c2c1caef880f7adb6fd27e7c101e8039edf1a0f5f51196576ed8"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 tools/check_task_graph.py --workspace .",
+      "exit_code": "0",
+      "duration": "0.11s",
+      "output": "{\n  \"scope\": \"static planning validation, not execution/approval/QA acceptance\",\n  \"canonical_task_count\": 0,\n  \"microtask_count\": 0,\n  \"errors\": [],\n  \"dependency_cycles\": [],\n  \"shared_write_pairs\": [],\n  \"readiness_blockers\": {},\n  \"card_paths\": {},\n  \"exit_code\": 0\n}"
+    },
+    {
+      "command": "./runner/qa_entrypoint.sh --suite cascade_vectors",
+      "exit_code": "0",
+      "duration": "0.14s",
+      "output": "=== QA Test Harness Entrypoint ===\nTimestamp: 2026-10-29T12:13:59Z\nHarness Root: /workspace/test_harness\n>> Running suite [cascade_vectors]: /usr/bin/python3 static_checks/cascade/run_query_cases.py --check-vectors --cases test_cases/cascade/query_cases.json\n   [PASSED] in 0.02s"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-29T12:14:01.909488+00:00"
+}
