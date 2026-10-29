@@ -1,0 +1,25 @@
+$ (project-control) python3 tools/test_qa_runner.py -> 0
+
+....................
+----------------------------------------------------------------------
+Ran 20 tests in 0.014s
+
+OK
+
+$ (project-control) python3 tools/test_delivery_checks.py -> 0
+
+....................
+----------------------------------------------------------------------
+Ran 20 tests in 0.078s
+
+OK
+
+$ (test_harness) ./runner/qa_entrypoint.sh --suite all -> 0
+=== QA Test Harness Entrypoint ===
+Timestamp: 2026-10-29T07:34:04Z
+Harness Root: /tmp/qa_sandboxes/AUTO-01_run_153358_20261029_073358/test_harness
+>> Running suite [cascade_vectors]: /usr/bin/python3 static_checks/cascade/run_query_cases.py --check-vectors --cases test_cases/cascade/query_cases.json
+   [PASSED] in 0.02s
+>> Running suite [hil_unit]: /usr/bin/python3 -m unittest hil/tests/test_probe_tools.py
+   [PASSED] in 0.07s
+

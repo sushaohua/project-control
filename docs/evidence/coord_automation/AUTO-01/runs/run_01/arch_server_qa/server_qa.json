@@ -1,0 +1,55 @@
+{
+  "task_id": "AUTO-01",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "remote-runner",
+    "id": "AUTO-01_run_153514_20261029_073514",
+    "path": "/tmp/qa_sandboxes/AUTO-01_run_153514_20261029_073514",
+    "developer_mounts": []
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/coord_automation/AUTO-01/runs/run_01/arch_server_qa/server_lock.json",
+    "sha256": "c150aa42c5a4490777ab3e4fbf690ec0c50f8b2112c316867b615e5c290fa1e3"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/coord_automation/AUTO-01/runs/run_01/arch_server_qa/checkout.log",
+    "sha256": "f6cce0acc3acbd8c1aa53fa0a4cab0a0180f01714e99a40368b5e827105d6a80"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/coord_automation/AUTO-01/runs/run_01/arch_server_qa/runtime.log",
+    "sha256": "772082eec41efaa6a3cd3ba6f455e3235a509fd2f6c93d79a91cd4f80f04c228"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/coord_automation/AUTO-01/runs/run_01/arch_server_qa/server_verdict.json",
+    "sha256": "6a8ef164c556454ff9ad0a5db0aad6c0c03df61f80d331e16e71ca55b3876d10"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "python3 tools/test_qa_runner.py",
+      "exit_code": "0",
+      "duration": "0.07s",
+      "output": "....................\n----------------------------------------------------------------------\nRan 20 tests in 0.014s\n\nOK"
+    },
+    {
+      "command": "python3 tools/test_delivery_checks.py",
+      "exit_code": "0",
+      "duration": "0.13s",
+      "output": "....................\n----------------------------------------------------------------------\nRan 20 tests in 0.079s\n\nOK"
+    },
+    {
+      "command": "./runner/qa_entrypoint.sh --suite all",
+      "exit_code": "0",
+      "duration": "0.12s",
+      "output": "=== QA Test Harness Entrypoint ===\nTimestamp: 2026-10-29T07:35:19Z\nHarness Root: /tmp/qa_sandboxes/AUTO-01_run_153514_20261029_073514/test_harness\n>> Running suite [cascade_vectors]: /usr/bin/python3 static_checks/cascade/run_query_cases.py --check-vectors --cases test_cases/cascade/query_cases.json\n   [PASSED] in 0.02s\n>> Running suite [hil_unit]: /usr/bin/python3 -m unittest hil/tests/test_probe_tools.py\n   [PASSED] in 0.07s"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-29T07:35:20.048076+00:00"
+}
