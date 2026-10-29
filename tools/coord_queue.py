@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Project the COORD queue without launching agents or changing task state."""
+"""Project the COORD queue and report runner checkpoint status."""
 
 import argparse
 import json
@@ -35,6 +35,18 @@ def next_action(queue: dict, cards: dict, workspace: Path) -> dict:
     return {"task": None, "action": "wait-for-dependencies-or-confirm-queue-complete"}
 
 
+def query_runner_state(workspace: Path) -> dict:
+    state_path = workspace / "project-control/tools/coord_runner/coord_state.json"
+    if not state_path.is_file():
+        return {"status": "not-deployed", "in_flight": []}
+    try:
+        data = json.loads(state_path.read_text(encoding="utf-8"))
+        in_flight = list((data.get("in_flight_tasks") or {}).keys())
+        return {"status": "deployed", "cursor": data.get("cursor"), "in_flight": in_flight}
+    except (OSError, json.JSONDecodeError):
+        return {"status": "corrupt-checkpoint", "in_flight": []}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workspace", type=Path, default=Path(__file__).resolve().parents[2])
@@ -46,7 +58,9 @@ def main() -> int:
         cards, report = graph.check(workspace)
         if report["errors"]:
             raise ValueError("task graph has structural errors: " + "; ".join(report["errors"]))
-        result = {"mode": "read-only-queue-projection", "runner_status": queue["runner_status"],
+        runner_info = query_runner_state(workspace)
+        result = {"mode": "read-only-queue-projection", "runner_status": runner_info["status"],
+                  "runner_state": runner_info,
                   "next": next_action(queue, cards, workspace),
                   "limits": "does not launch agents, verify a live server verdict or change status"}
         print(json.dumps(result, ensure_ascii=False, indent=2))

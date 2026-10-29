@@ -1,0 +1,24 @@
+schema_version: 1
+
+runner:
+  workspace_root: "."
+  queue_file: "project-control/docs/planning/coord_autorun_queue_20261029.yaml"
+  checkpoint_file: "project-control/tools/coord_runner/coord_state.json"
+  poll_interval_seconds: 5.0
+  default_lease_duration_seconds: 1800.0
+
+limits:
+  max_parallel_implementation: 2
+  max_evidence_based_corrections: 2
+  physical_operator_per_resource: 1
+
+resources:
+  exclusive_devices:
+    - uart
+    - hardware-serial
+    - hil-device
+    - probe
+
+qa_integration:
+  config_path: "project-control/config/qa_runner/default_config.yaml"
+  enabled: true
