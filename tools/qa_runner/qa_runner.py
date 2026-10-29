@@ -559,20 +559,20 @@ class QARunner:
         c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
         img = self.config.get("sandbox", {}).get("image", "qa-sandbox:20261029")
         cid = start_docker_sandbox(c_name, img, sandbox_dir)
-        inspect_data = inspect_docker_sandbox(cid)
         try:
             c_logs, r_logs, b_res, t_res, ok = self._run_sandbox_steps(sandbox_dir, req, cid)
-            r_logs.insert(0, f"=== Docker Container Inspect: {cid} ===\n{json.dumps(inspect_data, indent=2)}")
-            res = QARunResult(
-                task_id=req.task_id, task_revision=req.task_revision, run_id=run_id,
-                sandbox_id=sandbox_dir.name, sandbox_path=str(sandbox_dir),
-                container_id=cid, container_image=img, container_inspect=inspect_data, passed=ok,
-                tool_versions=collect_tool_versions(), build_results=b_res, test_results=t_res,
-                summary="All sandbox tests passed" if ok else "Sandbox QA execution failed",
-            )
-            return res, sandbox_dir, c_logs, r_logs
         finally:
             stop_docker_sandbox(cid)
+            inspect_data = inspect_docker_sandbox(cid)
+        r_logs.insert(0, f"=== Docker Container Inspect: {cid} ===\n{json.dumps(inspect_data, indent=2)}")
+        res = QARunResult(
+            task_id=req.task_id, task_revision=req.task_revision, run_id=run_id,
+            sandbox_id=sandbox_dir.name, sandbox_path=str(sandbox_dir),
+            container_id=cid, container_image=img, container_inspect=inspect_data, passed=ok,
+            tool_versions=collect_tool_versions(), build_results=b_res, test_results=t_res,
+            summary="All sandbox tests passed" if ok else "Sandbox QA execution failed",
+        )
+        return res, sandbox_dir, c_logs, r_logs
 
 
 def create_cli_parser() -> argparse.ArgumentParser:
