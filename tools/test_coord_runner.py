@@ -359,7 +359,10 @@ class CodexAndSandboxIsolationGateTest(unittest.TestCase):
         self.assertIn("unavailable", str(ctx.exception))
 
     def test_codex_auth_failure_blocked(self):
-        adapter = CodexReviewAdapter(codex_bin=Path("/home/sushaohua/.local/bin/codex"))
+        fake_codex = self.root / "codex"
+        fake_codex.write_text("#!/bin/sh\nexit 1\n")
+        fake_codex.chmod(0o755)
+        adapter = CodexReviewAdapter(codex_bin=fake_codex)
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=1, stderr="Authentication error 401", stdout="")
             with self.assertRaises(CoordRunnerError) as ctx:
