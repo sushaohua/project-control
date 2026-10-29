@@ -1,0 +1,59 @@
+=== Docker Container Inspect: 2cf8d027bc62 ===
+{
+  "id": "2cf8d027bc6210bcd45d0725ce4272bbe22bc239197f9cd7af10a5569bede926",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:43a2f1c6c95b1df70095eb744d5eadc9225867e0d7a2feda9b41ec3b6d38c825",
+  "created": "2026-10-29T09:40:16.360953731Z",
+  "state": "running",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/AUTO-02_run_174016_20261029_094016",
+      "Destination": "/workspace",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (project-control) python3 tools/test_coord_runner.py -> 0
+
+.....................................................
+----------------------------------------------------------------------
+Ran 53 tests in 0.062s
+
+OK
+
+$ (project-control) python3 tools/test_qa_runner.py -> 0
+
+....................
+----------------------------------------------------------------------
+Ran 20 tests in 0.015s
+
+OK
+
+$ (project-control) python3 tools/test_delivery_checks.py -> 0
+
+....................
+----------------------------------------------------------------------
+Ran 20 tests in 0.081s
+
+OK
+
+$ (project-control) python3 tools/test_check_task_graph.py -> 0
+
+............
+----------------------------------------------------------------------
+Ran 12 tests in 0.009s
+
+OK
+
+$ (test_harness) ./runner/qa_entrypoint.sh --suite all -> 0
+=== QA Test Harness Entrypoint ===
+Timestamp: 2026-10-29T09:40:21Z
+Harness Root: /workspace/test_harness
+>> Running suite [cascade_vectors]: /usr/bin/python3 static_checks/cascade/run_query_cases.py --check-vectors --cases test_cases/cascade/query_cases.json
+   [PASSED] in 0.02s
+>> Running suite [hil_unit]: /usr/bin/python3 -m unittest hil/tests/test_probe_tools.py
+   [PASSED] in 0.05s
+

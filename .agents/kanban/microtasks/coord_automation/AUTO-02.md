@@ -6,9 +6,9 @@ plan_revision: coord-server-sandbox-20261029
 task_kind: implementation
 development_stage: cross-stage
 dispatchable: true
-status: InProgress
+status: Done
 blocked: false
-planning_status: in-progress
+planning_status: completed
 owner: 0e0e4b90-2aeb-42d4-abc2-13ed9198e8f0
 proposed_owner: INTEGRATOR
 executor:
@@ -26,24 +26,39 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-auto-02
-    session: 3118e0b6-e82d-4f88-8b22-512cd6451293
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18780-1a71-78c1-851c-bda854f7c9b4
+    session_evidence:
+      path: docs/evidence/coord_automation/AUTO-02/runs/run_13/qa_review_report.md
+      sha256: 8b128c7be5cad72aa25227029f4333339aa04ed63ebd939cefcaa7eddfcb8025
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: "project-control=0a3b1a4c9879308edfb3532822a05bd386e6ee0b; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/coord_automation/AUTO-02/runs/run_13/qa_review_report.md
+    report_sha256: 8b128c7be5cad72aa25227029f4333339aa04ed63ebd939cefcaa7eddfcb8025
+    report_review:
+      session: 01a18782-894d-7713-865e-3fa069d56de6
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: "project-control=0a3b1a4c9879308edfb3532822a05bd386e6ee0b; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+      evidence: docs/evidence/coord_automation/AUTO-02/runs/run_13/arch_review_report.md
+      report_sha256: 8f7f7be8b4294580f54462afbd10f757e15a4a0d33f096b9b20fddb3c60f85d8
+      session_evidence:
+        path: docs/evidence/coord_automation/AUTO-02/runs/run_13/arch_review_report.md
+        sha256: 8f7f7be8b4294580f54462afbd10f757e15a4a0d33f096b9b20fddb3c60f85d8
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-auto-02
-    session: f559672c-e3ca-4bb1-8b4a-a87d321a1a27
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18782-894d-7713-865e-3fa069d56de6
+    session_evidence:
+      path: docs/evidence/coord_automation/AUTO-02/runs/run_13/arch_review_report.md
+      sha256: 8f7f7be8b4294580f54462afbd10f757e15a4a0d33f096b9b20fddb3c60f85d8
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: "project-control=0a3b1a4c9879308edfb3532822a05bd386e6ee0b; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/coord_automation/AUTO-02/runs/run_13/arch_review_report.md
+    report_sha256: 8f7f7be8b4294580f54462afbd10f757e15a4a0d33f096b9b20fddb3c60f85d8
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010
@@ -75,7 +90,7 @@ source_baseline:
   mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
   test_harness: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
 base_commit: 896024edec58a8a6552bb776766d3a95bb849206
-candidate_commit: null
+candidate_commit: 0a3b1a4c9879308edfb3532822a05bd386e6ee0b
 dispatch_binding:
   source_commit: 896024edec58a8a6552bb776766d3a95bb849206
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
