@@ -10,7 +10,7 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 
 # 当前任务看板
 
-当前接续为[VMware→SoC两阶段孪生任务](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)。共102张有效卡，18张工作包不直接派发；另6张superseded V2历史卡不计入。旧卡状态/阻塞保持，历史签署只适用原版本。根目录旧`.agents`不作正式状态源。
+当前接续为[VMware→SoC两阶段孪生任务](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)。共106张有效卡，18张工作包不直接派发；另6张superseded V2历史卡不计入。旧卡状态/阻塞保持，历史签署只适用原版本。根目录旧`.agents`不作正式状态源。
 
 | 类别 | 数量 | 实际状态投影 |
 | --- | ---: | --- |
@@ -20,7 +20,7 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 16 | Backlog 15、Done 1 |
+| TWIN | 20 | Backlog 19、Done 1 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任

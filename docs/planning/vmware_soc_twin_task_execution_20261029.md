@@ -43,6 +43,10 @@ qa_review_policy: project-control/.agents/rules/codex_qa_review.md
 | [TWIN-14](../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-14.md) | SoC实屏实板独立验收与阶段二收件 | QA | TASK-010 | TWIN-03, TWIN-12, TWIN-13 | soc-migration |
 | [TWIN-15](../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-15.md) | MC温度契约复核与必要修订 | ENG-MC | TASK-002 | TWIN-02, TWIN-03, TEMP-03 | vmware-twin |
 | [TWIN-16](../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-16.md) | TH温度契约复核与必要修订 | ENG-TH | TASK-002 | TWIN-02, TWIN-03, TEMP-02 | vmware-twin |
+| [TWIN-17](../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-17.md) | 本地离线作业引擎与基础混色执行规划 | ENG-STATE | TASK-011 | TWIN-02 | vmware-twin |
+| [TWIN-18](../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-18.md) | 双MCU运动/调平/断料状态接口调查与协议对账 | ENG-MC | TASK-002 | TWIN-01 | cross-stage |
+| [TWIN-19](../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-19.md) | 全机HMS错误码体系、双级急停联动与脱敏诊断导出 | ENG-STATE | TASK-008 | TWIN-02 | vmware-twin |
+| [TWIN-20](../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-20.md) | HMI料槽映射、新机检查引导、国际化与局域网发现 | ENG-UI | TASK-009 | TWIN-02 | vmware-twin |
 
 序号是稳定ID，15/16在02/03后执行并阻断11，不能按编号顺序跳过。ARCH负责01/02，通信岗位负责05/06，FWD/STATE/NET/UI负责07～10，INTEGRATOR负责04/11及与BSP配合13，独立QA负责03/12/14；COORD全程派单、核版本、安排独立检查和最终收件。岗位是计划，不是现有运行Agent。
 

@@ -29,6 +29,7 @@ child_tasks:
 - MS-12
 - TWIN-15
 - TWIN-16
+- TWIN-18
 planning_relations: []
 related_tasks:
 - MS-03

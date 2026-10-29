@@ -23,6 +23,7 @@ revalidate_before_consumption:
 order:
   - TWIN-01
   - TWIN-02
+  - TWIN-18
   - TWIN-03
   - TWIN-04
   - TWIN-05
@@ -33,6 +34,9 @@ order:
   - TWIN-08
   - TWIN-09
   - TWIN-10
+  - TWIN-19
+  - TWIN-20
+  - TWIN-17
   - TWIN-11
   - TWIN-12
   - TWIN-13

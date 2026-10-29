@@ -27,6 +27,7 @@ task_kind: work_package
 dispatchable: false
 child_tasks:
 - TWIN-08
+- TWIN-19
 planning_relations:
 - MS-11
 related_tasks: []

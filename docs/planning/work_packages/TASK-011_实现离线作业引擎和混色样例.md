@@ -25,7 +25,8 @@ timezone: 北京时间（UTC+8）
 plan_revision: vmware-soc-twin-20261029
 task_kind: work_package
 dispatchable: false
-child_tasks: []
+child_tasks:
+- TWIN-17
 planning_relations:
 - MS-11
 - TASK-005
