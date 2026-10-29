@@ -25,7 +25,7 @@ author_role: ARCH
 | 当前AP环境 | 采用VMware Ubuntu模拟SoC/AP；既有登记为暂无真实SoC板卡 | [B0决策D25](../baseline/B0_方案基线.md)；板卡到货/环境变化需补最新证据，虚拟机指标不能替代目标板指标 |
 | AP↔MC / MC↔TH参数 | AP↔MC 115200 8N1；MC↔TH 921600 8N1；相关UART与引脚已有登记 | [串口链路登记](../baseline/serial_links.md)；目标接线与本次实际设备/部署身份分开核验 |
 | MCU正式基础协议 | MiniMCProto v2.0 Rev 2.0.3 | [协议采用记录与原稿目录](../specs/README.md)；扩展仍需三端契约一致 |
-| 当前产品增量 | 现有PL-01文档记录选择双端温度只读遥测；完整产品功能目录仍需逐项选择 | [PL-01范围](product/next_increment_scope_pl01.md)、[PM目录](product/full_color_3d_printer_feature_catalog_baseline.md)、[SOC目录](product/product_feature_catalog_baseline.md)；不将目录或局部温度范围当成整机首版承诺 |
+| 当前产品增量 | PL-01记录双端温度只读遥测；用户另确认首版目标为本地正常打印的整机及七项已列子范围，用户已确认按 PM 建议分期；原待决定项及未明确指标仍需逐项选择 | [PL-01范围](product/next_increment_scope_pl01.md)、[首版范围决定 U-D01/U-D02](product/first_release_scope_decision_20261029.md)、[PM目录](product/full_color_3d_printer_feature_catalog_baseline.md)、[SOC目录](product/product_feature_catalog_baseline.md)；不以温度增量完成代表整机打印完成 |
 | 温度契约与既有实现输入 | 有温度ICD、共享头、AP查询CLI及JSON输出等输入 | [板端温度ICD](../interfaces/ap_mc_th_telemetry_icd.md)、[AP CLI源码](../../../soc-ap/core/host/main.cpp)、[查询模块](../../../soc-ap/core/host/query.h)；可复用版本和真实运行能力须对账，不等于已有常驻STATE公共服务 |
 | 模块职责及通信分工 | FWD、STATE、JOB、UI、NET、MEDIA等职责已有规划；DDS/D-Bus/MQTT已有岗位边界 | [模块职责](../../.agents/rules/02_模块与Agent职责.md)、[通信边界](../../.agents/rules/06_通信工程师职责与接口边界.md)；逻辑目录/岗位不能视作现有进程或可调用API |
 | 局部架构提案 | 温度FORWARD→STATE→显示的语义、生命周期、故障与候选IPC | [温度架构提案](../interfaces/soc_temperature_module_architecture_icd_draft_20261028.md)；revision 2按两阶段同构方向修订，旧同进程CLI建议已被替代，具体接口仍待Owner接受 |
@@ -41,7 +41,7 @@ author_role: ARCH
 | P01 | 最终SoC芯片、板型及修订、CPU架构/ABI、RAM/存储容量？ | 本轮未取得准确目标板交付；C302X等历史候选不能当已确认实物 | HUMAN/硬件Owner、BSP | 待填写 |
 | P02 | 目标Linux/BSP/SDK版本、libc、编译器、sysroot及可复现构建入口？ | 当前有主机工程，目标平台输入未核实 | BSP、INTEGRATOR | 待填写 |
 | P03 | 启动管理器、服务账户/权限、只读分区、日志空间和更新方式？ | 用户已要求进程管理尽量1:1；具体实现未冻结 | INTEGRATOR、BSP、ARCH | 两环境保持同一逻辑生命周期/依赖/就绪/重启行为，优先同管理方式；具体系统版本、账户、路径等待目标输入 |
-| S01 | 整机首版Must/Should/Later/Out：温度、打印作业、文件上传、本地屏、视频/AI、LAN/云各包含哪些？ | 温度增量有记录，整机首版范围未由该记录确定 | PM、HUMAN | 待填写 |
+| S01 | 整机首版Must/Should/Later/Out：温度、打印作业、文件上传、本地屏、视频/AI、LAN/云各包含哪些？ | 用户确认本地正常打印目标、按 PM 建议分期及七项子范围；原待决定项、具体能力和未明确指标仍待逐项确定 | PM、HUMAN | 目标及建议分期已确认；具体能力部分待定，详见首版范围 U-D01/U-D02 |
 | S02 | 各项功能的使用场景、用户角色、验收标准及外部交付（切片器/App/云）是谁负责？ | 产品目录是输入，需逐项接受 | PM、HUMAN、对应Owner | 待填写 |
 | U01 | 浏览器显示运行在SoC本机的屏幕上、外部PC，还是两者都支持？ | 阶段一VMware必须有可见交互应用，当前选择浏览器形式；阶段二迁移界面 | HUMAN、UI、BSP | 共享同一UI及后台接口；VMware桌面窗口或宿主浏览器访问均为开发方式候选，最终本机屏/远程访问方式待定 |
 | U02 | 实屏尺寸/分辨率、触控、GPU/显示驱动、字体语言、启动与帧率目标？ | 未核实目标屏 | 硬件Owner、BSP、UI | 待填写 |
