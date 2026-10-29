@@ -479,9 +479,24 @@ class ExecutionModesTest(unittest.TestCase):
     def test_default_agent_executor_resolves_head(self):
         runner = CoordRunner(CoordRunnerConfig(workspace_root=WORKSPACE_ROOT))
         rec = TaskExecutionRecord("AUTO-02", state=TaskState.IN_PROGRESS.value)
-        commit = runner.default_agent_executor("AUTO-02", rec)
-        self.assertEqual(len(commit), 40)
-        runner.state_machine.validate_commit_sha(commit)
+        with patch.object(runner, "_verify_server_commit") as mock_verify:
+            commit = runner.default_agent_executor("AUTO-02", rec)
+            self.assertEqual(len(commit), 40)
+            runner.state_machine.validate_commit_sha(commit)
+            mock_verify.assert_called_once()
+
+    def test_verify_server_commit_variants(self):
+        runner = CoordRunner(self.cfg)
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=0, stdout="origin/main\n")
+            runner._verify_server_commit(Path("/dummy"), "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819")
+        with patch("subprocess.run") as mock_run:
+            mock_run.side_effect = [
+                MagicMock(returncode=0, stdout=""),
+                MagicMock(returncode=0, stdout="other_hash refs/heads/main\n"),
+            ]
+            with self.assertRaises(CoordRunnerError):
+                runner._verify_server_commit(Path("/dummy"), "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819")
 
     def test_default_agent_executor_rejects_unpushed_commit(self):
         runner = CoordRunner(CoordRunnerConfig(workspace_root=self.base))

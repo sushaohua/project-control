@@ -297,6 +297,10 @@ def checkout_remote_repository(sandbox_dir: Path, target: RepositoryTarget, time
     rev_res = run_git_command(["git", "rev-parse", "HEAD"], cwd=repo_dir, timeout=timeout)
     if rev_res.stdout.strip() != target.commit:
         raise QARunnerError(f"Checked out commit mismatch: expected {target.commit}, got {rev_res.stdout.strip()}")
+    ref_name = target.ref or "refs/heads/main"
+    branch_name = ref_name.split("/")[-1]
+    run_git_command(["git", "update-ref", f"refs/remotes/origin/{branch_name}", target.commit], cwd=repo_dir, timeout=timeout)
+    run_git_command(["git", "update-ref", "refs/remotes/origin/HEAD", target.commit], cwd=repo_dir, timeout=timeout)
     verify_clean_worktree(repo_dir)
     return "\n".join(logs)
 
