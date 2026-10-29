@@ -2,7 +2,7 @@
 title: TASK-005 冻结第一版控制和 AP-MCU 契约
 date: 2026-09-30
 id: TASK-005
-revision: 8
+revision: 9
 status: Backlog
 blocked: false
 owner: null
@@ -22,9 +22,9 @@ depends_on: []
 tags:
 - soc
 - task
-updated: '2026-10-28'
+updated: '2026-10-29T13:52:16+08:00'
 timezone: 北京时间（UTC+8）
-plan_revision: marlin-r2
+plan_revision: vmware-soc-twin-20261029
 task_kind: work_package
 dispatchable: false
 child_tasks:
@@ -32,20 +32,27 @@ child_tasks:
 - MS-03
 - MS-05
 - PL-02
+- TEMP-01
 - V2-P01A
 - V2-P01B
 - V2-P01C
 - V2-P01D
 - V2-P02C
 - MCQ-0105
+- TWIN-01
 planning_relations: []
 related_tasks:
 - MS-12
+development_stages:
+- vmware-twin
+- soc-migration
+execution_plan: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
+historical_acceptance_scope: 原有签署仅适用其原版本；本次规划修订不继承批准
 ---
 
 # TASK-005 冻结第一版控制和 AP-MCU 契约（工作包）
 
-**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前可派单入口是 MS 小卡，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
+**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前增量派单入口是TWIN能力卡，MS原范围保留，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
 
 ## 目标与范围
 
@@ -109,3 +116,14 @@ GAP-02 轴边界、GAP-03 时间单位、GAP-04 断电 ISR 进入相应固件修
 [V2-P01A](../../../.agents/kanban/microtasks/minimc_v2/V2-P01A.md)、[V2-P01B](../../../.agents/kanban/microtasks/minimc_v2/V2-P01B.md)、[V2-P01C](../../../.agents/kanban/microtasks/minimc_v2/V2-P01C.md)、[V2-P01D](../../../.agents/kanban/microtasks/minimc_v2/V2-P01D.md)、[V2-P02C](../../../.agents/kanban/microtasks/minimc_v2/V2-P02C.md)。
 
 这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。
+
+
+## 2026-10-29 两阶段孪生开发范围更新
+
+TWIN-01冻结全局服务/部署/唯一控制路径和模块实现状态，逐项处理温度冲突；TWIN-02形成可执行契约，旧签署不自动接受新版本。
+
+依据[执行总表](../vmware_soc_twin_task_execution_20261029.md)和[两阶段方案](../vmware_soc_twin_development_plan_20261029.md)。旧文中的“首轮不等UI/总线”和CLI目标仅指历史MS/CR最小链路，不能作为本轮阶段一出口。工作包仍不可直接派单，历史子票状态不变。
+
+| 新子票 | 责任岗位 | 当前状态 |
+| --- | --- | --- |
+| [TWIN-01](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-01.md) | ARCH | Backlog，未派单 |

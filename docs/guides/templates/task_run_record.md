@@ -76,3 +76,10 @@ case_result_fields:
 HIL记录真实端点和部署身份，原始TX/RX带UTC毫秒及单调时钟/测量点；RTT记录样本、成功/失败/超时及分布。PTY/Mock/假探针结果只能归host-software；命令写入成功、文件改名不等于物理恢复或新App生效。
 
 本记录只承载执行事实；所有必需独立检查分别填写`independent_reviews`。新记录使用数组，避免一个结论覆盖多岗位；已有历史`independent_review`原件保留，修订时注明字段迁移，不能补造过去的签署。报告自身SHA256在文件写完后保存到任务卡/交接清单，避免自引用。
+
+
+## 服务器基线与独立沙箱（2026-10-29）
+
+真实run补充`candidate_server_lock`、`remote_verification`、`qa_sandbox`、`actual_session_evidence`及`trusted_runner_job`（均含准确路径/SHA256与身份映射）。区分作者自检与正式服务器沙箱QA。QA必须从服务器锁定提交重建；记录独立Git对象/工作区/输出、实际隔离机制、镜像/快照/账户/挂载/依赖及HIL设备窗口。不把本机worktree或新目录称为独立沙箱。
+
+QA报告和非作者复核分别绑定准确候选与报告哈希；报告发布在后续证据提交，明确被审源码commit，行政收件不触发无限递归重审。完整要求见[交付门禁](../../../.agents/rules/delivery_and_coord_gate.md)。

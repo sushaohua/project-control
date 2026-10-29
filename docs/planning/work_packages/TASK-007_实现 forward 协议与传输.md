@@ -2,7 +2,7 @@
 title: TASK-007 实现 forward 协议与传输
 date: 2026-09-30
 id: TASK-007
-revision: 7
+revision: 8
 status: Backlog
 blocked: false
 owner: null
@@ -22,9 +22,9 @@ depends_on: []
 tags:
 - soc
 - task
-updated: '2026-10-20 11:26:37'
+updated: '2026-10-29T13:52:16+08:00'
 timezone: 北京时间（UTC+8）
-plan_revision: marlin-r2
+plan_revision: vmware-soc-twin-20261029
 task_kind: work_package
 dispatchable: false
 child_tasks:
@@ -32,6 +32,9 @@ child_tasks:
 - MS-08
 - MS-10
 - MS-15
+- TEMP-02
+- TEMP-03
+- TEMP-04
 - V2-P02A
 - V2-P02B
 - V2-P03A
@@ -47,15 +50,21 @@ child_tasks:
 - V2-P05A
 - V2-P05B
 - V2-P0506
+- TWIN-07
 planning_relations:
 - MS-05
 - MS-06
 related_tasks: []
+development_stages:
+- vmware-twin
+- soc-migration
+execution_plan: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
+historical_acceptance_scope: 原有签署仅适用其原版本；本次规划修订不继承批准
 ---
 
 # TASK-007 实现 forward 协议与传输（工作包）
 
-**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前可派单入口是 MS 小卡，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
+**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前增量派单入口是TWIN能力卡，MS原范围保留，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
 
 ## 目标与范围
 
@@ -102,3 +111,14 @@ SoC FWD 消费真实 MC/TH 接口；MC/TH 设备侧串口/DMA/代理按固件 Ow
 [V2-P02A](../../../.agents/kanban/microtasks/minimc_v2/V2-P02A.md)、[V2-P02B](../../../.agents/kanban/microtasks/minimc_v2/V2-P02B.md)、[V2-P03A](../../../.agents/kanban/microtasks/minimc_v2/V2-P03A.md)、[V2-P03B](../../../.agents/kanban/microtasks/minimc_v2/V2-P03B.md)、[V2-P03C](../../../.agents/kanban/microtasks/minimc_v2/V2-P03C.md)、[V2-P03D](../../../.agents/kanban/microtasks/minimc_v2/V2-P03D.md)、[V2-P03E](../../../.agents/kanban/microtasks/minimc_v2/V2-P03E.md)、[V2-P03F](../../../.agents/kanban/microtasks/minimc_v2/V2-P03F.md)、[V2-P04A](../../../.agents/kanban/microtasks/minimc_v2/V2-P04A.md)、[V2-P04B](../../../.agents/kanban/microtasks/minimc_v2/V2-P04B.md)、[V2-P04C](../../../.agents/kanban/microtasks/minimc_v2/V2-P04C.md)、[V2-P04D](../../../.agents/kanban/microtasks/minimc_v2/V2-P04D.md)、[V2-P05A](../../../.agents/kanban/microtasks/minimc_v2/V2-P05A.md)、[V2-P05B](../../../.agents/kanban/microtasks/minimc_v2/V2-P05B.md)、[V2-P05C](../../../.agents/kanban/microtasks/minimc_v2/V2-P05C.md)、[V2-P05D](../../../.agents/kanban/microtasks/minimc_v2/V2-P05D.md)、[V2-P05E](../../../.agents/kanban/microtasks/minimc_v2/V2-P05E.md)、[V2-P06A](../../../.agents/kanban/microtasks/minimc_v2/V2-P06A.md)。
 
 这些卡各有文件边界、直接前置、正反判据、命令、证据根目录和失败处理；实际状态读取卡原件。离线产出不完成本工作包其他范围，也不替代原 MS 硬件/团队验收。完整关系见[微步索引](../../../.agents/kanban/microtasks/minimc_v2/README.md)。
+
+
+## 2026-10-29 两阶段孪生开发范围更新
+
+TWIN-07将已对账查询能力接入常驻forward-service，独占UART并经真实IPC提供能力；不再把CLI完成当本阶段出口。
+
+依据[执行总表](../vmware_soc_twin_task_execution_20261029.md)和[两阶段方案](../vmware_soc_twin_development_plan_20261029.md)。旧文中的“首轮不等UI/总线”和CLI目标仅指历史MS/CR最小链路，不能作为本轮阶段一出口。工作包仍不可直接派单，历史子票状态不变。
+
+| 新子票 | 责任岗位 | 当前状态 |
+| --- | --- | --- |
+| [TWIN-07](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-07.md) | ENG-FWD | Backlog，未派单 |

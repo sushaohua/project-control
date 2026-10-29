@@ -10,6 +10,10 @@ plan_revision: marlin-r2
 
 # 模块与 Agent 职责
 
+> **通信模块代码维护：** 用户已明确D-Bus与Fast DDS均在当前项目维护独立模块与源码。ENG-DBUS、ENG-DDS分别负责SDK实现、依赖源码/版本/补丁、配置、生成和测试；业务模块只接项目公开接口。具体路径、共享构建Owner和服务器沙箱验收见[模块维护规范](../../docs/planning/communication_modules_ownership_20261029.md)。
+
+> **2026-10-29 当前阶段口径：** 用户已确认VMware→SoC两阶段尽量1:1孪生。阶段一就运行已接受的真实模块/进程/管理/IPC和可见浏览器界面，阶段二复用源码、契约、界面并作平台适配及实板复验。历史“先同进程/CLI、首轮不等UI或总线”仅适用原MS/CR最小查询，不作为本轮出口。新职责/依赖/独立验收按[两阶段执行总表](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)；最多两张实现票并行、唯一控制路径、真实HIL及独立检查要求保留。
+
 2026-10-28 当前执行分工见[任务重排](../../docs/planning/workflow_replan_20261028.md)：COORD 可兼 INTEGRATOR 做组织与候选装配，AP/MC/TH 由各端 Owner 负责；ARCH 按需协调契约与责任，QA 保持独立。最多两张实现卡并行；台架登记一名操作者。长期岗位表不是必须同时运行的 Agent 清单，方案签署不能复用成各端实现验收。
 
 ## 1. 先分清：角色、工程师、模块、任务和 Agent
@@ -63,7 +67,7 @@ PM、ARCH 的早期讨论可以在主对话中分阶段完成。复杂方案采�
 
 ## 2. 工程岗位职责（全部都是角色）
 
-下表目录是**建议的逻辑路径**，不是当前 Vault 或源码仓已存在的目录。进入实际工程后，ARCH 必须将其映射成仓库和精确文件白名单。一个模块可先是同进程库，接口稳定后再决定是否拆成守护进程。
+下表目录是**建议的逻辑路径**，不是当前 Vault 或源码仓已存在的目录。进入实际工程后，ARCH 必须将其映射成仓库和精确文件白名单。模块是否同进程由ARCH在TWIN-01接受；本轮已选服务边界在VM阶段就实际运行，进程内库可作内部实现，不能替代跨进程出口。
 
 本表按岗位归属职责，不按 Agent 编号分人。多个模块可以暂由同一岗位负责；独立任务也可以由不同 Agent 先后执行。输出接口一列是设计与验收目录，真实名称、实现及版本仍须按本机源码和已接受契约核查，不能直接当成现有可调用 API。
 
@@ -73,7 +77,7 @@ PM、ARCH 的早期讨论可以在主对话中分阶段完成。复杂方案采�
 | ENG-BSP（板级支持工程师）          | `bsp/` 和登记过的 SDK 板级文件                                                      | U-Boot、Kernel、DTS、Pinmux、驱动、显示／触控／网络／摄像头底层、资源预留                    | 版本化 `HardwareCapability`、设备访问条件、Bring-up 证据                 | 上层业务、云 API、rootfs 全局装配、随意改原厂公共板型                     |
 | ENG-JOB（打印作业工程师）          | `services/job_engine/`、`tests/job_engine/`                                 | 预切片包流式解析、作业队列、JobState、打印／暂停／恢复／取消、确认后的执行位点                        | `JobCommand`、`JobState`；不接串口的模拟作业闭环                         | 电机脉冲、硬件 PID、协议帧细节、整机能力聚合                             |
 | ENG-STATE（整机状态工程师）        | `services/device_manager/`、`tests/device_manager/`                         | DeviceState、能力聚合、准备条件、请求仲裁、错误和联锁状态                                 | `DeviceState`、`CommandDecision`；UI／LAN 一致准入                 | JobState、串口直访、取代 MCU 本地物理保护                          |
-| ENG-UI（界面工程师）             | `ui/`、`tests/ui/`                                                          | 触控界面、向导、进度、错误展示、适配数据模型                                             | 仅依赖公开 API；模拟数据验收与后续实屏验收                                     | 在 UI 中复制调度／混色逻辑、直接打开 UART／写 DTS                      |
+| ENG-UI（界面工程师）             | `ui/`、`tests/ui/`                                                          | 触控界面、向导、进度、错误展示、适配数据模型                                             | 仅依赖公开API；VM真实模块交互验收与SoC实屏验收分别记录                                     | 在 UI 中复制调度／混色逻辑、直接打开 UART／写 DTS                      |
 | ENG-NET（网络与文件接入工程师）       | `services/gateway/`、`services/storage/`、模块测试                               | HTTP／LAN 业务 API、业务认证授权、MQTT 业务映射、文件接入与配额、校验和、上传完成发布、可选云业务适配        | `ArtifactReady` 和控制请求；未完成文件不可启动                             | 重复实现 MQTT 连接、外部客户端直接向 UART 注入、绕开 DeviceState 准入、公开密钥 |
 | ENG-MEDIA（视频与视觉工程师，后续）    | `services/media/`、`algorithms/vision/`、模块测试                                | MBP／V4L2 用户态采集、编码预览、NPU 推理、视觉事件                                    | `MediaStatus`、`VisionEvent`；资源隔离和错误降级                       | 擅改 PMZ／驱动、直接暂停 MCU；视觉建议走统一控制入口                       |
 | INTEGRATOR（集成与交付工程师）      | `build/`、`runtime/`、`services/update/`、`tools/factory/`、CI                 | manifest、工具链锁定、rootfs 打包、服务启动、日志装配、AP OTA、MCU 更新编排、FCT             | 制品清单、兼容矩阵、恢复结果、release candidate                            | 和 FWD 同时占用 UART、自行扩大分区、合入未评审改动                       |

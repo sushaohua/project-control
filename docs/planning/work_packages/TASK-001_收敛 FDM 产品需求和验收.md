@@ -2,7 +2,7 @@
 title: "TASK-001 收敛 FDM 产品需求和验收"
 date: 2026-09-30
 id: TASK-001
-revision: 6
+revision: 7
 status: Backlog
 blocked: false
 owner: null
@@ -20,9 +20,9 @@ candidate_commit: null
 merged_commit: null
 depends_on: []
 tags: [soc, task]
-updated: '2026-10-28'
+updated: '2026-10-29T13:52:16+08:00'
 timezone: 北京时间（UTC+8）
-plan_revision: marlin-r2
+plan_revision: vmware-soc-twin-20261029
 task_kind: work_package
 dispatchable: false
 child_tasks:
@@ -30,11 +30,16 @@ child_tasks:
 planning_relations: []
 related_tasks:
 - PL-02
+development_stages:
+- vmware-twin
+- soc-migration
+execution_plan: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
+historical_acceptance_scope: 原有签署仅适用其原版本；本次规划修订不继承批准
 ---
 
 # TASK-001 收敛 FDM 产品需求和验收（工作包）
 
-**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前可派单入口是 MS 小卡，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
+**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前增量派单入口是TWIN能力卡，MS原范围保留，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
 
 ## 目标与范围
 
@@ -73,3 +78,11 @@ related_tasks:
 产品候选以 [SOC 维护原件](../product/product_feature_catalog_baseline.md) 为准，PM 44 项目标显式映射（[PM 产品目标目录](../product/full_color_3d_printer_feature_catalog_baseline.md)）；当前输入版本及 SHA256 见 PL-01/PL-02。逐项范围/阈值由 PL-01 接受。目录更新不自动改变批准范围或本工作包状态。
 
 对应产品项以 PM:/SOC: 限定 ID 追踪到 REQ/ADR/ICD、细卡和实际验收；本工作包不直接派单，不因报告或文档修订改 Done。必要 MCU 扩展由已设立 ENG-MC/ENG-TH 按准确任务授权实施。
+
+
+## 2026-10-29 两阶段孪生开发范围更新
+
+保留已批准温度只读切片；PM补首版Must/Should/Later/Out，不把产品目录全量功能展开为本轮实现。
+
+依据[执行总表](../vmware_soc_twin_task_execution_20261029.md)和[两阶段方案](../vmware_soc_twin_development_plan_20261029.md)。旧文中的“首轮不等UI/总线”和CLI目标仅指历史MS/CR最小链路，不能作为本轮阶段一出口。工作包仍不可直接派单，历史子票状态不变。
+

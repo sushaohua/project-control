@@ -2,7 +2,7 @@
 title: "TASK-006 协调真实 MCU 台架和异常夹具"
 date: 2026-09-30
 id: TASK-006
-revision: 7
+revision: 8
 status: Backlog
 blocked: false
 owner: null
@@ -20,9 +20,9 @@ candidate_commit: null
 merged_commit: null
 depends_on: []
 tags: [soc, task]
-updated: '2026-10-28'
+updated: '2026-10-29T13:52:16+08:00'
 timezone: 北京时间（UTC+8）
-plan_revision: marlin-r2
+plan_revision: vmware-soc-twin-20261029
 task_kind: work_package
 dispatchable: false
 child_tasks:
@@ -44,11 +44,16 @@ child_tasks:
 planning_relations: []
 related_tasks:
 - MS-19
+development_stages:
+- vmware-twin
+- soc-migration
+execution_plan: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
+historical_acceptance_scope: 原有签署仅适用其原版本；本次规划修订不继承批准
 ---
 
 # TASK-006 协调真实 MCU 台架与异常夹具（工作包）
 
-**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前可派单入口是 MS 小卡，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
+**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前增量派单入口是TWIN能力卡，MS原范围保留，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
 
 ## 目标与范围
 
@@ -85,3 +90,11 @@ related_tasks:
 协调真实 MCU 台架接入和隔离资源；ENG-MC/ENG-TH 维护固件，ENG-FWD 核查请求/应答，ENG-SIM 只维护 Mock/故障工具。
 
 对应产品项以 PM:/SOC: 限定 ID 追踪到 REQ/ADR/ICD、细卡和实际验收；本工作包不直接派单，不因报告或文档修订改 Done。必要 MCU 扩展由已设立 ENG-MC/ENG-TH 按准确任务授权实施。
+
+
+## 2026-10-29 两阶段孪生开发范围更新
+
+优先真实台架与故障采集；隔离Mock/PTY仅用于软件用例，不能替代VM真实应用链、真实MC/TH或目标SoC接受。
+
+依据[执行总表](../vmware_soc_twin_task_execution_20261029.md)和[两阶段方案](../vmware_soc_twin_development_plan_20261029.md)。旧文中的“首轮不等UI/总线”和CLI目标仅指历史MS/CR最小链路，不能作为本轮阶段一出口。工作包仍不可直接派单，历史子票状态不变。
+

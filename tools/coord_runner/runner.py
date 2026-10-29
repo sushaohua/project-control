@@ -188,7 +188,7 @@ class CoordRunner:
         repo_dir = self.config.workspace_root / repo_name
         if not repo_dir.is_dir():
             repo_dir = self.config.workspace_root
-        cmd = ["git", "-C", str(repo_dir), "rev-parse", "HEAD"]
+        cmd = ["git", "-c", "safe.directory=*", "-C", str(repo_dir), "rev-parse", "HEAD"]
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
         if proc.returncode != 0:
             raise CoordRunnerError(f"Failed to resolve git HEAD in {repo_dir}: {proc.stderr.strip()}")

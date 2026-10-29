@@ -77,3 +77,47 @@ HIL必须明确真实设备、串口参数、AP/MC/TH实际部署版本与制品
 先列问题、缺失证据和未执行项，再给准确范围的APPROVED或REJECTED；待审/报告缺失/调用失败不填APPROVED。单板票只评价本票交付，最终组合才要求参与节点的全部制品和适用物理证据。文档APPROVED不等于源码实施批准、固件接受或HIL通过。
 
 报告自身SHA256由收件者在文件写完后存入任务卡/交接清单，不在报告内容中嵌入自身哈希。新候选重新审核，旧报告和签署保留。审阅者提交结果，唯一COORD核对全部必需签署、同一候选、集成和收件条件后才更新正式status；REJECTED是报告决定，阻塞用blocked字段记录。
+
+
+## 服务器候选、独立沙箱与内容审计扩展（2026-10-29）
+
+以下写入真实报告的YAML元数据，空值不表示通过。`reviewed_artifacts`逐项覆盖任务交付、准确路径与实际SHA256，所有必需岗位的报告分别绑定本卡revision与实际身份。一个报告承担多个非作者岗位时显式列`reviewer_roles`及各岗位接受范围。
+
+```yaml
+actual_session: null # 或actual_thread_id；必须与任务卡session及运行记录一致
+reviewer_role: QA
+reviewer_roles: [QA]
+task_id: null
+task_revision: null
+reviewed_artifacts: [] # path / sha256，不能只写候选名称或verified
+server_qa: null # {path, sha256}，引用下方实际服务器/沙箱记录
+content_audit:
+  fact_sources: {result: pending, basis: null}
+  protocol_compatibility: {result: pending, basis: null}
+  claim_scope: {result: pending, basis: null}
+  architecture_completeness: {result: pending, basis: null}
+# QA报告的非作者复核报告还必须填：
+reviewed_qa_report_sha256: null
+```
+
+内容审计result仅可在实际核对后写passed；不适用写not-applicable并给依据。引用[交付内容审计表](交付内容审计表.md)，列出事实来源、协议变化兼容和修订任务、设计/代码/硬件等结论层级、架构验收逐项结果。
+
+服务器/沙箱记录为实际runner导出的JSON，并作为证据锁定SHA256：
+
+```json
+{
+  "task_id": null, "task_revision": null,
+  "source": "server-pinned-commits", "fresh_checkout": false,
+  "sandbox": {"kind": null, "id": null, "developer_mounts": []},
+  "server_lock": {"path": null, "sha256": null},
+  "checkout_log": {"path": null, "sha256": null},
+  "runtime_log": {"path": null, "sha256": null},
+  "server_verdict": {"path": null, "sha256": null}
+}
+```
+
+`server_lock` JSON包含`repositories`数组，每仓有URL、ref、完整commit及所消费的准确版本；`checkout_log`记录从服务器fetch/checkout与clean检查；`runtime_log`记录镜像digest/VM快照、实际sandbox/会话、账户/挂载/隔离/命令/退出码/日志；`server_verdict`是可定位的可信服务端job/候选/会话与判定记录。源码来自服务器、沙箱隔离和结果真实性由AUTO-01的可信runner核实，不能用手写布尔值、作者目录或本地文件存在代替。离线检查工具只核记录结构/哈希，不提供真实性认证。
+
+任务卡Reviewer的`session_evidence`引用实际Codex/运行器导出，内容可定位该session。QA条目`report_review`记录另一非作者的role/session/session_evidence/reviewed_task_revision/evidence/report_sha256；其报告元数据绑定`reviewed_qa_report_sha256`。保留所有旧报告，新候选新run，不覆写旧签署。
+
+QA报告的非作者复核报告同样填写`server_qa`，在与原QA不同的独立沙箱中复核服务器候选及已发布报告；其沙箱ID必须不同。QA作者交付的预期/工具由ARCH复核时，也须有服务器基线和独立沙箱记录，但不递归要求再为这份ARCH复核无限增加检查层。

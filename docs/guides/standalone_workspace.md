@@ -1,5 +1,7 @@
 # 独立工作区使用说明
 
+> **当前使用入口（2026-10-29）：** [两阶段执行总表](../planning/vmware_soc_twin_task_execution_20261029.md)与[主看板](../../.agents/kanban/KANBAN.md)为当前接续入口。第一阶段在VMware运行真实服务/管理/IPC/浏览器界面，第二阶段迁移并实板实屏验收。旧文中的MS/CLI启动与历史模拟记录仅保留其原范围；新服务尚未交付，不存在可照抄运行的完整孪生启动命令。
+
 ## 项目边界
 
 `ai_soc_project/` 是工作区，`project-control/`、`soc-ap/`、`mcu-p3/`、`test_harness/` 为四个独立 Git 仓。当前规则、决定、协议和任务在本地控制仓；代码、构建依赖和测试在各自仓库。`D:\AI_RDdocs\` 仅是知识库，不作为项目根目录、配置目录、构建输入、脚本入口或运行时文件源。
@@ -20,7 +22,7 @@ cmake --build soc-ap/build/host
 ./soc-ap/build/host/bin/soc-ap --serial-port /dev/ttyUSB0
 ```
 
-最后一条运行当前 AP 主程序，Ctrl-C 或 SIGTERM 正常退出。当前程序仅报告配置/启动状态，没有打开串口或实现 v2.0 收发，因此能独立启动不代表 AP→MC→TH 通信已经完成。运行细节见 [soc-ap README](../../../soc-ap/README.md)。
+最后一条运行当前 AP 主程序，Ctrl-C 或 SIGTERM 正常退出。上述无查询参数的路径仅报告配置/启动状态；当前源码另已有`--target mc|th --cmd version|ping|temp [--json]`查询路径，会访问实际串口。它们是诊断/旧温度能力，不能证明常驻服务/IPC/界面已交付。硬件查询须按候选、授权和UART排他规则执行，本次文档更新未运行。运行细节见 [soc-ap README](../../../soc-ap/README.md)。
 
 MC/TH 是目标板固件，不能作为 Linux 程序直接执行；源码和标准外设库均在 `mcu-p3/`。其 ARM 工具链、开发构建候选命令、现有制品和未验证项见 [工程登记](../baseline/ms01_source_inventory_20261020.md)。真正运行仍需构建和部署到板，知识库无需挂载。Windows 串口/烧录工具及板卡、VMware 访问属于环境资源，分别验证，不能用知识库的存在代替。
 

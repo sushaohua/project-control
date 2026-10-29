@@ -2,7 +2,7 @@
 title: "TASK-011 实现离线作业引擎和混色样例"
 date: 2026-09-30
 id: TASK-011
-revision: 6
+revision: 7
 status: Backlog
 blocked: false
 owner: null
@@ -20,9 +20,9 @@ candidate_commit: null
 merged_commit: null
 depends_on: []
 tags: [soc, task]
-updated: '2026-10-13 12:24:23'
+updated: '2026-10-29T13:52:16+08:00'
 timezone: 北京时间（UTC+8）
-plan_revision: marlin-r2
+plan_revision: vmware-soc-twin-20261029
 task_kind: work_package
 dispatchable: false
 child_tasks: []
@@ -30,11 +30,16 @@ planning_relations:
 - MS-11
 - TASK-005
 related_tasks: []
+development_stages:
+- vmware-twin
+- soc-migration
+execution_plan: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
+historical_acceptance_scope: 原有签署仅适用其原版本；本次规划修订不继承批准
 ---
 
 # TASK-011 实现离线作业引擎和混色样例（工作包）
 
-**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前可派单入口是 MS 小卡，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
+**不直接派单。** 本卡原位修订并保留稳定 ID/文件名，用于描述领域范围和子任务归属；当前增量派单入口是TWIN能力卡，MS原范围保留，不是另一套 TASK 执行顺序。任务状态仅见字段与证据，不在此重复实时结论。
 
 ## 目标与范围
 
@@ -46,7 +51,7 @@ related_tasks: []
 
 ## 已拆小任务
 
-尚未拆出主责小卡；对应功能实现前先设计和拆卡。
+最新主归属以frontmatter的child_tasks为准；对应TWIN子卡见本节新增表。
 
 关联但不重复计数：无。
 
@@ -73,3 +78,11 @@ related_tasks: []
 PL-01 先选择作业模式和真实切片样本，PL-02 明确流控/位点/暂停取消/四通道语义及 GAP 前置后拆作业实现。
 
 对应产品项以 PM:/SOC: 限定 ID 追踪到 REQ/ADR/ICD、细卡和实际验收；本工作包不直接派单，不因报告或文档修订改 Done。必要 MCU 扩展由已设立 ENG-MC/ENG-TH 按准确任务授权实施。
+
+
+## 2026-10-29 两阶段孪生开发范围更新
+
+离线作业/混色为后续经批准的业务增量，不占本轮温度切片前置；一旦选入，两环境保持同一JOB语义/契约/已选进程边界。
+
+依据[执行总表](../vmware_soc_twin_task_execution_20261029.md)和[两阶段方案](../vmware_soc_twin_development_plan_20261029.md)。旧文中的“首轮不等UI/总线”和CLI目标仅指历史MS/CR最小链路，不能作为本轮阶段一出口。工作包仍不可直接派单，历史子票状态不变。
+

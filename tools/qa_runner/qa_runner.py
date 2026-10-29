@@ -457,7 +457,10 @@ def start_docker_sandbox(name: str, image: str, mount_dir: Path) -> str:
     proc = subprocess.run(cmd, text=True, capture_output=True, timeout=30)
     if proc.returncode != 0:
         raise QARunnerError(f"Failed to start Docker sandbox: {proc.stderr.strip()}")
-    return proc.stdout.strip()[:12]
+    cid = proc.stdout.strip()[:12]
+    subprocess.run(["docker", "exec", cid, "git", "config", "--global", "--add", "safe.directory", "*"],
+                   text=True, capture_output=True, timeout=10)
+    return cid
 
 
 def stop_docker_sandbox(container_id: str) -> None:
