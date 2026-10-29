@@ -253,6 +253,54 @@ class StateMachineAndRemediationTest(unittest.TestCase):
             self.sm.validate_qa_verdict(self.record, qa_verdict)
         self.assertIn("Invalid sandbox kind", str(ctx.exception))
 
+    def test_done_rejected_when_required_role_missing(self):
+        card = {
+            "id": "T1",
+            "reviewer": ["QA", "ARCH"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {"session": "sess-qa", "role": "QA", "decision": "APPROVED"}
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, Path("."))
+        self.assertIn("ARCH", str(ctx.exception))
+
+    def test_done_rejected_when_any_review_rejected(self):
+        card = {
+            "id": "T1",
+            "reviewer": ["QA", "ARCH"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {"session": "sess-qa", "role": "QA", "decision": "APPROVED"},
+                    {"session": "sess-arch", "role": "ARCH", "decision": "REJECTED"},
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, Path("."))
+        self.assertIn("not approved", str(ctx.exception))
+
+    def test_done_rejected_when_qa_report_review_unapproved(self):
+        card = {
+            "id": "T1",
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {
+                        "session": "sess-qa",
+                        "role": "QA",
+                        "decision": "APPROVED",
+                        "report_review": {"session": "sess-arch", "decision": "REJECTED"},
+                    }
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, Path("."))
+        self.assertIn("QA report review not approved", str(ctx.exception))
+
 
 class CheckpointAndRecoveryTest(unittest.TestCase):
     def setUp(self):
@@ -414,7 +462,9 @@ class ExecutionModesTest(unittest.TestCase):
                 "sandbox": {"kind": "container", "id": "c1"},
             },
         }
-        runner.review_executor = lambda tid, c: {"session": f"rev_{tid}", "decision": "APPROVED"}
+        runner.review_executor = lambda tid, c, role="QA": {
+            "session": f"rev_{tid}_{role}", "role": role, "decision": "APPROVED"
+        }
 
     def test_production_executors_wiring(self):
         runner = CoordRunner(self.cfg)
@@ -432,6 +482,29 @@ class ExecutionModesTest(unittest.TestCase):
         commit = runner.default_agent_executor("AUTO-02", rec)
         self.assertEqual(len(commit), 40)
         runner.state_machine.validate_commit_sha(commit)
+
+    def test_default_agent_executor_rejects_unpushed_commit(self):
+        runner = CoordRunner(CoordRunnerConfig(workspace_root=self.base))
+        rec = TaskExecutionRecord("AUTO-02", state=TaskState.IN_PROGRESS.value)
+        with patch.object(runner, "_verify_server_commit", side_effect=CoordRunnerError("unpushed")):
+            with patch("subprocess.run") as mock_run:
+                mock_run.return_value = MagicMock(returncode=0, stdout="a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819\n")
+                with self.assertRaises(CoordRunnerError) as ctx:
+                    runner.default_agent_executor("AUTO-02", rec)
+                self.assertIn("unpushed", str(ctx.exception))
+
+    def test_execute_review_phase_multi_role(self):
+        runner = CoordRunner(self.cfg)
+        self._setup_mock_executors(runner)
+        rec = TaskExecutionRecord("T1", state=TaskState.REVIEW.value,
+                                  candidate_commit="a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819")
+        card = {"id": "T1", "reviewer": ["QA", "ARCH"]}
+        ok = runner._execute_review_phase(rec, card)
+        self.assertTrue(ok)
+        self.assertEqual(rec.state, TaskState.DONE.value)
+        sessions = card["review_assignments"]["reviewer_sessions"]
+        roles = {s.get("role") for s in sessions}
+        self.assertEqual(roles, {"QA", "ARCH"})
 
     def test_missing_executor_fails_closed(self):
         runner = CoordRunner(self.cfg)

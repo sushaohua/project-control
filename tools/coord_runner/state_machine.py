@@ -134,6 +134,19 @@ class CoordStateMachine:
         assignments = (card.get("review_assignments") or {}).get("reviewer_sessions") or []
         if not assignments:
             raise GateValidationError("Fake Done rejected: missing review assignments")
+        req_raw = card.get("reviewer") or []
+        required_roles = [req_raw] if isinstance(req_raw, str) else list(req_raw)
+        approved_roles = set()
         for entry in assignments:
             if entry.get("decision") != "APPROVED":
                 raise GateValidationError("Fake Done rejected: review assignments not approved")
+            role = entry.get("role")
+            if role:
+                approved_roles.add(role)
+            if role == "QA" and "report_review" in entry:
+                rep_rev = entry.get("report_review") or {}
+                if rep_rev.get("decision") != "APPROVED":
+                    raise GateValidationError("Fake Done rejected: QA report review not approved")
+        for r in required_roles:
+            if r not in approved_roles:
+                raise GateValidationError(f"Fake Done rejected: required reviewer role {r} missing or not approved")

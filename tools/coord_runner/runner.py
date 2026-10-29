@@ -136,21 +136,37 @@ class CoordRunner:
             self.state_machine.transition(record, TaskState.REVIEW)
         return ok
 
+    def _invoke_reviewer(self, role: str, record: TaskExecutionRecord) -> dict:
+        try:
+            return self.review_executor(record.task_id, record.candidate_commit, role)
+        except TypeError:
+            try:
+                return self.review_executor(record.task_id, record.candidate_commit, record)
+            except TypeError:
+                return self.review_executor(record.task_id, record.candidate_commit)
+
     def _execute_review_phase(self, record: TaskExecutionRecord, card: dict) -> bool:
         if self.review_executor is None:
             raise CoordRunnerError(f"Missing review_executor for {record.task_id}: fail-closed enforced")
-        try:
-            entry = self.review_executor(record.task_id, record.candidate_commit, record)
-        except TypeError:
-            entry = self.review_executor(record.task_id, record.candidate_commit)
+        req_raw = card.get("reviewer") or ["QA"]
+        required_roles = [req_raw] if isinstance(req_raw, str) else list(req_raw)
+        if "review_assignments" not in card or not isinstance(card["review_assignments"], dict):
+            card["review_assignments"] = {"reviewer_sessions": []}
+        sessions = card["review_assignments"].setdefault("reviewer_sessions", [])
+        approved_roles = {e.get("role") for e in sessions if e.get("decision") == "APPROVED"}
         author_session = record.session_id or ""
-        ok = self.state_machine.validate_review_verdict(record, entry, author_session)
-        if ok:
-            if "review_assignments" not in card:
-                card["review_assignments"] = {"reviewer_sessions": []}
-            card["review_assignments"]["reviewer_sessions"].append(entry)
-            self.state_machine.transition(record, TaskState.DONE)
-        return ok
+        for role in required_roles:
+            if role in approved_roles:
+                continue
+            entry = self._invoke_reviewer(role, record)
+            entry.setdefault("role", role)
+            ok = self.state_machine.validate_review_verdict(record, entry, author_session)
+            if not ok:
+                return False
+            sessions.append(entry)
+            approved_roles.add(role)
+        self.state_machine.transition(record, TaskState.DONE)
+        return True
 
     def _parse_qa_runner_output(self, stdout: str, stderr: str) -> dict:
         prefix = "[SERVER QA REF] "
@@ -183,6 +199,20 @@ class CoordRunner:
             return "test_harness"
         return "project-control"
 
+    def _verify_server_commit(self, repo_dir: Path, commit: str) -> None:
+        cmd = ["git", "-c", "safe.directory=*", "-C", str(repo_dir), "branch", "-r", "--contains", commit]
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        if proc.returncode != 0 or not proc.stdout.strip():
+            rem = subprocess.run(
+                ["git", "-c", "safe.directory=*", "-C", str(repo_dir), "ls-remote", "origin"],
+                capture_output=True, text=True, timeout=10,
+            )
+            if rem.returncode == 0 and commit in rem.stdout:
+                return
+            raise CoordRunnerError(
+                f"Candidate commit {commit} is unpushed to server remote in {repo_dir}"
+            )
+
     def default_agent_executor(self, task_id: str, record: TaskExecutionRecord) -> str:
         repo_name = self._resolve_task_repo(task_id)
         repo_dir = self.config.workspace_root / repo_name
@@ -194,6 +224,7 @@ class CoordRunner:
             raise CoordRunnerError(f"Failed to resolve git HEAD in {repo_dir}: {proc.stderr.strip()}")
         commit = proc.stdout.strip()
         self.state_machine.validate_commit_sha(commit)
+        self._verify_server_commit(repo_dir, commit)
         return commit
 
     def default_qa_executor(self, task_id: str, candidate_commit: str) -> dict:
@@ -223,17 +254,19 @@ class CoordRunner:
         self,
         task_id: str,
         candidate_commit: str,
-        record: Optional[TaskExecutionRecord] = None,
+        role_or_record: object = "QA",
     ) -> dict:
+        role = role_or_record if isinstance(role_or_record, str) else "QA"
         adapter = CodexReviewAdapter()
         prompt = (
-            f"Review task {task_id} with candidate commit {candidate_commit}. "
+            f"Review task {task_id} as role {role} with candidate commit {candidate_commit}. "
             "Verify implementation against task contract and state APPROVED or REJECTED."
         )
         res = adapter.execute_review(prompt, self.config.workspace_root)
         return {
             "reviewer_session": res.session_id,
             "session": res.session_id,
+            "role": role,
             "decision": res.decision,
             "model": adapter.default_model,
             "commit_sha": candidate_commit,

@@ -1,0 +1,14 @@
+=== Checkout repository 'project-control' from ssh://git@192.168.77.113:2222/sushaohua/project-control.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/project-control.git -> 0
+$ git fetch origin 1829769b0976e4d881c361bff2e1f0684eeb63fc -> 0
+From ssh://192.168.77.113:2222/sushaohua/project-control
+ * branch            1829769b0976e4d881c361bff2e1f0684eeb63fc -> FETCH_HEAD
+$ git checkout 1829769b0976e4d881c361bff2e1f0684eeb63fc -> 0
+=== Checkout repository 'test_harness' from ssh://git@192.168.77.113:2222/sushaohua/test_harness.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/test_harness.git -> 0
+$ git fetch origin 210ddd1c3f6f59594836c91b68aae55fb7a35181 -> 0
+From ssh://192.168.77.113:2222/sushaohua/test_harness
+ * branch            210ddd1c3f6f59594836c91b68aae55fb7a35181 -> FETCH_HEAD
+$ git checkout 210ddd1c3f6f59594836c91b68aae55fb7a35181 -> 0

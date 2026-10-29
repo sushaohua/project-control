@@ -76,10 +76,10 @@ actual_result: passed
 5. **[P1 AUTO02-R2-04] 函数入参重构 (`check_task_graph.py`)**：
    - 将 `check_task_graph.py:done_acceptance_errors` 重构为 `(task_id, card, cards, workspace=None)`，严格 $\le 4$ 参数。
 
-7. **[P0 AUTO02-R3-01] 生产环境 Agent 执行器接通 (`runner.py`)**：
-   - 实现 `default_agent_executor(self, task_id, record)`：通过 `_resolve_task_repo` 定位任务所属仓库（`soc-ap`、`mcu-p3`、`test_harness` 或 `project-control`），调用 `git -C <repo_dir> rev-parse HEAD` 获取真实最新 Commit，校验合法后返回。
+7. **[P0 AUTO02-R3-01 / AUTO02-R5-01] 生产环境 Agent 执行器接通与服务端远端推送核验 (`runner.py`)**：
+   - 实现 `default_agent_executor(self, task_id, record)`：通过 `_resolve_task_repo` 定位任务所属仓库（`soc-ap`、`mcu-p3`、`test_harness` 或 `project-control`），调用 `git rev-parse HEAD` 获取候选 Commit。
+   - 实现 `_verify_server_commit(self, repo_dir, commit)`：通过 `git branch -r --contains <commit>` 及 `git ls-remote origin <commit>` 核验候选 Commit 是否真实推送至 GitLab 远端服务器；若为本地未推送 Commit 则抛出 `CoordRunnerError` 拦截。
    - 在 `wire_production_executors(self)` 中同步组装 `self.agent_executor = self.default_agent_executor`，保证生产运行环境下三类执行器（Agent、QA、Review）全量自动接通。
-   - 在 `test_coord_runner.py` 中新增单元测试断言 `runner.agent_executor == runner.default_agent_executor` 及真实 HEAD 解析校验。
 
 8. **[P1 AUTO02-R3-02] 进程级崩溃与跨进程重启恢复真实演练 (`test_coord_runner.py`)**：
    - 实现 `test_process_level_kill_and_restart_recovery_drill`：
@@ -88,9 +88,13 @@ actual_result: passed
      - 父进程验证子进程非正常退出（`returncode == -SIGKILL`），随后在父进程中拉起全新的 `CoordRunner` 实例并调用 `restore_from_checkpoint`。
      - 验证任务自 `SandboxQA` 状态成功恢复，接通 QA 和 Review 判定后无缝推进至 `Done` 状态，最终持久化落盘。
 
-9. **方法论硬性门禁 100% 达标**：
-   - 经 AST 静态扫描，所有 18 个白名单及工具文件（包括 `runner.py`、`state_machine.py`、`qa_runner.py`、`delivery_checks.py`、`check_task_graph.py`、各测试套件等）中的自研函数**行数全部严格 $\le 50$ 行**，**入参全部严格 $\le 4$ 个**，违规数为 0。
-   - 运行 94 项单元测试 100% 通过（`test_coord_runner.py` 42 项、`test_qa_runner.py` 20 项、`test_delivery_checks.py` 20 项、`test_check_task_graph.py` 12 项）。
+9. **[AUTO02-R5-02] 多角色评审门禁与闭环验收 (`runner.py` 与 `state_machine.py`)**：
+   - 在 `runner.py:_execute_review_phase` 中：读取 `card.get("reviewer", ["QA"])`，循环每个必需角色；未完成评审的角色调用 `review_executor` 并记录结果；所有声明的评审角色均 APPROVED 后方流转至 DONE。
+   - 在 `state_machine.py:validate_done_acceptance` 中：校验任务卡声明的所有 reviewer 角色均存在于 `reviewer_sessions` 且判定全为 APPROVED；若包含 QA 且附带 QA 报告复审则递归校验复审 APPROVED，任一缺失或拒绝立即抛出 `GateValidationError` 拒绝虚假 Done。
+
+10. **方法论硬性门禁 100% 达标**：
+    - 经 AST 静态扫描，所有 18 个白名单及工具文件（包括 `runner.py`、`state_machine.py`、`qa_runner.py`、`delivery_checks.py`、`check_task_graph.py`、各测试套件等）中的自研函数**行数全部严格 $\le 50$ 行**，**入参全部严格 $\le 4$ 个**，违规数为 0。
+    - 运行 99 项单元测试 100% 通过（`test_coord_runner.py` 47 项、`test_qa_runner.py` 20 项、`test_delivery_checks.py` 20 项、`test_check_task_graph.py` 12 项）。
 
 ---
 
@@ -103,13 +107,13 @@ actual_result: passed
 | `project-control/tools/coord_runner/models.py` | `e2db6126d84ef12a007f83a89ddd472e5569e0ca7ba28b0f20a09d5f4a18ce78` |
 | `project-control/tools/coord_runner/errors.py` | `1407cc0ddd7dc5a954dc024f2be1e2689274a0735bef37d8e8effd22ccef07e3` |
 | `project-control/tools/coord_runner/lease_manager.py` | `e65e24a97af415303c7193e6c0c1d0264aac7aa9e90c43f4e0a657676680a96d` |
-| `project-control/tools/coord_runner/state_machine.py` | `36631c9b1e30ad454b093ed2c9be1059f98e672d3ba5806b2b920b76fdc5d88f` |
+| `project-control/tools/coord_runner/state_machine.py` | `5a8e8397a5057dd60bfba0291fe60c3d9baef0acb9b8cdc62b4774283fb0c3ae` |
 | `project-control/tools/coord_runner/checkpoint.py` | `5e38f357b573570a27cd718e296b694c8cb6671bacd5a67a834ff796b5f56ed6` |
 | `project-control/tools/coord_runner/scheduler.py` | `c015900d4ee81e421da333aec2b0e49d0066158c9dffa3f1c23037083095e884` |
-| `project-control/tools/coord_runner/runner.py` | `6f61f8af413138a637d761aef6a5b2bbc85305c3dc3a27e673a4fe8ee99f2ec4` |
+| `project-control/tools/coord_runner/runner.py` | `8f64a0a26377d1455c313677f0c4e78a0f1ca3a60b754fcfd3ee37f167e2fe24` |
 | `project-control/tools/coord_runner/codex_adapter.py` | `5e571fbd94cc38486d3b7ba892adf425d7ed0f750384e0e793827e63f948d9a0` |
 | `project-control/tools/coord_queue.py` | `cb803af84686e7b98e9e3818b7050cfb99427e1d3b0482e3213f8d98919fe995` |
 | `project-control/tools/delivery_checks.py` | `7c72354037f0a5e3fdbf6e8bed5522f8029b1ec5f957842bba06645ef32ecc0e` |
 | `project-control/tools/check_task_graph.py` | `4fdb9b6fc7f4eac35c7ef0cf65aa7636c7ba4075e52f9f335a25f2273162e11e` |
-| `project-control/tools/qa_runner/qa_runner.py` | `dc03452ee672e82eabc06ce2fb9c77adc9b079bdbd8c7723293bec6461b795c9` |
-| `project-control/tools/test_coord_runner.py` | `3b262223b92ab0bcc6d9b52a678084483f4752b604c4af9ee7aee3575cef18e3` |
+| `project-control/tools/qa_runner/qa_runner.py` | `20731adceb6ad1fd1741c2b84001f1b54d0b4a79a0f8c3b7bbf09dda86b8e803` |
+| `project-control/tools/test_coord_runner.py` | `1e747c404aae2fc12aeaa4e37ef16e0c9015631cc781d8c1cca06e1c73b71da3` |
