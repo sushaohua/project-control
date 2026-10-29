@@ -2,6 +2,7 @@
 """Comprehensive test suite for COORD runner, state machine, leases, and recovery."""
 
 import ast
+import hashlib
 import json
 from pathlib import Path
 import signal
@@ -133,8 +134,16 @@ class LeaseAndExclusivityTest(unittest.TestCase):
 
 class StateMachineAndRemediationTest(unittest.TestCase):
     def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory(prefix="sm_test_")
+        self.workspace = Path(self.temp_dir.name)
         self.sm = CoordStateMachine(max_corrections=2)
         self.record = TaskExecutionRecord(task_id="TEST-01")
+        self.sample_report = self.workspace / "qa_review_report.md"
+        self.sample_report.write_text("# Sample QA Report\n", encoding="utf-8")
+        self.sample_report_sha = hashlib.sha256(b"# Sample QA Report\n").hexdigest()
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
 
     def test_state_machine_positive_flow(self):
         self.sm.transition(self.record, TaskState.READY)
@@ -197,7 +206,7 @@ class StateMachineAndRemediationTest(unittest.TestCase):
     def test_fake_done_rejected(self):
         card = {"id": "FAKE-DONE", "review_assignments": {}}
         with self.assertRaises(GateValidationError):
-            self.sm.validate_done_acceptance(card, Path("."))
+            self.sm.validate_done_acceptance(card, self.workspace)
 
     def test_qa_developer_mounts_rejected(self):
         self.record.state = TaskState.SANDBOX_QA.value
@@ -264,7 +273,7 @@ class StateMachineAndRemediationTest(unittest.TestCase):
             },
         }
         with self.assertRaises(GateValidationError) as ctx:
-            self.sm.validate_done_acceptance(card, Path("."))
+            self.sm.validate_done_acceptance(card, self.workspace)
         self.assertIn("ARCH", str(ctx.exception))
 
     def test_done_rejected_when_any_review_rejected(self):
@@ -279,7 +288,7 @@ class StateMachineAndRemediationTest(unittest.TestCase):
             },
         }
         with self.assertRaises(GateValidationError) as ctx:
-            self.sm.validate_done_acceptance(card, Path("."))
+            self.sm.validate_done_acceptance(card, self.workspace)
         self.assertIn("not approved", str(ctx.exception))
 
     def test_done_rejected_when_qa_report_review_unapproved(self):
@@ -296,14 +305,14 @@ class StateMachineAndRemediationTest(unittest.TestCase):
                             "session": "sess-arch",
                             "decision": "REJECTED",
                             "report_path": "qa_review_report.md",
-                            "report_sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                            "report_sha256": self.sample_report_sha,
                         },
                     }
                 ]
             },
         }
         with self.assertRaises(GateValidationError) as ctx:
-            self.sm.validate_done_acceptance(card, Path("."))
+            self.sm.validate_done_acceptance(card, self.workspace)
         self.assertIn("QA report review not approved", str(ctx.exception))
 
     def test_remediation_missing_evidence_rejected(self):
@@ -325,7 +334,7 @@ class StateMachineAndRemediationTest(unittest.TestCase):
             },
         }
         with self.assertRaises(GateValidationError) as ctx:
-            self.sm.validate_done_acceptance(card, Path("."))
+            self.sm.validate_done_acceptance(card, self.workspace)
         self.assertIn("QA reviewer missing mandatory non-author report_review", str(ctx.exception))
 
     def test_done_rejected_when_qa_report_review_self_reviewed(self):
@@ -343,14 +352,14 @@ class StateMachineAndRemediationTest(unittest.TestCase):
                             "session": "sess-qa",
                             "decision": "APPROVED",
                             "report_path": "qa_review_report.md",
-                            "report_sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                            "report_sha256": self.sample_report_sha,
                         },
                     }
                 ]
             },
         }
         with self.assertRaises(GateValidationError) as ctx:
-            self.sm.validate_done_acceptance(card, Path("."))
+            self.sm.validate_done_acceptance(card, self.workspace)
         self.assertIn("QA reviewer missing mandatory non-author report_review", str(ctx.exception))
 
     def test_done_rejected_when_qa_report_review_by_author(self):
@@ -368,14 +377,14 @@ class StateMachineAndRemediationTest(unittest.TestCase):
                             "session": "author-sess",
                             "decision": "APPROVED",
                             "report_path": "qa_review_report.md",
-                            "report_sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                            "report_sha256": self.sample_report_sha,
                         },
                     }
                 ]
             },
         }
         with self.assertRaises(GateValidationError) as ctx:
-            self.sm.validate_done_acceptance(card, Path("."))
+            self.sm.validate_done_acceptance(card, self.workspace)
         self.assertIn("QA reviewer missing mandatory non-author report_review", str(ctx.exception))
 
     def test_done_rejected_when_qa_report_review_missing_report_path_or_sha(self):
@@ -394,7 +403,7 @@ class StateMachineAndRemediationTest(unittest.TestCase):
             },
         }
         with self.assertRaises(GateValidationError) as ctx:
-            self.sm.validate_done_acceptance(card, Path("."))
+            self.sm.validate_done_acceptance(card, self.workspace)
         self.assertIn("missing mandatory report_path or report_sha256", str(ctx.exception))
 
     def test_done_rejected_when_qa_report_review_sha_mismatch(self):
@@ -419,8 +428,56 @@ class StateMachineAndRemediationTest(unittest.TestCase):
             },
         }
         with self.assertRaises(GateValidationError) as ctx:
-            self.sm.validate_done_acceptance(card, Path("."))
-        self.assertIn("does not match QA report_sha256", str(ctx.exception))
+            self.sm.validate_done_acceptance(card, self.workspace)
+        self.assertIn("does not match physical file content", str(ctx.exception))
+
+    def test_done_rejected_when_qa_report_file_not_found_on_disk(self):
+        card = {
+            "id": "T1",
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {
+                        "session": "sess-qa",
+                        "role": "QA",
+                        "decision": "APPROVED",
+                        "report_review": {
+                            "session": "sess-arch",
+                            "decision": "APPROVED",
+                            "report_path": "non_existent_report.md",
+                            "report_sha256": "a" * 64,
+                        },
+                    }
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, self.workspace)
+        self.assertIn("QA report file not found on disk", str(ctx.exception))
+
+    def test_done_rejected_when_qa_report_file_tampered_or_sha_mismatch(self):
+        card = {
+            "id": "T1",
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {
+                        "session": "sess-qa",
+                        "role": "QA",
+                        "decision": "APPROVED",
+                        "report_review": {
+                            "session": "sess-arch",
+                            "decision": "APPROVED",
+                            "report_path": "qa_review_report.md",
+                            "report_sha256": "f" * 64,
+                        },
+                    }
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, self.workspace)
+        self.assertIn("report_review sha256 does not match physical file content", str(ctx.exception))
 
     def test_qa_verdict_missing_task_revision_rejected(self):
         self.record.state = TaskState.SANDBOX_QA.value
@@ -542,7 +599,16 @@ class CheckpointAndRecoveryTest(unittest.TestCase):
                 "task_revision": 1,
             },
         }
-        r2.review_executor = lambda tid, c, role="QA": {"session": f"rev_{tid}_{role}", "role": role, "decision": "APPROVED"}
+        rep = self.base / "qa_review_report.md"
+        rep.write_text("# QA Review Report\n", encoding="utf-8")
+        r_sha = hashlib.sha256(b"# QA Review Report\n").hexdigest()
+        r2.review_executor = lambda tid, c, role="QA": {
+            "session": f"rev_{tid}_{role}",
+            "role": role,
+            "decision": "APPROVED",
+            "report_path": "qa_review_report.md",
+            "report_sha256": r_sha,
+        }
         card = {"id": "T1", "review_assignments": {"reviewer_sessions": []}}
         state = r2.process_task("T1", card)
         self.assertEqual(state, TaskState.DONE.value)
@@ -586,7 +652,16 @@ class CheckpointAndRecoveryTest(unittest.TestCase):
             "server_qa": {"path": "s.json", "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
                           "sandbox": {"kind": "container"}, "task_revision": 1},
         }
-        r2.review_executor = lambda tid, c, role="QA": {"session": f"rev_{tid}_{role}", "role": role, "decision": "APPROVED"}
+        rep2 = self.base / "qa_review_report.md"
+        rep2.write_text("# QA Review Report\n", encoding="utf-8")
+        r_sha2 = hashlib.sha256(b"# QA Review Report\n").hexdigest()
+        r2.review_executor = lambda tid, c, role="QA": {
+            "session": f"rev_{tid}_{role}",
+            "role": role,
+            "decision": "APPROVED",
+            "report_path": "qa_review_report.md",
+            "report_sha256": r_sha2,
+        }
         card = {"id": "T1", "review_assignments": {"reviewer_sessions": []}}
         state = r2.process_task("T1", card)
         self.assertEqual(state, TaskState.DONE.value)
@@ -620,8 +695,15 @@ class ExecutionModesTest(unittest.TestCase):
                 "task_revision": 1,
             },
         }
+        rep = self.base / "qa_review_report.md"
+        rep.write_text("# QA Review Report\n", encoding="utf-8")
+        r_sha = hashlib.sha256(b"# QA Review Report\n").hexdigest()
         runner.review_executor = lambda tid, c, role="QA": {
-            "session": f"rev_{tid}_{role}", "role": role, "decision": "APPROVED"
+            "session": f"rev_{tid}_{role}",
+            "role": role,
+            "decision": "APPROVED",
+            "report_path": "qa_review_report.md",
+            "report_sha256": r_sha,
         }
 
     def test_production_executors_wiring(self):
@@ -736,6 +818,24 @@ class ExecutionModesTest(unittest.TestCase):
         st = runner.process_task("T1", card)
         self.assertEqual(st, TaskState.DONE.value)
         self.assertIn("T1", runner.completed_tasks)
+
+    def test_runner_resolve_qa_report_missing_file_rejected(self):
+        runner = CoordRunner(self.cfg)
+        rec = TaskExecutionRecord("T1")
+        qa_entry = {"role": "QA", "report_path": "missing_report.md"}
+        with self.assertRaises(CoordRunnerError) as ctx:
+            runner._resolve_qa_report_ref(rec, qa_entry)
+        self.assertIn("QA report file not found on disk", str(ctx.exception))
+
+    def test_runner_resolve_qa_report_prefill_mismatch_rejected(self):
+        runner = CoordRunner(self.cfg)
+        rep = self.base / "qa_rep.md"
+        rep.write_text("content", encoding="utf-8")
+        rec = TaskExecutionRecord("T1")
+        qa_entry = {"role": "QA", "report_path": "qa_rep.md", "report_sha256": "0" * 64}
+        with self.assertRaises(CoordRunnerError) as ctx:
+            runner._resolve_qa_report_ref(rec, qa_entry)
+        self.assertIn("does not match physical file sha", str(ctx.exception))
 
 
 class CodexAndSandboxIsolationGateTest(unittest.TestCase):

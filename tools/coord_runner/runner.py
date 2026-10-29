@@ -151,17 +151,25 @@ class CoordRunner:
                 return self.review_executor(record.task_id, record.candidate_commit)
 
     def _resolve_qa_report_ref(self, record: TaskExecutionRecord, qa_entry: dict) -> tuple:
-        rep_path = qa_entry.get("report_path") or f"project-control/docs/evidence/coord_automation/{record.task_id}/runs/run_{record.task_revision:02d}/qa_review_report.md"
-        rep_sha = qa_entry.get("report_sha256")
-        if not rep_sha:
-            full_p = self.config.workspace_root / rep_path
-            if full_p.is_file():
-                rep_sha = hashlib.sha256(full_p.read_bytes()).hexdigest()
-            else:
-                rep_sha = hashlib.sha256(json.dumps(qa_entry, sort_keys=True).encode("utf-8")).hexdigest()
+        rep_path = qa_entry.get("report_path")
+        if not rep_path:
+            runs_dir = self.config.workspace_root / "project-control" / "docs" / "evidence" / "coord_automation" / record.task_id / "runs"
+            if runs_dir.is_dir():
+                found = sorted(runs_dir.glob("run_*/qa_review_report.md"))
+                if found:
+                    rep_path = str(found[-1].relative_to(self.config.workspace_root))
+            if not rep_path:
+                rep_path = f"project-control/docs/evidence/coord_automation/{record.task_id}/runs/run_{record.task_revision:02d}/qa_review_report.md"
+        full_p = Path(rep_path) if Path(rep_path).is_absolute() else (self.config.workspace_root / rep_path)
+        if not full_p.is_file():
+            raise CoordRunnerError(f"QA report file not found on disk at {full_p}")
+        real_sha = hashlib.sha256(full_p.read_bytes()).hexdigest()
+        prefill = qa_entry.get("report_sha256")
+        if prefill and prefill != real_sha:
+            raise CoordRunnerError(f"QA entry report_sha256 {prefill} does not match physical file sha {real_sha}")
         qa_entry["report_path"] = rep_path
-        qa_entry["report_sha256"] = rep_sha
-        return rep_path, rep_sha
+        qa_entry["report_sha256"] = real_sha
+        return rep_path, real_sha
 
     def _ensure_qa_report_review(
         self,

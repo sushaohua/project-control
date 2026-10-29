@@ -182,7 +182,12 @@ class CoordStateMachine:
             return False
         return True
 
-    def _validate_qa_report_review(self, entry: dict, author: Optional[str]) -> None:
+    def _validate_qa_report_review(
+        self,
+        entry: dict,
+        author: Optional[str],
+        workspace: Path,
+    ) -> None:
         rep_rev = entry.get("report_review")
         if not rep_rev or not isinstance(rep_rev, dict):
             raise GateValidationError("Fake Done rejected: QA reviewer missing mandatory non-author report_review")
@@ -200,9 +205,15 @@ class CoordStateMachine:
             raise GateValidationError(
                 "Fake Done rejected: QA report_review missing mandatory report_path or report_sha256 binding"
             )
+        p = Path(r_path) if Path(r_path).is_absolute() else (workspace / r_path)
+        if not p.is_file():
+            raise GateValidationError(f"Fake Done rejected: QA report file not found on disk at {r_path}")
+        real_sha = hashlib.sha256(p.read_bytes()).hexdigest()
+        if r_sha != real_sha:
+            raise GateValidationError("Fake Done rejected: report_review sha256 does not match physical file content")
         entry_sha = entry.get("report_sha256")
-        if entry_sha and r_sha != entry_sha:
-            raise GateValidationError("Fake Done rejected: report_review sha256 does not match QA report_sha256")
+        if entry_sha and entry_sha != real_sha:
+            raise GateValidationError("Fake Done rejected: QA entry report_sha256 does not match physical file content")
 
     def validate_done_acceptance(self, card: dict, workspace: Path) -> None:
         assignments = (card.get("review_assignments") or {}).get("reviewer_sessions") or []
@@ -223,4 +234,4 @@ class CoordStateMachine:
         author = card.get("session_id") or card.get("author_session") or card.get("owner")
         for entry in assignments:
             if entry.get("role") == "QA" and "QA" in required_roles:
-                self._validate_qa_report_review(entry, author)
+                self._validate_qa_report_review(entry, author, workspace)
