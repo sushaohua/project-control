@@ -1,7 +1,7 @@
 ---
 id: TWIN-02
 title: TWIN-02 双环境可执行通信契约与生成规则
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261029
 task_kind: design
 development_stage: cross-stage
@@ -151,6 +151,9 @@ read_sources:
 - project-control/docs/planning/vmware_soc_twin_development_plan_20261029.md
 - project-control/docs/interfaces/soc_temperature_module_architecture_icd_draft_20261028.md
 - project-control/.agents/rules/c_cpp_coding_standard.md
+- project-control/docs/planning/communication_modules_ownership_20261029.md
+- soc-ap/third_party/README.md
+- soc-ap/middleware/README.md
 worktree: null
 lease: null
 resources:
@@ -200,7 +203,8 @@ verification:
 required_evidence_level: document
 verification_environment: isolated-host-or-document
 qa_review_policy: project-control/.agents/rules/codex_qa_review.md
-updated: '2026-10-29T13:52:16+08:00'
+updated: '2026-10-29T15:26:38+08:00'
+module_maintenance_requirement: project-control/docs/planning/communication_modules_ownership_20261029.md
 ---
 
 # TWIN-02 双环境可执行通信契约与生成规则
@@ -232,3 +236,8 @@ updated: '2026-10-29T13:52:16+08:00'
 硬件使用和操作授权沿用现行HW-G及软硬件交接规范；此文档更新不执行串口、探针、烧录或加热操作。连续两次有证据修正仍失败，保存候选/失败日志交COORD重新裁决，不修改判据促通过。
 
 [执行总表](../../../../docs/planning/vmware_soc_twin_task_execution_20261029.md) · [两阶段方案](../../../../docs/planning/vmware_soc_twin_development_plan_20261029.md)
+
+
+## 2026-10-29 通信模块所有权约束
+
+ARCH维护`contracts/twin/`权威IDL/XML/schema与兼容语义，ENG-DDS/ENG-DBUS参与接受并分别实现项目内`middleware/dds/`、`middleware/dbus/`代码与生成流程。契约须能被两个SDK一致消费；SDK公开API、生成器/输出归属和依赖版本关系一并明确，不另设私有契约原件，也不在本设计卡越界实现中间件代码。详见[模块维护规范](../../../../docs/planning/communication_modules_ownership_20261029.md)。
