@@ -1,84 +1,63 @@
 ---
-title: SoC 公共看板
-version: 8
+title: SoC公共看板
+version: 9
 status: current-planning
 owner: COORD
-coord_session: Codex 当前主对话 /root（2026-10-28）
-updated: '2026-10-28T10:53:59+08:00'
-projection_updated: '2026-10-28T10:53:59+08:00'
-plan_revision: workflow-replan-20261028
-execution_mode: 按卡落实实际会话与授权；未派单不表示运行
+updated: '2026-10-29T14:31:00+08:00'
+plan_revision: vmware-soc-twin-20261029
+execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示运行
 ---
 
 # 当前任务看板
 
-任务卡是唯一状态明细，本页为 2026-10-28 逐卡 frontmatter 的人工投影。[当前执行分工与重排](../../docs/planning/workflow_replan_20261028.md)规定角色、颗粒度和联调方式；[原快照](../../docs/evidence/workflow_replan_20261028/input_inventory.json)保留调整前 78 张卡及版本。根目录旧 `.agents` 和外部知识库不写正式状态。
+当前接续为[VMware→SoC两阶段孪生任务](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)。共102张有效卡，18张工作包不直接派发；另6张superseded V2历史卡不计入。旧卡状态/阻塞保持，历史签署只适用原版本。根目录旧`.agents`不作正式状态源。
 
-## 数量与适用范围
-
-当前 79 张有效卡记录，其中 18 张工作包不直接派发；另有 6 张 superseded V2 历史卡不计入有效数。卡面 Done 不是当前任意候选均可消费；撤回、限制和新增对账要求需与状态一起读。
-
-| 类别 | 数量 | 卡面状态 |
+| 类别 | 数量 | 实际状态投影 |
 | --- | ---: | --- |
-| 工作包 | 18 | Backlog 18 |
-| MS里程碑 | 22 | Backlog 21、Done 1 |
-| PL规划 | 2 | Backlog 2 |
-| V2有效微步 | 20 | Done 20 |
-| CR治理/交付 | 15 | Backlog 2、Done 13 |
-| MCQ微步 | 2 | Done 2 |
+| CR | 15 | Backlog 1、Done 14 |
+| MCQ | 2 | Done 2 |
+| MS | 22 | Backlog 20、Done 1、Verify 1 |
+| PL | 2 | Done 2 |
+| TASK | 18 | Backlog 18 |
+| TEMP | 7 | Done 7 |
+| TWIN | 16 | Backlog 15、Done 1 |
+| V2 | 20 | Done 20 |
 
-V2 原始 25 张经 6 张归档、1 张收敛票后为 20 张有效卡，全部标记 Done。MCQ-0106 的旧级联候选已撤回；MS-07 的历史 Done 仅保留已裁决范围。CR-02/02Q/02T/03/04/05/06 的当前消费关系须先由 CR-12 逐产物对账，不能用方案 review-02 或 `sha256:verified` 认作各端实现接受。
+## 当前顺序与责任
 
-## 当前派单顺序
+第一张[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)已由ARCH完成架构与C1～C6对账并经独立QA审查通过（Done）；下一张[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)交ARCH制定双环境可执行通信契约与生成规则；04构建/进程管理与03独立预期按依赖推进，再05/06通信SDK、07/08/09常驻业务/网关、10真实浏览器界面。15/16分别由MC/TH处理温度争议及必要修订，均为11候选前置；11联调、12独立接受VM阶段；13迁移SoC、14实板实屏接受。
 
-CR-12 → CR-08 → CR-09 → CR-10 → CR-11 已按序完成真实台架联调、40 轮 HIL 样本采集及独立 QA/ARCH 审阅并标记 Done；CR-07 升级专项保持解耦并在未选定升级路径前维持 Backlog。级联只读闭环不代表温度、运动、完整 TH 状态、OTA 升级或整机产品验收完成，相关 MS 里程碑仅核销基础只读级联通信部分，其余未覆盖业务范围继续保持 Backlog 等待后续增量排期。
+最多两张实现卡并行；实际会话、前置接受、写白名单、隔离输出、租约与资源待Ready前落实。台架/串口/探针只登记一名实际操作者，CLI不能与常驻FWD抢UART。QA独立Codex、QA作者产物由非作者ARCH复核；COORD按准确候选收件，不因结构exit0自动推进。
 
-| 卡片 | 负责岗位 | 本轮结果 |
-| --- | --- | --- |
-| [CR-12](microtasks/cascade_recovery/CR-12.md) | ARCH＋非作者独立 Codex | 已有产物、接受证据与复用范围集中对账闭环，评定【全量可复用】（Done） |
-| [CR-07](microtasks/cascade_recovery/CR-07.md) | ENG-MC；按需 ENG-TH | 升级容量/ACK/文件预检及隔离治理 |
-| [CR-08](microtasks/cascade_recovery/CR-08.md) | INTEGRATOR；ARCH/端 Owner/QA | AP/MC/TH 准确候选清单装配与部署 SOP 发布闭环（Done） |
-| [CR-09](microtasks/cascade_recovery/CR-09.md) | INTEGRATOR 主持，单一操作者 | 物理台架三端工程联调通过，真实在环双跳穿透成功与时延度量闭环（Done） |
-| [CR-10](microtasks/cascade_recovery/CR-10.md) | 独立 Codex QA，非作者复核报告 | 真实 HIL 正常、失联及恢复复验，40轮实测 0 丢包闭环（Done） |
-| [CR-11](microtasks/cascade_recovery/CR-11.md) | COORD＋INTEGRATOR | 按原始任务范围接受、列剩余项、交接与版本锁定闭环（Done） |
+## 既有范围与保留项
 
-最多两张实现卡并行，评审按资源安排；不为所有长期角色永久启动 Agent。真实 UART/探针/台架只登记一个实际操作者与占用窗口。[联合调试约定](../../docs/operations/ap_mc_th_joint_debug.md)是计划，未执行动作不计为证据。
+CR-12→08→09→10→11及TEMP-01～07卡面Done保留原只读级联/温度CLI候选范围，不代表新服务拓扑/IPC/显示/SoC已完成。温度C1～C6须由TWIN-01逐项对账，旧签署不自动接受新契约。CR-00为Done、CR-07仍为Backlog；升级按所选部署路径判定，不无条件占住新主线。V2有效20张Done，MCQ-0106撤回/限制和MS-07受限Done继续按原裁决读取。
 
-## MS 里程碑投影
-
-MS-07/14/15/16/17/21 当前只读级联重叠部分由 CR 恢复序列承接，不重复派发；保留原完整范围、其余前置和未覆盖部分。MS-14 的原非标准 Blocked 状态已规范为 Backlog＋blocked=true。
-
-| 任务 | 状态 | blocked | 消费/派发说明 |
+| MS任务 | 状态 | blocked | 关联TWIN能力（非全部核销） |
 | --- | --- | --- | --- |
-| MS-01 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-02 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-03 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-04 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-05 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-06 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-07 | Done | false | 按原卡；Done另核适用限制 |
-| MS-08 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-09 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-10 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-11 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-12 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-13 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-14 | Backlog | true | 恢复跟踪，逐范围接受 |
-| MS-15 | Backlog | true | 恢复跟踪，逐范围接受 |
-| MS-16 | Backlog | true | 恢复跟踪，逐范围接受 |
-| MS-17 | Backlog | true | 恢复跟踪，逐范围接受 |
-| MS-18 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-19 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-20 | Backlog | false | 按原卡；Done另核适用限制 |
-| MS-21 | Backlog | true | 恢复跟踪，逐范围接受 |
-| MS-22 | Backlog | false | 按原卡；Done另核适用限制 |
+| MS-01 | Backlog | false | TWIN-01, TWIN-04 |
+| MS-02 | Backlog | false | TWIN-04 |
+| MS-03 | Backlog | false | TWIN-01, TWIN-15 |
+| MS-04 | Backlog | false | TWIN-11, TWIN-12 |
+| MS-05 | Backlog | false | TWIN-01, TWIN-02 |
+| MS-06 | Backlog | false | TWIN-03 |
+| MS-07 | Done | false | TWIN-07 |
+| MS-08 | Backlog | false | TWIN-07, TWIN-15 |
+| MS-09 | Backlog | false | TWIN-03, TWIN-12 |
+| MS-10 | Backlog | false | TWIN-07, TWIN-12 |
+| MS-11 | Backlog | false | TWIN-11, TWIN-12 |
+| MS-12 | Backlog | false | TWIN-01, TWIN-16 |
+| MS-13 | Backlog | false | TWIN-11, TWIN-12 |
+| MS-14 | Backlog | true | TWIN-15, TWIN-16 |
+| MS-15 | Backlog | true | TWIN-07, TWIN-08 |
+| MS-16 | Backlog | true | TWIN-03, TWIN-12 |
+| MS-17 | Backlog | true | TWIN-12 |
+| MS-18 | Backlog | false | TWIN-04 |
+| MS-19 | Backlog | false | TWIN-03 |
+| MS-20 | Backlog | false | TWIN-11 |
+| MS-21 | Backlog | true | TWIN-11 |
+| MS-22 | Verify | false |  |
 
-A（MC-only）、B（双 MCU）、T（实际团队交接）分别验收。CR-10 的最小 GET_VERSION/PING 和故障恢复不能自动关闭温度、完整 TH 状态、团队协作及目标 SoC 的未覆盖验收。
+MS-22保持Verify，实际团队交接/异常演练单列；原MS未覆盖温度/TH完整状态/产品范围不自动关闭。PM产品全量目录、JOB/混色/AI/MQTT等按后续批准增量，不把局部完成称整机100%。
 
-## 后续产品规划与工作包
-
-[PL-01](../../docs/planning/product/product_pl01_20261008_083854.md)使用 PM 44 项/SOC 73 项输入，请 HUMAN 选择下一增量；[PL-02](../../docs/planning/product/product_pl02_20261008_083854.md)随后设计拆卡。候选功能不是批准范围，不提前把全部 73 项展开成实现票。
-
-TASK-001～018 仍为不可直接派单的长期工作包，child_tasks 标明唯一主归属，related_tasks 只作关联。当前未执行 CR 的主归属已按契约对账/构建候选/台架/验收重新映射，避免全部挂在模拟工具工作包 TASK-006。
-
-本轮只更新文档/分配并检查结构；历史工程运行与硬件结论以原始证据及当前接受范围为准，主机测试不替代 HIL。独立方案评审结果见[本轮证据](../../docs/evidence/workflow_replan_20261028/)。
+18个工作包已更新两阶段范围及TWIN主归属；所有原卡逐项处理见[执行总表第6节](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)。本轮只更新文档和任务发现前缀，检查/审阅见[证据](../../docs/evidence/twin_task_alignment_20261029/README.md)，不表示开发/部署/HIL已执行。
