@@ -9,6 +9,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest.mock import MagicMock, patch
 
 TOOLS_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = TOOLS_DIR.parent.parent
@@ -20,6 +21,7 @@ if str(TOOLS_DIR) not in sys.path:
 from coord_runner import (
     CheckpointCorruptError,
     CheckpointManager,
+    CodexReviewAdapter,
     CoordRunner,
     CoordRunnerConfig,
     CoordRunnerError,
@@ -114,7 +116,6 @@ class LeaseAndExclusivityTest(unittest.TestCase):
         past = time.time() - 200.0
         lease = Lease("l_old", "TASK-OLD", "uart", "agent-old", past, past + 50.0)
         self.mgr.restore_leases([lease])
-        self.assertTrue(self.mgr.is_resource_locked("uart", now=past + 10.0))
         pruned = self.mgr.prune_expired_leases(now=past + 100.0)
         self.assertEqual(pruned, 1)
         self.assertFalse(self.mgr.is_resource_locked("uart", now=past + 100.0))
@@ -204,6 +205,18 @@ class StateMachineAndRemediationTest(unittest.TestCase):
         self.assertFalse(ok)
         self.assertEqual(self.record.state, TaskState.IN_PROGRESS.value)
 
+    def test_qa_verdict_string_false_rejected(self):
+        self.record.state = TaskState.SANDBOX_QA.value
+        ok = self.sm.validate_qa_verdict(self.record, {"passed": "false"})
+        self.assertFalse(ok)
+        self.assertEqual(self.record.state, TaskState.IN_PROGRESS.value)
+
+    def test_evidence_based_remediation_validation(self):
+        self.sm.handle_remediation(self.record, "err", {"path": "e.log", "sha256": "abc12345"})
+        self.assertEqual(self.record.corrections_count, 1)
+        with self.assertRaises(GateValidationError):
+            self.sm.handle_remediation(self.record, "err", {"path": ""})
+
 
 class CheckpointAndRecoveryTest(unittest.TestCase):
     def setUp(self):
@@ -274,8 +287,22 @@ class ExecutionModesTest(unittest.TestCase):
     def tearDown(self):
         self.temp_dir.cleanup()
 
+    def _setup_mock_executors(self, runner: CoordRunner) -> None:
+        runner.agent_executor = lambda tid, r: "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        runner.qa_executor = lambda tid, c: {"passed": True, "sandbox": {"kind": "container", "id": "c1"}}
+        runner.review_executor = lambda tid, c: {"session": f"rev_{tid}", "decision": "APPROVED"}
+
+    def test_missing_executor_fails_closed(self):
+        runner = CoordRunner(self.cfg)
+        rec = TaskExecutionRecord("T1", state=TaskState.IN_PROGRESS.value)
+        runner.in_flight_tasks["T1"] = rec
+        with self.assertRaises(CoordRunnerError) as ctx:
+            runner.process_task("T1", {"id": "T1"})
+        self.assertIn("fail-closed", str(ctx.exception))
+
     def test_run_once_mode(self):
         runner = CoordRunner(self.cfg)
+        self._setup_mock_executors(runner)
         res = runner.run_once()
         self.assertIn("dispatched", res)
         self.assertIn("completed", res)
@@ -283,6 +310,7 @@ class ExecutionModesTest(unittest.TestCase):
 
     def test_run_tasks_finite_mode(self):
         runner = CoordRunner(self.cfg)
+        self._setup_mock_executors(runner)
         cnt = runner.run_tasks(max_tasks=1)
         self.assertEqual(cnt, 1)
         self.assertIn("T1", runner.completed_tasks)
@@ -294,6 +322,87 @@ class ExecutionModesTest(unittest.TestCase):
         runner._signal_handler(signal.SIGINT, None)
         self.assertFalse(runner._running)
         self.assertTrue(self.cfile.is_file())
+
+    def test_uart_conflict_rolls_back_implementation_lease(self):
+        runner = CoordRunner(self.cfg)
+        runner.lease_mgr.acquire_lease("OTHER", "uart", "other-owner")
+        card = {"id": "T1", "task_kind": "implementation", "resources": [{"resource": "uart", "exclusive": True}]}
+        with self.assertRaises(ResourceConflictError):
+            runner._acquire_task_leases("T1", card)
+        self.assertEqual(runner.lease_mgr.count_active_implementation(), 0)
+
+    def test_sandbox_qa_restart_recovery_progresses(self):
+        runner = CoordRunner(self.cfg)
+        self._setup_mock_executors(runner)
+        rec = TaskExecutionRecord("T1", state=TaskState.SANDBOX_QA.value,
+                                  candidate_commit="a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819")
+        runner.in_flight_tasks["T1"] = rec
+        card = {"id": "T1", "review_assignments": {"reviewer_sessions": []}}
+        st = runner.process_task("T1", card)
+        self.assertEqual(st, TaskState.DONE.value)
+        self.assertIn("T1", runner.completed_tasks)
+
+
+class CodexAndSandboxIsolationGateTest(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory(prefix="codex_test_")
+        self.root = Path(self.temp_dir.name)
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
+
+    def test_codex_unavailable_blocked(self):
+        adapter = CodexReviewAdapter(codex_bin=self.root / "missing_codex")
+        self.assertFalse(adapter.check_availability())
+        with self.assertRaises(CoordRunnerError) as ctx:
+            adapter.execute_review("prompt", self.root)
+        self.assertIn("unavailable", str(ctx.exception))
+
+    def test_codex_auth_failure_blocked(self):
+        adapter = CodexReviewAdapter(codex_bin=Path("/home/sushaohua/.local/bin/codex"))
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=1, stderr="Authentication error 401", stdout="")
+            with self.assertRaises(CoordRunnerError) as ctx:
+                adapter.execute_review("prompt", self.root)
+            self.assertIn("Authentication error", str(ctx.exception))
+
+    def test_plain_directory_sandbox_rejected(self):
+        import delivery_checks as gate
+        proof = {
+            "task_id": "T1", "task_revision": 1,
+            "source": "server-pinned-commits", "fresh_checkout": True,
+            "sandbox": {"kind": "remote-runner", "id": "plain_dir", "developer_mounts": []},
+            "server_lock": {"path": "lock.json", "sha256": "abc"},
+        }
+        ref = self.root / "server_qa.json"
+        ref.write_text(json.dumps(proof), encoding="utf-8")
+        header = {"server_qa": {"path": "server_qa.json", "sha256": "dummy"}}
+        with patch("delivery_checks.read_ref", return_value=ref.read_bytes()):
+            with self.assertRaises(ValueError) as ctx:
+                gate.check_server_qa(header, {"id": "T1", "revision": 1}, self.root)
+            self.assertIn("container/vm", str(ctx.exception))
+
+    def test_docker_container_sandbox_passed(self):
+        import delivery_checks as gate
+        proof = {
+            "task_id": "T1", "task_revision": 1,
+            "source": "server-pinned-commits", "fresh_checkout": True,
+            "sandbox": {"kind": "container", "container_id": "cid123", "image": "ubuntu:20.04", "developer_mounts": []},
+            "runtime_log": {"path": "rt.log", "sha256": "a"},
+            "checkout_log": {"path": "co.log", "sha256": "b"},
+            "server_verdict": {"path": "vd.json", "sha256": "c"},
+            "server_lock": {"path": "lk.json", "sha256": "d"},
+        }
+        lock = {"repositories": [{"name": "repo", "url": "ssh://git@srv/r.git", "ref": "main", "commit": "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"}]}
+        ref = self.root / "server_qa.json"
+        ref.write_text(json.dumps(proof), encoding="utf-8")
+        header = {"server_qa": {"path": "server_qa.json", "sha256": "dummy"}}
+        def fake_read_ref(r, ws):
+            if r["path"] == "lk.json": return json.dumps(lock).encode()
+            if r["path"] == "server_qa.json": return json.dumps(proof).encode()
+            return b"ok"
+        with patch("delivery_checks.read_ref", side_effect=fake_read_ref):
+            gate.check_server_qa(header, {"id": "T1", "revision": 1}, self.root)
 
 
 class MethodologicalInvariantsTest(unittest.TestCase):

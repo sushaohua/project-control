@@ -2,6 +2,7 @@
 """COORD runner package: task scheduling, lease management, state machine, and checkpoint recovery."""
 
 from .checkpoint import CheckpointManager
+from .codex_adapter import CodexReviewAdapter, CodexReviewResult
 from .errors import (
     CheckpointCorruptError,
     ConfigError,
@@ -28,6 +29,8 @@ from .state_machine import CoordStateMachine
 __all__ = [
     "CheckpointCorruptError",
     "CheckpointManager",
+    "CodexReviewAdapter",
+    "CodexReviewResult",
     "ConfigError",
     "CoordRunner",
     "CoordRunnerConfig",

@@ -1,0 +1,11 @@
+{
+  "task_id": "AUTO-02",
+  "task_revision": 1,
+  "run_id": "run_160139",
+  "verdict": "FAILED",
+  "exit_code": 1,
+  "summary": "Sandbox QA execution failed",
+  "build_count": 0,
+  "test_count": 4,
+  "timestamp": "2026-10-29T08:01:57.029813+00:00"
+}

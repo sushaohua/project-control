@@ -10,7 +10,8 @@ server:
 
 sandbox:
   base_dir: "/tmp/qa_sandboxes"
-  kind: "remote-runner"
+  kind: "container"
+  image: "qa-sandbox:20261029"
   cleanup_after_run: false
   enforce_clean_checkout: true
 

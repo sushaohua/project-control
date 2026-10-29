@@ -1,0 +1,16 @@
+{
+  "repositories": [
+    {
+      "name": "project-control",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "refs/heads/dfea09b83702da96f9c269c64ba7ad9547e0710f",
+      "commit": "dfea09b83702da96f9c269c64ba7ad9547e0710f"
+    },
+    {
+      "name": "test_harness",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+      "ref": "refs/heads/210ddd1c3f6f59594836c91b68aae55fb7a35181",
+      "commit": "210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    }
+  ]
+}

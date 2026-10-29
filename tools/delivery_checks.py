@@ -114,9 +114,10 @@ def check_server_qa(header: dict, card: dict, workspace: Path) -> None:
     if proof.get("task_id") != card.get("id") or proof.get("task_revision") != card.get("revision"):
         raise ValueError("server QA proof does not bind this task/revision")
     sandbox = proof.get("sandbox") or {}
-    if sandbox.get("kind") not in {"container", "vm", "remote-runner"}:
-        raise ValueError("QA requires an isolated sandbox, not a directory/worktree")
-    if not sandbox.get("id") or sandbox.get("developer_mounts") != []:
+    if sandbox.get("kind") not in {"container", "vm"}:
+        raise ValueError("QA requires an isolated container/vm sandbox, not a directory/worktree")
+    s_id = sandbox.get("container_id") or sandbox.get("id") or sandbox.get("vm_id")
+    if not s_id or sandbox.get("developer_mounts") != []:
         raise ValueError("sandbox identity is missing or developer mounts are present")
     if proof.get("source") != "server-pinned-commits" or proof.get("fresh_checkout") is not True:
         raise ValueError("QA source must be a fresh checkout of server-pinned commits")

@@ -8,12 +8,21 @@ import sys
 import time
 from typing import Callable, Dict, List, Optional, Set
 
-from .checkpoint import CheckpointManager
-from .errors import CoordRunnerError, GateValidationError, ResourceConflictError
-from .lease_manager import LeaseManager
-from .models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
-from .scheduler import CoordScheduler, ScheduleContext
-from .state_machine import CoordStateMachine
+if __package__:
+    from .checkpoint import CheckpointManager
+    from .errors import CoordRunnerError, GateValidationError, ResourceConflictError
+    from .lease_manager import LeaseManager
+    from .models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
+    from .scheduler import CoordScheduler, ScheduleContext
+    from .state_machine import CoordStateMachine
+else:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from coord_runner.checkpoint import CheckpointManager
+    from coord_runner.errors import CoordRunnerError, GateValidationError, ResourceConflictError
+    from coord_runner.lease_manager import LeaseManager
+    from coord_runner.models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
+    from coord_runner.scheduler import CoordScheduler, ScheduleContext
+    from coord_runner.state_machine import CoordStateMachine
 
 
 class CoordRunner:
@@ -71,16 +80,21 @@ class CoordRunner:
         owner = card.get("owner", f"session_{task_id}")
         acquired = []
         task_kind = card.get("task_kind", "implementation")
-        if task_kind == "implementation":
-            lease = self.lease_mgr.acquire_lease(task_id, "implementation", owner)
-            acquired.append(lease.lease_id)
-        for res_item in card.get("resources", []):
-            if isinstance(res_item, dict) and res_item.get("exclusive", False):
-                res_name = res_item.get("resource", "")
-                if res_name:
-                    lease = self.lease_mgr.acquire_lease(task_id, res_name, owner)
-                    acquired.append(lease.lease_id)
-        return acquired
+        try:
+            if task_kind == "implementation":
+                lease = self.lease_mgr.acquire_lease(task_id, "implementation", owner)
+                acquired.append(lease.lease_id)
+            for res_item in card.get("resources", []):
+                if isinstance(res_item, dict) and res_item.get("exclusive", False):
+                    res_name = res_item.get("resource", "")
+                    if res_name:
+                        lease = self.lease_mgr.acquire_lease(task_id, res_name, owner)
+                        acquired.append(lease.lease_id)
+            return acquired
+        except Exception:
+            for lid in acquired:
+                self.lease_mgr.release_lease(lid)
+            raise
 
     def dispatch_task(self, task_id: str, card: dict) -> TaskExecutionRecord:
         if task_id in self.in_flight_tasks:
@@ -100,30 +114,28 @@ class CoordRunner:
         return record
 
     def _execute_agent_phase(self, record: TaskExecutionRecord, card: dict) -> None:
-        if self.agent_executor:
-            commit = self.agent_executor(record.task_id, record)
-        else:
-            commit = card.get("candidate_commit", "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819")
+        if self.agent_executor is None:
+            raise CoordRunnerError(f"Missing agent_executor for {record.task_id}: fail-closed enforced")
+        commit = self.agent_executor(record.task_id, record)
         self.state_machine.validate_commit_sha(commit)
         record.candidate_commit = commit
         self.state_machine.transition(record, TaskState.CANDIDATE_PUSHED)
 
     def _execute_qa_phase(self, record: TaskExecutionRecord, card: dict) -> bool:
-        self.state_machine.transition(record, TaskState.SANDBOX_QA)
-        if self.qa_executor:
-            verdict = self.qa_executor(record.task_id, record.candidate_commit)
-        else:
-            verdict = {"passed": True, "developer_mounts": []}
+        if record.state != TaskState.SANDBOX_QA.value:
+            self.state_machine.transition(record, TaskState.SANDBOX_QA)
+        if self.qa_executor is None:
+            raise CoordRunnerError(f"Missing qa_executor for {record.task_id}: fail-closed enforced")
+        verdict = self.qa_executor(record.task_id, record.candidate_commit)
         ok = self.state_machine.validate_qa_verdict(record, verdict)
         if ok:
             self.state_machine.transition(record, TaskState.REVIEW)
         return ok
 
     def _execute_review_phase(self, record: TaskExecutionRecord, card: dict) -> bool:
-        if self.review_executor:
-            entry = self.review_executor(record.task_id, record.candidate_commit)
-        else:
-            entry = {"session": f"reviewer_{record.task_id}", "decision": "APPROVED"}
+        if self.review_executor is None:
+            raise CoordRunnerError(f"Missing review_executor for {record.task_id}: fail-closed enforced")
+        entry = self.review_executor(record.task_id, record.candidate_commit)
         author_session = record.session_id or ""
         ok = self.state_machine.validate_review_verdict(record, entry, author_session)
         if ok:
@@ -137,7 +149,7 @@ class CoordRunner:
         record = self.in_flight_tasks[task_id]
         if record.state == TaskState.IN_PROGRESS.value:
             self._execute_agent_phase(record, card)
-        if record.state == TaskState.CANDIDATE_PUSHED.value:
+        if record.state in {TaskState.CANDIDATE_PUSHED.value, TaskState.SANDBOX_QA.value}:
             if not self._execute_qa_phase(record, card):
                 return record.state
         if record.state == TaskState.REVIEW.value:
@@ -214,3 +226,40 @@ class CoordRunner:
                 time.sleep(interval)
         finally:
             self.save_checkpoint()
+
+
+def create_cli_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="COORD task runner and scheduler")
+    parser.add_argument("--config", default="project-control/config/coord_runner/coord_config.yaml",
+                        help="Path to coord_runner YAML config")
+    parser.add_argument("--once", action="store_true", help="Execute single step and exit")
+    parser.add_argument("--max-tasks", type=int, default=0, help="Execute up to N tasks and exit")
+    parser.add_argument("--daemon", action="store_true", help="Run polling daemon mode")
+    parser.add_argument("--poll-interval", type=float, default=None, help="Polling interval in seconds")
+    return parser
+
+
+def main() -> int:
+    parser = create_cli_parser()
+    args = parser.parse_args()
+    cfg_path = Path(args.config)
+    import yaml
+    raw_cfg = yaml.safe_load(cfg_path.read_text(encoding="utf-8")) if cfg_path.is_file() else {}
+    base_dir = cfg_path.parent.parent.parent
+    config = CoordRunnerConfig.from_dict(raw_cfg, base_dir)
+    runner = CoordRunner(config)
+    if args.once:
+        runner.run_once()
+        return 0
+    if args.max_tasks > 0:
+        runner.run_tasks(args.max_tasks)
+        return 0
+    if args.daemon:
+        runner.run_daemon(args.poll_interval)
+        return 0
+    runner.run_once()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

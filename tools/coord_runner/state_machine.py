@@ -63,7 +63,15 @@ class CoordStateMachine:
         if len(set(commit)) <= 1:
             raise GateValidationError(f"Placeholder commit SHA rejected: {commit}")
 
-    def handle_remediation(self, record: TaskExecutionRecord, reason: str) -> None:
+    def handle_remediation(
+        self,
+        record: TaskExecutionRecord,
+        reason: str,
+        evidence: Optional[dict] = None,
+    ) -> None:
+        if evidence is not None:
+            if not isinstance(evidence, dict) or not evidence.get("path") or not evidence.get("sha256"):
+                raise GateValidationError("Remediation evidence requires non-empty path and sha256")
         record.corrections_count += 1
         if record.corrections_count > self.max_corrections:
             record.state = TaskState.ESCALATED.value
@@ -71,18 +79,28 @@ class CoordStateMachine:
                 f"Task {record.task_id} exceeded max corrections ({self.max_corrections}): {reason}"
             )
         record.state = TaskState.IN_PROGRESS.value
-        record.waiting_events.append(f"remediation:{record.corrections_count}:{reason}")
+        ev_tag = f":evidence={evidence.get('sha256')[:8]}" if evidence else ""
+        record.waiting_events.append(f"remediation:{record.corrections_count}:{reason}{ev_tag}")
 
     def validate_qa_verdict(self, record: TaskExecutionRecord, qa_verdict: dict) -> bool:
-        passed = bool(qa_verdict.get("passed", False))
+        if not isinstance(qa_verdict, dict):
+            self.handle_remediation(record, "QA verdict must be a valid dictionary")
+            return False
+        passed = qa_verdict.get("passed")
+        if passed is not True:
+            err = qa_verdict.get("summary", "QA verification failed or passed not boolean True")
+            self.handle_remediation(record, f"Server QA failure: {err}")
+            return False
         mounts = qa_verdict.get("developer_mounts", [])
         if mounts:
             self.handle_remediation(record, "Sandbox security violation: developer mounts present")
             return False
-        if not passed:
-            err = qa_verdict.get("summary", "QA verification failed")
-            self.handle_remediation(record, f"Server QA failure: {err}")
-            return False
+        server_qa = qa_verdict.get("server_qa")
+        if server_qa and isinstance(server_qa, dict):
+            sbox = server_qa.get("sandbox", {})
+            if sbox.get("kind") not in {"container", "vm"}:
+                self.handle_remediation(record, f"Invalid sandbox kind: {sbox.get('kind')}")
+                return False
         return True
 
     def validate_review_verdict(

@@ -69,6 +69,8 @@ class QARunResult:
     test_results: List[Dict[str, str]] = field(default_factory=list)
     evidence_files: Dict[str, Dict[str, str]] = field(default_factory=dict)
     summary: str = ""
+    container_id: str = ""
+    container_image: str = "ubuntu:20.04"
 
 
 def redact_token(text: str) -> str:
@@ -298,23 +300,39 @@ def checkout_remote_repository(sandbox_dir: Path, target: RepositoryTarget, time
     return "\n".join(logs)
 
 
-def run_command_in_sandbox(sandbox_dir: Path, cmd: str, subpath: str = "", timeout: int = 300) -> CommandResult:
-    """Execute build or test command strictly inside the sandbox directory."""
+DEFAULT_CMD_TIMEOUT = 300
+
+
+def run_command_in_sandbox(sandbox_dir: Path, cmd: str, subpath: str = "",
+                           container_id: Optional[str] = None) -> CommandResult:
+    """Execute build or test command inside container or sandbox directory."""
     work_dir = validate_sandbox_subpath(sandbox_dir, subpath)
+    start_time = datetime.datetime.now()
+    if container_id:
+        target_dir = f"/workspace/{subpath}".rstrip("/") if subpath else "/workspace"
+        exec_cmd = ["docker", "exec", "-w", target_dir, container_id, "bash", "-c", cmd]
+        try:
+            proc = subprocess.run(exec_cmd, text=True, capture_output=True, timeout=DEFAULT_CMD_TIMEOUT)
+            dur = (datetime.datetime.now() - start_time).total_seconds()
+            return CommandResult(command=cmd, cwd=target_dir, returncode=proc.returncode,
+                                 stdout=proc.stdout, stderr=proc.stderr, duration_seconds=dur)
+        except subprocess.TimeoutExpired:
+            dur = (datetime.datetime.now() - start_time).total_seconds()
+            return CommandResult(command=cmd, cwd=target_dir, returncode=-1, stdout="",
+                                 stderr=f"Command timed out after {DEFAULT_CMD_TIMEOUT}s", duration_seconds=dur)
     env = os.environ.copy()
     for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
         env.pop(key, None)
-    start_time = datetime.datetime.now()
     try:
         proc = subprocess.run(cmd, shell=True, cwd=str(work_dir), env=env, text=True,
-                              capture_output=True, timeout=timeout)
-        duration = (datetime.datetime.now() - start_time).total_seconds()
+                              capture_output=True, timeout=DEFAULT_CMD_TIMEOUT)
+        dur = (datetime.datetime.now() - start_time).total_seconds()
         return CommandResult(command=cmd, cwd=str(work_dir), returncode=proc.returncode,
-                             stdout=proc.stdout, stderr=proc.stderr, duration_seconds=duration)
-    except subprocess.TimeoutExpired as err:
-        duration = (datetime.datetime.now() - start_time).total_seconds()
+                             stdout=proc.stdout, stderr=proc.stderr, duration_seconds=dur)
+    except subprocess.TimeoutExpired:
+        dur = (datetime.datetime.now() - start_time).total_seconds()
         return CommandResult(command=cmd, cwd=str(work_dir), returncode=-1,
-                             stdout="", stderr=f"Command timed out after {timeout}s", duration_seconds=duration)
+                             stdout="", stderr=f"Command timed out after {DEFAULT_CMD_TIMEOUT}s", duration_seconds=dur)
 
 
 def collect_tool_versions() -> Dict[str, str]:
@@ -360,14 +378,18 @@ def build_server_verdict_data(run_result: QARunResult) -> dict:
 
 def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str]]) -> dict:
     """Construct canonical server_qa proof dictionary matching delivery_checks."""
+    cid = run_result.container_id or run_result.sandbox_id
+    img = run_result.container_image or "ubuntu:20.04"
     return {
         "task_id": run_result.task_id,
         "task_revision": run_result.task_revision,
         "source": "server-pinned-commits",
         "fresh_checkout": True,
         "sandbox": {
-            "kind": "remote-runner",
+            "kind": "container",
+            "container_id": cid,
             "id": run_result.sandbox_id,
+            "image": img,
             "path": run_result.sandbox_path,
             "developer_mounts": [],
         },
@@ -421,6 +443,26 @@ def load_yaml_config(config_path: Path) -> dict:
         raise QARunnerError(f"Failed to parse config YAML: {err}") from err
 
 
+def start_docker_sandbox(name: str, image: str, mount_dir: Path) -> str:
+    """Start isolated docker container with volume mount for QA workspace."""
+    cmd = [
+        "docker", "run", "-d",
+        "--name", name,
+        "-v", f"{mount_dir.resolve()}:/workspace:rw",
+        "-w", "/workspace",
+        image, "sleep", "3600",
+    ]
+    proc = subprocess.run(cmd, text=True, capture_output=True, timeout=30)
+    if proc.returncode != 0:
+        raise QARunnerError(f"Failed to start Docker sandbox: {proc.stderr.strip()}")
+    return proc.stdout.strip()[:12]
+
+
+def stop_docker_sandbox(container_id: str) -> None:
+    """Stop and forcefully remove docker container."""
+    subprocess.run(["docker", "rm", "-f", container_id], text=True, capture_output=True, timeout=30)
+
+
 class QARunner:
     """Core QA runner orchestrating remote verification and sandbox execution."""
 
@@ -451,11 +493,8 @@ class QARunner:
             project_path = cfg.get("api_project_path", f"sushaohua/{target.name}")
             verify_server_commit(self.gitlab, project_path, target.commit)
 
-    def execute_run(self, req: QARunRequest) -> tuple:
-        """Execute complete isolated QA workflow in sandbox."""
-        self.verify_target_commits(req.targets)
-        run_id = f"run_{datetime.datetime.now().strftime('%H%M%S')}"
-        sandbox_dir = create_isolated_sandbox(self.sandbox_base, req.task_id, run_id)
+    def _run_sandbox_steps(self, sandbox_dir: Path, req: QARunRequest,
+                           cid: Optional[str] = None) -> tuple:
         checkout_logs, runtime_logs = [], []
         for target in req.targets:
             log = checkout_remote_repository(sandbox_dir, target)
@@ -463,13 +502,11 @@ class QARunner:
         build_results, test_results = [], []
         overall_passed = True
         for cmd_item in req.commands:
-            cmd = cmd_item.get("command", "")
-            subpath = cmd_item.get("subpath", "")
+            cmd, subpath = cmd_item.get("command", ""), cmd_item.get("subpath", "")
             is_test = cmd_item.get("kind", "test") == "test"
-            c_res = run_command_in_sandbox(sandbox_dir, cmd, subpath)
+            c_res = run_command_in_sandbox(sandbox_dir, cmd, subpath, cid)
             res_dict = {
-                "command": cmd,
-                "exit_code": str(c_res.returncode),
+                "command": cmd, "exit_code": str(c_res.returncode),
                 "duration": f"{c_res.duration_seconds:.2f}s",
                 "output": (c_res.stdout + "\n" + c_res.stderr).strip(),
             }
@@ -481,14 +518,28 @@ class QARunner:
             runtime_logs.append(c_res.stdout + "\n" + c_res.stderr)
             if c_res.returncode != 0:
                 overall_passed = False
-        res = QARunResult(
-            task_id=req.task_id, task_revision=req.task_revision, run_id=run_id,
-            sandbox_id=sandbox_dir.name, sandbox_path=str(sandbox_dir),
-            passed=overall_passed, tool_versions=collect_tool_versions(),
-            build_results=build_results, test_results=test_results,
-            summary="All sandbox tests passed" if overall_passed else "Sandbox QA execution failed",
-        )
-        return res, sandbox_dir, checkout_logs, runtime_logs
+        return checkout_logs, runtime_logs, build_results, test_results, overall_passed
+
+    def execute_run(self, req: QARunRequest) -> tuple:
+        """Execute complete isolated QA workflow in container sandbox."""
+        self.verify_target_commits(req.targets)
+        run_id = f"run_{datetime.datetime.now().strftime('%H%M%S')}"
+        sandbox_dir = create_isolated_sandbox(self.sandbox_base, req.task_id, run_id)
+        c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
+        img = self.config.get("sandbox", {}).get("image", "qa-sandbox:20261029")
+        cid = start_docker_sandbox(c_name, img, sandbox_dir)
+        try:
+            c_logs, r_logs, b_res, t_res, ok = self._run_sandbox_steps(sandbox_dir, req, cid)
+            res = QARunResult(
+                task_id=req.task_id, task_revision=req.task_revision, run_id=run_id,
+                sandbox_id=sandbox_dir.name, sandbox_path=str(sandbox_dir),
+                container_id=cid, container_image=img, passed=ok,
+                tool_versions=collect_tool_versions(), build_results=b_res, test_results=t_res,
+                summary="All sandbox tests passed" if ok else "Sandbox QA execution failed",
+            )
+            return res, sandbox_dir, c_logs, r_logs
+        finally:
+            stop_docker_sandbox(cid)
 
 
 def create_cli_parser() -> argparse.ArgumentParser:
