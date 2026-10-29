@@ -212,8 +212,8 @@ class CoordStateMachine:
         if r_sha != real_sha:
             raise GateValidationError("Fake Done rejected: report_review sha256 does not match physical file content")
         entry_sha = entry.get("report_sha256")
-        if entry_sha and entry_sha != real_sha:
-            raise GateValidationError("Fake Done rejected: QA entry report_sha256 does not match physical file content")
+        if not entry_sha or entry_sha != real_sha:
+            raise GateValidationError("Fake Done rejected: QA entry report_sha256 missing or does not match physical file content")
 
     def validate_done_acceptance(self, card: dict, workspace: Path) -> None:
         assignments = (card.get("review_assignments") or {}).get("reviewer_sessions") or []

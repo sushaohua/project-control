@@ -397,6 +397,7 @@ class StateMachineAndRemediationTest(unittest.TestCase):
                         "session": "sess-qa",
                         "role": "QA",
                         "decision": "APPROVED",
+                        "report_sha256": self.sample_report_sha,
                         "report_review": {"session": "sess-arch", "decision": "APPROVED"},
                     }
                 ]
@@ -405,6 +406,30 @@ class StateMachineAndRemediationTest(unittest.TestCase):
         with self.assertRaises(GateValidationError) as ctx:
             self.sm.validate_done_acceptance(card, self.workspace)
         self.assertIn("missing mandatory report_path or report_sha256", str(ctx.exception))
+
+    def test_done_rejected_when_qa_entry_missing_report_sha(self):
+        card = {
+            "id": "T1",
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [
+                    {
+                        "session": "sess-qa",
+                        "role": "QA",
+                        "decision": "APPROVED",
+                        "report_review": {
+                            "session": "sess-arch",
+                            "decision": "APPROVED",
+                            "report_path": "qa_review_report.md",
+                            "report_sha256": self.sample_report_sha,
+                        },
+                    }
+                ]
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx:
+            self.sm.validate_done_acceptance(card, self.workspace)
+        self.assertIn("QA entry report_sha256 missing or does not match", str(ctx.exception))
 
     def test_done_rejected_when_qa_report_review_sha_mismatch(self):
         card = {
