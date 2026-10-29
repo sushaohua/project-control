@@ -900,6 +900,63 @@ class ExecutionModesTest(unittest.TestCase):
         self.assertEqual(rec.state, TaskState.IN_PROGRESS.value)
         self.assertEqual(rec.corrections_count, 1)
 
+    def test_invoke_report_reviewer_passes_req_dict(self):
+        runner = CoordRunner(self.cfg)
+        captured = []
+        runner.review_executor = lambda tid, c, req: captured.append(req) or {"decision": "APPROVED"}
+        rec = TaskExecutionRecord("T1", candidate_commit="a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819")
+        runner._invoke_report_reviewer(rec, "rep.md", "abc")
+        self.assertEqual(len(captured), 1)
+        self.assertIsInstance(captured[0], dict)
+        self.assertEqual(captured[0]["role"], "ARCH")
+        self.assertEqual(captured[0]["report_path"], "rep.md")
+        self.assertEqual(captured[0]["report_sha256"], "abc")
+        self.assertEqual(captured[0]["review_kind"], "qa_report")
+
+    def test_ensure_qa_report_review_preexisting_invalid_review_rejected(self):
+        runner = CoordRunner(self.cfg)
+        rec = TaskExecutionRecord("T1", state=TaskState.REVIEW.value)
+        sessions = [
+            {
+                "role": "QA",
+                "session": "sess-qa",
+                "report_review": {
+                    "session": "sess-arch",
+                    "decision": "REJECTED",
+                    "report_path": "qa_review_report.md",
+                    "report_sha256": "0" * 64,
+                },
+            }
+        ]
+        ok = runner._ensure_qa_report_review(rec, sessions, "author-sess")
+        self.assertFalse(ok)
+        self.assertEqual(rec.state, TaskState.IN_PROGRESS.value)
+        self.assertEqual(rec.corrections_count, 1)
+
+    def test_ensure_qa_report_review_preexisting_valid_review_accepted(self):
+        runner = CoordRunner(self.cfg)
+        rep = self.base / "qa_review_report.md"
+        rep.write_text("# Valid QA Report\n", encoding="utf-8")
+        r_sha = hashlib.sha256(b"# Valid QA Report\n").hexdigest()
+        rec = TaskExecutionRecord("T1", state=TaskState.REVIEW.value)
+        sessions = [
+            {
+                "role": "QA",
+                "session": "sess-qa",
+                "report_path": "qa_review_report.md",
+                "report_sha256": r_sha,
+                "report_review": {
+                    "session": "sess-arch",
+                    "decision": "APPROVED",
+                    "report_path": "qa_review_report.md",
+                    "report_sha256": r_sha,
+                },
+            }
+        ]
+        ok = runner._ensure_qa_report_review(rec, sessions, "author-sess")
+        self.assertTrue(ok)
+        self.assertEqual(rec.state, TaskState.REVIEW.value)
+
 
 class CodexAndSandboxIsolationGateTest(unittest.TestCase):
     def setUp(self):

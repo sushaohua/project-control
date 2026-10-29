@@ -175,13 +175,7 @@ class CoordRunner:
             "report_sha256": rep_sha,
             "review_kind": "qa_report",
         }
-        try:
-            return self.review_executor(record.task_id, record.candidate_commit, req)
-        except TypeError:
-            try:
-                return self.review_executor(record.task_id, record.candidate_commit, "ARCH")
-            except TypeError:
-                return self.review_executor(record.task_id, record.candidate_commit)
+        return self.review_executor(record.task_id, record.candidate_commit, req)
 
     def _ensure_qa_report_review(
         self,
@@ -190,8 +184,20 @@ class CoordRunner:
         author: str,
     ) -> bool:
         qa_entry = next((e for e in sessions if e.get("role") == "QA"), None)
-        if not qa_entry or qa_entry.get("report_review"):
+        if not qa_entry:
             return True
+        if qa_entry.get("report_review"):
+            try:
+                self.state_machine._validate_qa_report_review(
+                    qa_entry, author, self.config.workspace_root
+                )
+                return True
+            except GateValidationError as err:
+                ev = self.state_machine._extract_review_failure_evidence(qa_entry["report_review"])
+                self.state_machine.handle_remediation(
+                    record, f"Pre-existing QA report review invalid: {err}", ev
+                )
+                return False
         rep_path, rep_sha = self._resolve_qa_report_ref(record, qa_entry)
         report_res = self._invoke_report_reviewer(record, rep_path, rep_sha)
         report_res.setdefault("role", "ARCH")
