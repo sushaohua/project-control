@@ -1,0 +1,62 @@
+{
+  "task_id": "TWIN-05",
+  "task_revision": 2,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "72699b032c25",
+    "id": "TWIN-05_run_142035_20261030_062035",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-05_run_142035_20261030_062035",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "72699b032c25e6aaa42bd649b726716331091473eb14d6e247c5c4532ac7ed55",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-10-30T06:20:54.724588675Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-05_run_142035_20261030_062035",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_02/arch_server_qa/server_lock.json",
+    "sha256": "ff28e53f55a4042a7c153b0c89b183bacbfb6864ffa92e5b4015653fbaf5c56f"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_02/arch_server_qa/checkout.log",
+    "sha256": "4cfdc35566e520b2965945017cd6541cdd4fd8b3f8deb903241a48b3ccebe47c"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_02/arch_server_qa/runtime.log",
+    "sha256": "5185de4c5c45886e29ef8ef657e1c7c87943a2cc4e9e03a88c5288860cc16571"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_02/arch_server_qa/server_verdict.json",
+    "sha256": "1b0a8b706dbdd56938a9932151867db7a49087fecc9b5ea3de273762a26e71d7"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "g++ -std=c++17 -Wall -Wextra -Werror -I middleware/dds/include -I middleware/dds/src -I /usr/local/include middleware/dds/src/aisoc_dds*.cpp tests/dds/twin/test_dds_pubsub.cpp -L /usr/local/lib -lfastdds -lfastcdr -o /tmp/test_dds_pubsub && LD_LIBRARY_PATH=/usr/local/lib /tmp/test_dds_pubsub",
+      "exit_code": "0",
+      "duration": "7.90s",
+      "output": "=========================================================\nAI-SoC Fast DDS SDK Test Suite (v2.0.0)\n=========================================================\n[Test 1.1] Testing Participant & Profile Guard Clauses...\n[Test 1.2] Testing Publisher Guard Clauses...\n[Test 1.3] Testing Subscriber Guard Clauses...\n>>> Guard Clause Tests: 100% PASSED\n[Test 1.1] Testing Entity Quota Hard Limits...\n>>> Entity Quota Hard Limits: 100% PASSED\n[Test 2] Testing Raw Temp Telemetry End-to-End...\n>>> Raw Temp E2E Test: 100% PASSED\n[Test 3] Testing Temperature Snapshot End-to-End...\n>>> Temperature Snapshot E2E Test: 100% PASSED\n[Test 4] Testing Transient Local Late-Joiner Delivery...\nPublished snapshot gen=42 before subscriber created\nLate-joiner successfully retrieved historical snapshot gen=42\n>>> Transient Local Late-Joiner Test: 100% PASSED\n[Test 5] Testing History Depth KEEP_LAST(5)...\nPublished 10 samples (seq 1..10) into KEEP_LAST(5) history\nLate subscriber collected 5 samples: 6 7 8 9 10 \n>>> History Depth KEEP_LAST(5) Test: 100% PASSED\n[Test 6] Testing Real Cross-Process IPC with fork + exec...\n>>> Cross-Process IPC Test: 100% PASSED (child exit=0)\n=========================================================\nALL 6 FAST DDS TEST SUITES PASSED (100% SUCCESS)!\n========================================================="
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-30T06:21:05.235707+00:00"
+}

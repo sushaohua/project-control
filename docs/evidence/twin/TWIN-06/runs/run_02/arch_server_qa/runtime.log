@@ -1,0 +1,42 @@
+=== Docker Container Inspect: a8cbc2de747a ===
+{
+  "id": "a8cbc2de747aa376faf4a80441d8ecafd4d4fda5efedd4a625e77e5bf6f53032",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-10-30T06:20:49.751001275Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-06_run_142038_20261030_062038",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) g++ -std=c++17 -Wall -Wextra -Werror -fno-exceptions -fno-rtti -I middleware/dbus/include -I /usr/include/dbus-1.0 -I /usr/lib/x86_64-linux-gnu/dbus-1.0/include -I /usr/local/include/dbus-1.0 -I /usr/local/lib/dbus-1.0/include middleware/dbus/src/aisoc_dbus*.cpp tests/dbus/twin/test_dbus_ipc.cpp -L /usr/local/lib -ldbus-1 -o /tmp/test_dbus_ipc && LD_LIBRARY_PATH=/usr/local/lib /tmp/test_dbus_ipc -> 0
+========================================================================
+TWIN-06 D-Bus IPC SDK & Permissions/Timeout Test Suite
+========================================================================
+[RUN ] test_guard_conn
+[PASS] test_guard_conn
+[RUN ] test_guard_msg
+[PASS] test_guard_msg
+[RUN ] test_guard_server
+[PASS] test_guard_server
+[RUN ] test_error_forward
+[PASS] test_error_forward
+[RUN ] test_error_reverse
+[PASS] test_error_reverse
+[RUN ] test_msg_types
+[PASS] test_msg_types
+[INFO] Spawned dbus-daemon (PID=32) at unix:path=/tmp/dbus-cySG49S3mi,guid=2917bef914605b6a11d12dc86ae43742
+[INFO] Spawned D-Bus server process (PID=33), ready received
+[RUN ] run_client_test_suite (Real IPC Across 3 Processes)
+[PASS] run_client_test_suite
+------------------------------------------------------------------------
+Test Results: 7 passed, 0 failed
+========================================================================
+
