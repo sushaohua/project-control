@@ -36,6 +36,12 @@ description: C/C++ 编码规范与函数接口设计约束（严禁超50行或�
   - 针对继承自开源社区或三方库的存量代码（如 Marlin 运动控制代码、第三方协议栈），以**最小修改预算 (Minimal Diff Budget)** 优先，严禁大范围无关重构或修改已有外部签名。
   - 对于已由上游规范协议正式冻结的跨模块 ABI 公共入口（如固定 5 参数的历史 C 兼容入口），公共包装入口在必须兼容外部调用的同时，其实际实现必须立即委托给符合入参 $\le 4$ 且长度 $\le 50$ 行的静态辅助函数处理。
 
+### 1.4 Linux 用户态第三方中间件 C++ 适配层豁免原则 (Middleware Wrapper Exemption)
+- 针对 SoC-AP Linux 用户态对外封装 Fast DDS、D-Bus 等外部 C++ 中间件库的 SDK 适配层（如 `aisoc_dds`、`aisoc_dbus`）：
+  - **允许最小必要使用外部 C++ 库实体**：允许按第三方库官方 API 规范进行必要实例化与异常捕获（`try-catch`），豁免 `-fno-exceptions` 编译门禁；
+  - **自研层有界硬性配额约束**：自研适配层必须通过严格的原子 CAS 配额机制（如 `AISOC_DDS_MAX_PARTICIPANTS`、`MAX_PUBLISHERS`、`MAX_SUBSCRIBERS`）对实体总量设定硬性上限，并在创建失败时原子回滚，从架构上 100% 杜绝无界泄漏；
+  - **函数规模硬门禁照常执行**：所有自研封装及辅助函数依然 100% 严格执行行数 $\le 50$ 行、入参 $\le 4$ 个、首行防御性空指针校验等门禁要求。
+
 ---
 
 ## 2. 函数接口设计与防御性规范
@@ -89,7 +95,7 @@ description: C/C++ 编码规范与函数接口设计约束（严禁超50行或�
 - **固定位宽类型优先**：源文件必须包含 `<stdint.h>` 与 `<stdbool.h>`（或 C++ `<cstdint>`），统一使用 `uint8_t`、`uint16_t`、`uint32_t`、`int32_t`、`bool` 等位宽明确的类型，杜绝跨平台隐式溢出。
 
 ### 3.4 现代 C++ 裸机轻量化规范 (C with Classes)
-若模块引入 C++（编译选项 `-fno-exceptions -fno-rtti`），必须严格遵循：
+本节严格约束 MCU 裸机固件以及 SoC-AP 核心通信协议序列化与状态机纯自研模块（Linux 用户态第三方中间件 SDK 适配层按第 1.4 节执行豁免）。若模块引入 C++（编译选项 `-fno-exceptions -fno-rtti`），必须严格遵循：
 - **零动态堆内存 (Zero Dynamic Allocation)**：严禁使用 `new`、`delete`、`malloc`、`free` 以及依赖堆的 STL 容器（如 `std::vector`、`std::string`），统一使用定长静态数组、有界视图或栈对象。
 - **禁用异常体系与 RTTI**：禁止使用 `throw`、`try`、`catch` 与 `dynamic_cast`、`typeid`。
 - **显式两阶段初始化**：严禁在全局对象构造函数中操作底层硬件或分配资源，构造函数保持平凡或空实现，统一调用显式的 `init()` 方法。

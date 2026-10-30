@@ -7,7 +7,7 @@
 | **执行角色** | `ENG-DBUS` (D-Bus 通信工程师) |
 | **当前轮次** | `run_03` (针对 Run 02 Codex QA 审计意见全面闭环) |
 | **前置依赖** | `TWIN-02` (`soc-ap: 532caecf3a146802969a49e73081400c2b32b25e`), `TWIN-03` (`test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5`) |
-| **候选 Commit** | `soc-ap: 0e3931fc2597a44cf5789cd4ff21418b228d88dd`, `project-control: <pinned-at-commit>` |
+| **候选 Commit** | `soc-ap: e933078a0c2c31e67e3bf8e21a221f1fb6b2837d`, `project-control: <pinned-at-commit>` |
 | **作者会话 ID** | `bab80130-abdc-443c-9e30-4730e31b82f7` |
 | **执行状态** | **Rework Completed (7套独立测试集命名打标、并发与吞吐基准覆盖、分支规则与远端锁对齐)** |
 
@@ -34,6 +34,10 @@
 - **执行时序与生命周期安全**：将广播信号测试调整到所有 RPC、并发与权限测试完成后执行，避免服务端因收到退出信号提前终止事件循环；
 - **函数行数门禁达标**：将测试套件调用逻辑拆解为 `run_connected_client_suites` 辅助函数，`main` 函数控制在 35 行以内，全模块所有自研函数严格遵守 $\le 50$ 行、$\le 4$ 参数硬门禁。
 
+### 1.3 TWIN06-ARCH-01 (移除 own_prefix 通配并增加未授权名称负例)
+- **策略文件收敛**：从 `session_twin.conf` 和 `org.aisoc.conf` 中彻底移除 `<allow own_prefix="org.aisoc"/>` 通配指令，仅保留 6 个明确获批的服务名（Forward, Device, Hms, UiGateway, JobEngine, StorageService）白名单；
+- **负例用例补齐**：在 `test_client_permission_denial` 中增加对命名空间内未授权服务名 `org.aisoc.UnapprovedService` 的申请拒绝断言，100% 验证精确白名单生效。
+
 ---
 
 ## 2. 交付物清单与 SHA-256 校验码 (Run 03)
@@ -50,10 +54,10 @@
 | `soc-ap/middleware/dbus/examples/server_example.cpp` | 简明服务端示例 (注册 Forward 服务与信号发射) | `0eec65f5be141911e4e16fb9f8e2a8c84efd328581f2bd21c282325db19b4558` |
 | `soc-ap/middleware/dbus/examples/client_example.cpp` | 简明客户端示例 (RPC 远程调用与信号监听) | `30127a238e75ff469ba06b1e7cee04a99c00e0f0bfe86903e9996fc6880d7608` |
 | `soc-ap/middleware/dbus/README.md` | 模块公开 API 架构、接口规范与构建集成指南 | `ab3229bbc2441a7bb09175c0b91521e6a73079f2d4e51267263766d9eb65da9f` |
-| `soc-ap/config/dbus/twin/session_twin.conf` | 严格白名单会话总线配置文件 (默认拒绝所有名称及调用，仅放通 org.aisoc.*) | `e790d570ae3b5ba3fff2f9186d86ad64b1eac9d3ef47b1c2d7d59dd8605a1bac` |
-| `soc-ap/config/dbus/twin/org.aisoc.conf` | 系统总线级策略配置文件 (声明授权通信白名单) | `679a9f3be91c467849b4c31439eb345a7c9eab22cf860d1b50355189406f6817` |
+| `soc-ap/config/dbus/twin/session_twin.conf` | 严格白名单会话总线配置文件 (默认拒绝所有名称及调用，仅放通获批 6 服务) | `95bf44ab20b8feb90c767dceb68bcc8fcee13c20e7380a2590f4a475ac67524a` |
+| `soc-ap/config/dbus/twin/org.aisoc.conf` | 系统总线级策略配置文件 (声明授权通信白名单，无 own_prefix) | `f1359ae1a3af1e171295ea60a27bd1c11893b9861bad76354c3d9ea2bbc74d7d` |
 | `soc-ap/tests/dbus/twin/CMakeLists.txt` | 测试目录独立构建配置 | `06ad077ec9e34dac1a496e96aa7e2c39cd68ee4e45c69547e19ab9b1cd61d88c` |
-| `soc-ap/tests/dbus/twin/test_dbus_ipc.cpp` | 真实三进程 D-Bus IPC 正反例（含 7 套独立测试集、并发吞吐与信号）综合自动化测试套件 | `1bdd0233cc9316cd163fc10fef20d7998ceea5fc519930f603d8a6877ac74f0a` |
+| `soc-ap/tests/dbus/twin/test_dbus_ipc.cpp` | 真实三进程 D-Bus IPC 正反例（含 7 套独立测试集、未授权前缀拒绝、并发吞吐与信号）综合自动化测试套件 | `a6a187fa31e98fbcff5921c48a47995f6c77d3cb3b1da0a892d2762f51f4619e` |
 | `soc-ap/third_party/dbus/README.md` | D-Bus 1.16.2 来源、SHA256、许可证及构建说明 | `2898d82324e54110e6c3a95972ee26af794512a03bbf689043e7f961758315f3` |
 
 ---
