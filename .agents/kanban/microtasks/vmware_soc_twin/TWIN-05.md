@@ -8,13 +8,13 @@ development_stage: vmware-twin
 dispatchable: true
 status: Backlog
 blocked: false
-planning_status: planned-not-dispatched
-owner: null
+planning_status: dispatched
+owner: ENG-DDS
 proposed_owner: ENG-DDS
 executor:
   role: ENG-DDS
-  agent_id: null
-  run_id: null
+  agent_id: ENG-DDS
+  run_id: run_01
 reviewer:
 - QA
 - ARCH
@@ -91,12 +91,14 @@ source_baseline:
   soc-ap: 4445c8fedc21bafef5e6c971fcb54cec703f0e71
   mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
   test_harness: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
-base_commit: null
+base_commit: 6a7864293f95fd44e5d3cc631289bb71489705b7
 candidate_commit: null
 dispatch_binding:
-  source_commit: null
-  workspace_diff_sha256: null
-  consumed_artifact_versions: {}
+  source_commit: 6a7864293f95fd44e5d3cc631289bb71489705b7
+  workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  consumed_artifact_versions:
+    TWIN-02: 532caecf3a146802969a49e73081400c2b32b25e
+    TWIN-03: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
 protocol_input:
   path: project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md
   sha256: 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
@@ -109,8 +111,12 @@ read_sources:
 - project-control/docs/planning/communication_modules_ownership_20261029.md
 - soc-ap/third_party/README.md
 - soc-ap/middleware/README.md
-worktree: null
-lease: null
+worktree: soc-ap
+lease:
+  owner: ENG-DDS
+  task_revision: 2
+  lease_id: lease-twin-05-run01
+  expires_at: '2026-10-30T18:00:00+08:00'
 resources:
 - resource: isolated-worktree-and-build-output
   location: null
@@ -143,7 +149,7 @@ rollback:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行
 handoff:
   receiver_role: COORD
-  receiver_session: null
+  receiver_session: coord-main-session
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-05
   acknowledgement: null
