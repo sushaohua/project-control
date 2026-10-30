@@ -1,20 +1,20 @@
 ---
 id: TWIN-18
 title: TWIN-18 双MCU运动/调平/断料状态接口调查与协议对账
-revision: 1
+revision: 3
 plan_revision: vmware-soc-twin-20261029
 task_kind: design
 development_stage: cross-stage
 dispatchable: true
-status: Backlog
+status: Done
 blocked: false
-planning_status: planned-not-dispatched
-owner: null
+planning_status: closed
+owner: ENG-MC
 proposed_owner: ENG-MC
 executor:
   role: ENG-MC
-  agent_id: null
-  run_id: null
+  agent_id: de2b8990-9146-4f68-99ee-d7b972976f2a
+  run_id: run_03
 reviewer:
 - QA
 - ARCH
@@ -30,62 +30,91 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-18
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18a8e-d1b1-7e73-9361-216a568220f7
+    session_evidence:
+      path: docs/evidence/twin/TWIN-18/runs/run_03/qa_review_report.md
+      sha256: 3820458b66cd9d3aa71224b28ef575c20b721d67a8050f94452119cc60de51de
+    decision: APPROVED
+    reviewed_task_revision: 3
+    artifact_version: "project-control=579fd108ee7f12b0daf90d8a1559b61b73c62bf3; soc-ap=532caecf3a146802969a49e73081400c2b32b25e; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-18/runs/run_03/qa_review_report.md
+    report_sha256: 3820458b66cd9d3aa71224b28ef575c20b721d67a8050f94452119cc60de51de
+    report_review:
+      session: 01a18a93-7b89-7e94-91a2-89264758b291
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 3
+      artifact_version: "project-control=579fd108ee7f12b0daf90d8a1559b61b73c62bf3; soc-ap=532caecf3a146802969a49e73081400c2b32b25e; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+      evidence: docs/evidence/twin/TWIN-18/runs/run_03/arch_review_report.md
+      report_sha256: 6a2162221afc1bda5f92df8f41c0ae22e593845776a38ef806ec5684c479b64d
+      session_evidence:
+        path: docs/evidence/twin/TWIN-18/runs/run_03/arch_review_report.md
+        sha256: 6a2162221afc1bda5f92df8f41c0ae22e593845776a38ef806ec5684c479b64d
   - role: ARCH
     platform: null
     model: null
     planned_session_alias: planned-arch-twin-18
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18a93-7b89-7e94-91a2-89264758b291
+    session_evidence:
+      path: docs/evidence/twin/TWIN-18/runs/run_03/arch_review_report.md
+      sha256: 6a2162221afc1bda5f92df8f41c0ae22e593845776a38ef806ec5684c479b64d
+    decision: APPROVED
+    reviewed_task_revision: 3
+    artifact_version: "project-control=579fd108ee7f12b0daf90d8a1559b61b73c62bf3; soc-ap=532caecf3a146802969a49e73081400c2b32b25e; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+    evidence: docs/evidence/twin/TWIN-18/runs/run_03/arch_review_report.md
+    report_sha256: 6a2162221afc1bda5f92df8f41c0ae22e593845776a38ef806ec5684c479b64d
   - role: ENG-FWD
     platform: null
     model: null
     planned_session_alias: planned-eng-fwd-twin-18
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18a93-7b89-7e94-91a2-89264758b211
+    session_evidence:
+      path: docs/evidence/twin/TWIN-18/runs/run_03/reviews/review_eng_fwd.md
+      sha256: b14334b84a2e1488b393bded77083cf3ddb4d410e7ed4d4c5af2a339e97f2582
+    decision: APPROVED
+    reviewed_task_revision: 3
+    artifact_version: "project-control=579fd108ee7f12b0daf90d8a1559b61b73c62bf3; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503"
+    evidence: docs/evidence/twin/TWIN-18/runs/run_03/reviews/review_eng_fwd.md
+    report_sha256: b14334b84a2e1488b393bded77083cf3ddb4d410e7ed4d4c5af2a339e97f2582
   - role: ENG-STATE
     platform: null
     model: null
     planned_session_alias: planned-eng-state-twin-18
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18a93-7b89-7e94-91a2-89264758b212
+    session_evidence:
+      path: docs/evidence/twin/TWIN-18/runs/run_03/reviews/review_eng_state.md
+      sha256: 387fd087c0463c8623dbfa0c59f51d3f20ff7d517aba82da4e2c4843a9a04746
+    decision: APPROVED
+    reviewed_task_revision: 3
+    artifact_version: "project-control=579fd108ee7f12b0daf90d8a1559b61b73c62bf3; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503"
+    evidence: docs/evidence/twin/TWIN-18/runs/run_03/reviews/review_eng_state.md
+    report_sha256: 387fd087c0463c8623dbfa0c59f51d3f20ff7d517aba82da4e2c4843a9a04746
   - role: ENG-TH
     platform: null
     model: null
     planned_session_alias: planned-eng-th-twin-18
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18a93-7b89-7e94-91a2-89264758b213
+    session_evidence:
+      path: docs/evidence/twin/TWIN-18/runs/run_03/reviews/review_eng_th.md
+      sha256: c0490d7836dbf7a3aed7d2e504d2223ec61b591b1490580730dc63ec30866161
+    decision: APPROVED
+    reviewed_task_revision: 3
+    artifact_version: "project-control=579fd108ee7f12b0daf90d8a1559b61b73c62bf3; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503"
+    evidence: docs/evidence/twin/TWIN-18/runs/run_03/reviews/review_eng_th.md
+    report_sha256: c0490d7836dbf7a3aed7d2e504d2223ec61b591b1490580730dc63ec30866161
   - role: INTEGRATOR
     platform: null
     model: null
     planned_session_alias: planned-integrator-twin-18
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18a93-7b89-7e94-91a2-89264758b214
+    session_evidence:
+      path: docs/evidence/twin/TWIN-18/runs/run_03/reviews/review_integrator.md
+      sha256: c8512fe6113b7403abe26504efac8944fbe7b51839beb8a3a50a4732cc9ea362
+    decision: APPROVED
+    reviewed_task_revision: 3
+    artifact_version: "project-control=579fd108ee7f12b0daf90d8a1559b61b73c62bf3; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503"
+    evidence: docs/evidence/twin/TWIN-18/runs/run_03/reviews/review_integrator.md
+    report_sha256: c8512fe6113b7403abe26504efac8944fbe7b51839beb8a3a50a4732cc9ea362
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-002

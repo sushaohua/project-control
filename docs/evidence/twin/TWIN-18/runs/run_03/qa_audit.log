@@ -1,0 +1,3387 @@
+Independent reviewer audit transcript (run_03)
+Fresh repositories: /tmp/twin18_run03_fresh.oHnNbf; independent metadata/object stores.
+=== project-control ===
+origin advertised refs/heads/main:
+579fd108ee7f12b0daf90d8a1559b61b73c62bf3	refs/heads/main
+origin fetch exact 579fd108ee7f12b0daf90d8a1559b61b73c62bf3:
+From ssh://192.168.77.113:2222/sushaohua/project-control
+ * branch            579fd108ee7f12b0daf90d8a1559b61b73c62bf3 -> FETCH_HEAD
+FETCH_HEAD=579fd108ee7f12b0daf90d8a1559b61b73c62bf3
+HEAD=579fd108ee7f12b0daf90d8a1559b61b73c62bf3
+=== soc-ap ===
+origin advertised refs/heads/main:
+532caecf3a146802969a49e73081400c2b32b25e	refs/heads/main
+origin fetch exact 532caecf3a146802969a49e73081400c2b32b25e:
+From ssh://192.168.77.113:2222/sushaohua/soc-ap
+ * branch            532caecf3a146802969a49e73081400c2b32b25e -> FETCH_HEAD
+FETCH_HEAD=532caecf3a146802969a49e73081400c2b32b25e
+HEAD=532caecf3a146802969a49e73081400c2b32b25e
+=== mcu-p3 ===
+origin advertised refs/heads/main:
+cb9340173b16473c894999b32b17a1937a1a6c59	refs/heads/main
+origin fetch exact 1246ea9cb441d074ea444f53320f5632fefcd503:
+From ssh://192.168.77.113:2222/sushaohua/mcu-p3
+ * branch            1246ea9cb441d074ea444f53320f5632fefcd503 -> FETCH_HEAD
+FETCH_HEAD=1246ea9cb441d074ea444f53320f5632fefcd503
+HEAD=1246ea9cb441d074ea444f53320f5632fefcd503
+=== test_harness ===
+origin advertised refs/heads/main:
+210ddd1c3f6f59594836c91b68aae55fb7a35181	refs/heads/main
+origin fetch exact 210ddd1c3f6f59594836c91b68aae55fb7a35181:
+From ssh://192.168.77.113:2222/sushaohua/test_harness
+ * branch            210ddd1c3f6f59594836c91b68aae55fb7a35181 -> FETCH_HEAD
+FETCH_HEAD=210ddd1c3f6f59594836c91b68aae55fb7a35181
+HEAD=210ddd1c3f6f59594836c91b68aae55fb7a35181
+=== candidate lineage ===
+1c389 ancestor of project-control 579fd: yes
+survey blob at 1c389: b59884f67332025a2936c5b3762ef32b3f62570c
+survey blob at 579fd: b59884f67332025a2936c5b3762ef32b3f62570c
+=== document hashes ===
+596b4e84252fd71332865663a31187d40e5826ab345712bec34d40eca1f2f4ea  /tmp/twin18_run03_fresh.oHnNbf/project-control/docs/specs/mcu_motion_leveling_filament_interface_survey_20261029.md
+51041871dfe3af1ebfb96481e8771b7027312f0002f0576f5be2aacb7dd01972  /tmp/twin18_run03_fresh.oHnNbf/project-control/docs/evidence/twin/TWIN-18/runs/run_03/result.md
+=== task graph stdout ===
+{
+  "scope": "static planning validation, not execution/approval/QA acceptance",
+  "canonical_task_count": 108,
+  "microtask_count": 66,
+  "errors": [],
+  "dependency_cycles": [],
+  "shared_write_pairs": [
+    {
+      "tasks": [
+        "CR-00",
+        "CR-08"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-09"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-10"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-12"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "CR-11"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P01A"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P01B"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P02C"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "TEMP-01"
+      ],
+      "paths": [
+        "project-control/docs/interfaces/**",
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "TWIN-01"
+      ],
+      "paths": [
+        "project-control/docs/interfaces/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-03",
+        "CR-11"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-03",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P02A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P02B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03C"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03D"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt",
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TEMP-04"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt",
+        "soc-ap/core/forward/**",
+        "soc-ap/core/host/**",
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-05"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-06"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-07"
+      ],
+      "paths": [
+        "soc-ap/core/host/**",
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-08"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-09"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-10"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "MCQ-0105"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/inc/wk_usart.*",
+        "mcu-p3/motion-controller-mcu/project/src/main.c",
+        "mcu-p3/motion-controller-mcu/project/src/memu_gui.c",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/inc/wk_usart.*",
+        "mcu-p3/motion-controller-mcu/project/src/main.c",
+        "mcu-p3/motion-controller-mcu/project/src/memu_gui.c",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TEMP-02"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-07",
+        "MCQ-0105"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-07",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.*",
+        "mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-11",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**",
+        "project-control/docs/handoff/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-01",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/delivery_checks.py",
+        "project-control/tools/qa_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-02",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/coord_queue.py",
+        "project-control/tools/coord_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03E",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04C",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P0506",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P0506",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05A",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-01",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_telemetry.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-01",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/io_toggle/inc/minimc_telemetry.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-02",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/io_toggle/inc/thermistor_adc.h",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/thermistor_adc.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-03",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P02A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03C"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "TWIN-07"
+      ],
+      "paths": [
+        "soc-ap/core/host/query.cpp",
+        "soc-ap/core/host/query.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-02",
+        "TWIN-17"
+      ],
+      "paths": [
+        "soc-ap/contracts/twin/**"
+      ],
+      "dependency_ordered": true
+    }
+  ],
+  "readiness_blockers": {
+    "CR-00": [
+      "lease has expired"
+    ],
+    "CR-01": [
+      "lease has expired"
+    ],
+    "CR-02": [
+      "lease has expired"
+    ],
+    "CR-02Q": [
+      "lease has expired"
+    ],
+    "CR-02T": [
+      "lease has expired"
+    ],
+    "CR-03": [
+      "lease has expired"
+    ],
+    "CR-04": [
+      "lease has expired"
+    ],
+    "CR-05": [
+      "lease has expired"
+    ],
+    "CR-06": [
+      "lease has expired"
+    ],
+    "CR-07": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "CR-00 accepted deliverable/version is not bound",
+      "CR-00 acceptance evidence path is missing",
+      "CR-05 accepted deliverable/version is not bound",
+      "CR-05 acceptance evidence path is missing"
+    ],
+    "CR-08": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-09": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-10": [
+      "actual owner/executor is not assigned consistently",
+      "author cannot be own independent reviewer",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-11": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-12": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "CR-00 accepted deliverable/version is not bound",
+      "CR-00 acceptance evidence path is missing"
+    ],
+    "AUTO-01": [
+      "lease has expired"
+    ],
+    "AUTO-02": [
+      "lease has expired"
+    ],
+    "MCQ-0105": [
+      "actual worktree/working directory is not bound",
+      "lease has expired"
+    ],
+    "MCQ-0106": [
+      "task is marked blocked",
+      "actual worktree/working directory is not bound",
+      "lease has expired"
+    ],
+    "V2-P01A": [
+      "lease has expired"
+    ],
+    "V2-P01B": [
+      "lease has expired"
+    ],
+    "V2-P01C": [
+      "lease has expired"
+    ],
+    "V2-P01D": [
+      "lease has expired"
+    ],
+    "V2-P02A": [
+      "lease has expired"
+    ],
+    "V2-P02B": [
+      "lease has expired"
+    ],
+    "V2-P02C": [
+      "lease has expired"
+    ],
+    "V2-P03A": [
+      "lease has expired"
+    ],
+    "V2-P03B": [
+      "lease has expired"
+    ],
+    "V2-P03C": [
+      "lease has expired"
+    ],
+    "V2-P03D": [
+      "lease has expired"
+    ],
+    "V2-P03E": [
+      "lease has expired"
+    ],
+    "V2-P03F": [
+      "lease has expired"
+    ],
+    "V2-P04A": [
+      "lease has expired"
+    ],
+    "V2-P04B": [
+      "lease has expired"
+    ],
+    "V2-P04C": [
+      "lease has expired"
+    ],
+    "V2-P04D": [
+      "lease has expired"
+    ],
+    "V2-P0506": [
+      "lease has expired"
+    ],
+    "V2-P05A": [
+      "lease has expired"
+    ],
+    "V2-P05B": [
+      "lease has expired"
+    ],
+    "TEMP-01": [
+      "lease has expired"
+    ],
+    "TEMP-02": [
+      "lease has expired",
+      "TEMP-01 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-01/runs/run_01/result.md"
+    ],
+    "TEMP-03": [
+      "lease has expired",
+      "TEMP-01 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-01/runs/run_01/result.md"
+    ],
+    "TEMP-04": [
+      "lease has expired",
+      "TEMP-01 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-01/runs/run_01/result.md"
+    ],
+    "TEMP-05": [
+      "lease has expired",
+      "TEMP-02 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-02/runs/run_01/result.md",
+      "TEMP-03 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-03/runs/run_01/result.md",
+      "TEMP-04 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-04/runs/run_01/result.md"
+    ],
+    "TEMP-06": [
+      "lease has expired",
+      "TEMP-05 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-05/runs/run_01/result.md"
+    ],
+    "TEMP-07": [
+      "lease has expired",
+      "TEMP-06 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-06/runs/run_01/result.md"
+    ],
+    "TWIN-01": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "CR-11 accepted deliverable/version is not bound",
+      "CR-11 acceptance evidence path is missing"
+    ],
+    "TWIN-02": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-03": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-04": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-05": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing"
+    ],
+    "TWIN-06": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing"
+    ],
+    "TWIN-07": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-05 is not Done",
+      "TWIN-05 accepted deliverable/version is not bound",
+      "TWIN-05 acceptance evidence path is missing",
+      "TWIN-06 is not Done",
+      "TWIN-06 accepted deliverable/version is not bound",
+      "TWIN-06 acceptance evidence path is missing",
+      "TEMP-04 accepted deliverable/version is not bound",
+      "TEMP-04 acceptance evidence path is missing"
+    ],
+    "TWIN-08": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-05 is not Done",
+      "TWIN-05 accepted deliverable/version is not bound",
+      "TWIN-05 acceptance evidence path is missing",
+      "TWIN-06 is not Done",
+      "TWIN-06 accepted deliverable/version is not bound",
+      "TWIN-06 acceptance evidence path is missing"
+    ],
+    "TWIN-09": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-05 is not Done",
+      "TWIN-05 accepted deliverable/version is not bound",
+      "TWIN-05 acceptance evidence path is missing",
+      "TWIN-06 is not Done",
+      "TWIN-06 accepted deliverable/version is not bound",
+      "TWIN-06 acceptance evidence path is missing"
+    ],
+    "TWIN-10": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-09 is not Done",
+      "TWIN-09 accepted deliverable/version is not bound",
+      "TWIN-09 acceptance evidence path is missing"
+    ],
+    "TWIN-11": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-04 is not Done",
+      "TWIN-04 accepted deliverable/version is not bound",
+      "TWIN-04 acceptance evidence path is missing",
+      "TWIN-07 is not Done",
+      "TWIN-07 accepted deliverable/version is not bound",
+      "TWIN-07 acceptance evidence path is missing",
+      "TWIN-08 is not Done",
+      "TWIN-08 accepted deliverable/version is not bound",
+      "TWIN-08 acceptance evidence path is missing",
+      "TWIN-09 is not Done",
+      "TWIN-09 accepted deliverable/version is not bound",
+      "TWIN-09 acceptance evidence path is missing",
+      "TWIN-10 is not Done",
+      "TWIN-10 accepted deliverable/version is not bound",
+      "TWIN-10 acceptance evidence path is missing",
+      "TWIN-15 is not Done",
+      "TWIN-15 accepted deliverable/version is not bound",
+      "TWIN-15 acceptance evidence path is missing",
+      "TWIN-16 is not Done",
+      "TWIN-16 accepted deliverable/version is not bound",
+      "TWIN-16 acceptance evidence path is missing"
+    ],
+    "TWIN-12": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-11 is not Done",
+      "TWIN-11 accepted deliverable/version is not bound",
+      "TWIN-11 acceptance evidence path is missing"
+    ],
+    "TWIN-13": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-04 is not Done",
+      "TWIN-04 accepted deliverable/version is not bound",
+      "TWIN-04 acceptance evidence path is missing",
+      "TWIN-12 is not Done",
+      "TWIN-12 accepted deliverable/version is not bound",
+      "TWIN-12 acceptance evidence path is missing"
+    ],
+    "TWIN-14": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-12 is not Done",
+      "TWIN-12 accepted deliverable/version is not bound",
+      "TWIN-12 acceptance evidence path is missing",
+      "TWIN-13 is not Done",
+      "TWIN-13 accepted deliverable/version is not bound",
+      "TWIN-13 acceptance evidence path is missing"
+    ],
+    "TWIN-15": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TEMP-03 accepted deliverable/version is not bound",
+      "TEMP-03 acceptance evidence path is missing"
+    ],
+    "TWIN-16": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TEMP-02 accepted deliverable/version is not bound",
+      "TEMP-02 acceptance evidence path is missing"
+    ],
+    "TWIN-17": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-18": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-19": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-20": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ]
+  },
+  "card_paths": {
+    "CR-00": ".agents/kanban/microtasks/cascade_recovery/CR-00.md",
+    "CR-01": ".agents/kanban/microtasks/cascade_recovery/CR-01.md",
+    "CR-02": ".agents/kanban/microtasks/cascade_recovery/CR-02.md",
+    "CR-02Q": ".agents/kanban/microtasks/cascade_recovery/CR-02Q.md",
+    "CR-02T": ".agents/kanban/microtasks/cascade_recovery/CR-02T.md",
+    "CR-03": ".agents/kanban/microtasks/cascade_recovery/CR-03.md",
+    "CR-04": ".agents/kanban/microtasks/cascade_recovery/CR-04.md",
+    "CR-05": ".agents/kanban/microtasks/cascade_recovery/CR-05.md",
+    "CR-06": ".agents/kanban/microtasks/cascade_recovery/CR-06.md",
+    "CR-07": ".agents/kanban/microtasks/cascade_recovery/CR-07.md",
+    "CR-08": ".agents/kanban/microtasks/cascade_recovery/CR-08.md",
+    "CR-09": ".agents/kanban/microtasks/cascade_recovery/CR-09.md",
+    "CR-10": ".agents/kanban/microtasks/cascade_recovery/CR-10.md",
+    "CR-11": ".agents/kanban/microtasks/cascade_recovery/CR-11.md",
+    "CR-12": ".agents/kanban/microtasks/cascade_recovery/CR-12.md",
+    "AUTO-01": ".agents/kanban/microtasks/coord_automation/AUTO-01.md",
+    "AUTO-02": ".agents/kanban/microtasks/coord_automation/AUTO-02.md",
+    "MCQ-0105": ".agents/kanban/microtasks/mc_firmware/MCQ-0105.md",
+    "MCQ-0106": ".agents/kanban/microtasks/mc_firmware/MCQ-0106.md",
+    "V2-P01A": ".agents/kanban/microtasks/minimc_v2/V2-P01A.md",
+    "V2-P01B": ".agents/kanban/microtasks/minimc_v2/V2-P01B.md",
+    "V2-P01C": ".agents/kanban/microtasks/minimc_v2/V2-P01C.md",
+    "V2-P01D": ".agents/kanban/microtasks/minimc_v2/V2-P01D.md",
+    "V2-P02A": ".agents/kanban/microtasks/minimc_v2/V2-P02A.md",
+    "V2-P02B": ".agents/kanban/microtasks/minimc_v2/V2-P02B.md",
+    "V2-P02C": ".agents/kanban/microtasks/minimc_v2/V2-P02C.md",
+    "V2-P03A": ".agents/kanban/microtasks/minimc_v2/V2-P03A.md",
+    "V2-P03B": ".agents/kanban/microtasks/minimc_v2/V2-P03B.md",
+    "V2-P03C": ".agents/kanban/microtasks/minimc_v2/V2-P03C.md",
+    "V2-P03D": ".agents/kanban/microtasks/minimc_v2/V2-P03D.md",
+    "V2-P03E": ".agents/kanban/microtasks/minimc_v2/V2-P03E.md",
+    "V2-P03F": ".agents/kanban/microtasks/minimc_v2/V2-P03F.md",
+    "V2-P04A": ".agents/kanban/microtasks/minimc_v2/V2-P04A.md",
+    "V2-P04B": ".agents/kanban/microtasks/minimc_v2/V2-P04B.md",
+    "V2-P04C": ".agents/kanban/microtasks/minimc_v2/V2-P04C.md",
+    "V2-P04D": ".agents/kanban/microtasks/minimc_v2/V2-P04D.md",
+    "V2-P0506": ".agents/kanban/microtasks/minimc_v2/V2-P0506.md",
+    "V2-P05A": ".agents/kanban/microtasks/minimc_v2/V2-P05A.md",
+    "V2-P05B": ".agents/kanban/microtasks/minimc_v2/V2-P05B.md",
+    "TEMP-01": ".agents/kanban/microtasks/temperature_telemetry/TEMP-01.md",
+    "TEMP-02": ".agents/kanban/microtasks/temperature_telemetry/TEMP-02.md",
+    "TEMP-03": ".agents/kanban/microtasks/temperature_telemetry/TEMP-03.md",
+    "TEMP-04": ".agents/kanban/microtasks/temperature_telemetry/TEMP-04.md",
+    "TEMP-05": ".agents/kanban/microtasks/temperature_telemetry/TEMP-05.md",
+    "TEMP-06": ".agents/kanban/microtasks/temperature_telemetry/TEMP-06.md",
+    "TEMP-07": ".agents/kanban/microtasks/temperature_telemetry/TEMP-07.md",
+    "TWIN-01": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-01.md",
+    "TWIN-02": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-02.md",
+    "TWIN-03": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-03.md",
+    "TWIN-04": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-04.md",
+    "TWIN-05": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-05.md",
+    "TWIN-06": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-06.md",
+    "TWIN-07": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-07.md",
+    "TWIN-08": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-08.md",
+    "TWIN-09": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-09.md",
+    "TWIN-10": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-10.md",
+    "TWIN-11": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-11.md",
+    "TWIN-12": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-12.md",
+    "TWIN-13": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-13.md",
+    "TWIN-14": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-14.md",
+    "TWIN-15": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-15.md",
+    "TWIN-16": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-16.md",
+    "TWIN-17": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-17.md",
+    "TWIN-18": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-18.md",
+    "TWIN-19": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-19.md",
+    "TWIN-20": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-20.md",
+    "MS-01": ".agents/kanban/milestones/marlin_ms01_20261007_214108.md",
+    "MS-02": ".agents/kanban/milestones/marlin_ms02_20261007_214108.md",
+    "MS-03": ".agents/kanban/milestones/marlin_ms03_20261007_214108.md",
+    "MS-04": ".agents/kanban/milestones/marlin_ms04_20261007_214108.md",
+    "MS-05": ".agents/kanban/milestones/marlin_ms05_20261007_214108.md",
+    "MS-06": ".agents/kanban/milestones/marlin_ms06_20261007_214108.md",
+    "MS-07": ".agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+    "MS-08": ".agents/kanban/milestones/marlin_ms08_20261007_214108.md",
+    "MS-09": ".agents/kanban/milestones/marlin_ms09_20261007_214108.md",
+    "MS-10": ".agents/kanban/milestones/marlin_ms10_20261007_214108.md",
+    "MS-11": ".agents/kanban/milestones/marlin_ms11_20261007_214108.md",
+    "MS-12": ".agents/kanban/milestones/marlin_ms12_20261007_214108.md",
+    "MS-13": ".agents/kanban/milestones/marlin_ms13_20261007_214108.md",
+    "MS-14": ".agents/kanban/milestones/marlin_ms14_20261007_214108.md",
+    "MS-15": ".agents/kanban/milestones/marlin_ms15_20261007_214108.md",
+    "MS-16": ".agents/kanban/milestones/marlin_ms16_20261007_214108.md",
+    "MS-17": ".agents/kanban/milestones/marlin_ms17_20261007_214108.md",
+    "MS-18": ".agents/kanban/milestones/marlin_ms18_20261008_083854.md",
+    "MS-19": ".agents/kanban/milestones/marlin_ms19_20261008_083854.md",
+    "MS-20": ".agents/kanban/milestones/marlin_ms20_20261008_083854.md",
+    "MS-21": ".agents/kanban/milestones/marlin_ms21_20261008_083854.md",
+    "MS-22": ".agents/kanban/milestones/marlin_ms22_20261008_083854.md",
+    "PL-01": "docs/planning/product/product_pl01_20261008_083854.md",
+    "PL-02": "docs/planning/product/product_pl02_20261008_083854.md",
+    "TASK-001": "docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md",
+    "TASK-002": "docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md",
+    "TASK-003": "docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md",
+    "TASK-004": "docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+    "TASK-005": "docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+    "TASK-006": "docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md",
+    "TASK-007": "docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md",
+    "TASK-008": "docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md",
+    "TASK-009": "docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md",
+    "TASK-010": "docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+    "TASK-011": "docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md",
+    "TASK-012": "docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md",
+    "TASK-013": "docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md",
+    "TASK-014": "docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md",
+    "TASK-015": "docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md",
+    "TASK-016": "docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md",
+    "TASK-017": "docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md",
+    "TASK-018": "docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md"
+  },
+  "exit_code": 0
+}
+=== task graph --check-done stdout (exit 1 expected pending reviewers) ===
+{
+  "scope": "static planning validation, not execution/approval/QA acceptance",
+  "canonical_task_count": 108,
+  "microtask_count": 66,
+  "errors": [],
+  "dependency_cycles": [],
+  "shared_write_pairs": [
+    {
+      "tasks": [
+        "CR-00",
+        "CR-08"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-09"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-10"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-12"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "CR-11"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P01A"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P01B"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P02C"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "TEMP-01"
+      ],
+      "paths": [
+        "project-control/docs/interfaces/**",
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "TWIN-01"
+      ],
+      "paths": [
+        "project-control/docs/interfaces/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-03",
+        "CR-11"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-03",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P02A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P02B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03C"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03D"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt",
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TEMP-04"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt",
+        "soc-ap/core/forward/**",
+        "soc-ap/core/host/**",
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-05"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-06"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-07"
+      ],
+      "paths": [
+        "soc-ap/core/host/**",
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-08"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-09"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-10"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "MCQ-0105"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/inc/wk_usart.*",
+        "mcu-p3/motion-controller-mcu/project/src/main.c",
+        "mcu-p3/motion-controller-mcu/project/src/memu_gui.c",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/inc/wk_usart.*",
+        "mcu-p3/motion-controller-mcu/project/src/main.c",
+        "mcu-p3/motion-controller-mcu/project/src/memu_gui.c",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TEMP-02"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-07",
+        "MCQ-0105"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-07",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.*",
+        "mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-11",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**",
+        "project-control/docs/handoff/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-01",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/delivery_checks.py",
+        "project-control/tools/qa_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-02",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/coord_queue.py",
+        "project-control/tools/coord_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03E",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04C",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P0506",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P0506",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05A",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-01",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_telemetry.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-01",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/io_toggle/inc/minimc_telemetry.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-02",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/io_toggle/inc/thermistor_adc.h",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/thermistor_adc.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-03",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P02A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03C"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "TWIN-07"
+      ],
+      "paths": [
+        "soc-ap/core/host/query.cpp",
+        "soc-ap/core/host/query.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-02",
+        "TWIN-17"
+      ],
+      "paths": [
+        "soc-ap/contracts/twin/**"
+      ],
+      "dependency_ordered": true
+    }
+  ],
+  "readiness_blockers": {
+    "CR-00": [
+      "lease has expired"
+    ],
+    "CR-01": [
+      "lease has expired"
+    ],
+    "CR-02": [
+      "lease has expired"
+    ],
+    "CR-02Q": [
+      "lease has expired"
+    ],
+    "CR-02T": [
+      "lease has expired"
+    ],
+    "CR-03": [
+      "lease has expired"
+    ],
+    "CR-04": [
+      "lease has expired"
+    ],
+    "CR-05": [
+      "lease has expired"
+    ],
+    "CR-06": [
+      "lease has expired"
+    ],
+    "CR-07": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "CR-00 accepted deliverable/version is not bound",
+      "CR-00 acceptance evidence path is missing",
+      "CR-05 accepted deliverable/version is not bound",
+      "CR-05 acceptance evidence path is missing"
+    ],
+    "CR-08": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-09": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-10": [
+      "actual owner/executor is not assigned consistently",
+      "author cannot be own independent reviewer",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-11": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-12": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "CR-00 accepted deliverable/version is not bound",
+      "CR-00 acceptance evidence path is missing"
+    ],
+    "AUTO-01": [
+      "lease has expired"
+    ],
+    "AUTO-02": [
+      "lease has expired"
+    ],
+    "MCQ-0105": [
+      "actual worktree/working directory is not bound",
+      "lease has expired"
+    ],
+    "MCQ-0106": [
+      "task is marked blocked",
+      "actual worktree/working directory is not bound",
+      "lease has expired"
+    ],
+    "V2-P01A": [
+      "lease has expired"
+    ],
+    "V2-P01B": [
+      "lease has expired"
+    ],
+    "V2-P01C": [
+      "lease has expired"
+    ],
+    "V2-P01D": [
+      "lease has expired"
+    ],
+    "V2-P02A": [
+      "lease has expired"
+    ],
+    "V2-P02B": [
+      "lease has expired"
+    ],
+    "V2-P02C": [
+      "lease has expired"
+    ],
+    "V2-P03A": [
+      "lease has expired"
+    ],
+    "V2-P03B": [
+      "lease has expired"
+    ],
+    "V2-P03C": [
+      "lease has expired"
+    ],
+    "V2-P03D": [
+      "lease has expired"
+    ],
+    "V2-P03E": [
+      "lease has expired"
+    ],
+    "V2-P03F": [
+      "lease has expired"
+    ],
+    "V2-P04A": [
+      "lease has expired"
+    ],
+    "V2-P04B": [
+      "lease has expired"
+    ],
+    "V2-P04C": [
+      "lease has expired"
+    ],
+    "V2-P04D": [
+      "lease has expired"
+    ],
+    "V2-P0506": [
+      "lease has expired"
+    ],
+    "V2-P05A": [
+      "lease has expired"
+    ],
+    "V2-P05B": [
+      "lease has expired"
+    ],
+    "TEMP-01": [
+      "lease has expired"
+    ],
+    "TEMP-02": [
+      "lease has expired",
+      "TEMP-01 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-01/runs/run_01/result.md"
+    ],
+    "TEMP-03": [
+      "lease has expired",
+      "TEMP-01 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-01/runs/run_01/result.md"
+    ],
+    "TEMP-04": [
+      "lease has expired",
+      "TEMP-01 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-01/runs/run_01/result.md"
+    ],
+    "TEMP-05": [
+      "lease has expired",
+      "TEMP-02 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-02/runs/run_01/result.md",
+      "TEMP-03 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-03/runs/run_01/result.md",
+      "TEMP-04 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-04/runs/run_01/result.md"
+    ],
+    "TEMP-06": [
+      "lease has expired",
+      "TEMP-05 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-05/runs/run_01/result.md"
+    ],
+    "TEMP-07": [
+      "lease has expired",
+      "TEMP-06 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-06/runs/run_01/result.md"
+    ],
+    "TWIN-01": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "CR-11 accepted deliverable/version is not bound",
+      "CR-11 acceptance evidence path is missing"
+    ],
+    "TWIN-02": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-03": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-04": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-05": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing"
+    ],
+    "TWIN-06": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing"
+    ],
+    "TWIN-07": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-05 is not Done",
+      "TWIN-05 accepted deliverable/version is not bound",
+      "TWIN-05 acceptance evidence path is missing",
+      "TWIN-06 is not Done",
+      "TWIN-06 accepted deliverable/version is not bound",
+      "TWIN-06 acceptance evidence path is missing",
+      "TEMP-04 accepted deliverable/version is not bound",
+      "TEMP-04 acceptance evidence path is missing"
+    ],
+    "TWIN-08": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-05 is not Done",
+      "TWIN-05 accepted deliverable/version is not bound",
+      "TWIN-05 acceptance evidence path is missing",
+      "TWIN-06 is not Done",
+      "TWIN-06 accepted deliverable/version is not bound",
+      "TWIN-06 acceptance evidence path is missing"
+    ],
+    "TWIN-09": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-05 is not Done",
+      "TWIN-05 accepted deliverable/version is not bound",
+      "TWIN-05 acceptance evidence path is missing",
+      "TWIN-06 is not Done",
+      "TWIN-06 accepted deliverable/version is not bound",
+      "TWIN-06 acceptance evidence path is missing"
+    ],
+    "TWIN-10": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-09 is not Done",
+      "TWIN-09 accepted deliverable/version is not bound",
+      "TWIN-09 acceptance evidence path is missing"
+    ],
+    "TWIN-11": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-04 is not Done",
+      "TWIN-04 accepted deliverable/version is not bound",
+      "TWIN-04 acceptance evidence path is missing",
+      "TWIN-07 is not Done",
+      "TWIN-07 accepted deliverable/version is not bound",
+      "TWIN-07 acceptance evidence path is missing",
+      "TWIN-08 is not Done",
+      "TWIN-08 accepted deliverable/version is not bound",
+      "TWIN-08 acceptance evidence path is missing",
+      "TWIN-09 is not Done",
+      "TWIN-09 accepted deliverable/version is not bound",
+      "TWIN-09 acceptance evidence path is missing",
+      "TWIN-10 is not Done",
+      "TWIN-10 accepted deliverable/version is not bound",
+      "TWIN-10 acceptance evidence path is missing",
+      "TWIN-15 is not Done",
+      "TWIN-15 accepted deliverable/version is not bound",
+      "TWIN-15 acceptance evidence path is missing",
+      "TWIN-16 is not Done",
+      "TWIN-16 accepted deliverable/version is not bound",
+      "TWIN-16 acceptance evidence path is missing"
+    ],
+    "TWIN-12": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-11 is not Done",
+      "TWIN-11 accepted deliverable/version is not bound",
+      "TWIN-11 acceptance evidence path is missing"
+    ],
+    "TWIN-13": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-04 is not Done",
+      "TWIN-04 accepted deliverable/version is not bound",
+      "TWIN-04 acceptance evidence path is missing",
+      "TWIN-12 is not Done",
+      "TWIN-12 accepted deliverable/version is not bound",
+      "TWIN-12 acceptance evidence path is missing"
+    ],
+    "TWIN-14": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-12 is not Done",
+      "TWIN-12 accepted deliverable/version is not bound",
+      "TWIN-12 acceptance evidence path is missing",
+      "TWIN-13 is not Done",
+      "TWIN-13 accepted deliverable/version is not bound",
+      "TWIN-13 acceptance evidence path is missing"
+    ],
+    "TWIN-15": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TEMP-03 accepted deliverable/version is not bound",
+      "TEMP-03 acceptance evidence path is missing"
+    ],
+    "TWIN-16": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TEMP-02 accepted deliverable/version is not bound",
+      "TEMP-02 acceptance evidence path is missing"
+    ],
+    "TWIN-17": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-18": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-19": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-20": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ]
+  },
+  "card_paths": {
+    "CR-00": ".agents/kanban/microtasks/cascade_recovery/CR-00.md",
+    "CR-01": ".agents/kanban/microtasks/cascade_recovery/CR-01.md",
+    "CR-02": ".agents/kanban/microtasks/cascade_recovery/CR-02.md",
+    "CR-02Q": ".agents/kanban/microtasks/cascade_recovery/CR-02Q.md",
+    "CR-02T": ".agents/kanban/microtasks/cascade_recovery/CR-02T.md",
+    "CR-03": ".agents/kanban/microtasks/cascade_recovery/CR-03.md",
+    "CR-04": ".agents/kanban/microtasks/cascade_recovery/CR-04.md",
+    "CR-05": ".agents/kanban/microtasks/cascade_recovery/CR-05.md",
+    "CR-06": ".agents/kanban/microtasks/cascade_recovery/CR-06.md",
+    "CR-07": ".agents/kanban/microtasks/cascade_recovery/CR-07.md",
+    "CR-08": ".agents/kanban/microtasks/cascade_recovery/CR-08.md",
+    "CR-09": ".agents/kanban/microtasks/cascade_recovery/CR-09.md",
+    "CR-10": ".agents/kanban/microtasks/cascade_recovery/CR-10.md",
+    "CR-11": ".agents/kanban/microtasks/cascade_recovery/CR-11.md",
+    "CR-12": ".agents/kanban/microtasks/cascade_recovery/CR-12.md",
+    "AUTO-01": ".agents/kanban/microtasks/coord_automation/AUTO-01.md",
+    "AUTO-02": ".agents/kanban/microtasks/coord_automation/AUTO-02.md",
+    "MCQ-0105": ".agents/kanban/microtasks/mc_firmware/MCQ-0105.md",
+    "MCQ-0106": ".agents/kanban/microtasks/mc_firmware/MCQ-0106.md",
+    "V2-P01A": ".agents/kanban/microtasks/minimc_v2/V2-P01A.md",
+    "V2-P01B": ".agents/kanban/microtasks/minimc_v2/V2-P01B.md",
+    "V2-P01C": ".agents/kanban/microtasks/minimc_v2/V2-P01C.md",
+    "V2-P01D": ".agents/kanban/microtasks/minimc_v2/V2-P01D.md",
+    "V2-P02A": ".agents/kanban/microtasks/minimc_v2/V2-P02A.md",
+    "V2-P02B": ".agents/kanban/microtasks/minimc_v2/V2-P02B.md",
+    "V2-P02C": ".agents/kanban/microtasks/minimc_v2/V2-P02C.md",
+    "V2-P03A": ".agents/kanban/microtasks/minimc_v2/V2-P03A.md",
+    "V2-P03B": ".agents/kanban/microtasks/minimc_v2/V2-P03B.md",
+    "V2-P03C": ".agents/kanban/microtasks/minimc_v2/V2-P03C.md",
+    "V2-P03D": ".agents/kanban/microtasks/minimc_v2/V2-P03D.md",
+    "V2-P03E": ".agents/kanban/microtasks/minimc_v2/V2-P03E.md",
+    "V2-P03F": ".agents/kanban/microtasks/minimc_v2/V2-P03F.md",
+    "V2-P04A": ".agents/kanban/microtasks/minimc_v2/V2-P04A.md",
+    "V2-P04B": ".agents/kanban/microtasks/minimc_v2/V2-P04B.md",
+    "V2-P04C": ".agents/kanban/microtasks/minimc_v2/V2-P04C.md",
+    "V2-P04D": ".agents/kanban/microtasks/minimc_v2/V2-P04D.md",
+    "V2-P0506": ".agents/kanban/microtasks/minimc_v2/V2-P0506.md",
+    "V2-P05A": ".agents/kanban/microtasks/minimc_v2/V2-P05A.md",
+    "V2-P05B": ".agents/kanban/microtasks/minimc_v2/V2-P05B.md",
+    "TEMP-01": ".agents/kanban/microtasks/temperature_telemetry/TEMP-01.md",
+    "TEMP-02": ".agents/kanban/microtasks/temperature_telemetry/TEMP-02.md",
+    "TEMP-03": ".agents/kanban/microtasks/temperature_telemetry/TEMP-03.md",
+    "TEMP-04": ".agents/kanban/microtasks/temperature_telemetry/TEMP-04.md",
+    "TEMP-05": ".agents/kanban/microtasks/temperature_telemetry/TEMP-05.md",
+    "TEMP-06": ".agents/kanban/microtasks/temperature_telemetry/TEMP-06.md",
+    "TEMP-07": ".agents/kanban/microtasks/temperature_telemetry/TEMP-07.md",
+    "TWIN-01": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-01.md",
+    "TWIN-02": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-02.md",
+    "TWIN-03": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-03.md",
+    "TWIN-04": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-04.md",
+    "TWIN-05": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-05.md",
+    "TWIN-06": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-06.md",
+    "TWIN-07": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-07.md",
+    "TWIN-08": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-08.md",
+    "TWIN-09": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-09.md",
+    "TWIN-10": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-10.md",
+    "TWIN-11": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-11.md",
+    "TWIN-12": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-12.md",
+    "TWIN-13": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-13.md",
+    "TWIN-14": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-14.md",
+    "TWIN-15": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-15.md",
+    "TWIN-16": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-16.md",
+    "TWIN-17": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-17.md",
+    "TWIN-18": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-18.md",
+    "TWIN-19": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-19.md",
+    "TWIN-20": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-20.md",
+    "MS-01": ".agents/kanban/milestones/marlin_ms01_20261007_214108.md",
+    "MS-02": ".agents/kanban/milestones/marlin_ms02_20261007_214108.md",
+    "MS-03": ".agents/kanban/milestones/marlin_ms03_20261007_214108.md",
+    "MS-04": ".agents/kanban/milestones/marlin_ms04_20261007_214108.md",
+    "MS-05": ".agents/kanban/milestones/marlin_ms05_20261007_214108.md",
+    "MS-06": ".agents/kanban/milestones/marlin_ms06_20261007_214108.md",
+    "MS-07": ".agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+    "MS-08": ".agents/kanban/milestones/marlin_ms08_20261007_214108.md",
+    "MS-09": ".agents/kanban/milestones/marlin_ms09_20261007_214108.md",
+    "MS-10": ".agents/kanban/milestones/marlin_ms10_20261007_214108.md",
+    "MS-11": ".agents/kanban/milestones/marlin_ms11_20261007_214108.md",
+    "MS-12": ".agents/kanban/milestones/marlin_ms12_20261007_214108.md",
+    "MS-13": ".agents/kanban/milestones/marlin_ms13_20261007_214108.md",
+    "MS-14": ".agents/kanban/milestones/marlin_ms14_20261007_214108.md",
+    "MS-15": ".agents/kanban/milestones/marlin_ms15_20261007_214108.md",
+    "MS-16": ".agents/kanban/milestones/marlin_ms16_20261007_214108.md",
+    "MS-17": ".agents/kanban/milestones/marlin_ms17_20261007_214108.md",
+    "MS-18": ".agents/kanban/milestones/marlin_ms18_20261008_083854.md",
+    "MS-19": ".agents/kanban/milestones/marlin_ms19_20261008_083854.md",
+    "MS-20": ".agents/kanban/milestones/marlin_ms20_20261008_083854.md",
+    "MS-21": ".agents/kanban/milestones/marlin_ms21_20261008_083854.md",
+    "MS-22": ".agents/kanban/milestones/marlin_ms22_20261008_083854.md",
+    "PL-01": "docs/planning/product/product_pl01_20261008_083854.md",
+    "PL-02": "docs/planning/product/product_pl02_20261008_083854.md",
+    "TASK-001": "docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md",
+    "TASK-002": "docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md",
+    "TASK-003": "docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md",
+    "TASK-004": "docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+    "TASK-005": "docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+    "TASK-006": "docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md",
+    "TASK-007": "docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md",
+    "TASK-008": "docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md",
+    "TASK-009": "docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md",
+    "TASK-010": "docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+    "TASK-011": "docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md",
+    "TASK-012": "docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md",
+    "TASK-013": "docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md",
+    "TASK-014": "docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md",
+    "TASK-015": "docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md",
+    "TASK-016": "docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md",
+    "TASK-017": "docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md",
+    "TASK-018": "docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md"
+  },
+  "selected_done": {
+    "task": "TWIN-18",
+    "errors": [
+      "TWIN-18: review decision is not accepted (found None)",
+      "TWIN-18: review artifact_version is missing",
+      "TWIN-18: review evidence path is missing",
+      "TWIN-18: review decision is not accepted (found None)",
+      "TWIN-18: review artifact_version is missing",
+      "TWIN-18: review evidence path is missing",
+      "TWIN-18: review decision is not accepted (found None)",
+      "TWIN-18: review artifact_version is missing",
+      "TWIN-18: review evidence path is missing",
+      "TWIN-18: review decision is not accepted (found None)",
+      "TWIN-18: review artifact_version is missing",
+      "TWIN-18: review evidence path is missing",
+      "TWIN-18: review decision is not accepted (found None)",
+      "TWIN-18: review artifact_version is missing",
+      "TWIN-18: review evidence path is missing",
+      "TWIN-18: review decision is not accepted (found None)",
+      "TWIN-18: review artifact_version is missing",
+      "TWIN-18: review evidence path is missing",
+      "TWIN-18: QA: actual reviewer session is missing",
+      "TWIN-18: ARCH: actual reviewer session is missing",
+      "TWIN-18: ENG-FWD: actual reviewer session is missing",
+      "TWIN-18: ENG-STATE: actual reviewer session is missing",
+      "TWIN-18: ENG-TH: actual reviewer session is missing",
+      "TWIN-18: INTEGRATOR: actual reviewer session is missing"
+    ]
+  },
+  "exit_code": 1
+}
+=== pinned MCU source anchors ===
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/inc/pins.h:45:#define A_DET gpio_input_data_bit_read(A_LIMIT_GPIO_PORT, A_LIMIT_PIN)			//默认低电平
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/inc/pins.h:46://#define A_DET 0
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/src/app/motherboard.c:9:#define FILAMENTCHECK_UPDATE_RATE_US 1000000UL
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/src/app/motherboard.c:10:#define FILAMENT_LOW_SAMPLES          10U
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/src/app/motherboard.c:21:  return A_DET ? FILAMENT_NORMAL : FILAMENT_ERROR;
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/src/app/motherboard.c:64:	send_quick("filaout\r\n");		//向主控435发送 从控断料检测信号
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/src/app/motherboard.c:80:  if (filament_low_samples < FILAMENT_LOW_SAMPLES)
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/src/app/motherboard.c:104:  Timeout_start(&filament_check_timeout, FILAMENTCHECK_UPDATE_RATE_US);
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/src/app/motherboard.c:112:  Timeout_start(&filament_check_timeout, FILAMENTCHECK_UPDATE_RATE_US);
+1246ea9cb441d074ea444f53320f5632fefcd503:color-engine-mcu/io_toggle/src/app/motherboard.c:127:							A_DET, filament_low_samples, filament_error_count);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:392:volatile float current_position[NUM_AXIS] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0};
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:528:float bed_level[AUTO_BED_LEVELING_GRID_POINTS][AUTO_BED_LEVELING_GRID_POINTS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:529:float bed_level_before = 0.0;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1289:      current_position[X_AXIS] = x_home_pos(active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1295:      current_position[X_AXIS] = base_home_pos(X_AXIS) + add_homing[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1342:    current_position[axis] = delta[axis];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1351:      current_position[axis] = base_home_pos(axis) + add_homing[axis];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1360:			current_position[axis] = base_home_pos(axis) - measure_test - z_axis_offset + add_homing[axis];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1365:		   current_position[axis] = base_home_pos(axis) + add_homing[axis];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1372:			current_position[axis] = base_home_pos(axis) - manunal_z_axis_offset + add_homing[axis];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1377:		   current_position[axis] = base_home_pos(axis) + add_homing[axis];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1389:static void set_bed_level_equation_lsq(double *plane_equation_coefficients)
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1397:    plan_bed_level_matrix = create_look_at(planeNormal);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1400:    //plan_bed_level_matrix.debug("bed level before");
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1406:    current_position[X_AXIS] = corrected_position.x;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1407:    current_position[Y_AXIS] = corrected_position.y;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1408:    current_position[Z_AXIS] = corrected_position.z;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1413:		current_position[Z_AXIS] = zprobe_zoffset;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1418:    current_position[Z_AXIS] = zprobe_zoffset; // in the lsq we reach here after raising the extruder due to the loop structure   2019-2-25
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1422:////	  current_position[Z_AXIS] = zPosition;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1423://      calculate_delta(current_position); // change cartesian kinematic  to  delta kinematic;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1424://      plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1426:      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS],current_position[B_AXIS],current_position[C_AXIS],current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1429: //   plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1434:static void set_bed_level_equation_3pts(float z_at_pt_1, float z_at_pt_2, float z_at_pt_3) {
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1436:    plan_bed_level_matrix.set_to_identity();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1447:    plan_bed_level_matrix = matrix_3x3::create_look_at(planeNormal);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1450:    current_position[X_AXIS] = corrected_position.x;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1451:    current_position[Y_AXIS] = corrected_position.y;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1452:    current_position[Z_AXIS] = corrected_position.z;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1455:    current_position[Z_AXIS] = zprobe_zoffset;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1457:    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],current_position[E1_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1471:	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], current_position[A_AXIS], current_position[B_AXIS],  current_position[C_AXIS], current_position[D_AXIS],feedrate/60, active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1474:		current_position[i] = destination[i];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1488:    plan_bed_level_matrix = set_to_identity();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1492:    start_z = current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1505:    current_position[Z_AXIS] = mm;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1506:    calculate_delta(current_position);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1507:    plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS]),current_position[E1_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1513:    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[A_AXIS],current_position[B_AXIS], current_position[C_AXIS],current_position[D_AXIS],feedrate/30, active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1518:    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[A_AXIS],current_position[B_AXIS],current_position[C_AXIS],current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1522:    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[A_AXIS],current_position[B_AXIS], current_position[C_AXIS],current_position[D_AXIS],feedrate/30, active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1528:    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[A_AXIS],current_position[B_AXIS], current_position[C_AXIS],current_position[D_AXIS],feedrate/30, active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1531:    current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1533:    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS],current_position[B_AXIS],current_position[C_AXIS],current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1551:    current_position[X_AXIS] = x;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1552:    current_position[Y_AXIS] = y;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1553:    current_position[Z_AXIS] = z;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1554:    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS],current_position[B_AXIS], current_position[C_AXIS],current_position[D_AXIS],feedrate/45, active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1632:    destination[Z_AXIS] = current_position[Z_AXIS] + 30;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1642:    //destination[Z_AXIS] = current_position[Z_AXIS] - 30;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1647:    destination[Z_AXIS] = current_position[Z_AXIS] - 20;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1651:    destination[Z_AXIS] = current_position[Z_AXIS] + 30;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1669:  do_blocking_move_to(current_position[X_AXIS], current_position[Y_AXIS], z_before);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1670:  do_blocking_move_to(x - X_PROBE_OFFSET_FROM_EXTRUDER, y - Y_PROBE_OFFSET_FROM_EXTRUDER, current_position[Z_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1678:  measured_z = current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1699:	float a = 2*bed_level[x+xdir][y] - bed_level[x+xdir*2][y];  // Left to right.
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1700:	float b = 2*bed_level[x][y+ydir] - bed_level[x][y+ydir*2];  // Front to back.
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1701:	float c = 2*bed_level[x+xdir][y+ydir] - bed_level[x+xdir*2][y+ydir*2];  // Diagonal.
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1703:	if (bed_level[x][y] != 0.0f) 
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1718:	bed_level[x][y] = median;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1723:static void extrapolate_unprobed_bed_level() 
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1742:static void print_bed_level() 
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1750:		//      SERIAL_PROTOCOL_F(bed_level[x][y], 2);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1758:static void reset_bed_level() 
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1766:			bed_level[x][y] = 0.0;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1792:    current_position[axis] = 0;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1793:    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS],current_position[B_AXIS], current_position[C_AXIS],current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1800:    destination[X_AXIS] = current_position[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1801:    destination[Y_AXIS] = current_position[Y_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1802:    destination[A_AXIS] = current_position[A_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1803:    destination[B_AXIS] = current_position[B_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1825:    current_position[axis] = 0;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1826:    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS], current_position[B_AXIS], current_position[C_AXIS], current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1844:      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], current_position[E1_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1851:    destination[axis] = current_position[axis];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1888:      destination[X_AXIS]=current_position[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1889:      destination[Y_AXIS]=current_position[Y_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1890:      destination[Z_AXIS]=current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1891:      destination[E_AXIS]=current_position[E_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1893:        current_position[E_AXIS]+=retract_length_swap/volumetric_multiplier[active_extruder];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1895:        current_position[E_AXIS]+=retract_length/volumetric_multiplier[active_extruder];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1897:      plan_set_e_position(current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1902:      current_position[Z_AXIS]-=retract_zlift;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1904:      calculate_delta(current_position); // change cartesian kinematic to  delta kinematic;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1905:      plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1907:      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1912:      destination[X_AXIS]=current_position[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1913:      destination[Y_AXIS]=current_position[Y_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1914:      destination[Z_AXIS]=current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1915:      destination[E_AXIS]=current_position[E_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1916:      current_position[Z_AXIS]+=retract_zlift;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1918:      calculate_delta(current_position); // change cartesian kinematic  to  delta kinematic;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1919:      plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1921:      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1925:        current_position[E_AXIS]-=(retract_length_swap+retract_recover_length_swap)/volumetric_multiplier[active_extruder]; 
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1927:        current_position[E_AXIS]-=(retract_length+retract_recover_length)/volumetric_multiplier[active_extruder]; 
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1929:      plan_set_e_position(current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1958:                       current_position[Y_AXIS],
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1959:                       current_position[Z_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1963:   if (current_position[Z_AXIS] < (Z_RAISE_BEFORE_PROBING + 5))
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1966:     z_loc = current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1988:void set_bed_leveling_enabled(bool enable/*=true*/)
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2009:	  planner.unapply_leveling(current_position);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2043:  void reset_bed_level() {
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2044:    set_bed_leveling_enabled(false);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2052:        if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("reset_bed_level");
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2055:        planner.bed_level_matrix.set_to_identity();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2061:            bed_level_grid[x][y] = UNPROBED;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2157:              float echange=destination[E_AXIS]-current_position[E_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2159:                  current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2160:                  plan_set_e_position(current_position[E_AXIS]); //AND from the planner
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2235:			plan_bed_level_matrix = set_to_identity();  //Reset the plane ("erase" all leveling data)重置平面矩阵，清除所有床面调平数据
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2262:			destination[i] = current_position[i];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2271:          current_position[X_AXIS] = 0;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2272:          current_position[Y_AXIS] = 0;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2273:          current_position[Z_AXIS] = 0;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2274:          plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2284:          current_position[X_AXIS] = destination[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2285:          current_position[Y_AXIS] = destination[Y_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2286:          current_position[Z_AXIS] = destination[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2293:          calculate_delta(current_position);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2294:          plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2310:		current_position[X_AXIS] = 0;current_position[Y_AXIS] = 0;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2319:		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2334:		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2335:		destination[X_AXIS] = current_position[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2336:		destination[Y_AXIS] = current_position[Y_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2342:		current_position[X_AXIS] = destination[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2343:		current_position[Y_AXIS] = destination[Y_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2345:		current_position[Z_AXIS] = destination[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2357:			inactive_extruder_x_pos = current_position[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2361:			memcpy(raised_parked_position, current_position, sizeof(raised_parked_position));
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2365://		   current_position[Z_AXIS] = 0;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2368://           plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2369:////		   plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], feedrate, active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2370://           plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], 10,  current_position[E_AXIS], feedrate, active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2388:				current_position[X_AXIS]=code_value();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2390:				current_position[X_AXIS]=code_value()+add_homing[X_AXIS];		//设置X轴位置并加上回0偏移量
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2400:				current_position[Y_AXIS]=code_value();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2402:				current_position[Y_AXIS]=code_value()+add_homing[Y_AXIS];		//设置Y轴位置并加上回0偏移量
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2439:				current_position[Z_AXIS] = 0;		//设置Z轴当前位置为0
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2442:				printf("current_positionx:%f,Y:%f;Z:%f\n",current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2446:				plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS], current_position[B_AXIS], current_position[C_AXIS], current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2451:				current_position[X_AXIS] = destination[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2452:				current_position[Y_AXIS] = destination[Y_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2461:				// && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER >= X_MIN_POS) \
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2462:				// && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER <= X_MAX_POS) \
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2463:				// && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER >= Y_MIN_POS) \
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2464:				// && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER <= Y_MAX_POS)) 
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2469:					current_position[Z_AXIS] = 0;		//将当前Z轴位置设置为0
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2471:					plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS], current_position[B_AXIS], current_position[C_AXIS], current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2479:					current_position[X_AXIS] = destination[X_AXIS];    //2019-8-20
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2480:					current_position[Y_AXIS] = destination[Y_AXIS];    //2019-8-20
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2506:				current_position[Z_AXIS]=code_value()+add_homing[Z_AXIS];	//设置Z轴当前位置为参数值加上回0偏移量
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2517:					current_position[Z_AXIS] += zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2525:		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS],  current_position[B_AXIS], current_position[C_AXIS], current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2529:	  calculate_delta(current_position);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2530:      plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS], current_position[E1_AXIS], current_position[E1_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2550:				plan_bed_level_matrix = set_to_identity();		//将床面调平矩阵重置为单位矩阵(清除之前的调平数据)
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2554:				current_position[X_AXIS] = uncorrected_position.x;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2555:				current_position[Y_AXIS] = uncorrected_position.y;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2556:				current_position[Z_AXIS] = uncorrected_position.z;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2557:				//plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS],current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2558:	//			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2559:				//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], MANUAL_Z_HOME_POS - measure_test, current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2569:				//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], MANUAL_Z_HOME_POS - measure_test, current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2573:	//			current_position[X_AXIS] = uncorrected_position.x;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2574:	//			current_position[Y_AXIS] = uncorrected_position.y;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2575:	//			current_position[Z_AXIS] = uncorrected_position.z;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2576:	//			//plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS],current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2577:	//			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2579:	//			plan_bed_level_matrix = set_to_identity();  //Reset the plane ("erase" all leveling data)
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2601:				set_bed_level_equation_lsq(plane_equation_coefficients1);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2607:	  //          plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2619:				x_tmp = current_position[X_AXIS] + X_PROBE_OFFSET_FROM_EXTRUDER;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2620:				y_tmp = current_position[Y_AXIS] + Y_PROBE_OFFSET_FROM_EXTRUDER;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2621:				z_tmp = current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2623:				apply_rotation_xyz(plan_bed_level_matrix, &x_tmp, &y_tmp, &z_tmp);         //Apply the correction sending the probe offset(应用旋转矩阵进行校正，考虑探头偏移)
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2624:				current_position[Z_AXIS] = z_tmp - real_z + current_position[Z_AXIS];   //The difference is added to current position and sent to planner.20201209
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2626:				plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS], current_position[B_AXIS], current_position[C_AXIS], current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2638:	  gui_update_display_one_piece_of_data(0x0003, current_position[X_AXIS] * 100.0f);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2639:	  gui_update_display_one_piece_of_data(0x0005, current_position[Y_AXIS] * 100.0f);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2640:	  gui_update_display_one_piece_of_data(0x0007, current_position[Z_AXIS] * 100.0f);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2649://			bed_level_before = 0.0f;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2667:			plan_bed_level_matrix = set_to_identity();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2669://			reset_bed_level();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2674:			current_position[X_AXIS] = uncorrected_position.x;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2675:			current_position[Y_AXIS] = uncorrected_position.y;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2676:			current_position[Z_AXIS] = uncorrected_position.z;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2677:			//plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS],current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2678:			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS], current_position[B_AXIS], current_position[C_AXIS], current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2734:                  current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2737:				  bed_level[yCount][xCount] = measured_z;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2772://			eeprom_write_float(X_POWER_POS_CUR, current_position[X_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2773://			eeprom_write_float(Y_POWER_POS_CUR, current_position[Y_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2780:            set_bed_level_equation_lsq(plane_equation_coefficients);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2795:            float z_at_pt_2 = probe_pt(ABL_PROBE_PT_2_X, ABL_PROBE_PT_2_Y, current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2798:            float z_at_pt_3 = probe_pt(ABL_PROBE_PT_3_X, ABL_PROBE_PT_3_Y, current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2802:            set_bed_level_equation_3pts(z_at_pt_1, z_at_pt_2, z_at_pt_3);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2819:            x_tmp = current_position[X_AXIS] + X_PROBE_OFFSET_FROM_EXTRUDER;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2820:            y_tmp = current_position[Y_AXIS] + Y_PROBE_OFFSET_FROM_EXTRUDER;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2821:            z_tmp = current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2823:            apply_rotation_xyz(plan_bed_level_matrix, &x_tmp, &y_tmp, &z_tmp);         //Apply the correction sending the probe offset
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2824:            current_position[Z_AXIS] = z_tmp - real_z + current_position[Z_AXIS];   //The difference is added to current position and sent to planner.
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2825:            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS], current_position[B_AXIS], current_position[C_AXIS], current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2843:            // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2851://            SERIAL_PROTOCOL(current_position[X_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2853://            SERIAL_PROTOCOL(current_position[Y_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2855://            SERIAL_PROTOCOL(current_position[Z_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2890:             current_position[i] = code_value();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2891:             plan_set_e_position(current_position[A_AXIS],current_position[B_AXIS],current_position[C_AXIS],current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2894:             current_position[i] = code_value();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2895:             plan_set_e_position(current_position[A_AXIS],current_position[B_AXIS],current_position[C_AXIS],current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2898:             current_position[i] = code_value();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2899:             plan_set_e_position(current_position[A_AXIS],current_position[B_AXIS],current_position[C_AXIS],current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2902:             current_position[i] = code_value();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2903:             plan_set_e_position(current_position[A_AXIS],current_position[B_AXIS],current_position[C_AXIS],current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2908:                	current_position[i] = code_value();  
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2911:                current_position[i] = code_value()+add_homing[i];  
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2914:		current_position[i] = code_value()+add_homing[i];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2916:            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS], current_position[B_AXIS], current_position[C_AXIS], current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3140:        plan_bed_level_matrix = set_to_identity();
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3161:	current_position[X_AXIS] = X_current = st_get_position_mm(X_AXIS);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3162:	current_position[Y_AXIS] = Y_current = st_get_position_mm(Y_AXIS);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3163:	current_position[Z_AXIS] = Z_current = st_get_position_mm(Z_AXIS);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3164:	current_position[E_AXIS] = ext_position = st_get_position_mm(E_AXIS);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3176:	current_position[Z_AXIS] = Z_current = st_get_position_mm(Z_AXIS);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3184:	current_position[Z_AXIS] = Z_current = st_get_position_mm(Z_AXIS);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3248:		sample_set[n] = current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3275://			SERIAL_PROTOCOL_F(current_position[Z_AXIS], 6);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3290:				  current_position[E_AXIS], homing_feedrate[Z_AXIS]/60, active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3553:      SERIAL_PROTOCOL(current_position[X_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3555:      SERIAL_PROTOCOL(current_position[Y_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3557:      SERIAL_PROTOCOL(current_position[Z_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3559:      SERIAL_PROTOCOL(current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4362:        target[X_AXIS]=current_position[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4363:        target[Y_AXIS]=current_position[Y_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4364:        target[Z_AXIS]=current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4365:        target[E_AXIS]=current_position[E_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4366:        lastpos[X_AXIS]=current_position[X_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4367:        lastpos[Y_AXIS]=current_position[Y_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4368:        lastpos[Z_AXIS]=current_position[Z_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4369:        lastpos[E_AXIS]=current_position[E_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4478:        current_position[E_AXIS]=target[E_AXIS]; //the long retract of L is compensated by manual filament feeding
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4479:        plan_set_e_position(current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4634:        //memcpy(destination, current_position, sizeof(destination));
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4636:			destination[i] = current_position[i];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4639:            (delayed_move_time != 0 || current_position[X_AXIS] != x_home_pos(active_extruder)))
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4642:          plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] + TOOLCHANGE_PARK_ZLIFT,
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4643:                current_position[E_AXIS], max_feedrate[Z_AXIS], active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4644:          plan_buffer_line(x_home_pos(active_extruder), current_position[Y_AXIS], current_position[Z_AXIS] + TOOLCHANGE_PARK_ZLIFT,
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4645:                current_position[E_AXIS], max_feedrate[X_AXIS], active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4646:          plan_buffer_line(x_home_pos(active_extruder), current_position[Y_AXIS], current_position[Z_AXIS],
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4647:                current_position[E_AXIS], max_feedrate[Z_AXIS], active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4652:        current_position[Y_AXIS] = current_position[Y_AXIS] -
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4655:        current_position[Z_AXIS] = current_position[Z_AXIS] -
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4666:          current_position[X_AXIS] = inactive_extruder_x_pos;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4673:            current_position[X_AXIS] = inactive_extruder_x_pos;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4675:            current_position[X_AXIS] = destination[X_AXIS] + duplicate_extruder_x_offset;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4682:          memcpy(raised_parked_position, current_position, sizeof(raised_parked_position));
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4691:           current_position[i] = current_position[i] -
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4700:  calculate_delta(current_position); // change cartesian kinematic  to  delta kinematic;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4702:  plan_set_position(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS],current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4705:        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[A_AXIS], current_position[B_AXIS],current_position[C_AXIS], current_position[D_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4756:      destination[i] = (float)code_value() + (axis_relative_modes[i] || relative_mode)*current_position[i];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4759:    else destination[i] = current_position[i]; //Are these else lines really needed?
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4863:// Adjust print surface height by linear interpolation over the bed_level array.
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4873:  float z1 = bed_level[floor_x+half][floor_y+half];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4874:  float z2 = bed_level[floor_x+half][floor_y+half+1];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4875:  float z3 = bed_level[floor_x+half+1][floor_y+half];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4876:  float z4 = bed_level[floor_x+half+1][floor_y+half+1];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4927:	difference[i] = destination[i] - current_position[i];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4943:		destination[i] = current_position[i] + difference[i] * fraction;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4965:    difference[i] = destination[i] - current_position[i];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4981:      destination[i] = current_position[i] + difference[i] * fraction;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5004:      plan_set_position(inactive_extruder_x_pos, current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5005:      plan_buffer_line(current_position[X_AXIS] + duplicate_extruder_x_offset, current_position[Y_AXIS], current_position[Z_AXIS],
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5006:          current_position[E_AXIS], max_feedrate[X_AXIS], 1);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5007:      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5014:      if (current_position[E_AXIS] == destination[E_AXIS])
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5020:          memcpy(current_position, destination, sizeof(current_position));
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5029:      plan_buffer_line(raised_parked_position[X_AXIS], raised_parked_position[Y_AXIS], raised_parked_position[Z_AXIS],    current_position[E_AXIS], max_feedrate[Z_AXIS], active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5030:      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], raised_parked_position[Z_AXIS],
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5031:          current_position[E_AXIS], min(max_feedrate[X_AXIS],max_feedrate[Y_AXIS]), active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5032:      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5033:          current_position[E_AXIS], max_feedrate[Z_AXIS], active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5041:	if( (current_position[X_AXIS] == destination [X_AXIS]) && (current_position[Y_AXIS] == destination [Y_AXIS])) 
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5055:		current_position[i] = destination[i];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5065:  mc_arc(current_position, destination, offset, X_AXIS, Y_AXIS, Z_AXIS, feedrate*feedmultiply/60/100.0, r, isclockwise, active_extruder);
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5071:    current_position[i] = destination[i];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5314:     float oldepos=current_position[E_AXIS];
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5319:     current_position[E_AXIS]=oldepos;
+1246ea9cb441d074ea444f53320f5632fefcd503:motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:5333:      memcpy(destination,current_position,sizeof(destination));

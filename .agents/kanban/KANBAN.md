@@ -1,9 +1,9 @@
 ---
 title: SoC公共看板
-version: 9
+version: 10
 status: current-planning
 owner: COORD
-updated: '2026-10-29T14:31:00+08:00'
+updated: '2026-10-30T10:26:00+08:00'
 plan_revision: vmware-soc-twin-20261029
 execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示运行
 ---
@@ -20,12 +20,12 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 20 | Backlog 19、Done 1 |
+| TWIN | 20 | Backlog 17、Done 3 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
 
-第一张[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)已由ARCH完成架构与C1～C6对账并经独立QA审查通过（Done）；下一张[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)交ARCH制定双环境可执行通信契约与生成规则（当前任务已暂停，等待用户指令启动）；04构建/进程管理与03独立预期按依赖推进，再05/06通信SDK、07/08/09常驻业务/网关、10真实浏览器界面。15/16分别由MC/TH处理温度争议及必要修订，均为11候选前置；11联调、12独立接受VM阶段；13迁移SoC、14实板实屏接受。
+第一张[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)（Done）、第二张[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)（通信契约与服务清单，Done）及[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)（运动/调平/断料状态接口调查与协议对账，Done）均已完成独立QA审计与收件闭环；下游就绪任务包括[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)（QA独立预期与夹具）、[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)（两阶段构建骨架与一键拉起）以及[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)（离线作业与混色状态机）。
 
 最多两张实现卡并行；实际会话、前置接受、写白名单、隔离输出、租约与资源待Ready前落实。台架/串口/探针只登记一名实际操作者，CLI不能与常驻FWD抢UART。QA独立Codex、QA作者产物由非作者ARCH复核；COORD按准确候选收件，不因结构exit0自动推进。
 
