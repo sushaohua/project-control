@@ -26,12 +26,12 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-04
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18ab5-b1e8-7751-8ad8-b7ce15218e37
+    decision: REJECTED
+    reviewed_task_revision: 2
+    artifact_version: soc-ap=89ac9d54c2994f635be49faa1b88ea2440b083ff; project-control=80ffa386f3ff682b0913763109d63c865b0d9808
+    evidence: docs/evidence/twin/TWIN-04/runs/run_01/qa_review_report.md
+    report_sha256: 3e2796b24bc6eb5ff891cbbc9a5276a0afac718f27c0c66c890357fbc91bbf76
   - role: ARCH
     platform: codex
     model: gpt-6-luna
@@ -50,8 +50,8 @@ depends_on:
 - TWIN-02
 dependency_conditions:
 - task: TWIN-02
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 532caecf3a146802969a49e73081400c2b32b25e
+  acceptance_evidence: docs/evidence/twin/TWIN-02/runs/run_03/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 scope_status: mapped
 allowed_repositories:
