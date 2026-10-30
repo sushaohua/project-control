@@ -1,0 +1,34 @@
+=== Docker Container Inspect: 52739b0eb6fc ===
+{
+  "id": "52739b0eb6fc607657b24a723c36c0f7d67867d445eff60bc3dd83b8ebbe7a46",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-10-30T09:02:34.866993087Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-07_run_170209_20261030_090209",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) g++ -std=c++17 -Wall -Wextra -Wpedantic -I services/forward -I contracts/twin -I middleware/dbus/include -I middleware/dds/include -I core/forward/minimc -I core/forward/transport -I /usr/local/include/dbus-1.0 -I /usr/local/lib/dbus-1.0/include -I /usr/include/dbus-1.0 -I /usr/lib/x86_64-linux-gnu/dbus-1.0/include -I /usr/local/include services/forward/forward_protocol.cpp services/forward/forward_uart.cpp services/forward/forward_dbus.cpp services/forward/forward_service.cpp core/forward/minimc/codec.cpp core/forward/minimc/parser.cpp core/forward/transport/serial_posix.cpp middleware/dbus/src/aisoc_dbus_*.cpp middleware/dds/src/aisoc_dds*.cpp tests/forward/twin/test_forward_service.cpp -L /usr/local/lib -ldbus-1 -lfastdds -lfastcdr -lutil -lpthread -o /tmp/test_forward_service && LD_LIBRARY_PATH=/usr/local/lib /tmp/test_forward_service -> 0
+========================================================================
+TWIN-07 FORWARD Service Verification & Integration Test Suite
+========================================================================
+[RUN ] test_proto_target_mapping
+[PASS] test_proto_target_mapping
+[RUN ] test_proto_build_frames
+[PASS] test_proto_build_frames
+[RUN ] test_proto_parse_raw_temp
+[PASS] test_proto_parse_raw_temp
+[RUN ] [&]() { return test_fwd_full_pipeline(&env.fwd_state, &env.cli_conn); }
+[PASS] [&]() { return test_fwd_full_pipeline(&env.fwd_state, &env.cli_conn); }
+========================================================================
+Total: Passed=4, Failed=0
+========================================================================
+

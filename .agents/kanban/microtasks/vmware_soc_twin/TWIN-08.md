@@ -6,9 +6,9 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Ready
+status: Done
 blocked: false
-planning_status: ready
+planning_status: done
 owner: ENG-STATE
 proposed_owner: ENG-STATE
 executor:
@@ -26,22 +26,22 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-08
-    session: 01a18c08-qa-twin08-planned
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18bb1-8931-7e8c-926a-ddfc0d5e44c3
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: 9d671be3c6eacd90169a56718e8e139c85ed9513
+    evidence: docs/evidence/twin/TWIN-08/runs/run_01/qa_review_report.md
+    report_sha256: de9d679e80947097d8fc0e01d145f244fdc62bd3e5f8120d1f1f608ed219f0f4
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-08
-    session: 01a18c08-arch-twin08-planned
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18bb2-4e89-73fb-98ac-ce45f7710a04
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: 9d671be3c6eacd90169a56718e8e139c85ed9513
+    evidence: docs/evidence/twin/TWIN-08/runs/run_01/arch_review_report.md
+    report_sha256: 7128d3c06f6a8e786b9994d1246b15a4dae6451afb043057848bbf84d51e81dd
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-008
@@ -88,7 +88,7 @@ source_baseline:
   mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
   test_harness: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
 base_commit: 17fc3b4854af61c7fc21898d8f2045677ae1c84f
-candidate_commit: null
+candidate_commit: 9d671be3c6eacd90169a56718e8e139c85ed9513
 dispatch_binding:
   source_commit: 17fc3b4854af61c7fc21898d8f2045677ae1c84f
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855

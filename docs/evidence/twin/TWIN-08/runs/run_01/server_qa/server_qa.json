@@ -1,0 +1,62 @@
+{
+  "task_id": "TWIN-08",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "d1e9957cdb4e",
+    "id": "TWIN-08_run_170301_20261030_090301",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-08_run_170301_20261030_090301",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "d1e9957cdb4e914827da88f1906417f4e0935525a1146f81abe6f2ae7cf9c7dc",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-10-30T09:03:33.228199517Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-08_run_170301_20261030_090301",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-08/runs/run_01/server_qa/server_lock.json",
+    "sha256": "96638ba49216586aed3f76c58c0fc67c74fb8cfda4bc49822cd4a5187add5d11"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-08/runs/run_01/server_qa/checkout.log",
+    "sha256": "bd0093d3c74c4187b24605685f1f03cc71c29916d978b5a2c641d2ad79700973"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-08/runs/run_01/server_qa/runtime.log",
+    "sha256": "a272a173f295377a7bc8dd7f83bd8ee6f775cb7303657acf62c66830cda7f621"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-08/runs/run_01/server_qa/server_verdict.json",
+    "sha256": "3587d722990835658246cff40d1754a9bfccb158039fa2825fb0890b9dc89576"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "g++ -std=c++17 -Wall -Wextra -Wpedantic -I services/device_manager -I contracts/twin -I middleware/dbus/include -I middleware/dds/include -I /usr/local/include/dbus-1.0 -I /usr/local/lib/dbus-1.0/include -I /usr/include/dbus-1.0 -I /usr/lib/x86_64-linux-gnu/dbus-1.0/include -I /usr/local/include services/device_manager/device_manager_state.cpp services/device_manager/device_manager_dbus.cpp services/device_manager/device_manager_service.cpp middleware/dbus/src/aisoc_dbus_*.cpp middleware/dds/src/aisoc_dds*.cpp tests/device_manager/twin/test_device_manager.cpp -L /usr/local/lib -ldbus-1 -lfastdds -lfastcdr -lpthread -o /tmp/test_device_manager && LD_LIBRARY_PATH=/usr/local/lib /tmp/test_device_manager",
+      "exit_code": "0",
+      "duration": "6.44s",
+      "output": "========================================================================\nTWIN-08 Device Manager Verification & Integration Test Suite\n========================================================================\n[RUN ] test_unit_state_init\n[PASS] test_unit_state_init\n[RUN ] test_unit_state_sample_update\n[PASS] test_unit_state_sample_update\n[RUN ] test_unit_state_admission\n[PASS] test_unit_state_admission\n[RUN ] test_unit_state_json\n[PASS] test_unit_state_json\n[RUN ] [&]() { return test_rpc_get_snapshot(&env.cli_conn); }\n[PASS] [&]() { return test_rpc_get_snapshot(&env.cli_conn); }\n[RUN ] [&]() { return test_dds_sync_and_signal(&env); }\n[PASS] [&]() { return test_dds_sync_and_signal(&env); }\n[RUN ] [&]() { return test_rpc_request_sample(&env.cli_conn); }\n[PASS] [&]() { return test_rpc_request_sample(&env.cli_conn); }\n[RUN ] [&]() { return test_rpc_device_state_and_estop(&env.cli_conn); }\n[PASS] [&]() { return test_rpc_device_state_and_estop(&env.cli_conn); }\n========================================================================\nTotal: Passed=8, Failed=0\n========================================================================"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-30T09:03:42.336697+00:00"
+}

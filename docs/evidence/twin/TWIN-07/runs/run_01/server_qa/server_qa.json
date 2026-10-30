@@ -1,0 +1,62 @@
+{
+  "task_id": "TWIN-07",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "52739b0eb6fc",
+    "id": "TWIN-07_run_170209_20261030_090209",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-07_run_170209_20261030_090209",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "52739b0eb6fc607657b24a723c36c0f7d67867d445eff60bc3dd83b8ebbe7a46",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-10-30T09:02:34.866993087Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-07_run_170209_20261030_090209",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-07/runs/run_01/server_qa/server_lock.json",
+    "sha256": "96638ba49216586aed3f76c58c0fc67c74fb8cfda4bc49822cd4a5187add5d11"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-07/runs/run_01/server_qa/checkout.log",
+    "sha256": "bd0093d3c74c4187b24605685f1f03cc71c29916d978b5a2c641d2ad79700973"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-07/runs/run_01/server_qa/runtime.log",
+    "sha256": "63e6c6404dc3c77c8550333ced734bddff651ba56811e69010fcb8fd40d57adf"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-07/runs/run_01/server_qa/server_verdict.json",
+    "sha256": "019e12450e64b780a590d3796899451e70d8ecb2227d96eac186f4385b6d0f7e"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "g++ -std=c++17 -Wall -Wextra -Wpedantic -I services/forward -I contracts/twin -I middleware/dbus/include -I middleware/dds/include -I core/forward/minimc -I core/forward/transport -I /usr/local/include/dbus-1.0 -I /usr/local/lib/dbus-1.0/include -I /usr/include/dbus-1.0 -I /usr/lib/x86_64-linux-gnu/dbus-1.0/include -I /usr/local/include services/forward/forward_protocol.cpp services/forward/forward_uart.cpp services/forward/forward_dbus.cpp services/forward/forward_service.cpp core/forward/minimc/codec.cpp core/forward/minimc/parser.cpp core/forward/transport/serial_posix.cpp middleware/dbus/src/aisoc_dbus_*.cpp middleware/dds/src/aisoc_dds*.cpp tests/forward/twin/test_forward_service.cpp -L /usr/local/lib -ldbus-1 -lfastdds -lfastcdr -lutil -lpthread -o /tmp/test_forward_service && LD_LIBRARY_PATH=/usr/local/lib /tmp/test_forward_service",
+      "exit_code": "0",
+      "duration": "6.46s",
+      "output": "========================================================================\nTWIN-07 FORWARD Service Verification & Integration Test Suite\n========================================================================\n[RUN ] test_proto_target_mapping\n[PASS] test_proto_target_mapping\n[RUN ] test_proto_build_frames\n[PASS] test_proto_build_frames\n[RUN ] test_proto_parse_raw_temp\n[PASS] test_proto_parse_raw_temp\n[RUN ] [&]() { return test_fwd_full_pipeline(&env.fwd_state, &env.cli_conn); }\n[PASS] [&]() { return test_fwd_full_pipeline(&env.fwd_state, &env.cli_conn); }\n========================================================================\nTotal: Passed=4, Failed=0\n========================================================================"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-30T09:02:44.002313+00:00"
+}
