@@ -1,9 +1,9 @@
 ---
 title: SoC公共看板
-version: 11
+version: 12
 status: current-planning
 owner: COORD
-updated: '2026-10-30T17:10:00+08:00'
+updated: '2026-10-30T17:35:00+08:00'
 plan_revision: vmware-soc-twin-20261029
 execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示运行
 ---
@@ -20,16 +20,17 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 20 | Backlog 11、Done 9 |
+| TWIN | 20 | Backlog 10、Done 10 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
 
-前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)、[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)、[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)、[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)、[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)、[TWIN-05](microtasks/vmware_soc_twin/TWIN-05.md)、[TWIN-06](microtasks/vmware_soc_twin/TWIN-06.md)、[TWIN-07](microtasks/vmware_soc_twin/TWIN-07.md)及[TWIN-08](microtasks/vmware_soc_twin/TWIN-08.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。后续涉及[TWIN-09](microtasks/vmware_soc_twin/TWIN-09.md)、[TWIN-15](microtasks/vmware_soc_twin/TWIN-15.md)、[TWIN-16](microtasks/vmware_soc_twin/TWIN-16.md)和[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)，实际就绪与派单由COORD按任务卡和前置证据核定。
+前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)、[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)、[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)、[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)、[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)、[TWIN-05](microtasks/vmware_soc_twin/TWIN-05.md)、[TWIN-06](microtasks/vmware_soc_twin/TWIN-06.md)、[TWIN-07](microtasks/vmware_soc_twin/TWIN-07.md)、[TWIN-08](microtasks/vmware_soc_twin/TWIN-08.md)及[TWIN-15](microtasks/vmware_soc_twin/TWIN-15.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。后续涉及[TWIN-09](microtasks/vmware_soc_twin/TWIN-09.md)、[TWIN-16](microtasks/vmware_soc_twin/TWIN-16.md)和[TWIN-10](microtasks/vmware_soc_twin/TWIN-10.md)，实际就绪与派单由COORD按任务卡和前置证据核定。
 
 2026-10-30工作区记录中：
-1. **TWIN-07（FORWARD常驻服务与唯一UART通路）**：已完成常驻进程守护、MiniMCProto v2.0双向编解码与CRC校验、PTY串口仿真、DDS `telemetry/raw_temp`低延迟发布与D-Bus RPC控制服务，在独立Docker沙箱（`TWIN-07_run_170209`）中完成100%全套测试验证，取得真实独立Codex QA与ARCH审签APPROVED，正式推进至Done；
-2. **TWIN-08（STATE权威快照与统一请求准入）**：已完成单一权威温度状态模型与世代单调递增管理、3s/10s新鲜度退化评估、50ms防抖统一请求准入仲裁、急停熔断、DDS与D-Bus异步广播联动，在独立Docker沙箱（`TWIN-08_run_170301`）中完成100%单元与集成测试验证，取得真实独立Codex QA与ARCH审签APPROVED，正式推进至Done。
+1. **TWIN-07（FORWARD常驻服务与唯一UART通路）**：已完成常驻进程守护、MiniMCProto v2.0双向编解码与CRC校验、PTY串口仿真、DDS `telemetry/raw_temp`低延迟发布与D-Bus RPC控制服务，在独立Docker沙箱中通过100%验证，取得独立Codex QA与ARCH审签APPROVED闭环；
+2. **TWIN-08（STATE权威快照与统一请求准入）**：已完成单一权威温度状态模型与世代单调递增管理、3s/10s新鲜度退化评估、50ms防抖统一请求准入仲裁、急停熔断、DDS与D-Bus异步广播联动，在独立Docker沙箱中通过100%验证，取得独立Codex QA与ARCH审签APPROVED闭环；
+3. **TWIN-15（MC温度契约复核与必要修订）**：已完成MC固件0x14查询响应实现、0.1℃ (`deci_c`) 分辨率对账消除溢出、强电安全硬性锁死为0%及TH报文原生透明中继保持，在独立Docker沙箱（`TWIN-15_run_173258`）中完成100%验证，生成AT32F435固件并取得独立Codex QA与ARCH审签APPROVED闭环。
 
 当前释放下游就绪任务，COORD将按依赖接续调度推进。最多两张实现卡并行；实际会话、前置接受、写白名单、隔离输出、租约与资源待Ready前落实。台架/串口/探针只登记一名实际操作者，CLI不能与常驻FWD抢UART。QA独立Codex、QA作者产物由非作者ARCH复核；COORD按准确候选收件，不因结构exit0自动推进。
 

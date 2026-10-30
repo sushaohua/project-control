@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: Done
 blocked: false
-planning_status: planned-not-dispatched
-owner: null
+planning_status: closed
+owner: ENG-MC
 proposed_owner: ENG-MC
 executor:
   role: ENG-MC
-  agent_id: null
-  run_id: null
+  agent_id: 1aba53f3-e424-4e8c-926a-ddfc0d5e44c5
+  run_id: run_01
 reviewer:
 - QA
 - ARCH
@@ -26,22 +26,22 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-15
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 04e29db1-8492-7f9a-81cb-9a885e528802
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: run_01
+    evidence: docs/evidence/twin/TWIN-15/runs/run_01/qa_review_report.md
+    report_sha256: 41b65b63be708e3100650d4eb0caefdd678d212ce71934c9c1e19488da154ab1
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-15
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 08bc71da-8831-7e8a-82dc-8a901f417715
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: run_01
+    evidence: docs/evidence/twin/TWIN-15/runs/run_01/arch_review_report.md
+    report_sha256: 7d65c3bbec6147e0340156bbac8fe45722129c9225792376fcd8efbe68194f4d
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-002
@@ -52,16 +52,16 @@ depends_on:
 - TEMP-03
 dependency_conditions:
 - task: TWIN-02
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1.0.0
+  acceptance_evidence: docs/evidence/twin/TWIN-02/runs/run_03/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TWIN-03
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1.0.0
+  acceptance_evidence: docs/evidence/twin/TWIN-03/runs/run_02/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TEMP-03
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1.0.0
+  acceptance_evidence: docs/evidence/temperature_increment/TEMP-03/runs/run_01/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 scope_status: mapped
 allowed_repositories:
@@ -82,12 +82,12 @@ allowed_paths:
 - mcu-p3/motion-controller-mcu/project/inc/thermistor*
 - project-control/docs/evidence/twin/TWIN-15/**
 source_baseline:
-  project-control: a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819
-  soc-ap: 4445c8fedc21bafef5e6c971fcb54cec703f0e71
-  mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
-  test_harness: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
-base_commit: null
-candidate_commit: null
+  project-control: 6207499476986989df3a82848510cbaa68e1435e
+  soc-ap: 9d671be3c6eacd90169a56718e8e139c85ed9513
+  mcu-p3: 0ba7769fe60a032f765deada1e112c360e08b3cd
+  test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+base_commit: 1246ea9cb441d074ea444f53320f5632fefcd503
+candidate_commit: 0ba7769fe60a032f765deada1e112c360e08b3cd
 dispatch_binding:
   source_commit: null
   workspace_diff_sha256: null
