@@ -3,7 +3,7 @@ title: SoC公共看板
 version: 10
 status: current-planning
 owner: COORD
-updated: '2026-10-30T10:26:00+08:00'
+updated: '2026-10-30T12:26:00+08:00'
 plan_revision: vmware-soc-twin-20261029
 execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示运行
 ---
@@ -20,12 +20,12 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 20 | Backlog 17、Done 3 |
+| TWIN | 20 | Backlog 15、Done 5 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
 
-第一张[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)（Done）、第二张[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)（通信契约与服务清单，Done）及[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)（运动/调平/断料状态接口调查与协议对账，Done）均已完成独立QA审计与收件闭环；下游就绪任务包括[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)（QA独立预期与夹具）、[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)（两阶段构建骨架与一键拉起）以及[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)（离线作业与混色状态机）。
+前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)（Done）、[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)（通信契约与服务清单，Done）、[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)（状态接口调查与协议对账，Done）、[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)（QA独立预期与夹具，Done）以及[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)（构建配置与同构生命周期，Done）均已通过独立沙箱验证与 Codex 独立审签闭环；当前下游就绪任务已解锁释放：[TWIN-05](microtasks/vmware_soc_twin/TWIN-05.md)（DDS 通信底座与 IDL 代码生成）、[TWIN-06](microtasks/vmware_soc_twin/TWIN-06.md)（D-Bus 通信底座与自省 XML 接入）、[TWIN-15](microtasks/vmware_soc_twin/TWIN-15.md)（MC 虚拟驱动与回放夹具）、[TWIN-16](microtasks/vmware_soc_twin/TWIN-16.md)（TH 虚拟驱动与温控仿真模型）以及[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)（离线作业与混色状态机）。
 
 最多两张实现卡并行；实际会话、前置接受、写白名单、隔离输出、租约与资源待Ready前落实。台架/串口/探针只登记一名实际操作者，CLI不能与常驻FWD抢UART。QA独立Codex、QA作者产物由非作者ARCH复核；COORD按准确候选收件，不因结构exit0自动推进。
 

@@ -1,0 +1,163 @@
+=== Docker Container Inspect: b5a14166a7eb ===
+{
+  "id": "b5a14166a7eb7d4a078dfa87d26f4f14ca5ea15fa0622cd04197bc6d7ac8c14c",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:43a2f1c6c95b1df70095eb744d5eadc9225867e0d7a2feda9b41ec3b6d38c825",
+  "created": "2026-10-30T04:15:12.158738876Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-04_run_121447_20261030_041447",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) bash tools/twin_build/build_vmware.sh --clean --build-dir /tmp/build_vmware --dist-dir /tmp/dist_vmware -> 0
+=================================================================
+AISOC VMware Twin Build Pipeline
+  Workspace:   /workspace/soc-ap
+  Toolchain:   /workspace/soc-ap/cmake/toolchains/vmware.cmake
+  Build Dir:   /tmp/build_vmware
+  Dist Dir:    /tmp/dist_vmware
+  CMake:       
+=================================================================
+--> Cleaning build and dist directories...
+--> Verifying runtime service manifests...
+  [OK] JSON verified (10 services): /workspace/soc-ap/config/runtime/common/services_manifest.json
+  [OK] JSON verified (10 services): /workspace/soc-ap/config/runtime/vmware/services_manifest.json
+--> cmake not found; using direct g++ toolchain (-std=c++17 -fno-exceptions -fno-rtti)...
+--> Running test suites...
+Running Service Lifecycle Unit Tests...
+PASS: test_null_guards
+PASS: test_state_transitions
+PASS: test_health_check
+ALL Service Lifecycle Unit Tests PASSED!
+Running Bounded Backoff Unit Tests...
+PASS: test_backoff_null_guards
+PASS: test_backoff_progression
+PASS: test_backoff_reset
+ALL Bounded Backoff Unit Tests PASSED!
+Running Supervisor Topology Unit Tests...
+PASS: test_default_services_registration
+PASS: test_topological_sort_order
+PASS: test_cycle_detection
+PASS: test_supervisor_start_and_stop
+PASS: test_manifest_binary_binding
+PASS: test_real_mode_missing_binary_rejection
+PASS: test_real_mode_valid_binary_spawn
+PASS: test_real_mode_graceful_stop
+ALL Supervisor Topology Unit Tests PASSED!
+--> Running supervisor CLI dry-run verification...
+=================================================================
+AISOC VMware Twin Services Topology (Total: 10, Active: 4)
+=================================================================
+[0] forward-service    (Order:  0) State: UNINITIALIZED Active: YES
+[1] device-manager     (Order:  1) State: UNINITIALIZED Active: YES
+    Dependencies: forward-service
+[2] ui-gateway         (Order:  2) State: UNINITIALIZED Active: YES
+    Dependencies: device-manager, forward-service
+[3] browser-hmi        (Order:  3) State: UNINITIALIZED Active: YES
+    Dependencies: ui-gateway
+[4] job-engine         (Order:  0) State: UNINITIALIZED Active: NO
+    Dependencies: device-manager
+[5] storage-service    (Order:  0) State: UNINITIALIZED Active: NO
+[6] cloud-gateway      (Order:  0) State: UNINITIALIZED Active: NO
+    Dependencies: device-manager
+[7] camera-service     (Order:  0) State: UNINITIALIZED Active: NO
+[8] print-guard        (Order:  0) State: UNINITIALIZED Active: NO
+    Dependencies: camera-service, device-manager
+[9] system-manager     (Order:  0) State: UNINITIALIZED Active: NO
+-----------------------------------------------------------------
+Topological Startup Order (Active Services):
+  Step 1: Start forward-service (Role: UART Serial Gateway)
+  Step 2: Start device-manager (Role: Device State Machine)
+  Step 3: Start ui-gateway (Role: HTTP/SSE Gateway)
+  Step 4: Start browser-hmi (Role: Browser Web HMI)
+Reverse Topological Shutdown Order:
+  Step 1: Stop  browser-hmi
+  Step 2: Stop  ui-gateway
+  Step 3: Stop  device-manager
+  Step 4: Stop  forward-service
+=================================================================
+Dry run validation complete. Exiting.
+--> Running supervisor simulation mode verification...
+=================================================================
+AISOC VMware Twin Services Topology (Total: 10, Active: 4)
+=================================================================
+[0] forward-service    (Order:  0) State: UNINITIALIZED Active: YES
+[1] device-manager     (Order:  1) State: UNINITIALIZED Active: YES
+    Dependencies: forward-service
+[2] ui-gateway         (Order:  2) State: UNINITIALIZED Active: YES
+    Dependencies: device-manager, forward-service
+[3] browser-hmi        (Order:  3) State: UNINITIALIZED Active: YES
+    Dependencies: ui-gateway
+[4] job-engine         (Order:  0) State: UNINITIALIZED Active: NO
+    Dependencies: device-manager
+[5] storage-service    (Order:  0) State: UNINITIALIZED Active: NO
+[6] cloud-gateway      (Order:  0) State: UNINITIALIZED Active: NO
+    Dependencies: device-manager
+[7] camera-service     (Order:  0) State: UNINITIALIZED Active: NO
+[8] print-guard        (Order:  0) State: UNINITIALIZED Active: NO
+    Dependencies: camera-service, device-manager
+[9] system-manager     (Order:  0) State: UNINITIALIZED Active: NO
+-----------------------------------------------------------------
+Topological Startup Order (Active Services):
+  Step 1: Start forward-service (Role: UART Serial Gateway)
+  Step 2: Start device-manager (Role: Device State Machine)
+  Step 3: Start ui-gateway (Role: HTTP/SSE Gateway)
+  Step 4: Start browser-hmi (Role: Browser Web HMI)
+Reverse Topological Shutdown Order:
+  Step 1: Stop  browser-hmi
+  Step 2: Stop  ui-gateway
+  Step 3: Stop  device-manager
+  Step 4: Stop  forward-service
+=================================================================
+--> Starting all active services in topological order...
+--> All active services successfully started (RUNNING).
+--> Performing unified health check on all services...
+--> All services reported HEALTH_STATUS_OK.
+--> Stopping all services in reverse topological order...
+--> All services stopped gracefully (STOPPED).
+--> Packaging VMware Twin distribution bundle...
+  [OK] Distribution bundle assembled at: /tmp/dist_vmware
+23c3347e18e769cb1d1f24dd0192115542699b1c1a35c07f3a0bafd00d3b96d0  ./bin/aisoc_supervisor
+aface080d154ea97017c207e08ff41f810a4b3115933f6c2ec9e91e35c950af1  ./config/services_manifest.json
+c52c585dc05f240ea9ecb675e5e15dca98df81e576132318a21395e8f536783c  ./lib/libaisoc_runtime_common.a
+dbbcef86dfafdaf323a9f54d24cc123482ce421199f267179db1bc1185ae83ed  ./systemd/aisoc-supervisor.service
+=================================================================
+AISOC VMware Twin Build Pipeline Completed Successfully!
+=================================================================
+
+
+$ (soc-ap) /tmp/build_vmware/test_service_lifecycle -> 0
+Running Service Lifecycle Unit Tests...
+PASS: test_null_guards
+PASS: test_state_transitions
+PASS: test_health_check
+ALL Service Lifecycle Unit Tests PASSED!
+
+
+$ (soc-ap) /tmp/build_vmware/test_backoff -> 0
+Running Bounded Backoff Unit Tests...
+PASS: test_backoff_null_guards
+PASS: test_backoff_progression
+PASS: test_backoff_reset
+ALL Bounded Backoff Unit Tests PASSED!
+
+
+$ (soc-ap) /tmp/build_vmware/test_supervisor_topology -> 0
+Running Supervisor Topology Unit Tests...
+PASS: test_default_services_registration
+PASS: test_topological_sort_order
+PASS: test_cycle_detection
+PASS: test_supervisor_start_and_stop
+PASS: test_manifest_binary_binding
+PASS: test_real_mode_missing_binary_rejection
+PASS: test_real_mode_valid_binary_spawn
+PASS: test_real_mode_graceful_stop
+ALL Supervisor Topology Unit Tests PASSED!
+
