@@ -25,7 +25,9 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 
 ## 当前顺序与责任
 
-前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)（Done）、[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)（通信契约与服务清单，Done）、[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)（状态接口调查与协议对账，Done）、[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)（QA独立预期与夹具，Done）以及[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)（构建配置与同构生命周期，Done）均已通过独立沙箱验证与 Codex 独立审签闭环；当前下游就绪任务已解锁释放：[TWIN-05](microtasks/vmware_soc_twin/TWIN-05.md)（DDS 通信底座与 IDL 代码生成）、[TWIN-06](microtasks/vmware_soc_twin/TWIN-06.md)（D-Bus 通信底座与自省 XML 接入）、[TWIN-15](microtasks/vmware_soc_twin/TWIN-15.md)（MC 虚拟驱动与回放夹具）、[TWIN-16](microtasks/vmware_soc_twin/TWIN-16.md)（TH 虚拟驱动与温控仿真模型）以及[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)（离线作业与混色状态机）。
+前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)、[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)、[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)、[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)及[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。后续涉及[TWIN-05](microtasks/vmware_soc_twin/TWIN-05.md)、[TWIN-06](microtasks/vmware_soc_twin/TWIN-06.md)、[TWIN-15](microtasks/vmware_soc_twin/TWIN-15.md)、[TWIN-16](microtasks/vmware_soc_twin/TWIN-16.md)和[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)，实际就绪与派单由COORD按任务卡和前置证据核定。
+
+2026-10-30工作区记录中，TWIN-05/06卡面仍为Backlog，但已有后续运行证据；本地未跟踪的 TWIN-05 run_02 QA报告记录REJECTED，尚需按证据发布和COORD对账。报告决定不自动改变任务状态，也不表示其他候选的验收结果。
 
 最多两张实现卡并行；实际会话、前置接受、写白名单、隔离输出、租约与资源待Ready前落实。台架/串口/探针只登记一名实际操作者，CLI不能与常驻FWD抢UART。QA独立Codex、QA作者产物由非作者ARCH复核；COORD按准确候选收件，不因结构exit0自动推进。
 
