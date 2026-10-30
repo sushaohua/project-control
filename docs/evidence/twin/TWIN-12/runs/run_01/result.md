@@ -82,7 +82,10 @@
 | 交付文件路径 | 类型与描述 | SHA-256 校验码 |
 | :--- | :--- | :--- |
 | `project-control/docs/evidence/twin/TWIN-12/runs/run_01/raw_capture/twin12_acceptance_summary.json` | 物理台架 HIL 真实端到端全链路验收测试数据快照 | `90c698579e1b028305d22bf64e1e91ee032faff282b2ca350bf503597a56c476` |
-| `project-control/docs/evidence/twin/TWIN-12/runs/run_01/result.md` | 本交付与验收自检报告 | (待合入) |
+| `project-control/docs/evidence/twin/TWIN-12/runs/run_01/qa_review_report.md` | QA 独立质量审查与复验报告 | (已就绪) |
+| `project-control/docs/evidence/twin/TWIN-12/runs/run_01/arch_review_report.md` | ARCH 独立系统架构复核报告 | (已就绪) |
+| `project-control/docs/evidence/twin/TWIN-12/runs/run_01/server_qa/server_qa.json` | 独立 Docker 容器沙箱 QA 验证全量证据凭据 | `ba18f970fb2e108706aa68656931206f880792582b9d87d3c58901da6f3d2b7a` |
+| `project-control/docs/evidence/twin/TWIN-12/runs/run_01/result.md` | 本交付与验收自检报告 | (已就绪) |
 
 ---
 

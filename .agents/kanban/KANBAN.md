@@ -1,9 +1,9 @@
 ---
 title: SoC公共看板
-version: 16
+version: 17
 status: current-planning
 owner: COORD
-updated: '2026-10-30T18:01:00+08:00'
+updated: '2026-10-30T19:06:00+08:00'
 plan_revision: vmware-soc-twin-20261029
 execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示运行
 ---
@@ -20,12 +20,12 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 20 | Backlog 6、Done 14 |
+| TWIN | 20 | Backlog 5、Done 15 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
 
-前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)、[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)、[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)、[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)、[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)、[TWIN-05](microtasks/vmware_soc_twin/TWIN-05.md)、[TWIN-06](microtasks/vmware_soc_twin/TWIN-06.md)、[TWIN-07](microtasks/vmware_soc_twin/TWIN-07.md)、[TWIN-08](microtasks/vmware_soc_twin/TWIN-08.md)、[TWIN-15](microtasks/vmware_soc_twin/TWIN-15.md)、[TWIN-09](microtasks/vmware_soc_twin/TWIN-09.md)、[TWIN-16](microtasks/vmware_soc_twin/TWIN-16.md)、[TWIN-10](microtasks/vmware_soc_twin/TWIN-10.md)及[TWIN-11](microtasks/vmware_soc_twin/TWIN-11.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。后续涉及[TWIN-12](microtasks/vmware_soc_twin/TWIN-12.md)，实际就绪与派单由COORD按任务卡和前置证据核定。
+前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)至[TWIN-12](microtasks/vmware_soc_twin/TWIN-12.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。后续涉及[TWIN-13](microtasks/vmware_soc_twin/TWIN-13.md)（SoC平台迁移与实板候选交接），实际就绪与派单由COORD按任务卡和前置证据核定。
 
 2026-10-30工作区记录中：
 1. **TWIN-07（FORWARD常驻服务与唯一UART通路）**：已完成常驻进程守护、MiniMCProto v2.0双向编解码与CRC校验、PTY串口仿真、DDS `telemetry/raw_temp`低延迟发布与D-Bus RPC控制服务，在独立Docker沙箱中通过100%验证，取得独立Codex QA与ARCH审签APPROVED闭环；
@@ -34,7 +34,8 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 4. **TWIN-09（UI网关真实HTTP与SSE通信）**：已完成独立守护进程、非阻塞POSIX Socket与poll()事件循环、HTTP REST快照/准入采样代理、SSE实时长连接多客户端广播、D-Bus点对点解耦交互及全自研函数≤50行硬门禁，在独立Docker容器沙箱（`TWIN-09_run_174259`）中完成100%验证（8/8用例全通），取得独立Codex QA与ARCH审签APPROVED闭环；
 5. **TWIN-16（TH温度契约复核与必要修订）**：已完成TH固件0x14查询响应实现、0.1℃ (`deci_c`) 分辨率全面对账、NTC查表映射修正、开短路故障哨兵（0x7FFF）以及thermistor_safety_lock强电硬件硬锁死，在独立Docker沙箱（`TWIN-16_run_175010`）中完成100%验证，生成AT32F423打包固件并取得独立Codex QA与ARCH审签APPROVED闭环；
 6. **TWIN-10（浏览器交互屏幕接入真实业务接口）**：已完成纯原生零外部依赖的前端交互HMI、实时SSE事件流长连接接入、REST快照加载与防抖准入采样控制、严防死守零伪造模拟数据、0x7FFF/0x7FFE显式哨兵映射及800x480触摸屏优化，在独立Docker容器沙箱（`TWIN-10_run_175524`）中完成100%验证（7/7用例全通），取得独立Codex QA与ARCH审签APPROVED闭环；
-7. **TWIN-11（VMware整链联调与候选交接）**：已完成全链路发布元数据定义（vmware_twin_candidate.yaml锁定微服务/Web/固件制品精准Commit与SHA256）、编排启动联调SOP手册（vmware_twin_joint_debug.md覆盖多进程拉起、D-Bus/DDS/HTTP验证及四类故障自愈），在独立Docker容器沙箱（`TWIN-11_run_175931`）中完成100%验证，取得独立Codex QA与ARCH审签APPROVED闭环。
+7. **TWIN-11（VMware整链联调与候选交接）**：已完成全链路发布元数据定义（vmware_twin_candidate.yaml锁定微服务/Web/固件制品精准Commit与SHA256）、编排启动联调SOP手册（vmware_twin_joint_debug.md覆盖多进程拉起、D-Bus/DDS/HTTP验证及四类故障自愈），在独立Docker容器沙箱（`TWIN-11_run_175931`）中完成100%验证，取得独立Codex QA与ARCH审签APPROVED闭环；
+8. **TWIN-12（VMware应用孪生与真实MCU独立验收）**：已完成真实硬件在环（HIL）双开发板串口贯通实测（MC 7.51ms, TH 8.49ms <= 10ms，加热占空比恒为0%）、全栈微服务（FORWARD/STATE/UI Gateway）在VMware Ubuntu宿主常驻部署与优雅生命周期守护、D-Bus与Fast DDS跨进程低时延协同、HTTP REST与即时采样单调世代号递增（3->5），修复fastcdr未激活union内存拷贝跨环境ABI漏洞，在独立Docker容器沙箱（`TWIN-12_run_190452`）中完成100%验证，取得独立Codex QA与ARCH双审签APPROVED闭环。
 
 当前释放下游就绪任务，COORD将按依赖接续调度推进。最多两张实现卡并行；实际会话、前置接受、写白名单、隔离输出、租约与资源待Ready前落实。台架/串口/探针只登记一名实际操作者，CLI不能与常驻FWD抢UART。QA独立Codex、QA作者产物由非作者ARCH复核；COORD按准确候选收件，不因结构exit0自动推进。
 

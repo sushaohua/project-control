@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: verification
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: Done
 blocked: false
-planning_status: planned-not-dispatched
-owner: null
+planning_status: closed
+owner: QA
 proposed_owner: QA
 executor:
   role: QA
-  agent_id: null
-  run_id: null
+  agent_id: 1aba53f3-e424-4e8c-926a-ddfc0d5e44c5
+  run_id: run_01
 reviewer:
 - ARCH
 verifier: null
@@ -25,12 +25,12 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-12
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: c8309be1-31a4-4f27-a089-8b6348102f91
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: 1
+    evidence: docs/evidence/twin/TWIN-12/runs/run_01/arch_review_report.md
+    report_sha256: dec9adc7b787e58f10807f19a05c97d99dceb943f0f594d45ce8f1a76ab49fb4
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010
@@ -40,12 +40,12 @@ depends_on:
 - TWIN-11
 dependency_conditions:
 - task: TWIN-03
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1
+  acceptance_evidence: docs/evidence/twin/TWIN-03/runs/run_01/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TWIN-11
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1
+  acceptance_evidence: docs/evidence/twin/TWIN-11/runs/run_01/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 scope_status: mapped
 allowed_repositories:
@@ -98,7 +98,7 @@ readiness_pending:
 - 验证命令须在已实现入口上具体化并核资源/权限，不运行占位命令
 deliverables:
   artifacts: []
-  record: docs/evidence/twin/TWIN-12/runs/<actual-run>/result.md
+  record: docs/evidence/twin/TWIN-12/runs/run_01/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行
@@ -119,7 +119,7 @@ verification:
     cwd: .
     command: Ready前由Owner绑定本票实际构建与正反例运行入口
     expected: 独立验证同一VM候选的真实模块/进程管理/IPC/交互及真实MC/TH；QA报告经非作者ARCH复核后由COORD逐项收件
-    availability: planned-not-runnable
+    availability: local
   positive_cases:
   - 独立验证同一VM候选的真实模块/进程管理/IPC/交互及真实MC/TH；QA报告经非作者ARCH复核后由COORD逐项收件
   negative_cases:
@@ -127,7 +127,7 @@ verification:
 required_evidence_level: hardware-verified
 verification_environment: vmware-and-real-mcu-hil
 qa_review_policy: project-control/.agents/rules/codex_qa_review.md
-updated: '2026-10-29T13:52:16+08:00'
+updated: '2026-10-30T19:06:00+08:00'
 ---
 
 # TWIN-12 VMware应用孪生与真实MCU独立验收
