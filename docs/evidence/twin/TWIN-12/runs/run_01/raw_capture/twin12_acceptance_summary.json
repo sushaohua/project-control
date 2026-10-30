@@ -1,0 +1,101 @@
+{
+  "status": "PASS",
+  "baseline_cli": {
+    "mc": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793358048020,
+      "monotonic_rtt_us": 7509,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 121941246
+      }
+    },
+    "th": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793358048045,
+      "monotonic_rtt_us": 8490,
+      "target": "TH",
+      "target_id": 3,
+      "cmd": "GET_TEMP",
+      "req_seq": 5,
+      "resp_seq": 5,
+      "temp_info": {
+        "temperature_c": 120.0,
+        "current_temp_centi_c": 12000,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 2103,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 121982759
+      }
+    }
+  },
+  "forward_service": {
+    "port": "/dev/ttyUSB0",
+    "baud": 115200,
+    "dbus_interface": "org.aisoc.ForwardInterface",
+    "trigger_mc_rtt_ms": 182.15,
+    "trigger_th_rtt_ms": 10.87
+  },
+  "device_manager": {
+    "dbus_interface": "org.aisoc.DeviceInterface",
+    "initial_snapshot": {
+      "schema_version": 2,
+      "generation_id": 3,
+      "timestamp_ns": 182890881430782,
+      "bed": {
+        "temperature_millic": 245000,
+        "temperature_c": 245.0,
+        "sensor_status": "OK",
+        "quality": "FRESH"
+      },
+      "tool": {
+        "temperature_millic": 2147483647,
+        "temperature_c": 2147483.6,
+        "sensor_status": "OK",
+        "quality": "FRESH"
+      },
+      "system_status": "NORMAL"
+    },
+    "updated_snapshot": {
+      "schema_version": 2,
+      "generation_id": 5,
+      "timestamp_ns": 182892006598672,
+      "bed": {
+        "temperature_millic": 245000,
+        "temperature_c": 245.0,
+        "sensor_status": "OK",
+        "quality": "FRESH"
+      },
+      "tool": {
+        "temperature_millic": 2147483647,
+        "temperature_c": 2147483.6,
+        "sensor_status": "OK",
+        "quality": "FRESH"
+      },
+      "system_status": "NORMAL"
+    }
+  },
+  "ui_gateway": {
+    "http_port": 8080,
+    "snapshot_http_status": 200,
+    "sample_http_status": 200,
+    "sample_http_body": "{\"accepted\":true,\"reason\":\"\"}",
+    "hmi_http_status": 200,
+    "hmi_content_bytes": 156
+  }
+}
