@@ -6,15 +6,16 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: false
-planning_status: planned-not-dispatched
-owner: null
+planning_status: dispatched
+owner: INTEGRATOR
 proposed_owner: INTEGRATOR
 executor:
   role: INTEGRATOR
-  agent_id: null
-  run_id: null
+  agent_id: INTEGRATOR
+  run_id: run_02
+candidate_commit: soc-ap=688e4d4cd27a1e76d9cd3d9377659a178926d1e1; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5; project-control=430d30bb2d99211a65dbdc4aa840baef15b2cec7; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503
 reviewer:
 - QA
 - ARCH

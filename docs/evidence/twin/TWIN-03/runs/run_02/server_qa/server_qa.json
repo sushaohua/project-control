@@ -1,0 +1,80 @@
+{
+  "task_id": "TWIN-03",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "67926b0073b1",
+    "id": "TWIN-03_run_114055_20261030_034055",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-03_run_114055_20261030_034055",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "67926b0073b1318efd6a7757b57e1174ddbd2e3827d9a167fb32d67429697f8f",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:43a2f1c6c95b1df70095eb744d5eadc9225867e0d7a2feda9b41ec3b6d38c825",
+      "created": "2026-10-30T03:41:23.581955618Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-03_run_114055_20261030_034055",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-03/runs/run_02/server_qa/server_lock.json",
+    "sha256": "ad2421311642976659166b17384e67161704ef6ef8ab28b30a6b3610b1465eb3"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-03/runs/run_02/server_qa/checkout.log",
+    "sha256": "ae3c5d7c91736ad679ac9d604f0508aa9a7be39f5325dcf80b4433f39979c038"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-03/runs/run_02/server_qa/runtime.log",
+    "sha256": "7398bb4b750811bb5b6088311728225771faa9f0a1584689eb45a37f0d8c03b0"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-03/runs/run_02/server_qa/server_verdict.json",
+    "sha256": "0e1eafcee309414cb593e8af530d4fbcea2bb07202c4ee0ded8f5c264b5182e4"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "python3 static_checks/twin/validate_schemas.py --root /workspace",
+      "exit_code": "0",
+      "duration": "0.14s",
+      "output": "========================================================================\nTWIN-03 Schema Draft7Validator Matrix Results\n========================================================================\n[PASS] POS-MAN-VMWARE                   : VALID\n[PASS] POS-MAN-SOC                      : VALID\n[PASS] NEG-MAN-ONLY-4-ACTIVE            : Array missing required element at /services\n[PASS] NEG-MAN-MISSING-SYSTEM-MGR       : Array missing required element at /services\n[PASS] NEG-MAN-ACTIVE-MARKED-DEFERRED   : Value deferred != const first_slice_active at /services/0/slice_status\n[PASS] NEG-MAN-GENERATION-ZERO          : 0 < min 1 at /generation_id\n[PASS] NEG-MAN-BAD-REVISION-TAG         : 'bad_revision' mismatch pattern ^[0-9]{8}_rev[0-9]+$ at /manifest_revision\n[PASS] POS-HTTP-SNAPSHOT-VALID          : VALID\n[PASS] POS-HTTP-SNAPSHOT-FAULT          : VALID\n[PASS] NEG-HTTP-TEMP-TOO-HIGH           : 500.1 > max 500.0 at /tool/temperature_c\n[PASS] NEG-HTTP-TEMP-TOO-LOW            : -40.1 < min -40.0 at /bed/temperature_c\n[PASS] NEG-HTTP-INVALID-SENTINEL        : Expected 1 valid in oneOf, got 0 at /tool/temperature_millic\n[PASS] NEG-HTTP-ADC-OVERFLOW            : 4096 > max 4095 at /bed/raw_adc\n[PASS] NEG-HTTP-EXTRA-PROPERTY          : Property 'extra_field' not allowed at /extra_field\n[PASS] POS-SSE-TEMP-UPDATE              : VALID\n[PASS] NEG-SSE-INVALID-QUALITY-ENUM     : Value INVALID_QUALITY not in ['FRESH', 'STALE', 'FAULT', 'UNKNOWN'] at /bed_q\n------------------------------------------------------------------------\nTotal: 16, Passed: 16, Failed: 0"
+    },
+    {
+      "command": "python3 static_checks/twin/run_twin_cases.py --root /workspace",
+      "exit_code": "0",
+      "duration": "0.10s",
+      "output": "========================================================================\nTWIN-03 Independent Golden Expectation Test Suite Execution\n========================================================================\n[PASS] PERIODIC-100MS-SAMPLING          : Verified 10 periodic samples with 100ms cadence\n[PASS] NOZZLE-4CH-AND-BED-TEMPS         : Verified 4 nozzles and 4 beds with unit conversion\n[PASS] SENTINELS-AND-FRESHNESS          : Sentinels and freshness rules verified\n[PASS] NEGATIVE-ROBUSTNESS-CASES        : Verified 9 negative telemetry fault assertions\n[PASS] DBUS-CONTROL-AND-ERRORS          : Verified 27 D-Bus method and signal test cases with codes and admissions\n[PASS] HTTP-REST-AND-SSE-EVENTS         : Verified 11 HTTP REST and SSE golden cases\n[PASS] CRC16-KNOWN-VECTORS              : CRC-16/CCITT-FALSE verified against standard vectors (123456789 -> 0x29B1)\n------------------------------------------------------------------------\nTotal Suites: 7, Passed: 7, Failed: 0"
+    },
+    {
+      "command": "python3 static_checks/twin/reconcile_layout.py --root /workspace",
+      "exit_code": "0",
+      "duration": "0.18s",
+      "output": "========================================================================\nTWIN-03 C/C++ Struct & Fast DDS IDL Layout Reconciliation\n========================================================================\n[PASS] BINARY-LAYOUT-INVARIANTS         : C11 and C++17 binary layout assertions passed\n[PASS] IDL-RAW-TEMP-RECONCILE           : RawTempTelemetry fields exactly matched\n[PASS] SENTINEL-CONSTANTS-RECONCILE     : Sentinel values aligned\n[PASS] DIMENSIONS-AND-THRESHOLDS        : Dimensions and thresholds aligned\n------------------------------------------------------------------------\nTotal: 4, Passed: 4, Failed: 0"
+    },
+    {
+      "command": "python3 hil/twin_capture/test_twin_capture.py",
+      "exit_code": "0",
+      "duration": "0.13s",
+      "output": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.006s\n\nOK"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-30T03:41:26.776566+00:00"
+}

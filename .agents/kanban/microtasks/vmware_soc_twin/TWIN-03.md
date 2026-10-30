@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: verification
 development_stage: cross-stage
 dispatchable: true
-status: Backlog
+status: Done
 blocked: false
-planning_status: planned-not-dispatched
-owner: null
+planning_status: closed
+owner: QA
 proposed_owner: QA
 executor:
   role: QA
-  agent_id: null
-  run_id: null
+  agent_id: QA
+  run_id: run_02
 reviewer:
 - ARCH
 verifier: null
@@ -24,13 +24,16 @@ review_assignments:
   - role: ARCH
     platform: codex
     model: gpt-6-luna
-    planned_session_alias: planned-arch-twin-03
-    session: 01a18ab7-e3e0-7673-918e-aad60f325354
-    decision: REJECTED
+    planned_session_alias: planned-arch-twin-03-r2
+    session: 01a18ae9-7374-7c62-8787-a9b4cc5c9598
+    session_evidence:
+      path: docs/evidence/twin/TWIN-03/runs/run_02/arch_review_report.md
+      sha256: d69119fe767485d5f6afe94dc480056d6dac6b9d663dbfddb98ae5ae9857ecaf
+    decision: APPROVED
     reviewed_task_revision: 1
-    artifact_version: test_harness=27532d3bc1237e6f7324edcadee14fc95169fc49; project-control=80ffa386f3ff682b0913763109d63c865b0d9808
-    evidence: docs/evidence/twin/TWIN-03/runs/run_01/arch_review_report.md
-    report_sha256: 578e153843e74b069eb61a64de0d483c5443e9a6426a6e1d49029bf8b5e8ddc3
+    artifact_version: "soc-ap=6a63b7879795beed0f9e1e8dc3e52c935fe2a54f; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5; project-control=430d30bb2d99211a65dbdc4aa840baef15b2cec7; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503"
+    evidence: docs/evidence/twin/TWIN-03/runs/run_02/arch_review_report.md
+    report_sha256: d69119fe767485d5f6afe94dc480056d6dac6b9d663dbfddb98ae5ae9857ecaf
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010

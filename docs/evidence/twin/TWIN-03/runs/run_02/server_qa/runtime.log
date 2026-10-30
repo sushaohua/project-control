@@ -1,0 +1,76 @@
+=== Docker Container Inspect: 67926b0073b1 ===
+{
+  "id": "67926b0073b1318efd6a7757b57e1174ddbd2e3827d9a167fb32d67429697f8f",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:43a2f1c6c95b1df70095eb744d5eadc9225867e0d7a2feda9b41ec3b6d38c825",
+  "created": "2026-10-30T03:41:23.581955618Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-03_run_114055_20261030_034055",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (test_harness) python3 static_checks/twin/validate_schemas.py --root /workspace -> 0
+========================================================================
+TWIN-03 Schema Draft7Validator Matrix Results
+========================================================================
+[PASS] POS-MAN-VMWARE                   : VALID
+[PASS] POS-MAN-SOC                      : VALID
+[PASS] NEG-MAN-ONLY-4-ACTIVE            : Array missing required element at /services
+[PASS] NEG-MAN-MISSING-SYSTEM-MGR       : Array missing required element at /services
+[PASS] NEG-MAN-ACTIVE-MARKED-DEFERRED   : Value deferred != const first_slice_active at /services/0/slice_status
+[PASS] NEG-MAN-GENERATION-ZERO          : 0 < min 1 at /generation_id
+[PASS] NEG-MAN-BAD-REVISION-TAG         : 'bad_revision' mismatch pattern ^[0-9]{8}_rev[0-9]+$ at /manifest_revision
+[PASS] POS-HTTP-SNAPSHOT-VALID          : VALID
+[PASS] POS-HTTP-SNAPSHOT-FAULT          : VALID
+[PASS] NEG-HTTP-TEMP-TOO-HIGH           : 500.1 > max 500.0 at /tool/temperature_c
+[PASS] NEG-HTTP-TEMP-TOO-LOW            : -40.1 < min -40.0 at /bed/temperature_c
+[PASS] NEG-HTTP-INVALID-SENTINEL        : Expected 1 valid in oneOf, got 0 at /tool/temperature_millic
+[PASS] NEG-HTTP-ADC-OVERFLOW            : 4096 > max 4095 at /bed/raw_adc
+[PASS] NEG-HTTP-EXTRA-PROPERTY          : Property 'extra_field' not allowed at /extra_field
+[PASS] POS-SSE-TEMP-UPDATE              : VALID
+[PASS] NEG-SSE-INVALID-QUALITY-ENUM     : Value INVALID_QUALITY not in ['FRESH', 'STALE', 'FAULT', 'UNKNOWN'] at /bed_q
+------------------------------------------------------------------------
+Total: 16, Passed: 16, Failed: 0
+
+
+$ (test_harness) python3 static_checks/twin/run_twin_cases.py --root /workspace -> 0
+========================================================================
+TWIN-03 Independent Golden Expectation Test Suite Execution
+========================================================================
+[PASS] PERIODIC-100MS-SAMPLING          : Verified 10 periodic samples with 100ms cadence
+[PASS] NOZZLE-4CH-AND-BED-TEMPS         : Verified 4 nozzles and 4 beds with unit conversion
+[PASS] SENTINELS-AND-FRESHNESS          : Sentinels and freshness rules verified
+[PASS] NEGATIVE-ROBUSTNESS-CASES        : Verified 9 negative telemetry fault assertions
+[PASS] DBUS-CONTROL-AND-ERRORS          : Verified 27 D-Bus method and signal test cases with codes and admissions
+[PASS] HTTP-REST-AND-SSE-EVENTS         : Verified 11 HTTP REST and SSE golden cases
+[PASS] CRC16-KNOWN-VECTORS              : CRC-16/CCITT-FALSE verified against standard vectors (123456789 -> 0x29B1)
+------------------------------------------------------------------------
+Total Suites: 7, Passed: 7, Failed: 0
+
+
+$ (test_harness) python3 static_checks/twin/reconcile_layout.py --root /workspace -> 0
+========================================================================
+TWIN-03 C/C++ Struct & Fast DDS IDL Layout Reconciliation
+========================================================================
+[PASS] BINARY-LAYOUT-INVARIANTS         : C11 and C++17 binary layout assertions passed
+[PASS] IDL-RAW-TEMP-RECONCILE           : RawTempTelemetry fields exactly matched
+[PASS] SENTINEL-CONSTANTS-RECONCILE     : Sentinel values aligned
+[PASS] DIMENSIONS-AND-THRESHOLDS        : Dimensions and thresholds aligned
+------------------------------------------------------------------------
+Total: 4, Passed: 4, Failed: 0
+
+
+$ (test_harness) python3 hil/twin_capture/test_twin_capture.py -> 0
+
+........
+----------------------------------------------------------------------
+Ran 8 tests in 0.006s
+
+OK
