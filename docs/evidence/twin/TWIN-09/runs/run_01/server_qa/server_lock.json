@@ -1,0 +1,28 @@
+{
+  "repositories": [
+    {
+      "name": "soc-ap",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+      "ref": "main",
+      "commit": "d214ded82447502944a41d2b27194245b0f96b19"
+    },
+    {
+      "name": "project-control",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "main",
+      "commit": "754b188b312ac79e2873ea97075b8a2a74937ecc"
+    },
+    {
+      "name": "test_harness",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+      "ref": "main",
+      "commit": "0b7497ba43158841eb3c4af7f16e477b9c30c2c5"
+    },
+    {
+      "name": "mcu-p3",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+      "ref": "feat/soc-debug",
+      "commit": "0ba7769fe60a032f765deada1e112c360e08b3cd"
+    }
+  ]
+}

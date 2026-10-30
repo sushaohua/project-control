@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: Done
 blocked: false
-planning_status: planned-not-dispatched
-owner: null
+planning_status: closed
+owner: ENG-NET
 proposed_owner: ENG-NET
 executor:
   role: ENG-NET
-  agent_id: null
-  run_id: null
+  agent_id: 1aba53f3-e424-4e8c-926a-ddfc0d5e44c5
+  run_id: run_01
 reviewer:
 - QA
 - ARCH
@@ -26,22 +26,22 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-09
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: d14f923b-741a-4d29-a1b7-95ec10e30129
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: run_01
+    evidence: docs/evidence/twin/TWIN-09/runs/run_01/qa_review_report.md
+    report_sha256: 7bdc4244f1fd3eef2559e83f6374f4bf8eb23869e9d3c4204fd3c86ae6982985
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-09
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 0c5a289b-9831-7e8a-82dc-8a901f417724
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: run_01
+    evidence: docs/evidence/twin/TWIN-09/runs/run_01/arch_review_report.md
+    report_sha256: 43adeb9a0c87f3f56bf63e9d01088e7f3532cc4516d1166ed98ae65320fbbe64
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -53,20 +53,20 @@ depends_on:
 - TWIN-06
 dependency_conditions:
 - task: TWIN-02
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1.0.0
+  acceptance_evidence: docs/evidence/twin/TWIN-02/runs/run_03/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TWIN-03
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1.0.0
+  acceptance_evidence: docs/evidence/twin/TWIN-03/runs/run_02/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TWIN-05
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1.0.0
+  acceptance_evidence: docs/evidence/twin/TWIN-05/runs/run_03/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TWIN-06
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1.0.0
+  acceptance_evidence: docs/evidence/twin/TWIN-06/runs/run_03/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 scope_status: mapped
 allowed_repositories:
@@ -83,12 +83,12 @@ allowed_paths:
 - soc-ap/tests/ui_gateway/twin/**
 - project-control/docs/evidence/twin/TWIN-09/**
 source_baseline:
-  project-control: a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819
-  soc-ap: 4445c8fedc21bafef5e6c971fcb54cec703f0e71
-  mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
-  test_harness: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
-base_commit: null
-candidate_commit: null
+  project-control: 754b188b312ac79e2873ea97075b8a2a74937ecc
+  soc-ap: d214ded82447502944a41d2b27194245b0f96b19
+  mcu-p3: 0ba7769fe60a032f765deada1e112c360e08b3cd
+  test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+base_commit: 4445c8fedc21bafef5e6c971fcb54cec703f0e71
+candidate_commit: d214ded82447502944a41d2b27194245b0f96b19
 dispatch_binding:
   source_commit: null
   workspace_diff_sha256: null
