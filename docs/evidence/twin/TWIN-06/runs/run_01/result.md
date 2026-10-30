@@ -48,7 +48,7 @@
 | `soc-ap/middleware/dbus/README.md` | 模块公开 API 架构、接口规范与构建集成指南 | `ab3229bbc2441a7bb09175c0b91521e6a73079f2d4e51267263766d9eb65da9f` |
 | `soc-ap/config/dbus/twin/session_twin.conf` | 孪生会话总线配置文件 (安全沙箱与名称权限放通) | `86e75ad9413fca24c6282356fba7dd206d460efe8fa8daa9025c298540921a96` |
 | `soc-ap/config/dbus/twin/org.aisoc.conf` | 总线安全策略文件 (声明所有权与通信白名单) | `bc147d05ee8018cf25862766bf52cfbe5f090f75f06b852936cef56c72ac6060` |
-| `soc-ap/tests/dbus/twin/test_dbus_ipc.cpp` | 真实三进程 D-Bus IPC 正反例、超时与信号自动化测试套件 | `da78ec2b28e5e100820d849a994fb4a75848103463a4e80170877e413908e23e` |
+| `soc-ap/tests/dbus/twin/test_dbus_ipc.cpp` | 真实三进程 D-Bus IPC 正反例、超时与信号自动化测试套件 | `d5014ac4ceb09a2b2068c0c5050443b1fd8ecec93bec49976b9a81d1109a9a97` |
 | `soc-ap/tests/dbus/twin/CMakeLists.txt` | 测试目录独立构建配置 | `06ad077ec9e34dac1a496e96aa7e2c39cd68ee4e45c69547e19ab9b1cd61d88c` |
 | `soc-ap/third_party/dbus/README.md` | D-Bus 1.16.2 来源、SHA256、许可证及构建说明 | `2898d82324e54110e6c3a95972ee26af794512a03bbf689043e7f961758315f3` |
 
