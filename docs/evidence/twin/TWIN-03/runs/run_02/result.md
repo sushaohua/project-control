@@ -36,12 +36,13 @@
 | `test_harness/test_cases/twin/golden_telemetry_cases.json` | 遥测黄金向量（Fast DDS 100ms周期、4路喷嘴、热床/机箱、哨兵与负例） | `bb0b37641b452bb340bc217e809102d7be362a659ab5f7895e38d9b11cbf2945` | `d6769765f8d5bb12ea61db4491b70ca71a152567` |
 | `test_harness/test_cases/twin/golden_dbus_cases.json` | D-Bus 统一控制准入与错误码黄金预期集 | `15703beb77b0cb362395d9de3bd87542863e346d087e937a78c284258cec22fe` | `d6769765f8d5bb12ea61db4491b70ca71a152567` |
 | `test_harness/test_cases/twin/golden_sse_cases.json` | HTTP REST 与 SSE 实时事件流黄金预期集 | `2c8032df9362e3378d41be50e26d0e9b3cde4d94a1383fb93ccbc214280e6799` | `d6769765f8d5bb12ea61db4491b70ca71a152567` |
-| `test_harness/static_checks/twin/validate_schemas.py` | Draft7Validator 自动化正反例矩阵验证脚本 | `135f4f64aa66da4644fdb595abae12112864577841e03b407583c011f3a7d0b3` | `d6769765f8d5bb12ea61db4491b70ca71a152567` |
-| `test_harness/static_checks/twin/check_layout.c` | C/C++ 内存布局、偏移量、已知 CRC-16 (0x29B1) 校验程序 | `98f8e97f89adebee2444f637d5e1b5d219abce23f48b3b50760eada1b0fa7f3f` | `d6769765f8d5bb12ea61db4491b70ca71a152567` |
-| `test_harness/static_checks/twin/reconcile_layout.py` | C/C++ 结构体与 Fast DDS IDL 静态与二进制对账脚本 | `e34d19dd9128f743efe64dc84b569cd10c025ba6b83af40456c34d1b72dc51dd` | `d6769765f8d5bb12ea61db4491b70ca71a152567` |
-| `test_harness/static_checks/twin/run_twin_cases.py` | 独立黄金预期、负例断言与 CRC-16 已知向量综合测试运行器 | `098aa4506801b387479b7c45fcc5ffa1ee53886aeecb606de4e43a9a20d963ac` | `d6769765f8d5bb12ea61db4491b70ca71a152567` |
-| `test_harness/hil/twin_capture/twin_capture_analyzer.py` | 虚拟/物理帧捕获、抖动门禁与端到端对账工具（抖动违例 CLI 返回 1） | `b662df9145ffdb2fdd0428425d48f2f6361de4f9aa8136c60c68cea46af28073` | `d6769765f8d5bb12ea61db4491b70ca71a152567` |
-| `test_harness/hil/twin_capture/test_twin_capture.py` | 捕获分析器单测（含已知 CRC-16 向量与 AST 门禁核验） | `6c8d4d7f6b3f8147f2a0df127b486b2de4d100940bf5ef126b601d5029b82884` | `d6769765f8d5bb12ea61db4491b70ca71a152567` |
+| `test_harness/static_checks/twin/validate_schemas.py` | Draft7Validator 自动化正反例矩阵验证脚本 | `55b0a21c72340d5fc5c0b13866fb90dfe24124c988b63df5fcd2b484e9ae3d35` | `c6eda3871524d2f083bac7dc595871ff0a12adad` |
+| `test_harness/static_checks/twin/fallback_validator.py` | 纯 Python JSON Schema Draft-07 离线轻量验证器（无第三方依赖） | `c741dfccabaa84afef299d3bd374a0791c3f8efebd52f22ba513ce11a77f45a6` | `c6eda3871524d2f083bac7dc595871ff0a12adad` |
+| `test_harness/static_checks/twin/check_layout.c` | C/C++ 内存布局、偏移量、已知 CRC-16 (0x29B1) 校验程序 | `98f8e97f89adebee2444f637d5e1b5d219abce23f48b3b50760eada1b0fa7f3f` | `c6eda3871524d2f083bac7dc595871ff0a12adad` |
+| `test_harness/static_checks/twin/reconcile_layout.py` | C/C++ 结构体与 Fast DDS IDL 静态与二进制对账脚本 | `e34d19dd9128f743efe64dc84b569cd10c025ba6b83af40456c34d1b72dc51dd` | `c6eda3871524d2f083bac7dc595871ff0a12adad` |
+| `test_harness/static_checks/twin/run_twin_cases.py` | 独立黄金预期、负例断言与 CRC-16 已知向量综合测试运行器 | `42d73c3158e914ccc9ed53514f38b6c8d36a0a502a21a220d78deced2cdec6f1` | `c6eda3871524d2f083bac7dc595871ff0a12adad` |
+| `test_harness/hil/twin_capture/twin_capture_analyzer.py` | 虚拟/物理帧捕获、抖动门禁与端到端对账工具（抖动违例 CLI 返回 1） | `b662df9145ffdb2fdd0428425d48f2f6361de4f9aa8136c60c68cea46af28073` | `c6eda3871524d2f083bac7dc595871ff0a12adad` |
+| `test_harness/hil/twin_capture/test_twin_capture.py` | 捕获分析器单测（含已知 CRC-16 向量与 AST 门禁核验） | `6c8d4d7f6b3f8147f2a0df127b486b2de4d100940bf5ef126b601d5029b82884` | `c6eda3871524d2f083bac7dc595871ff0a12adad` |
 
 ---
 
