@@ -1,0 +1,2500 @@
+=== Docker Container Inspect: bcd22409d7a0 ===
+{
+  "id": "bcd22409d7a0f0f42f012f6fe563000c87e22745339e44f612620a12897553b4",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:43a2f1c6c95b1df70095eb744d5eadc9225867e0d7a2feda9b41ec3b6d38c825",
+  "created": "2026-10-30T01:51:36.109783372Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-02_run_095136_20261030_015136",
+      "Destination": "/workspace",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) g++ -std=c++17 -Wall -Wextra -Werror -fsyntax-only contracts/twin/telemetry_types.h -> 0
+
+
+$ (soc-ap) gcc -std=c11 -Wall -Wextra -Werror -fsyntax-only contracts/twin/telemetry_types.h -> 0
+
+
+$ (soc-ap) python3 -m json.tool contracts/twin/services_manifest_schema.json -> 0
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://aisoc.org/schemas/twin/services_manifest_schema.json",
+    "title": "AI-SoC Digital Twin Services Topology and Manifest Specification",
+    "description": "JSON Schema defining runtime service topologies, IPC channels, process resource budgets, and systemd units (TWIN-02 / ICD-VMWARE-SOC-TWIN-20261029)",
+    "type": "object",
+    "required": [
+        "schema_version",
+        "generation_id",
+        "manifest_revision",
+        "target_environments",
+        "services"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "schema_version": {
+            "type": "integer",
+            "const": 2,
+            "description": "Manifest schema version 2"
+        },
+        "generation_id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "System topology generation tracker"
+        },
+        "manifest_revision": {
+            "type": "string",
+            "pattern": "^[0-9]{8}_rev[0-9]+$",
+            "description": "Revision timestamp tag (e.g., 20261029_rev2)"
+        },
+        "target_environments": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "vmware",
+                    "soc"
+                ]
+            },
+            "minItems": 1
+        },
+        "services": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 10,
+            "description": "Full module service descriptors; first slice requires all 4 operational services",
+            "items": {
+                "$ref": "#/definitions/ServiceDescriptor"
+            },
+            "allOf": [
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "const": "forward-service"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ]
+                    }
+                },
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "const": "device-manager"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ]
+                    }
+                },
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "const": "ui-gateway"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ]
+                    }
+                },
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "const": "browser-hmi"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "definitions": {
+        "ResourceBudget": {
+            "type": "object",
+            "required": [
+                "rss_mb_max",
+                "cpu_percent_max"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "rss_mb_max": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 512,
+                    "description": "Maximum resident set size in megabytes"
+                },
+                "cpu_percent_max": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "description": "Maximum single-core CPU utilization percentage limit"
+                }
+            }
+        },
+        "SystemdSpec": {
+            "type": "object",
+            "required": [
+                "unit_name",
+                "restart_policy",
+                "restart_sec",
+                "sd_notify"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "unit_name": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9_-]+\\.service$"
+                },
+                "restart_policy": {
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "on-failure",
+                        "no"
+                    ]
+                },
+                "restart_sec": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "sd_notify": {
+                    "type": "boolean",
+                    "description": "True if process uses sd_notify(READY=1)"
+                }
+            }
+        },
+        "DdsIpcChannel": {
+            "type": "object",
+            "required": [
+                "topic",
+                "message_type",
+                "direction",
+                "qos"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "topic": {
+                    "type": "string"
+                },
+                "message_type": {
+                    "type": "string"
+                },
+                "direction": {
+                    "type": "string",
+                    "enum": [
+                        "PUB",
+                        "SUB"
+                    ]
+                },
+                "qos": {
+                    "type": "object",
+                    "required": [
+                        "reliability",
+                        "durability",
+                        "history_depth"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "reliability": {
+                            "type": "string",
+                            "enum": [
+                                "RELIABLE",
+                                "BEST_EFFORT"
+                            ]
+                        },
+                        "durability": {
+                            "type": "string",
+                            "enum": [
+                                "VOLATILE",
+                                "TRANSIENT_LOCAL"
+                            ]
+                        },
+                        "history_depth": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    }
+                }
+            }
+        },
+        "DbusIpcChannel": {
+            "type": "object",
+            "required": [
+                "bus_type",
+                "object_path",
+                "interface_name",
+                "role"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "bus_type": {
+                    "type": "string",
+                    "enum": [
+                        "session",
+                        "system"
+                    ]
+                },
+                "bus_name": {
+                    "type": "string"
+                },
+                "object_path": {
+                    "type": "string"
+                },
+                "interface_name": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "server",
+                        "client"
+                    ]
+                }
+            }
+        },
+        "HttpIpcChannel": {
+            "type": "object",
+            "required": [
+                "port",
+                "static_root",
+                "endpoints"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "port": {
+                    "type": "integer",
+                    "minimum": 1024,
+                    "maximum": 65535
+                },
+                "static_root": {
+                    "type": "string"
+                },
+                "endpoints": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "SerialChannel": {
+            "type": "object",
+            "required": [
+                "device_node",
+                "baud_rate",
+                "parity",
+                "timeout_ms",
+                "exclusive_lock"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "device_node": {
+                    "type": "string"
+                },
+                "baud_rate": {
+                    "type": "integer",
+                    "enum": [
+                        9600,
+                        115200,
+                        921600
+                    ]
+                },
+                "parity": {
+                    "type": "string",
+                    "enum": [
+                        "8N1",
+                        "8E1",
+                        "8O1"
+                    ]
+                },
+                "timeout_ms": {
+                    "type": "integer",
+                    "minimum": 10
+                },
+                "exclusive_lock": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "IpcChannels": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "dds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DdsIpcChannel"
+                    }
+                },
+                "dbus": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DbusIpcChannel"
+                    }
+                },
+                "http": {
+                    "$ref": "#/definitions/HttpIpcChannel"
+                },
+                "serial": {
+                    "$ref": "#/definitions/SerialChannel"
+                }
+            }
+        },
+        "ServiceDescriptor": {
+            "type": "object",
+            "required": [
+                "name",
+                "role",
+                "slice_status",
+                "binary_path",
+                "systemd",
+                "budgets",
+                "ipc_channels",
+                "dependencies"
+            ],
+            "additionalProperties": false,
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "name": {
+                                "enum": [
+                                    "forward-service",
+                                    "device-manager",
+                                    "ui-gateway",
+                                    "browser-hmi"
+                                ]
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "slice_status": {
+                                "const": "first_slice_active"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "name": {
+                                "enum": [
+                                    "job-engine",
+                                    "storage-service",
+                                    "cloud-gateway",
+                                    "camera-service",
+                                    "print-guard",
+                                    "system-manager"
+                                ]
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "slice_status": {
+                                "const": "deferred"
+                            }
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "enum": [
+                        "forward-service",
+                        "device-manager",
+                        "ui-gateway",
+                        "browser-hmi",
+                        "job-engine",
+                        "storage-service",
+                        "cloud-gateway",
+                        "camera-service",
+                        "print-guard",
+                        "system-manager"
+                    ]
+                },
+                "role": {
+                    "type": "string"
+                },
+                "slice_status": {
+                    "type": "string",
+                    "enum": [
+                        "first_slice_active",
+                        "deferred"
+                    ]
+                },
+                "binary_path": {
+                    "type": "string"
+                },
+                "systemd": {
+                    "$ref": "#/definitions/SystemdSpec"
+                },
+                "budgets": {
+                    "type": "object",
+                    "required": [
+                        "vmware",
+                        "soc"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "vmware": {
+                            "$ref": "#/definitions/ResourceBudget"
+                        },
+                        "soc": {
+                            "$ref": "#/definitions/ResourceBudget"
+                        }
+                    }
+                },
+                "ipc_channels": {
+                    "$ref": "#/definitions/IpcChannels"
+                },
+                "dependencies": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+$ (soc-ap) python3 -m json.tool contracts/twin/http_sse_schema.json -> 0
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://aisoc.org/schemas/twin/http_sse_schema.json",
+    "title": "AI-SoC Digital Twin HTTP REST and SSE Interface Specification",
+    "description": "Authoritative contract schema for ui-gateway REST endpoints and SSE event streams (TWIN-02 / ICD-VMWARE-SOC-TWIN-20261029)",
+    "type": "object",
+    "required": [
+        "endpoints",
+        "sse_events"
+    ],
+    "properties": {
+        "endpoints": {
+            "type": "object",
+            "required": [
+                "/api/v1/temperature/snapshot",
+                "/api/v1/motion/status",
+                "/api/v1/hms/active"
+            ],
+            "properties": {
+                "/api/v1/temperature/snapshot": {
+                    "$ref": "#/definitions/TemperatureSnapshotResponse"
+                },
+                "/api/v1/motion/status": {
+                    "$ref": "#/definitions/MotionStatusResponse"
+                },
+                "/api/v1/hms/active": {
+                    "$ref": "#/definitions/HmsActiveResponse"
+                }
+            }
+        },
+        "sse_events": {
+            "type": "object",
+            "required": [
+                "temp_update",
+                "motion_update",
+                "status_change",
+                "alarm_event"
+            ],
+            "properties": {
+                "temp_update": {
+                    "$ref": "#/definitions/SseTempUpdateEvent"
+                },
+                "motion_update": {
+                    "$ref": "#/definitions/SseMotionUpdateEvent"
+                },
+                "status_change": {
+                    "$ref": "#/definitions/SseStatusChangeEvent"
+                },
+                "alarm_event": {
+                    "$ref": "#/definitions/SseAlarmEvent"
+                }
+            }
+        }
+    },
+    "definitions": {
+        "SensorStatusEnum": {
+            "type": "string",
+            "enum": [
+                "STATUS_OK",
+                "STATUS_OPEN",
+                "STATUS_SHORT",
+                "STATUS_TIMEOUT",
+                "STATUS_UNKNOWN"
+            ],
+            "description": "Physical sensor health condition"
+        },
+        "DataQualityEnum": {
+            "type": "string",
+            "enum": [
+                "QUALITY_UNKNOWN",
+                "QUALITY_FRESH",
+                "QUALITY_STALE",
+                "QUALITY_FAULT"
+            ],
+            "description": "Temporal data quality status (FRESH < 3s, STALE >= 3s, FAULT >= 10s or sensor failure)"
+        },
+        "TemperatureChannel": {
+            "type": "object",
+            "required": [
+                "temperature_c",
+                "temperature_millic",
+                "sensor_status",
+                "quality",
+                "raw_adc",
+                "updated_ms_ago"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "temperature_c": {
+                    "type": [
+                        "number",
+                        "null"
+                    ],
+                    "minimum": -40.0,
+                    "maximum": 500.0,
+                    "description": "Calibrated temperature in degrees Celsius (0.1 resolution), or null if faulted/offline"
+                },
+                "temperature_millic": {
+                    "type": "integer",
+                    "description": "Normalized integer temperature in 0.001 deg C, or 2147483647 (0x7FFFFFFF) on fault, 2147483646 (0x7FFFFFFE) on offline",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "minimum": -40000,
+                            "maximum": 500000,
+                            "description": "Valid measurement range: -40.000 deg C to +500.000 deg C"
+                        },
+                        {
+                            "type": "integer",
+                            "enum": [
+                                2147483647,
+                                2147483646
+                            ],
+                            "description": "Sentinels: 2147483647 (FAULT), 2147483646 (OFFLINE)"
+                        }
+                    ]
+                },
+                "sensor_status": {
+                    "$ref": "#/definitions/SensorStatusEnum"
+                },
+                "quality": {
+                    "$ref": "#/definitions/DataQualityEnum"
+                },
+                "raw_adc": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4095,
+                    "description": "12-bit ADC raw conversion readout"
+                },
+                "sample_tick_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Monotonic timestamp of sampling tick on MCU (ms)"
+                },
+                "updated_ms_ago": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Elapsed milliseconds since last valid telemetry update received on host"
+                }
+            }
+        },
+        "TemperatureSnapshotResponse": {
+            "type": "object",
+            "required": [
+                "schema_version",
+                "generation_id",
+                "timestamp_ms",
+                "system_status",
+                "bed",
+                "tool"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "schema_version": {
+                    "type": "integer",
+                    "const": 2,
+                    "description": "Fixed schema version 2 (TWIN-02)"
+                },
+                "generation_id": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "AP service boot/restart generation ID (invalidates stale clients)"
+                },
+                "timestamp_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Unix epoch or monotonic milliseconds when snapshot was generated"
+                },
+                "system_status": {
+                    "type": "string",
+                    "description": "Human-readable summary of subsystem operational health"
+                },
+                "bed": {
+                    "$ref": "#/definitions/TemperatureChannel",
+                    "description": "Heated bed temperature channel (MC, source_node=1)"
+                },
+                "tool": {
+                    "$ref": "#/definitions/TemperatureChannel",
+                    "description": "Toolhead / nozzle temperature channel (TH, source_node=2)"
+                }
+            }
+        },
+        "MotionStatusResponse": {
+            "type": "object",
+            "required": [
+                "schema_version",
+                "timestamp_ms",
+                "x_mm",
+                "y_mm",
+                "z_mm",
+                "e_mm",
+                "feedrate_mms",
+                "is_moving",
+                "is_homed",
+                "sequence_id"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "schema_version": {
+                    "type": "integer",
+                    "const": 2
+                },
+                "timestamp_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "x_mm": {
+                    "type": "number",
+                    "description": "Current X axis coordinate in millimeters"
+                },
+                "y_mm": {
+                    "type": "number",
+                    "description": "Current Y axis coordinate in millimeters"
+                },
+                "z_mm": {
+                    "type": "number",
+                    "description": "Current Z axis coordinate in millimeters"
+                },
+                "e_mm": {
+                    "type": "number",
+                    "description": "Current extruder coordinate in millimeters"
+                },
+                "feedrate_mms": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "description": "Current commanded feedrate in mm/s"
+                },
+                "is_moving": {
+                    "type": "boolean",
+                    "description": "True when motion planner buffer is actively executing moves"
+                },
+                "is_homed": {
+                    "type": "boolean",
+                    "description": "True when all axes are homed"
+                },
+                "sequence_id": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "HmsAlarm": {
+            "type": "object",
+            "required": [
+                "alarm_id",
+                "node_id",
+                "error_code",
+                "severity",
+                "message",
+                "timestamp_ms"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "alarm_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "node_id": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ],
+                    "description": "1 = MC, 2 = TH, 3 = AP"
+                },
+                "error_code": {
+                    "type": "integer"
+                },
+                "severity": {
+                    "type": "string",
+                    "enum": [
+                        "INFO",
+                        "WARNING",
+                        "ERROR",
+                        "CRITICAL"
+                    ]
+                },
+                "message": {
+                    "type": "string"
+                },
+                "timestamp_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "HmsActiveResponse": {
+            "type": "object",
+            "required": [
+                "schema_version",
+                "timestamp_ms",
+                "total_active",
+                "active_alarms"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "schema_version": {
+                    "type": "integer",
+                    "const": 2
+                },
+                "timestamp_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "total_active": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "active_alarms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HmsAlarm"
+                    }
+                }
+            }
+        },
+        "SseTempUpdateEvent": {
+            "type": "object",
+            "required": [
+                "timestamp_ms",
+                "bed_c",
+                "tool_c",
+                "bed_q",
+                "tool_q",
+                "bed_status",
+                "tool_status"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "timestamp_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "bed_c": {
+                    "type": [
+                        "number",
+                        "null"
+                    ],
+                    "description": "Bed temperature in deg C, or null on fault/offline"
+                },
+                "tool_c": {
+                    "type": [
+                        "number",
+                        "null"
+                    ],
+                    "description": "Toolhead temperature in deg C, or null on fault/offline"
+                },
+                "bed_q": {
+                    "type": "string",
+                    "enum": [
+                        "FRESH",
+                        "STALE",
+                        "FAULT",
+                        "UNKNOWN"
+                    ]
+                },
+                "tool_q": {
+                    "type": "string",
+                    "enum": [
+                        "FRESH",
+                        "STALE",
+                        "FAULT",
+                        "UNKNOWN"
+                    ]
+                },
+                "bed_status": {
+                    "$ref": "#/definitions/SensorStatusEnum"
+                },
+                "tool_status": {
+                    "$ref": "#/definitions/SensorStatusEnum"
+                }
+            }
+        },
+        "SseMotionUpdateEvent": {
+            "type": "object",
+            "required": [
+                "timestamp_ms",
+                "x_mm",
+                "y_mm",
+                "z_mm",
+                "e_mm",
+                "feedrate_mms",
+                "is_moving",
+                "is_homed"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "timestamp_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "x_mm": {
+                    "type": "number"
+                },
+                "y_mm": {
+                    "type": "number"
+                },
+                "z_mm": {
+                    "type": "number"
+                },
+                "e_mm": {
+                    "type": "number"
+                },
+                "feedrate_mms": {
+                    "type": "number"
+                },
+                "is_moving": {
+                    "type": "boolean"
+                },
+                "is_homed": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "SseStatusChangeEvent": {
+            "type": "object",
+            "required": [
+                "timestamp_ms",
+                "system_state",
+                "mc_link",
+                "th_link",
+                "reason"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "timestamp_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "system_state": {
+                    "type": "string",
+                    "enum": [
+                        "INITIALIZING",
+                        "OPERATIONAL",
+                        "DEGRADED",
+                        "FAULT",
+                        "EMERGENCY_STOP"
+                    ]
+                },
+                "mc_link": {
+                    "type": "boolean"
+                },
+                "th_link": {
+                    "type": "boolean"
+                },
+                "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "SseAlarmEvent": {
+            "type": "object",
+            "required": [
+                "timestamp_ms",
+                "action",
+                "alarm_id",
+                "node_id",
+                "severity",
+                "message"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "timestamp_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "action": {
+                    "type": "string",
+                    "enum": [
+                        "RAISED",
+                        "CLEARED"
+                    ]
+                },
+                "alarm_id": {
+                    "type": "integer"
+                },
+                "node_id": {
+                    "type": "integer"
+                },
+                "severity": {
+                    "type": "string",
+                    "enum": [
+                        "INFO",
+                        "WARNING",
+                        "ERROR",
+                        "CRITICAL"
+                    ]
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
+
+
+$ (soc-ap) python3 -c "import xml.etree.ElementTree as ET; ET.parse('contracts/twin/dbus_interfaces.xml'); print('D-Bus XML valid!')" -> 0
+D-Bus XML valid!
+
+
+$ (soc-ap) test -s contracts/twin/telemetry.idl -> 0
+
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 tools/check_task_graph.py --workspace .. -> 0
+{
+  "scope": "static planning validation, not execution/approval/QA acceptance",
+  "canonical_task_count": 108,
+  "microtask_count": 66,
+  "errors": [],
+  "dependency_cycles": [],
+  "shared_write_pairs": [
+    {
+      "tasks": [
+        "CR-00",
+        "CR-08"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-09"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-10"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-12"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "CR-11"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P01A"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P01B"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P02C"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "TEMP-01"
+      ],
+      "paths": [
+        "project-control/docs/interfaces/**",
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "TWIN-01"
+      ],
+      "paths": [
+        "project-control/docs/interfaces/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-03",
+        "CR-11"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-03",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P02A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P02B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03C"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03D"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt",
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TEMP-04"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt",
+        "soc-ap/core/forward/**",
+        "soc-ap/core/host/**",
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-05"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-06"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-07"
+      ],
+      "paths": [
+        "soc-ap/core/host/**",
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-08"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-09"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-10"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "MCQ-0105"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/inc/wk_usart.*",
+        "mcu-p3/motion-controller-mcu/project/src/main.c",
+        "mcu-p3/motion-controller-mcu/project/src/memu_gui.c",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/inc/wk_usart.*",
+        "mcu-p3/motion-controller-mcu/project/src/main.c",
+        "mcu-p3/motion-controller-mcu/project/src/memu_gui.c",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TEMP-02"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-07",
+        "MCQ-0105"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-07",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.*",
+        "mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-11",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**",
+        "project-control/docs/handoff/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-01",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/delivery_checks.py",
+        "project-control/tools/qa_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-02",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/coord_queue.py",
+        "project-control/tools/coord_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03E",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04C",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P0506",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P0506",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05A",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-01",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_telemetry.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-01",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/io_toggle/inc/minimc_telemetry.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-02",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/io_toggle/inc/thermistor_adc.h",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/thermistor_adc.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-03",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P02A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03C"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "TWIN-07"
+      ],
+      "paths": [
+        "soc-ap/core/host/query.cpp",
+        "soc-ap/core/host/query.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-02",
+        "TWIN-17"
+      ],
+      "paths": [
+        "soc-ap/contracts/twin/**"
+      ],
+      "dependency_ordered": true
+    }
+  ],
+  "readiness_blockers": {
+    "CR-00": [
+      "lease has expired"
+    ],
+    "CR-01": [
+      "lease has expired"
+    ],
+    "CR-02": [
+      "lease has expired"
+    ],
+    "CR-02Q": [
+      "lease has expired"
+    ],
+    "CR-02T": [
+      "lease has expired"
+    ],
+    "CR-03": [
+      "lease has expired"
+    ],
+    "CR-04": [
+      "lease has expired"
+    ],
+    "CR-05": [
+      "lease has expired"
+    ],
+    "CR-06": [
+      "lease has expired"
+    ],
+    "CR-07": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "CR-00 accepted deliverable/version is not bound",
+      "CR-00 acceptance evidence path is missing",
+      "CR-05 accepted deliverable/version is not bound",
+      "CR-05 acceptance evidence path is missing"
+    ],
+    "CR-08": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-09": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-10": [
+      "actual owner/executor is not assigned consistently",
+      "author cannot be own independent reviewer",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-11": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-12": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "CR-00 accepted deliverable/version is not bound",
+      "CR-00 acceptance evidence path is missing"
+    ],
+    "AUTO-01": [
+      "lease has expired"
+    ],
+    "AUTO-02": [
+      "lease has expired",
+      "AUTO-01 closure evidence: QA: evidence is empty or SHA256 does not match: project-control/tools/qa_runner/qa_runner.py",
+      "AUTO-01 closure evidence: ARCH: evidence is empty or SHA256 does not match: project-control/tools/qa_runner/qa_runner.py"
+    ],
+    "MCQ-0105": [
+      "actual worktree/working directory is not bound",
+      "lease has expired"
+    ],
+    "MCQ-0106": [
+      "task is marked blocked",
+      "actual worktree/working directory is not bound",
+      "lease has expired"
+    ],
+    "V2-P01A": [
+      "lease has expired"
+    ],
+    "V2-P01B": [
+      "lease has expired"
+    ],
+    "V2-P01C": [
+      "lease has expired"
+    ],
+    "V2-P01D": [
+      "lease has expired"
+    ],
+    "V2-P02A": [
+      "lease has expired"
+    ],
+    "V2-P02B": [
+      "lease has expired"
+    ],
+    "V2-P02C": [
+      "lease has expired"
+    ],
+    "V2-P03A": [
+      "lease has expired"
+    ],
+    "V2-P03B": [
+      "lease has expired"
+    ],
+    "V2-P03C": [
+      "lease has expired"
+    ],
+    "V2-P03D": [
+      "lease has expired"
+    ],
+    "V2-P03E": [
+      "lease has expired"
+    ],
+    "V2-P03F": [
+      "lease has expired"
+    ],
+    "V2-P04A": [
+      "lease has expired"
+    ],
+    "V2-P04B": [
+      "lease has expired"
+    ],
+    "V2-P04C": [
+      "lease has expired"
+    ],
+    "V2-P04D": [
+      "lease has expired"
+    ],
+    "V2-P0506": [
+      "lease has expired"
+    ],
+    "V2-P05A": [
+      "lease has expired"
+    ],
+    "V2-P05B": [
+      "lease has expired"
+    ],
+    "TEMP-01": [
+      "lease has expired"
+    ],
+    "TEMP-02": [
+      "lease has expired",
+      "TEMP-01 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-01/runs/run_01/result.md"
+    ],
+    "TEMP-03": [
+      "lease has expired",
+      "TEMP-01 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-01/runs/run_01/result.md"
+    ],
+    "TEMP-04": [
+      "lease has expired",
+      "TEMP-01 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-01/runs/run_01/result.md"
+    ],
+    "TEMP-05": [
+      "lease has expired",
+      "TEMP-02 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-02/runs/run_01/result.md",
+      "TEMP-03 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-03/runs/run_01/result.md",
+      "TEMP-04 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-04/runs/run_01/result.md"
+    ],
+    "TEMP-06": [
+      "lease has expired",
+      "TEMP-05 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-05/runs/run_01/result.md"
+    ],
+    "TEMP-07": [
+      "lease has expired",
+      "TEMP-06 acceptance evidence file does not exist: docs/evidence/temperature_increment/TEMP-06/runs/run_01/result.md"
+    ],
+    "TWIN-01": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "CR-11 accepted deliverable/version is not bound",
+      "CR-11 acceptance evidence path is missing"
+    ],
+    "TWIN-02": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-03": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-04": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-05": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing"
+    ],
+    "TWIN-06": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing"
+    ],
+    "TWIN-07": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-05 is not Done",
+      "TWIN-05 accepted deliverable/version is not bound",
+      "TWIN-05 acceptance evidence path is missing",
+      "TWIN-06 is not Done",
+      "TWIN-06 accepted deliverable/version is not bound",
+      "TWIN-06 acceptance evidence path is missing",
+      "TEMP-04 accepted deliverable/version is not bound",
+      "TEMP-04 acceptance evidence path is missing"
+    ],
+    "TWIN-08": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-05 is not Done",
+      "TWIN-05 accepted deliverable/version is not bound",
+      "TWIN-05 acceptance evidence path is missing",
+      "TWIN-06 is not Done",
+      "TWIN-06 accepted deliverable/version is not bound",
+      "TWIN-06 acceptance evidence path is missing"
+    ],
+    "TWIN-09": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-05 is not Done",
+      "TWIN-05 accepted deliverable/version is not bound",
+      "TWIN-05 acceptance evidence path is missing",
+      "TWIN-06 is not Done",
+      "TWIN-06 accepted deliverable/version is not bound",
+      "TWIN-06 acceptance evidence path is missing"
+    ],
+    "TWIN-10": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-09 is not Done",
+      "TWIN-09 accepted deliverable/version is not bound",
+      "TWIN-09 acceptance evidence path is missing"
+    ],
+    "TWIN-11": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-04 is not Done",
+      "TWIN-04 accepted deliverable/version is not bound",
+      "TWIN-04 acceptance evidence path is missing",
+      "TWIN-07 is not Done",
+      "TWIN-07 accepted deliverable/version is not bound",
+      "TWIN-07 acceptance evidence path is missing",
+      "TWIN-08 is not Done",
+      "TWIN-08 accepted deliverable/version is not bound",
+      "TWIN-08 acceptance evidence path is missing",
+      "TWIN-09 is not Done",
+      "TWIN-09 accepted deliverable/version is not bound",
+      "TWIN-09 acceptance evidence path is missing",
+      "TWIN-10 is not Done",
+      "TWIN-10 accepted deliverable/version is not bound",
+      "TWIN-10 acceptance evidence path is missing",
+      "TWIN-15 is not Done",
+      "TWIN-15 accepted deliverable/version is not bound",
+      "TWIN-15 acceptance evidence path is missing",
+      "TWIN-16 is not Done",
+      "TWIN-16 accepted deliverable/version is not bound",
+      "TWIN-16 acceptance evidence path is missing"
+    ],
+    "TWIN-12": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-11 is not Done",
+      "TWIN-11 accepted deliverable/version is not bound",
+      "TWIN-11 acceptance evidence path is missing"
+    ],
+    "TWIN-13": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-04 is not Done",
+      "TWIN-04 accepted deliverable/version is not bound",
+      "TWIN-04 acceptance evidence path is missing",
+      "TWIN-12 is not Done",
+      "TWIN-12 accepted deliverable/version is not bound",
+      "TWIN-12 acceptance evidence path is missing"
+    ],
+    "TWIN-14": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-12 is not Done",
+      "TWIN-12 accepted deliverable/version is not bound",
+      "TWIN-12 acceptance evidence path is missing",
+      "TWIN-13 is not Done",
+      "TWIN-13 accepted deliverable/version is not bound",
+      "TWIN-13 acceptance evidence path is missing"
+    ],
+    "TWIN-15": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TEMP-03 accepted deliverable/version is not bound",
+      "TEMP-03 acceptance evidence path is missing"
+    ],
+    "TWIN-16": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing",
+      "TWIN-03 is not Done",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TEMP-02 accepted deliverable/version is not bound",
+      "TEMP-02 acceptance evidence path is missing"
+    ],
+    "TWIN-17": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-18": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-19": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ],
+    "TWIN-20": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-02 is not Done",
+      "TWIN-02 accepted deliverable/version is not bound",
+      "TWIN-02 acceptance evidence path is missing"
+    ]
+  },
+  "card_paths": {
+    "CR-00": ".agents/kanban/microtasks/cascade_recovery/CR-00.md",
+    "CR-01": ".agents/kanban/microtasks/cascade_recovery/CR-01.md",
+    "CR-02": ".agents/kanban/microtasks/cascade_recovery/CR-02.md",
+    "CR-02Q": ".agents/kanban/microtasks/cascade_recovery/CR-02Q.md",
+    "CR-02T": ".agents/kanban/microtasks/cascade_recovery/CR-02T.md",
+    "CR-03": ".agents/kanban/microtasks/cascade_recovery/CR-03.md",
+    "CR-04": ".agents/kanban/microtasks/cascade_recovery/CR-04.md",
+    "CR-05": ".agents/kanban/microtasks/cascade_recovery/CR-05.md",
+    "CR-06": ".agents/kanban/microtasks/cascade_recovery/CR-06.md",
+    "CR-07": ".agents/kanban/microtasks/cascade_recovery/CR-07.md",
+    "CR-08": ".agents/kanban/microtasks/cascade_recovery/CR-08.md",
+    "CR-09": ".agents/kanban/microtasks/cascade_recovery/CR-09.md",
+    "CR-10": ".agents/kanban/microtasks/cascade_recovery/CR-10.md",
+    "CR-11": ".agents/kanban/microtasks/cascade_recovery/CR-11.md",
+    "CR-12": ".agents/kanban/microtasks/cascade_recovery/CR-12.md",
+    "AUTO-01": ".agents/kanban/microtasks/coord_automation/AUTO-01.md",
+    "AUTO-02": ".agents/kanban/microtasks/coord_automation/AUTO-02.md",
+    "MCQ-0105": ".agents/kanban/microtasks/mc_firmware/MCQ-0105.md",
+    "MCQ-0106": ".agents/kanban/microtasks/mc_firmware/MCQ-0106.md",
+    "V2-P01A": ".agents/kanban/microtasks/minimc_v2/V2-P01A.md",
+    "V2-P01B": ".agents/kanban/microtasks/minimc_v2/V2-P01B.md",
+    "V2-P01C": ".agents/kanban/microtasks/minimc_v2/V2-P01C.md",
+    "V2-P01D": ".agents/kanban/microtasks/minimc_v2/V2-P01D.md",
+    "V2-P02A": ".agents/kanban/microtasks/minimc_v2/V2-P02A.md",
+    "V2-P02B": ".agents/kanban/microtasks/minimc_v2/V2-P02B.md",
+    "V2-P02C": ".agents/kanban/microtasks/minimc_v2/V2-P02C.md",
+    "V2-P03A": ".agents/kanban/microtasks/minimc_v2/V2-P03A.md",
+    "V2-P03B": ".agents/kanban/microtasks/minimc_v2/V2-P03B.md",
+    "V2-P03C": ".agents/kanban/microtasks/minimc_v2/V2-P03C.md",
+    "V2-P03D": ".agents/kanban/microtasks/minimc_v2/V2-P03D.md",
+    "V2-P03E": ".agents/kanban/microtasks/minimc_v2/V2-P03E.md",
+    "V2-P03F": ".agents/kanban/microtasks/minimc_v2/V2-P03F.md",
+    "V2-P04A": ".agents/kanban/microtasks/minimc_v2/V2-P04A.md",
+    "V2-P04B": ".agents/kanban/microtasks/minimc_v2/V2-P04B.md",
+    "V2-P04C": ".agents/kanban/microtasks/minimc_v2/V2-P04C.md",
+    "V2-P04D": ".agents/kanban/microtasks/minimc_v2/V2-P04D.md",
+    "V2-P0506": ".agents/kanban/microtasks/minimc_v2/V2-P0506.md",
+    "V2-P05A": ".agents/kanban/microtasks/minimc_v2/V2-P05A.md",
+    "V2-P05B": ".agents/kanban/microtasks/minimc_v2/V2-P05B.md",
+    "TEMP-01": ".agents/kanban/microtasks/temperature_telemetry/TEMP-01.md",
+    "TEMP-02": ".agents/kanban/microtasks/temperature_telemetry/TEMP-02.md",
+    "TEMP-03": ".agents/kanban/microtasks/temperature_telemetry/TEMP-03.md",
+    "TEMP-04": ".agents/kanban/microtasks/temperature_telemetry/TEMP-04.md",
+    "TEMP-05": ".agents/kanban/microtasks/temperature_telemetry/TEMP-05.md",
+    "TEMP-06": ".agents/kanban/microtasks/temperature_telemetry/TEMP-06.md",
+    "TEMP-07": ".agents/kanban/microtasks/temperature_telemetry/TEMP-07.md",
+    "TWIN-01": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-01.md",
+    "TWIN-02": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-02.md",
+    "TWIN-03": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-03.md",
+    "TWIN-04": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-04.md",
+    "TWIN-05": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-05.md",
+    "TWIN-06": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-06.md",
+    "TWIN-07": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-07.md",
+    "TWIN-08": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-08.md",
+    "TWIN-09": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-09.md",
+    "TWIN-10": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-10.md",
+    "TWIN-11": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-11.md",
+    "TWIN-12": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-12.md",
+    "TWIN-13": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-13.md",
+    "TWIN-14": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-14.md",
+    "TWIN-15": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-15.md",
+    "TWIN-16": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-16.md",
+    "TWIN-17": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-17.md",
+    "TWIN-18": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-18.md",
+    "TWIN-19": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-19.md",
+    "TWIN-20": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-20.md",
+    "MS-01": ".agents/kanban/milestones/marlin_ms01_20261007_214108.md",
+    "MS-02": ".agents/kanban/milestones/marlin_ms02_20261007_214108.md",
+    "MS-03": ".agents/kanban/milestones/marlin_ms03_20261007_214108.md",
+    "MS-04": ".agents/kanban/milestones/marlin_ms04_20261007_214108.md",
+    "MS-05": ".agents/kanban/milestones/marlin_ms05_20261007_214108.md",
+    "MS-06": ".agents/kanban/milestones/marlin_ms06_20261007_214108.md",
+    "MS-07": ".agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+    "MS-08": ".agents/kanban/milestones/marlin_ms08_20261007_214108.md",
+    "MS-09": ".agents/kanban/milestones/marlin_ms09_20261007_214108.md",
+    "MS-10": ".agents/kanban/milestones/marlin_ms10_20261007_214108.md",
+    "MS-11": ".agents/kanban/milestones/marlin_ms11_20261007_214108.md",
+    "MS-12": ".agents/kanban/milestones/marlin_ms12_20261007_214108.md",
+    "MS-13": ".agents/kanban/milestones/marlin_ms13_20261007_214108.md",
+    "MS-14": ".agents/kanban/milestones/marlin_ms14_20261007_214108.md",
+    "MS-15": ".agents/kanban/milestones/marlin_ms15_20261007_214108.md",
+    "MS-16": ".agents/kanban/milestones/marlin_ms16_20261007_214108.md",
+    "MS-17": ".agents/kanban/milestones/marlin_ms17_20261007_214108.md",
+    "MS-18": ".agents/kanban/milestones/marlin_ms18_20261008_083854.md",
+    "MS-19": ".agents/kanban/milestones/marlin_ms19_20261008_083854.md",
+    "MS-20": ".agents/kanban/milestones/marlin_ms20_20261008_083854.md",
+    "MS-21": ".agents/kanban/milestones/marlin_ms21_20261008_083854.md",
+    "MS-22": ".agents/kanban/milestones/marlin_ms22_20261008_083854.md",
+    "PL-01": "docs/planning/product/product_pl01_20261008_083854.md",
+    "PL-02": "docs/planning/product/product_pl02_20261008_083854.md",
+    "TASK-001": "docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md",
+    "TASK-002": "docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md",
+    "TASK-003": "docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md",
+    "TASK-004": "docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+    "TASK-005": "docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+    "TASK-006": "docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md",
+    "TASK-007": "docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md",
+    "TASK-008": "docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md",
+    "TASK-009": "docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md",
+    "TASK-010": "docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+    "TASK-011": "docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md",
+    "TASK-012": "docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md",
+    "TASK-013": "docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md",
+    "TASK-014": "docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md",
+    "TASK-015": "docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md",
+    "TASK-016": "docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md",
+    "TASK-017": "docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md",
+    "TASK-018": "docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md"
+  },
+  "exit_code": 0
+}
+
