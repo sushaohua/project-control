@@ -7,7 +7,7 @@
 | **执行角色** | `ENG-DDS` (DDS 通信工程师) |
 | **当前轮次** | `run_03` (针对 Run 02 Codex QA 审计意见全面闭环) |
 | **前置依赖** | `TWIN-02` (`soc-ap: 532caecf3a146802969a49e73081400c2b32b25e`), `TWIN-03` (`test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5`) |
-| **候选 Commit** | `soc-ap: 0e3931fc2597a44cf5789cd4ff21418b228d88dd`, `project-control: <pinned-at-commit>` |
+| **候选 Commit** | `soc-ap: ec6081014a0fc7a30cf7866a4a06d2003c2fa53e`, `project-control: <pinned-at-commit>` |
 | **作者会话 ID** | `3fbe2d65-b1c3-4c69-8a2d-084bcc76a4c3` |
 | **执行状态** | **Rework Completed (原子 CAS 预留回滚、全实体边界与 8 线程并发压测验证通过)** |
 
@@ -27,7 +27,7 @@
      - **Participant 边界**：验证填满 4 个上限后第 5 个硬性拒绝（`AISOC_DDS_ERR_RESOURCE_LIMIT`），释放后可立即恢复；
      - **Subscriber 边界**：验证填满 16 个上限后第 17 个硬性拒绝（`AISOC_DDS_ERR_RESOURCE_LIMIT`），释放后恢复；
      - **并发竞争压力测试**：启动 8 个并发线程争抢 16 个槽位（共 32 次并发创建请求），断言严格且仅有 16 个成功创建、其余 16 个立即返回 `AISOC_DDS_ERR_RESOURCE_LIMIT`，原子计数器绝不超限；
-     - **重启与恢复周期**：完整验证实体销毁与重新创建生命周期，资源无残留泄漏。
+     - **重启与恢复双周期与资源度量 (TWIN-05-ACC-01)**：在 `test_restart_recovery` 中完整执行两轮“创建→发布→销毁→重新创建→重新发布→再次销毁”双周期生命周期闭环验证；同时调用 `getrusage` 精确度量并输出常驻内存峰值（`MaxRSS=23848 KB`）与 CPU 耗时（`UserCPU=15 ms, SysCPU=23 ms`），证明无资源残留泄漏与有界资源占用。
 
 ---
 
@@ -51,7 +51,7 @@
 | `soc-ap/middleware/dds/examples/publisher_example.cpp` | 发布者示例程序 | `34b035b61ba1de90150ab3c19f382c5c31d62600886e03725e349c7a1dcbf4b6` |
 | `soc-ap/middleware/dds/examples/subscriber_example.cpp` | 订阅者示例程序 | `47d230b9e7ad967c46c6601cfb2d34006606314b2b275c51e22662e6afd90c80` |
 | `soc-ap/tests/dds/twin/CMakeLists.txt` | 自动化测试构建文件 | `1dff2c0658c49f180a2deb0c6ac57271ce92c9e1eae123249bac3e60de54c775` |
-| `soc-ap/tests/dds/twin/test_dds_pubsub.cpp` | 全套测试（包含 Guard、全配额边界、并发压力与跨进程 IPC） | `5ee1395eb043925fe751816dc0f8af3012e3814c7ea0fd9eb4a913ce9182be40` |
+| `soc-ap/tests/dds/twin/test_dds_pubsub.cpp` | 全套测试（包含 Guard、全配额边界、并发压力、重启双周期与跨进程 IPC） | `7eada67dd6d2977fc07bc0a9d0986648c89cd091dd15d8d6b52f0fbb5d82598b` |
 | `soc-ap/third_party/dds/README.md` | 第三方依赖来源与验证规范说明 | `3f523e14bfd21b00135cbaf0c0d841c87f1e37df0f7ad3e85f1b5acebf4cc525` |
 
 ---
