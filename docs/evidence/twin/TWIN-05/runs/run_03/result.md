@@ -7,7 +7,7 @@
 | **执行角色** | `ENG-DDS` (DDS 通信工程师) |
 | **当前轮次** | `run_03` (针对 Run 02 Codex QA 审计意见全面闭环) |
 | **前置依赖** | `TWIN-02` (`soc-ap: 532caecf3a146802969a49e73081400c2b32b25e`), `TWIN-03` (`test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5`) |
-| **候选 Commit** | `soc-ap: ec6081014a0fc7a30cf7866a4a06d2003c2fa53e`, `project-control: <pinned-at-commit>` |
+| **候选 Commit** | `soc-ap: ec6081066a4b70e326e99aa124d7bbf356c41b17`, `project-control: <pinned-at-commit>` |
 | **作者会话 ID** | `3fbe2d65-b1c3-4c69-8a2d-084bcc76a4c3` |
 | **执行状态** | **Rework Completed (原子 CAS 预留回滚、全实体边界与 8 线程并发压测验证通过)** |
 
