@@ -51,12 +51,12 @@ depends_on:
 - TWIN-03
 dependency_conditions:
 - task: TWIN-02
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 532caecf3a146802969a49e73081400c2b32b25e
+  acceptance_evidence: docs/evidence/twin/TWIN-02/runs/run_03/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TWIN-03
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+  acceptance_evidence: docs/evidence/twin/TWIN-03/runs/run_02/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 scope_status: mapped
 allowed_repositories:
