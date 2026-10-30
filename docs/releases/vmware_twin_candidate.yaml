@@ -1,0 +1,122 @@
+candidate_id: vmware-soc-twin-candidate-20261030-01
+release_tag: v2.1.0-twin-rc1
+created: '2026-10-30T17:58:00+08:00'
+status: candidate-for-twin12-hil
+supersedes: ap-mc-th-temperature-telemetry-candidate-20261029-01
+supersedes_reason: "升级为 VMware 数字孪生微服务集群架构：解耦 FORWARD 单一 UART 独占网关、STATE 权威快照与准入状态机、UI Gateway HTTP/SSE 边缘服务以及纯原生 Web HMI 交互前端，双 MCU 固件完全对账 0.1℃ deci_c 契约与强电硬件安全锁死。"
+
+scope:
+  description: VMware 数字孪生全链路候选发布包 (RC1)，包含三总线微服务集群 (Fast DDS + D-Bus + HTTP/SSE)、Web HMI 触屏界面以及 AT32F435/F423 双 MCU 完整闭环固件，用于 TWIN-11 整链联调与 TWIN-12 物理台架 HIL 终验
+  capability: vmware-soc-digital-twin-full-chain
+  hardware_bound: true
+  primary_work_package: TASK-012
+
+repositories:
+  soc-ap:
+    commit: 33e23b74175b916b262d73b9901b106c4fb18f14
+    branch: main
+    artifacts:
+      - path: services/forward/forward_main.cpp
+        role: FORWARD 常驻服务 (唯一硬件串口独占、DDS 发布器、D-Bus 控制端)
+        features:
+          - "唯一独占真实/虚拟 UART 串口通路，杜绝多进程冲突"
+          - "MiniMCProto v2.0 双向编解码与 CRC16 校验"
+          - "Fast DDS 发布 telemetry/raw_temp 主题"
+          - "D-Bus 响应 org.aisoc.Device 控制与即时采样 RPC"
+      - path: services/device_manager/device_manager_main.cpp
+        role: STATE 状态机服务 (单一权威快照维护、准入防抖仲裁、多总线联动)
+        features:
+          - "维护单调递增 state_generation 世代号"
+          - "3s / 10s 数据新鲜度降级与超时判定 (FRESH/STALE/FAULT)"
+          - "50ms 防抖节流统一采样请求准入仲裁"
+          - "D-Bus 权威对象 /org/aisoc/Device"
+      - path: services/ui_gateway/ui_gateway_main.cpp
+        role: UI Gateway 边缘服务 (非阻塞 HTTP REST 与 SSE 实时长连接)
+        features:
+          - "非阻塞 POSIX Socket 与 poll() 多路复用 (默认端口 8080)"
+          - "GET /api/v1/temperature/snapshot (带 CORS 头部)"
+          - "POST /api/v1/temperature/sample (准入采样代理)"
+          - "GET /api/v1/temperature/stream (SSE 广播，多客户端长连接)"
+      - path: ui/twin/index.html
+        role: Web HMI 纯原生触屏界面 (800x480 / 1024x600 工业适配)
+        features:
+          - "零外部构建依赖，零第三方 CDN"
+          - "严格杜绝 Math.random 等假数据合成，直连真实网关"
+          - "0x7FFF / 0x7FFE 物理故障哨兵显式告警"
+  mcu-p3:
+    commit: d756a13b3c2a1c47186a07311b2c24fa43431465
+    branch: feat/soc-debug
+    artifacts:
+      - path: motion-controller-mcu/build/fw_mc.bin
+        sha256: 662e5822f1cb36ea39fb85e69f2e03168496eaa032f13cb29c2df5194ac3e13b
+        size_bytes: 370036
+        role: MC (Motion Controller 固件)
+        chip: AT32F435VGT7
+        flash_base_address: '0x08020000'
+        uart_upstream: USART2 (PA2/PA3 @ 115200 8N1)
+        uart_downstream: USART6 (PC6/PC7 @ 921600 8N1)
+        features:
+          - "本地响应发往 MC (0x02) 的 0x14 温度查询 (0.1℃ deci_c)"
+          - "发往从控 TH (0x03) 的 0x14 查询执行原生零拷贝/线速透明路由中继"
+          - "强电安全硬性锁死 heater_duty_percent = 0%"
+      - path: color-engine-mcu/io_toggle/build/fw_th.bin
+        sha256: df02647e585e2081d5ebd87680c0ecf1dab795768018c01b063a797425fe1e25
+        size_bytes: 71804
+        role: TH (Toolhead Controller 固件)
+        chip: AT32F423CCT7
+        flash_base_address: '0x08004000'
+        uart_cascade: USART1 (PA9/PA10 @ 921600 8N1)
+        features:
+          - "0.1℃ deci_c 分辨率 NTC 线性插值与传感器状态识别"
+          - "ADC 轮询超时退出保护 (ADC_POLL_TIMEOUT_CYCLES = 10000U)"
+          - "thermistor_safety_lock 强电硬件安全硬锁死 (PWM 占空比清零)"
+      - path: color-engine-mcu/io_toggle/build/anchor.bin
+        sha256: dfdda0fdeea0a947236990baab7da655f9c2e4123de59bb4c883ea157f1613b7
+        size_bytes: 140
+        role: TH Sector 127 引导签名锚点
+        flash_base_address: '0x0803F800'
+  test_harness:
+    commit: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+    branch: main
+    artifacts:
+      - path: static_checks/twin/check_layout.c
+        role: 静态内存对齐、偏移、哨兵与度量转换回归测试基线
+  project-control:
+    commit: 8c2bdeb150e7a4b8eb512c1eb683ca593d9ef961
+    branch: main
+    artifacts:
+      - path: docs/releases/vmware_twin_candidate.yaml
+        role: 全链路基线发布元数据
+      - path: docs/operations/vmware_twin_joint_debug.md
+        role: 微服务集群编排与联调 SOP 操作手册
+
+ipc_topology:
+  fastdds:
+    domain_id: 0
+    qos_profile: RELIABLE_TRANSIENT_LOCAL
+    topics:
+      - name: "telemetry/raw_temp"
+        type: "RawTemperaturePayload"
+        publisher: "forward_service"
+        subscriber: "device_manager"
+  dbus:
+    bus_type: "SYSTEM_BUS (or P2P SESSION)"
+    service_name: "org.aisoc.Device"
+    interface_name: "org.aisoc.Device"
+    object_path: "/org/aisoc/Device"
+    methods:
+      - "GetSnapshot() -> (s: json_snapshot)"
+      - "RequestImmediateSample(s: client_id) -> (b: accepted, s: reason)"
+  http_sse:
+    bind_host: "0.0.0.0"
+    port: 8080
+    endpoints:
+      - "GET /api/v1/temperature/snapshot"
+      - "POST /api/v1/temperature/sample"
+      - "GET /api/v1/temperature/stream"
+
+verification_summary:
+  build_status: PASSED
+  unit_test_status: PASSED
+  sandbox_status: VERIFIED
+  gate_compliance: 100% (函数≤50行, 入参≤4个, Guard Clause防御首行)
