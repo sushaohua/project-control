@@ -20,7 +20,7 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 20 | Backlog 5、Done 15 |
+| TWIN | 20 | Backlog 3、Done 17 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
@@ -35,7 +35,9 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 5. **TWIN-16（TH温度契约复核与必要修订）**：已完成TH固件0x14查询响应实现、0.1℃ (`deci_c`) 分辨率全面对账、NTC查表映射修正、开短路故障哨兵（0x7FFF）以及thermistor_safety_lock强电硬件硬锁死，在独立Docker沙箱（`TWIN-16_run_175010`）中完成100%验证，生成AT32F423打包固件并取得独立Codex QA与ARCH审签APPROVED闭环；
 6. **TWIN-10（浏览器交互屏幕接入真实业务接口）**：已完成纯原生零外部依赖的前端交互HMI、实时SSE事件流长连接接入、REST快照加载与防抖准入采样控制、严防死守零伪造模拟数据、0x7FFF/0x7FFE显式哨兵映射及800x480触摸屏优化，在独立Docker容器沙箱（`TWIN-10_run_175524`）中完成100%验证（7/7用例全通），取得独立Codex QA与ARCH审签APPROVED闭环；
 7. **TWIN-11（VMware整链联调与候选交接）**：已完成全链路发布元数据定义（vmware_twin_candidate.yaml锁定微服务/Web/固件制品精准Commit与SHA256）、编排启动联调SOP手册（vmware_twin_joint_debug.md覆盖多进程拉起、D-Bus/DDS/HTTP验证及四类故障自愈），在独立Docker容器沙箱（`TWIN-11_run_175931`）中完成100%验证，取得独立Codex QA与ARCH审签APPROVED闭环；
-8. **TWIN-12（VMware应用孪生与真实MCU独立验收）**：已完成真实硬件在环（HIL）双开发板串口贯通实测（MC 7.51ms, TH 8.49ms <= 10ms，加热占空比恒为0%）、全栈微服务（FORWARD/STATE/UI Gateway）在VMware Ubuntu宿主常驻部署与优雅生命周期守护、D-Bus与Fast DDS跨进程低时延协同、HTTP REST与即时采样单调世代号递增（3->5），修复fastcdr未激活union内存拷贝跨环境ABI漏洞，在独立Docker容器沙箱（`TWIN-12_run_190452`）中完成100%验证，取得独立Codex QA与ARCH双审签APPROVED闭环。
+8. **TWIN-12（VMware应用孪生与真实MCU独立验收）**：已完成真实硬件在环（HIL）双开发板串口贯通实测（MC 7.51ms, TH 8.49ms <= 10ms，加热占空比恒为0%）、全栈微服务（FORWARD/STATE/UI Gateway）在VMware Ubuntu宿主常驻部署与优雅生命周期守护、D-Bus与Fast DDS跨进程低时延协同、HTTP REST与即时采样单调世代号递增（3->5），修复fastcdr未激活union内存拷贝跨环境ABI漏洞，在独立Docker容器沙箱（`TWIN-12_run_190452`）中完成100%验证，取得独立Codex QA与ARCH双审签APPROVED闭环；
+9. **TWIN-17（本地离线作业引擎与基础混色执行规划）**：已完成离线作业流式解析引擎、开始/暂停/恢复/取消状态机完整实现、4通道供料混色权重规范契约（0~10000基准，0.01%分辨率，FEAT-COL-001）、M112瞬时熔断急停、纯静态配置与绝对零动态堆内存分配，自研函数全部≤35行，在独立Docker沙箱（`TWIN-17_run_202502`）中完成C11/C++17双严苛编译器构建验证与6/6单元测试全通，取得独立Codex QA与ARCH双审签APPROVED闭环；
+10. **TWIN-19（全机HMS错误码体系、双级急停联动与安全快照导出）**：已完成全机HMS 24类分级错误码体系（0x1000 COMM, 0x2000 THERMAL, 0x3000 MMU含0x3001断料, 0x4000 MOTION, 0x5000 SAFETY）、双级急停联动管理与安全互锁（Level 1软急停保温停进给，Level 2硬急停断开强电并强制人工特权复位）、一键脱敏诊断导出工具（export_diag_pack.py）及敏感凭据100%正则脱敏，自研函数全部≤39行，在独立Docker沙箱（`TWIN-19_run_202545`）中完成7/7单元测试与反向泄露断言测试全通，取得独立Codex QA与ARCH双审签APPROVED闭环。
 
 当前释放下游就绪任务，COORD将按依赖接续调度推进。最多两张实现卡并行；实际会话、前置接受、写白名单、隔离输出、租约与资源待Ready前落实。台架/串口/探针只登记一名实际操作者，CLI不能与常驻FWD抢UART。QA独立Codex、QA作者产物由非作者ARCH复核；COORD按准确候选收件，不因结构exit0自动推进。
 

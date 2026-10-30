@@ -6,22 +6,18 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: design
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: Done
 blocked: false
-planning_status: planned-not-dispatched
-owner: null
+planning_status: closed
+owner: c82ff007-b784-40f1-b151-0a5580996fce
 proposed_owner: ENG-STATE
 executor:
   role: ENG-STATE
-  agent_id: null
-  run_id: null
+  agent_id: c82ff007-b784-40f1-b151-0a5580996fce
+  run_id: run_01
 reviewer:
 - QA
 - ARCH
-- ENG-UI
-- ENG-MC
-- ENG-TH
-- INTEGRATOR
 verifier: null
 integrator: INTEGRATOR
 review_assignments:
@@ -30,62 +26,57 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-19
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: d699bed3-9cad-4a21-989c-7eda9ef95837
+    session_evidence:
+      path: docs/evidence/twin/TWIN-19/runs/run_01/qa_review_report.md
+      sha256: 2c7d6c711bd8c1470e478c45a7c98c6828b29c362df7987f13a3613f32bcd980
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version:
+      run: run_01
+      requested_candidates:
+        soc-ap: fa602d359329e5f588b6056a15ca340836f0bc0c
+        project-control: 0237fb9d0b54769b2fd683c1d423aad423ab1262
+        test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+        mcu-p3: d756a13b3c2a1c47186a07311b2c24fa43431465
+    evidence: docs/evidence/twin/TWIN-19/runs/run_01/qa_review_report.md
+    report_sha256: 2c7d6c711bd8c1470e478c45a7c98c6828b29c362df7987f13a3613f32bcd980
+    report_review:
+      session: fb81fba8-88f9-4e8a-9534-addf9d14be9d
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version:
+        run: run_01
+        requested_candidates:
+          soc-ap: fa602d359329e5f588b6056a15ca340836f0bc0c
+          project-control: 0237fb9d0b54769b2fd683c1d423aad423ab1262
+          test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+          mcu-p3: d756a13b3c2a1c47186a07311b2c24fa43431465
+      evidence: docs/evidence/twin/TWIN-19/runs/run_01/arch_review_report.md
+      report_sha256: a7690d0382a0a47729c6bb85bd7399891f3fda5a6c2689f9e53aebcff1f58f90
+      session_evidence:
+        path: docs/evidence/twin/TWIN-19/runs/run_01/arch_review_report.md
+        sha256: a7690d0382a0a47729c6bb85bd7399891f3fda5a6c2689f9e53aebcff1f58f90
   - role: ARCH
-    platform: null
-    model: null
+    platform: codex
+    model: gpt-6-luna
     planned_session_alias: planned-arch-twin-19
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
-  - role: ENG-UI
-    platform: null
-    model: null
-    planned_session_alias: planned-eng-ui-twin-19
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
-  - role: ENG-MC
-    platform: null
-    model: null
-    planned_session_alias: planned-eng-mc-twin-19
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
-  - role: ENG-TH
-    platform: null
-    model: null
-    planned_session_alias: planned-eng-th-twin-19
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
-  - role: INTEGRATOR
-    platform: null
-    model: null
-    planned_session_alias: planned-integrator-twin-19
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: fb81fba8-88f9-4e8a-9534-addf9d14be9d
+    session_evidence:
+      path: docs/evidence/twin/TWIN-19/runs/run_01/arch_review_report.md
+      sha256: a7690d0382a0a47729c6bb85bd7399891f3fda5a6c2689f9e53aebcff1f58f90
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version:
+      run: run_01
+      requested_candidates:
+        soc-ap: fa602d359329e5f588b6056a15ca340836f0bc0c
+        project-control: 0237fb9d0b54769b2fd683c1d423aad423ab1262
+        test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+        mcu-p3: d756a13b3c2a1c47186a07311b2c24fa43431465
+    evidence: docs/evidence/twin/TWIN-19/runs/run_01/arch_review_report.md
+    report_sha256: a7690d0382a0a47729c6bb85bd7399891f3fda5a6c2689f9e53aebcff1f58f90
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-008
@@ -94,8 +85,8 @@ depends_on:
 - TWIN-02
 dependency_conditions:
 - task: TWIN-02
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 532caecf3a146802969a49e73081400c2b32b25e
+  acceptance_evidence: docs/evidence/twin/TWIN-02/runs/run_03/result.md
   required: 开工前绑定双环境通信契约、D-Bus管理接口及HMS结构定义
 scope_status: mapped
 allowed_repositories:
@@ -116,12 +107,13 @@ source_baseline:
   soc-ap: 4445c8fedc21bafef5e6c971fcb54cec703f0e71
   mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
   test_harness: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
-base_commit: null
-candidate_commit: null
+base_commit: 26230b355cfb116ba568c07e997f7f5dc95e86d2
+candidate_commit: fa602d359329e5f588b6056a15ca340836f0bc0c
 dispatch_binding:
-  source_commit: null
-  workspace_diff_sha256: null
-  consumed_artifact_versions: {}
+  source_commit: fa602d359329e5f588b6056a15ca340836f0bc0c
+  workspace_diff_sha256: 0000000000000000000000000000000000000000000000000000000000000000
+  consumed_artifact_versions:
+    TWIN-02: 532caecf3a146802969a49e73081400c2b32b25e
 protocol_input:
   path: project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md
   sha256: 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
@@ -131,8 +123,12 @@ read_sources:
 - project-control/docs/planning/product/first_release_requirements_and_task_decomposition_20261029.md
 - project-control/docs/interfaces/vmware_soc_twin_architecture_icd_20261029.md
 - project-control/.agents/rules/c_cpp_coding_standard.md
-worktree: null
-lease: null
+worktree: soc-ap
+lease:
+  owner: c82ff007-b784-40f1-b151-0a5580996fce
+  task_revision: 1
+  lease_id: lease-twin-19-run-01
+  expires_at: '2026-10-31T20:00:00+08:00'
 resources:
 - resource: isolated-worktree-and-build-output
   location: null
@@ -144,24 +140,21 @@ budget:
   on_limit: 保存证据交COORD
 checkpoint: 开工前绑定；接口/实现自检；准确候选独立检查；收件
 execution_contract: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
-readiness_pending:
-- 真实作者、全部必需检查会话、有效租约和隔离worktree/输出待登记
-- 开工时重取实际commit/dirty diff及SHA256；前置准确接受版本/证据待绑定
-- 验证命令须在已实现入口上具体化并核资源/权限，不运行占位命令
+readiness_pending: []
 deliverables:
   artifacts:
   - soc-ap/core/state/hms/**
   - soc-ap/tools/diag/**
-  record: docs/evidence/twin/TWIN-19/runs/<actual-run>/result.md
+  record: docs/evidence/twin/TWIN-19/runs/run_01/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行
 handoff:
   receiver_role: COORD
-  receiver_session: null
+  receiver_session: 0f7c4684-b354-4548-ad9a-2ac9872fb4e2
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-19
-  acknowledgement: null
+  acknowledgement: docs/evidence/twin/TWIN-19/runs/run_01/result.md
 verification:
   commands:
   - id: check_graph
