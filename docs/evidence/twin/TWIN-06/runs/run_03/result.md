@@ -7,7 +7,7 @@
 | **执行角色** | `ENG-DBUS` (D-Bus 通信工程师) |
 | **当前轮次** | `run_03` (针对 Run 02 Codex QA 审计意见全面闭环) |
 | **前置依赖** | `TWIN-02` (`soc-ap: 532caecf3a146802969a49e73081400c2b32b25e`), `TWIN-03` (`test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5`) |
-| **候选 Commit** | `soc-ap: e933078a0c2c31e67e3bf8e21a221f1fb6b2837d`, `project-control: <pinned-at-commit>` |
+| **候选 Commit** | `soc-ap: 17fc3b4e723528b1e4c760416b252069fa4d1b82`, `project-control: <pinned-at-commit>` |
 | **作者会话 ID** | `bab80130-abdc-443c-9e30-4730e31b82f7` |
 | **执行状态** | **Rework Completed (7套独立测试集命名打标、并发与吞吐基准覆盖、分支规则与远端锁对齐)** |
 
@@ -57,7 +57,7 @@
 | `soc-ap/config/dbus/twin/session_twin.conf` | 严格白名单会话总线配置文件 (默认拒绝所有名称及调用，仅放通获批 6 服务) | `95bf44ab20b8feb90c767dceb68bcc8fcee13c20e7380a2590f4a475ac67524a` |
 | `soc-ap/config/dbus/twin/org.aisoc.conf` | 系统总线级策略配置文件 (声明授权通信白名单，无 own_prefix) | `f1359ae1a3af1e171295ea60a27bd1c11893b9861bad76354c3d9ea2bbc74d7d` |
 | `soc-ap/tests/dbus/twin/CMakeLists.txt` | 测试目录独立构建配置 | `06ad077ec9e34dac1a496e96aa7e2c39cd68ee4e45c69547e19ab9b1cd61d88c` |
-| `soc-ap/tests/dbus/twin/test_dbus_ipc.cpp` | 真实三进程 D-Bus IPC 正反例（含 7 套独立测试集、未授权前缀拒绝、并发吞吐与信号）综合自动化测试套件 | `a6a187fa31e98fbcff5921c48a47995f6c77d3cb3b1da0a892d2762f51f4619e` |
+| `soc-ap/tests/dbus/twin/test_dbus_ipc.cpp` | 真实三进程 D-Bus IPC 正反例（含 7 套独立测试集、未授权前缀拒绝、并发吞吐与信号）综合自动化测试套件 | `3bab792f9487d2f396598efcde25181d306a5272e9c156b965648ec87012442d` |
 | `soc-ap/third_party/dbus/README.md` | D-Bus 1.16.2 来源、SHA256、许可证及构建说明 | `2898d82324e54110e6c3a95972ee26af794512a03bbf689043e7f961758315f3` |
 
 ---
