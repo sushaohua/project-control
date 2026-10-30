@@ -20,14 +20,14 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 20 | Backlog 15、Done 5 |
+| TWIN | 20 | Backlog 13、Done 7 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
 
-前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)、[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)、[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)、[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)及[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。后续涉及[TWIN-05](microtasks/vmware_soc_twin/TWIN-05.md)、[TWIN-06](microtasks/vmware_soc_twin/TWIN-06.md)、[TWIN-15](microtasks/vmware_soc_twin/TWIN-15.md)、[TWIN-16](microtasks/vmware_soc_twin/TWIN-16.md)和[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)，实际就绪与派单由COORD按任务卡和前置证据核定。
+前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)、[TWIN-02](microtasks/vmware_soc_twin/TWIN-02.md)、[TWIN-18](microtasks/vmware_soc_twin/TWIN-18.md)、[TWIN-03](microtasks/vmware_soc_twin/TWIN-03.md)、[TWIN-04](microtasks/vmware_soc_twin/TWIN-04.md)、[TWIN-05](microtasks/vmware_soc_twin/TWIN-05.md)及[TWIN-06](microtasks/vmware_soc_twin/TWIN-06.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。后续涉及[TWIN-07](microtasks/vmware_soc_twin/TWIN-07.md)、[TWIN-08](microtasks/vmware_soc_twin/TWIN-08.md)、[TWIN-15](microtasks/vmware_soc_twin/TWIN-15.md)、[TWIN-16](microtasks/vmware_soc_twin/TWIN-16.md)和[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)，实际就绪与派单由COORD按任务卡和前置证据核定。
 
-2026-10-30工作区记录中，TWIN-05/06卡面仍为Backlog，但已有后续运行证据；本地未跟踪的 TWIN-05 run_02 QA报告记录REJECTED，尚需按证据发布和COORD对账。报告决定不自动改变任务状态，也不表示其他候选的验收结果。
+2026-10-30工作区记录中，TWIN-05（Fast DDS SDK与有界QoS）与TWIN-06（D-Bus SDK与权限超时）Run 03经过定向整改，已在双独立Docker沙箱完成100%通过测试，并分别取得独立的真实Codex QA与ARCH双审签APPROVED，经COORD核实全部闭环推进至Done。释放下游任务[TWIN-07](microtasks/vmware_soc_twin/TWIN-07.md)（FORWARD常驻服务）与[TWIN-08](microtasks/vmware_soc_twin/TWIN-08.md)（STATE权威快照）。
 
 最多两张实现卡并行；实际会话、前置接受、写白名单、隔离输出、租约与资源待Ready前落实。台架/串口/探针只登记一名实际操作者，CLI不能与常驻FWD抢UART。QA独立Codex、QA作者产物由非作者ARCH复核；COORD按准确候选收件，不因结构exit0自动推进。
 
