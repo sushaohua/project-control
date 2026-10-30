@@ -1,0 +1,68 @@
+{
+  "task_id": "TWIN-18",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "2d577bcba43a",
+    "id": "TWIN-18_run_093720_20261030_013720",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-18_run_093720_20261030_013720",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "2d577bcba43a5f2651c136ff501d45117832fd7ee7c5d57d7547063733931126",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:43a2f1c6c95b1df70095eb744d5eadc9225867e0d7a2feda9b41ec3b6d38c825",
+      "created": "2026-10-30T01:37:20.236198225Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-18_run_093720_20261030_013720",
+          "Destination": "/workspace",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-18/runs/run_01/server_qa/server_lock.json",
+    "sha256": "e42ccf555ea8a7bc39a281bad5f3e9e2603a5986b6c5c2d30d92bba97226ff1b"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-18/runs/run_01/server_qa/checkout.log",
+    "sha256": "a7bae570634535e17ce829edfdc7006e7a3662f2305dcf6075c71912a601f363"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-18/runs/run_01/server_qa/runtime.log",
+    "sha256": "1d9e4cb5a9cdabe478ab3bd4d2a7861fc466daae452de8b7098d5db463adb8c9"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-18/runs/run_01/server_qa/server_verdict.json",
+    "sha256": "b4749049302eb2ea0ce3f62aa75f6d89ce967efb8579eb60ed21c6593a3b0ab3"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 tools/check_task_graph.py --workspace .",
+      "exit_code": "0",
+      "duration": "0.13s",
+      "output": "{\n  \"scope\": \"static planning validation, not execution/approval/QA acceptance\",\n  \"canonical_task_count\": 0,\n  \"microtask_count\": 0,\n  \"errors\": [],\n  \"dependency_cycles\": [],\n  \"shared_write_pairs\": [],\n  \"readiness_blockers\": {},\n  \"card_paths\": {},\n  \"exit_code\": 0\n}"
+    },
+    {
+      "command": "test -f docs/specs/mcu_motion_leveling_filament_interface_survey_20261029.md",
+      "exit_code": "0",
+      "duration": "0.09s",
+      "output": ""
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-30T01:37:33.688475+00:00"
+}

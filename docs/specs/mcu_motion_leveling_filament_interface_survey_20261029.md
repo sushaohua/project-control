@@ -380,9 +380,9 @@ MC 端接收到 TH 回传的字符流时：
 
 | 特性编号与名称 | 当前单片机实现现状 (代码锚点与数据形态) | MiniMCProto 正式规范目标 (CMD / Flags / 载荷定义) | AP 消费与分发路径 (DDS / D-Bus / HTTP-SSE) | 纯软件/孪生验证条件 (Isolated Twin/Doc) | 物理硬件在环验收条件 (Physical HIL) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`MOT-001`**<br/>当前位置与状态读取 | 存在 `current_position[9]`（浮点毫米，[`Marlin_main.c#L392`](file:///home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c#L392)）；`M114` 仅向调试串口输出 ASCII 文本，`minimc_proto.c` **无位置查询指令** | **CMD ID: `0x40`** (`CMD_TELEMETRY_REPORT`) 或 **`0x16`** (`CMD_POS_QUERY`);<br/>Flags: `0x06` (Response);<br/>载荷: 包含 `int32_t pos_x_um`, `pos_y_um`, `pos_z_um`, `pos_e_um` (微米, 1mm=1000um), `mc_state`, `homed_flags` | **DDS**: `telemetry/motion_status`<br/>(`aisoc::MotionStatusTelemetry`);<br/>**D-Bus**: `GetDeviceState()`;<br/>**SSE**: `event: motion_update`<br/>`{"x":10.5,"y":20.0,"z":0.2}` | 运行 Mock 串口或虚拟单片机，下发 0x16 查询帧，验证 AP 正确解析微米并显示浮点毫米 | 连接真实 AT32F435 板，发送 G1 移动指令后，回读坐标与步进电机实际物理移动量一致 |
-| **`MOT-002`**<br/>调平网格与状态界面 | 具备 $5 \times 5$ 网格 `bed_level[5][5]`（[`Marlin_main.c#L528`](file:///home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c#L528)）与双线性插补；`print_bed_level()` 被注释，**无协议导出接口** | **CMD ID: `0x18`** (`CMD_LEVEL_GRID_QUERY`);<br/>Flags: `0x06` (Response);<br/>载荷: 固定 52 字节 (`uint8_t grid_size_x`, `grid_size_y`, `int16_t z_offsets_um[25]`)，高度分辨率为 1um (0.001mm) | **D-Bus**: `org.aisoc.DeviceInterface.GetLevelingGrid()`;<br/>**HTTP**: `GET /api/v1/calibration/mesh`;<br/>**Web HMI**: 渲染 5x5 热力网格图与调平向导 | 注入模拟的 25 点高程矩阵 JSON，验证 HMI 正确绘制 3D/热力拓扑图且无内存泄露 | 真实探针在 PE1 下压接触床面 25 点，实测各点形变与 EEPROM 保存读出一致 |
-| **`COL-007`**<br/>断料提示与挂起暂停 | TH 读取 PD2 `A_DET`（[`pins.h#L45`](file:///home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle/inc/pins.h#L45)），10秒防抖后向串口发送 ASCII 文本 `"filaout\r\n"`；**无二进制协议报文** | **CMD ID: `0x50`** (`CMD_ALARM_EVENT`);<br/>Flags: `0x05` (Req, Wants ACK);<br/>载荷: 8 字节 (`alarm_level=2`, `subsystem=4`, `error_code=0x3001`, `param=0`);<br/>**HMS 错误码**: `0x3001` (`HMS_ERR_FILAMENT_RUNOUT`) | **DDS**: `telemetry/filament_status`;<br/>**D-Bus**: `org.aisoc.HmsInterface.AlarmRaised`;<br/>**SSE**: `event: alarm_event`<br/>`{"code":"0x3001","desc":"Runout"}`;<br/>**HMI**: 弹窗阻断并显示换料指引 | AP 端发送模拟 0x50 告警帧，验证 `device-manager` 状态机转为 PAUSED，HMI 弹出换料弹窗 | 打印过程中物理抽离 PD2 处耗材，验证 10s 内整机暂停降速，无撞机堵头 |
+| **`MOT-001`**<br/>当前位置与状态读取 | 存在 `current_position[9]`（浮点毫米，[`Marlin_main.c#L392`](file:///home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c#L392)）；`M114` 仅向调试串口输出 ASCII 文本，`minimc_proto.c` **无位置查询指令** | **CMD ID: `0x16`** (`CMD_POS_QUERY`);<br/>Flags: `0x06` (Response);<br/>载荷: 20 字节 (`int32_t pos_x_um`, `pos_y_um`, `pos_z_um`, `pos_e_um`, `uint8_t mc_state`, `uint8_t homed_mask`, `uint16_t reserved`) | **DDS**: `telemetry/motion_status`<br/>(`aisoc::MotionStatusTelemetry`);<br/>**D-Bus**: `GetDeviceState()`;<br/>**SSE**: `event: motion_update`<br/>`{"x":10.5,"y":20.0,"z":0.2}` | 运行 Mock 串口或虚拟单片机，下发 0x16 查询帧，验证 AP 正确解析微米并显示浮点毫米 | 连接真实 AT32F435 板，发送 G1 移动指令后，回读坐标与步进电机实际物理移动量一致 |
+| **`MOT-002`**<br/>调平网格与状态界面 | 具备 $5 \times 5$ 网格 `bed_level[5][5]`（[`Marlin_main.c#L528`](file:///home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c#L528)）与双线性插补；`print_bed_level()` 被注释，**无协议导出接口** | **CMD ID: `0x18`** (`CMD_LEVEL_GRID_QUERY`);<br/>Flags: `0x06` (Response);<br/>载荷: 固定 52 字节 (`uint8_t grid_points_x`, `uint8_t grid_points_y`, `int16_t z_offset_um[25]`)，高度分辨率为 1um (0.001mm) | **D-Bus**: `org.aisoc.DeviceInterface.GetLevelingGrid()`;<br/>**HTTP**: `GET /api/v1/calibration/mesh`;<br/>**Web HMI**: 渲染 5x5 热力网格图与调平向导 | 注入模拟的 25 点高程矩阵 JSON，验证 HMI 正确绘制 3D/热力拓扑图且无内存泄露 | 真实探针在 PE1 下压接触床面 25 点，实测各点形变与 EEPROM 保存读出一致 |
+| **`COL-007`**<br/>断料提示与挂起暂停 | TH 读取 PD2 `A_DET`（[`pins.h#L45`](file:///home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle/inc/pins.h#L45)），10秒防抖后向串口发送 ASCII 文本 `"filaout\r\n"`；**无二进制协议报文** | **CMD ID: `0x50`** (`CMD_ALARM_EVENT`);<br/>Flags: `0x05` (Req, Wants ACK);<br/>载荷: 8 字节 (`uint8_t alarm_level=2`, `uint8_t subsystem_id=4`, `uint16_t error_code=0x3001`, `uint32_t timestamp_tick_ms`);<br/>**HMS 错误码**: `0x3001` (`HMS_ERR_FILAMENT_RUNOUT`) | **DDS**: `telemetry/filament_status`;<br/>**D-Bus**: `org.aisoc.HmsInterface.AlarmRaised`;<br/>**SSE**: `event: alarm_event`<br/>`{"code":"0x3001","desc":"Runout"}`;<br/>**HMI**: 弹窗阻断并显示换料指引 | AP 端发送模拟 0x50 告警帧，验证 `device-manager` 状态机转为 PAUSED，HMI 弹出换料弹窗 | 打印过程中物理抽离 PD2 处耗材，验证 10s 内整机暂停降速，无撞机堵头 |
 
 ---
 
@@ -416,7 +416,7 @@ MC 端接收到 TH 回传的字符流时：
 
 * **请求帧（AP $\to$ MC）**：`DST_ID: 0x02`, `CMD_ID: 0x18`, `Payload_Len: 0`, 14 字节。
 * **响应帧（MC $\to$ AP）**：
-  - `Payload_Len`: `54` 字节（`0x0036`），帧总长 68 字节。
+  - `Payload_Len`: `52` 字节（`0x0034`），帧总长 66 字节。
 * **载荷结构体 (`minimc_level_grid_payload_t`)**：
   ```c
   #pragma pack(push, 1)
@@ -424,11 +424,9 @@ MC 端接收到 TH 回传的字符流时：
       uint8_t  grid_points_x;      /* 固定为 5 */
       uint8_t  grid_points_y;      /* 固定为 5 */
       int16_t  z_offset_um[25];    /* 25 个采样点的相对偏差 (微米 um, 0.001mm), 范围 -32768~+32767 um */
-      int16_t  plane_coeff_a_x10k; /* 拟合平面系数 a (放大10000倍整型) */
-      int16_t  plane_coeff_b_x10k; /* 拟合平面系数 b (放大10000倍整型) */
   } minimc_level_grid_payload_t;
   #pragma pack(pop)
-  _Static_assert(sizeof(minimc_level_grid_payload_t) == 54, "level grid payload must be 54 bytes");
+  _Static_assert(sizeof(minimc_level_grid_payload_t) == 52, "level grid payload must be 52 bytes");
   ```
 
 ### 6.3 断料告警事件报文 (`CMD_ALARM_EVENT = 0x50` / HMS `0x3001`)
