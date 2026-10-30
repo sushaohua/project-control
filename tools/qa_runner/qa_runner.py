@@ -273,6 +273,8 @@ def checkout_remote_repository(sandbox_dir: Path, target: RepositoryTarget, time
     """Fetch exact commit from remote server directly into sandbox."""
     validate_commit_sha(target.commit)
     validate_remote_url(target.url)
+    if not target.ref:
+        raise QARunnerError(f"Missing remote ref for {target.name}")
     repo_dir = sandbox_dir / target.name
     repo_dir.mkdir(parents=True, exist_ok=True)
     logs = [f"=== Checkout repository '{target.name}' from {target.url} ==="]
@@ -297,8 +299,9 @@ def checkout_remote_repository(sandbox_dir: Path, target: RepositoryTarget, time
     rev_res = run_git_command(["git", "rev-parse", "HEAD"], cwd=repo_dir, timeout=timeout)
     if rev_res.stdout.strip() != target.commit:
         raise QARunnerError(f"Checked out commit mismatch: expected {target.commit}, got {rev_res.stdout.strip()}")
-    ref_name = target.ref or "refs/heads/main"
-    branch_name = ref_name.split("/")[-1]
+    branch_name = target.ref
+    if branch_name.startswith("refs/heads/"):
+        branch_name = branch_name[len("refs/heads/"):]
     run_git_command(["git", "update-ref", f"refs/remotes/origin/{branch_name}", target.commit], cwd=repo_dir, timeout=timeout)
     run_git_command(["git", "update-ref", "refs/remotes/origin/HEAD", target.commit], cwd=repo_dir, timeout=timeout)
     verify_clean_worktree(repo_dir)
@@ -357,10 +360,12 @@ def build_server_lock_data(targets: List[RepositoryTarget]) -> dict:
     repos = []
     for target in targets:
         validate_commit_sha(target.commit)
+        if not target.ref:
+            raise QARunnerError(f"Missing remote ref for {target.name}")
         repos.append({
             "name": target.name,
             "url": target.url,
-            "ref": target.ref or "refs/heads/main",
+            "ref": target.ref,
             "commit": target.commit,
         })
     return {"repositories": repos}
@@ -595,7 +600,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def parse_repo_target(raw: str, default_urls: dict) -> RepositoryTarget:
+def parse_repo_target(raw: str, default_urls: dict, default_branches: dict = None) -> RepositoryTarget:
     """Parse a single repo target specification string."""
     name, sep, rest = raw.partition("=")
     if not sep or not rest:
@@ -603,7 +608,11 @@ def parse_repo_target(raw: str, default_urls: dict) -> RepositoryTarget:
     commit, sep_ref, ref = rest.partition(":")
     validate_commit_sha(commit)
     url = default_urls.get(name, f"ssh://git@192.168.77.113:2222/sushaohua/{name}.git")
-    return RepositoryTarget(name=name, url=url, commit=commit, ref=ref if sep_ref else None)
+    if not sep_ref:
+        ref = (default_branches or {}).get(name, "")
+    if not ref:
+        raise QARunnerError(f"Missing remote ref for {name}")
+    return RepositoryTarget(name=name, url=url, commit=commit, ref=ref)
 
 
 def parse_command_spec(raw: str) -> dict:
@@ -626,7 +635,8 @@ def main() -> int:
             print(f"[OK] Server verification passed: {status}")
             return 0
         urls = {k: v.get("url", "") for k, v in config.get("repositories", {}).items()}
-        targets = [parse_repo_target(r, urls) for r in args.repo_commit]
+        branches = {k: v.get("default_branch", "") for k, v in config.get("repositories", {}).items()}
+        targets = [parse_repo_target(r, urls, branches) for r in args.repo_commit]
         commands = [parse_command_spec(c) for c in args.cmd]
         req = QARunRequest(task_id=args.task, task_revision=args.revision, targets=targets, commands=commands)
         res, s_dir, c_logs, r_logs = runner.execute_run(req)

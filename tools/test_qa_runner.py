@@ -196,6 +196,17 @@ class CommandAndEvidenceTest(unittest.TestCase):
         self.assertEqual(spec["subpath"], "soc-ap")
         self.assertEqual(spec["command"], "make -j4")
 
+    def test_repo_default_branch_and_explicit_override(self):
+        sha = "1246ea9cb441d074ea444f53320f5632fefcd503"
+        urls = {"mcu-p3": "ssh://git@example.com/mcu-p3.git"}
+        branches = {"mcu-p3": "feat/soc-debug"}
+        target = parse_repo_target(f"mcu-p3={sha}", urls, branches)
+        self.assertEqual(build_server_lock_data([target])["repositories"][0]["ref"], "feat/soc-debug")
+        target = parse_repo_target(f"mcu-p3={sha}:refs/heads/other", urls, branches)
+        self.assertEqual(target.ref, "refs/heads/other")
+        with self.assertRaises(QARunnerError):
+            parse_repo_target(f"mcu-p3={sha}", urls)
+
     def test_evidence_bundle_delivery_checks_compatibility(self):
         sha = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
         target = RepositoryTarget("project-control", "ssh://git@192.168.77.113:2222/sushaohua/project-control.git", sha, "refs/heads/main")
