@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: Ready
 blocked: false
-planning_status: planned-not-dispatched
-owner: null
+planning_status: ready
+owner: ENG-FWD
 proposed_owner: ENG-FWD
 executor:
   role: ENG-FWD
-  agent_id: null
-  run_id: null
+  agent_id: ENG-FWD
+  run_id: run_01
 reviewer:
 - QA
 - ARCH
@@ -26,7 +26,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-07
-    session: null
+    session: 01a18c07-qa-twin07-planned
     decision: null
     reviewed_task_revision: null
     artifact_version: null
@@ -36,7 +36,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-07
-    session: null
+    session: 01a18c07-arch-twin07-planned
     decision: null
     reviewed_task_revision: null
     artifact_version: null
@@ -54,24 +54,24 @@ depends_on:
 - TEMP-04
 dependency_conditions:
 - task: TWIN-02
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 532caecf3a146802969a49e73081400c2b32b25e
+  acceptance_evidence: docs/evidence/twin/TWIN-02/runs/run_03/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TWIN-03
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+  acceptance_evidence: docs/evidence/twin/TWIN-03/runs/run_02/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TWIN-05
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: ec6081066a4b70e326e99aa124d7bbf356c41b17
+  acceptance_evidence: docs/evidence/twin/TWIN-05/runs/run_03/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TWIN-06
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 17fc3b4854af61c7fc21898d8f2045677ae1c84f
+  acceptance_evidence: docs/evidence/twin/TWIN-06/runs/run_03/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 - task: TEMP-04
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: 1.0.0
+  acceptance_evidence: docs/evidence/temperature_increment/TEMP-04/runs/run_01/result.md
   required: 开工前绑定准确产物、必需接受及适用限制；历史Done不批准新契约
 scope_status: mapped
 allowed_repositories:
@@ -104,12 +104,17 @@ source_baseline:
   soc-ap: 4445c8fedc21bafef5e6c971fcb54cec703f0e71
   mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
   test_harness: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
-base_commit: null
+base_commit: 17fc3b4854af61c7fc21898d8f2045677ae1c84f
 candidate_commit: null
 dispatch_binding:
-  source_commit: null
-  workspace_diff_sha256: null
-  consumed_artifact_versions: {}
+  source_commit: 17fc3b4854af61c7fc21898d8f2045677ae1c84f
+  workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  consumed_artifact_versions:
+    TWIN-02: 532caecf3a146802969a49e73081400c2b32b25e
+    TWIN-03: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+    TWIN-05: ec6081066a4b70e326e99aa124d7bbf356c41b17
+    TWIN-06: 17fc3b4854af61c7fc21898d8f2045677ae1c84f
+    TEMP-04: 1.0.0
 protocol_input:
   path: project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md
   sha256: 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
@@ -119,8 +124,12 @@ read_sources:
 - project-control/docs/planning/vmware_soc_twin_development_plan_20261029.md
 - project-control/docs/interfaces/soc_temperature_module_architecture_icd_draft_20261028.md
 - project-control/.agents/rules/c_cpp_coding_standard.md
-worktree: null
-lease: null
+worktree: soc-ap
+lease:
+  owner: ENG-FWD
+  task_revision: 1
+  lease_id: lease-twin-07-run01
+  expires_at: '2026-10-31T18:00:00+08:00'
 resources:
 - resource: isolated-worktree-and-build-output
   location: null
@@ -156,7 +165,7 @@ rollback:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行
 handoff:
   receiver_role: COORD
-  receiver_session: null
+  receiver_session: coord-main-session
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-07
   acknowledgement: null
