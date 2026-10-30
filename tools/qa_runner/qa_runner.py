@@ -360,7 +360,7 @@ def build_server_lock_data(targets: List[RepositoryTarget]) -> dict:
         repos.append({
             "name": target.name,
             "url": target.url,
-            "ref": target.ref or f"refs/heads/{target.commit}",
+            "ref": target.ref or "refs/heads/main",
             "commit": target.commit,
         })
     return {"repositories": repos}
@@ -449,12 +449,13 @@ def load_yaml_config(config_path: Path) -> dict:
         raise QARunnerError(f"Failed to parse config YAML: {err}") from err
 
 
-def start_docker_sandbox(name: str, image: str, mount_dir: Path) -> str:
-    """Start isolated docker container with volume mount for QA workspace."""
+def start_docker_sandbox(name: str, image: str, mount_dir: Path, read_only: bool = True) -> str:
+    """Start isolated docker container with read-only volume mount for QA workspace."""
+    mode = "ro" if read_only else "rw"
     cmd = [
         "docker", "run", "-d",
         "--name", name,
-        "-v", f"{mount_dir.resolve()}:/workspace:rw",
+        "-v", f"{mount_dir.resolve()}:/workspace:{mode}",
         "-w", "/workspace",
         image, "sleep", "3600",
     ]
@@ -526,10 +527,7 @@ class QARunner:
 
     def _run_sandbox_steps(self, sandbox_dir: Path, req: QARunRequest,
                            cid: Optional[str] = None) -> tuple:
-        checkout_logs, runtime_logs = [], []
-        for target in req.targets:
-            log = checkout_remote_repository(sandbox_dir, target)
-            checkout_logs.append(log)
+        runtime_logs = []
         build_results, test_results = [], []
         overall_passed = True
         for cmd_item in req.commands:
@@ -549,18 +547,24 @@ class QARunner:
             runtime_logs.append(c_res.stdout + "\n" + c_res.stderr)
             if c_res.returncode != 0:
                 overall_passed = False
-        return checkout_logs, runtime_logs, build_results, test_results, overall_passed
+        return runtime_logs, build_results, test_results, overall_passed
 
     def execute_run(self, req: QARunRequest) -> tuple:
-        """Execute complete isolated QA workflow in container sandbox."""
+        """Execute complete isolated QA workflow in read-only container sandbox."""
         self.verify_target_commits(req.targets)
         run_id = f"run_{datetime.datetime.now().strftime('%H%M%S')}"
         sandbox_dir = create_isolated_sandbox(self.sandbox_base, req.task_id, run_id)
+        # 1. Fetch exact server commits on host before launching container
+        c_logs = []
+        for target in req.targets:
+            log = checkout_remote_repository(sandbox_dir, target)
+            c_logs.append(log)
+        # 2. Launch container with read-only workspace snapshot
         c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
         img = self.config.get("sandbox", {}).get("image", "qa-sandbox:20261029")
-        cid = start_docker_sandbox(c_name, img, sandbox_dir)
+        cid = start_docker_sandbox(c_name, img, sandbox_dir, read_only=True)
         try:
-            c_logs, r_logs, b_res, t_res, ok = self._run_sandbox_steps(sandbox_dir, req, cid)
+            r_logs, b_res, t_res, ok = self._run_sandbox_steps(sandbox_dir, req, cid)
         finally:
             stop_docker_sandbox(cid)
             inspect_data = inspect_docker_sandbox(cid)
