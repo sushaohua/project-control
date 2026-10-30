@@ -1,0 +1,62 @@
+{
+  "task_id": "TWIN-05",
+  "task_revision": 2,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "d3be990d052a",
+    "id": "TWIN-05_run_133218_20261030_053218",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-05_run_133218_20261030_053218",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "d3be990d052a6703ea98b78990fcc8be3f1782495040c784f49ba18df7dec5ea",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-10-30T05:32:39.008590663Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-05_run_133218_20261030_053218",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_01/arch_server_qa/server_lock.json",
+    "sha256": "774fc33e4a0124159b810682c02f9009a177954121f4540d4dd89890854d25d9"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_01/arch_server_qa/checkout.log",
+    "sha256": "7994fa709d079edb4663b3c6abf830e79d41ee90fcc91c80fa246794aa20514e"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_01/arch_server_qa/runtime.log",
+    "sha256": "f6551cfd8022b4c469bb63f0e1da97bec0741bcc4370e6629513f265a708e7c3"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_01/arch_server_qa/server_verdict.json",
+    "sha256": "a5648208c68e1dc2db9eebfb98d3fe27e75845e6093b1dbe071a442a142ffe21"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [
+    {
+      "command": "g++ -std=c++17 -Wall -Wextra -Werror -I middleware/dds/include -I contracts/twin -I /usr/local/include -L /usr/local/lib -Wl,-rpath,/usr/local/lib middleware/dds/src/aisoc_dds.cpp middleware/dds/src/aisoc_dds_common.cpp middleware/dds/src/aisoc_dds_participant.cpp middleware/dds/src/aisoc_dds_pub.cpp middleware/dds/src/aisoc_dds_sub.cpp middleware/dds/src/aisoc_dds_types.cpp tests/dds/twin/test_dds_pubsub.cpp -lfastdds -lfastcdr -lpthread -o /tmp/test_dds_pubsub && /tmp/test_dds_pubsub",
+      "exit_code": "0",
+      "duration": "6.99s",
+      "output": "=========================================================\nAI-SoC Fast DDS SDK Test Suite (v2.0.0)\n=========================================================\n[Test 1.1] Testing Participant & Profile Guard Clauses...\n[Test 1.2] Testing Publisher Guard Clauses...\n[Test 1.3] Testing Subscriber Guard Clauses...\n>>> Guard Clause Tests: 100% PASSED\n[Test 2] Testing Raw Temp Telemetry End-to-End...\n>>> Raw Temp E2E Test: 100% PASSED\n[Test 3] Testing Temperature Snapshot End-to-End...\n>>> Temperature Snapshot E2E Test: 100% PASSED\n[Test 4] Testing Transient Local Late-Joiner Delivery...\nPublished snapshot gen=42 before subscriber created\nLate-joiner successfully retrieved historical snapshot gen=42\n>>> Transient Local Late-Joiner Test: 100% PASSED\n[Test 5] Testing History Depth KEEP_LAST(5)...\nPublished 10 samples (seq 1..10) into KEEP_LAST(5) history\nLate subscriber collected 5 samples: 6 7 8 9 10 \n>>> History Depth KEEP_LAST(5) Test: 100% PASSED\n[Test 6] Testing Real Cross-Process IPC with fork + exec...\n>>> Cross-Process IPC Test: 100% PASSED (child exit=0)\n=========================================================\nALL 6 FAST DDS TEST SUITES PASSED (100% SUCCESS)!\n========================================================="
+    }
+  ],
+  "test_results": [],
+  "passed": true,
+  "timestamp": "2026-10-30T05:32:48.611965+00:00"
+}

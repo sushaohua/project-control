@@ -1,0 +1,62 @@
+{
+  "task_id": "TWIN-06",
+  "task_revision": 2,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "b8022f1721eb",
+    "id": "TWIN-06_run_133257_20261030_053257",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-06_run_133257_20261030_053257",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "b8022f1721eb269eec81ce61ba301e3f72c24ee927ec461cacbe9c086bc7df6d",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-10-30T05:33:17.79067823Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-06_run_133257_20261030_053257",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-06/runs/run_01/arch_server_qa/server_lock.json",
+    "sha256": "774fc33e4a0124159b810682c02f9009a177954121f4540d4dd89890854d25d9"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-06/runs/run_01/arch_server_qa/checkout.log",
+    "sha256": "7994fa709d079edb4663b3c6abf830e79d41ee90fcc91c80fa246794aa20514e"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-06/runs/run_01/arch_server_qa/runtime.log",
+    "sha256": "cb43ac09a0990f8b385db2142547b61a7bff10d0a0b23259ecd42e90da3f375b"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-06/runs/run_01/arch_server_qa/server_verdict.json",
+    "sha256": "cbcc4696e7c76fd0d00280caac7fd3f69e3f5dddc26184a8e672ccc4e61cf1f4"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [
+    {
+      "command": "g++ -std=c++17 -Wall -Wextra -Werror -fno-exceptions -fno-rtti -I middleware/dbus/include -I /usr/local/include/dbus-1.0 -I /usr/local/lib/dbus-1.0/include -L /usr/local/lib -Wl,-rpath,/usr/local/lib middleware/dbus/src/aisoc_dbus_core.cpp middleware/dbus/src/aisoc_dbus_msg.cpp middleware/dbus/src/aisoc_dbus_client.cpp middleware/dbus/src/aisoc_dbus_server.cpp tests/dbus/twin/test_dbus_ipc.cpp -ldbus-1 -lpthread -o /tmp/test_dbus_ipc && /tmp/test_dbus_ipc",
+      "exit_code": "0",
+      "duration": "0.52s",
+      "output": "========================================================================\nTWIN-06 D-Bus IPC SDK & Permissions/Timeout Test Suite\n========================================================================\n[RUN ] test_guard_conn\n[PASS] test_guard_conn\n[RUN ] test_guard_msg\n[PASS] test_guard_msg\n[RUN ] test_guard_server\n[PASS] test_guard_server\n[RUN ] test_error_forward\n[PASS] test_error_forward\n[RUN ] test_error_reverse\n[PASS] test_error_reverse\n[RUN ] test_msg_types\n[PASS] test_msg_types\n[INFO] Spawned dbus-daemon (PID=32) at unix:path=/tmp/dbus-bmV2kMHGIY,guid=cb9d8e6f2405719c6fd5d8be6ae42c1e\n[INFO] Spawned D-Bus server process (PID=33), ready received\n[RUN ] run_client_test_suite (Real IPC Across 3 Processes)\n[PASS] run_client_test_suite\n------------------------------------------------------------------------\nTest Results: 7 passed, 0 failed\n========================================================================"
+    }
+  ],
+  "test_results": [],
+  "passed": true,
+  "timestamp": "2026-10-30T05:33:20.919157+00:00"
+}
