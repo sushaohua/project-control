@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: Done
 blocked: false
-planning_status: dispatched
+planning_status: closed
 owner: ENG-DBUS
 proposed_owner: ENG-DBUS
 executor:
   role: ENG-DBUS
   agent_id: bab80130-abdc-443c-9e30-4730e31b82f7
-  run_id: run_02
+  run_id: run_03
 reviewer:
 - QA
 - ARCH
@@ -26,22 +26,51 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-06
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18bc7-1aac-7451-83c7-b9c40bb8a759
+    session_evidence:
+      path: docs/evidence/twin/TWIN-06/runs/run_03/codex_session.jsonl
+      sha256: b13052afa3c7c4e028737c86cc5e936a91898726cf7acc0201043827e1f0f95d
+    decision: APPROVED
+    reviewed_task_revision: 2
+    artifact_version:
+      soc-ap: 17fc3b4854af61c7fc21898d8f2045677ae1c84f
+      test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+      project-control: 58193f4ac35cdf7b894d9b8162842e16b1cab7ba
+      mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
+    evidence: docs/evidence/twin/TWIN-06/runs/run_03/qa_review_report.md
+    report_sha256: 237f75e4c06d748b96e1e7bbbb7d7a7fee6c97c8d9ebb80fc54f79e5828044e4
+    report_review:
+      session: 01a18bce-4627-75a3-9270-e4dd76a896e8
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 2
+      artifact_version:
+        soc-ap: 17fc3b4854af61c7fc21898d8f2045677ae1c84f
+        test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+        project-control: 58193f4ac35cdf7b894d9b8162842e16b1cab7ba
+        mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
+      evidence: docs/evidence/twin/TWIN-06/runs/run_03/arch_review_report.md
+      report_sha256: 44b633dac91c8732c99b78f9110176da0aeab153ed1d933b82dc3681786a0bae
+      session_evidence:
+        path: docs/evidence/twin/TWIN-06/runs/run_03/arch_codex_session.jsonl
+        sha256: a42aa182f2f6f606dd8ffc820d2f7ad415a361efae57f0d4700552d6d42e279c
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-06
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18bce-4627-75a3-9270-e4dd76a896e8
+    session_evidence:
+      path: docs/evidence/twin/TWIN-06/runs/run_03/arch_codex_session.jsonl
+      sha256: a42aa182f2f6f606dd8ffc820d2f7ad415a361efae57f0d4700552d6d42e279c
+    decision: APPROVED
+    reviewed_task_revision: 2
+    artifact_version:
+      soc-ap: 17fc3b4854af61c7fc21898d8f2045677ae1c84f
+      test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+      project-control: 58193f4ac35cdf7b894d9b8162842e16b1cab7ba
+      mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
+    evidence: docs/evidence/twin/TWIN-06/runs/run_03/arch_review_report.md
+    report_sha256: 44b633dac91c8732c99b78f9110176da0aeab153ed1d933b82dc3681786a0bae
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-015
@@ -84,7 +113,7 @@ source_baseline:
   mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
   test_harness: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
 base_commit: 6a7864293f95fd44e5d3cc631289bb71489705b7
-candidate_commit: null
+candidate_commit: soc-ap=17fc3b4854af61c7fc21898d8f2045677ae1c84f
 dispatch_binding:
   source_commit: 6a7864293f95fd44e5d3cc631289bb71489705b7
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -130,8 +159,7 @@ deliverables:
   - soc-ap/config/dbus/twin/**
   - soc-ap/tests/dbus/twin/**
   - soc-ap/third_party/dbus/**
-  - soc-ap/third_party/archives/dbus-*.tar.*
-  record: docs/evidence/twin/TWIN-06/runs/<actual-run>/result.md
+  record: docs/evidence/twin/TWIN-06/runs/run_03/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行

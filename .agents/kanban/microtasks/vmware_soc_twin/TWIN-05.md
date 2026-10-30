@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: Done
 blocked: false
-planning_status: dispatched
+planning_status: closed
 owner: ENG-DDS
 proposed_owner: ENG-DDS
 executor:
   role: ENG-DDS
   agent_id: 3fbe2d65-b1c3-4c69-8a2d-084bcc76a4c3
-  run_id: run_02
+  run_id: run_03
 reviewer:
 - QA
 - ARCH
@@ -26,22 +26,59 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-05
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18bab-6746-7fb3-90ba-8d884f417707
+    session_evidence:
+      path: docs/evidence/twin/TWIN-05/runs/run_03/codex_session.jsonl
+      sha256: 0806e3fe2042b3ed9c0f022b3602f327c0098de888c51420e85df2c315578bdc
+    decision: APPROVED
+    reviewed_task_revision: 2
+    artifact_version:
+      run: run_03
+      requested_candidates:
+        soc-ap: ec6081066a4b70e326e99aa124d7bbf356c41b17
+        test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+        project-control: 81feb7a2d520131205af6cad7d013f87be34127d
+        mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
+    evidence: docs/evidence/twin/TWIN-05/runs/run_03/qa_review_report.md
+    report_sha256: 66a17c0e17917abfc17592472ebb7082096c4a108579927ecc956685a0ab6f8d
+    report_review:
+      session: 01a18bcb-0ce9-7500-bc2f-22f1a88931d5
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 2
+      artifact_version:
+        run: run_03
+        requested_candidates:
+          soc-ap: ec6081066a4b70e326e99aa124d7bbf356c41b17
+          test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+          project-control: 58193f4ac35cdf7b894d9b8162842e16b1cab7ba
+          mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
+        qa_execution_lock_project_control: 81feb7a2d520131205af6cad7d013f87be34127d
+      evidence: docs/evidence/twin/TWIN-05/runs/run_03/arch_review_report.md
+      report_sha256: f022112db3ba5560b7d207303b676d8c1be9aee0e67f60ba34afb2a83c93e08e
+      session_evidence:
+        path: docs/evidence/twin/TWIN-05/runs/run_03/arch_codex_session.jsonl
+        sha256: 61b7e8211bcb471b8fe7be736b9d59228339629e15a38f4a9fa6526c272bb25f
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-05
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: 01a18bcb-0ce9-7500-bc2f-22f1a88931d5
+    session_evidence:
+      path: docs/evidence/twin/TWIN-05/runs/run_03/arch_codex_session.jsonl
+      sha256: 61b7e8211bcb471b8fe7be736b9d59228339629e15a38f4a9fa6526c272bb25f
+    decision: APPROVED
+    reviewed_task_revision: 2
+    artifact_version:
+      run: run_03
+      requested_candidates:
+        soc-ap: ec6081066a4b70e326e99aa124d7bbf356c41b17
+        test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+        project-control: 58193f4ac35cdf7b894d9b8162842e16b1cab7ba
+        mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
+      qa_execution_lock_project_control: 81feb7a2d520131205af6cad7d013f87be34127d
+    evidence: docs/evidence/twin/TWIN-05/runs/run_03/arch_review_report.md
+    report_sha256: f022112db3ba5560b7d207303b676d8c1be9aee0e67f60ba34afb2a83c93e08e
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-014
@@ -92,7 +129,7 @@ source_baseline:
   mcu-p3: 1246ea9cb441d074ea444f53320f5632fefcd503
   test_harness: 6c61ce6e51cf83d7fb58d319c23cb91bf95786cb
 base_commit: 6a7864293f95fd44e5d3cc631289bb71489705b7
-candidate_commit: null
+candidate_commit: soc-ap=ec6081066a4b70e326e99aa124d7bbf356c41b17
 dispatch_binding:
   source_commit: 6a7864293f95fd44e5d3cc631289bb71489705b7
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -138,12 +175,7 @@ deliverables:
   - soc-ap/config/dds/twin/**
   - soc-ap/tests/dds/twin/**
   - soc-ap/third_party/dds/**
-  - soc-ap/third_party/archives/Fast-DDS-*.tar.*
-  - soc-ap/third_party/archives/Fast-CDR-*.tar.*
-  - soc-ap/third_party/archives/foonathan_memory*.tar.*
-  - soc-ap/third_party/archives/asio-*.tar.*
-  - soc-ap/third_party/archives/tinyxml2-*.tar.*
-  record: docs/evidence/twin/TWIN-05/runs/<actual-run>/result.md
+  record: docs/evidence/twin/TWIN-05/runs/run_03/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行

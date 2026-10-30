@@ -1,0 +1,55 @@
+=== Docker Container Inspect: c2f905d6af03 ===
+{
+  "id": "c2f905d6af03f0c989ba3cb646482d37fa250f5eae37892e73e3f5076886a97b",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-10-30T07:15:51.695918656Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-05_run_151525_20261030_071525",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) g++ -std=c++17 -Wall -Wextra -Werror -I middleware/dds/include -I middleware/dds/src -I /usr/local/include middleware/dds/src/aisoc_dds*.cpp tests/dds/twin/test_dds_pubsub.cpp -L /usr/local/lib -lfastdds -lfastcdr -lpthread -o /tmp/test_dds_pubsub && LD_LIBRARY_PATH=/usr/local/lib /tmp/test_dds_pubsub -> 0
+=========================================================
+AI-SoC Fast DDS SDK Test Suite (v2.0.0)
+=========================================================
+[Test 1.1] Testing Participant & Profile Guard Clauses...
+[Test 1.2] Testing Publisher Guard Clauses...
+[Test 1.3] Testing Subscriber Guard Clauses...
+>>> Guard Clause Tests: 100% PASSED
+[Test 1.1] Testing Entity Quota Hard Limits & Concurrency...
+  - Publisher Quota Boundary (Max 16)...
+  - Subscriber Quota Boundary (Max 16)...
+  - Participant Quota Boundary (Max 4)...
+  - Concurrent Quota Stress (8 threads racing for 16 slots)...
+  - Restart/Recovery Cycle & Resource Measurement...
+  - Cycle 1: Teardown Clean
+  - Resource Measurement: MaxRSS=23752 KB, UserCPU=0 ms, SysCPU=38 ms
+  - Cycle 2 (Recovery): Recreate & Publish Successful
+  - Resource Measurement: MaxRSS=23752 KB, UserCPU=0 ms, SysCPU=40 ms
+>>> Entity Quota Hard Limits & Concurrency: 100% PASSED
+[Test 2] Testing Raw Temp Telemetry End-to-End...
+>>> Raw Temp E2E Test: 100% PASSED
+[Test 3] Testing Temperature Snapshot End-to-End...
+>>> Temperature Snapshot E2E Test: 100% PASSED
+[Test 4] Testing Transient Local Late-Joiner Delivery...
+Published snapshot gen=42 before subscriber created
+Late-joiner successfully retrieved historical snapshot gen=42
+>>> Transient Local Late-Joiner Test: 100% PASSED
+[Test 5] Testing History Depth KEEP_LAST(5)...
+Published 10 samples (seq 1..10) into KEEP_LAST(5) history
+Late subscriber collected 5 samples: 6 7 8 9 10 
+>>> History Depth KEEP_LAST(5) Test: 100% PASSED
+[Test 6] Testing Real Cross-Process IPC with fork + exec...
+>>> Cross-Process IPC Test: 100% PASSED (child exit=0)
+=========================================================
+ALL 6 FAST DDS TEST SUITES PASSED (100% SUCCESS)!
+=========================================================
+

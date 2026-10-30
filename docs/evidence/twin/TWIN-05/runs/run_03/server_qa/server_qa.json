@@ -1,0 +1,62 @@
+{
+  "task_id": "TWIN-05",
+  "task_revision": 2,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "c2f905d6af03",
+    "id": "TWIN-05_run_151525_20261030_071525",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-05_run_151525_20261030_071525",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "c2f905d6af03f0c989ba3cb646482d37fa250f5eae37892e73e3f5076886a97b",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-10-30T07:15:51.695918656Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-05_run_151525_20261030_071525",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_03/server_qa/server_lock.json",
+    "sha256": "dcf6763a0fa0c7e9b7a9274ab0bd410d230b2762bcdcc0166858ccce4367508d"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_03/server_qa/checkout.log",
+    "sha256": "6d5d5c9ecbcdef58cec6029dc8c0904dddb2204288da48933d5adb30b4d950d3"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_03/server_qa/runtime.log",
+    "sha256": "f03136976f7c32c327ef40022c639ef3d79ed198f9e47af58ae51012800de38a"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-05/runs/run_03/server_qa/server_verdict.json",
+    "sha256": "10d531944f8c96e0c68302cb42ba2e9abf696a5398bd6bc2c018d7ce1275148f"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "g++ -std=c++17 -Wall -Wextra -Werror -I middleware/dds/include -I middleware/dds/src -I /usr/local/include middleware/dds/src/aisoc_dds*.cpp tests/dds/twin/test_dds_pubsub.cpp -L /usr/local/lib -lfastdds -lfastcdr -lpthread -o /tmp/test_dds_pubsub && LD_LIBRARY_PATH=/usr/local/lib /tmp/test_dds_pubsub",
+      "exit_code": "0",
+      "duration": "7.15s",
+      "output": "=========================================================\nAI-SoC Fast DDS SDK Test Suite (v2.0.0)\n=========================================================\n[Test 1.1] Testing Participant & Profile Guard Clauses...\n[Test 1.2] Testing Publisher Guard Clauses...\n[Test 1.3] Testing Subscriber Guard Clauses...\n>>> Guard Clause Tests: 100% PASSED\n[Test 1.1] Testing Entity Quota Hard Limits & Concurrency...\n  - Publisher Quota Boundary (Max 16)...\n  - Subscriber Quota Boundary (Max 16)...\n  - Participant Quota Boundary (Max 4)...\n  - Concurrent Quota Stress (8 threads racing for 16 slots)...\n  - Restart/Recovery Cycle & Resource Measurement...\n  - Cycle 1: Teardown Clean\n  - Resource Measurement: MaxRSS=23752 KB, UserCPU=0 ms, SysCPU=38 ms\n  - Cycle 2 (Recovery): Recreate & Publish Successful\n  - Resource Measurement: MaxRSS=23752 KB, UserCPU=0 ms, SysCPU=40 ms\n>>> Entity Quota Hard Limits & Concurrency: 100% PASSED\n[Test 2] Testing Raw Temp Telemetry End-to-End...\n>>> Raw Temp E2E Test: 100% PASSED\n[Test 3] Testing Temperature Snapshot End-to-End...\n>>> Temperature Snapshot E2E Test: 100% PASSED\n[Test 4] Testing Transient Local Late-Joiner Delivery...\nPublished snapshot gen=42 before subscriber created\nLate-joiner successfully retrieved historical snapshot gen=42\n>>> Transient Local Late-Joiner Test: 100% PASSED\n[Test 5] Testing History Depth KEEP_LAST(5)...\nPublished 10 samples (seq 1..10) into KEEP_LAST(5) history\nLate subscriber collected 5 samples: 6 7 8 9 10 \n>>> History Depth KEEP_LAST(5) Test: 100% PASSED\n[Test 6] Testing Real Cross-Process IPC with fork + exec...\n>>> Cross-Process IPC Test: 100% PASSED (child exit=0)\n=========================================================\nALL 6 FAST DDS TEST SUITES PASSED (100% SUCCESS)!\n========================================================="
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-30T07:16:01.451120+00:00"
+}
