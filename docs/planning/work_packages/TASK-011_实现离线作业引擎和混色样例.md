@@ -27,6 +27,7 @@ task_kind: work_package
 dispatchable: false
 child_tasks:
 - TWIN-17
+- TWIN-23
 planning_relations:
 - MS-11
 - TASK-005
