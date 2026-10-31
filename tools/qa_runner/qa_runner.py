@@ -282,7 +282,7 @@ def checkout_remote_repository(sandbox_dir: Path, target: RepositoryTarget, time
     logs.append(f"$ git init -> {init_res.returncode}")
     add_res = run_git_command(["git", "remote", "add", "origin", target.url], cwd=repo_dir, timeout=timeout)
     logs.append(f"$ git remote add origin {target.url} -> {add_res.returncode}")
-    fetch_cmd = ["git", "fetch", "--depth=1", "origin", target.commit]
+    fetch_cmd = ["git", "fetch", "--depth=50", "origin", target.commit]
     fetch_res = run_git_command(fetch_cmd, cwd=repo_dir, timeout=timeout)
     logs.append(f"$ git fetch origin {target.commit} -> {fetch_res.returncode}\n{fetch_res.stderr.strip()}")
     if fetch_res.returncode != 0:
