@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Done
 blocked: false
 planning_status: planned
 owner: session-eng-fwd-twin-25
@@ -27,23 +27,27 @@ review_assignments:
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-25
     session: session-qa-twin-25
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence:
+      path: docs/evidence/twin/TWIN-25/runs/run_01/qa_review_report.md
+      sha256: a5ffbf6c1e0673de41a8989892d223bfb8f6173ebb3e75eb89dab1cf12f02ab6
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; project-control=ac67c5faab018cb08a8e6582cdad2a740e5925b0; mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+    evidence: docs/evidence/twin/TWIN-25/runs/run_01/qa_review_report.md
+    report_sha256: a5ffbf6c1e0673de41a8989892d223bfb8f6173ebb3e75eb89dab1cf12f02ab6
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-25
     session: session-arch-twin-25
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence:
+      path: docs/evidence/twin/TWIN-25/runs/run_01/arch_review_report.md
+      sha256: 843143e7d7cce21c58e152046e6dfb76edfaae55404dc2083cea930c69418919
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; project-control=ac67c5faab018cb08a8e6582cdad2a740e5925b0; mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+    evidence: docs/evidence/twin/TWIN-25/runs/run_01/arch_review_report.md
+    report_sha256: 843143e7d7cce21c58e152046e6dfb76edfaae55404dc2083cea930c69418919
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-007
@@ -134,7 +138,10 @@ handoff:
   receiver_session: session-coord-main
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-25
-  acknowledgement: null
+  acknowledgement:
+    status: ACCEPTED
+    time: '2026-10-31T11:53:00+08:00'
+    by: session-coord-main
 verification:
   commands:
   - id: check_graph

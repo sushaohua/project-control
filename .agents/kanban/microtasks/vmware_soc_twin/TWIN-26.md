@@ -77,7 +77,7 @@ source_baseline:
   mcu-p3: 9b017f186665c2c9226146cc0fdc34af3ad5242b
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
 base_commit: 9b017f186665c2c9226146cc0fdc34af3ad5242b
-candidate_commit: null
+candidate_commit: 04231388c842c1ce3e5b71675d0dc118a65edf2e
 dispatch_binding:
   source_commit: 9b017f186665c2c9226146cc0fdc34af3ad5242b
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -113,7 +113,7 @@ deliverables:
   artifacts:
   - mcu-p3/motion-controller-mcu/project/src/wk_usart.c
   - mcu-p3/motion-controller-mcu/project/inc/wk_usart.h
-  record: docs/evidence/twin/TWIN-26/runs/<actual-run>/result.md
+  record: docs/evidence/twin/TWIN-26/runs/run_01/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行

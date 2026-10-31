@@ -1,0 +1,89 @@
+=== Docker Container Inspect: 81efef808e35 ===
+{
+  "id": "81efef808e3582d7c716adfbd09bc9e9adea351f36d3b91b4989ee71008a4b42",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-10-31T03:51:56.879048489Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-25_run_115137_20261031_035137",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) cmake -B /tmp/build_devmgr -S tests/device_manager/twin -DCMAKE_CXX_FLAGS='-I/usr/local/include/dbus-1.0 -I/usr/local/lib/dbus-1.0/include' && cmake --build /tmp/build_devmgr -> 0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/build_devmgr
+[  5%] Building CXX object CMakeFiles/test_device_manager.dir/test_device_manager.cpp.o
+[ 11%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/services/device_manager/device_manager_state.cpp.o
+[ 17%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/services/device_manager/device_manager_dbus.cpp.o
+[ 23%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/services/device_manager/device_manager_service.cpp.o
+[ 29%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/services/forward/forward_protocol.cpp.o
+[ 35%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/core/forward/minimc/codec.cpp.o
+[ 41%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 47%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 52%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 58%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 64%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 70%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 76%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 82%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 88%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 94%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[100%] Linking CXX executable test_device_manager
+[100%] Built target test_device_manager
+
+
+$ (soc-ap) /tmp/build_devmgr/test_device_manager -> 0
+========================================================================
+TWIN-08 Device Manager Verification & Integration Test Suite
+========================================================================
+[RUN ] test_unit_state_init
+[PASS] test_unit_state_init
+[RUN ] test_unit_state_sample_update
+[PASS] test_unit_state_sample_update
+[RUN ] test_unit_state_admission
+[PASS] test_unit_state_admission
+[RUN ] test_unit_state_json
+[PASS] test_unit_state_json
+[RUN ] test_unit_temp_conversion_and_json
+[PASS] test_unit_temp_conversion_and_json
+[RUN ] test_unit_fault_sentinel_defense
+[PASS] test_unit_fault_sentinel_defense
+[RUN ] test_unit_offline_sentinel_defense
+[PASS] test_unit_offline_sentinel_defense
+[RUN ] test_unit_grid_proto_build_query
+[PASS] test_unit_grid_proto_build_query
+[RUN ] test_unit_grid_proto_validate_positive_and_negative
+[PASS] test_unit_grid_proto_validate_positive_and_negative
+[RUN ] test_unit_grid_proto_parse_raw
+[PASS] test_unit_grid_proto_parse_raw
+[RUN ] test_unit_state_leveling_grid_and_json
+[PASS] test_unit_state_leveling_grid_and_json
+[RUN ] test_unit_state_grid_defense
+[PASS] test_unit_state_grid_defense
+[RUN ] [&]() { return test_rpc_get_snapshot(&env.cli_conn); }
+[PASS] [&]() { return test_rpc_get_snapshot(&env.cli_conn); }
+[RUN ] [&]() { return test_dds_sync_and_signal(&env); }
+[DEVICE_MGR DEBUG] DDS RX: node=1, temp=62000 millic (62.0 C) -> Snapshot GEN=11 (DEGRADED)
+[PASS] [&]() { return test_dds_sync_and_signal(&env); }
+[RUN ] [&]() { return test_rpc_request_sample(&env.cli_conn); }
+[PASS] [&]() { return test_rpc_request_sample(&env.cli_conn); }
+[RUN ] [&]() { return test_rpc_device_state_and_estop(&env.cli_conn); }
+[PASS] [&]() { return test_rpc_device_state_and_estop(&env.cli_conn); }
+========================================================================
+Total: Passed=16, Failed=0
+========================================================================
+
