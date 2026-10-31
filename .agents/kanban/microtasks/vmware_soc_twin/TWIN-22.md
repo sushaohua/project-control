@@ -6,9 +6,9 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Done
 blocked: false
-planning_status: planned
+planning_status: completed
 owner: session-eng-fwd-twin-22
 proposed_owner: ENG-FWD
 executor:
@@ -27,23 +27,23 @@ review_assignments:
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-22
     session: session-qa-twin-22
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence: docs/evidence/twin/TWIN-22/runs/run_01/qa_review_report.md
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: 6850cc553d405b5e7e511ff181d985fdee8e221f
+    evidence: docs/evidence/twin/TWIN-22/runs/run_01/qa_review_report.md
+    report_sha256: ef745ab3480afd338a27f965ed8dcdf65aad37ffb2771379bb07fe31324569d7
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-22
     session: session-arch-twin-22
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence: docs/evidence/twin/TWIN-22/runs/run_01/arch_review_report.md
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: 6850cc553d405b5e7e511ff181d985fdee8e221f
+    evidence: docs/evidence/twin/TWIN-22/runs/run_01/arch_review_report.md
+    report_sha256: 142cdd146194f78bd1ded0bad5f74f2b3ada7a8cf7c2648647dac37153f42666
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-008
@@ -79,7 +79,7 @@ source_baseline:
   mcu-p3: d756a13b3c2a1c47186a07311b2c24fa43431465
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
 base_commit: 19dd461b1959c170963ebd477aa29c36ea841f63
-candidate_commit: null
+candidate_commit: 6850cc553d405b5e7e511ff181d985fdee8e221f
 dispatch_binding:
   source_commit: 19dd461b1959c170963ebd477aa29c36ea841f63
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -128,7 +128,7 @@ handoff:
   receiver_session: session-coord-main
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-22
-  acknowledgement: null
+  acknowledgement: COORD-ACCEPTED
 verification:
   commands:
   - id: compile_device_manager_tests
