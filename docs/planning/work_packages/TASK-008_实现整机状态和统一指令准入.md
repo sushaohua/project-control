@@ -28,6 +28,7 @@ dispatchable: false
 child_tasks:
 - TWIN-08
 - TWIN-19
+- TWIN-22
 planning_relations:
 - MS-11
 related_tasks: []

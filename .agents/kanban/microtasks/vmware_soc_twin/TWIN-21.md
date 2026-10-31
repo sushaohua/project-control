@@ -6,12 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: false
 planning_status: planned
-owner: ENG-MC
+owner: session-eng-mc-twin-21
 proposed_owner: ENG-MC
-executor: null
+executor:
+  role: ENG-MC
+  agent_id: session-eng-mc-twin-21
+  run_id: run_01
 reviewer:
 - QA
 - ARCH
@@ -23,7 +26,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-21
-    session: null
+    session: session-qa-twin-21
     session_evidence: null
     decision: null
     reviewed_task_revision: null
@@ -34,7 +37,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-21
-    session: null
+    session: session-arch-twin-21
     session_evidence: null
     decision: null
     reviewed_task_revision: null
@@ -46,15 +49,11 @@ review_assignments:
 primary_work_package: TASK-002
 related_work_packages: []
 depends_on:
-- TWIN-15
 - TWIN-18
 dependency_conditions:
-- task: TWIN-15
-  accepted_version: run_01
-  acceptance_evidence: docs/evidence/twin/TWIN-15/runs/run_01/qa_review_report.md
-  required: 开工前继承 TWIN-15 固件 0x14 与强电 0% 硬锁死代码基线
 - task: TWIN-18
-  accepted_version: "project-control=579fd108ee7f12b0daf90d8a1559b61b73c62bf3; soc-ap=532caecf3a146802969a49e73081400c2b32b25e; mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181"
+  accepted_version: project-control=579fd108ee7f12b0daf90d8a1559b61b73c62bf3; soc-ap=532caecf3a146802969a49e73081400c2b32b25e;
+    mcu-p3=1246ea9cb441d074ea444f53320f5632fefcd503; test_harness=210ddd1c3f6f59594836c91b68aae55fb7a35181
   acceptance_evidence: docs/evidence/twin/TWIN-18/runs/run_03/qa_review_report.md
   required: 开工前绑定准确产物与 SPEC-MCU-MOTION-LEVELING-FILAMENT-20261029 规范定义
 scope_status: mapped
@@ -79,8 +78,8 @@ source_baseline:
 base_commit: d756a13b3c2a1c47186a07311b2c24fa43431465
 candidate_commit: null
 dispatch_binding:
-  source_commit: null
-  workspace_diff_sha256: null
+  source_commit: d756a13b3c2a1c47186a07311b2c24fa43431465
+  workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   consumed_artifact_versions: {}
 protocol_input:
   path: project-control/docs/specs/mcu_motion_leveling_filament_interface_survey_20261029.md
@@ -91,8 +90,12 @@ read_sources:
 - project-control/docs/planning/product/first_release_requirements_and_task_decomposition_20261029.md
 - project-control/docs/specs/mcu_motion_leveling_filament_interface_survey_20261029.md
 - project-control/.agents/rules/c_cpp_coding_standard.md
-worktree: null
-lease: null
+worktree: mcu-p3
+lease:
+  owner: session-eng-mc-twin-21
+  task_revision: 1
+  lease_id: lease-twin-21-run01
+  expires_at: '2026-10-31T18:00:00+08:00'
 resources:
 - resource: isolated-worktree-and-build-output
   location: null
@@ -118,7 +121,7 @@ rollback:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行
 handoff:
   receiver_role: COORD
-  receiver_session: null
+  receiver_session: session-coord-main
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-21
   acknowledgement: null
@@ -126,7 +129,8 @@ verification:
   commands:
   - id: check_graph
     cwd: .
-    command: PYTHONDONTWRITEBYTECODE=1 python3 project-control/tools/check_task_graph.py --workspace .
+    command: PYTHONDONTWRITEBYTECODE=1 python3 project-control/tools/check_task_graph.py
+      --workspace .
     expected: 结构无错误；不等于任务/运行/硬件接受
     availability: local
   - id: planned_build_and_acceptance

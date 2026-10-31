@@ -121,11 +121,26 @@ primary_work_package: TASK-002
 related_work_packages: []
 depends_on:
 - TWIN-01
+- TWIN-07
+- TWIN-08
+- TWIN-15
 dependency_conditions:
 - task: TWIN-01
   accepted_version: 67709ffaec92ec739f33d19ff690c3ad1a90027bd4d75ba804417a68b6095316
   acceptance_evidence: docs/evidence/twin/TWIN-01/runs/run_02/result.md
   required: 开工前绑定架构总图与双MCU芯片基线（MC=AT32F435, TH=AT32F423）
+- task: TWIN-07
+  accepted_version: 532caecf3a146802969a49e73081400c2b32b25e
+  acceptance_evidence: docs/evidence/twin/TWIN-07/runs/run_01/result.md
+  required: 开工前绑定 forward 服务协议解析基线
+- task: TWIN-08
+  accepted_version: 532caecf3a146802969a49e73081400c2b32b25e
+  acceptance_evidence: docs/evidence/twin/TWIN-08/runs/run_01/result.md
+  required: 开工前绑定 device_manager 状态机与准入基线
+- task: TWIN-15
+  accepted_version: 0ba7769fe60a032f765deada1e112c360e08b3cd
+  acceptance_evidence: docs/evidence/twin/TWIN-15/runs/run_01/result.md
+  required: 开工前绑定 MC 固件 minimc_proto.c 存量协议实现基线
 scope_status: mapped
 allowed_repositories:
 - project-control
