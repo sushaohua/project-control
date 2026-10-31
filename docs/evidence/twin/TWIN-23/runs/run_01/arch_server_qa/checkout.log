@@ -1,0 +1,28 @@
+=== Checkout repository 'soc-ap' from ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git -> 0
+$ git fetch origin 674e7336f924c2f297c439417a0011adc12427fa -> 0
+From ssh://192.168.77.113:2222/sushaohua/soc-ap
+ * branch            674e7336f924c2f297c439417a0011adc12427fa -> FETCH_HEAD
+$ git checkout 674e7336f924c2f297c439417a0011adc12427fa -> 0
+=== Checkout repository 'project-control' from ssh://git@192.168.77.113:2222/sushaohua/project-control.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/project-control.git -> 0
+$ git fetch origin e097299f1483d5192f3319996fa3008901f27613 -> 0
+From ssh://192.168.77.113:2222/sushaohua/project-control
+ * branch            e097299f1483d5192f3319996fa3008901f27613 -> FETCH_HEAD
+$ git checkout e097299f1483d5192f3319996fa3008901f27613 -> 0
+=== Checkout repository 'mcu-p3' from ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git -> 0
+$ git fetch origin 04231388c842c1ce3e5b71675d0dc118a65edf2e -> 0
+From ssh://192.168.77.113:2222/sushaohua/mcu-p3
+ * branch            04231388c842c1ce3e5b71675d0dc118a65edf2e -> FETCH_HEAD
+$ git checkout 04231388c842c1ce3e5b71675d0dc118a65edf2e -> 0
+=== Checkout repository 'test_harness' from ssh://git@192.168.77.113:2222/sushaohua/test_harness.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/test_harness.git -> 0
+$ git fetch origin 0b7497ba43158841eb3c4af7f16e477b9c30c2c5 -> 0
+From ssh://192.168.77.113:2222/sushaohua/test_harness
+ * branch            0b7497ba43158841eb3c4af7f16e477b9c30c2c5 -> FETCH_HEAD
+$ git checkout 0b7497ba43158841eb3c4af7f16e477b9c30c2c5 -> 0
