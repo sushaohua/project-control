@@ -1,0 +1,69 @@
+{
+  "task_id": "TWIN-29",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "cbf1bdbb7baf",
+    "id": "TWIN-29_run_142642_20261031_062642",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-29_run_142642_20261031_062642",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "cbf1bdbb7bafa5d87671ea0b92cd1e5690fc6f7b171b68c2f090dbc266b5fc90",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-10-31T06:26:56.293937346Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-29_run_142642_20261031_062642",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-29/runs/run_02/server_qa/server_lock.json",
+    "sha256": "909f86e504d561668057f26f539883dd98e8e786e7b3d8dc59c9d9181de930ba"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-29/runs/run_02/server_qa/checkout.log",
+    "sha256": "af994ec06c599602709de26a73c95e22dda4a2bdcb4a95b1ad1b0de13f565277"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-29/runs/run_02/server_qa/runtime.log",
+    "sha256": "50fa8beefa387eca2117bf68089b5ee2362f58fc36cb24c4757b472713d2c853"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-29/runs/run_02/server_qa/server_verdict.json",
+    "sha256": "0eb4ff863db897391dd740980c5043c32f462f6f72ef659f27ec9975fdc399d4"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [
+    {
+      "command": "cmake -B /tmp/build_devmgr -S tests/device_manager/twin -DCMAKE_CXX_FLAGS='-I/usr/local/include/dbus-1.0 -I/usr/local/lib/dbus-1.0/include' && cmake --build /tmp/build_devmgr",
+      "exit_code": "0",
+      "duration": "6.38s",
+      "output": "-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/build_devmgr\n[  5%] Building CXX object CMakeFiles/test_device_manager.dir/test_device_manager.cpp.o\n[ 11%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/services/device_manager/device_manager_state.cpp.o\n[ 17%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/services/device_manager/device_manager_dbus.cpp.o\n[ 23%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/services/device_manager/device_manager_service.cpp.o\n[ 29%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/services/forward/forward_protocol.cpp.o\n[ 35%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/core/forward/minimc/codec.cpp.o\n[ 41%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o\n[ 47%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o\n[ 52%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o\n[ 58%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o\n[ 64%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o\n[ 70%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o\n[ 76%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o\n[ 82%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o\n[ 88%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o\n[ 94%] Building CXX object CMakeFiles/test_device_manager.dir/workspace/soc-ap/middleware/dds/src/aisoc_dds.cpp.o\n[100%] Linking CXX executable test_device_manager\n[100%] Built target test_device_manager"
+    }
+  ],
+  "test_results": [
+    {
+      "command": "/tmp/build_devmgr/test_device_manager",
+      "exit_code": "0",
+      "duration": "1.16s",
+      "output": "========================================================================\nTWIN-08 / TWIN-29 Device Manager Verification & Integration Test Suite\n========================================================================\n[RUN ] test_unit_state_init\n[PASS] test_unit_state_init\n[RUN ] test_unit_state_sample_update\n[PASS] test_unit_state_sample_update\n[RUN ] test_unit_state_admission\n[PASS] test_unit_state_admission\n[RUN ] test_unit_state_json\n[PASS] test_unit_state_json\n[RUN ] test_unit_temp_conversion_and_json\n[PASS] test_unit_temp_conversion_and_json\n[RUN ] test_unit_fault_sentinel_defense\n[PASS] test_unit_fault_sentinel_defense\n[RUN ] test_unit_offline_sentinel_defense\n[PASS] test_unit_offline_sentinel_defense\n[RUN ] test_unit_grid_proto_build_query\n[PASS] test_unit_grid_proto_build_query\n[RUN ] test_unit_grid_proto_validate_positive_and_negative\n[PASS] test_unit_grid_proto_validate_positive_and_negative\n[RUN ] test_unit_grid_proto_parse_raw\n[PASS] test_unit_grid_proto_parse_raw\n[RUN ] test_unit_state_leveling_grid_and_json\n[PASS] test_unit_state_leveling_grid_and_json\n[RUN ] test_unit_state_grid_defense\n[PASS] test_unit_state_grid_defense\n[RUN ] test_unit_version_proto_build_query\n[PASS] test_unit_version_proto_build_query\n[RUN ] test_unit_version_proto_validate_positive_and_negative\n[PASS] test_unit_version_proto_validate_positive_and_negative\n[RUN ] test_unit_version_proto_parse_raw\n[PASS] test_unit_version_proto_parse_raw\n[RUN ] test_unit_state_version_tracking_and_decay\n[PASS] test_unit_state_version_tracking_and_decay\n[RUN ] test_unit_state_version_json_and_snapshot\n[PASS] test_unit_state_version_json_and_snapshot\n[RUN ] test_unit_state_version_binding_exhaustion\n[PASS] test_unit_state_version_binding_exhaustion\n[RUN ] [&]() { return test_rpc_get_snapshot(&env.cli_conn); }\n[PASS] [&]() { return test_rpc_get_snapshot(&env.cli_conn); }\n[RUN ] [&]() { return test_dds_sync_and_signal(&env); }\n[DEVICE_MGR DEBUG] DDS RX: node=1, temp=62000 millic (62.0 C) -> Snapshot GEN=11 (DEGRADED)\n[PASS] [&]() { return test_dds_sync_and_signal(&env); }\n[RUN ] [&]() { return test_rpc_request_sample(&env.cli_conn); }\n[PASS] [&]() { return test_rpc_request_sample(&env.cli_conn); }\n[RUN ] [&]() { return test_rpc_device_state_and_estop(&env.cli_conn); }\n[PASS] [&]() { return test_rpc_device_state_and_estop(&env.cli_conn); }\n[RUN ] [&]() { return test_rpc_get_version_info(&env.cli_conn); }\n[PASS] [&]() { return test_rpc_get_version_info(&env.cli_conn); }\n========================================================================\nTotal: Passed=23, Failed=0\n========================================================================"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-31T06:27:06.567160+00:00"
+}

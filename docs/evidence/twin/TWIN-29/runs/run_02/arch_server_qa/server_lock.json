@@ -1,0 +1,16 @@
+{
+  "repositories": [
+    {
+      "name": "soc-ap",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+      "ref": "main",
+      "commit": "86f5e17ead0971ca1a1eb20c07ca345924e24454"
+    },
+    {
+      "name": "project-control",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "main",
+      "commit": "8b2b685d8232e4b0485740e7fe1268f544fa0528"
+    }
+  ]
+}

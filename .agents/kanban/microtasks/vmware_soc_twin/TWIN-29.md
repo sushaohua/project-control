@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Done
 blocked: false
-planning_status: planned
+planning_status: closed
 owner: session-eng-fwd-twin-29
 proposed_owner: ENG-FWD
 executor:
   role: ENG-FWD
   agent_id: session-eng-fwd-twin-29
-  run_id: run_01
+  run_id: run_02
 reviewer:
 - QA
 - ARCH
@@ -27,23 +27,38 @@ review_assignments:
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-29
     session: session-qa-twin-29
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence:
+      path: docs/evidence/twin/TWIN-29/runs/run_02/qa_review_report.md
+      sha256: 3493232f0619f5481073a966a3b2f469b4939e02ea5037ad07aede50345c7fd5
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: soc-ap=86f5e17ead0971ca1a1eb20c07ca345924e24454; project-control=8b2b685d8232e4b0485740e7fe1268f544fa0528
+    evidence: docs/evidence/twin/TWIN-29/runs/run_02/qa_review_report.md
+    report_sha256: 3493232f0619f5481073a966a3b2f469b4939e02ea5037ad07aede50345c7fd5
+    report_review:
+      session: session-arch-twin-29
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: soc-ap=86f5e17ead0971ca1a1eb20c07ca345924e24454; project-control=8b2b685d8232e4b0485740e7fe1268f544fa0528
+      evidence: docs/evidence/twin/TWIN-29/runs/run_02/arch_review_report.md
+      report_sha256: 475c2bb08e07badeb5fda3e1f8479f1c288db21e7a5e4c8696ac10bc13608b49
+      session_evidence:
+        path: docs/evidence/twin/TWIN-29/runs/run_02/arch_review_report.md
+        sha256: 475c2bb08e07badeb5fda3e1f8479f1c288db21e7a5e4c8696ac10bc13608b49
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-29
     session: session-arch-twin-29
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence:
+      path: docs/evidence/twin/TWIN-29/runs/run_02/arch_review_report.md
+      sha256: 475c2bb08e07badeb5fda3e1f8479f1c288db21e7a5e4c8696ac10bc13608b49
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: soc-ap=86f5e17ead0971ca1a1eb20c07ca345924e24454; project-control=8b2b685d8232e4b0485740e7fe1268f544fa0528
+    evidence: docs/evidence/twin/TWIN-29/runs/run_02/arch_review_report.md
+    report_sha256: 475c2bb08e07badeb5fda3e1f8479f1c288db21e7a5e4c8696ac10bc13608b49
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-007
@@ -90,7 +105,7 @@ source_baseline:
   mcu-p3: 04231388c842c1ce3e5b71675d0dc118a65edf2e
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
 base_commit: f2596517c8e7a53da6ff9623d948ec5e70bf6770
-candidate_commit: null
+candidate_commit: 86f5e17ead0971ca1a1eb20c07ca345924e24454
 dispatch_binding:
   source_commit: f2596517c8e7a53da6ff9623d948ec5e70bf6770
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -134,7 +149,7 @@ deliverables:
   - soc-ap/tests/device_manager/twin/test_device_manager.cpp
   - soc-ap/tests/device_manager/twin/CMakeLists.txt
   - soc-ap/tests/device_manager/twin/test_device_manager.cpp
-  record: docs/evidence/twin/TWIN-29/runs/run_01/result.md
+  record: docs/evidence/twin/TWIN-29/runs/run_02/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行
@@ -143,7 +158,7 @@ handoff:
   receiver_session: session-coord-main
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-29
-  acknowledgement: null
+  acknowledgement: docs/evidence/twin/TWIN-29/runs/run_02/result.md
 verification:
   commands:
   - id: check_graph
@@ -169,7 +184,7 @@ verification:
 required_evidence_level: software-verified
 verification_environment: isolated-host-or-document
 qa_review_policy: project-control/.agents/rules/codex_qa_review.md
-updated: '2026-10-31T12:15:00+08:00'
+updated: '2026-10-31T14:32:00+08:00'
 ---
 
 # TWIN-29 AP端双MCU真实固件版本查询链路与时序衰退状态机实现
