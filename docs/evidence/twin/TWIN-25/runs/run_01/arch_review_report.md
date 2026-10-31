@@ -14,8 +14,11 @@ author_session: session-eng-fwd-twin-25
 task_id: TWIN-25
 task_revision: 1
 run_id: run_01
+reviewed_qa_report_sha256: 3c9497dc69f646ee0aeeb9074eeeeb2874a95ecaf7f657d3f9746abf1532f074
 reviewed_artifact_version: 'soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; project-control=ac67c5faab018cb08a8e6582cdad2a740e5925b0; mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5'
 reviewed_artifacts:
+  - path: docs/evidence/twin/TWIN-25/runs/run_01/qa_review_report.md
+    sha256: 3c9497dc69f646ee0aeeb9074eeeeb2874a95ecaf7f657d3f9746abf1532f074
   - path: soc-ap/services/forward/forward_protocol.h
     sha256: 294106db669b0cad836035f14ed936a9330cc1d5c3137a6cda12eafad60d4bd9
     commit: f2596517c8e7a53da6ff9623d948ec5e70bf6770
@@ -68,6 +71,7 @@ protocol_and_expectations:
 verification_environment: 'Container sandbox qa-sandbox:20261029 (container ID 2e19d77f80db) with read-only source mount from Git server pinned commits; independent host-side review of exported server_qa evidence.'
 verification_scope: 'AP-side 0x18 wire parsing, 5x5 leveling grid state model, JSON topology generation, error defense, unit and integration test suites.'
 findings: []
+decision: APPROVED
 recommendation: APPROVED
 comments: "Architecture review confirms that TWIN-25 establishes a solid bridge between down-link MC 0x18 leveling telemetry and up-link HMI/D-Bus state representation. Robust defense against malformed frames and NULL pointers verified. APPROVED."
 reviewed_at: '2026-10-31T11:52:30+08:00'

@@ -29,12 +29,23 @@ review_assignments:
     session: session-qa-twin-25
     session_evidence:
       path: docs/evidence/twin/TWIN-25/runs/run_01/qa_review_report.md
-      sha256: a5ffbf6c1e0673de41a8989892d223bfb8f6173ebb3e75eb89dab1cf12f02ab6
+      sha256: 3c9497dc69f646ee0aeeb9074eeeeb2874a95ecaf7f657d3f9746abf1532f074
     decision: APPROVED
     reviewed_task_revision: 1
     artifact_version: soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; project-control=ac67c5faab018cb08a8e6582cdad2a740e5925b0; mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
     evidence: docs/evidence/twin/TWIN-25/runs/run_01/qa_review_report.md
-    report_sha256: a5ffbf6c1e0673de41a8989892d223bfb8f6173ebb3e75eb89dab1cf12f02ab6
+    report_sha256: 3c9497dc69f646ee0aeeb9074eeeeb2874a95ecaf7f657d3f9746abf1532f074
+    report_review:
+      session: session-arch-twin-25
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; project-control=ac67c5faab018cb08a8e6582cdad2a740e5925b0; mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+      evidence: docs/evidence/twin/TWIN-25/runs/run_01/arch_review_report.md
+      report_sha256: 7da2a7ab483b79e3fc6d274c23c5cf0da36fe401ffe55171baa2631603e9c5c9
+      session_evidence:
+        path: docs/evidence/twin/TWIN-25/runs/run_01/arch_review_report.md
+        sha256: 7da2a7ab483b79e3fc6d274c23c5cf0da36fe401ffe55171baa2631603e9c5c9
   - role: ARCH
     platform: codex
     model: gpt-6-luna
@@ -42,12 +53,12 @@ review_assignments:
     session: session-arch-twin-25
     session_evidence:
       path: docs/evidence/twin/TWIN-25/runs/run_01/arch_review_report.md
-      sha256: 843143e7d7cce21c58e152046e6dfb76edfaae55404dc2083cea930c69418919
+      sha256: 7da2a7ab483b79e3fc6d274c23c5cf0da36fe401ffe55171baa2631603e9c5c9
     decision: APPROVED
     reviewed_task_revision: 1
     artifact_version: soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; project-control=ac67c5faab018cb08a8e6582cdad2a740e5925b0; mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
     evidence: docs/evidence/twin/TWIN-25/runs/run_01/arch_review_report.md
-    report_sha256: 843143e7d7cce21c58e152046e6dfb76edfaae55404dc2083cea930c69418919
+    report_sha256: 7da2a7ab483b79e3fc6d274c23c5cf0da36fe401ffe55171baa2631603e9c5c9
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-007

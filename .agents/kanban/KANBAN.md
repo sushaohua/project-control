@@ -1,16 +1,16 @@
 ---
 title: SoC公共看板
-version: 22
+version: 23
 status: current-planning
 owner: COORD
-updated: '2026-10-31T12:05:00+08:00'
+updated: '2026-10-31T12:16:00+08:00'
 plan_revision: vmware-soc-twin-20261029
 execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示运行
 ---
 
 # 当前任务看板
 
-当前接续为[VMware→SoC两阶段孪生任务](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)。共109张有效卡，18张工作包不直接派发；另6张superseded V2历史卡不计入。旧卡状态/阻塞保持，历史签署只适用原版本。根目录旧`.agents`不作正式状态源。
+当前接续为[VMware→SoC两阶段孪生任务](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)。共110张有效卡，18张工作包不直接派发；另6张superseded V2历史卡不计入。旧卡状态/阻塞保持，历史签署只适用原版本。根目录旧`.agents`不作正式状态源。
 
 | 类别 | 数量 | 实际状态投影 |
 | --- | ---: | --- |
@@ -20,7 +20,7 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 27 | Backlog 4、Done 23（含人为冻结1） |
+| TWIN | 28 | Backlog 4、InProgress 1、Done 23（含人为冻结1） |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
@@ -32,7 +32,8 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 - [TWIN-25](microtasks/vmware_soc_twin/TWIN-25.md)（AP端0x18调平网格解析与设备状态拓扑呈现）：承接TWIN-24下位机网格数据，提供D-Bus/HTTP-SSE/Web HMI拓扑状态呈现，双独立Docker沙箱16项单测全通，独立Codex QA与ARCH复核APPROVED收件；
 - [TWIN-26](microtasks/vmware_soc_twin/TWIN-26.md)（双MCU固件升级通道与Bootloader IAP协议复用对账）：已按用户指令【人为冻结】（blocked: true）。虽双独立Docker沙箱6大测试全通、独立Codex QA与ENG-MC完成复核，但遵照人工指示严格保持冻结状态，严禁下游自动消费；
 - [TWIN-27](microtasks/vmware_soc_twin/TWIN-27.md)（AP端VMware指定目录固件扫描与安全准入服务实现）：因前置TWIN-26被人为冻结，本任务保持Backlog且标记blocked: true，不派发、不推进；
-- [TWIN-28](microtasks/vmware_soc_twin/TWIN-28.md)（端到端真实双MCU固件升级在环联调与验收）：保持Backlog且标记blocked: true，待上游解冻后按流程推进。
+- [TWIN-28](microtasks/vmware_soc_twin/TWIN-28.md)（端到端真实双MCU固件升级在环联调与验收）：保持Backlog且标记blocked: true，待上游解冻后按流程推进；
+- [TWIN-29](microtasks/vmware_soc_twin/TWIN-29.md)（AP端双MCU真实固件版本查询链路与时序衰退状态机实现）：落实用户高优先级固件版本展示指令，实现0x01/0x02版本帧组帧与解析、device_manager双端版本拓扑与FRESH/STALE/OFFLINE/FAILED四态时序衰退，已派发ENG-FWD会话session-eng-fwd-twin-29执行。
 
 2026-10-30工作区记录中：
 1. **TWIN-07（FORWARD常驻服务与唯一UART通路）**：已完成常驻进程守护、MiniMCProto v2.0双向编解码与CRC校验、PTY串口仿真、DDS `telemetry/raw_temp`低延迟发布与D-Bus RPC控制服务，在独立Docker沙箱中通过100%验证，取得独立Codex QA与ARCH审签APPROVED闭环；
