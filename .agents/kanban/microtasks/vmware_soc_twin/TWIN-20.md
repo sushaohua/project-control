@@ -32,7 +32,13 @@ review_assignments:
       sha256: a72234f143e9380397616870907bea6da1b7fe169b0bb439cdb3ad2924fa3b8c
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: soc-ap=cb70d59e949396f45aec94d33ae23cab75beb282; project-control=f0fe3948482adb71e5366006850fdb9dd36282bc
+    artifact_version:
+      run: run_02
+      requested_candidates:
+        soc-ap: cb70d59e949396f45aec94d33ae23cab75beb282
+        project-control: f0fe3948482adb71e5366006850fdb9dd36282bc
+        test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+        mcu-p3: 04231388c842c1ce3e5b71675d0dc118a65edf2e
     evidence: docs/evidence/twin/TWIN-20/runs/run_02/qa_review_report.md
     report_sha256: a72234f143e9380397616870907bea6da1b7fe169b0bb439cdb3ad2924fa3b8c
     report_review:
@@ -40,7 +46,13 @@ review_assignments:
       role: ARCH
       decision: APPROVED
       reviewed_task_revision: 2
-      artifact_version: soc-ap=cb70d59e949396f45aec94d33ae23cab75beb282; project-control=f0fe3948482adb71e5366006850fdb9dd36282bc
+      artifact_version:
+        run: run_02
+        requested_candidates:
+          soc-ap: cb70d59e949396f45aec94d33ae23cab75beb282
+          project-control: f0fe3948482adb71e5366006850fdb9dd36282bc
+          test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+          mcu-p3: 04231388c842c1ce3e5b71675d0dc118a65edf2e
       evidence: docs/evidence/twin/TWIN-20/runs/run_02/arch_review_report.md
       report_sha256: 08bb5946228ca5a38a0ee164a4642e25eb5a5a5cc730c751afeead583ecdb98f
       session_evidence:
@@ -56,7 +68,13 @@ review_assignments:
       sha256: 08bb5946228ca5a38a0ee164a4642e25eb5a5a5cc730c751afeead583ecdb98f
     decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: soc-ap=cb70d59e949396f45aec94d33ae23cab75beb282; project-control=f0fe3948482adb71e5366006850fdb9dd36282bc
+    artifact_version:
+      run: run_02
+      requested_candidates:
+        soc-ap: cb70d59e949396f45aec94d33ae23cab75beb282
+        project-control: f0fe3948482adb71e5366006850fdb9dd36282bc
+        test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+        mcu-p3: 04231388c842c1ce3e5b71675d0dc118a65edf2e
     evidence: docs/evidence/twin/TWIN-20/runs/run_02/arch_review_report.md
     report_sha256: 08bb5946228ca5a38a0ee164a4642e25eb5a5a5cc730c751afeead583ecdb98f
   verifier_session: null

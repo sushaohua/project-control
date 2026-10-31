@@ -1,9 +1,9 @@
 ---
 title: SoC公共看板
-version: 25
+version: 26
 status: current-planning
 owner: COORD
-updated: '2026-10-31T15:25:00+08:00'
+updated: '2026-10-31T15:37:00+08:00'
 plan_revision: vmware-soc-twin-20261029
 execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示运行
 ---
@@ -20,12 +20,13 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 29 | Backlog 4、Done 25（含人为冻结3） |
+| TWIN | 30 | Backlog 4、InProgress 1、Done 25（含人为冻结3） |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
 
 前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)至[TWIN-12](microtasks/vmware_soc_twin/TWIN-12.md)、[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)至[TWIN-25](microtasks/vmware_soc_twin/TWIN-25.md)及[TWIN-29](microtasks/vmware_soc_twin/TWIN-29.md)卡面均为Done；其中TWIN-26已按用户指令执行人为冻结（blocked: true），TWIN-13/TWIN-14亦按不具备SoC迁移条件指令执行人为冻结（blocked: true），其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。
+- [TWIN-30](microtasks/vmware_soc_twin/TWIN-30.md)（VMware全流程离线打印闭环集成验证与首版收件）：【在途推进 InProgress】承接首版本地正常打印闭环目标（U-D02）与纯逻辑空跑底线（选项 A / U-D03），已完成卡片正式编制并签发派发，由 INTEGRATOR 主责端到端串联离线作业引擎、流式执行器、权威状态机与双 MCU 契约，验证 OOBE 新机向导、5×5 网格热力、料槽调色板映射、双 MCU 固件版本呈现、G28 回零防护、微米走线调度、强电 0% 锁定拦截与断料/急停在环联动；
 - [TWIN-23](microtasks/vmware_soc_twin/TWIN-23.md)（VMware离线G-code作业流式空跑与运控执行器实现）：【已闭环 Done】承接首版本地正常打印闭环目标（U-D02）与选项 A 台架底线要求（U-D03），已完成离线 G-code 流式读取、选项 A 强电 0% 过滤、CoreXY 走线调度、HMS 0x3001 断料联锁与 M112 急停熔断；C11/C++17 8/8 单测与 6/6 回归测试 100% 通过，两组独立沙箱（QA / ARCH）全绿通过，独立 Codex QA 与 ARCH 双重 APPROVED 收件；
 - [TWIN-21](microtasks/vmware_soc_twin/TWIN-21.md)（MC固件0x16坐标查询与运动指令响应）：已完成0x16 20B微米整型对账、栈溢出根除与强电0%锁死，服务器沙箱100%通过，独立Codex QA与ARCH复核APPROVED收件；
 - [TWIN-22](microtasks/vmware_soc_twin/TWIN-22.md)（AP端温控倍数换算与故障哨兵防御性治理）：已完成deci_c至milli_c统一换算（解决TWIN-12 245.0℃ vs 24.5℃冲突）、故障哨兵输出null与降级，服务器沙箱11项单测100%通过，独立Codex QA与ARCH复核APPROVED收件；
