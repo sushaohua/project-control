@@ -20,14 +20,15 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 22 | Backlog 2、Done 20 |
+| TWIN | 23 | Backlog 3、Done 20 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
 
 前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)至[TWIN-12](microtasks/vmware_soc_twin/TWIN-12.md)、[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)至[TWIN-22](microtasks/vmware_soc_twin/TWIN-22.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。
 - [TWIN-21](microtasks/vmware_soc_twin/TWIN-21.md)（MC固件0x16坐标查询与运动指令响应）：已完成0x16 20B微米整型对账、栈溢出根除与强电0%锁死，服务器沙箱100%通过，独立Codex QA与ARCH复核APPROVED收件；
-- [TWIN-22](microtasks/vmware_soc_twin/TWIN-22.md)（AP端温控倍数换算与故障哨兵防御性治理）：已完成deci_c至milli_c统一换算（解决TWIN-12 245.0℃ vs 24.5℃冲突）、故障哨兵输出null与降级，服务器沙箱11项单测100%通过，独立Codex QA与ARCH复核APPROVED收件。
+- [TWIN-22](microtasks/vmware_soc_twin/TWIN-22.md)（AP端温控倍数换算与故障哨兵防御性治理）：已完成deci_c至milli_c统一换算（解决TWIN-12 245.0℃ vs 24.5℃冲突）、故障哨兵输出null与降级，服务器沙箱11项单测100%通过，独立Codex QA与ARCH复核APPROVED收件；
+- [TWIN-24](microtasks/vmware_soc_twin/TWIN-24.md)（MC固件5×5调平网格导出0x18与AP拓扑呈现）：落实U-D04裁决，基于固件存量5×5双线性网格导出52B载荷，AP端解析网格与状态呈现，已就绪待派单。
 
 2026-10-30工作区记录中：
 1. **TWIN-07（FORWARD常驻服务与唯一UART通路）**：已完成常驻进程守护、MiniMCProto v2.0双向编解码与CRC校验、PTY串口仿真、DDS `telemetry/raw_temp`低延迟发布与D-Bus RPC控制服务，在独立Docker沙箱中通过100%验证，取得独立Codex QA与ARCH审签APPROVED闭环；
