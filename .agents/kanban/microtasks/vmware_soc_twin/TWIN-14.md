@@ -7,7 +7,8 @@ task_kind: verification
 development_stage: soc-migration
 dispatchable: true
 status: Backlog
-blocked: false
+blocked: true
+block_reason: "人为冻结 (User directive: 不具备SoC迁移条件，涉及平台迁移部分人为冻结；首版打印闭环改为在VMware上验证)"
 planning_status: planned-not-dispatched
 owner: null
 proposed_owner: QA

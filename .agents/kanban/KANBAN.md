@@ -30,6 +30,8 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 - [TWIN-22](microtasks/vmware_soc_twin/TWIN-22.md)（AP端温控倍数换算与故障哨兵防御性治理）：已完成deci_c至milli_c统一换算（解决TWIN-12 245.0℃ vs 24.5℃冲突）、故障哨兵输出null与降级，服务器沙箱11项单测100%通过，独立Codex QA与ARCH复核APPROVED收件；
 - [TWIN-24](microtasks/vmware_soc_twin/TWIN-24.md)（MC固件5×5调平网格导出0x18响应实现）：落实U-D04裁决，基于固件存量5×5双线性网格导出52B载荷，缓冲区扩至128B，双独立Docker沙箱100%通过，独立Codex QA与ARCH复核APPROVED收件；
 - [TWIN-25](microtasks/vmware_soc_twin/TWIN-25.md)（AP端0x18调平网格解析与设备状态拓扑呈现）：承接TWIN-24下位机网格数据，提供D-Bus/HTTP-SSE/Web HMI拓扑状态呈现，双独立Docker沙箱16项单测全通，独立Codex QA与ARCH复核APPROVED收件；
+- [TWIN-13](microtasks/vmware_soc_twin/TWIN-13.md)（SoC平台迁移与实板候选交接）：因不具备SoC迁移条件，涉及平台迁移部分按用户指令【人为冻结】（blocked: true），首版打印闭环改为在VMware孪生环境上验证；
+- [TWIN-14](microtasks/vmware_soc_twin/TWIN-14.md)（SoC实屏实板独立验收与阶段二收件）：按用户指令【人为冻结】（blocked: true），首版验收基于VMware环境完成；
 - [TWIN-26](microtasks/vmware_soc_twin/TWIN-26.md)（双MCU固件升级通道与Bootloader IAP协议复用对账）：已按用户指令【人为冻结】（blocked: true）。虽双独立Docker沙箱6大测试全通、独立Codex QA与ENG-MC完成复核，但遵照人工指示严格保持冻结状态，严禁下游自动消费；
 - [TWIN-27](microtasks/vmware_soc_twin/TWIN-27.md)（AP端VMware指定目录固件扫描与安全准入服务实现）：因前置TWIN-26被人为冻结，本任务保持Backlog且标记blocked: true，不派发、不推进；
 - [TWIN-28](microtasks/vmware_soc_twin/TWIN-28.md)（端到端真实双MCU固件升级在环联调与验收）：保持Backlog且标记blocked: true，待上游解冻后按流程推进；
