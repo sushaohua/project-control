@@ -1,0 +1,38 @@
+=== Docker Container Inspect: 59852ff5e6ca ===
+{
+  "id": "59852ff5e6cabca5a4ce9ae7034939e2e020f446109cbc33a56ad4fcad37ade3",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-10-31T03:56:43.944495812Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-26_run_115624_20261031_035624",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (project-control) gcc -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I ../mcu-p3/motion-controller-mcu/build -I ../mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/core_support -I ../mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/device_support -I ../mcu-p3/motion-controller-mcu/libraries/drivers/inc -I ../mcu-p3/motion-controller-mcu/project/inc docs/evidence/twin/TWIN-26/runs/run_01/test_twin26_mcu_upgrade.c -o /tmp/test_twin26 && /tmp/test_twin26 -> 0
+========================================================================
+TWIN-26 Dual MCU Upgrade Channel & Bootloader IAP Protocol Verification
+========================================================================
+[RUN ] test_protocol_constants_reconciliation
+[PASS] test_protocol_constants_reconciliation
+[RUN ] test_upgrade_mode_and_marlin_interception
+[PASS] test_upgrade_mode_and_marlin_interception
+[RUN ] test_send_iap_chunk_512b_and_checksum
+[PASS] test_send_iap_chunk_512b_and_checksum
+[RUN ] test_chunk_boundary_and_null_pointer_defenses
+[PASS] test_chunk_boundary_and_null_pointer_defenses
+[RUN ] test_recv_iap_resp_and_status_extraction
+[PASS] test_recv_iap_resp_and_status_extraction
+[RUN ] test_strong_electricity_pwm_duty_lock
+[PASS] test_strong_electricity_pwm_duty_lock
+------------------------------------------------------------------------
+All 6 test suites PASSED! (0 failures)
+========================================================================
+

@@ -1,0 +1,62 @@
+{
+  "task_id": "TWIN-26",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "59852ff5e6ca",
+    "id": "TWIN-26_run_115624_20261031_035624",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-26_run_115624_20261031_035624",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "59852ff5e6cabca5a4ce9ae7034939e2e020f446109cbc33a56ad4fcad37ade3",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-10-31T03:56:43.944495812Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-26_run_115624_20261031_035624",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-26/runs/run_01/mc_server_qa/server_lock.json",
+    "sha256": "e5b350633fb4e72a1b2806b4525292bbc817e61470ceb2d1f8b1c3dd294547ae"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-26/runs/run_01/mc_server_qa/checkout.log",
+    "sha256": "06c38bbf79ddac7f01eac7b758376a8723c679b6d27a724d68284110959a9edd"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-26/runs/run_01/mc_server_qa/runtime.log",
+    "sha256": "e0c21e05157c0006a145454cf1b48e180a045fb9ee3729f27226a08a3f70c874"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-26/runs/run_01/mc_server_qa/server_verdict.json",
+    "sha256": "914ecf65fe2d72984acf73bc3a1eea0dbfe7a11fe1a17fc86aab9612708d2622"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "gcc -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I ../mcu-p3/motion-controller-mcu/build -I ../mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/core_support -I ../mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/device_support -I ../mcu-p3/motion-controller-mcu/libraries/drivers/inc -I ../mcu-p3/motion-controller-mcu/project/inc docs/evidence/twin/TWIN-26/runs/run_01/test_twin26_mcu_upgrade.c -o /tmp/test_twin26 && /tmp/test_twin26",
+      "exit_code": "0",
+      "duration": "0.19s",
+      "output": "========================================================================\nTWIN-26 Dual MCU Upgrade Channel & Bootloader IAP Protocol Verification\n========================================================================\n[RUN ] test_protocol_constants_reconciliation\n[PASS] test_protocol_constants_reconciliation\n[RUN ] test_upgrade_mode_and_marlin_interception\n[PASS] test_upgrade_mode_and_marlin_interception\n[RUN ] test_send_iap_chunk_512b_and_checksum\n[PASS] test_send_iap_chunk_512b_and_checksum\n[RUN ] test_chunk_boundary_and_null_pointer_defenses\n[PASS] test_chunk_boundary_and_null_pointer_defenses\n[RUN ] test_recv_iap_resp_and_status_extraction\n[PASS] test_recv_iap_resp_and_status_extraction\n[RUN ] test_strong_electricity_pwm_duty_lock\n[PASS] test_strong_electricity_pwm_duty_lock\n------------------------------------------------------------------------\nAll 6 test suites PASSED! (0 failures)\n========================================================================"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-31T03:56:46.745606+00:00"
+}
