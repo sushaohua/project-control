@@ -29,12 +29,12 @@ review_assignments:
     session: session-qa-twin-29
     session_evidence:
       path: docs/evidence/twin/TWIN-29/runs/run_02/qa_review_report.md
-      sha256: 3493232f0619f5481073a966a3b2f469b4939e02ea5037ad07aede50345c7fd5
+      sha256: 1244b59c57b41c60bea0da7e106c17b137667faeafd7067d5bdce720e1d14158
     decision: APPROVED
     reviewed_task_revision: 1
     artifact_version: soc-ap=86f5e17ead0971ca1a1eb20c07ca345924e24454; project-control=8b2b685d8232e4b0485740e7fe1268f544fa0528
     evidence: docs/evidence/twin/TWIN-29/runs/run_02/qa_review_report.md
-    report_sha256: 3493232f0619f5481073a966a3b2f469b4939e02ea5037ad07aede50345c7fd5
+    report_sha256: 1244b59c57b41c60bea0da7e106c17b137667faeafd7067d5bdce720e1d14158
     report_review:
       session: session-arch-twin-29
       role: ARCH
@@ -42,10 +42,10 @@ review_assignments:
       reviewed_task_revision: 1
       artifact_version: soc-ap=86f5e17ead0971ca1a1eb20c07ca345924e24454; project-control=8b2b685d8232e4b0485740e7fe1268f544fa0528
       evidence: docs/evidence/twin/TWIN-29/runs/run_02/arch_review_report.md
-      report_sha256: 475c2bb08e07badeb5fda3e1f8479f1c288db21e7a5e4c8696ac10bc13608b49
+      report_sha256: bc0abedd48e290081c88048de2d9c56a0cec199e71177d7a7be50f49258ae8fe
       session_evidence:
         path: docs/evidence/twin/TWIN-29/runs/run_02/arch_review_report.md
-        sha256: 475c2bb08e07badeb5fda3e1f8479f1c288db21e7a5e4c8696ac10bc13608b49
+        sha256: bc0abedd48e290081c88048de2d9c56a0cec199e71177d7a7be50f49258ae8fe
   - role: ARCH
     platform: codex
     model: gpt-6-luna
@@ -53,12 +53,12 @@ review_assignments:
     session: session-arch-twin-29
     session_evidence:
       path: docs/evidence/twin/TWIN-29/runs/run_02/arch_review_report.md
-      sha256: 475c2bb08e07badeb5fda3e1f8479f1c288db21e7a5e4c8696ac10bc13608b49
+      sha256: bc0abedd48e290081c88048de2d9c56a0cec199e71177d7a7be50f49258ae8fe
     decision: APPROVED
     reviewed_task_revision: 1
     artifact_version: soc-ap=86f5e17ead0971ca1a1eb20c07ca345924e24454; project-control=8b2b685d8232e4b0485740e7fe1268f544fa0528
     evidence: docs/evidence/twin/TWIN-29/runs/run_02/arch_review_report.md
-    report_sha256: 475c2bb08e07badeb5fda3e1f8479f1c288db21e7a5e4c8696ac10bc13608b49
+    report_sha256: bc0abedd48e290081c88048de2d9c56a0cec199e71177d7a7be50f49258ae8fe
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-007
@@ -84,8 +84,6 @@ write_scope:
   - services/device_manager/device_manager_state.cpp
   - services/device_manager/device_manager_state.h
   - services/device_manager/device_manager_dbus.cpp
-  - services/device_manager/device_manager_dbus.h
-  - tests/device_manager/twin/CMakeLists.txt
   - tests/device_manager/twin/test_device_manager.cpp
   project-control:
   - docs/evidence/twin/TWIN-29/**
@@ -95,8 +93,6 @@ allowed_paths:
 - soc-ap/services/device_manager/device_manager_state.cpp
 - soc-ap/services/device_manager/device_manager_state.h
 - soc-ap/services/device_manager/device_manager_dbus.cpp
-- soc-ap/services/device_manager/device_manager_dbus.h
-- soc-ap/tests/device_manager/twin/CMakeLists.txt
 - soc-ap/tests/device_manager/twin/test_device_manager.cpp
 - project-control/docs/evidence/twin/TWIN-29/**
 source_baseline:
@@ -144,10 +140,6 @@ deliverables:
   - soc-ap/services/device_manager/device_manager_state.cpp
   - soc-ap/services/device_manager/device_manager_state.h
   - soc-ap/services/device_manager/device_manager_dbus.cpp
-  - soc-ap/services/device_manager/device_manager_dbus.h
-  - soc-ap/tests/device_manager/twin/CMakeLists.txt
-  - soc-ap/tests/device_manager/twin/test_device_manager.cpp
-  - soc-ap/tests/device_manager/twin/CMakeLists.txt
   - soc-ap/tests/device_manager/twin/test_device_manager.cpp
   record: docs/evidence/twin/TWIN-29/runs/run_02/result.md
 rollback:

@@ -14,11 +14,11 @@ author_session: session-eng-fwd-twin-29
 task_id: TWIN-29
 task_revision: 1
 run_id: run_02
-reviewed_qa_report_sha256: 3493232f0619f5481073a966a3b2f469b4939e02ea5037ad07aede50345c7fd5
+reviewed_qa_report_sha256: 1244b59c57b41c60bea0da7e106c17b137667faeafd7067d5bdce720e1d14158
 reviewed_artifact_version: 'soc-ap=86f5e17ead0971ca1a1eb20c07ca345924e24454; project-control=8b2b685d8232e4b0485740e7fe1268f544fa0528'
 reviewed_artifacts:
   - path: docs/evidence/twin/TWIN-29/runs/run_02/qa_review_report.md
-    sha256: 3493232f0619f5481073a966a3b2f469b4939e02ea5037ad07aede50345c7fd5
+    sha256: 1244b59c57b41c60bea0da7e106c17b137667faeafd7067d5bdce720e1d14158
   - path: soc-ap/services/forward/forward_protocol.h
     sha256: 188de250ecbd4a06a44ebcf8909c956cd2878cda16dd3128610718919684ede2
     commit: 86f5e17ead0971ca1a1eb20c07ca345924e24454
