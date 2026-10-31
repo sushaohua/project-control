@@ -7,7 +7,8 @@ task_kind: test
 development_stage: vmware-twin
 dispatchable: true
 status: Backlog
-blocked: false
+blocked: true
+block_reason: "前置任务TWIN-26被人为冻结，暂不推进"
 planning_status: planned
 owner: null
 proposed_owner: INTEGRATOR

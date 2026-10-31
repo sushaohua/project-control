@@ -7,7 +7,8 @@ task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
 status: Done
-blocked: false
+blocked: true
+block_reason: "人为冻结 (User directive: 人为冻结TWIN-26，冻结本任务与相关交付)"
 planning_status: planned
 owner: session-arch-twin-26
 proposed_owner: ARCH
@@ -29,12 +30,23 @@ review_assignments:
     session: session-qa-twin-26
     session_evidence:
       path: docs/evidence/twin/TWIN-26/runs/run_01/qa_review_report.md
-      sha256: 3b1c5675ed2ededd90feab4219efc3236a4fed1cff796dd8aa76a8b948186ad5
+      sha256: a83dc059dab5f60efbad3d692c2956be1e38be2c4c4051909a9c8fd3e625b0f4
     decision: APPROVED
     reviewed_task_revision: 1
     artifact_version: mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e; project-control=37be0fe2cb7bc945c888aabbcb2bb7d8a8068dea; soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
     evidence: docs/evidence/twin/TWIN-26/runs/run_01/qa_review_report.md
-    report_sha256: 3b1c5675ed2ededd90feab4219efc3236a4fed1cff796dd8aa76a8b948186ad5
+    report_sha256: a83dc059dab5f60efbad3d692c2956be1e38be2c4c4051909a9c8fd3e625b0f4
+    report_review:
+      session: session-mc-twin-26
+      role: ENG-MC
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e; project-control=37be0fe2cb7bc945c888aabbcb2bb7d8a8068dea; soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+      evidence: docs/evidence/twin/TWIN-26/runs/run_01/mc_review_report.md
+      report_sha256: 33fbb0648c231f9ad69ce1d8409bbb737494e0f5094a1065966e0a0efe8b4a26
+      session_evidence:
+        path: docs/evidence/twin/TWIN-26/runs/run_01/mc_review_report.md
+        sha256: 33fbb0648c231f9ad69ce1d8409bbb737494e0f5094a1065966e0a0efe8b4a26
   - role: ENG-MC
     platform: codex
     model: gpt-6-luna
@@ -42,12 +54,12 @@ review_assignments:
     session: session-mc-twin-26
     session_evidence:
       path: docs/evidence/twin/TWIN-26/runs/run_01/mc_review_report.md
-      sha256: 07a9f4bdb5b9be049f8baddcd21255c16a47769234a77513c453845951cb51a8
+      sha256: 33fbb0648c231f9ad69ce1d8409bbb737494e0f5094a1065966e0a0efe8b4a26
     decision: APPROVED
     reviewed_task_revision: 1
     artifact_version: mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e; project-control=37be0fe2cb7bc945c888aabbcb2bb7d8a8068dea; soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
     evidence: docs/evidence/twin/TWIN-26/runs/run_01/mc_review_report.md
-    report_sha256: 07a9f4bdb5b9be049f8baddcd21255c16a47769234a77513c453845951cb51a8
+    report_sha256: 33fbb0648c231f9ad69ce1d8409bbb737494e0f5094a1065966e0a0efe8b4a26
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-002

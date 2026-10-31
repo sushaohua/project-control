@@ -59,6 +59,7 @@ protocol_and_expectations:
 verification_environment: 'Container sandbox qa-sandbox:20261029 (container ID d4f40f29cf34) with read-only source mount from Git server pinned commits; independent host-side review of exported server_qa evidence.'
 verification_scope: 'Dual MCU upgrade channel and bootloader IAP reuse, frame format, mode switching, buffer boundary defense, heating lock, test suites.'
 findings: []
+decision: APPROVED
 recommendation: APPROVED
 comments: "TWIN-26 successfully realizes the dual MCU firmware upgrade channel and bootloader IAP protocol reuse without modifying any Bootloader. Tested and verified in server-pinned isolated Docker container sandbox. All 6 test suites passed with exit code 0. APPROVED."
 reviewed_at: '2026-10-31T11:56:00+08:00'

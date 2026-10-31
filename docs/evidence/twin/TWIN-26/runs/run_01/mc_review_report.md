@@ -14,8 +14,11 @@ author_session: session-arch-twin-26
 task_id: TWIN-26
 task_revision: 1
 run_id: run_01
+reviewed_qa_report_sha256: a83dc059dab5f60efbad3d692c2956be1e38be2c4c4051909a9c8fd3e625b0f4
 reviewed_artifact_version: 'mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e; project-control=37be0fe2cb7bc945c888aabbcb2bb7d8a8068dea; soc-ap=f2596517c8e7a53da6ff9623d948ec5e70bf6770; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5'
 reviewed_artifacts:
+  - path: docs/evidence/twin/TWIN-26/runs/run_01/qa_review_report.md
+    sha256: a83dc059dab5f60efbad3d692c2956be1e38be2c4c4051909a9c8fd3e625b0f4
   - path: mcu-p3/motion-controller-mcu/project/inc/wk_usart.h
     sha256: 4ef343675a936a4de235c53523a66a7380ecdde12bac824e5db049eccbf87dc4
     commit: 04231388c842c1ce3e5b71675d0dc118a65edf2e
@@ -59,6 +62,7 @@ protocol_and_expectations:
 verification_environment: 'Container sandbox qa-sandbox:20261029 (container ID 2e19d77f80db) with read-only source mount from Git server pinned commits; independent host-side review of exported server_qa evidence.'
 verification_scope: 'Dual MCU upgrade channel and bootloader IAP reuse, frame format, mode switching, buffer boundary defense, heating lock, test suites.'
 findings: []
+decision: APPROVED
 recommendation: APPROVED
 comments: "ENG-MC review confirms the upgrade mode implementation in wk_usart.c cleanly decouples normal motion control operations from toolhead firmware flashing, ensuring stability and safety during IAP. APPROVED."
 reviewed_at: '2026-10-31T11:56:30+08:00'

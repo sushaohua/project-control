@@ -7,7 +7,8 @@ task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
 status: Backlog
-blocked: false
+blocked: true
+block_reason: "前置任务TWIN-26被人为冻结，暂不推进"
 planning_status: planned
 owner: null
 proposed_owner: ENG-NET
@@ -54,8 +55,8 @@ depends_on:
 - TWIN-26
 dependency_conditions:
 - task: TWIN-26
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e
+  acceptance_evidence: docs/evidence/twin/TWIN-26/runs/run_01/qa_review_report.md
   required: 开工前继承TWIN-26 双MCU升级通道与IAP协议基线
 scope_status: mapped
 allowed_repositories:
@@ -78,14 +79,14 @@ allowed_paths:
 - soc-ap/tests/device_manager/twin/test_firmware_updater.cpp
 - project-control/docs/evidence/twin/TWIN-27/**
 source_baseline:
-  project-control: 8ea89b9d1e442894be6bc1f92e4aa1a4c954f9a0
-  soc-ap: 6850cc553d405b5e7e511ff181d985fdee8e221f
-  mcu-p3: 9b017f186665c2c9226146cc0fdc34af3ad5242b
+  project-control: 8ada67cc07b4dd958e821217e47a5051952a26ba
+  soc-ap: f2596517c8e7a53da6ff9623d948ec5e70bf6770
+  mcu-p3: 04231388c842c1ce3e5b71675d0dc118a65edf2e
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
-base_commit: 6850cc553d405b5e7e511ff181d985fdee8e221f
+base_commit: f2596517c8e7a53da6ff9623d948ec5e70bf6770
 candidate_commit: null
 dispatch_binding:
-  source_commit: 6850cc553d405b5e7e511ff181d985fdee8e221f
+  source_commit: f2596517c8e7a53da6ff9623d948ec5e70bf6770
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   consumed_artifact_versions: {}
 protocol_input:
@@ -138,11 +139,11 @@ verification:
       --workspace .
     expected: 结构无错误；不等于任务/运行/硬件接受
     availability: local
-  - id: planned_build_and_acceptance
+  - id: compile_and_run_firmware_updater_tests
     cwd: .
-    command: Ready前由Owner绑定本票实际构建与正反例运行入口
-    expected: 目录扫描、128B Trailer验签、安全联锁与单元测试100%通过；函数<=50行
-    availability: planned-not-runnable
+    command: g++ -std=c++17 -Wall -Wextra -Wpedantic -I soc-ap/services/device_manager -I soc-ap/services/forward -I soc-ap/contracts/twin soc-ap/services/device_manager/firmware_updater.cpp soc-ap/tests/device_manager/twin/test_firmware_updater.cpp -o /tmp/test_firmware_updater && /tmp/test_firmware_updater
+    expected: exit 0, 固件目录扫描、128B Trailer验签与安全准入全集测试通过
+    availability: host-toolchain
   positive_cases:
   - 正确解析/var/update/下fw_mc.bin与fw_th.bin并提取有效Trailer，前置安全检查通过时触发刷写调度
   negative_cases:
