@@ -28,6 +28,7 @@ dispatchable: false
 child_tasks:
 - TWIN-17
 - TWIN-23
+- TWIN-32
 planning_relations:
 - MS-11
 - TASK-005
