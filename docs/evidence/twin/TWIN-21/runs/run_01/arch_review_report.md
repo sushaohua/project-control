@@ -27,8 +27,8 @@ reviewed_artifacts:
   - path: project-control/docs/evidence/twin/TWIN-21/runs/run_01/result.md
     sha256: c3a78c97fa16c79963b7d15b26d8c5be1ba224c4ab022925d531a2162fdf2a50
 server_qa:
-  path: project-control/docs/evidence/twin/TWIN-21/runs/run_01/server_qa/server_qa.json
-  sha256: 80d454d186d3826ab4eec638c491d1531b2b0a8904b8619c6dd3d9f76f39f289
+  path: project-control/docs/evidence/twin/TWIN-21/runs/run_01/arch_server_qa/server_qa.json
+  sha256: 199a3b11a002681189e57f02a1e9c35a3ee4d55c57ff94364cd6626c2b6c1101
 content_audit:
   fact_sources:
     result: passed

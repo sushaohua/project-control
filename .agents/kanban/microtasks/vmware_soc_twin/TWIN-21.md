@@ -27,23 +27,38 @@ review_assignments:
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-21
     session: session-qa-twin-21
-    session_evidence: docs/evidence/twin/TWIN-21/runs/run_01/qa_review_report.md
+    session_evidence:
+      path: docs/evidence/twin/TWIN-21/runs/run_01/qa_review_report.md
+      sha256: 00da1ecb05befb3bff1fffbd3403e745816d4942bfe67774262c9f989c1535c2
     decision: APPROVED
     reviewed_task_revision: 1
-    artifact_version: abbc3ae240972f5a60d751c6204c8b73f1f464bf
+    artifact_version: 'mcu-p3=abbc3ae240972f5a60d751c6204c8b73f1f464bf; soc-ap=6850cc553d405b5e7e511ff181d985fdee8e221f; project-control=c6a1a21f5711be18cabf85c037d4e30b8bc67cba; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5'
     evidence: docs/evidence/twin/TWIN-21/runs/run_01/qa_review_report.md
     report_sha256: 00da1ecb05befb3bff1fffbd3403e745816d4942bfe67774262c9f989c1535c2
+    report_review:
+      session: session-arch-twin-21
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: 'mcu-p3=abbc3ae240972f5a60d751c6204c8b73f1f464bf; soc-ap=6850cc553d405b5e7e511ff181d985fdee8e221f; project-control=c6a1a21f5711be18cabf85c037d4e30b8bc67cba; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5'
+      evidence: docs/evidence/twin/TWIN-21/runs/run_01/arch_review_report.md
+      report_sha256: 71119ce3af858e2e7d086f376d18971087d497e639306518ea6a919a37ea915e
+      session_evidence:
+        path: docs/evidence/twin/TWIN-21/runs/run_01/arch_review_report.md
+        sha256: 71119ce3af858e2e7d086f376d18971087d497e639306518ea6a919a37ea915e
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-21
     session: session-arch-twin-21
-    session_evidence: docs/evidence/twin/TWIN-21/runs/run_01/arch_review_report.md
+    session_evidence:
+      path: docs/evidence/twin/TWIN-21/runs/run_01/arch_review_report.md
+      sha256: 71119ce3af858e2e7d086f376d18971087d497e639306518ea6a919a37ea915e
     decision: APPROVED
     reviewed_task_revision: 1
-    artifact_version: abbc3ae240972f5a60d751c6204c8b73f1f464bf
+    artifact_version: 'mcu-p3=abbc3ae240972f5a60d751c6204c8b73f1f464bf; soc-ap=6850cc553d405b5e7e511ff181d985fdee8e221f; project-control=c6a1a21f5711be18cabf85c037d4e30b8bc67cba; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5'
     evidence: docs/evidence/twin/TWIN-21/runs/run_01/arch_review_report.md
-    report_sha256: 2748e0fd989bf19daf0c9c7763752d21e8eb83dbc0c6bf2399650dbb1930dec0
+    report_sha256: 71119ce3af858e2e7d086f376d18971087d497e639306518ea6a919a37ea915e
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-002

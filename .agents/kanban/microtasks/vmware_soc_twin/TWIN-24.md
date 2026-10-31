@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: false
 planning_status: planned
-owner: null
+owner: session-eng-mc-twin-24
 proposed_owner: ENG-MC
 executor:
   role: ENG-MC
-  agent_id: null
-  run_id: null
+  agent_id: session-eng-mc-twin-24
+  run_id: run_01
 reviewer:
 - QA
 - ARCH
@@ -26,7 +26,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-24
-    session: null
+    session: session-qa-twin-24
     session_evidence: null
     decision: null
     reviewed_task_revision: null
@@ -37,7 +37,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-24
-    session: null
+    session: session-arch-twin-24
     session_evidence: null
     decision: null
     reviewed_task_revision: null
@@ -97,22 +97,23 @@ read_sources:
 - project-control/docs/specs/mcu_motion_leveling_filament_interface_survey_20261029.md
 - project-control/.agents/rules/c_cpp_coding_standard.md
 worktree: mcu-p3
-lease: null
+lease:
+  owner: session-eng-mc-twin-24
+  task_revision: 1
+  lease_id: lease-twin-24-run01
+  expires_at: '2026-10-31T18:00:00+08:00'
 resources:
 - resource: isolated-worktree-and-build-output
   location: null
   exclusive: true
-  pending: Ready前按实际会话登记；最多两张实现票并行
+  pending: null
 budget:
   planned_checkpoint_minutes: 30
   max_evidence_based_corrections: 2
   on_limit: 保存证据交COORD
 checkpoint: 开工前绑定；0x18网格导出与微米整型精度自检；准确候选独立检查；收件
 execution_contract: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
-readiness_pending:
-- 真实作者、全部必需检查会话、有效租约和隔离worktree/输出待登记
-- 开工时重取实际commit/dirty diff及SHA256；前置准确接受版本/证据待绑定
-- 验证命令须在已实现入口上具体化并核资源/权限，不运行占位命令
+readiness_pending: []
 deliverables:
   artifacts:
   - mcu-p3/motion-controller-mcu/project/src/minimc_proto.c
