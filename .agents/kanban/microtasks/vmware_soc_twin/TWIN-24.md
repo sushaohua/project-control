@@ -77,7 +77,7 @@ allowed_paths:
 - mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h
 - project-control/docs/evidence/twin/TWIN-24/**
 source_baseline:
-  project-control: 2377278cee99fea116f121b2f6add293e7b50121
+  project-control: 9eaad6d110e2c820b35f30297845a12fcc79a6a1
   soc-ap: 6850cc553d405b5e7e511ff181d985fdee8e221f
   mcu-p3: abbc3ae240972f5a60d751c6204c8b73f1f464bf
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
