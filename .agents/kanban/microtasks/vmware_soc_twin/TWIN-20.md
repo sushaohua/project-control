@@ -80,7 +80,7 @@ source_baseline:
   mcu-p3: 04231388c842c1ce3e5b71675d0dc118a65edf2e
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
 base_commit: 86f5e17ead0971ca1a1eb20c07ca345924e24454
-candidate_commit: null
+candidate_commit: cb70d592651034f78630094b8eec3d65b1695275
 dispatch_binding:
   source_commit: 86f5e17ead0971ca1a1eb20c07ca345924e24454
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -127,7 +127,7 @@ handoff:
   receiver_session: session-coord-main
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-20
-  acknowledgement: null
+  acknowledgement: docs/evidence/twin/TWIN-20/runs/run_02/result.md
 verification:
   commands:
   - id: check_graph
