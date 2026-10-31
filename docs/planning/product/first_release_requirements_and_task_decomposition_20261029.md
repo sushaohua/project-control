@@ -1,8 +1,8 @@
 ---
 id: REQ-DECOMP-FIRST-RELEASE-20261029
 title: 首版本地打印闭环与七项子范围需求分解及任务卡规范
-revision: 1
-date: 2026-10-29
+revision: 2
+date: 2026-10-31
 status: baselined-task-decomposition
 author_role: ARCH
 collaborating_roles:
@@ -37,6 +37,7 @@ references:
 3. **首版纳入范围**：
    - **5 项首版必做**：混色基础（`PM:FEAT-COL-001`）、料槽对应显示与确认（`PM:FEAT-HMI-003`）、硬件双级安全急停（`PM:FEAT-SAF-001`）、全机 HMS 统一错误码（`PM:FEAT-SAF-002`）、脱敏诊断导出（`PM:FEAT-MFG-003`）；
    - **7 项已确认首版子范围 (`U-D01`)**：断料提示与暂停（`COL-007`）、位置与状态读取（`MOT-001`）、调平调查与界面（`MOT-002`）、基础新机检查 OOBE（`HMI-004`）、寿命数据与维护提醒（`SAF-005`）、浏览器语言与主题（`HMI-005`）、极速局域网自发现与直连（`NET-001`）；
+   - **1 项新增已确认固件升级首版功能 (`U-D05`)**：VMware 指定目录真实双 MCU (MC/TH) 固件升级（`PM:FEAT-OTA-001`），以避免修改 Bootloader 为优先约束；
    - **其余未决功能**：未明确的完整功能（如 7×7 免调平传感器选型、CoreXY 500mm/s 极限速度、全系统 A/B OTA 等）继续保持“待决定/后续”，不擅自扩大首版范围。
 4. **角色协同**：MC 固件工程师（`ENG-MC`）与 TH 工具头工程师（`ENG-TH`）必须实质参与能力、通信接口及验收条件对账。
 
@@ -101,6 +102,22 @@ references:
 | `HMI-005` | **浏览器语言与主题** | `ENG-UI` (前端), `ENG-MC`/`ENG-TH` (错误码文案边界) | 前端 i18n 资源包（中/英），明亮/暗黑主题 CSS 切换，对齐 HMS 错误码多语言文案 | 浏览器多端渲染与高对比度界面测试 |
 | `NET-001` | **极速局域网自发现** | `ENG-NET` (mDNS/Avahi 服务), `ENG-UI` (配对提示) | 在 AP 端集成 mDNS 组播服务广播，支持 `printer-aisoc.local` 直接访问与安全配对 | 真实局域网跨网段/跨设备访问与发现实测 |
 
+### 2.3 新增已确认功能需求：PM:FEAT-OTA-001 VMware 指定目录双 MCU 固件在线升级 (U-D05)
+- **需求描述**：
+  在 VMware AP 主机建立指定的固件投放目录（默认 `/var/update/`），系统通过 `aisoc_updater` 扫描放入的 `fw_mc.bin` 与 `fw_th.bin` 固件镜像，完成签名与 Trailer 验签、目标自动分流、安全联锁审查，对真实物理下位机 MC（AT32F435）与 TH（AT32F423）执行在线刷机；
+- **Bootloader 豁免硬性约束**：
+  - 以**避免修改 Bootloader 为绝对优先约束**；
+  - TH 100% 沿用已有的 `bootloader423.bin`（Base `0x08000000`），复用既有 921600 波特率 UART IAP 分块协议（`0x10~0x13`）与 `M997 S0` 软复位机制；
+  - MC 优先复用工程现存硬件调试探针驱动通道（通过宿主 `probe-rs` / `openocd` 透传直接对 Flash `0x08020000` 执行安全增量写入与复位），严格豁免改动 Bootloader 源码；
+- **接口定义与契约**：
+  - 固件识别：末尾严格包含 128B `fw_trailer_t`（`magic=0x41545347`, `board_id=0x43500001/0x42300001`, `sha256`, `trailer_crc32`）；
+  - 目标分流与版本比对：通过 `0x01`（MC 版本）与 `0x02`（TH 版本）查询在线固件版本，防意外误降级；
+  - 前置安全联锁：设备处于 IDLE 态、所有电机静止、喷嘴/热床设定温度为 0 且当前温度 $<50^\circ\text{C}$、加热占空比恒为 0%；
+  - 失败自愈：TH 支持断电救砖信标（`CMD_TH_HELLO`）自动重写入，防变砖拦截；
+- **验收标准**：
+  - 正例：在指定目录放入新版 `fw_mc.bin` 与 `fw_th.bin`，系统成功识别并完成双 MCU 真实刷写，开机 Banner 与 `0x01`/`0x02` 版本查询回显新版本字符串；
+  - 负例：损坏文件（魔数或 CRC32 错误）拦截并不修改 Flash；打印运行或高温中拦截并拒绝刷写；严禁以文件复制或虚拟 PTY 回环冒充升级成功。
+
 ---
 
 ## 3. MC / TH 工程师能力与协议对账规范
@@ -155,6 +172,15 @@ flowchart TD
 4. **`TWIN-20`**：**HMI 料槽映射、新机检查引导、国际化与局域网发现**
    - 主责：`ENG-UI`（协力 `ENG-NET`、`ENG-STATE`），主工作包：`TASK-009`；
    - 覆盖：`PM:FEAT-HMI-003`（料槽调色板映射）、`PM:FEAT-HMI-004`（新机检查向导）、`PM:FEAT-HMI-005`（多语言与主题）、`PM:FEAT-NET-001`（局域网 mDNS 自发现）。
+5. **`TWIN-26`**：**双 MCU 固件升级通道与 Bootloader IAP 协议复用对账**
+   - 主责：`ARCH`（协力 `ENG-MC`、`ENG-TH`），主工作包：`TASK-002`；
+   - 覆盖：`PM:FEAT-OTA-001`（升级通道与协议规范对账，恪守避免修改 Bootloader 原则）。
+6. **`TWIN-27`**：**AP VMware 指定目录固件扫描与安全准入服务实现**
+   - 主责：`ENG-NET`（协力 `INTEGRATOR`、`ENG-STATE`），主工作包：`TASK-007`；
+   - 覆盖：`PM:FEAT-OTA-001`（目录扫描、Trailer 验签、前置安全联锁巡检与分发引擎）。
+7. **`TWIN-28`**：**端到端真实双 MCU 固件升级在环联调与验收**
+   - 主责：`INTEGRATOR`（协力 `QA`），主工作包：`TASK-012`；
+   - 覆盖：`PM:FEAT-OTA-001`（物理台架实测刷写、版本比对前后闭环与独立双沙箱验收）。
 
 ---
 
