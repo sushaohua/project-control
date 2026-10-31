@@ -6,9 +6,9 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: design
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Done
 blocked: false
-planning_status: planned
+planning_status: closed
 owner: session-eng-ui-twin-20
 proposed_owner: ENG-UI
 executor:
@@ -27,23 +27,38 @@ review_assignments:
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-20-run02
     session: session-qa-twin-20
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence:
+      path: docs/evidence/twin/TWIN-20/runs/run_02/qa_review_report.md
+      sha256: a72234f143e9380397616870907bea6da1b7fe169b0bb439cdb3ad2924fa3b8c
+    decision: APPROVED
+    reviewed_task_revision: 2
+    artifact_version: soc-ap=cb70d59e949396f45aec94d33ae23cab75beb282; project-control=f0fe3948482adb71e5366006850fdb9dd36282bc
+    evidence: docs/evidence/twin/TWIN-20/runs/run_02/qa_review_report.md
+    report_sha256: a72234f143e9380397616870907bea6da1b7fe169b0bb439cdb3ad2924fa3b8c
+    report_review:
+      session: session-arch-twin-20
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 2
+      artifact_version: soc-ap=cb70d59e949396f45aec94d33ae23cab75beb282; project-control=f0fe3948482adb71e5366006850fdb9dd36282bc
+      evidence: docs/evidence/twin/TWIN-20/runs/run_02/arch_review_report.md
+      report_sha256: 08bb5946228ca5a38a0ee164a4642e25eb5a5a5cc730c751afeead583ecdb98f
+      session_evidence:
+        path: docs/evidence/twin/TWIN-20/runs/run_02/arch_review_report.md
+        sha256: 08bb5946228ca5a38a0ee164a4642e25eb5a5a5cc730c751afeead583ecdb98f
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-20-run02
     session: session-arch-twin-20
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence:
+      path: docs/evidence/twin/TWIN-20/runs/run_02/arch_review_report.md
+      sha256: 08bb5946228ca5a38a0ee164a4642e25eb5a5a5cc730c751afeead583ecdb98f
+    decision: APPROVED
+    reviewed_task_revision: 2
+    artifact_version: soc-ap=cb70d59e949396f45aec94d33ae23cab75beb282; project-control=f0fe3948482adb71e5366006850fdb9dd36282bc
+    evidence: docs/evidence/twin/TWIN-20/runs/run_02/arch_review_report.md
+    report_sha256: 08bb5946228ca5a38a0ee164a4642e25eb5a5a5cc730c751afeead583ecdb98f
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
