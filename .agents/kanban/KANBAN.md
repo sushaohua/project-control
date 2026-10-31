@@ -1,9 +1,9 @@
 ---
 title: SoC公共看板
-version: 17
+version: 18
 status: current-planning
 owner: COORD
-updated: '2026-10-30T19:06:00+08:00'
+updated: '2026-10-31T09:30:00+08:00'
 plan_revision: vmware-soc-twin-20261029
 execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示运行
 ---
@@ -20,7 +20,7 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 20 | Backlog 2、Done 18 |
+| TWIN | 21 | Backlog 3、Done 18 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
