@@ -90,6 +90,7 @@ architecture_review: ARCH（初步对账，正式独立QA及收件待完成）
 - [TWIN-26](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-26.md)：双MCU固件升级通道与Bootloader IAP协议对账，已完成但按人工指令人为冻结（blocked: true）；[TWIN-27](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-27.md)、[TWIN-28](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-28.md)相应冻结。
 - [TWIN-29](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-29.md)：AP端双MCU真实版本查询与衰退状态机，已闭环。
 - [TWIN-23](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-23.md)：VMware离线G-code作业流式空跑与运控执行器实现，已闭环。
+- [TWIN-30](../../../.agents/kanban/microtasks/vmware_soc_twin/TWIN-30.md)：VMware全流程离线打印闭环集成验证与首版收件，已闭环。
 - [TASK-011 作业与混色样例](../work_packages/TASK-011_实现离线作业引擎和混色样例.md)、[TASK-016 MQTT 底座](../work_packages/TASK-016_实现%20MQTT%20传输底座和会话恢复.md)、[TASK-018 MQTT 网关](../work_packages/TASK-018_接入%20MQTT%20网关业务映射和授权.md)：相关规划入口，须按实际工作包状态和范围判断，不能证明已派单或实现完整产品功能。
 - [总控执行清单](../coord_autorun_tasklist_20261029.md) 对 TWIN-01 既有签署、接口兼容和预算保留复核要求；保持历史状态，不擅自覆盖。该清单是执行入口，不能把本表作为已批准新派单。
 

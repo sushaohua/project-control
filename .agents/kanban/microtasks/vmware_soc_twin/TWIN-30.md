@@ -6,9 +6,9 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: integration
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Done
 blocked: false
-planning_status: in-progress
+planning_status: closed
 owner: session-integrator-twin-30
 proposed_owner: INTEGRATOR
 executor:
@@ -26,33 +26,39 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-30
-    session: planned-qa-twin-30
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: session-qa-twin-30
+    session_evidence:
+      path: docs/evidence/twin/TWIN-30/runs/run_01/qa_review_report.md
+      sha256: 0e999e80be64c45e46ec172d35d1953477d0f52bcfd8c345e50a8db583beba29
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: soc-ap=7bb05218c39d6852cac5e8d86db845dbbedd7064; project-control=f7d18c48774a8787f0dfa1d1cbe9dddea9309a40
+    evidence: docs/evidence/twin/TWIN-30/runs/run_01/qa_review_report.md
+    report_sha256: 0e999e80be64c45e46ec172d35d1953477d0f52bcfd8c345e50a8db583beba29
     report_review:
-      session: planned-arch-twin-30
+      session: session-arch-twin-30
       role: ARCH
-      decision: null
-      reviewed_task_revision: null
-      artifact_version: null
-      evidence: null
-      report_sha256: null
-      session_evidence: null
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: soc-ap=7bb05218c39d6852cac5e8d86db845dbbedd7064; project-control=f7d18c48774a8787f0dfa1d1cbe9dddea9309a40
+      evidence: docs/evidence/twin/TWIN-30/runs/run_01/arch_review_report.md
+      report_sha256: 108f13dfc0d5474b2ce4b3e14a47bac4aff803cfd8b7dffcf8328ea9c9f86e94
+      session_evidence:
+        path: docs/evidence/twin/TWIN-30/runs/run_01/arch_review_report.md
+        sha256: 108f13dfc0d5474b2ce4b3e14a47bac4aff803cfd8b7dffcf8328ea9c9f86e94
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-30
-    session: planned-arch-twin-30
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session: session-arch-twin-30
+    session_evidence:
+      path: docs/evidence/twin/TWIN-30/runs/run_01/arch_review_report.md
+      sha256: 108f13dfc0d5474b2ce4b3e14a47bac4aff803cfd8b7dffcf8328ea9c9f86e94
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: soc-ap=7bb05218c39d6852cac5e8d86db845dbbedd7064; project-control=f7d18c48774a8787f0dfa1d1cbe9dddea9309a40
+    evidence: docs/evidence/twin/TWIN-30/runs/run_01/arch_review_report.md
+    report_sha256: 108f13dfc0d5474b2ce4b3e14a47bac4aff803cfd8b7dffcf8328ea9c9f86e94
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010
@@ -100,7 +106,7 @@ source_baseline:
   mcu-p3: 04231388c842c1ce3e5b71675d0dc118a65edf2e
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
 base_commit: 674e7336f924c2f297c439417a0011adc12427fa
-candidate_commit: null
+candidate_commit: 7bb05218c39d6852cac5e8d86db845dbbedd7064
 dispatch_binding:
   source_commit: 674e7336f924c2f297c439417a0011adc12427fa
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
