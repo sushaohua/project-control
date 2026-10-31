@@ -54,8 +54,8 @@ depends_on:
 - TWIN-24
 dependency_conditions:
 - task: TWIN-24
-  accepted_version: null
-  acceptance_evidence: null
+  accepted_version: mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b
+  acceptance_evidence: docs/evidence/twin/TWIN-24/runs/run_01/qa_review_report.md
   required: 开工前继承TWIN-24 MC 5×5调平网格0x18导出协议与固件候选
 scope_status: mapped
 allowed_repositories:
@@ -78,9 +78,9 @@ allowed_paths:
 - soc-ap/tests/device_manager/twin/test_device_manager.cpp
 - project-control/docs/evidence/twin/TWIN-25/**
 source_baseline:
-  project-control: fb35afb7625076cf45a1c1d0920d3f7ea44e8ec0
+  project-control: 8ea89b9d1e442894be6bc1f92e4aa1a4c954f9a0
   soc-ap: 6850cc553d405b5e7e511ff181d985fdee8e221f
-  mcu-p3: abbc3ae240972f5a60d751c6204c8b73f1f464bf
+  mcu-p3: 9b017f186665c2c9226146cc0fdc34af3ad5242b
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
 base_commit: 6850cc553d405b5e7e511ff181d985fdee8e221f
 candidate_commit: null

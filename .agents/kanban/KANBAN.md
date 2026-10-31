@@ -1,16 +1,16 @@
 ---
 title: SoC公共看板
-version: 18
+version: 19
 status: current-planning
 owner: COORD
-updated: '2026-10-31T09:30:00+08:00'
+updated: '2026-10-31T11:32:00+08:00'
 plan_revision: vmware-soc-twin-20261029
 execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示运行
 ---
 
 # 当前任务看板
 
-当前接续为[VMware→SoC两阶段孪生任务](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)。共106张有效卡，18张工作包不直接派发；另6张superseded V2历史卡不计入。旧卡状态/阻塞保持，历史签署只适用原版本。根目录旧`.agents`不作正式状态源。
+当前接续为[VMware→SoC两阶段孪生任务](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)。共109张有效卡，18张工作包不直接派发；另6张superseded V2历史卡不计入。旧卡状态/阻塞保持，历史签署只适用原版本。根目录旧`.agents`不作正式状态源。
 
 | 类别 | 数量 | 实际状态投影 |
 | --- | ---: | --- |
@@ -20,16 +20,19 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 | PL | 2 | Done 2 |
 | TASK | 18 | Backlog 18 |
 | TEMP | 7 | Done 7 |
-| TWIN | 24 | InProgress 1、Backlog 3、Done 20 |
+| TWIN | 27 | Backlog 6、Done 21 |
 | V2 | 20 | Done 20 |
 
 ## 当前顺序与责任
 
-前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)至[TWIN-12](microtasks/vmware_soc_twin/TWIN-12.md)、[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)至[TWIN-22](microtasks/vmware_soc_twin/TWIN-22.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。
+前置任务[TWIN-01](microtasks/vmware_soc_twin/TWIN-01.md)至[TWIN-12](microtasks/vmware_soc_twin/TWIN-12.md)、[TWIN-17](microtasks/vmware_soc_twin/TWIN-17.md)至[TWIN-22](microtasks/vmware_soc_twin/TWIN-22.md)及[TWIN-24](microtasks/vmware_soc_twin/TWIN-24.md)卡面均为Done；其接受范围以各卡绑定候选和证据为准，TWIN-01仍须遵循[交付门禁](../rules/delivery_and_coord_gate.md)登记的疑点和消费限制。
 - [TWIN-21](microtasks/vmware_soc_twin/TWIN-21.md)（MC固件0x16坐标查询与运动指令响应）：已完成0x16 20B微米整型对账、栈溢出根除与强电0%锁死，服务器沙箱100%通过，独立Codex QA与ARCH复核APPROVED收件；
 - [TWIN-22](microtasks/vmware_soc_twin/TWIN-22.md)（AP端温控倍数换算与故障哨兵防御性治理）：已完成deci_c至milli_c统一换算（解决TWIN-12 245.0℃ vs 24.5℃冲突）、故障哨兵输出null与降级，服务器沙箱11项单测100%通过，独立Codex QA与ARCH复核APPROVED收件；
-- [TWIN-24](microtasks/vmware_soc_twin/TWIN-24.md)（MC固件5×5调平网格导出0x18响应实现）：落实U-D04裁决，基于固件存量5×5双线性网格导出52B载荷，缓冲区扩至128B，已就绪并已派单ENG-MC执行中；
-- [TWIN-25](microtasks/vmware_soc_twin/TWIN-25.md)（AP端0x18调平网格解析与设备状态拓扑呈现）：承接TWIN-24下位机网格数据，提供D-Bus/HTTP-SSE/Web HMI拓扑状态呈现，规划就绪Backlog。
+- [TWIN-24](microtasks/vmware_soc_twin/TWIN-24.md)（MC固件5×5调平网格导出0x18响应实现）：落实U-D04裁决，基于固件存量5×5双线性网格导出52B载荷，缓冲区扩至128B，双独立Docker沙箱100%通过，独立Codex QA与ARCH复核APPROVED收件；
+- [TWIN-25](microtasks/vmware_soc_twin/TWIN-25.md)（AP端0x18调平网格解析与设备状态拓扑呈现）：承接TWIN-24下位机网格数据，提供D-Bus/HTTP-SSE/Web HMI拓扑状态呈现，前置依赖已全部清空，就绪准备派发；
+- [TWIN-26](microtasks/vmware_soc_twin/TWIN-26.md)（双MCU固件升级通道与Bootloader IAP协议复用对账）：落实U-D05首版固件升级裁决，恪守避免修改Bootloader原则，TH复用存量921600 IAP时序，MC评估探针与透传通道，规划就绪Backlog；
+- [TWIN-27](microtasks/vmware_soc_twin/TWIN-27.md)（AP端VMware指定目录固件扫描与安全准入服务实现）：在soc-ap实现/var/update/目录扫描、128B Trailer验签与device-manager前置安全联锁，规划就绪Backlog；
+- [TWIN-28](microtasks/vmware_soc_twin/TWIN-28.md)（端到端真实双MCU固件升级在环联调与验收）：在真实物理MC/TH台架上实测刷写，0x01/0x02前后版本核验，规划就绪Backlog。
 
 2026-10-30工作区记录中：
 1. **TWIN-07（FORWARD常驻服务与唯一UART通路）**：已完成常驻进程守护、MiniMCProto v2.0双向编解码与CRC校验、PTY串口仿真、DDS `telemetry/raw_temp`低延迟发布与D-Bus RPC控制服务，在独立Docker沙箱中通过100%验证，取得独立Codex QA与ARCH审签APPROVED闭环；

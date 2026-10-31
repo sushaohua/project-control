@@ -30,6 +30,7 @@ child_tasks:
 - CR-09
 - TEMP-05
 - TWIN-11
+- TWIN-28
 planning_relations:
 - TASK-003
 - TASK-004

@@ -52,6 +52,7 @@ child_tasks:
 - V2-P0506
 - TWIN-07
 - TWIN-25
+- TWIN-27
 planning_relations:
 - MS-05
 - MS-06
