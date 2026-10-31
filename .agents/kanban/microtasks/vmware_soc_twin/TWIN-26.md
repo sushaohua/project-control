@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: false
 planning_status: planned
-owner: null
+owner: session-arch-twin-26
 proposed_owner: ARCH
 executor:
   role: ARCH
-  agent_id: null
-  run_id: null
+  agent_id: session-arch-twin-26
+  run_id: run_01
 reviewer:
 - QA
 - ENG-MC
@@ -26,7 +26,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-26
-    session: null
+    session: session-qa-twin-26
     session_evidence: null
     decision: null
     reviewed_task_revision: null
@@ -37,7 +37,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-mc-twin-26
-    session: null
+    session: session-mc-twin-26
     session_evidence: null
     decision: null
     reviewed_task_revision: null
@@ -93,10 +93,10 @@ read_sources:
 - project-control/.agents/rules/c_cpp_coding_standard.md
 worktree: mcu-p3
 lease:
-  owner: null
+  owner: session-arch-twin-26
   task_revision: 1
-  lease_id: null
-  expires_at: null
+  lease_id: lease-twin-26-run01
+  expires_at: '2026-10-31T18:00:00+08:00'
 resources:
 - resource: isolated-worktree-and-build-output
   location: null
@@ -131,11 +131,11 @@ verification:
       --workspace .
     expected: 结构无错误；不等于任务/运行/硬件接受
     availability: local
-  - id: planned_build_and_acceptance
+  - id: run_twin26_tests
     cwd: .
-    command: Ready前由Owner绑定本票实际构建与正反例运行入口
-    expected: 遵守避免修改Bootloader原则；TH IAP 0x10~0x13时序与MC透传模式验证；函数<=50行
-    availability: planned-not-runnable
+    command: gcc -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I mcu-p3/motion-controller-mcu/build -I mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/core_support -I mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/device_support -I mcu-p3/motion-controller-mcu/libraries/drivers/inc -I mcu-p3/motion-controller-mcu/project/inc project-control/docs/evidence/twin/TWIN-26/runs/run_01/test_twin26_mcu_upgrade.c -o /tmp/test_twin26 && /tmp/test_twin26
+    expected: exit 0, 所有双MCU固件升级协议与通道测试全集通过
+    availability: host-toolchain
   positive_cases:
   - 依据ARCH-MCU-UPGRADE-DESIGN-20261031，TH UART IAP握手（0x10~0x13）与MC透传模式满足契约
   negative_cases:

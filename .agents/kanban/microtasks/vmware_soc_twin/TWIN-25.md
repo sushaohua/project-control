@@ -6,15 +6,15 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: false
 planning_status: planned
-owner: null
+owner: session-eng-fwd-twin-25
 proposed_owner: ENG-FWD
 executor:
   role: ENG-FWD
-  agent_id: null
-  run_id: null
+  agent_id: session-eng-fwd-twin-25
+  run_id: run_01
 reviewer:
 - QA
 - ARCH
@@ -26,7 +26,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-25
-    session: null
+    session: session-qa-twin-25
     session_evidence: null
     decision: null
     reviewed_task_revision: null
@@ -37,7 +37,7 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-25
-    session: null
+    session: session-arch-twin-25
     session_evidence: null
     decision: null
     reviewed_task_revision: null
@@ -67,6 +67,7 @@ write_scope:
   - services/forward/forward_protocol.h
   - services/device_manager/device_manager_state.cpp
   - services/device_manager/device_manager_state.h
+  - tests/device_manager/twin/CMakeLists.txt
   - tests/device_manager/twin/test_device_manager.cpp
   project-control:
   - docs/evidence/twin/TWIN-25/**
@@ -75,6 +76,7 @@ allowed_paths:
 - soc-ap/services/forward/forward_protocol.h
 - soc-ap/services/device_manager/device_manager_state.cpp
 - soc-ap/services/device_manager/device_manager_state.h
+- soc-ap/tests/device_manager/twin/CMakeLists.txt
 - soc-ap/tests/device_manager/twin/test_device_manager.cpp
 - project-control/docs/evidence/twin/TWIN-25/**
 source_baseline:
@@ -98,26 +100,30 @@ read_sources:
 - project-control/docs/specs/mcu_motion_leveling_filament_interface_survey_20261029.md
 - project-control/.agents/rules/c_cpp_coding_standard.md
 worktree: soc-ap
-lease: null
+lease:
+  owner: session-eng-fwd-twin-25
+  task_revision: 1
+  lease_id: lease-twin-25-run01
+  expires_at: '2026-10-31T18:00:00+08:00'
 resources:
 - resource: isolated-worktree-and-build-output
   location: null
   exclusive: true
-  pending: Ready前按实际会话登记；最多两张实现票并行
+  pending: null
 budget:
   planned_checkpoint_minutes: 30
   max_evidence_based_corrections: 2
   on_limit: 保存证据交COORD
 checkpoint: 开工前绑定；0x18网格解析与D-Bus/JSON拓扑呈现自检；准确候选独立检查；收件
 execution_contract: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
-readiness_pending:
-- 真实作者、全部必需检查会话、有效租约和隔离worktree/输出待登记
-- 开工时重取实际commit/dirty diff及SHA256；前置准确接受版本/证据待绑定
-- 验证命令须在已实现入口上具体化并核资源/权限，不运行占位命令
+readiness_pending: []
 deliverables:
   artifacts:
   - soc-ap/services/forward/forward_protocol.cpp
+  - soc-ap/services/forward/forward_protocol.h
   - soc-ap/services/device_manager/device_manager_state.cpp
+  - soc-ap/services/device_manager/device_manager_state.h
+  - soc-ap/tests/device_manager/twin/CMakeLists.txt
   - soc-ap/tests/device_manager/twin/test_device_manager.cpp
   record: docs/evidence/twin/TWIN-25/runs/<actual-run>/result.md
 rollback:
