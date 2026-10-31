@@ -1,0 +1,41 @@
+=== Docker Container Inspect: 9882fc0d1454 ===
+{
+  "id": "9882fc0d14542b3c9236e96bcb74c8cf22be9cf4f17b527ac4f56a60fb38d6ee",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-10-31T03:18:47.870431595Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-24_run_111818_20261031_031818",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (mcu-p3) g++ -std=c++17 -Wall -Wextra -Werror -I motion-controller-mcu/project/inc -fsyntax-only -x c++ motion-controller-mcu/project/inc/minimc_proto.h -> 0
+
+
+$ (project-control) gcc -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I ../mcu-p3/motion-controller-mcu/build -I ../mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/core_support -I ../mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/device_support -I ../mcu-p3/motion-controller-mcu/libraries/drivers/inc -I ../mcu-p3/motion-controller-mcu/project/inc -I ../mcu-p3/motion-controller-mcu/project/delay -I ../mcu-p3/motion-controller-mcu/project/fatfs/source -I ../mcu-p3/motion-controller-mcu/project/marlin -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_core -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_gcode -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_msc -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_module docs/evidence/twin/TWIN-24/runs/run_01/test_twin24_level_grid.c ../mcu-p3/motion-controller-mcu/project/src/minimc_proto.c -o /tmp/test_twin24 && /tmp/test_twin24 -> 0
+========================================================================
+TWIN-24 MC Firmware 5x5 Level Grid Query (0x18) Response Verification
+========================================================================
+[RUN ] test_struct_layout_and_size
+[PASS] test_struct_layout_and_size
+[RUN ] test_level_mm_to_um_reconciliation
+[PASS] test_level_mm_to_um_reconciliation
+[RUN ] test_build_level_grid_resp_frame
+[PASS] test_build_level_grid_resp_frame
+[RUN ] test_rx_pipeline_e2e_dispatch
+[PASS] test_rx_pipeline_e2e_dispatch
+[RUN ] test_buffer_safety_and_defensive_checks
+[PASS] test_buffer_safety_and_defensive_checks
+[RUN ] test_high_voltage_safety_confirmation
+[PASS] test_high_voltage_safety_confirmation
+------------------------------------------------------------------------
+All 6 test suites PASSED!
+========================================================================
+

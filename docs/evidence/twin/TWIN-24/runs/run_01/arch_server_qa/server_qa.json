@@ -1,0 +1,69 @@
+{
+  "task_id": "TWIN-24",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "9882fc0d1454",
+    "id": "TWIN-24_run_111818_20261031_031818",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-24_run_111818_20261031_031818",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "9882fc0d14542b3c9236e96bcb74c8cf22be9cf4f17b527ac4f56a60fb38d6ee",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-10-31T03:18:47.870431595Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-24_run_111818_20261031_031818",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/twin/TWIN-24/runs/run_01/arch_server_qa/server_lock.json",
+    "sha256": "65756166e3c8a63d4af3f06ccef227f50611ed650ed31acac7b025fee6a5c6b2"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-24/runs/run_01/arch_server_qa/checkout.log",
+    "sha256": "c807a484ed3542f1a42b1d6aba7766ec4471f0b71f19ff8e4413cfcb0de4c2eb"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/twin/TWIN-24/runs/run_01/arch_server_qa/runtime.log",
+    "sha256": "1034530dc9d843f52bc00d8bb02ebe902f5579abb3adcb95b0391b69db7ebe01"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/twin/TWIN-24/runs/run_01/arch_server_qa/server_verdict.json",
+    "sha256": "a7e243a9df2bb3bba8bd803ed4efab3532c326eaad0b57122513e08991e947a3"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [
+    {
+      "command": "g++ -std=c++17 -Wall -Wextra -Werror -I motion-controller-mcu/project/inc -fsyntax-only -x c++ motion-controller-mcu/project/inc/minimc_proto.h",
+      "exit_code": "0",
+      "duration": "0.10s",
+      "output": ""
+    }
+  ],
+  "test_results": [
+    {
+      "command": "gcc -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I ../mcu-p3/motion-controller-mcu/build -I ../mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/core_support -I ../mcu-p3/motion-controller-mcu/libraries/cmsis/cm4/device_support -I ../mcu-p3/motion-controller-mcu/libraries/drivers/inc -I ../mcu-p3/motion-controller-mcu/project/inc -I ../mcu-p3/motion-controller-mcu/project/delay -I ../mcu-p3/motion-controller-mcu/project/fatfs/source -I ../mcu-p3/motion-controller-mcu/project/marlin -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_core -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_gcode -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_msc -I ../mcu-p3/motion-controller-mcu/project/marlin/marlin_module docs/evidence/twin/TWIN-24/runs/run_01/test_twin24_level_grid.c ../mcu-p3/motion-controller-mcu/project/src/minimc_proto.c -o /tmp/test_twin24 && /tmp/test_twin24",
+      "exit_code": "0",
+      "duration": "0.17s",
+      "output": "========================================================================\nTWIN-24 MC Firmware 5x5 Level Grid Query (0x18) Response Verification\n========================================================================\n[RUN ] test_struct_layout_and_size\n[PASS] test_struct_layout_and_size\n[RUN ] test_level_mm_to_um_reconciliation\n[PASS] test_level_mm_to_um_reconciliation\n[RUN ] test_build_level_grid_resp_frame\n[PASS] test_build_level_grid_resp_frame\n[RUN ] test_rx_pipeline_e2e_dispatch\n[PASS] test_rx_pipeline_e2e_dispatch\n[RUN ] test_buffer_safety_and_defensive_checks\n[PASS] test_buffer_safety_and_defensive_checks\n[RUN ] test_high_voltage_safety_confirmation\n[PASS] test_high_voltage_safety_confirmation\n------------------------------------------------------------------------\nAll 6 test suites PASSED!\n========================================================================"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-10-31T03:18:50.787136+00:00"
+}

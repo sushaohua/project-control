@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Done
 blocked: false
 planning_status: planned
 owner: session-eng-mc-twin-24
@@ -27,23 +27,38 @@ review_assignments:
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-24
     session: session-qa-twin-24
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence:
+      path: docs/evidence/twin/TWIN-24/runs/run_01/qa_review_report.md
+      sha256: 0615e55ddc304b97d10fc3c54a20b95e6ae674559079af8c1ad9dff8a5a9007e
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b; soc-ap=6850cc553d405b5e7e511ff181d985fdee8e221f; project-control=3fb3adb0a8499687177e64bde06fb077892d6c07; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+    evidence: docs/evidence/twin/TWIN-24/runs/run_01/qa_review_report.md
+    report_sha256: 0615e55ddc304b97d10fc3c54a20b95e6ae674559079af8c1ad9dff8a5a9007e
+    report_review:
+      session: session-arch-twin-24
+      role: ARCH
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b; soc-ap=6850cc553d405b5e7e511ff181d985fdee8e221f; project-control=3fb3adb0a8499687177e64bde06fb077892d6c07; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+      evidence: docs/evidence/twin/TWIN-24/runs/run_01/arch_review_report.md
+      report_sha256: 4ab35d89c8dcd679564f32759302b2fdf76bd3d9aed2cc2aef0776c84967094a
+      session_evidence:
+        path: docs/evidence/twin/TWIN-24/runs/run_01/arch_review_report.md
+        sha256: 4ab35d89c8dcd679564f32759302b2fdf76bd3d9aed2cc2aef0776c84967094a
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-24
     session: session-arch-twin-24
-    session_evidence: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    session_evidence:
+      path: docs/evidence/twin/TWIN-24/runs/run_01/arch_review_report.md
+      sha256: 4ab35d89c8dcd679564f32759302b2fdf76bd3d9aed2cc2aef0776c84967094a
+    decision: APPROVED
+    reviewed_task_revision: 1
+    artifact_version: mcu-p3=9b017f186665c2c9226146cc0fdc34af3ad5242b; soc-ap=6850cc553d405b5e7e511ff181d985fdee8e221f; project-control=3fb3adb0a8499687177e64bde06fb077892d6c07; test_harness=0b7497ba43158841eb3c4af7f16e477b9c30c2c5
+    evidence: docs/evidence/twin/TWIN-24/runs/run_01/arch_review_report.md
+    report_sha256: 4ab35d89c8dcd679564f32759302b2fdf76bd3d9aed2cc2aef0776c84967094a
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-002
@@ -82,7 +97,7 @@ source_baseline:
   mcu-p3: abbc3ae240972f5a60d751c6204c8b73f1f464bf
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
 base_commit: abbc3ae240972f5a60d751c6204c8b73f1f464bf
-candidate_commit: null
+candidate_commit: 9b017f186665c2c9226146cc0fdc34af3ad5242b
 dispatch_binding:
   source_commit: abbc3ae240972f5a60d751c6204c8b73f1f464bf
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -118,7 +133,7 @@ deliverables:
   artifacts:
   - mcu-p3/motion-controller-mcu/project/src/minimc_proto.c
   - mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h
-  record: docs/evidence/twin/TWIN-24/runs/<actual-run>/result.md
+  record: docs/evidence/twin/TWIN-24/runs/run_01/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行
@@ -127,7 +142,10 @@ handoff:
   receiver_session: session-coord-main
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-24
-  acknowledgement: null
+  acknowledgement:
+    status: ACCEPTED
+    time: '2026-10-31T11:20:00+08:00'
+    by: session-coord-main
 verification:
   commands:
   - id: check_graph
