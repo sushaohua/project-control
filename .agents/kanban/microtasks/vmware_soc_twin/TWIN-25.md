@@ -85,7 +85,7 @@ source_baseline:
   mcu-p3: 9b017f186665c2c9226146cc0fdc34af3ad5242b
   test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
 base_commit: 6850cc553d405b5e7e511ff181d985fdee8e221f
-candidate_commit: null
+candidate_commit: f2596517c8e7a53da6ff9623d948ec5e70bf6770
 dispatch_binding:
   source_commit: 6850cc553d405b5e7e511ff181d985fdee8e221f
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -125,7 +125,7 @@ deliverables:
   - soc-ap/services/device_manager/device_manager_state.h
   - soc-ap/tests/device_manager/twin/CMakeLists.txt
   - soc-ap/tests/device_manager/twin/test_device_manager.cpp
-  record: docs/evidence/twin/TWIN-25/runs/<actual-run>/result.md
+  record: docs/evidence/twin/TWIN-25/runs/run_01/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态；硬件恢复须按实际SOP及授权执行
