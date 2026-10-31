@@ -1,9 +1,10 @@
 ---
 title: 整机首版范围决定表（供用户确认）
 date: 2026-10-29
-revision: 4
+updated: '2026-10-31T09:23:00+08:00'
+revision: 5
 status: user-phased-scope-confirmed-details-pending
-product_decision_status: partially-confirmed
+product_decision_status: confirmed-option-a-dryrun
 owner: PM
 coordinator: COORD
 technical_input: ARCH
@@ -40,6 +41,15 @@ arch_agent: /root/arch_first_release
 | 期望达到什么打印效果？ | 提供一种材料组合和代表性彩色样件，确定可接受质量及必要速度；不直接照抄目录数值 | 待决定 |
 
 这些选择可分批决定；没决定的项目继续保留待决定，不反复询问下面已确认的开发方向。
+
+## 用户决定 U-D03：第一阶段物理台架验收底线确认（选项 A：空跑联调与强电 0% 锁死）
+
+决定人：用户；日期：2026-10-31；文档 revision：5。用户指令明确选择“选项 A”。
+
+1. **强电加热绝对安全门禁**：第一阶段在 VMware 连接物理真实 MC/TH 板卡时，固件强电加热占空比继续**严格硬锁死为 0%**（`thermistor_safety_lock` 保持有效），不通发热丝，杜绝火灾、飞温与设备损坏风险；温控链路仅维持只读遥测监视与故障哨兵告警；
+2. **开放电机运动与空跑路径**：开放 CoreXY 三轴步进电机运动驱动控制，支持物理三轴回零（`G28`）、手动点动（Jog，X/Y/Z 轴相对微米位移）与本地 G-code 流式下发空跑（Dry-run）模拟走线；
+3. **开放调平探针与传感输入**：支持自动调平接触探针触发信号与断料检测（`0x3001`）物理传感器输入及闭环响应；
+4. **软件全功能操作体验**：上位 AP 界面与微服务系统闭环实现作业选择、状态监视、实时坐标展示、手动调轴控制盘（Jog Panel）、调平网格拓扑预览与双级急停断能，使整机在 VMware 环境中呈现为一台完全可用、可操作的现代化 3D 打印机。
 
 ## 用户决定 U-D02：首版整机目标
 
