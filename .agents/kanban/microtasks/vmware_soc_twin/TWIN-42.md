@@ -37,13 +37,13 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-42
-    session: null
-    session_evidence: null
-    decision: PENDING
+    session: session-arch-review-42
+    session_evidence: docs/evidence/twin/TWIN-42/runs/arch_01/arch_review_report.md
+    decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    artifact_version: soc-ap=5955fa57c9be6b90ff34156a1a6b183717f9a3a6; project-control=c50f652e0ecb81c3d8c550c81a24a6fe01dd0fb5; test_harness=3a10e16beae43e51fc9673925179471e43f66114; mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e
+    evidence: docs/evidence/twin/TWIN-42/runs/arch_01/arch_review_report.md
+    report_sha256: 96fd1d75b47e213e5eab4a2a16528b1691bfc130638e1c023623e387921356c4
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010
