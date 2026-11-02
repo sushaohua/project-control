@@ -199,16 +199,36 @@ sequenceDiagram
 
 ## 6. 异常处置与 NACK 错误码
 
-当命令业务层发生合法性校验失败且请求帧要求确认（`WANTS_ACK=1` 且 `IS_RESPONSE=0`）时，终端节点应回发标准 `CMD_NACK`（操作码 `0x00`，载荷长度 `0x0002`）：
+当命令业务层发生合法性校验失败且请求帧要求确认（`WANTS_ACK=1` 且 `IS_RESPONSE=0`）时，终端节点应回发标准 `CMD_NACK`（操作码 `0x06`，载荷长度 `0x0003`）：
+
+### 6.1 NACK 载荷结构 (固定 3 字节)
+依据总规范 `SPEC-PROTO-20261015-153000` Rev 2.0.3 §5.2 定义，NACK 载荷采用小端序紧凑排列：
+
+| 偏移 (Offset) | 字段名称 | 宽度 | 类型 | 字节序 | 语义说明与规约 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `0x00` | `error_code` | 1B | `uint8_t` | -- | 标准错误码（见 6.2 节标准枚举） |
+| `0x01` | `expected_seq` | 2B | `uint16_t` | Little-Endian | 接收端期望的下一个正确 16-bit seq |
+
+* **整帧总长**：12B 帧头 + 3B 载荷 + 2B CRC = **17 字节**。
+* **Flags 规约**：`flags = 0x06`（`IS_RESPONSE=1`，`PROTO_VERSION=0b01`，二进制 `0000 0110`）。
+* **seq 回显规约**：帧头中的 `seq` 严格回显原请求帧流水号，载荷中的 `expected_seq` 指示接收端期望的下一个流水号。
+
+### 6.2 标准 NACK 错误码定义
+依据总规范 Rev 2.0.3 §5.2 全局错误码表：
 
 | 错误码常量 | 数值 | 含义说明 | 触发场景 |
 | :--- | :--- | :--- | :--- |
-| `MINIMC_ERR_SUCCESS` | `0x00` | 成功处理 | 正常响应 |
-| `MINIMC_ERR_TIMEOUT` | `0x03` | 处理超时 | 节点等待内部资源超时 |
-| `MINIMC_ERR_UNKNOWN_CMD` | `0x04` | 未知操作码 | 收到未支持的指令 |
-| `MINIMC_ERR_COMMAND_REJECTED` | `0x06` | 参数非法/长度冲突 | 载荷长度与操作码定义不符 |
-| `MINIMC_ERR_HOP_EXCEEDED` | `0x0B` | 跳数耗尽 | 中继节点检测到 `hop_limit <= 1` |
-| `MINIMC_ERR_ROUTING_FAILED` | `0x0C` | 路由不可达 | 目标节点离线或目标端口未开通 |
+| `MINIMC_ERR_CRC` | `0x01` | 校验和错误 | 仅用于诊断统计（坏帧默认静默丢弃） |
+| `MINIMC_ERR_MTU_EXCEEDED` | `0x02` | 载荷长度超限 | 载荷长度超过协议或节点 MTU |
+| `MINIMC_ERR_SEQ_OUT_OF_WINDOW` | `0x03` | 序号超前越界 (乱序) | 流水号不符合停等或窗口预期 |
+| `MINIMC_ERR_UNKNOWN_CMD` | `0x04` | 未知/不支持操作码 | 收到未支持的指令 |
+| `MINIMC_ERR_DEVICE_BUSY` | `0x05` | 接收端繁忙 | 内部队列已满，稍后重试 |
+| `MINIMC_ERR_COMMAND_REJECTED` | `0x06` | 参数非法/长度冲突 | 载荷长度与操作码定义不符或参数校验被拒绝 |
+| `MINIMC_ERR_ROUTING_CONGESTION` | `0x07` | 路由节点拥塞丢弃 | 转发队列满 |
+| `MINIMC_ERR_STALE_EXPIRED` | `0x08` | 历史重传脱离缓存 | 请求已过时 |
+| `MINIMC_ERR_SEQ_AMBIGUOUS` | `0x09` | 序号分界盲区 | 序号处于半周期分界盲区 |
+| `MINIMC_ERR_HOP_EXCEEDED` | `0x0B` | 跳数耗尽 | 中继节点检测到 `hop_limit <= 1`（派生诊断） |
+| `MINIMC_ERR_ROUTING_FAILED` | `0x0C` | 路由不可达 | 目标节点离线或目标端口未开通（派生诊断） |
 
 ---
 
