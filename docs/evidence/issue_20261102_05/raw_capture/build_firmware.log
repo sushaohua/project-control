@@ -1,0 +1,36 @@
+==============================================================================
+AI-SoC Quad-Repo Locked Candidate Firmware Build Transcript
+Timestamp: 2026-11-02 20:49:07+08:00
+Operator: INTEGRATOR (Session: 4b120074-de2b-46f3-bd39-af85494c3dca)
+Target Issue: ISSUE-20261102-05 / TASK-INT-01
+==============================================================================
+
+[LOCKED CANDIDATE COMMITS]
+- soc-ap:          427dd6d82caceebb7b4642e78f1dbfa96ff5fc84
+- mcu-p3:          e051111e68dd61896ed42c0961153b167b8bca41
+- test_harness:    dccf2de1ec680cbf7456c76d70970b0338710e8e
+- project-control: d5b1d46e556cab83eeaf12290dabef5634ca4365
+
+1. MC Firmware Build (AT32F435VGT7)
+   Directory: mcu-p3/motion-controller-mcu
+   Command: make pack
+   Toolchain: arm-none-eabi-gcc 9.2.1 / cmake 3.22.1
+   Binary Target: Marlin_AT32.bin (371,148 bytes) -> fw_mc.bin (371,276 bytes with 128B Trailer)
+   SHA256: ba5f738cdbd04b645a5f60d1cd29c1ff21e2ed9ee47479c711b2dd9ee1c92a4c
+
+2. TH Firmware Build (AT32F423CCT7)
+   Directory: mcu-p3/color-engine-mcu/io_toggle
+   Command: make all pack
+   Toolchain: arm-none-eabi-gcc 9.2.1
+   Binary Targets:
+     - fw_th.bin (71,844 bytes with 128B Trailer)
+       SHA256: 0fa6594ba6e77f421acdc1a3cd00365afa95d5d72c567f2d7072031dc5c5db7b
+     - anchor.bin (140 bytes)
+       SHA256: c43a60654231a034226c944cf518dbf35268cb88b881cd29f1b93f197852212b
+
+3. SoC AP Binary Build
+   Directory: soc-ap
+   Command: cmake -B build -S . && cmake --build build -j$(nproc)
+   Binary Target: soc-ap/build/bin/soc-ap (58,528 bytes)
+   SHA256: a07562ea6681aadb6f74c5893ad9da3c45a0502cc4d138fd777d815e2fd53567
+==============================================================================

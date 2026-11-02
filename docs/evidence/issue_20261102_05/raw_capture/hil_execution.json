@@ -1,0 +1,289 @@
+{
+  "hil_tests": {
+    "timestamp": "2026-11-02 21:00:43.840",
+    "port": "/dev/ttyUSB0",
+    "baud": 115200,
+    "test_cases": [
+      {
+        "id": "HIL-POS-01",
+        "name": "MC Single-Hop GET_VERSION",
+        "target": "MC",
+        "tx_time": "2026-11-02 21:00:43.840",
+        "rx_time": "2026-11-02 21:00:43.847",
+        "rtt_us": 7241,
+        "tx_hex": "55AA010205010400010000004D68",
+        "rx_hex": "55AA020106020400010010000200020004030201321379A603000000EE6C",
+        "parsed": {
+          "valid": true,
+          "raw_hex": "55AA020106020400010010000200020004030201321379A603000000EE6C",
+          "total_len": 30,
+          "src": 2,
+          "dst": 1,
+          "flags": 6,
+          "cmd": 2,
+          "hop": 4,
+          "route": 0,
+          "seq": 1,
+          "payload_len": 16,
+          "payload": "0200020004030201321379A603000000",
+          "payload_hex": "0200020004030201321379A603000000",
+          "crc_recv": "0x6CEE",
+          "crc_calc": "0x6CEE",
+          "crc_valid": true
+        },
+        "pass": true,
+        "version_info": {
+          "proto_ver": "2.0",
+          "firmware_ver": "2.0",
+          "boot_id": "0x01020304",
+          "git_commit": "0xA6791332",
+          "capabilities": "0x00000003"
+        }
+      },
+      {
+        "id": "HIL-POS-02",
+        "name": "TH Dual-Hop Cascaded GET_VERSION",
+        "target": "TH",
+        "tx_time": "2026-11-02 21:00:43.897",
+        "rx_time": "2026-11-02 21:00:43.906",
+        "rtt_us": 8378,
+        "tx_hex": "55AA01030501040002000000B218",
+        "rx_hex": "55AA030106020304020010000200020055AA77885AC0566307000000BE18",
+        "parsed": {
+          "valid": true,
+          "raw_hex": "55AA030106020304020010000200020055AA77885AC0566307000000BE18",
+          "total_len": 30,
+          "src": 3,
+          "dst": 1,
+          "flags": 6,
+          "cmd": 2,
+          "hop": 3,
+          "route": 4,
+          "seq": 2,
+          "payload_len": 16,
+          "payload": "0200020055AA77885AC0566307000000",
+          "payload_hex": "0200020055AA77885AC0566307000000",
+          "crc_recv": "0x18BE",
+          "crc_calc": "0x18BE",
+          "crc_valid": true
+        },
+        "pass": true,
+        "version_info": {
+          "proto_ver": "2.0",
+          "firmware_ver": "2.0",
+          "boot_id": "0x8877AA55",
+          "git_commit": "0x6356C05A",
+          "capabilities": "0x00000007"
+        }
+      },
+      {
+        "id": "HIL-POS-03",
+        "name": "MC Single-Hop PING",
+        "target": "MC",
+        "tx_time": "2026-11-02 21:00:43.956",
+        "rx_time": "2026-11-02 21:00:43.963",
+        "rtt_us": 7489,
+        "tx_hex": "55AA01020503040003000400E803000020F2",
+        "rx_hex": "55AA02010604040003000C00E8030000EE030000100008008B5F",
+        "parsed": {
+          "valid": true,
+          "raw_hex": "55AA02010604040003000C00E8030000EE030000100008008B5F",
+          "total_len": 26,
+          "src": 2,
+          "dst": 1,
+          "flags": 6,
+          "cmd": 4,
+          "hop": 4,
+          "route": 0,
+          "seq": 3,
+          "payload_len": 12,
+          "payload": "E8030000EE03000010000800",
+          "payload_hex": "E8030000EE03000010000800",
+          "crc_recv": "0x5F8B",
+          "crc_calc": "0x5F8B",
+          "crc_valid": true
+        },
+        "pass": true,
+        "ping_info": {
+          "t_originate_ms": 1000,
+          "t_receive_ms": 1006,
+          "planner_buf_free": 16,
+          "rx_fifo_free_units": 8
+        }
+      },
+      {
+        "id": "HIL-POS-04",
+        "name": "TH Dual-Hop Cascaded PING",
+        "target": "TH",
+        "tx_time": "2026-11-02 21:00:44.013",
+        "rx_time": "2026-11-02 21:00:44.022",
+        "rtt_us": 8213,
+        "tx_hex": "55AA0103050304000400040078563412D8F8",
+        "rx_hex": "55AA03010604030404000C00785634129056341200040000A6E3",
+        "parsed": {
+          "valid": true,
+          "raw_hex": "55AA03010604030404000C00785634129056341200040000A6E3",
+          "total_len": 26,
+          "src": 3,
+          "dst": 1,
+          "flags": 6,
+          "cmd": 4,
+          "hop": 3,
+          "route": 4,
+          "seq": 4,
+          "payload_len": 12,
+          "payload": "785634129056341200040000",
+          "payload_hex": "785634129056341200040000",
+          "crc_recv": "0xE3A6",
+          "crc_calc": "0xE3A6",
+          "crc_valid": true
+        },
+        "pass": true,
+        "ping_info": {
+          "t_originate_ms": 305419896,
+          "t_receive_ms": 305419920,
+          "planner_buf_free": 1024,
+          "rx_fifo_free_units": 0
+        }
+      },
+      {
+        "id": "HIL-NEG-01",
+        "name": "MC Physical CMD_NACK Contract Alignment (cmd_id=0x7E)",
+        "target": "MC",
+        "tx_time": "2026-11-02 21:00:44.072",
+        "rx_time": "2026-11-02 21:00:44.078",
+        "rtt_us": 6700,
+        "tx_hex": "55AA0102057E04002A000000944F",
+        "rx_hex": "55AA0201060604002A000300042A008619",
+        "parsed": {
+          "valid": true,
+          "raw_hex": "55AA0201060604002A000300042A008619",
+          "total_len": 17,
+          "src": 2,
+          "dst": 1,
+          "flags": 6,
+          "cmd": 6,
+          "hop": 4,
+          "route": 0,
+          "seq": 42,
+          "payload_len": 3,
+          "payload": "042A00",
+          "payload_hex": "042A00",
+          "crc_recv": "0x1986",
+          "crc_calc": "0x1986",
+          "crc_valid": true
+        },
+        "pass": true,
+        "nack_info": {
+          "error_code": "0x04",
+          "expected_seq": 42,
+          "seq_matched": true
+        }
+      },
+      {
+        "id": "HIL-NEG-02",
+        "name": "TH Dual-Hop Cascaded Physical CMD_NACK (cmd_id=0x7E)",
+        "target": "TH",
+        "tx_time": "2026-11-02 21:00:44.129",
+        "rx_time": "2026-11-02 21:00:44.135",
+        "rtt_us": 6229,
+        "tx_hex": "55AA0103057E04003B000000A4C9",
+        "rx_hex": "55AA0301060603043B000300043B007B5D",
+        "parsed": {
+          "valid": true,
+          "raw_hex": "55AA0301060603043B000300043B007B5D",
+          "total_len": 17,
+          "src": 3,
+          "dst": 1,
+          "flags": 6,
+          "cmd": 6,
+          "hop": 3,
+          "route": 4,
+          "seq": 59,
+          "payload_len": 3,
+          "payload": "043B00",
+          "payload_hex": "043B00",
+          "crc_recv": "0x5D7B",
+          "crc_calc": "0x5D7B",
+          "crc_valid": true
+        },
+        "pass": true,
+        "nack_info": {
+          "error_code": "0x04",
+          "expected_seq": 59,
+          "seq_matched": true
+        }
+      }
+    ]
+  },
+  "ap_e2e_tests": {
+    "soc_ap_bin": "/home/sushaohua/soc-ap",
+    "port": "/dev/ttyUSB0",
+    "cases": [
+      {
+        "id": "AP-E2E-POS-01",
+        "cmd": "/home/sushaohua/soc-ap --port /dev/ttyUSB0 --target mc --cmd version --json",
+        "exit_code": 0,
+        "pass": true,
+        "stdout": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793624444138,\"monotonic_rtt_us\":7826,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_VERSION\",\"req_seq\":0,\"resp_seq\":0,\"version_info\":{\"proto_ver\":\"2.0\",\"firmware_ver\":\"2.0\",\"boot_id\":\"0x01020304\",\"git_commit\":\"0xA6791332\",\"capabilities\":\"0x00000003\"}}",
+        "stderr": ""
+      },
+      {
+        "id": "AP-E2E-POS-02",
+        "cmd": "/home/sushaohua/soc-ap --port /dev/ttyUSB0 --target th --cmd version --json",
+        "exit_code": 0,
+        "pass": true,
+        "stdout": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793624444149,\"monotonic_rtt_us\":8256,\"target\":\"TH\",\"target_id\":3,\"cmd\":\"GET_VERSION\",\"req_seq\":2,\"resp_seq\":2,\"version_info\":{\"proto_ver\":\"2.0\",\"firmware_ver\":\"2.0\",\"boot_id\":\"0x8877AA55\",\"git_commit\":\"0x6356C05A\",\"capabilities\":\"0x00000007\"}}",
+        "stderr": ""
+      },
+      {
+        "id": "AP-E2E-POS-03",
+        "cmd": "/home/sushaohua/soc-ap --port /dev/ttyUSB0 --target mc --cmd ping --json",
+        "exit_code": 0,
+        "pass": true,
+        "stdout": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793624444160,\"monotonic_rtt_us\":7582,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"PING\",\"req_seq\":3,\"resp_seq\":3,\"ping_info\":{\"t_originate_ms\":1000,\"t_receive_ms\":1006,\"planner_buf_free\":16,\"rx_fifo_free_units\":8}}",
+        "stderr": ""
+      },
+      {
+        "id": "AP-E2E-POS-04",
+        "cmd": "/home/sushaohua/soc-ap --port /dev/ttyUSB0 --target th --cmd ping --json",
+        "exit_code": 0,
+        "pass": true,
+        "stdout": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793624444169,\"monotonic_rtt_us\":7794,\"target\":\"TH\",\"target_id\":3,\"cmd\":\"PING\",\"req_seq\":1,\"resp_seq\":1,\"ping_info\":{\"t_originate_ms\":305419896,\"t_receive_ms\":305419920,\"planner_buf_free\":1024,\"rx_fifo_free_units\":0}}",
+        "stderr": ""
+      },
+      {
+        "id": "AP-E2E-NEG-01",
+        "cmd": "/home/sushaohua/soc-ap --port /dev/pts/1 --target mc --cmd version --timeout-ms 1000",
+        "exit_code": 2,
+        "pass": true,
+        "stdout": "",
+        "stderr": "ERROR: Exit code 2 (Received CMD_NACK from target (error_code=0x04, expected_seq=0))"
+      },
+      {
+        "id": "AP-E2E-NEG-02",
+        "cmd": "/home/sushaohua/soc-ap --port /dev/pts/1 --target mc --cmd version --timeout-ms 1000 --json",
+        "exit_code": 2,
+        "pass": true,
+        "stdout": "{\"status\":\"CORRELATION_ERR\",\"exit_code\":2,\"utc_time_ms\":1793624444243,\"target\":\"MC\",\"cmd\":\"GET_VERSION\",\"req_seq\":0,\"error_msg\":\"Received CMD_NACK from target (error_code=0x04, expected_seq=0)\"}",
+        "stderr": ""
+      },
+      {
+        "id": "AP-E2E-NEG-03",
+        "cmd": "/home/sushaohua/soc-ap --port /dev/pts/1 --target th --cmd version --timeout-ms 1000",
+        "exit_code": 2,
+        "pass": true,
+        "stdout": "",
+        "stderr": "ERROR: Exit code 2 (Received CMD_NACK from target (error_code=0x04, expected_seq=2))"
+      },
+      {
+        "id": "AP-E2E-NEG-04",
+        "cmd": "/home/sushaohua/soc-ap --port /dev/pts/1 --target th --cmd version --timeout-ms 1000 --json",
+        "exit_code": 2,
+        "pass": true,
+        "stdout": "{\"status\":\"CORRELATION_ERR\",\"exit_code\":2,\"utc_time_ms\":1793624444369,\"target\":\"TH\",\"cmd\":\"GET_VERSION\",\"req_seq\":2,\"error_msg\":\"Received CMD_NACK from target (error_code=0x04, expected_seq=2)\"}",
+        "stderr": ""
+      }
+    ]
+  }
+}

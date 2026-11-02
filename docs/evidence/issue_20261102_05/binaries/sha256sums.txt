@@ -1,0 +1,4 @@
+c43a60654231a034226c944cf518dbf35268cb88b881cd29f1b93f197852212b  project-control/docs/evidence/issue_20261102_05/binaries/anchor.bin
+ba5f738cdbd04b645a5f60d1cd29c1ff21e2ed9ee47479c711b2dd9ee1c92a4c  project-control/docs/evidence/issue_20261102_05/binaries/fw_mc.bin
+0fa6594ba6e77f421acdc1a3cd00365afa95d5d72c567f2d7072031dc5c5db7b  project-control/docs/evidence/issue_20261102_05/binaries/fw_th.bin
+a07562ea6681aadb6f74c5893ad9da3c45a0502cc4d138fd777d815e2fd53567  project-control/docs/evidence/issue_20261102_05/binaries/soc-ap

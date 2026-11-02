@@ -1,0 +1,61 @@
+==============================================================================
+AI-SoC Dual MCU Hardware SWD Flashing & Reset Execution Transcript
+Timestamp: 2026-11-02 20:54:11+08:00
+Operator / Subagent: INTEGRATOR (session: 4b120074-de2b-46f3-bd39-af85494c3dca)
+Flashing Tool: /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe (0.32.0, commit 48f5e4d)
+Target Candidate Repo: mcu-p3 (commit: e051111e68dd61896ed42c0961153b167b8bca41)
+==============================================================================
+
+[TARGET 1: TH Toolhead Controller - AT32F423CCT7]
+Probe Serial: 0483:3748:
+Base Flash Address: 0x08004000 (App), 0x0803F800 (Anchor)
+
+1.1 Flashing fw_th.bin (71,844 bytes):
+  SHA256: 0fa6594ba6e77f421acdc1a3cd00365afa95d5d72c567f2d7072031dc5c5db7b
+  Command: cd /home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle/build && /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe download --chip AT32F423CCT7 --probe "0483:3748:" --binary-format bin --base-address 0x08004000 --verify fw_th.bin < /dev/null
+  Execution Time: 2026-11-02 20:54:11+08:00
+  Console Output:
+     Finished in 5.40s
+  Exit Code: 0 (Verification PASS)
+
+1.2 Flashing anchor.bin (140 bytes):
+  SHA256: c43a60654231a034226c944cf518dbf35268cb88b881cd29f1b93f197852212b
+  Command: cd /home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle/build && /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe download --chip AT32F423CCT7 --probe "0483:3748:" --binary-format bin --base-address 0x0803F800 --verify --reset anchor.bin < /dev/null
+  Execution Time: 2026-11-02 20:54:21+08:00
+  Console Output:
+     Finished in 0.34s
+  Exit Code: 0 (Verification & Hardware Reset PASS)
+
+------------------------------------------------------------------------------
+
+[TARGET 2: MC Motion Controller - AT32F435VGT7]
+Probe Serial: 0483:3748:75003800120000334C41534E
+Base Flash Address: 0x08020000 (App)
+
+2.1 Flashing fw_mc.bin (371,276 bytes):
+  SHA256: ba5f738cdbd04b645a5f60d1cd29c1ff21e2ed9ee47479c711b2dd9ee1c92a4c
+  Command: cd /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build && /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe download --chip AT32F435VGT7 --probe "0483:3748:75003800120000334C41534E" --binary-format bin --base-address 0x08020000 --verify --reset fw_mc.bin < /dev/null
+  Execution Time: 2026-11-02 20:54:30+08:00
+  Console Output:
+ WARN probe_rs::probe::stlink: send_jtag_command 242 failed: SwdDpWait
+ WARN probe_rs::probe::stlink: got SwdDpWait/SwdApWait, retrying.
+ WARN probe_rs::probe::stlink: send_jtag_command 242 failed: SwdDpWait
+ WARN probe_rs::probe::stlink: got SwdDpWait/SwdApWait, retrying.
+ WARN probe_rs::probe::stlink: send_jtag_command 242 failed: SwdDpWait
+ WARN probe_rs::probe::stlink: got SwdDpWait/SwdApWait, retrying.
+ WARN probe_rs::probe::stlink: send_jtag_command 242 failed: SwdDpWait
+ WARN probe_rs::probe::stlink: got SwdDpWait/SwdApWait, retrying.
+     Finished in 29.72s
+  Exit Code: 0 (Verification & Hardware Reset PASS)
+
+------------------------------------------------------------------------------
+[HARDWARE IDENTIFICATION CONFIRMATION (Post-Reset Discovery)]
+  MC Board: AT32F435VGT7 (Flash: 1024KB, MSP: 0x20060000)
+    Probe ID: 0483:3748:75003800120000334C41534E
+    UID: 053023904C96C0000D819709
+    Status: ONLINE
+  TH Board: AT32F423CCT7 (Flash: 256KB, MSP: 0x2000C000)
+    Probe ID: 0483:3748:
+    UID: 053173C58023C000127C0707
+    Status: ONLINE
+==============================================================================
