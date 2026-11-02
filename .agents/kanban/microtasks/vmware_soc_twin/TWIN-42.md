@@ -1,7 +1,7 @@
 ---
 id: TWIN-42
 title: TWIN-42 多模块系统集成阶段单功能穿透梳理与级联验证
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261029
 task_kind: integration
 development_stage: vmware-twin
@@ -26,12 +26,12 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-42
-    session: null
-    session_evidence: null
+    session: session-qa-hil-twin-42
+    session_evidence: docs/evidence/twin/TWIN-42/runs/qa_01/qa_review_report.md
     decision: PENDING
-    reviewed_task_revision: 1
-    artifact_version: null
-    evidence: null
+    reviewed_task_revision: 2
+    artifact_version: soc-ap=5955fa57c9be6b90ff34156a1a6b183717f9a3a6; project-control=e8a32ec7532193e68aab48a82ebf5c958dc193a0
+    evidence: docs/evidence/twin/TWIN-42/runs/qa_01/qa_review_report.md
     report_sha256: null
   - role: ARCH
     platform: codex
@@ -40,7 +40,7 @@ review_assignments:
     session: null
     session_evidence: null
     decision: PENDING
-    reviewed_task_revision: 1
+    reviewed_task_revision: 2
     artifact_version: null
     evidence: null
     report_sha256: null
@@ -100,6 +100,10 @@ resources:
   location: null
   exclusive: true
   pending: Ready前落实
+- resource: qa-independent-vmware-hil-env
+  location: null
+  exclusive: true
+  pending: COORD在Ready前落实独立QA VMware实例、锁定候选部署环境及真实MC/TH HIL独占时段；QA不得复用INTEGRATOR运行实例或证据作为自己的验证结果
 budget:
   planned_checkpoint_minutes: 60
   max_evidence_based_corrections: 2
@@ -110,6 +114,7 @@ readiness_pending: []
 deliverables:
   artifacts:
   - project-control/docs/evidence/twin/TWIN-42/runs/author_01/feature_by_feature_penetration_matrix.md
+  - project-control/docs/evidence/twin/TWIN-42/runs/<qa-run>/qa_review_report.md（独立QA从服务器候选重新构建、部署并执行真实MC/TH HIL后的报告与环境证据）
   record: docs/evidence/twin/TWIN-42/runs/author_01/result.md
 rollback:
   steps:
@@ -132,13 +137,17 @@ verification:
   - 每个功能均通过正向闭环、无 ACK 超时阻断、带 Sequence 报错核实
   - 关键运控功能在执行中经受物理拔线测试，CPU 保持正常（<= 2%），UI 准确阻断
   - 热插拔恢复后具备自愈重连验证记录
+  - 独立QA使用独立Codex会话和新建隔离环境，从服务器获取本卡锁定的准确候选，自行构建并部署SoC服务；不得复用INTEGRATOR的工作区、构建产物、运行会话或原始验证结果
+  - 独立QA在COORD分配的排他HIL时段接入真实MC/TH，按10个功能的适用用例独立复验；记录VM/沙箱身份、源码/配置/制品哈希、串口与设备身份、MC/TH固件版本、原始双向通信轨迹、逐例结果及未执行项
+  - QA报告与INTEGRATOR的集成矩阵及原始证据分别保存，并明确两次运行绑定的候选一致；任一环境或候选不一致时标记BLOCKED/INCONCLUSIVE并交COORD处理
   negative_cases:
   - 严禁采用全系统一次性总装黑盒测试替代单功能垂直穿透
   - 严禁忽略任何功能的无 ACK 超时与断线测试
-required_evidence_level: server-sandbox-and-independent-review
-verification_environment: vmware-twin-and-docker-sandbox
+  - 严禁以INTEGRATOR的HIL运行结果、日志或签署替代独立QA在其隔离环境中的重新构建、部署和真实硬件复验
+required_evidence_level: hardware-verified
+verification_environment: independent-vmware-and-server-sandbox-with-real-mc-th-hil
 qa_review_policy: project-control/.agents/rules/codex_qa_review.md
-updated: '2026-10-31T19:30:00+08:00'
+updated: '2026-11-02T09:12:00+08:00'
 ---
 
 # TWIN-42 多模块系统集成阶段单功能穿透梳理与级联验证
@@ -156,4 +165,12 @@ updated: '2026-10-31T19:30:00+08:00'
 
 ## 2. 交付成果
 - 交付文档：[`project-control/docs/evidence/twin/TWIN-42/runs/author_01/feature_by_feature_penetration_matrix.md`](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-42/runs/author_01/feature_by_feature_penetration_matrix.md)
-- 包含每个功能的穿透测试记录、波形抓包/日志抓取物证及 QA 签署。
+- INTEGRATOR 交付每个功能的集成穿透记录、原始通信/日志物证与复现步骤；QA 在独立 run 中交付自己的复验报告和环境证据。两类记录分别绑定准确候选，不把作者证据写成 QA 结果。
+
+## 3. 独立 QA 环境准备与真实 HIL 复验
+
+1. **INTEGRATOR 提供可复现输入**：交付服务器候选及各仓完整 commit、构建/部署步骤、配置与制品哈希、MC/TH 固件身份、串口映射、逐功能操作步骤和预期结果，并保留自身集成运行证据。INTEGRATOR 不代替 QA 创建或签署 QA 结果。
+2. **QA 独立搭建软件验证环境**：由未参与本卡实现的独立 Codex 会话，从服务器重新获取同一锁定候选，在独立隔离环境中重新构建和部署 SoC 服务。记录实际 VM/容器身份、镜像或快照、挂载与权限、构建依赖和命令、配置及制品哈希。不得挂载作者可写工作区或拷贝作者构建产物充当独立构建。
+3. **QA 独立执行真实 MC/TH HIL**：COORD 预先安排 QA 可独占的真实台架/串口时段，记录设备身份、MC/TH 固件版本和 USB 串口路径。QA 从自己的部署发起测试，独立采集双向原始帧、时间戳、CPU/状态/UI 响应及逐例结果；PTY/Mock 只可用于对应软件用例，不能替代真实 MC/TH 正向闭环和物理拔线/恢复用例。
+4. **物理资源排他与安全边界**：同一台架、UART、探针同一时刻只由一名操作者占用；INTEGRATOR 与 QA 分时运行，不共享活动中的串口会话。拔线、复位及其他物理测试须符合已批准的硬件操作窗口和安全规则；本卡不授权烧录固件或启用加热输出。
+5. **独立判定与阻塞处理**：QA 报告逐项区分通过、失败、未覆盖、未执行，并将独立运行的候选与 INTEGRATOR 候选对账。缺服务器候选、隔离证据、硬件时段或真实设备时，记录 BLOCKED/INCONCLUSIVE 及解除条件，不以作者的 HIL 证据代签独立通过。
