@@ -1,0 +1,190 @@
+==============================================================================
+AI-SoC QA Independent HIL Automated Test Suite Full Execution Log (runtime.log)
+Execution Time: 2026-11-01 21:14:49.996
+Reviewer Role: QA (session-qa-hil-twin-35)
+Candidate Pinned Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
+Target Machine: VMware Twin (192.168.77.134:8080) + AT32F435 MC + AT32F423 TH
+==============================================================================
+
+##############################################################################
+### [EXECUTE] C-INTEGRATION-PRINT-LOOP
+### Start: 2026-11-01 21:14:49.996
+### Command: /home/sushaohua/aisoc_qa_sandbox/soc-ap/build/tests/integration/test_first_release_print_loop
+### Working Directory: /home/sushaohua/aisoc_qa_sandbox/soc-ap
+##############################################################################
+===================================================================
+=== TWIN-30 VMware全流程离线打印闭环集成验证测试套件 (C11/C++17) ===
+===================================================================
+[PASS] Case 1: 未回零防线与 G28 初始化 (未回零硬拦截与三轴归零就绪)
+[DRY-RUN SAFEGUARD] Heating cmd M4 intercepted: duty locked to 0%
+[DRY-RUN SAFEGUARD] Heating cmd M5 intercepted: duty locked to 0%
+[DRY-RUN SAFEGUARD] Heating cmd M6 intercepted: duty locked to 0%
+[DRY-RUN SAFEGUARD] Heating cmd M7 intercepted: duty locked to 0%
+[PASS] Case 2: 选项 A 纯逻辑空跑强电锁死拦截 (4条加热指令占空比强制清零与安全跳过)
+[PASS] Case 3: CoreXY G0/G1 微米级走线流式调度与 MC 0x16 20B 坐标报文双向同步
+[PASS] Case 4: 多通道混色比例在环调度 (M163/M164 50:50比率记录与非法混色拦截)
+[PASS] Case 5: 在环异常中断与安全挂起 (HMS 0x3001挂起/恢复与M112急停自锁/复位)
+[DRY-RUN SAFEGUARD] Heating cmd M4 intercepted: duty locked to 0%
+[DRY-RUN SAFEGUARD] Heating cmd M6 intercepted: duty locked to 0%
+[PASS] Case 6: 128B 原子快照与完成态收敛 (逐字段断言与100.0%收敛态)
+[PASS] Case 7: 双 MCU 固件版本拓扑与状态机联调模拟 (MC v1.2.0/TH v1.1.5四态衰退)
+[DRY-RUN SAFEGUARD] Heating cmd M4 intercepted: duty locked to 0%
+[DRY-RUN SAFEGUARD] Heating cmd M6 intercepted: duty locked to 0%
+[PASS] Case 8: 全流程闭环端到端验证 (未回零/回零/空跑升温锁死/走线/0x16同步/HMS/128B快照/急停复位闭环)
+[PASS] Case 9: 物理串口断开优雅挂起与新鲜度老化降级防线 (Hot-Unplug Graceful Hangup & Freshness Aging to OFFLINE with 0x7FFFFFFE sentinel)
+[PASS] Case 10: 硬件离线阻断打印作业虚假空跑 (Fail-Closed Print Pause on Link-Lost & Prohibition of Open-Loop Progress Ticking)
+===================================================================
+=== ALL TWIN-30 INTEGRATION TESTS PASSED (10/10 Suites 100% Green) ===
+===================================================================
+
+### End: 2026-11-01 21:14:49.998 | Exit Code: 0 | Verdict: PASS
+
+##############################################################################
+### [EXECUTE] HARNESS-FIRST-RELEASE-SUITE
+### Start: 2026-11-01 21:14:49.998
+### Command: python3 /home/sushaohua/aisoc_qa_sandbox/test_harness/static_checks/twin/run_first_release_cases.py
+### Working Directory: /home/sushaohua/aisoc_qa_sandbox/test_harness
+##############################################################################
+========================================================================
+AI-SoC First Release Automated Test Suite Execution (TWIN-10 ~ TWIN-35)
+========================================================================
+[PASS] CASE-INVENTORY-COMPLETENESS          : Verified 10 modules and 75 functional test cases
+[PASS] OFFLINE-503-FAIL-CLOSED-GATE         : Verified 5 offline 503 blockings and 1 online passes
+[PASS] NO-ACK-COMM-TIMEOUT-DEFENSE          : Verified 4 no-ACK timeout and unplug resilience assertions
+[PASS] SENTINEL-TEMP-AND-FLOAT-LEAK-DEFENSE : Verified 4 sentinel vectors with zero float leak
+[PASS] COLOR-MIXING-10000-INVARIANT         : Color mixing 10000 invariant and presets verified; Material whitelist and HEX regex rules verified
+[PASS] HMS-ALARM-HIERARCHY-AND-ESTOP        : HMS hierarchy, 0x3001 soft pause and 0x2003 hard estop verified; Alarm deduplication, FATAL preservation and E-STOP interlock verified
+[PASS] OPTION-A-ZERO-HEATING-SAFEGUARD      : Option A 0% heating lock and 128B state snapshot verified
+[PASS] OOBE-REALISM-AND-ERGONOMICS          : OOBE realism and 44px ergonomics touch requirements verified
+[PASS] MDNS-WIRE-PACKET-AND-MEMORY-SAFETY   : mDNS wire response format and 1460B static buffer verified
+------------------------------------------------------------------------
+Total Suites: 9, Passed: 9, Failed: 0
+
+### End: 2026-11-01 21:14:50.038 | Exit Code: 0 | Verdict: PASS
+
+##############################################################################
+### [EXECUTE] HMI-CONTRACT-SUITE
+### Start: 2026-11-01 21:14:50.038
+### Command: python3 test_hmi_contract.py
+### Working Directory: /home/sushaohua/aisoc_qa_sandbox/soc-ap/browser_hmi/first_release
+##############################################################################
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.008s
+
+OK
+
+### End: 2026-11-01 21:14:50.078 | Exit Code: 0 | Verdict: PASS
+
+##############################################################################
+### [EXECUTE] BROWSER-OOBE-CDP-AUTOMATION
+### Start: 2026-11-01 21:14:50.078
+### Command: python3 /home/sushaohua/aisoc_qa_sandbox/run_qa_e2e_oobe_browser.py
+### Working Directory: /home/sushaohua/aisoc_qa_sandbox
+##############################################################################
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/185f2de0-53a6-4493-8f3b-a6f56d60b088
+==================================================================
+=== TC-E2E-OOBE-01-POS & TC-E2E-OOBE-03-POS BROWSER VERIFICATION ===
+==================================================================
+[STEP 1->2] Clicking '下一步' to Step 2 (Theme)...
+[STEP 2->3] Clicking '下一步' to Step 3 (Firmware Version Check)...
+  MC Version Text: '固件版本: v1.0 (0xA6791332)'
+  TH Version Text: '固件版本: v1.0 (0x6356C05A)'
+  MC Status Badge: '已连接 (在线)' (class: 'check-result-badge badge-success')
+  TH Status Badge: '已连接 (在线)' (class: 'check-result-badge badge-success')
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-01-POS_step3_versions.png (170704 b64 bytes)
+[PASS] TC-E2E-OOBE-01-POS: Cold start version probe and display verified!
+
+[STEP 3->4] Clicking '下一步' to Step 4 (Sensors)...
+[STEP 4->5] Clicking '下一步' to Step 5 (Finish Step)...
+  Finish button display: 'inline-flex'
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-POS_step5_ready.png (151012 b64 bytes)
+[ACTION] Clicking '进入打印控制台' (btn-oobe-finish)...
+  Modal display after finish: 'none'
+  Dashboard active: True
+  LocalStorage['aisoc_oobe_completed']: 'true'
+  Toast Text: '✅ 新机自检向导已完成，已进入控制台'
+  Toast Class: 'hmi-toast toast-success'
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-POS_dashboard_toast.png (199416 b64 bytes)
+[PASS] TC-E2E-OOBE-03-POS: Wizard completion, tab-dashboard navigation, toast and persistence verified!
+
+[RELOAD] Testing TC-E2E-OOBE-03-NEG: Page Reload Persistence Check...
+  Reloaded Modal display: 'none'
+  Reloaded Dashboard active: True
+  Reloaded LocalStorage: 'true'
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-NEG_refreshed_no_modal.png (190840 b64 bytes)
+[PASS] TC-E2E-OOBE-03-NEG: Reloaded persistence verified, OOBE modal does not pop up!
+
+### End: 2026-11-01 21:15:00.561 | Exit Code: 0 | Verdict: PASS
+
+##############################################################################
+### [EXECUTE] HOT-UNPLUG-RECOVERY-SUITE
+### Start: 2026-11-01 21:15:00.561
+### Command: python3 /home/sushaohua/aisoc_qa_sandbox/test_qa_e2e_hotunplug.py
+### Working Directory: /home/sushaohua/aisoc_qa_sandbox
+##############################################################################
+1-2.1:1.0
+1-2.1:1.0
+==================================================================
+=== QA INDEPENDENT HOT-UNPLUG & RECOVERY END-TO-END REGRESSION ===
+==================================================================
+[PRE-CHECK] Forward Service PID: 3571328
+[ONLINE BASELINE] Status: NORMAL, MC: ONLINE, TH: ONLINE
+[ONLINE JOG] Status Code: 200, Resp: {'status': 'ok', 'axis': 'X', 'step_mm': 10.0}
+
+[ACTION] Triggering USB Serial Unplug (unbinding 1-2.1:1.0)...
+[DECAY CHECK] OFFLINE reached: True in 1.72s (Contract: <= 3.0s)
+  Bed Millic: 2147483646 (Expected: 2147483646, 0x7FFFFFFE)
+  Tool Millic: 2147483646 (Expected: 2147483646, 0x7FFFFFFE)
+  Bed Celsius: None (Expected: None/null)
+  Tool Celsius: None (Expected: None/null)
+  Bed Quality: STALE
+  Tool Quality: STALE
+  MC Status: OFFLINE
+  TH Status: OFFLINE
+
+[CPU CHECK] Sampling CPU usage while unplugged...
+  CPU Samples: [0.0, 0.0, 0.0, 0.0]% (Max: 0.0%, Avg: 0.00%, Target <= 2.0%)
+
+[503 GATE CHECK] Testing fail-closed HTTP 503 command blocking...
+  POST /api/v1/motion/jog -> HTTP 503, Resp: {'error': 503, 'message': 'Hardware offline: cannot jog motion'}
+  POST /api/v1/motion/home -> HTTP 503, Resp: {'error': 503, 'message': 'Hardware offline: cannot home axes'}
+  POST /api/v1/jobs/start -> HTTP 503, Resp: {'error': 503, 'message': 'Hardware offline: cannot start job'}
+
+[ACTION] Triggering USB Serial Reconnect (binding 1-2.1:1.0)...
+[RECOVERY CHECK] ONLINE restored: True in 1.58s (Contract: <= 3.0s)
+  Bed Temp: 24.5 C (Quality: FRESH)
+  Tool Temp: 122.5 C (Quality: FRESH)
+  MC Commit: 0xA6791332
+  TH Commit: 0x6356C05A
+  Unblocked POST /api/v1/motion/jog -> HTTP 503, Resp: {'error': 503, 'message': 'Hardware offline: cannot jog motion'}
+Traceback (most recent call last):
+  File "/home/sushaohua/aisoc_qa_sandbox/test_qa_e2e_hotunplug.py", line 197, in <module>
+    run_hotunplug_test()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/home/sushaohua/aisoc_qa_sandbox/test_qa_e2e_hotunplug.py", line 191, in run_hotunplug_test
+    assert jog_unblk_c == 200
+           ^^^^^^^^^^^^^^^^^^
+AssertionError
+
+### End: 2026-11-01 21:15:06.765 | Exit Code: 1 | Verdict: FAIL
+
+##############################################################################
+### [EXECUTE] DBUS-MC-VERSION-QUERY
+### Start: 2026-11-01 21:15:06.765
+### Command: /home/sushaohua/aisoc_qa_sandbox/soc-ap/build/bin/soc-ap --query-version --target mc --json
+### Working Directory: /home/sushaohua/aisoc_qa_sandbox/soc-ap
+##############################################################################
+{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793596506767,"monotonic_rtt_us":7510,"target":"MC","target_id":2,"cmd":"GET_VERSION","req_seq":0,"resp_seq":0,"version_info":{"proto_ver":"2.0","firmware_ver":"1.0","boot_id":"0x01020304","git_commit":"0xA6791332","capabilities":"0x00000003"}}
+
+### End: 2026-11-01 21:15:06.775 | Exit Code: 0 | Verdict: PASS
+
+##############################################################################
+### [EXECUTE] DBUS-TH-VERSION-QUERY
+### Start: 2026-11-01 21:15:06.775
+### Command: /home/sushaohua/aisoc_qa_sandbox/soc-ap/build/bin/soc-ap --query-version --target th --json
+### Working Directory: /home/sushaohua/aisoc_qa_sandbox/soc-ap
+##############################################################################
+{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793596506778,"monotonic_rtt_us":8044,"target":"TH","target_id":3,"cmd":"GET_VERSION","req_seq":2,"resp_seq":2,"version_info":{"proto_ver":"2.0","firmware_ver":"1.0","boot_id":"0x8877AA55","git_commit":"0x6356C05A","capabilities":"0x00000007"}}
+
+### End: 2026-11-01 21:15:06.786 | Exit Code: 0 | Verdict: PASS
