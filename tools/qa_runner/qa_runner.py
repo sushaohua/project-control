@@ -266,7 +266,7 @@ def run_git_command(args: List[str], cwd: Path, timeout: int = 180) -> subproces
     for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
         env.pop(key, None)
     env["GIT_TERMINAL_PROMPT"] = "0"
-    env.setdefault("GIT_SSH_COMMAND", "ssh -n -o BatchMode=yes -o ConnectTimeout=60")
+    env.setdefault("GIT_SSH_COMMAND", "ssh -o BatchMode=yes -o ConnectTimeout=60")
     return subprocess.run(args, cwd=str(cwd), env=env, text=True, capture_output=True, timeout=timeout)
 
 
