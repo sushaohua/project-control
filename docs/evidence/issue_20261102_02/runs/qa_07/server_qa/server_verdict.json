@@ -1,0 +1,11 @@
+{
+  "task_id": "ISSUE-20261102-02",
+  "task_revision": 7,
+  "run_id": "run_201051",
+  "verdict": "PASSED",
+  "exit_code": 0,
+  "summary": "All sandbox tests passed",
+  "build_count": 3,
+  "test_count": 4,
+  "timestamp": "2026-11-02T12:11:16.804520+00:00"
+}

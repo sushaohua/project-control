@@ -1,0 +1,47 @@
+
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/3a9f4483-717f-42ea-82af-3383a54bcd93
+==================================================================
+=== TC-E2E-OOBE-01-POS & TC-E2E-OOBE-03-POS BROWSER VERIFICATION ===
+==================================================================
+[STEP 1->2] Clicking '下一步' to Step 2 (Theme)...
+[STEP 2->3] Clicking '下一步' to Step 3 (Firmware Version Check)...
+  MC Version Text: '固件版本: v2.0 (0xA6791332)'
+  TH Version Text: '固件版本: v2.0 (0x6356C05A)'
+  MC Status Badge: '已连接 (在线)' (class: 'check-result-badge badge-success')
+  TH Status Badge: '已连接 (在线)' (class: 'check-result-badge badge-success')
+  FWD Status Badge: '在线 (帧同步正常)' (class: 'check-result-badge badge-success')
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-01-POS_step3_versions.png (166568 b64 bytes)
+[PASS] TC-E2E-OOBE-01-POS: Cold start version probe and forwarding status verified!
+
+[STEP 3->4] Clicking '下一步' to Step 4 (Sensors)...
+[STEP 4] Inspecting DOM for Step 4 (Sensors Health Check)...
+  Nozzle Status: '正常 (120.7 °C)' (class: 'check-result-badge badge-success')
+  Nozzle Detail: '当前读数: 120.7 °C (有效区间 5~300°C)'
+  Bed Status: '正常 (24.5 °C)' (class: 'check-result-badge badge-success')
+  Bed Detail: '当前读数: 24.5 °C (有效区间 5~130°C)'
+  Runout Status: '正常 (料丝在位)' (class: 'check-result-badge badge-success')
+  Runout Detail: 'Slot 1~4 光电对射开关状态'
+  Sensor runout-sensor-0: text='就绪 (正常)', class='runout-state-badge state-pass'
+  Sensor runout-sensor-1: text='就绪 (正常)', class='runout-state-badge state-pass'
+  Sensor runout-sensor-2: text='就绪 (正常)', class='runout-state-badge state-pass'
+  Sensor runout-sensor-3: text='就绪 (正常)', class='runout-state-badge state-pass'
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-01-POS_step4_sensors.png (175152 b64 bytes)
+[PASS] TC-E2E-OOBE-01-POS: Step 4 sensor health & real temperature assertions verified!
+[STEP 4->5] Clicking '下一步' to Step 5 (Finish Step)...
+  Finish button display: 'inline-flex'
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-POS_step5_ready.png (147736 b64 bytes)
+[ACTION] Clicking '进入打印控制台' (btn-oobe-finish)...
+  Modal display after finish: 'none'
+  Dashboard active: True
+  LocalStorage['aisoc_oobe_completed']: 'true'
+  Toast Text: '✅ 新机自检向导已完成，已进入控制台'
+  Toast Class: 'hmi-toast toast-success'
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-POS_dashboard_toast.png (196852 b64 bytes)
+[PASS] TC-E2E-OOBE-03-POS: Wizard completion, tab-dashboard navigation, toast and persistence verified!
+
+[RELOAD] Testing TC-E2E-OOBE-03-NEG: Page Reload Persistence Check...
+  Reloaded Modal display: 'none'
+  Reloaded Dashboard active: True
+  Reloaded LocalStorage: 'true'
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-NEG_refreshed_no_modal.png (185316 b64 bytes)
+[PASS] TC-E2E-OOBE-03-NEG: Reloaded persistence verified, OOBE modal does not pop up!

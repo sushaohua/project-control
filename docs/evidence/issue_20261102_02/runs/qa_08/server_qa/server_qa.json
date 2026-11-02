@@ -1,0 +1,106 @@
+{
+  "task_id": "ISSUE-20261102-02",
+  "task_revision": 7,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "70e40b395ada",
+    "id": "ISSUE-20261102-02_run_201051_20261102_121051",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/ISSUE-20261102-02_run_201051_20261102_121051",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "70e40b395ada260b7fe11bacdf52491be8b25b96b909c17a4713357045165ac2",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-02T12:11:09.828194122Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/ISSUE-20261102-02_run_201051_20261102_121051",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/issue_20261102_02/runs/qa_08/server_qa/server_lock.json",
+    "sha256": "3bd067a910570298b37025dd7781460c12734819a78b223f7de9f59e74831c93"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/issue_20261102_02/runs/qa_08/server_qa/checkout.log",
+    "sha256": "16cac91423ddf1dcd180e89436c5e70468eae328b29b86ab62c8d3fa5add1c8a"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/issue_20261102_02/runs/qa_08/server_qa/runtime.log",
+    "sha256": "26ce74b493b1f8eb376d84754868ce98e30e003364c1e52175a3cbf574896a45"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/issue_20261102_02/runs/qa_08/server_qa/server_verdict.json",
+    "sha256": "88d06f341c04694c748390daf6690831dc7ab6f82a103bc8954239d4d420eaec"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [
+    {
+      "command": "cmake -B /tmp/soc_build -S . && make -C /tmp/soc_build",
+      "exit_code": "0",
+      "subpath": "soc-ap",
+      "duration": "1.25s",
+      "output": "-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Found Python3: /usr/bin/python3.8 (found version \"3.8.10\") found components: Interpreter\n-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/soc_build\nmake: Entering directory '/tmp/soc_build'\nmake[1]: Entering directory '/tmp/soc_build'\nmake[2]: Entering directory '/tmp/soc_build'\nmake[2]: Leaving directory '/tmp/soc_build'\nmake[2]: Entering directory '/tmp/soc_build'\n[ 11%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o\n[ 22%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o\n[ 33%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o\n[ 44%] Linking CXX static library libminimcproto.a\nmake[2]: Leaving directory '/tmp/soc_build'\n[ 44%] Built target minimcproto\nmake[2]: Entering directory '/tmp/soc_build'\nmake[2]: Leaving directory '/tmp/soc_build'\nmake[2]: Entering directory '/tmp/soc_build'\n[ 55%] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o\n[ 66%] Building CXX object CMakeFiles/soc-ap.dir/core/host/query.cpp.o\n[ 77%] Linking CXX executable bin/soc-ap\nmake[2]: Leaving directory '/tmp/soc_build'\n[ 77%] Built target soc-ap\nmake[2]: Entering directory '/tmp/soc_build'\nmake[2]: Leaving directory '/tmp/soc_build'\nmake[2]: Entering directory '/tmp/soc_build'\n[ 88%] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o\n[100%] Linking CXX executable bin/minimc-probe\nmake[2]: Leaving directory '/tmp/soc_build'\n[100%] Built target minimc-probe\nmake[1]: Leaving directory '/tmp/soc_build'\nmake: Leaving directory '/tmp/soc_build'"
+    },
+    {
+      "command": "python3 tools/version_tool.py --ini motion-controller-mcu/version.ini --mode dev --gen-header /tmp/version_mc_autogen.h && python3 tools/version_tool.py --ini color-engine-mcu/version.ini --mode dev --gen-header /tmp/version_th_autogen.h",
+      "exit_code": "0",
+      "subpath": "mcu-p3",
+      "duration": "0.11s",
+      "output": "[VERSION][DEV] \u751f\u6210 16bit \u65f6\u95f4\u7279\u5f81\u7801: 0xB928 (V2.0.1-B928 1102)\n[VERSION] \u751f\u6210\u5934\u6587\u4ef6: /tmp/version_mc_autogen.h\n[VERSION][DEV] \u751f\u6210 16bit \u65f6\u95f4\u7279\u5f81\u7801: 0xB678 (V2.0.1-B678 1102)\n[VERSION] \u751f\u6210\u5934\u6587\u4ef6: /tmp/version_th_autogen.h"
+    },
+    {
+      "command": "gcc -Wall -Wextra -Werror -std=c11 -I ../soc-ap/contracts/twin static_checks/twin/check_layout.c -o /tmp/check_layout",
+      "exit_code": "0",
+      "subpath": "test_harness",
+      "duration": "0.12s",
+      "output": ""
+    }
+  ],
+  "test_results": [
+    {
+      "command": "ctest --test-dir /tmp/soc_build --output-on-failure",
+      "exit_code": "0",
+      "subpath": "soc-ap",
+      "duration": "2.55s",
+      "output": "Test project /tmp/soc_build\n    Start 1: host_runtime_smoke\n1/2 Test #1: host_runtime_smoke ...............   Passed    0.11 sec\n    Start 2: cascade_query_cases\n2/2 Test #2: cascade_query_cases ..............   Passed    2.32 sec\n\n100% tests passed out of 2\n\nTotal Test time (real) =   2.43 sec"
+    },
+    {
+      "command": "/tmp/check_layout",
+      "exit_code": "0",
+      "subpath": "test_harness",
+      "duration": "0.08s",
+      "output": "ALL_LAYOUT_AND_CONVERSION_CHECKS_PASSED"
+    },
+    {
+      "command": "python3 static_checks/minimcproto/reference_vectors.py --vectors test_cases/minimcproto/vectors.json --check",
+      "exit_code": "0",
+      "subpath": "test_harness",
+      "duration": "0.10s",
+      "output": "{\n  \"schema_version\": \"minimcproto-vectors-v2.0.3-r1\",\n  \"protocol_sha256\": \"9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54\",\n  \"golden_frame_count\": 5,\n  \"total_case_count\": 64,\n  \"group_counts\": {\n    \"stub\": 4,\n    \"crc\": 9,\n    \"encode\": 8,\n    \"decode_bounds\": 6,\n    \"decode\": 12,\n    \"stream_sync\": 5,\n    \"stream_header\": 5,\n    \"stream_payload\": 5,\n    \"timeout\": 6,\n    \"recovery\": 4\n  },\n  \"errors\": [],\n  \"mode\": \"check\",\n  \"vectors_path\": \"test_cases/minimcproto/vectors.json\",\n  \"vectors_sha256\": \"6d46bd05a4133e678611abe2ab1cb88db190c394f23151900009c0c077c8d995\",\n  \"exit_code\": 0\n}"
+    },
+    {
+      "command": "python3 -c \"import configparser; mc=configparser.ConfigParser(); mc.read('motion-controller-mcu/version.ini'); th=configparser.ConfigParser(); th.read('color-engine-mcu/version.ini'); assert mc.get('VERSION','major')=='2' and mc.get('VERSION','minor')=='0' and mc.get('VERSION','patch')=='1', 'MC version.ini mismatch'; assert th.get('VERSION','major')=='2' and th.get('VERSION','minor')=='0' and th.get('VERSION','patch')=='1', 'TH version.ini mismatch'; print('MCU version.ini checks PASS (MC=2.0.1, TH=2.0.1)')\"",
+      "exit_code": "0",
+      "subpath": "mcu-p3",
+      "duration": "0.09s",
+      "output": "MCU version.ini checks PASS (MC=2.0.1, TH=2.0.1)"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-02T12:11:16.804624+00:00"
+}

@@ -1,0 +1,63 @@
+==============================================================================
+AI-SoC Dual MCU Hardware SWD Flashing & Reset Execution Transcript
+Timestamp: 2026-11-02 16:25:21+08:00
+Operator / Subagent: INTEGRATOR (session: b322c0f5-b370-4ed0-bc7b-0c5fc6343606)
+Flashing Tool: /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe (0.32.0, commit 48f5e4d)
+Source Repo: mcu-p3 (commit: 31a7c6891264ac154c421eaead77c4e4d23acd3e)
+==============================================================================
+
+[TARGET 1: TH Toolhead Controller - AT32F423CCT7]
+Probe Serial: 0483:3748:
+Base Flash Address: 0x08004000 (App), 0x0803F800 (Anchor)
+
+1.1 Flashing fw_th.bin (71,804 bytes):
+  SHA256: deee2c9b5051dc8b42be3721c8ba4196ada9c511a9afc8c4bf5d40810fb93529
+  Command: cd /home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle/build && time /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe download --chip AT32F423CCT7 --probe "0483:3748:" --binary-format bin --base-address 0x08004000 --verify fw_th.bin < /dev/null
+  Execution Time: 2026-11-02 16:25:27+08:00
+  Console Output:
+     Finished in 5.23s
+
+  real	0m5.214s
+  user	0m0.002s
+  sys	0m0.000s
+  Exit Code: 0 (Verification PASS)
+
+1.2 Flashing anchor.bin (140 bytes):
+  SHA256: 14a451cf80f0cc4e53af012e1437c9d79f7e801bbbdda696d2203dd732f17a76
+  Command: cd /home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle/build && time /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe download --chip AT32F423CCT7 --probe "0483:3748:" --binary-format bin --base-address 0x0803F800 --verify --reset anchor.bin < /dev/null
+  Execution Time: 2026-11-02 16:25:37+08:00
+  Console Output:
+     Finished in 0.32s
+
+  real	0m0.441s
+  user	0m0.001s
+  sys	0m0.000s
+  Exit Code: 0 (Verification & Hardware Reset PASS)
+
+------------------------------------------------------------------------------
+
+[TARGET 2: MC Motion Controller - AT32F435VGT7]
+Probe Serial: 0483:3748:75003800120000334C41534E
+Base Flash Address: 0x08020000 (App)
+
+2.1 Flashing fw_mc.bin (371,260 bytes):
+  SHA256: d738bbd82d0f6d42840d0194ae661348faf68328a22a5f203c3b96a11d503d9b
+  Command: cd /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build && time /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe download --chip AT32F435VGT7 --probe "0483:3748:75003800120000334C41534E" --binary-format bin --base-address 0x08020000 --verify --reset fw_mc.bin < /dev/null
+  Execution Time: 2026-11-02 16:25:41+08:00
+  Console Output:
+ WARN probe_rs::probe::stlink: send_jtag_command 242 failed: SwdDpWait
+ WARN probe_rs::probe::stlink: got SwdDpWait/SwdApWait, retrying.
+ WARN probe_rs::probe::stlink: send_jtag_command 242 failed: SwdDpWait
+ WARN probe_rs::probe::stlink: got SwdDpWait/SwdApWait, retrying.
+ WARN probe_rs::probe::stlink: send_jtag_command 242 failed: SwdDpWait
+ WARN probe_rs::probe::stlink: got SwdDpWait/SwdApWait, retrying.
+     Finished in 29.60s
+
+  real	0m29.806s
+  user	0m0.001s
+  sys	0m0.000s
+  Exit Code: 0 (Verification & Hardware Reset PASS)
+
+==============================================================================
+STATUS: ALL DUAL MCU FIRMWARE BINARIES (VERSION 2.0.1) PHYSICAL FLASH SUCCESS
+==============================================================================

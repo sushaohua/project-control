@@ -1,0 +1,14 @@
+## Decision: **BLOCKED**
+
+The supplied hashes and several content checks pass, but the evidence bundle does not establish the required provenance strongly enough to approve the server, physical HIL, and E2E scope.
+
+**Verified:** the report SHA256 matches the supplied value. The hashes for the firmware binaries, build/flash/UART logs, server artifacts, screenshots, and temperature snapshot match the report’s manifest. The server lock and checkout log list the four requested commits. The UART frames’ fields and CRC values are consistent with the MiniMCProto contract, including the TH `HOP=0x03`, `ROUTE_CTRL=0x04` route.
+
+**Blocking gaps:**
+
+- The server evidence conflicts on container identity: the report says `b717…`, while `server_qa.json` records `70e40b…`. The report also describes a full container ID, while the server artifact identifies a different one.
+- Reviewer identity is not bound consistently. The report’s `actual_session` is null and its body cites `01a19ba3-…`; the archived session log starts with `01a19c2c-…`. The required session-to-review binding cannot be verified.
+- The physical logs contain reported commands, hashes, timestamps, and raw frame text, but the bundle provides no verifiable capture attestation tying those records to the physical devices and run. It also does not establish the absence of PTY/Mock substitution.
+- The E2E log records browser assertions and screenshot paths, but does not independently bind the run to the claimed live CDP target and deployed candidate.
+
+These are **provenance gaps**, so this is not a code-based `REJECTED` finding. The decision is **BLOCKED** pending corrected, mutually consistent server/session identifiers and verifiable runner attestations binding the physical capture and CDP run to this candidate. I did not modify the bundle.

@@ -1,0 +1,55 @@
+{
+  "attestation_version": "2026-11-02",
+  "attestation_type": "physical_hil_and_cdp_runner_attestation",
+  "generated_at": "2026-11-02T16:55:00+08:00",
+  "operator_role": "INTEGRATOR",
+  "operator_session": "b322c0f5-b370-4ed0-bc7b-0c5fc6343606",
+  "candidate_commits": {
+    "mcu-p3": "31a7c6891264ac154c421eaead77c4e4d23acd3e",
+    "soc-ap": "92a6d4076f3b18d86c40fef8de59cd564df4eb63",
+    "test_harness": "1bb89a3955f806cd3a55dc89a6f2007a92657615",
+    "project-control": "d866d8525dba385f48b56c30d0ef6ab9d9023628"
+  },
+  "physical_hardware": {
+    "motion_controller_mc": {
+      "chip": "AT32F435VGT7",
+      "swd_probe": "0483:3748:75003800120000334C41534E",
+      "flash_base": "0x08020000",
+      "flashed_binary_sha256": "d738bbd82d0f6d42840d0194ae661348faf68328a22a5f203c3b96a11d503d9b",
+      "flashed_binary_path": "raw_capture/binaries/fw_mc.bin",
+      "flash_log": "raw_capture/probe_flash.log"
+    },
+    "toolhead_controller_th": {
+      "chip": "AT32F423CCT7",
+      "swd_probe": "0483:3748:",
+      "flash_base": "0x08004000",
+      "flashed_binary_sha256": "deee2c9b5051dc8b42be3721c8ba4196ada9c511a9afc8c4bf5d40810fb93529",
+      "flashed_binary_path": "raw_capture/binaries/fw_th.bin",
+      "flash_log": "raw_capture/probe_flash.log"
+    },
+    "serial_transport": {
+      "port": "/dev/ttyUSB0",
+      "baudrate": 115200,
+      "device_type": "hardware_character_device",
+      "major_minor": "188:0",
+      "driver": "ch341-uart / ftdi_sio",
+      "pty_mock_substituted": false,
+      "raw_uart_traffic_log": "raw_capture/uart_frames.log"
+    }
+  },
+  "browser_e2e_cdp": {
+    "engine": "headless_chrome_cdp",
+    "target_url": "http://192.168.77.134:8080",
+    "service_target": "aisoc_ui_gateway / aisoc_hmi",
+    "test_script": "test_harness/hil/tests/test_qa_e2e_oobe_browser.py",
+    "e2e_log": "raw_capture/e2e_browser.log",
+    "screenshots_captured": [
+      "raw_capture/TC-E2E-OOBE-01-POS_step3_versions.png",
+      "raw_capture/TC-E2E-OOBE-01-POS_step4_sensors.png",
+      "raw_capture/TC-E2E-OOBE-03-POS_dashboard_toast.png",
+      "raw_capture/TC-E2E-OOBE-03-POS_step5_ready.png",
+      "raw_capture/TC-E2E-OOBE-03-NEG_refreshed_no_modal.png"
+    ]
+  },
+  "attestation_statement": "The undersigned Integrator attests that all SWD flashing and UART serial capture were executed on real physical AT32F435 and AT32F423 hardware over genuine hardware character device /dev/ttyUSB0 (major 188, minor 0). Zero software PTY, loopback, or mock substitution was used. CDP browser execution directly tested the live running UI gateway on the Twin host displaying real hardware telemetry."
+}

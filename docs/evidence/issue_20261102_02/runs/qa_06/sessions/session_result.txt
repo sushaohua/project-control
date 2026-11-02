@@ -1,0 +1,7 @@
+**Decision: REJECTED — QA-06.**
+
+The report’s claimed SHA256 matches the file, and the binary and firmware build-log hashes match the supplied values. The TH response’s `HOP=0x03` and `ROUTE_CTRL=0x04` also agree with §6.3 of the protocol contract.
+
+However, the report itself names `project-control` commit `39414c49…`, while the current server lock and checkout log name `d866d852…`. That leaves the report’s candidate binding internally inconsistent. The bundle also contains a session result that rejects QA-06 based on conflicting UART and runtime evidence; it does not establish that those earlier files belong to this current run, so the conflict remains unresolved. Hash matches establish file integrity, not that the physical evidence was produced by the locked candidate.
+
+These gaps prevent approval of the claimed candidate-to-firmware-to-HIL/E2E chain. The current evidence does **not** establish that the claimed hardware results are false; it is insufficient to approve QA-06. Do not use this report to close the issue.

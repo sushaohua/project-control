@@ -1,0 +1,55 @@
+You are the independent Codex QA Reviewer performing the server sandbox, physical HIL & E2E verification audit (Run QA-08) for ISSUE-20261102-02 under:
+- project-control/.agents/rules/codex_qa_review.md (amended 2026-11-02: physical execution & read-only audit decoupling)
+- project-control/.agents/rules/c_cpp_coding_standard.md
+- project-control/.agents/rules/delivery_and_coord_gate.md (amended 2026-11-02)
+- soc-ap/contracts/minimcproto/v2-minimal.md
+
+Key Policy Clarification in Run QA-08:
+Under authoritative project-control/.agents/rules/codex_qa_review.md (§覆盖范围与职责 line 26 & §HW-G5/HW-G7 rule 7) and delivery_and_coord_gate.md (§4.2), physical HIL operations (probe-rs flashing, /dev/ttyUSB0 serial capture, Chrome CDP browser E2E) are executed by the physical runner / integrator producing cryptographically bound objective evidence. Codex serves as the independent auditor in a read-only host sandbox. Codex is NOT required or expected to physically connect to host USB hardware. Codex audits the cryptographic provenance, hash integrity, protocol contract conformance, and absence of deception (PTY/Mock) in the recorded evidence bundle.
+
+Verification Scope & Resolved Provenance for Run QA-08:
+1. Locked Candidate Commits (Identically matching server_lock.json, checkout.log, and qa_review_report.md):
+   - mcu-p3: 31a7c6891264ac154c421eaead77c4e4d23acd3e (refs/heads/feat/soc-debug)
+   - soc-ap: 92a6d4076f3b18d86c40fef8de59cd564df4eb63 (refs/heads/main)
+   - test_harness: 1bb89a3955f806cd3a55dc89a6f2007a92657615 (refs/heads/main)
+   - project-control: d866d8525dba385f48b56c30d0ef6ab9d9023628 (refs/heads/main)
+   (All four commits are fetched directly from GitLab server into Docker sandbox, verified in server_lock.json and checkout.log).
+
+2. Server Docker Sandbox Execution & Mutually Consistent Identifiers:
+   - Container ID: 70e40b395ada (inspect ID: 70e40b395ada260b7fe11bacdf52491be8b25b96b909c17a4713357045165ac2)
+   - Image: qa-sandbox:20261029 (digest: sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f)
+   - project-control/docs/evidence/issue_20261102_02/runs/qa_08/server_qa/server_qa.json (SHA256: 9cd9acece2e3fc752f90bf9590d7ea4f88fc2efc3e29d86e85d5c5c03756e2c3)
+   - project-control/docs/evidence/issue_20261102_02/runs/qa_08/server_qa/server_verdict.json (build_count: 3, test_count: 4, verdict: "PASSED", exit code: 0)
+
+3. Verifiable Runner Attestation Binding Physical Capture & CDP E2E:
+   - project-control/docs/evidence/issue_20261102_02/runs/qa_08/raw_capture/runner_attestation.json explicitly attests:
+     * Physical SWD probe 0483:3748:75003800120000334C41534E (MC AT32F435) and 0483:3748: (TH AT32F423).
+     * Hardware character device /dev/ttyUSB0 (major 188, minor 0; ch341-uart / ftdi_sio kernel driver).
+     * pty_mock_substituted: false (Zero software PTY, loopback, or mock substitution).
+     * Live CDP headless Chrome execution against Twin host http://192.168.77.134:8080.
+
+4. Firmware Binary Artifacts and Build Provenance:
+   - Physical binaries compiled from candidate commit mcu-p3@31a7c6891264ac154c421eaead77c4e4d23acd3e via arm-none-eabi-gcc 9.2.1:
+     * project-control/docs/evidence/issue_20261102_02/runs/qa_08/raw_capture/binaries/fw_mc.bin (371,260 B, SHA256: d738bbd82d0f6d42840d0194ae661348faf68328a22a5f203c3b96a11d503d9b)
+     * project-control/docs/evidence/issue_20261102_02/runs/qa_08/raw_capture/binaries/fw_th.bin (71,804 B, SHA256: deee2c9b5051dc8b42be3721c8ba4196ada9c511a9afc8c4bf5d40810fb93529)
+     * project-control/docs/evidence/issue_20261102_02/runs/qa_08/raw_capture/binaries/anchor.bin (140 B, SHA256: 14a451cf80f0cc4e53af012e1437c9d79f7e801bbbdda696d2203dd732f17a76)
+   - Arm GCC build log:
+     * project-control/docs/evidence/issue_20261102_02/runs/qa_08/raw_capture/build_firmware.log (SHA256: a72d7c15f9d6dfd9a8141b012fe255f93b199850636c8d2447dd78fba1e9698e)
+   - Flash verification log:
+     * project-control/docs/evidence/issue_20261102_02/runs/qa_08/raw_capture/probe_flash.log (probe-rs byte-by-byte verify pass)
+
+5. Multi-Hop Routing Reconciliation for TH 03 04:
+   - In raw_capture/uart_frames.log, the TH RX frame has header bytes 03 04 at HOP and ROUTE_CTRL offsets:
+     55 AA 03 01 06 02 03 04 02 00 10 00 ...
+   - Reconciled against authoritative protocol contract soc-ap/contracts/minimcproto/v2-minimal.md §6.3:
+     "MC routes packets to/from secondary UART for TH (Node 3): Hop_Limit is decremented from 0x04 to 0x03, and Route_Ctrl is set to ROUTE_IS_ROUTED (0x04)."
+
+6. Live Browser CDP E2E Automation:
+   - project-control/docs/evidence/issue_20261102_02/runs/qa_08/raw_capture/e2e_browser.log
+   - Screenshots: TC-E2E-OOBE-01-POS_step3_versions.png, TC-E2E-OOBE-01-POS_step4_sensors.png, TC-E2E-OOBE-03-POS_step5_ready.png, TC-E2E-OOBE-03-POS_dashboard_toast.png, TC-E2E-OOBE-03-NEG_refreshed_no_modal.png.
+
+7. QA Review Report:
+   - Report Path: project-control/docs/evidence/issue_20261102_02/runs/qa_08/qa_review_report.md
+   - Report SHA256: f00a9ba5dfea0a117c97e67797e0209d607bdf43a1f0d0a432c8b6eb112baa03
+
+Please audit the evidence bundle and render your independent decision (APPROVED, REJECTED, or BLOCKED).

@@ -1,0 +1,11 @@
+## BLOCKED — Run QA-08
+
+The recorded SHA-256 values match the artifacts I could check, and the three locally checked-out code repositories match the listed candidate commits. The UART frames also match the protocol’s §6.3 routing description: the TH reply shows hop limit `03` and route control `04`.
+
+I can’t verify the claimed execution and independent review provenance well enough to approve this run:
+
+- The report’s front matter says `decision: APPROVED`, but its title identifies it as **Run QA-05**, despite being stored as the QA-08 report. Its `actual_session` is a planned-style alias, not a verifiable session UUID; the accompanying session log does not establish an independent review session.
+- The runner attestation is an unsigned JSON statement. The listed hashes establish file integrity against the report’s manifest, but do not authenticate who performed the physical capture or bind that capture to a trusted runner.
+- The firmware build and flash records are text transcripts. They report matching binary hashes and successful verification, but the bundle does not provide independently verifiable runner provenance for those operations.
+
+This is an evidence and provenance block, not a finding that the firmware or protocol behavior failed. **Do not rely on the embedded APPROVED decision for acceptance.** Resolve the run/session identity and provide verifiable runner attestation for the physical capture, then have an independent reviewer assess that evidence in a new run.

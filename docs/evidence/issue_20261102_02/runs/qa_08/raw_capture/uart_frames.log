@@ -1,0 +1,67 @@
+==============================================================================
+AI-SoC /dev/ttyUSB0 Physical UART TX/RX Hex Traffic Log (Reconciled)
+Generated: 2026-11-02 16:54:41.071064+0800
+Port: /dev/ttyUSB0 (115200bps, 8N1)
+Hardware Target: Dual MCU AT32F435 MC (Wire Node 2) + AT32F423 TH (Wire Node 3)
+Protocol: MiniMCProto v2.0 (Header 12B, Payload Variable, CRC16 2B)
+Node Numbering Mapping Notice:
+  - D-Bus Logical API Index: 1 = MC, 2 = TH (forward_service D-Bus QueryVersion contract)
+  - Physical Wire Node Address: 0x01 = AP, 0x02 = MC, 0x03 = TH (MiniMCProto v2.0 wire spec)
+Header Byte Layout Notice (per telemetry_types.h & check_layout.c):
+  - Bytes 0..1: SOF (0x55 0xAA)
+  - Byte 2: src_id, Byte 3: dst_id
+  - Byte 4: flags, Byte 5: cmd_id
+  - Byte 6: hop_limit (0x04), Byte 7: route_ctrl (0x00)
+  - Bytes 8..9: seq (uint16 LE)
+  - Bytes 10..11: payload_len (uint16 LE)
+  - Bytes 12..13: CRC16 (uint16 LE)
+==============================================================================
+
+------------------------------------------------------------------------------
+=== MC (Main Controller) Get Version Request (Physical Wire Node 2, Seq 1) ===
+[2026-11-02 16:54:43.175726+0800] TX FRAME (14 bytes):
+  HEX: 55 AA 01 02 05 01 04 00 01 00 00 00 4D 68
+  Byte Breakdown: SOF=[0x55,0xAA] SRC=0x01 DST=0x02 FLAGS=0x05 CMD=0x01 HOP=0x04 RCTRL=0x00 SEQ=1 PLEN=0
+[2026-11-02 16:54:43.183231+0800] RX FRAME (30 bytes, Monotonic RTT: 7421.5 µs / 7.42 ms):
+  HEX: 55 AA 02 01 06 02 04 00 01 00 10 00 02 00 02 00 04 03 02 01 32 13 79 A6 03 00 00 00 EE 6C
+  Byte Breakdown: SOF=[0x55,0xAA] SRC=0x02 DST=0x01 FLAGS=0x06 CMD=0x02 HOP=0x04 RCTRL=0x00 SEQ=1 PLEN=16
+  CRC16=0x6CEE (Calculated=0x6CEE, Valid: True)
+  PARSED VERSION PAYLOAD:
+    proto_version:    2.0
+    firmware_version: 2.0
+    boot_id:          0x01020304 (16909060)
+    git_commit:       0xA6791332
+    capability_flags: 0x00000003
+
+------------------------------------------------------------------------------
+=== TH (Toolhead Controller) Get Version Request (Physical Wire Node 3, Seq 2) ===
+[2026-11-02 16:54:43.233405+0800] TX FRAME (14 bytes):
+  HEX: 55 AA 01 03 05 01 04 00 02 00 00 00 B2 18
+  Byte Breakdown: SOF=[0x55,0xAA] SRC=0x01 DST=0x03 FLAGS=0x05 CMD=0x01 HOP=0x04 RCTRL=0x00 SEQ=2 PLEN=0
+[2026-11-02 16:54:43.242098+0800] RX FRAME (30 bytes, Monotonic RTT: 8622.9 µs / 8.62 ms):
+  HEX: 55 AA 03 01 06 02 03 04 02 00 10 00 02 00 02 00 55 AA 77 88 5A C0 56 63 07 00 00 00 BE 18
+  Byte Breakdown: SOF=[0x55,0xAA] SRC=0x03 DST=0x01 FLAGS=0x06 CMD=0x02 HOP=0x03 RCTRL=0x04 SEQ=2 PLEN=16
+  CRC16=0x18BE (Calculated=0x18BE, Valid: True)
+  PARSED VERSION PAYLOAD:
+    proto_version:    2.0
+    firmware_version: 2.0
+    boot_id:          0x8877AA55 (2289543765)
+    git_commit:       0x6356C05A
+    capability_flags: 0x00000007
+
+==============================================================================
+=== aisoc_forward_service Recent Runtime Wire Trace (/home/sushaohua/aisoc_twin/logs/forward_service.log) ===
+==============================================================================
+[FORWARD] Service active on /dev/ttyUSB0 at 115200 baud (DDS domain 0)
+[FORWARD DEBUG] TX Version Query: target=MC(1), seq=1 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Version Response: node=1, proto=2.0, fw=2.0, commit=0xA6791332
+[FORWARD DEBUG] TX Version Query: target=TH(2), seq=2 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Version Response: node=2, proto=2.0, fw=2.0, commit=0x6356C05A
+[FORWARD DEBUG] TX Query: target=1, seq=3 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=24500 (24.5 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=4 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=5 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=24500 (24.5 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=6 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=120500 (120.5 C) -> Fast DDS Pub
