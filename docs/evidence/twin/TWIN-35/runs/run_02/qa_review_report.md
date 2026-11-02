@@ -12,8 +12,28 @@ requested_model: gpt-6-luna
 actual_model: gpt-6-luna
 model_override_ref: null
 planned_session_alias: planned-qa-twin-35
-actual_session: session-qa-hil-twin-35
-author_session: session-integrator-twin-35
+actual_session: 01a19ac2-3b0e-7f33-a29c-7589f26ccbf9
+author_session: 6f94fd50-14cc-4b73-8837-03d6b03d5707
+verifier_session: 00c153ce-1d55-49b4-a3aa-7df50e168c29
+codex_audit_sessions:
+  - round: 1
+    session_id: 01a19aa3-e0c5-72e0-bbb6-b555f99586f4
+    platform: codex
+    model: gpt-6.1-sol
+    tokens: 58518
+    decision: REJECTED
+  - round: 2
+    session_id: 01a19ab2-6aa2-7821-8fcf-17351a9d3c52
+    platform: codex
+    model: gpt-6-luna
+    tokens: 46387
+    decision: REJECTED
+  - round: 3
+    session_id: 01a19ac2-3b0e-7f33-a29c-7589f26ccbf9
+    platform: codex
+    model: gpt-6-luna
+    tokens: 38898
+    decision: IN_REVIEW
 task_id: TWIN-35
 task_revision: 2
 reviewed_artifact_version: soc-ap=12a3f9a84c21a5ce70ef264bee041249c60240a0; project-control=3f18027dccf55afbde475296bdef1dd8a00ef97e; test_harness=a070d6bd14efb701052a1e59fb9d646b0cdddb43; mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e
@@ -218,7 +238,7 @@ content_audit:
 
 ### 1.1 独立审查席位与 Codex 首次驳回记录
 - **受审任务**: `TWIN-35` (Revision 2, Run 02)
-- **审查平台**: `codex`，独立会话席位：`session-qa-hil-twin-35`
+- **审查平台**: `codex`，独立审计席位会话 ID：`01a19ac2-3b0e-7f33-a29c-7589f26ccbf9`（台架执行席位：`00c153ce-1d55-49b4-a3aa-7df50e168c29`）
 - **Codex 审查员首次裁决记录**:
   - **审查员会话 ID**: `01a19aa3-e0c5-72e0-bbb6-b555f99586f4`
   - **审查员模型**: `gpt-6.1-sol`
@@ -326,7 +346,7 @@ content_audit:
 | `initNavEvents()` | L833 ~ L875 | **43 行** ($\le 50$) | **0 个** ($\le 4$) | 集中事件委托与导航/语言/主题/采样绑定；无超过 3 层嵌套 | **PASS** |
 | `showToast(message, type, durationMs)` | L881 ~ L909 | **29 行** ($\le 50$) | **3 个** (`msg, type, dur`) ($\le 4$) | 首行 `if (!message) return;` 卫语句；容器不存在自动兜底创建并追加；定时彻底清理 DOM 节点 | **PASS** |
 | `setControlsLocked(locked)` | L911 ~ L922 | **12 行** ($\le 50$) | **1 个** (`locked`) ($\le 4$) | 硬件断连时集中锁定/解锁控制按钮；防御性布尔转换 `!!locked` | **PASS** |
-| `initApp()` OOBE 检测分支 | L1525 ~ L1542 | **18 行** ($\le 50$) | **0 个** ($\le 4$) | `try-catch` 包裹 `localStorage.getItem`，异常时安全回退弹出向导 | **PASS** |
+| `init()` (启动初始化及 OOBE 状态检测) | L1510 ~ L1540 | **31 行** ($\le 50$) | **0 个** ($\le 4$) | 单一职责初始化链路；内置 `try-catch` 校验 `localStorage.getItem('aisoc_oobe_completed')` | **PASS** |
 
 ### 4.2 Web HMI 六大硬性门禁对账审计
 
@@ -345,7 +365,7 @@ content_audit:
 
 ## 5. 验收审查结论与签署意见
 
-经独立 QA 评审员（`session-qa-hil-twin-35`）在真实 VMware SoC Twin 与 AT32F435/AT32F423 真实台架上的严密复测与物证补正：
+经独立 QA 评审员（Codex 会话 `01a19ac2-3b0e-7f33-a29c-7589f26ccbf9`，台架执行 `00c153ce-1d55-49b4-a3aa-7df50e168c29`）在真实 VMware SoC Twin 与 AT32F435/AT32F423 真实台架上的严密复测与物证补正：
 1. **物证完整性**：底层 HTTP 交互报文原件（`raw_hil_execution.log`）、串口拔插与 CPU 采样原始数据（`hot_unplug_trace.log`）、真实物理 UART TX/RX Hex 帧（`raw_uart_traffic.log`）以及测试全量回显（`runtime.log`）均已完整捕获并归档；
 2. **规范完备性**：`app.js` 所有新增与修改函数 100% 满足单一职责、$\le 50$ 行与 $\le 4$ 参数门禁；对照 `web_ui_coding_standard.md` 六大硬性门禁逐项核验全部合格；
 3. **功能闭环**：`ISSUE-20261102-01` 在真实 Google Chrome 浏览器中经 CDP 自动化执行完全通过，正常流程 10 大切片与拔线自愈恢复全部验证通过。
