@@ -9,6 +9,8 @@ authorization: 用户本轮明确要求“把所有的qa都独立成codex审查�
 
 # 独立 QA 统一使用 Codex
 
+**2026-11-02 验收补充：**按[交付门禁§4.1～4.3](delivery_and_coord_gate.md#41-正常流程优先与正负成对验收2026-11-02)核对正常流程、正负配对、软件/真实HIL分别覆盖及批准范围；按[E2E与Issue流转规则](e2e_issue_verification_flow.md)记录缺陷并独立复验。缺少范围内必测正例或真实HIL证据时不得签发对应功能/整体验收APPROVED；离线提示正确只证明该负例。保留旧签署，新复验另建run；环境/来源不足按交付门禁§5.3记录阻塞，不虚构通过或反复要求作者改无关代码。
+
 > **2026-10-29 新增要求（方案 1 规范标准做法）：**
 > 1. **分工明确**：被审阅源码的检出、构建与自动化测试套件必须在独立的 Docker 容器沙箱内执行，运行时记录并归档容器 Inspect 物证（Container ID、Image Digest、状态与挂载）至 `server_qa.json` 与 `runtime.log`；
 > 2. **独立审阅席位**：Codex Reviewer 作为独立的第三方审查席位，在宿主机上启动专属会话（具有唯一的 Session UUID、真实 Token 消耗与执行审计记录），对容器沙箱产出的锁定候选 Commit、`server_qa.json`、容器 Inspect 物证及交付文件进行独立审计与签署签发，规避 Docker 内部嵌套 Bubblewrap 的系统级命名空间冲突；
