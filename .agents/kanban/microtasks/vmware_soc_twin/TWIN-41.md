@@ -6,9 +6,9 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: architecture
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
-planning_status: planned
+planning_status: closed
 owner: ARCH
 proposed_owner: ARCH
 executor:

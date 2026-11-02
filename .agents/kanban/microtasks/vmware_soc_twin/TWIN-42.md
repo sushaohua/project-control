@@ -6,9 +6,9 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: integration
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
-planning_status: planned
+planning_status: closed
 owner: INTEGRATOR
 proposed_owner: INTEGRATOR
 executor:
