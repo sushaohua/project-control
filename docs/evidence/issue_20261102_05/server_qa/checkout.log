@@ -22,7 +22,7 @@ $ git checkout dccf2de1ec680cbf7456c76d70970b0338710e8e -> 0
 === Checkout repository 'project-control' from ssh://git@192.168.77.113:2222/sushaohua/project-control.git ===
 $ git init -> 0
 $ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/project-control.git -> 0
-$ git fetch origin 1a5d85e7b56407832ad31df7dfbd5e3412ba30a7 -> 0
+$ git fetch origin 491b9540b358603bbd062732b6155d754ad23dc9 -> 0
 From ssh://192.168.77.113:2222/sushaohua/project-control
- * branch            1a5d85e7b56407832ad31df7dfbd5e3412ba30a7 -> FETCH_HEAD
-$ git checkout 1a5d85e7b56407832ad31df7dfbd5e3412ba30a7 -> 0
+ * branch            491b9540b358603bbd062732b6155d754ad23dc9 -> FETCH_HEAD
+$ git checkout 491b9540b358603bbd062732b6155d754ad23dc9 -> 0

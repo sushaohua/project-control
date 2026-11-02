@@ -1,14 +1,14 @@
-=== Docker Container Inspect: 943f74dc2f29 ===
+=== Docker Container Inspect: ead6341b79cf ===
 {
-  "id": "943f74dc2f29b01868cc63da5280ab7b685183966ba4c4d239519913aa38af58",
+  "id": "ead6341b79cf91ee73683d29a5738e7a152941138c65642d6e84679fd84bf662",
   "image": "qa-sandbox:20261029",
   "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
-  "created": "2026-11-02T13:06:50.075951283Z",
+  "created": "2026-11-02T13:32:31.520848612Z",
   "state": "exited",
   "mounts": [
     {
       "Type": "bind",
-      "Source": "/tmp/qa_sandboxes/ISSUE-20261102-05_run_210633_20261102_130633",
+      "Source": "/tmp/qa_sandboxes/ISSUE-20261102-05_run_213213_20261102_133213",
       "Destination": "/workspace",
       "Mode": "ro",
       "RW": false,
@@ -71,9 +71,9 @@ Total Test time (real) =   2.43 sec
 
 
 $ (mcu-p3) python3 tools/version_tool.py --ini motion-controller-mcu/version.ini --mode dev --gen-header /tmp/version_mc_autogen.h && python3 tools/version_tool.py --ini color-engine-mcu/version.ini --mode dev --gen-header /tmp/version_th_autogen.h -> 0
-[VERSION][DEV] 生成 16bit 时间特征码: 0xBEBF (V2.0.1-BEBF 1102)
+[VERSION][DEV] 生成 16bit 时间特征码: 0x331F (V2.0.1-331F 1102)
 [VERSION] 生成头文件: /tmp/version_mc_autogen.h
-[VERSION][DEV] 生成 16bit 时间特征码: 0xBE4E (V2.0.1-BE4E 1102)
+[VERSION][DEV] 生成 16bit 时间特征码: 0x33EF (V2.0.1-33EF 1102)
 [VERSION] 生成头文件: /tmp/version_th_autogen.h
 
 
@@ -118,15 +118,15 @@ $ (test_harness) python3 static_checks/cascade/run_query_cases.py --cases test_c
        执行 AP 宿主程序黑盒 PTY 级联查询测试: /tmp/soc_build/bin/soc-ap
 ===========================================================================
 [PASS] CAS-POS-001  | 退出码: 0 (期望 0) | 耗时: 0.061s | AP 直接查询 MC 固件版本 (单跳 GET_VERSION)
-[PASS] CAS-POS-002  | 退出码: 0 (期望 0) | 耗时: 0.062s | AP 经 MC 级联查询 TH 固件版本 (双跳 GET_VERSION 原生透明路由)
+[PASS] CAS-POS-002  | 退出码: 0 (期望 0) | 耗时: 0.061s | AP 经 MC 级联查询 TH 固件版本 (双跳 GET_VERSION 原生透明路由)
 [PASS] CAS-POS-003  | 退出码: 0 (期望 0) | 耗时: 0.062s | AP 向 MC 发送心跳探活与时延测量 (单跳 PING/PONG)
-[PASS] CAS-POS-004  | 退出码: 0 (期望 0) | 耗时: 0.062s | AP 经 MC 级联向 TH 发送心跳探活 (双跳 PING/PONG 原生透明路由)
+[PASS] CAS-POS-004  | 退出码: 0 (期望 0) | 耗时: 0.061s | AP 经 MC 级联向 TH 发送心跳探活 (双跳 PING/PONG 原生透明路由)
 [PASS] CAS-NEG-001  | 退出码: 1 (期望 1) | 耗时: 0.352s | 信道持续静默无响应 (Silence / Timeout)
 [PASS] CAS-NEG-002  | 退出码: 1 (期望 1) | 耗时: 0.362s | 信道回显原请求报文 (Echo / Reflection Loop)
 [PASS] CAS-NEG-003  | 退出码: 1 (期望 1) | 耗时: 0.362s | 响应源节点错位 (Target Mismatch: 查 TH 却收到 MC 回包)
 [PASS] CAS-NEG-004  | 退出码: 1 (期望 1) | 耗时: 0.362s | 流水号错位 (Stale / Corrupted Sequence Number)
-[PASS] CAS-NEG-005  | 退出码: 2 (期望 2) | 耗时: 0.062s | 操作码定义冲突 (Command Opcode Conflict: 收到 0x03 魔数或非法应答)
-[PASS] CAS-NEG-006  | 退出码: 2 (期望 2) | 耗时: 0.062s | 载荷长度截断不匹配 (Truncated / Malformed Payload Length)
+[PASS] CAS-NEG-005  | 退出码: 2 (期望 2) | 耗时: 0.061s | 操作码定义冲突 (Command Opcode Conflict: 收到 0x03 魔数或非法应答)
+[PASS] CAS-NEG-006  | 退出码: 2 (期望 2) | 耗时: 0.061s | 载荷长度截断不匹配 (Truncated / Malformed Payload Length)
 [PASS] CAS-NEG-007  | 退出码: 1 (期望 1) | 耗时: 0.362s | 帧尾 CRC-16 损坏 (Corrupted CRC-16)
 [PASS] CAS-NEG-008  | 退出码: 2 (期望 2) | 耗时: 0.061s | 终端从机回发标准拒绝报文 (CMD_NACK with Error Code)
 [PASS] CAS-NEG-009  | 退出码: 0 (期望 0) | 耗时: 0.061s | 信道夹杂 DWIN 屏幕噪声抗扰 (Inter-packet Noise Resilience)

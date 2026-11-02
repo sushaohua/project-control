@@ -22,7 +22,7 @@
       "name": "project-control",
       "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
       "ref": "refs/heads/main",
-      "commit": "1a5d85e7b56407832ad31df7dfbd5e3412ba30a7"
+      "commit": "491b9540b358603bbd062732b6155d754ad23dc9"
     }
   ]
 }

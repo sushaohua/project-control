@@ -1,30 +1,44 @@
-You are the independent Codex QA Reviewer performing the server sandbox, physical HIL & protocol alignment verification audit (Run QA-02, re-verification) for ISSUE-20261102-05 under:
+You are the independent Codex QA Reviewer performing the server sandbox, physical HIL & protocol alignment verification audit (Run QA-03) for ISSUE-20261102-05 under:
 - project-control/.agents/rules/codex_qa_review.md
 - project-control/.agents/rules/c_cpp_coding_standard.md
 - project-control/.agents/rules/delivery_and_coord_gate.md
 - project-control/docs/specs/minimcproto_ack_nack_contract_alignment_matrix_20261102.md
 - project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md (Rev 2.0.3 §5.1, §5.2)
 
-Reconciliation of Items from Run QA-01:
-1. Session Identity Decoupling:
-   - Report author session: 248f3ee5-1fcb-4068-890f-33bd68201740 (QA Independent Verification Reviewer subagent)
-   - Initial independent Codex review session: 01a19c65-bf95-7d53-976f-cdcccf81d766 (archived in sessions/codex_session_run1.jsonl and sessions/session_result_run1.txt)
-   - Current independent Codex review session: Run QA-02.
-2. Physical HIL Capture & Timestamps Reconciled:
-   - All physical capture records across hil_execution.json, uart_frames.log, and hil_physical_evidence.md are now 100% byte-for-byte and timestamp-for-timestamp identical:
-     * HIL-NEG-01: TX 55 AA 01 02 05 7E 04 00 2A 00 00 00 94 4F (CRC16: 0x4F94, TX Time: 2026-11-02 21:00:44.072), RX 55 AA 02 01 06 06 04 00 2A 00 03 00 04 2A 00 86 19 (17 bytes, CmdID 0x06, Len 0x0003, ErrCode 0x04, ExpectedSeq 42, CRC16: 0x1986).
-     * HIL-NEG-02: TX 55 AA 01 03 05 7E 04 00 3B 00 00 00 A4 C9 (CRC16: 0xC9A4, TX Time: 2026-11-02 21:00:44.129), RX 55 AA 03 01 06 06 03 04 3B 00 03 00 04 3B 00 7B 5D (17 bytes, CmdID 0x06, Len 0x0003, ErrCode 0x04, ExpectedSeq 59, CRC16: 0x5D7B, hop=3, route=0x04).
-3. Candidate Commits & Source Mapping:
-   - soc-ap: 427dd6d82caceebb7b4642e78f1dbfa96ff5fc84
-   - mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
-   - test_harness: dccf2de1ec680cbf7456c76d70970b0338710e8e
-   - project-control: e720e33a5da1f13b1945f8b9e693170ba37bcba4 (tracks all reconciled evidence and reports)
-4. Docker Sandbox Execution:
-   - Container ID: 943f74dc2f29 (inspect ID: 943f74dc2f29b01868cc63da5280ab7b685183966ba4c4d239519913aa38af58)
-   - Evidence path: project-control/docs/evidence/issue_20261102_05/server_qa/server_qa.json (SHA256: 135b6591992c447b6a2773580bbc4674d3929239e94dd925390bb485356e508e)
-   - Verdict: project-control/docs/evidence/issue_20261102_05/server_qa/server_verdict.json (verdict: "PASSED", exit code: 0)
-5. QA Review Report:
-   - Path: project-control/docs/evidence/issue_20261102_05/qa_review_report.md
-   - SHA256: 59d81f10e6b7ef4f2f4a91c65ff0cdfb6a1caccdcf03ed195d0fe8eaf5b652aa
+Audit Objectives and Verification Bundle for Run QA-03:
+1. Protocol Alignment Contract:
+   Master Spec Rev 2.0.3 §5.1 & §5.2 mandates CMD_ACK = 0x00 (4B payload) and CMD_NACK = 0x06 (3B payload: error_code uint8, expected_seq uint16 LE).
+   Derived ICD ap_mc_th_readonly_cascade_icd.md L202 is corrected to 0x06 (3B payload).
+2. Four-Repository Server Pinned Candidate Commits:
+   - soc-ap: 427dd6d82caceebb7b4642e78f1dbfa96ff5fc84 (refs/heads/main)
+   - mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41 (refs/heads/feat/soc-debug)
+   - test_harness: dccf2de1ec680cbf7456c76d70970b0338710e8e (refs/heads/main)
+   - project-control: 491b9540b358603bbd062732b6155d754ad23dc9 (refs/heads/main)
+   (All four commits are fetched directly from GitLab server into Docker sandbox, verified identically across server_lock.json, checkout.log, and local git object databases).
+3. Server Docker Sandbox Execution & Objective Evidence:
+   - Container ID: a9f8a3ec3419 (inspect ID: a9f8a3ec3419...)
+   - Evidence path: project-control/docs/evidence/issue_20261102_05/server_qa/server_qa.json (SHA256: e83f5e9dc3e0c4a08be93930724f87d5bb3082654c34c3e090a5f7dc4232cc04)
+   - Verdict: project-control/docs/evidence/issue_20261102_05/server_qa/server_verdict.json (build_count: 2, test_count: 6, verdict: "PASSED", exit code: 0)
+   - Tests executed inside sandbox include:
+     * ctest: 2/2 tests passed (host_runtime_smoke, cascade_query_cases)
+     * check_layout: ALL_LAYOUT_AND_CONVERSION_CHECKS_PASSED
+     * reference_vectors.py: 64/64 cases passed
+     * run_query_cases.py --check-vectors: 14/14 cases passed
+     * run_query_cases.py --test-host: 14/14 cases passed (including CAS-NEG-008 17B NACK validation with exit code 2)
+     * check_opcode_alignment.py --strict: 100% matched across all repos
+4. Physical Twin AT32 HIL Execution:
+   - Physical report: project-control/docs/evidence/issue_20261102_05/hil_physical_evidence.md
+   - Hardware: MC AT32F435 (UID 053023904C96C0000D819709), TH AT32F423 (UID 053173C58023C000127C0707)
+   - Serial port: /dev/ttyUSB0
+   - All physical capture records across hil_execution.json, uart_frames.log, and hil_physical_evidence.md are 100% byte-for-byte and timestamp-for-timestamp identical:
+     * HIL-POS-01 ~ 04: Normal single-hop / dual-hop GET_VERSION and PING/PONG links 100% operational
+     * HIL-NEG-01 (MC): TX 55 AA 01 02 05 7E 04 00 2A 00 00 00 94 4F (CRC16: 0x4F94, Time: 21:00:44.072) -> RX 55 AA 02 01 06 06 04 00 2A 00 03 00 04 2A 00 86 19 (17B, Opcode 0x06, Len 0x0003, ErrCode 0x04, ExpectedSeq 42, CRC 0x1986)
+     * HIL-NEG-02 (TH dual-hop): TX 55 AA 01 03 05 7E 04 00 3B 00 00 00 A4 C9 (CRC16: 0xC9A4, Time: 21:00:44.129) -> RX 55 AA 03 01 06 06 03 04 3B 00 03 00 04 3B 00 7B 5D (17B, Opcode 0x06, Len 0x0003, ErrCode 0x04, ExpectedSeq 59, CRC 0x5D7B, hop=3, route=0x04)
+     * Host soc-ap binary correctly parses NACK payload, outputs structured error log, exits with exit code 2.
+5. QA Review Report & Session Binding:
+   - Report Path: project-control/docs/evidence/issue_20261102_05/qa_review_report.md
+   - SHA256: f76d3bae4472d4e1f202a0e7ed63c7f2d511f71d6b1c98883ec4fa15f76a41b5
+   - Author session: 248f3ee5-1fcb-4068-890f-33bd68201740 (QA Reviewer subagent)
+   - Decision in report: null (pending this independent Codex review)
 
-Please audit the reconciled evidence bundle and render your independent decision (APPROVED, REJECTED, or BLOCKED).
+Please audit the evidence bundle and render your independent decision (APPROVED, REJECTED, or BLOCKED).

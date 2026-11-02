@@ -18,24 +18,24 @@ non_author_review_status: passed
 task_id: TASK-VERIFY-01
 task_revision: ISSUE-20261102-05
 reviewed_artifact_version:
-  project_control_commit: e720e338783968bda5b0a4280082160d05172e57
+  project_control_commit: 491b9540b358603bbd062732b6155d754ad23dc9
   mcu_p3_commit: e051111e68dd61896ed42c0961153b167b8bca41
   soc_ap_commit: 427dd6d82caceebb7b4642e78f1dbfa96ff5fc84
   test_harness_commit: dccf2de1ec680cbf7456c76d70970b0338710e8e
 server_qa:
   path: project-control/docs/evidence/issue_20261102_05/server_qa/server_qa.json
-  sha256: 135b6591992c447b6a2773580bbc4674d3929239e94dd925390bb485356e508e
+  sha256: e83f5e9dc3e0c4a08be93930724f87d5bb3082654c34c3e090a5f7dc4232cc04
 reviewed_artifacts:
   - path: project-control/docs/evidence/issue_20261102_05/server_qa/server_qa.json
-    sha256: 135b6591992c447b6a2773580bbc4674d3929239e94dd925390bb485356e508e
+    sha256: e83f5e9dc3e0c4a08be93930724f87d5bb3082654c34c3e090a5f7dc4232cc04
   - path: project-control/docs/evidence/issue_20261102_05/server_qa/server_verdict.json
-    sha256: 43c06ae390fc93135dcae88a206370e72698dd2164a7d6acf48fb4abe74879c1
+    sha256: 99ec0646e9392dda3bed8dabb4a190b727073e6cdfe1f6fe3fb7bd9067078a12
   - path: project-control/docs/evidence/issue_20261102_05/server_qa/server_lock.json
-    sha256: df042ace4b53638e3ce4c948f60e4650da3ec4496da75ffe509e63d1c2b9ce47
+    sha256: b6f8ca8126757537faaf49a157b396f17f1028826c5a2329d01dcc6ede9c62ff
   - path: project-control/docs/evidence/issue_20261102_05/server_qa/checkout.log
-    sha256: cb45843aa5ddc343043215a8d12c30cdc569cd624c73a46a8058f2ef2caf4d58
+    sha256: 2e8690e129ed0706085c88eef69e8137f14441f814191c8c11faf1b62e510166
   - path: project-control/docs/evidence/issue_20261102_05/server_qa/runtime.log
-    sha256: ceedfb1043c9cf63e7061b9bd733b33ca44dc0a04610e673ed6d8f3b7ed5260a
+    sha256: 5a8b170593c4ce866044259dbf39c4579fc4b1fde1ac3bb30d38dc8bab2d6ae0
   - path: project-control/docs/evidence/issue_20261102_05/hil_physical_evidence.md
     sha256: 9f3902357d3deccbf349350a12cd453e11d77cc5fabd6111f4182bb89d4679ca
   - path: project-control/docs/evidence/issue_20261102_05/binaries/fw_mc.bin

@@ -1,10 +1,12 @@
-## Decision: **BLOCKED**
+## Decision: **BLOCKED / INCONCLUSIVE**
 
-The ACK/NACK implementation evidence and reconciled HIL-NEG frames are consistent with the stated contract. The report, server run, and HIL captures also contain evidence of successful software and physical checks.
+I verified the ACK/NACK contract against the master spec and alignment matrix: `CMD_ACK` is `0x00` with a 4-byte payload, and `CMD_NACK` is `0x06` with a 3-byte payload. The cited `server_qa.json` hash also matches the supplied SHA256, and its verdict records 2 builds and 6 tests passed.
 
-I can’t verify this as one bound Run QA-02 candidate:
+The evidence bundle has material identity and consistency gaps that prevent approval:
 
-- The supplied `project-control` candidate, `e720e33a5da1f13b1945f8b9e693170ba37bcba4`, is absent from the local Git object database. The checkout is `e720e338783968bda5b0a4280082160d05172e57`; the server lock instead pins `1a5d85e7b56407832ad31df7dfbd5e3412ba30a7`.
-- The report records the earlier reviewer session `01a19c65-bf95-7d53-976f-cdcccf81d766` and is marked `APPROVED`; it does not bind this Run QA-02 decision to the bundle.
+- The report names project-control candidate `e720e338…`, while the server lock and checkout log identify `491b9540…`.
+- The report cites sandbox run `run_210633` and container `943f74dc…`; the verdict and runtime evidence identify `run_213213` and container `ead6341b…`. The user-supplied container ID also differs.
+- The report’s reviewer session fields are null or point to the report author’s session, so this bundle does not establish the required independent review session binding.
+- The claimed byte-for-byte/time-for-time HIL consistency is not established by the provided records: `hil_execution.json` and `uart_frames.log` show the physical capture beginning at `21:00:43.840`, while the supplied negative-case detail cites different timing. The HIL record also needs an auditable per-node mapping from locked source commit through firmware hash and deployment evidence to the boards.
 
-The HIL frame reconciliation does not resolve these candidate and review-session binding gaps. Keep the run pending until the candidate identity is corrected and the QA-02 decision is recorded against that exact candidate and evidence.
+These are evidence provenance and binding gaps, so I’m not treating them as code defects or issuing `REJECTED`. The report’s on-disk SHA256 matches the supplied hash, but I could not record this decision in the workspace: this session has read-only filesystem access. The report should remain pending until the mismatched records and required bindings are reconciled in a new review run.
