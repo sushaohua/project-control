@@ -43,6 +43,8 @@ child_tasks:
 - AUTO-02
 - TWIN-30
 - TWIN-35
+- TWIN-40
+- TWIN-42
 planning_relations:
 - MS-06
 - MS-08

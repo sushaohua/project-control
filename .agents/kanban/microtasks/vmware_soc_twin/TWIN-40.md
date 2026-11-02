@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: integration
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: Review
 blocked: false
 planning_status: planned
 owner: INTEGRATOR

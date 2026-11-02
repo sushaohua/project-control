@@ -40,6 +40,7 @@ child_tasks:
 - V2-P02C
 - MCQ-0105
 - TWIN-01
+- TWIN-41
 planning_relations: []
 related_tasks:
 - MS-12
