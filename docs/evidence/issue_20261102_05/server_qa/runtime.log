@@ -1,0 +1,154 @@
+=== Docker Container Inspect: 943f74dc2f29 ===
+{
+  "id": "943f74dc2f29b01868cc63da5280ab7b685183966ba4c4d239519913aa38af58",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-02T13:06:50.075951283Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/ISSUE-20261102-05_run_210633_20261102_130633",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) cmake -B /tmp/soc_build -S . && make -C /tmp/soc_build -> 0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter
+-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/soc_build
+make: Entering directory '/tmp/soc_build'
+make[1]: Entering directory '/tmp/soc_build'
+make[2]: Entering directory '/tmp/soc_build'
+make[2]: Leaving directory '/tmp/soc_build'
+make[2]: Entering directory '/tmp/soc_build'
+[ 11%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o
+[ 22%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o
+[ 33%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o
+[ 44%] Linking CXX static library libminimcproto.a
+make[2]: Leaving directory '/tmp/soc_build'
+[ 44%] Built target minimcproto
+make[2]: Entering directory '/tmp/soc_build'
+make[2]: Leaving directory '/tmp/soc_build'
+make[2]: Entering directory '/tmp/soc_build'
+[ 55%] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o
+[ 66%] Building CXX object CMakeFiles/soc-ap.dir/core/host/query.cpp.o
+[ 77%] Linking CXX executable bin/soc-ap
+make[2]: Leaving directory '/tmp/soc_build'
+[ 77%] Built target soc-ap
+make[2]: Entering directory '/tmp/soc_build'
+make[2]: Leaving directory '/tmp/soc_build'
+make[2]: Entering directory '/tmp/soc_build'
+[ 88%] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o
+[100%] Linking CXX executable bin/minimc-probe
+make[2]: Leaving directory '/tmp/soc_build'
+[100%] Built target minimc-probe
+make[1]: Leaving directory '/tmp/soc_build'
+make: Leaving directory '/tmp/soc_build'
+
+
+$ (soc-ap) ctest --test-dir /tmp/soc_build --output-on-failure -> 0
+Test project /tmp/soc_build
+    Start 1: host_runtime_smoke
+1/2 Test #1: host_runtime_smoke ...............   Passed    0.11 sec
+    Start 2: cascade_query_cases
+2/2 Test #2: cascade_query_cases ..............   Passed    2.32 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   2.43 sec
+
+
+$ (mcu-p3) python3 tools/version_tool.py --ini motion-controller-mcu/version.ini --mode dev --gen-header /tmp/version_mc_autogen.h && python3 tools/version_tool.py --ini color-engine-mcu/version.ini --mode dev --gen-header /tmp/version_th_autogen.h -> 0
+[VERSION][DEV] 生成 16bit 时间特征码: 0xBEBF (V2.0.1-BEBF 1102)
+[VERSION] 生成头文件: /tmp/version_mc_autogen.h
+[VERSION][DEV] 生成 16bit 时间特征码: 0xBE4E (V2.0.1-BE4E 1102)
+[VERSION] 生成头文件: /tmp/version_th_autogen.h
+
+
+$ (test_harness) gcc -Wall -Wextra -Werror -std=c11 -I ../soc-ap/contracts/twin static_checks/twin/check_layout.c -o /tmp/check_layout && /tmp/check_layout -> 0
+ALL_LAYOUT_AND_CONVERSION_CHECKS_PASSED
+
+
+$ (test_harness) python3 static_checks/minimcproto/reference_vectors.py --vectors test_cases/minimcproto/vectors.json --check -> 0
+{
+  "schema_version": "minimcproto-vectors-v2.0.3-r1",
+  "protocol_sha256": "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54",
+  "golden_frame_count": 5,
+  "total_case_count": 64,
+  "group_counts": {
+    "stub": 4,
+    "crc": 9,
+    "encode": 8,
+    "decode_bounds": 6,
+    "decode": 12,
+    "stream_sync": 5,
+    "stream_header": 5,
+    "stream_payload": 5,
+    "timeout": 6,
+    "recovery": 4
+  },
+  "errors": [],
+  "mode": "check",
+  "vectors_path": "test_cases/minimcproto/vectors.json",
+  "vectors_sha256": "6d46bd05a4133e678611abe2ab1cb88db190c394f23151900009c0c077c8d995",
+  "exit_code": 0
+}
+
+
+$ (test_harness) python3 static_checks/cascade/run_query_cases.py --cases test_cases/cascade/query_cases.json --check-vectors -> 0
+[OK] 黄金用例集静态校验通过: test_cases/cascade/query_cases.json (含 4 正例, 10 负例)
+[DONE] 黄金向量 CRC-16/CCITT-FALSE 全量比对无误。
+
+
+$ (test_harness) python3 static_checks/cascade/run_query_cases.py --cases test_cases/cascade/query_cases.json --test-host /tmp/soc_build/bin/soc-ap -> 0
+[OK] 黄金用例集静态校验通过: test_cases/cascade/query_cases.json (含 4 正例, 10 负例)
+===========================================================================
+       执行 AP 宿主程序黑盒 PTY 级联查询测试: /tmp/soc_build/bin/soc-ap
+===========================================================================
+[PASS] CAS-POS-001  | 退出码: 0 (期望 0) | 耗时: 0.061s | AP 直接查询 MC 固件版本 (单跳 GET_VERSION)
+[PASS] CAS-POS-002  | 退出码: 0 (期望 0) | 耗时: 0.062s | AP 经 MC 级联查询 TH 固件版本 (双跳 GET_VERSION 原生透明路由)
+[PASS] CAS-POS-003  | 退出码: 0 (期望 0) | 耗时: 0.062s | AP 向 MC 发送心跳探活与时延测量 (单跳 PING/PONG)
+[PASS] CAS-POS-004  | 退出码: 0 (期望 0) | 耗时: 0.062s | AP 经 MC 级联向 TH 发送心跳探活 (双跳 PING/PONG 原生透明路由)
+[PASS] CAS-NEG-001  | 退出码: 1 (期望 1) | 耗时: 0.352s | 信道持续静默无响应 (Silence / Timeout)
+[PASS] CAS-NEG-002  | 退出码: 1 (期望 1) | 耗时: 0.362s | 信道回显原请求报文 (Echo / Reflection Loop)
+[PASS] CAS-NEG-003  | 退出码: 1 (期望 1) | 耗时: 0.362s | 响应源节点错位 (Target Mismatch: 查 TH 却收到 MC 回包)
+[PASS] CAS-NEG-004  | 退出码: 1 (期望 1) | 耗时: 0.362s | 流水号错位 (Stale / Corrupted Sequence Number)
+[PASS] CAS-NEG-005  | 退出码: 2 (期望 2) | 耗时: 0.062s | 操作码定义冲突 (Command Opcode Conflict: 收到 0x03 魔数或非法应答)
+[PASS] CAS-NEG-006  | 退出码: 2 (期望 2) | 耗时: 0.062s | 载荷长度截断不匹配 (Truncated / Malformed Payload Length)
+[PASS] CAS-NEG-007  | 退出码: 1 (期望 1) | 耗时: 0.362s | 帧尾 CRC-16 损坏 (Corrupted CRC-16)
+[PASS] CAS-NEG-008  | 退出码: 2 (期望 2) | 耗时: 0.061s | 终端从机回发标准拒绝报文 (CMD_NACK with Error Code)
+[PASS] CAS-NEG-009  | 退出码: 0 (期望 0) | 耗时: 0.061s | 信道夹杂 DWIN 屏幕噪声抗扰 (Inter-packet Noise Resilience)
+[PASS] CAS-NEG-010  | 退出码: 4 (期望 4) | 耗时: --s | 命令行非法参数拒绝 (CLI Argument Defense)
+---------------------------------------------------------------------------
+测试汇总: 总用例 14, 通过 14, 失败 0
+===========================================================================
+
+
+$ (test_harness) python3 static_checks/minimcproto/check_opcode_alignment.py --strict -> 0
+========================================================================================
+           MiniMCProto CMD_NACK (0x06) 防漂移契约对齐审计报告
+========================================================================================
+#   | 目标资产 / 文件路径                                      | 期望值          | 状态        
+----------------------------------------------------------------------------------------
+1   | soc-ap/core/host/query.h                         | 0x06         | [MATCH]
+2   | soc-ap/contracts/twin/telemetry_types.h          | 0x06U        | [MATCH]
+3   | ...ion-controller-mcu/project/inc/minimc_proto.h | 0x06U        | [MATCH]
+4   | ...color-engine-mcu/io_toggle/inc/minimc_proto.h | 0x06U        | [MATCH]
+5   | ...s/interfaces/ap_mc_th_readonly_cascade_icd.md | 0x06, len=3  | [MATCH]
+6   | test_harness/test_cases/cascade/query_cases.json | 17B NACK (0x06, CRC-OK) | [MATCH]
+----------------------------------------------------------------------------------------
+[PASS] 全端契约完全对齐：CMD_NACK (0x06) 与载荷长度规范全量吻合！
+
+

@@ -1,0 +1,30 @@
+You are the independent Codex QA Reviewer performing the server sandbox, physical HIL & protocol alignment verification audit (Run QA-02, re-verification) for ISSUE-20261102-05 under:
+- project-control/.agents/rules/codex_qa_review.md
+- project-control/.agents/rules/c_cpp_coding_standard.md
+- project-control/.agents/rules/delivery_and_coord_gate.md
+- project-control/docs/specs/minimcproto_ack_nack_contract_alignment_matrix_20261102.md
+- project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md (Rev 2.0.3 §5.1, §5.2)
+
+Reconciliation of Items from Run QA-01:
+1. Session Identity Decoupling:
+   - Report author session: 248f3ee5-1fcb-4068-890f-33bd68201740 (QA Independent Verification Reviewer subagent)
+   - Initial independent Codex review session: 01a19c65-bf95-7d53-976f-cdcccf81d766 (archived in sessions/codex_session_run1.jsonl and sessions/session_result_run1.txt)
+   - Current independent Codex review session: Run QA-02.
+2. Physical HIL Capture & Timestamps Reconciled:
+   - All physical capture records across hil_execution.json, uart_frames.log, and hil_physical_evidence.md are now 100% byte-for-byte and timestamp-for-timestamp identical:
+     * HIL-NEG-01: TX 55 AA 01 02 05 7E 04 00 2A 00 00 00 94 4F (CRC16: 0x4F94, TX Time: 2026-11-02 21:00:44.072), RX 55 AA 02 01 06 06 04 00 2A 00 03 00 04 2A 00 86 19 (17 bytes, CmdID 0x06, Len 0x0003, ErrCode 0x04, ExpectedSeq 42, CRC16: 0x1986).
+     * HIL-NEG-02: TX 55 AA 01 03 05 7E 04 00 3B 00 00 00 A4 C9 (CRC16: 0xC9A4, TX Time: 2026-11-02 21:00:44.129), RX 55 AA 03 01 06 06 03 04 3B 00 03 00 04 3B 00 7B 5D (17 bytes, CmdID 0x06, Len 0x0003, ErrCode 0x04, ExpectedSeq 59, CRC16: 0x5D7B, hop=3, route=0x04).
+3. Candidate Commits & Source Mapping:
+   - soc-ap: 427dd6d82caceebb7b4642e78f1dbfa96ff5fc84
+   - mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
+   - test_harness: dccf2de1ec680cbf7456c76d70970b0338710e8e
+   - project-control: e720e33a5da1f13b1945f8b9e693170ba37bcba4 (tracks all reconciled evidence and reports)
+4. Docker Sandbox Execution:
+   - Container ID: 943f74dc2f29 (inspect ID: 943f74dc2f29b01868cc63da5280ab7b685183966ba4c4d239519913aa38af58)
+   - Evidence path: project-control/docs/evidence/issue_20261102_05/server_qa/server_qa.json (SHA256: 135b6591992c447b6a2773580bbc4674d3929239e94dd925390bb485356e508e)
+   - Verdict: project-control/docs/evidence/issue_20261102_05/server_qa/server_verdict.json (verdict: "PASSED", exit code: 0)
+5. QA Review Report:
+   - Path: project-control/docs/evidence/issue_20261102_05/qa_review_report.md
+   - SHA256: 59d81f10e6b7ef4f2f4a91c65ff0cdfb6a1caccdcf03ed195d0fe8eaf5b652aa
+
+Please audit the reconciled evidence bundle and render your independent decision (APPROVED, REJECTED, or BLOCKED).

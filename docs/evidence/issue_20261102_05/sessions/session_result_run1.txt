@@ -1,0 +1,11 @@
+## Decision: **BLOCKED**
+
+The ACK/NACK contract itself matches the cited master spec: `CMD_ACK = 0x00` with a 4-byte payload, and `CMD_NACK = 0x06` with a 3-byte payload. The pinned commits, sandbox verdict, and report checksum also match the supplied values.
+
+I can’t approve the end-to-end evidence bundle because its provenance has unresolved inconsistencies:
+
+- The report identifies reviewer session `248f3ee5-1fcb-4068-890f-33bd68201740`, but the archived `sessions/codex_session.jsonl` starts with a different thread ID, `01a19c65-bf95-7d53-976f-cdcccf81d766`. The archive does not establish that the claimed review session produced the report.
+- The physical HIL records disagree. For HIL-NEG-01, `hil_execution.json` records TX `...944F`, while `uart_frames.log` and the report give `...3CF7`. The first capture timestamps also differ between those artifacts. These differences leave the physical capture chain unverified.
+- The report claims full-source-to-candidate review, but the available bundle does not establish that the reviewed source snapshot matches the exact server-fetched commits.
+
+The server test results support the software checks, but they do not resolve these review-session and physical-evidence gaps. Per the QA and delivery gates, keep this candidate pending until the session binding and HIL records are reconciled and independently verifiable.
