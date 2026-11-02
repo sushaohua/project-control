@@ -6,19 +6,19 @@ plan_revision: vmware-soc-twin-20261029
 task_kind: integration
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Done
 blocked: false
-planning_status: in_progress
-owner: session-integrator-twin-35
+planning_status: completed
+owner: 6f94fd50-14cc-4b73-8837-03d6b03d5707
 proposed_owner: INTEGRATOR
 executor:
   role: INTEGRATOR
-  agent_id: session-integrator-twin-35
+  agent_id: 6f94fd50-14cc-4b73-8837-03d6b03d5707
   run_id: run_02
 reviewer:
 - ARCH
 - QA
-verifier: null
+verifier: 00c153ce-1d55-49b4-a3aa-7df50e168c29
 integrator: INTEGRATOR
 review_assignments:
   reviewer_sessions:
@@ -26,26 +26,26 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: session-qa-hil-twin-35
-    session: session-qa-hil-twin-35
-    session_evidence: docs/evidence/twin/TWIN-35/runs/run_02/qa_session.jsonl
-    decision: PENDING
+    session: 01a19ac9-79d4-7642-9947-2922a15c13f7
+    session_evidence: docs/evidence/twin/TWIN-35/runs/run_02/sessions/codex_session_01a19ac6-cb27-7e10-9be9-555256c71011.jsonl
+    decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    artifact_version: soc-ap=12a3f9a84c21a5ce70ef264bee041249c60240a0
+    evidence: docs/evidence/twin/TWIN-35/runs/run_02/qa_review_report.md
+    report_sha256: 770c1a64650930716da6472f07ec56efad96b0effce5eacdc9f8d6d828929fb2
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: session-arch-review-35
-    session: session-arch-review-35
-    session_evidence: docs/evidence/twin/TWIN-35/runs/run_02/arch_session.jsonl
-    decision: PENDING
+    session: 245429ef-cba5-4ff3-8c9f-a473a4f79fc1
+    session_evidence: docs/evidence/twin/TWIN-35/runs/arch_01/arch_review_report.md
+    decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: null
-    evidence: null
-    report_sha256: null
-  verifier_session: null
-  integrator_session: session-integrator-twin-35
+    artifact_version: soc-ap=12a3f9a84c21a5ce70ef264bee041249c60240a0
+    evidence: docs/evidence/twin/TWIN-35/runs/arch_01/arch_review_report.md
+    report_sha256: 95bf7ee910b32e0c76b5d89ecee5bf15ebabfb43df6ccaaf4bf636e0ed4905de
+  verifier_session: 00c153ce-1d55-49b4-a3aa-7df50e168c29
+  integrator_session: 6f94fd50-14cc-4b73-8837-03d6b03d5707
 primary_work_package: TASK-010
 related_work_packages:
 - TASK-009
