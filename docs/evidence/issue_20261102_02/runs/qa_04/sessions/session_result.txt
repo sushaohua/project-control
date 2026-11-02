@@ -1,0 +1,11 @@
+## Independent decision: **BLOCKED / INCONCLUSIVE**
+
+The Docker records support the reported sandbox run: the verdict and run manifest hashes match their files, the manifest records three builds and four tests, and `checkout.log` shows fetches of the four locked commits. The browser log and cited OOBE screenshot hashes also match. These checks establish artifact consistency; they do not establish all of the claimed firmware and physical HIL provenance.
+
+The HIL evidence does not bind the flashed firmware to the locked server candidate. `probe_flash.log` gives binary hashes and flash commands from local workspace build directories, but the run does not include the firmware binaries, their hashes in a candidate-bound build record, or evidence that those builds used the locked source snapshot. The reported wire commit values are static constants in the firmware, so they cannot establish which source commit produced the flashed binaries. This leaves the required source-to-binary-to-board identity unverified under HW-G7.
+
+There is also a protocol accounting discrepancy to resolve: the TH RX frame in `uart_frames.log` has header bytes `03 04` at the hop and route-control offsets, while the report describes the response as `HOP=0x03, RCTRL=0x04` in the raw log but elsewhere describes that path’s route control as zero. The report should reconcile this against the protocol contract.
+
+The session record does not provide the independently verifiable session UUID and execution audit required by the rules, and I found no separate non-author review evidence for the report. The report’s SHA256 matches its sidecar, but that alone does not satisfy those review requirements.
+
+**Release condition:** provide candidate-bound firmware build and binary provenance, reconcile the TH frame interpretation, and record the actual independent reviewer session and non-author report review. The sandbox and browser results can be retained as supported evidence; the full physical HIL acceptance remains pending.

@@ -1,0 +1,13 @@
+## BLOCKED
+
+I verified that the three binary files and `build_firmware.log` match the SHA256 values supplied in your request. The report and named artifacts are present.
+
+I can’t independently verify this run’s release claims from the available evidence:
+
+- The checked-in `server_verdict.json`, `server_qa.json`, runtime, and checkout records do not establish the required Docker inspect details and same-candidate binding described in the QA policy.
+- The browser log records test output, but does not independently establish the live browser run or link the screenshots to that execution.
+- `uart_frames.log` contains the reported `03 04` bytes, consistent with the cited routing interpretation, but that alone does not establish physical hardware provenance or a valid end-to-end response.
+- The session UUID and ARCH reviewer ID are stated in the materials; I can’t verify that they correspond to an independent Codex session and non-author review.
+- The report’s self-declared `APPROVED` verdict is not independent review evidence.
+
+This decision is **BLOCKED** because the evidence does not let me verify the required runtime, candidate, physical HIL, and review bindings. The requested QA-05 report is [qa_review_report.md](/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/issue_20261102_02/runs/qa_05/qa_review_report.md).

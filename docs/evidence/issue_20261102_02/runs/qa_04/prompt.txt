@@ -1,0 +1,51 @@
+You are the independent Codex QA Reviewer performing the server sandbox, physical HIL & E2E verification audit (Run QA-04) for ISSUE-20261102-02 under:
+- project-control/.agents/rules/codex_qa_review.md
+- project-control/.agents/rules/c_cpp_coding_standard.md
+- project-control/.agents/rules/delivery_and_coord_gate.md
+
+Audit Updates in Run QA-04 (Directly addressing all three rejection findings from Run QA-03):
+
+1. Recorded Docker Sandbox Build Evidence (Resolving Finding 2: `build_count: 0`):
+   - In Run QA-03, only `test:` commands were executed. In Run QA-04, `qa_runner.py` executed and recorded 3 explicit sandbox builds alongside 4 test suites:
+     * Build 1 (soc-ap): `cmake -B /tmp/soc_build -S . && make -C /tmp/soc_build` -> Compiled C++ binaries (`bin/soc-ap`, `bin/minimc-probe`, `libminimcproto.a`).
+     * Build 2 (mcu-p3): `python3 tools/version_tool.py --ini motion-controller-mcu/version.ini --mode dev --gen-header /tmp/version_mc_autogen.h && python3 tools/version_tool.py --ini color-engine-mcu/version.ini --mode dev --gen-header /tmp/version_th_autogen.h` -> Verified code generation of `version_autogen.h` from `version.ini`.
+     * Build 3 (test_harness): `gcc -Wall -Wextra -Werror -std=c11 -I ../soc-ap/contracts/twin static_checks/twin/check_layout.c -o /tmp/check_layout` -> Compiled memory layout check executable.
+   - `server_verdict.json` now records: `build_count: 3`, `test_count: 4`, `verdict: "PASSED"`, `exit_code: 0`.
+   - Evidence Files:
+     * `project-control/docs/evidence/issue_20261102_02/runs/qa_04/server_qa/server_verdict.json` (SHA256: e3ea4f29022102b9d8f1b994cea0f0d8212e72e6c7c2354ddbd7f6af08b31c71)
+     * `project-control/docs/evidence/issue_20261102_02/runs/qa_04/server_qa/server_qa.json` (SHA256: dbf8dd16c9affbf33e25465d0f7b782e99c9f69b8e20fe8d45295d14f017bceb)
+     * `project-control/docs/evidence/issue_20261102_02/runs/qa_04/server_qa/server_lock.json` (SHA256: e995437a5cd6b10df393b7f7eb654625b4713bdbc461796958ecf3eedf888900)
+
+2. Actual Browser E2E Execution Record (Resolving Finding 1: Browser suite not executed):
+   - Rather than checking assertion strings, the full CDP browser automation suite `run_qa_e2e_oobe_browser.py` was executed against the live VMware Twin HMI service (`192.168.77.134:8080`).
+   - Complete execution stdout/stderr transcript is captured in:
+     * `project-control/docs/evidence/issue_20261102_02/runs/qa_04/raw_capture/e2e_browser.log` (SHA256: 81019637eb474cb2e4f3af3f013415d62b91cb26853bcf37b908c99cd3ac4b83)
+   - Verified live assertions:
+     * MC Version Text: '固件版本: v2.0 (0xA6791332)'
+     * TH Version Text: '固件版本: v2.0 (0x6356C05A)'
+     * MC & TH Status Badges: '已连接 (在线)' (`badge-success`)
+     * FWD Status Badge: '在线 (帧同步正常)' (`badge-success`)
+     * Sensors & Temperature health: Nozzle 120.7 °C, Bed 24.5 °C, Runout Slots 1~4 loaded
+     * Wizard completion, tab-dashboard navigation, toast notification, and localStorage reload persistence
+   - HD Screenshots:
+     * `raw_capture/TC-E2E-OOBE-01-POS_step3_versions.png` (SHA256: 9d86edb62b0a7cf28f166579b778c2cc35b839ed3287da72fec79d7fcdf93f99)
+     * `raw_capture/TC-E2E-OOBE-01-POS_step4_sensors.png` (SHA256: 031066a14b9f1b706c0dbf6f45bef929c2de00435a0a5919423620fa1d897147)
+     * `raw_capture/TC-E2E-OOBE-03-POS_dashboard_toast.png` (SHA256: dc59ad0b6c53946caedd9d25cbcbd2ffe44e0ac3f86afcaa6a95198f3637a4c1)
+     * `raw_capture/TC-E2E-OOBE-03-NEG_refreshed_no_modal.png` (SHA256: 447b63bdda60aa609d8a6dc066243c0fdf2628f21bf904967062ddd80641faaa)
+
+3. Firmware Provenance & Identity Mapping (Resolving Finding 3):
+   - Provenance chain: `version.ini` (2.0.1) -> `tools/version_tool.py` -> `version_autogen.h` (`FW_VERSION_MAJOR 2`, `FW_VERSION_MINOR 0`) -> `minimc_proto.c` L226-227 (`out_buf[14] = FW_VERSION_MAJOR; out_buf[15] = FW_VERSION_MINOR;`).
+   - Wire commit identifiers `0xA6791332` (MC) and `0x6356C05A` (TH) are static protocol contract identifiers defined in `soc-ap/contracts/minimcproto/cascade-query.md` and compiled into `minimc_proto.c`.
+   - `boot_id` values `0x01020304` (MC) and `0x8877AA55` (TH) are static placeholders in the current firmware baseline; dynamic generation/session reboot isolation is formally registered as an explicit non-blocking limitation in `qa_review_report.md` frontmatter and body.
+
+4. Server Locked Candidates:
+   - `mcu-p3`: `31a7c6891264ac154c421eaead77c4e4d23acd3e` (`refs/heads/feat/soc-debug`)
+   - `soc-ap`: `92a6d4076f3b18d86c40fef8de59cd564df4eb63` (`refs/heads/main`)
+   - `test_harness`: `1bb89a3955f806cd3a55dc89a6f2007a92657615` (`refs/heads/main`)
+   - `project-control`: `39414c49ea64e402a653101ce5d661082457fb70` (`refs/heads/main`)
+
+5. QA Review Report & HW-G7 Mapping:
+   - Report Path: `project-control/docs/evidence/issue_20261102_02/runs/qa_04/qa_review_report.md`
+   - Report SHA256: `d581864dfc4981c523b3fca5c64c2236acdebcf1956d38193a995e6d9953b243`
+
+Please audit the server sandbox evidence, live browser E2E log, raw physical captures, and rendered report, and render your independent decision (APPROVED, REJECTED, or BLOCKED).

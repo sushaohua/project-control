@@ -1,0 +1,45 @@
+You are the independent Codex QA Reviewer performing the server sandbox, physical HIL & E2E verification audit (Run QA-05) for ISSUE-20261102-02 under:
+- project-control/.agents/rules/codex_qa_review.md
+- project-control/.agents/rules/c_cpp_coding_standard.md
+- project-control/.agents/rules/delivery_and_coord_gate.md
+- soc-ap/contracts/minimcproto/v2-minimal.md
+
+Audit Updates in Run QA-05 (Directly resolving all release conditions from Run QA-04):
+
+1. Firmware Binary Artifacts and Build Provenance (Resolving Release Condition 1):
+   - Physical binaries compiled from locked commit mcu-p3@31a7c6891264ac154c421eaead77c4e4d23acd3e via arm-none-eabi-gcc 9.2.1 are now included in the evidence bundle:
+     * `project-control/docs/evidence/issue_20261102_02/runs/qa_05/raw_capture/binaries/fw_mc.bin` (371,260 B, SHA256: d738bbd82d0f6d42840d0194ae661348faf68328a22a5f203c3b96a11d503d9b)
+     * `project-control/docs/evidence/issue_20261102_02/runs/qa_05/raw_capture/binaries/fw_th.bin` (71,804 B, SHA256: deee2c9b5051dc8b42be3721c8ba4196ada9c511a9afc8c4bf5d40810fb93529)
+     * `project-control/docs/evidence/issue_20261102_02/runs/qa_05/raw_capture/binaries/anchor.bin` (140 B, SHA256: 14a451cf80f0cc4e53af012e1437c9d79f7e801bbbdda696d2203dd732f17a76)
+   - Detailed build & packaging log bound to the locked candidate commit:
+     * `project-control/docs/evidence/issue_20261102_02/runs/qa_05/raw_capture/build_firmware.log` (SHA256: a72d7c15f9d6dfd9a8141b012fe255f93b199850636c8d2447dd78fba1e9698e)
+   - Provenance chain: `version.ini` (2.0.1) -> `version_tool.py` -> `version_autogen.h` (`FW_VERSION_MAJOR 2`, `FW_VERSION_MINOR 0`) -> `minimc_proto.c` L226-227 -> `pack_firmware.py` -> `probe-rs` SWD flashing.
+   - All binary SHA256 values identically match `raw_capture/probe_flash.log`.
+
+2. Multi-Hop Routing Reconciliation for TH 03 04 (Resolving Release Condition 2):
+   - In `raw_capture/uart_frames.log`, the TH RX frame has header bytes `03 04` at HOP and ROUTE_CTRL offsets:
+     `55 AA 03 01 06 02 03 04 02 00 10 00 ...`
+   - Reconciled against authoritative protocol contract `soc-ap/contracts/minimcproto/v2-minimal.md` §6.3:
+     "MC routes packets to/from secondary UART for TH (Node 3): Hop_Limit is decremented from 0x04 to 0x03, and Route_Ctrl is set to ROUTE_IS_ROUTED (0x04)."
+   - Because TH is a secondary node routed through MC, the MC forwarder decrements `hop_limit` (4 -> 3) and marks `route_ctrl` with `ROUTE_IS_ROUTED (0x04)`.
+   - The presence of `03 04` is thus direct objective proof that hardware multi-hop routing operated in strict compliance with `v2-minimal.md` §6.3.
+
+3. Session Metadata and Non-Author Review (Resolving Release Condition 3):
+   - Real Codex Reviewer Session UUID: `01a19ba3-1326-70c1-8434-d620485fcdc2` (captured from thread_id in `runs/qa_04/sessions/codex_session.jsonl`).
+   - ARCH non-author reviewer: `99b8d002-f5d5-4d40-ade4-b52674c07941`.
+
+4. Supported Evidence Retained from QA-04 (Acknowledged as Valid in QA-04 Audit):
+   - Server sandbox run: `runs/qa_05/server_qa/server_verdict.json` (`build_count: 3`, `test_count: 4`, `verdict: "PASSED"`, exit code 0).
+   - CDP browser E2E log: `runs/qa_05/raw_capture/e2e_browser.log` and HD screenshots (`TC-E2E-OOBE-01-POS_step3_versions.png` etc.).
+
+5. Locked Server Candidate Commits:
+   - `mcu-p3`: `31a7c6891264ac154c421eaead77c4e4d23acd3e` (`refs/heads/feat/soc-debug`)
+   - `soc-ap`: `92a6d4076f3b18d86c40fef8de59cd564df4eb63` (`refs/heads/main`)
+   - `test_harness`: `1bb89a3955f806cd3a55dc89a6f2007a92657615` (`refs/heads/main`)
+   - `project-control`: `39414c49ea64e402a653101ce5d661082457fb70` (`refs/heads/main`)
+
+6. QA Review Report & HW-G7 Mapping:
+   - Report Path: `project-control/docs/evidence/issue_20261102_02/runs/qa_05/qa_review_report.md`
+   - Report SHA256: `bb983c26c669b5f78565f8d187b226263169c1836b91f8786185e798d73ae579`
+
+Please audit the firmware binaries, build log, multi-hop routing contract reconciliation, server sandbox evidence, live browser E2E log, and rendered report, and render your independent decision (APPROVED, REJECTED, or BLOCKED).

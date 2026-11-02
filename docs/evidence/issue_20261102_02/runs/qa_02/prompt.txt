@@ -1,0 +1,45 @@
+You are the independent Codex QA Reviewer performing the physical HIL & E2E verification audit (Run QA-02) for ISSUE-20261102-02 under:
+- project-control/.agents/rules/codex_qa_review.md
+- project-control/.agents/rules/c_cpp_coding_standard.md
+- project-control/.agents/rules/delivery_and_coord_gate.md
+
+Audit Updates in Run QA-02 (Resolving Previous Gaps):
+1. Previous Blocking Gaps Addressed:
+   - HW-G7 Dual MCU Firmware Identity Mapping Table completed in Section 2 of report.
+   - Raw SWD flashing execution transcript with probe serials, base addresses, and times archived in raw_capture/probe_flash.log.
+   - Raw timestamped UART TX/RX Hex frames (14B/30B MiniMCProto with CRC16 and RTT) archived in raw_capture/uart_frames.log.
+   - Session metadata in qa_review_report.md bound to actual reviewer session UUID.
+   - boot_id limitations explicitly documented per HW-G7 §6.
+
+2. In-Situ Physical Flashing & Deployment Executed:
+   - Flashing Tool: /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe
+   - Evidence File: project-control/docs/evidence/issue_20261102_02/runs/qa_02/raw_capture/probe_flash.log
+     * SHA256: 810c8185deb0fe339c40b0cf1e075fd414b1246cc16cdb37b50a5bf623fa9cdd
+   - TH: AT32F423CCT7, Probe 0483:3748:
+     * fw_th.bin (71,804 B, SHA256: deee2c9b5051dc8b42be3721c8ba4196ada9c511a9afc8c4bf5d40810fb93529) -> 0x08004000 (5.23s, verify PASS)
+     * anchor.bin (140 B, SHA256: 14a451cf80f0cc4e53af012e1437c9d79f7e801bbbdda696d2203dd732f17a76) -> 0x0803F800 (0.32s, verify --reset PASS)
+   - MC: AT32F435VGT7, Probe 0483:3748:75003800120000334C41534E
+     * fw_mc.bin (371,260 B, SHA256: d738bbd82d0f6d42840d0194ae661348faf68328a22a5f203c3b96a11d503d9b) -> 0x08020000 (29.60s, verify --reset PASS)
+
+3. Raw In-Situ UART Protocol Hex Traffic:
+   - Target Port: /dev/ttyUSB0 (115200 8N1)
+   - Evidence File: project-control/docs/evidence/issue_20261102_02/runs/qa_02/raw_capture/uart_frames.log
+     * SHA256: dcdb15cf8bc73df8c6c92af6fc4b837cb4c2794055036005850d088760297bc6
+   - Live exchanges:
+     * MC (Node 2) Get Version: 14B TX (CRC 0x684D), 30B RX (CRC 0x6CEE, valid), Monotonic RTT 7.83ms, proto: 2.0, fw: 2.0, commit: 0xA6791332
+     * TH (Node 3) Get Version: 14B TX (CRC 0x18B2), 30B RX (CRC 0x18BE, valid), Monotonic RTT 8.40ms, proto: 2.0, fw: 2.0, commit: 0x6356C05A
+
+4. Web Gateway Telemetry & Browser E2E Suite:
+   - REST Snapshot: project-control/docs/evidence/issue_20261102_02/runs/qa_02/raw_capture/temperature_snapshot.json
+     * SHA256: d3bb595cfa17df8d2d02bb8150915f30cf11b51af1c23e3d27a4233084094f12
+     * devices.mc.firmware_version == "2.0" (ONLINE), devices.th.firmware_version == "2.0" (ONLINE)
+   - Browser E2E Test: test_harness/hil/tests/test_qa_e2e_oobe_browser.py (Commit 1bb89a3955f806cd3a55dc89a6f2007a92657615)
+     * Asserts "v2.0" present, "1.0" legacy residue absent
+   - Browser Screenshot: project-control/docs/evidence/issue_20261102_02/runs/qa_02/raw_capture/TC-E2E-OOBE-01-POS_step3_versions.png
+     * SHA256: e0cd9f615bc43e150d813a54a47cc10888e1e4ab51206165a39339526d7f46d4
+
+5. QA Review Report:
+   - project-control/docs/evidence/issue_20261102_02/runs/qa_02/qa_review_report.md
+   - Report SHA256: fafb7af30c110a397b6de01d46483d7a137caf4a461cf2c6d1a58f80d8e77283
+
+Please inspect the physical in-situ evidence files, raw captures, test code, live snapshot, and rendered report, and render your independent decision (APPROVED, REJECTED, or BLOCKED).

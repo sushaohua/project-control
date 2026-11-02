@@ -1,0 +1,55 @@
+=== Docker Container Inspect: b3d64c347ac9 ===
+{
+  "id": "b3d64c347ac90c675dc97882f1947f242cfa988c49941467695a9dfa54cfbf78",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-02T08:54:08.525915312Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/ISSUE-20261102-02_run_165333_20261102_085333",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (mcu-p3) python3 -c 'import configparser; c1=configparser.ConfigParser(); c1.read("motion-controller-mcu/version.ini"); assert c1["VERSION"]["major"]=="2"; assert c1["VERSION"]["patch"]=="1"; c2=configparser.ConfigParser(); c2.read("color-engine-mcu/version.ini"); assert c2["VERSION"]["major"]=="2"; assert c2["VERSION"]["patch"]=="1"; print("Version INI verified")' -> 0
+Version INI verified
+
+
+$ (test_harness) gcc -Wall -Wextra -Werror -std=c11 -I ../soc-ap/contracts/twin static_checks/twin/check_layout.c -o /tmp/check_layout && /tmp/check_layout -> 0
+ALL_LAYOUT_AND_CONVERSION_CHECKS_PASSED
+
+
+$ (test_harness) python3 static_checks/minimcproto/reference_vectors.py --vectors test_cases/minimcproto/vectors.json --check -> 0
+{
+  "schema_version": "minimcproto-vectors-v2.0.3-r1",
+  "protocol_sha256": "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54",
+  "golden_frame_count": 5,
+  "total_case_count": 64,
+  "group_counts": {
+    "stub": 4,
+    "crc": 9,
+    "encode": 8,
+    "decode_bounds": 6,
+    "decode": 12,
+    "stream_sync": 5,
+    "stream_header": 5,
+    "stream_payload": 5,
+    "timeout": 6,
+    "recovery": 4
+  },
+  "errors": [],
+  "mode": "check",
+  "vectors_path": "test_cases/minimcproto/vectors.json",
+  "vectors_sha256": "6d46bd05a4133e678611abe2ab1cb88db190c394f23151900009c0c077c8d995",
+  "exit_code": 0
+}
+
+
+$ (test_harness) python3 -c 'with open("hil/tests/test_qa_e2e_oobe_browser.py") as f: s = f.read(); assert "assert \"v2.0\" in mc_ver" in s; assert "assert \"1.0\" not in mc_ver" in s; print("E2E assertions verified")' -> 0
+E2E assertions verified
+

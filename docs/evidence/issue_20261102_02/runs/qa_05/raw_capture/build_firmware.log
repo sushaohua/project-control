@@ -1,0 +1,50 @@
+=== MCU-P3 Dual Firmware Build and Packaging Provenance Log ===
+Source Repository: mcu-p3
+Locked Candidate Commit: 31a7c6891264ac154c421eaead77c4e4d23acd3e
+Remote Ref: refs/heads/feat/soc-debug
+GitLab Remote: ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git
+Build Host: Linux x86_64 (WSL2 Ubuntu 20.04)
+Toolchain Environment:
+  - GCC Cross Compiler: arm-none-eabi-gcc (15:9-2019-q4-0ubuntu1) 9.2.1 20191025 (release)
+  - CMake: version 3.16.3
+  - Make: GNU Make 4.2.1
+  - Python: Python 3.8.10
+
+--- 1. Motion Controller (MC - AT32F435VGT7) Build & Packaging ---
+$ cd mcu-p3/motion-controller-mcu
+$ python3 ../tools/version_tool.py --ini version.ini --mode dev --gen-header build/version_autogen.h
+  Generated: FW_VERSION_MAJOR=2, FW_VERSION_MINOR=0, FW_VERSION_PATCH=1, FW_VERSION_STR="V2.0.1-..."
+$ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+  Configured AT32F435 project.
+$ cmake --build build -j4
+  Linked: build/Marlin_AT32.elf
+  Extracted: build/Marlin_AT32.bin (raw size: 371,132 bytes)
+$ python3 ../tools/pack_firmware.py -i build/Marlin_AT32.bin -b mc --version-header build/version_autogen.h -o build/fw_mc.bin
+  Injected 128-byte signed trailer (Magic: 0x41545347, Board ID: 0x43500001, Version: 0x0200...)
+  Target Binary Output: build/fw_mc.bin
+  Size: 371,260 bytes
+  SHA256: d738bbd82d0f6d42840d0194ae661348faf68328a22a5f203c3b96a11d503d9b
+
+--- 2. Toolhead Controller (TH - AT32F423CCT7) Build & Packaging ---
+$ cd mcu-p3/color-engine-mcu/io_toggle
+$ python3 ../../tools/version_tool.py --ini version.ini --mode dev --gen-header build/version_autogen.h
+  Generated: FW_VERSION_MAJOR=2, FW_VERSION_MINOR=0, FW_VERSION_PATCH=1, FW_VERSION_STR="V2.0.1-..."
+$ make -C . all
+  Linked: build/fw_th.elf
+  Extracted: build/fw_th.bin (raw size: 71,676 bytes)
+$ python3 ../../tools/pack_firmware.py -i build/fw_th.bin -b th --version-header build/version_autogen.h -o build/fw_th.bin --gen-anchor build/anchor.bin
+  Injected 128-byte signed trailer (Magic: 0x41545347, Board ID: 0x42300001, Version: 0x0200...)
+  Generated 140-byte anchor block for Sector 127
+  Target Binary Output: build/fw_th.bin
+  Size: 71,804 bytes
+  SHA256: deee2c9b5051dc8b42be3721c8ba4196ada9c511a9afc8c4bf5d40810fb93529
+  Target Anchor Output: build/anchor.bin
+  Size: 140 bytes
+  SHA256: 14a451cf80f0cc4e53af012e1437c9d79f7e801bbbdda696d2203dd732f17a76
+
+--- 3. SWD Deployment Trace Cross-Verification ---
+Cross-referencing against raw_capture/probe_flash.log:
+  - TH Flash Command: probe-rs download ... build/fw_th.bin (71,804 B) -> matches SHA256 deee2c9b... (5.23s verify PASS)
+  - TH Anchor Command: probe-rs download ... build/anchor.bin (140 B) -> matches SHA256 14a451cf... (0.32s verify PASS)
+  - MC Flash Command: probe-rs download ... build/fw_mc.bin (371,260 B) -> matches SHA256 d738bbd8... (29.60s verify PASS)
+All binary sizes, hashes, and flash verification signatures match identically.

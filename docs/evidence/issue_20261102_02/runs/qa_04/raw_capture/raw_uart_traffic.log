@@ -1,0 +1,106 @@
+==============================================================================
+AI-SoC /dev/ttyUSB0 Physical UART TX/RX Hex Traffic Log
+Generated: 2026-11-01 21:30:25.068
+Port: /dev/ttyUSB0 (115200bps, 8N1)
+Hardware Target: Dual MCU AT32F435 MC (Node 2) + AT32F423 TH (Node 3)
+Protocol: MiniMCProto v2.0 (Header 12B, Payload Variable, CRC16 2B)
+==============================================================================
+
+------------------------------------------------------------------------------
+=== MC (Main Controller) Get Version Request (Target Node 2, Seq 0) ===
+[2026-11-01 21:30:27.166] TX FRAME (14 bytes):
+  HEX: 55 AA 01 02 05 01 04 00 00 00 00 00 F9 1E
+  SOF=0x55AA SRC=0x01 DST=0x02 FLAGS=0x05 CMD=0x01 SEQ=0 PLEN=0
+[2026-11-01 21:30:27.173] RX FRAME (30 bytes, Monotonic RTT: 7602.0 µs / 7.60 ms):
+  HEX: 55 AA 02 01 06 02 04 00 00 00 10 00 02 00 01 00 04 03 02 01 32 13 79 A6 03 00 00 00 FE D4
+  SOF=0x55AA SRC=0x02 DST=0x01 FLAGS=0x06 CMD=0x02 SEQ=0 PLEN=16
+  CRC16=0xD4FE (Calculated=0xD4FE, Valid: True)
+  PARSED VERSION PAYLOAD:
+    proto_version:    2.0
+    firmware_version: 1.0
+    boot_id:          0x01020304
+    git_commit:       0xA6791332
+    capability_flags: 0x00000003
+
+------------------------------------------------------------------------------
+=== TH (Toolhead Controller) Get Version Request (Target Node 3, Seq 2) ===
+[2026-11-01 21:30:27.173] TX FRAME (14 bytes):
+  HEX: 55 AA 01 03 05 01 04 00 02 00 00 00 B2 18
+  SOF=0x55AA SRC=0x01 DST=0x03 FLAGS=0x05 CMD=0x01 SEQ=2 PLEN=0
+[2026-11-01 21:30:27.182] RX FRAME (30 bytes, Monotonic RTT: 8178.5 µs / 8.18 ms):
+  HEX: 55 AA 03 01 06 02 03 04 02 00 10 00 02 00 01 00 55 AA 77 88 5A C0 56 63 07 00 00 00 1D 95
+  SOF=0x55AA SRC=0x03 DST=0x01 FLAGS=0x06 CMD=0x02 SEQ=2 PLEN=16
+  CRC16=0x951D (Calculated=0x951D, Valid: True)
+  PARSED VERSION PAYLOAD:
+    proto_version:    2.0
+    firmware_version: 1.0
+    boot_id:          0x8877AA55
+    git_commit:       0x6356C05A
+    capability_flags: 0x00000007
+
+------------------------------------------------------------------------------
+=== MC Ping Request (Cookie=1000) (Target Node 2, Seq 3) ===
+[2026-11-01 21:30:27.182] TX FRAME (18 bytes):
+  HEX: 55 AA 01 02 05 00 04 00 03 00 04 00 E8 03 00 00 DA 8A
+  SOF=0x55AA SRC=0x01 DST=0x02 FLAGS=0x05 CMD=0x00 SEQ=3 PLEN=4
+[2026-11-01 21:30:27.188] RX FRAME (16 bytes, Monotonic RTT: 6096.6 µs / 6.10 ms):
+  HEX: 55 AA 02 01 06 00 04 00 03 00 02 00 04 00 8F 96
+  SOF=0x55AA SRC=0x02 DST=0x01 FLAGS=0x06 CMD=0x00 SEQ=3 PLEN=2
+  CRC16=0x968F (Calculated=0x968F, Valid: True)
+  PARSED PING PAYLOAD:
+    t_originate_ms:   0
+    t_receive_ms:     0
+    planner_buf_free: 0
+    rx_fifo_units:    0
+
+------------------------------------------------------------------------------
+=== TH Ping Request (Cookie=0x12345678) (Target Node 3, Seq 1) ===
+[2026-11-01 21:30:27.188] TX FRAME (18 bytes):
+  HEX: 55 AA 01 03 05 00 04 00 01 00 04 00 78 56 34 12 9C C8
+  SOF=0x55AA SRC=0x01 DST=0x03 FLAGS=0x05 CMD=0x00 SEQ=1 PLEN=4
+[2026-11-01 21:30:27.194] RX FRAME (16 bytes, Monotonic RTT: 6606.8 µs / 6.61 ms):
+  HEX: 55 AA 03 01 06 00 03 04 01 00 02 00 04 00 64 18
+  SOF=0x55AA SRC=0x03 DST=0x01 FLAGS=0x06 CMD=0x00 SEQ=1 PLEN=2
+  CRC16=0x1864 (Calculated=0x1864, Valid: True)
+  PARSED PING PAYLOAD:
+    t_originate_ms:   0
+    t_receive_ms:     0
+    planner_buf_free: 0
+    rx_fifo_units:    0
+
+==============================================================================
+=== aisoc_forward_service Recent Runtime Wire Trace (/home/sushaohua/aisoc_twin/logs/forward_service.log) ===
+==============================================================================
+[FORWARD] Service active on /dev/ttyUSB0 at 115200 baud (DDS domain 0)
+
+[FORWARD DEBUG] TX Version Query: target=MC(1), seq=1 -> /dev/ttyUSB0
+
+[FORWARD DEBUG] RX Version Response: node=1, proto=2.0, fw=1.0, commit=0xA6791332
+
+[FORWARD DEBUG] TX Version Query: target=TH(2), seq=2 -> /dev/ttyUSB0
+
+[FORWARD DEBUG] RX Version Response: node=2, proto=2.0, fw=1.0, commit=0x6356C05A
+
+[FORWARD DEBUG] TX Query: target=1, seq=3 -> /dev/ttyUSB0
+
+[FORWARD DEBUG] RX Response: node=1, temp_millic=24500 (24.5 C) -> Fast DDS Pub
+
+[FORWARD DEBUG] TX Query: target=2, seq=4 -> /dev/ttyUSB0
+
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122540 (122.5 C) -> Fast DDS Pub
+
+[FORWARD DEBUG] TX Query: target=1, seq=5 -> /dev/ttyUSB0
+
+[FORWARD DEBUG] RX Response: node=1, temp_millic=24500 (24.5 C) -> Fast DDS Pub
+
+[FORWARD DEBUG] TX Query: target=2, seq=6 -> /dev/ttyUSB0
+
+[FORWARD DEBUG] RX Response: node=2, temp_millic=120700 (120.7 C) -> Fast DDS Pub
+
+[FORWARD DEBUG] TX Query: target=1, seq=7 -> /dev/ttyUSB0
+
+[FORWARD DEBUG] RX Response: node=1, temp_millic=24500 (24.5 C) -> Fast DDS Pub
+
+[FORWARD DEBUG] TX Query: target=2, seq=8 -> /dev/ttyUSB0
+
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122540 (122.5 C) -> Fast DDS Pub

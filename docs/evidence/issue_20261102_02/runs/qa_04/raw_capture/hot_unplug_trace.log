@@ -1,0 +1,127 @@
+==============================================================================
+AI-SoC VMware Twin Hot-Unplug, CPU Resilience & Fail-Closed Trace Log
+Generated: 2026-11-01 21:30:19.569
+Host: VMware SoC Guest Ubuntu 22.04 LTS (192.168.77.134)
+Serial Port: /dev/ttyUSB0 (QinHeng CH340, USB Bus 1-2.1:1.0)
+==============================================================================
+
+[2026-11-01 21:30:19.583] [PRE-CONDITION] Forward Service PID=3571328
+[2026-11-01 21:30:19.583] [ONLINE BASELINE SNAPSHOT]:
+{"schema_version":2,"generation_id":1212,"timestamp_ns":422256391909790,"bed":{"temperature_millic":24500,"temperature_c":24.5,"sensor_status":"OK","quality":"FRESH"},"tool":{"temperature_millic":121740,"temperature_c":121.7,"sensor_status":"OK","quality":"FRESH"},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":16909060,"git_commit":"0xA6791332","capability_flags":3,"last_update_ns":422256383682337},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":2289543765,"git_commit":"0x6356C05A","capability_flags":7,"last_update_ns":422256391909790}},"system_status":"NORMAL"}
+
+[2026-11-01 21:30:19.583] [ACTION] Executing sysfs kernel driver unbind: echo '1-2.1:1.0' > /sys/bus/usb/drivers/ch341/unbind
+
+--- STATE DECAY LOGS ---
+[2026-11-01 21:30:19.600] Poll #1: system_status=NORMAL, bed_millic=24500, mc_status=ONLINE
+[2026-11-01 21:30:19.701] Poll #2: system_status=NORMAL, bed_millic=24500, mc_status=ONLINE
+[2026-11-01 21:30:19.802] Poll #3: system_status=OFFLINE, bed_millic=2147483646, mc_status=OFFLINE
+[2026-11-01 21:30:19.802] >>> TRANSITION TO OFFLINE CONFIRMED at delta t=0.420s (Contract: <= 3.0s)
+
+[2026-11-01 21:30:20.004] [OFFLINE DECAY SNAPSHOT (SENTINEL DEFENSE)]:
+{"schema_version":2,"generation_id":1212,"timestamp_ns":422256391909790,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"OK","quality":"STALE"},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"OK","quality":"STALE"},"devices":{"mc":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0},"th":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0}},"system_status":"OFFLINE"}
+
+--- CPU USAGE SAMPLING WHILE DISCONNECTED (Forward PID 3571328) ---
+[2026-11-01 21:30:20.004] Sample #1: 3571328 sushaoh+  20   0  437048  18088  15132 S   0.0   0.2   0:00.80 aisoc_f+
+[2026-11-01 21:30:20.708] Sample #2: 3571328 sushaoh+  20   0  437048  18088  15132 S   0.0   0.2   0:00.80 aisoc_f+
+[2026-11-01 21:30:21.412] Sample #3: 3571328 sushaoh+  20   0  437048  18088  15132 S   0.0   0.2   0:00.80 aisoc_f+
+[2026-11-01 21:30:22.120] Sample #4: 3571328 sushaoh+  20   0  437048  18088  15132 S   0.0   0.2   0:00.80 aisoc_f+
+[2026-11-01 21:30:22.824] CPU Assessment: Samples=[0.0, 0.0, 0.0, 0.0]%, Max=0.0%, Verdict: PASS (Target <= 2.0%)
+
+--- HTTP 503 SERVICE UNAVAILABLE INTERCEPTION (FAIL-CLOSED GATE) ---
+>>> REQUEST: 2026-11-01 21:30:22.824 POST /api/v1/motion/jog HTTP/1.1
+> Host: 127.0.0.1:8080
+> User-Agent: AisocQAHILTester/2.0
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 48
+>
+> {"axis": "x", "dist_mm": 10, "feedrate_mms": 50}
+
+<<< RESPONSE: 2026-11-01 21:30:22.824 HTTP/1.1 503 Service Unavailable (RTT: 0.39ms)
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 61
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Methods: GET, POST, OPTIONS
+< Access-Control-Allow-Headers: Content-Type, Accept
+< Connection: keep-alive
+<
+< {"error":503,"message":"Hardware offline: cannot jog motion"}
+==============================================================================
+
+>>> REQUEST: 2026-11-01 21:30:22.824 POST /api/v1/motion/home HTTP/1.1
+> Host: 127.0.0.1:8080
+> User-Agent: AisocQAHILTester/2.0
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 15
+>
+> {"axes": "ALL"}
+
+<<< RESPONSE: 2026-11-01 21:30:22.825 HTTP/1.1 503 Service Unavailable (RTT: 0.30ms)
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 60
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Methods: GET, POST, OPTIONS
+< Access-Control-Allow-Headers: Content-Type, Accept
+< Connection: keep-alive
+<
+< {"error":503,"message":"Hardware offline: cannot home axes"}
+==============================================================================
+
+>>> REQUEST: 2026-11-01 21:30:22.825 POST /api/v1/jobs/start HTTP/1.1
+> Host: 127.0.0.1:8080
+> User-Agent: AisocQAHILTester/2.0
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 37
+>
+> {"job_id": "test_unplug_fail_closed"}
+
+<<< RESPONSE: 2026-11-01 21:30:22.825 HTTP/1.1 503 Service Unavailable (RTT: 0.25ms)
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 60
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Methods: GET, POST, OPTIONS
+< Access-Control-Allow-Headers: Content-Type, Accept
+< Connection: keep-alive
+<
+< {"error":503,"message":"Hardware offline: cannot start job"}
+==============================================================================
+
+
+[2026-11-01 21:30:22.825] [ACTION] Executing sysfs kernel driver rebind: echo '1-2.1:1.0' > /sys/bus/usb/drivers/ch341/bind
+
+--- SELF-HEALING RECOVERY LOGS ---
+[2026-11-01 21:30:22.954] Poll #1: system_status=OFFLINE, quality=STALE, mc_commit=0x00000000
+[2026-11-01 21:30:23.255] Poll #2: system_status=OFFLINE, quality=STALE, mc_commit=0x00000000
+[2026-11-01 21:30:23.456] Poll #3: system_status=OFFLINE, quality=STALE, mc_commit=0x00000000
+[2026-11-01 21:30:23.657] Poll #4: system_status=OFFLINE, quality=STALE, mc_commit=0x00000000
+[2026-11-01 21:30:23.858] Poll #5: system_status=OFFLINE, quality=STALE, mc_commit=0x00000000
+[2026-11-01 21:30:24.059] Poll #6: system_status=OFFLINE, quality=STALE, mc_commit=0x00000000
+[2026-11-01 21:30:24.260] Poll #7: system_status=OFFLINE, quality=STALE, mc_commit=0x00000000
+[2026-11-01 21:30:24.461] Poll #8: system_status=NORMAL, quality=FRESH, mc_commit=0xA6791332
+[2026-11-01 21:30:24.461] >>> TRANSITION TO NORMAL CONFIRMED at delta t=1.637s (Contract: <= 3.0s)
+
+[2026-11-01 21:30:24.463] [RESTORED RECOVERY SNAPSHOT (ONLINE)]:
+{"schema_version":2,"generation_id":1214,"timestamp_ns":422262457677141,"bed":{"temperature_millic":24500,"temperature_c":24.5,"sensor_status":"OK","quality":"FRESH"},"tool":{"temperature_millic":120620,"temperature_c":120.6,"sensor_status":"OK","quality":"FRESH"},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":16909060,"git_commit":"0xA6791332","capability_flags":3,"last_update_ns":422262449115342},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":2289543765,"git_commit":"0x6356C05A","capability_flags":7,"last_update_ns":422262457677141}},"system_status":"NORMAL"}
+
+--- POST-RECOVERY UNBLOCKED MOTION REQUEST ---
+>>> REQUEST: 2026-11-01 21:30:25.067 POST /api/v1/motion/jog HTTP/1.1
+> Host: 127.0.0.1:8080
+> User-Agent: AisocQAHILTester/2.0
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 30
+>
+> {"axis": "X", "step_mm": 10.0}
+
+<<< RESPONSE: 2026-11-01 21:30:25.067 HTTP/1.1 200 OK (RTT: 0.42ms)
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 42
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Methods: GET, POST, OPTIONS
+< Access-Control-Allow-Headers: Content-Type, Accept
+< Connection: keep-alive
+<
+< {"status":"ok","axis":"X","step_mm":10.00}
+==============================================================================

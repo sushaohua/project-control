@@ -1,0 +1,115 @@
+=== Docker Container Inspect: b717fea90a36 ===
+{
+  "id": "b717fea90a3611b7bc674eaeced52a7e0aa44d9c86bd1033f3d862af81329402",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-02T09:38:17.079985115Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/ISSUE-20261102-02_run_173747_20261102_093747",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) cmake -B /tmp/soc_build -S . && make -C /tmp/soc_build -> 0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter
+-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/soc_build
+make: Entering directory '/tmp/soc_build'
+make[1]: Entering directory '/tmp/soc_build'
+make[2]: Entering directory '/tmp/soc_build'
+make[2]: Leaving directory '/tmp/soc_build'
+make[2]: Entering directory '/tmp/soc_build'
+[ 11%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o
+[ 22%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o
+[ 33%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o
+[ 44%] Linking CXX static library libminimcproto.a
+make[2]: Leaving directory '/tmp/soc_build'
+[ 44%] Built target minimcproto
+make[2]: Entering directory '/tmp/soc_build'
+make[2]: Leaving directory '/tmp/soc_build'
+make[2]: Entering directory '/tmp/soc_build'
+[ 55%] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o
+[ 66%] Building CXX object CMakeFiles/soc-ap.dir/core/host/query.cpp.o
+[ 77%] Linking CXX executable bin/soc-ap
+make[2]: Leaving directory '/tmp/soc_build'
+[ 77%] Built target soc-ap
+make[2]: Entering directory '/tmp/soc_build'
+make[2]: Leaving directory '/tmp/soc_build'
+make[2]: Entering directory '/tmp/soc_build'
+[ 88%] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o
+[100%] Linking CXX executable bin/minimc-probe
+make[2]: Leaving directory '/tmp/soc_build'
+[100%] Built target minimc-probe
+make[1]: Leaving directory '/tmp/soc_build'
+make: Leaving directory '/tmp/soc_build'
+
+
+$ (mcu-p3) python3 tools/version_tool.py --ini motion-controller-mcu/version.ini --mode dev --gen-header /tmp/version_mc_autogen.h && python3 tools/version_tool.py --ini color-engine-mcu/version.ini --mode dev --gen-header /tmp/version_th_autogen.h -> 0
+[VERSION][DEV] 生成 16bit 时间特征码: 0xB205 (V2.0.1-B205 1102)
+[VERSION] 生成头文件: /tmp/version_mc_autogen.h
+[VERSION][DEV] 生成 16bit 时间特征码: 0xBD94 (V2.0.1-BD94 1102)
+[VERSION] 生成头文件: /tmp/version_th_autogen.h
+
+
+$ (test_harness) gcc -Wall -Wextra -Werror -std=c11 -I ../soc-ap/contracts/twin static_checks/twin/check_layout.c -o /tmp/check_layout -> 0
+
+
+$ (soc-ap) ctest --test-dir /tmp/soc_build --output-on-failure -> 0
+Test project /tmp/soc_build
+    Start 1: host_runtime_smoke
+1/2 Test #1: host_runtime_smoke ...............   Passed    0.11 sec
+    Start 2: cascade_query_cases
+2/2 Test #2: cascade_query_cases ..............   Passed    2.31 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   2.42 sec
+
+
+$ (test_harness) /tmp/check_layout -> 0
+ALL_LAYOUT_AND_CONVERSION_CHECKS_PASSED
+
+
+$ (test_harness) python3 static_checks/minimcproto/reference_vectors.py --vectors test_cases/minimcproto/vectors.json --check -> 0
+{
+  "schema_version": "minimcproto-vectors-v2.0.3-r1",
+  "protocol_sha256": "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54",
+  "golden_frame_count": 5,
+  "total_case_count": 64,
+  "group_counts": {
+    "stub": 4,
+    "crc": 9,
+    "encode": 8,
+    "decode_bounds": 6,
+    "decode": 12,
+    "stream_sync": 5,
+    "stream_header": 5,
+    "stream_payload": 5,
+    "timeout": 6,
+    "recovery": 4
+  },
+  "errors": [],
+  "mode": "check",
+  "vectors_path": "test_cases/minimcproto/vectors.json",
+  "vectors_sha256": "6d46bd05a4133e678611abe2ab1cb88db190c394f23151900009c0c077c8d995",
+  "exit_code": 0
+}
+
+
+$ (mcu-p3) python3 -c "import configparser; mc=configparser.ConfigParser(); mc.read('motion-controller-mcu/version.ini'); th=configparser.ConfigParser(); th.read('color-engine-mcu/version.ini'); assert mc.get('VERSION','major')=='2' and mc.get('VERSION','minor')=='0' and mc.get('VERSION','patch')=='1', 'MC version.ini mismatch'; assert th.get('VERSION','major')=='2' and th.get('VERSION','minor')=='0' and th.get('VERSION','patch')=='1', 'TH version.ini mismatch'; print('MCU version.ini checks PASS (MC=2.0.1, TH=2.0.1)')" -> 0
+MCU version.ini checks PASS (MC=2.0.1, TH=2.0.1)
+

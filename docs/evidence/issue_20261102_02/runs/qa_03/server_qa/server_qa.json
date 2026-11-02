@@ -1,0 +1,84 @@
+{
+  "task_id": "ISSUE-20261102-02",
+  "task_revision": 2,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "b3d64c347ac9",
+    "id": "ISSUE-20261102-02_run_165333_20261102_085333",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/ISSUE-20261102-02_run_165333_20261102_085333",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "b3d64c347ac90c675dc97882f1947f242cfa988c49941467695a9dfa54cfbf78",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-02T08:54:08.525915312Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/ISSUE-20261102-02_run_165333_20261102_085333",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/issue_20261102_02/runs/qa_03/server_qa/server_lock.json",
+    "sha256": "07bc1581ebb4b1bd1fbb061e51585a143abcb5ebdc2de2be1e9cabda5e4a4347"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/issue_20261102_02/runs/qa_03/server_qa/checkout.log",
+    "sha256": "4aeb572e37b63f5666bb57dddcdcab7e2b87ff99827338080139f5a0b1bebfcb"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/issue_20261102_02/runs/qa_03/server_qa/runtime.log",
+    "sha256": "641123f0be6db4acbcde03cefae85e8f975057c65e20da0dad6a5e51d2bdec9c"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/issue_20261102_02/runs/qa_03/server_qa/server_verdict.json",
+    "sha256": "83a1edf4ecb09a91dfc3239a4d6e25ea4df39576fbd68563dcad94d84f5a1e33"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "python3 -c 'import configparser; c1=configparser.ConfigParser(); c1.read(\"motion-controller-mcu/version.ini\"); assert c1[\"VERSION\"][\"major\"]==\"2\"; assert c1[\"VERSION\"][\"patch\"]==\"1\"; c2=configparser.ConfigParser(); c2.read(\"color-engine-mcu/version.ini\"); assert c2[\"VERSION\"][\"major\"]==\"2\"; assert c2[\"VERSION\"][\"patch\"]==\"1\"; print(\"Version INI verified\")'",
+      "exit_code": "0",
+      "subpath": "mcu-p3",
+      "duration": "0.19s",
+      "output": "Version INI verified"
+    },
+    {
+      "command": "gcc -Wall -Wextra -Werror -std=c11 -I ../soc-ap/contracts/twin static_checks/twin/check_layout.c -o /tmp/check_layout && /tmp/check_layout",
+      "exit_code": "0",
+      "subpath": "test_harness",
+      "duration": "0.17s",
+      "output": "ALL_LAYOUT_AND_CONVERSION_CHECKS_PASSED"
+    },
+    {
+      "command": "python3 static_checks/minimcproto/reference_vectors.py --vectors test_cases/minimcproto/vectors.json --check",
+      "exit_code": "0",
+      "subpath": "test_harness",
+      "duration": "0.13s",
+      "output": "{\n  \"schema_version\": \"minimcproto-vectors-v2.0.3-r1\",\n  \"protocol_sha256\": \"9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54\",\n  \"golden_frame_count\": 5,\n  \"total_case_count\": 64,\n  \"group_counts\": {\n    \"stub\": 4,\n    \"crc\": 9,\n    \"encode\": 8,\n    \"decode_bounds\": 6,\n    \"decode\": 12,\n    \"stream_sync\": 5,\n    \"stream_header\": 5,\n    \"stream_payload\": 5,\n    \"timeout\": 6,\n    \"recovery\": 4\n  },\n  \"errors\": [],\n  \"mode\": \"check\",\n  \"vectors_path\": \"test_cases/minimcproto/vectors.json\",\n  \"vectors_sha256\": \"6d46bd05a4133e678611abe2ab1cb88db190c394f23151900009c0c077c8d995\",\n  \"exit_code\": 0\n}"
+    },
+    {
+      "command": "python3 -c 'with open(\"hil/tests/test_qa_e2e_oobe_browser.py\") as f: s = f.read(); assert \"assert \\\"v2.0\\\" in mc_ver\" in s; assert \"assert \\\"1.0\\\" not in mc_ver\" in s; print(\"E2E assertions verified\")'",
+      "exit_code": "0",
+      "subpath": "test_harness",
+      "duration": "0.09s",
+      "output": "E2E assertions verified"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-02T08:54:12.005394+00:00"
+}

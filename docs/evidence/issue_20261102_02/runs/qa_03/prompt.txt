@@ -1,0 +1,64 @@
+You are the independent Codex QA Reviewer performing the server sandbox, physical HIL & E2E verification audit (Run QA-03) for ISSUE-20261102-02 under:
+- project-control/.agents/rules/codex_qa_review.md
+- project-control/.agents/rules/c_cpp_coding_standard.md
+- project-control/.agents/rules/delivery_and_coord_gate.md
+
+Audit Updates in Run QA-03 (Resolving all prior findings from QA-01 and QA-02):
+1. Server Provenance & Controlled Docker Sandbox Execution:
+   - All candidate branches have been pushed to GitLab server (192.168.77.113:2222):
+     * mcu-p3: 31a7c6891264ac154c421eaead77c4e4d23acd3e (feat/soc-debug)
+     * soc-ap: 92a6d4076f3b18d86c40fef8de59cd564df4eb63 (main)
+     * test_harness: 1bb89a3955f806cd3a55dc89a6f2007a92657615 (main)
+     * project-control: 5f71cbecee7e106328325d3581d2e942a730b9dc (main)
+   - Controlled Python Runner executed Docker sandbox:
+     * Container Image: qa-sandbox:20261029 (Image ID sha256:acbab225932c...)
+     * Container ID: b3d64c347ac90c675dc97882f1947f242cfa988c49941467695a9dfa54cfbf78
+     * Mount: read-only (/workspace, Mode: ro)
+     * Verdict: PASSED (server_verdict.json, exit_code: 0, 4/4 suites passed)
+     * Evidence Directory: project-control/docs/evidence/issue_20261102_02/runs/qa_03/server_qa/
+     * server_qa.json SHA256: 06173acba8fb4851f01303e120dbb5553630a8453a9b7ccb642ad44c87c0949e
+
+2. Physical SWD Flashing & Chronological Timezone Synchronization:
+   - Host and Twin VM timezones are synchronized to Asia/Shanghai (CST, +0800):
+     * probe_flash.log execution: 2026-11-02 16:25:21+08:00
+     * uart_frames.log execution: 2026-11-02 16:54:41+0800 (chronologically post-flashing)
+   - Flashing execution via probe-rs.exe:
+     * fw_th.bin (71,804 B, SHA256: deee2c9b5051dc8b42be3721c8ba4196ada9c511a9afc8c4bf5d40810fb93529) -> 0x08004000 (5.23s verify PASS)
+     * anchor.bin (140 B, SHA256: 14a451cf80f0cc4e53af012e1437c9d79f7e801bbbdda696d2203dd732f17a76) -> 0x0803F800 (0.32s verify & reset PASS)
+     * fw_mc.bin (371,260 B, SHA256: d738bbd82d0f6d42840d0194ae661348faf68328a22a5f203c3b96a11d503d9b) -> 0x08020000 (29.60s verify & reset PASS)
+   - Evidence File: project-control/docs/evidence/issue_20261102_02/runs/qa_03/raw_capture/probe_flash.log (SHA256: 810c8185deb0fe339c40b0cf1e075fd414b1246cc16cdb37b50a5bf623fa9cdd)
+
+3. Wire Protocol Frame Layout & Node Numbering Reconciliation:
+   - Target Port: /dev/ttyUSB0 (115200 8N1)
+   - Wire Frame Structure Reconciled against soc-ap/contracts/twin/telemetry_types.h & test_harness/static_checks/twin/check_layout.c:
+     * Offset 0..1: SOF 0x55 0xAA (2B)
+     * Offset 2: src_id = 0x01 (AP)
+     * Offset 3: dst_id = 0x02 (MC) / 0x03 (TH)
+     * Offset 4: flags = 0x05
+     * Offset 5: cmd_id = 0x01 (CMD_GET_VERSION)
+     * Offset 6: hop_limit = 0x04 (HOP_LIMIT, not payload length)
+     * Offset 7: route_ctrl = 0x00 (ROUTE_CTRL, not payload length)
+     * Offset 8..9: seq = 0x0001 (uint16 LE)
+     * Offset 10..11: payload_len = 0x0000 (uint16 LE, PLEN=0 confirmed)
+     * Offset 12..13: CRC-16/CCITT-FALSE
+     Total wire size is exactly 12B header + 0B payload + 2B CRC = 14 bytes.
+   - Node Numbering:
+     * D-Bus API level: target_node 1 = MC, 2 = TH (in forward_service QueryVersion)
+     * Wire Protocol level: 0x01 = AP, 0x02 = MC, 0x03 = TH (MiniMCProto v2.0 wire address)
+   - Raw Capture Evidence: project-control/docs/evidence/issue_20261102_02/runs/qa_03/raw_capture/uart_frames.log (SHA256: ab2e0e380b961bf90c15e29a9a06d9d4febd1875c0fe17a8efba0039be8da8c1)
+     * MC (Node 2): Monotonic RTT 7.42ms, proto: 2.0, fw: 2.0, commit: 0xA6791332
+     * TH (Node 3): Monotonic RTT 8.62ms, proto: 2.0, fw: 2.0, commit: 0x6356C05A
+
+4. Web Gateway Telemetry & Browser E2E Test Suite:
+   - Live REST Snapshot: project-control/docs/evidence/issue_20261102_02/runs/qa_03/raw_capture/temperature_snapshot.json (SHA256: d3bb595cfa17df8d2d02bb8150915f30cf11b51af1c23e3d27a4233084094f12)
+     * devices.mc.firmware_version == "2.0" (ONLINE)
+     * devices.th.firmware_version == "2.0" (ONLINE)
+   - Browser E2E Suite: test_harness/hil/tests/test_qa_e2e_oobe_browser.py (Commit 1bb89a3955f806cd3a55dc89a6f2007a92657615)
+   - Screenshot Evidence: project-control/docs/evidence/issue_20261102_02/runs/qa_03/raw_capture/TC-E2E-OOBE-01-POS_step3_versions.png (SHA256: e0cd9f615bc43e150d813a54a47cc10888e1e4ab51206165a39339526d7f46d4)
+
+5. QA Review Report & HW-G7 Mapping:
+   - Report Path: project-control/docs/evidence/issue_20261102_02/runs/qa_03/qa_review_report.md
+   - Report SHA256: c0e841982a80d9b365aa1d8ded440dc334423f1597376dbfdd50d3e9cd40945e
+   - HW-G7 table in Section 3 documents mapping of 40-char commits, binary SHA256, expected short hashes, returned hashes, and static boot_id limitations.
+
+Please inspect the server sandbox evidence, raw physical captures, test code, live snapshot, and rendered report, and render your independent decision (APPROVED, REJECTED, or BLOCKED).
