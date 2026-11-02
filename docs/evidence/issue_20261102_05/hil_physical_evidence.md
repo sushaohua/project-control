@@ -6,7 +6,7 @@
 | **任务主题** | 锁定四仓组合候选、固件打包、现场物理部署与物理 HIL 联调实测 |
 | **执行角色** | `INTEGRATOR` (系统集成工程师) |
 | **执行会话 ID** | `4b120074-de2b-46f3-bd39-af85494c3dca` |
-| **测试时间** | `2026-11-02 21:00:43+08:00` |
+| **测试时间** | `2026-11-02 21:00:43.840 ~ 21:00:44.369+08:00` |
 | **测试环境** | 宿主: VMware Ubuntu 22.04 LTS (`192.168.77.134`), 用户 `sushaohua`<br>硬件: Twin AT32 物理板卡 (AT32F435 MC + AT32F423 TH), 双 ST-Link V2, CH340 串口 |
 | **串口端口** | `/dev/ttyUSB0` (QinHeng Electronics CH340, USB Bus 1-2.1:1.0, 115200 8N1) |
 | **整体验收结论** | **100% 验收通过 (PASS)**: 正常链路与否定应答对齐链路双向 Hex 报文、字段切片、CRC16 校验及 AP 宿主报错行为全量闭环 |
@@ -79,16 +79,24 @@ probe-rs 引擎: /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `HIL-POS-01` | AP 单跳查询 MC 固件版本 | `55AA010205010400010000004D68` | `55AA020106020400010010000200020004030201321379A603000000EE6C` | 7.24 ms | **PASS** (返回 0x02 版本报告, Commit 0xA6791332) |
 | `HIL-POS-02` | AP 双跳级联查询 TH 固件版本 | `55AA01030501040002000000B218` | `55AA030106020304020010000200020055AA77885AC0566307000000BE18` | 8.38 ms | **PASS** (返回 0x02 版本报告, Commit 0x6356C05A) |
-| `HIL-POS-03` | AP 单跳向 MC 发送心跳 PING | `55AA01020503040003000400E80300009C26` | `55AA02010604040003000C00E8030000EE030000100008008B5F` | 7.49 ms | **PASS** (返回 0x04 PONG 响应) |
-| `HIL-POS-04` | AP 双跳级联向 TH 发送心跳 PING | `55AA010305030400040004007856341251EF` | `55AA03010604030404000C00785634129056341200040000A6E3` | 8.21 ms | **PASS** (返回 0x04 PONG 响应) |
+| `HIL-POS-03` | AP 单跳向 MC 发送心跳 PING | `55AA01020503040003000400E803000020F2` | `55AA02010604040003000C00E8030000EE030000100008008B5F` | 7.49 ms | **PASS** (返回 0x04 PONG 响应) |
+| `HIL-POS-04` | AP 双跳级联向 TH 发送心跳 PING | `55AA0103050304000400040078563412D8F8` | `55AA03010604030404000C00785634129056341200040000A6E3` | 8.21 ms | **PASS** (返回 0x04 PONG 响应) |
+
+> **客观时间戳记录 (精确对齐 `raw_capture/hil_execution.json` 与 `uart_frames.log`)**:
+> - `HIL-POS-01`: TX `2026-11-02 21:00:43.840+08:00` -> RX `2026-11-02 21:00:43.847+08:00` (RTT: 7,241 µs)
+> - `HIL-POS-02`: TX `2026-11-02 21:00:43.897+08:00` -> RX `2026-11-02 21:00:43.906+08:00` (RTT: 8,378 µs)
+> - `HIL-POS-03`: TX `2026-11-02 21:00:43.956+08:00` -> RX `2026-11-02 21:00:43.963+08:00` (RTT: 7,489 µs)
+> - `HIL-POS-04`: TX `2026-11-02 21:00:44.013+08:00` -> RX `2026-11-02 21:00:44.022+08:00` (RTT: 8,213 µs)
 
 ---
 
 ### 3.2 否定应答契约对齐链路 (核心测试)
 
 #### 【用例 HIL-NEG-01】AP 单跳向 MC 发送未实现命令 (`cmd_id=0x7E`, `seq=42`)
-- **TX 帧 (14 字节)**: `55 AA 01 02 05 7E 04 00 2A 00 00 00 3C F7`
-  - SOF: `55 AA`, SRC: `0x01` (AP), DST: `0x02` (MC), FLAGS: `0x05`, CMD: `0x7E`, HOP: `4`, ROUTE: `0`, SEQ: `0x002A` (42), PLEN: `0`, CRC16: `0xF73C`
+- **TX 时间**: `2026-11-02 21:00:44.072+08:00`
+- **RX 时间**: `2026-11-02 21:00:44.078+08:00` (往返时延 RTT: 6,700 µs / 6.70 ms)
+- **TX 帧 (14 字节)**: `55 AA 01 02 05 7E 04 00 2A 00 00 00 94 4F`
+  - SOF: `55 AA`, SRC: `0x01` (AP), DST: `0x02` (MC), FLAGS: `0x05`, CMD: `0x7E`, HOP: `4`, ROUTE: `0`, SEQ: `0x002A` (42), PLEN: `0`, CRC16: `0x4F94`
 - **RX 物理回包 (17 字节)**: `55 AA 02 01 06 06 04 00 2A 00 03 00 04 2A 00 86 19`
 - **字段严格逐字节解码比对**:
   ```text
@@ -111,8 +119,10 @@ probe-rs 引擎: /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe
 ---
 
 #### 【用例 HIL-NEG-02】AP 经 MC 路由向 TH 发送未实现命令 (`cmd_id=0x7E`, `seq=59`)
-- **TX 帧 (14 字节)**: `55 AA 01 03 05 7E 04 00 3B 00 00 00 86 33`
-  - SOF: `55 AA`, SRC: `0x01` (AP), DST: `0x03` (TH), FLAGS: `0x05`, CMD: `0x7E`, HOP: `4`, ROUTE: `0`, SEQ: `0x003B` (59), PLEN: `0`, CRC16: `0x3386`
+- **TX 时间**: `2026-11-02 21:00:44.129+08:00`
+- **RX 时间**: `2026-11-02 21:00:44.135+08:00` (往返时延 RTT: 6,229 µs / 6.23 ms)
+- **TX 帧 (14 字节)**: `55 AA 01 03 05 7E 04 00 3B 00 00 00 A4 C9`
+  - SOF: `55 AA`, SRC: `0x01` (AP), DST: `0x03` (TH), FLAGS: `0x05`, CMD: `0x7E`, HOP: `4`, ROUTE: `0`, SEQ: `0x003B` (59), PLEN: `0`, CRC16: `0xC9A4`
 - **RX 物理回包 (17 字节)**: `55 AA 03 01 06 06 03 04 3B 00 03 00 04 3B 00 7B 5D`
 - **字段严格逐字节解码比对**:
   ```text
@@ -139,10 +149,10 @@ probe-rs 引擎: /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe
 ### 4.1 正常查询验证
 ```bash
 $ /home/sushaohua/soc-ap --port /dev/ttyUSB0 --target mc --cmd version --json
-{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793624444133,"monotonic_rtt_us":7562,"target":"MC","target_id":2,"cmd":"GET_VERSION","req_seq":0,"resp_seq":0,"version_info":{"proto_ver":"2.0","firmware_ver":"2.0","boot_id":"0x01020304","git_commit":"0xA6791332","capabilities":"0x00000003"}}
+{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793624444138,"monotonic_rtt_us":7826,"target":"MC","target_id":2,"cmd":"GET_VERSION","req_seq":0,"resp_seq":0,"version_info":{"proto_ver":"2.0","firmware_ver":"2.0","boot_id":"0x01020304","git_commit":"0xA6791332","capabilities":"0x00000003"}}
 
 $ /home/sushaohua/soc-ap --port /dev/ttyUSB0 --target th --cmd version --json
-{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793624444149,"monotonic_rtt_us":8288,"target":"TH","target_id":3,"cmd":"GET_VERSION","req_seq":2,"resp_seq":2,"version_info":{"proto_ver":"2.0","firmware_ver":"2.0","boot_id":"0x8877AA55","git_commit":"0x6356C05A","capabilities":"0x00000007"}}
+{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793624444149,"monotonic_rtt_us":8256,"target":"TH","target_id":3,"cmd":"GET_VERSION","req_seq":2,"resp_seq":2,"version_info":{"proto_ver":"2.0","firmware_ver":"2.0","boot_id":"0x8877AA55","git_commit":"0x6356C05A","capabilities":"0x00000007"}}
 ```
 - 结果: 正常解析版本报告，退出码为 0。
 
