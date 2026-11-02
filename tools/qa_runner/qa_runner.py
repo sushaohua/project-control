@@ -172,17 +172,18 @@ class GitLabClient:
         return self.request(endpoint)
 
 
-def check_ssh_connection(host: str, port: int, user: str = "git", timeout: int = 10) -> bool:
+def check_ssh_connection(host: str, port: int, user: str = "git", timeout: int = 90) -> bool:
     """Verify SSH remote reachability and key authentication."""
     cmd = [
         "ssh",
+        "-n",
         "-o", "BatchMode=yes",
         "-o", f"ConnectTimeout={timeout}",
         "-p", str(port),
         f"{user}@{host}",
     ]
     try:
-        proc = subprocess.run(cmd, text=True, capture_output=True, timeout=timeout + 5)
+        proc = subprocess.run(cmd, text=True, capture_output=True, timeout=timeout + 30)
         combined = f"{proc.stdout}\n{proc.stderr}"
         if "Welcome to GitLab" in combined or proc.returncode == 0:
             return True
@@ -265,7 +266,7 @@ def run_git_command(args: List[str], cwd: Path, timeout: int = 180) -> subproces
     for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
         env.pop(key, None)
     env["GIT_TERMINAL_PROMPT"] = "0"
-    env.setdefault("GIT_SSH_COMMAND", "ssh -o BatchMode=yes -o ConnectTimeout=15")
+    env.setdefault("GIT_SSH_COMMAND", "ssh -n -o BatchMode=yes -o ConnectTimeout=60")
     return subprocess.run(args, cwd=str(cwd), env=env, text=True, capture_output=True, timeout=timeout)
 
 
@@ -511,15 +512,17 @@ class QARunner:
         self.ssh_host = server_cfg.get("ssh_host", "192.168.77.113")
         self.ssh_port = server_cfg.get("ssh_port", 2222)
         self.ssh_user = server_cfg.get("ssh_user", "git")
+        self.api_timeout = int(server_cfg.get("api_timeout_seconds", 60))
+        self.ssh_timeout = int(server_cfg.get("ssh_timeout_seconds", 30))
         sandbox_cfg = config.get("sandbox", {})
         base_dir = Path(sandbox_cfg.get("base_dir", "/tmp/qa_sandboxes"))
         self.sandbox_base = validate_sandbox_path(base_dir, [self.workspace_root])
-        self.gitlab = GitLabClient(self.gitlab_url)
+        self.gitlab = GitLabClient(self.gitlab_url, timeout=self.api_timeout)
 
     def verify_server_prerequisites(self) -> dict:
         """Validate both GitLab API token and SSH port authentication."""
         user_info = self.gitlab.check_auth()
-        ssh_ok = check_ssh_connection(self.ssh_host, self.ssh_port, self.ssh_user)
+        ssh_ok = check_ssh_connection(self.ssh_host, self.ssh_port, self.ssh_user, timeout=self.ssh_timeout)
         return {"api_user": user_info.get("username"), "ssh_connected": ssh_ok}
 
     def verify_target_commits(self, targets: List[RepositoryTarget]) -> None:
@@ -563,9 +566,10 @@ class QARunner:
         run_id = f"run_{datetime.datetime.now().strftime('%H%M%S')}"
         sandbox_dir = create_isolated_sandbox(self.sandbox_base, req.task_id, run_id)
         # 1. Fetch exact server commits on host before launching container
+        git_timeout = int(self.config.get("timeouts", {}).get("git_clone_seconds", 300))
         c_logs = []
         for target in req.targets:
-            log = checkout_remote_repository(sandbox_dir, target)
+            log = checkout_remote_repository(sandbox_dir, target, timeout=git_timeout)
             c_logs.append(log)
         # 2. Launch container with read-only workspace snapshot
         c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
