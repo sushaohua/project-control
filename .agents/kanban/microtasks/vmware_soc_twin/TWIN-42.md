@@ -28,11 +28,11 @@ review_assignments:
     planned_session_alias: planned-qa-twin-42
     session: session-qa-hil-twin-42
     session_evidence: docs/evidence/twin/TWIN-42/runs/qa_01/qa_review_report.md
-    decision: PENDING
+    decision: APPROVED
     reviewed_task_revision: 2
-    artifact_version: soc-ap=5955fa57c9be6b90ff34156a1a6b183717f9a3a6; project-control=e8a32ec7532193e68aab48a82ebf5c958dc193a0
+    artifact_version: soc-ap=5955fa57c9be6b90ff34156a1a6b183717f9a3a6; project-control=c50f652e0ecb81c3d8c550c81a24a6fe01dd0fb5; test_harness=3a10e16beae43e51fc9673925179471e43f66114; mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e
     evidence: docs/evidence/twin/TWIN-42/runs/qa_01/qa_review_report.md
-    report_sha256: null
+    report_sha256: 0743983ad3f1c8b30172daee03ea0286bab519ffe7b80717ceaa550ae7ed7c4e
   - role: ARCH
     platform: codex
     model: gpt-6-luna
