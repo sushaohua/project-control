@@ -1,0 +1,6 @@
+PASS UNKNOWN -> FRESH after valid local sample
+PASS stale retains last value and only expires TH
+PASS sensor FAULT has no temperature value
+PASS disconnect retains stale value; recovery waits for a new sample
+PASS restart clears snapshots/history, increments generation, then recovers on sample
+PASS history bounded at 60; invalid scenario ignored

@@ -1,0 +1,17 @@
+{
+  "scope": "author documentation checks only, not formal independent server-sandbox QA",
+  "guide_files_read": 7,
+  "guides_updated": [
+    "project-control/docs/guides/07_第一次启动与日常使用.md",
+    "project-control/docs/guides/09_How-to_项目负责人操作手册.md"
+  ],
+  "other_guides_unchanged": [
+    "project-control/docs/guides/minimc_v2_task_execution.md",
+    "project-control/docs/guides/new_project_setup_howto.md",
+    "project-control/docs/guides/standalone_workspace.md",
+    "project-control/docs/guides/templates/task_run_record.md",
+    "project-control/docs/guides/workspace_restore.md"
+  ],
+  "local_links_checked": 34,
+  "errors": []
+}

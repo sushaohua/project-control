@@ -1,0 +1,24 @@
+313:        thQuality: document.getElementById('th-quality'),
+319:        mcQuality: document.getElementById('mc-quality'),
+379:            if (appState.devices.th) updateDeviceVersion('th', appState.devices.th, dom.thFirmwareVersion, dom.oobeThVersion, dom.oobeThStatus);
+380:            if (appState.devices.mc) updateDeviceVersion('mc', appState.devices.mc, dom.mcFirmwareVersion, dom.oobeMcVersion, dom.oobeMcStatus);
+822:        if (obj.temperature_millic !== undefined && obj.temperature_millic !== null) {
+823:            if (obj.temperature_millic === SENTINEL_FAULT || obj.temperature_millic >= 2147483640) return 'FAULT';
+824:            if (obj.temperature_millic === SENTINEL_OFFLINE) return 'OFFLINE';
+825:            return (obj.temperature_millic / 1000.0).toFixed(1);
+835:    function applyTelemetrySnapshot(data) {
+837:        appState.isConnected = true;
+854:            if (dom.thQuality && data.tool.quality) {
+855:                dom.thQuality.textContent = data.tool.quality;
+856:                dom.thQuality.className = (data.tool.quality === 'FRESH') ? 'quality-badge badge-fresh' : 'quality-badge';
+875:            if (dom.mcQuality && data.bed.quality) {
+876:                dom.mcQuality.textContent = data.bed.quality;
+877:                dom.mcQuality.className = (data.bed.quality === 'FRESH') ? 'quality-badge badge-fresh' : 'quality-badge';
+891:                updateDeviceVersion('th', data.devices.th, dom.thFirmwareVersion, dom.oobeThVersion, dom.oobeThStatus);
+895:                updateDeviceVersion('mc', data.devices.mc, dom.mcFirmwareVersion, dom.oobeMcVersion, dom.oobeMcStatus);
+900:    function updateDeviceVersion(nodeKey, devInfo, cardElem, oobeVerElem, oobeBadgeElem) {
+957:                    applyTelemetrySnapshot(data);
+966:            es.onerror = function () {
+985:                        applyTelemetrySnapshot(data);
+
+[stderr]

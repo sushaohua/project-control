@@ -1,0 +1,18 @@
+[
+  "soc-ap/third_party/dds/README.md",
+  "soc-ap/third_party/dbus/README.md",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-02.md",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-04.md",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-05.md",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-06.md",
+  "project-control/docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md",
+  "project-control/docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md",
+  "project-control/.agents/rules/06_通信工程师职责与接口边界.md",
+  "project-control/.agents/rules/06_通信工程师职责与接口边界.md",
+  "project-control/.agents/rules/02_模块与Agent职责.md",
+  "project-control/docs/planning/coord_autorun_tasklist_20261029.md",
+  "project-control/docs/planning/coord_autorun_queue_20261029.yaml",
+  "soc-ap/README.md",
+  "soc-ap/third_party/README.md",
+  "README.md"
+]

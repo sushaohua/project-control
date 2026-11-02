@@ -1,0 +1,1162 @@
+[
+  {
+    "round": 1,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 386.74,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236931470,\"monotonic_rtt_us\":8033,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":823122}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236931470,
+      "monotonic_rtt_us": 8033,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 823122
+      }
+    }
+  },
+  {
+    "round": 2,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 165.88,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236931689,\"monotonic_rtt_us\":7620,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":823341}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236931689,
+      "monotonic_rtt_us": 7620,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 823341
+      }
+    }
+  },
+  {
+    "round": 3,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 163.34,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236931905,\"monotonic_rtt_us\":7516,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":823558}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236931905,
+      "monotonic_rtt_us": 7516,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 823558
+      }
+    }
+  },
+  {
+    "round": 4,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 162.0,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236932119,\"monotonic_rtt_us\":7756,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":823772}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236932119,
+      "monotonic_rtt_us": 7756,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 823772
+      }
+    }
+  },
+  {
+    "round": 5,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 167.08,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236932339,\"monotonic_rtt_us\":7570,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":823992}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236932339,
+      "monotonic_rtt_us": 7570,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 823992
+      }
+    }
+  },
+  {
+    "round": 6,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 171.93,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236932560,\"monotonic_rtt_us\":11693,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":824217}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236932560,
+      "monotonic_rtt_us": 11693,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 824217
+      }
+    }
+  },
+  {
+    "round": 7,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 161.83,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236932778,\"monotonic_rtt_us\":7657,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":824430}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236932778,
+      "monotonic_rtt_us": 7657,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 824430
+      }
+    }
+  },
+  {
+    "round": 8,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 165.74,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236932996,\"monotonic_rtt_us\":7649,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":824648}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236932996,
+      "monotonic_rtt_us": 7649,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 824648
+      }
+    }
+  },
+  {
+    "round": 9,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 172.65,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236933221,\"monotonic_rtt_us\":8085,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":824874}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236933221,
+      "monotonic_rtt_us": 8085,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 824874
+      }
+    }
+  },
+  {
+    "round": 10,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 162.71,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236933436,\"monotonic_rtt_us\":7626,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":825088}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236933436,
+      "monotonic_rtt_us": 7626,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 825088
+      }
+    }
+  },
+  {
+    "round": 11,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 167.97,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236933657,\"monotonic_rtt_us\":7686,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":825309}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236933657,
+      "monotonic_rtt_us": 7686,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 825309
+      }
+    }
+  },
+  {
+    "round": 12,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 165.0,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236933874,\"monotonic_rtt_us\":7730,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":825527}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236933874,
+      "monotonic_rtt_us": 7730,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 825527
+      }
+    }
+  },
+  {
+    "round": 13,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 163.5,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236934090,\"monotonic_rtt_us\":7622,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":825742}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236934090,
+      "monotonic_rtt_us": 7622,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 825742
+      }
+    }
+  },
+  {
+    "round": 14,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 166.5,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236934307,\"monotonic_rtt_us\":7624,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":825959}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236934307,
+      "monotonic_rtt_us": 7624,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 825959
+      }
+    }
+  },
+  {
+    "round": 15,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 174.07,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236934531,\"monotonic_rtt_us\":7691,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":826183}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236934531,
+      "monotonic_rtt_us": 7691,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 826183
+      }
+    }
+  },
+  {
+    "round": 16,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 165.94,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236934747,\"monotonic_rtt_us\":7650,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":826399}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236934747,
+      "monotonic_rtt_us": 7650,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 826399
+      }
+    }
+  },
+  {
+    "round": 17,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 167.43,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236934965,\"monotonic_rtt_us\":7672,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":826618}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236934965,
+      "monotonic_rtt_us": 7672,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 826618
+      }
+    }
+  },
+  {
+    "round": 18,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 173.29,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236935188,\"monotonic_rtt_us\":7978,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":826841}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236935188,
+      "monotonic_rtt_us": 7978,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 826841
+      }
+    }
+  },
+  {
+    "round": 19,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 169.84,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236935409,\"monotonic_rtt_us\":7601,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":827061}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236935409,
+      "monotonic_rtt_us": 7601,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 827061
+      }
+    }
+  },
+  {
+    "round": 20,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 167.5,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236935627,\"monotonic_rtt_us\":7294,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":827279}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236935627,
+      "monotonic_rtt_us": 7294,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 827279
+      }
+    }
+  },
+  {
+    "round": 21,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 166.01,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236935843,\"monotonic_rtt_us\":7576,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":827495}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236935843,
+      "monotonic_rtt_us": 7576,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 827495
+      }
+    }
+  },
+  {
+    "round": 22,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 165.6,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236936058,\"monotonic_rtt_us\":7621,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":827711}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236936058,
+      "monotonic_rtt_us": 7621,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 827711
+      }
+    }
+  },
+  {
+    "round": 23,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 170.47,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236936279,\"monotonic_rtt_us\":7246,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":827932}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236936279,
+      "monotonic_rtt_us": 7246,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 827932
+      }
+    }
+  },
+  {
+    "round": 24,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 165.82,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236936495,\"monotonic_rtt_us\":7547,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":828148}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236936495,
+      "monotonic_rtt_us": 7547,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 828148
+      }
+    }
+  },
+  {
+    "round": 25,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 166.1,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236936711,\"monotonic_rtt_us\":7720,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":828363}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236936711,
+      "monotonic_rtt_us": 7720,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 828363
+      }
+    }
+  },
+  {
+    "round": 26,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 178.95,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236936940,\"monotonic_rtt_us\":7583,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":828593}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236936940,
+      "monotonic_rtt_us": 7583,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 828593
+      }
+    }
+  },
+  {
+    "round": 27,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 172.8,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236937163,\"monotonic_rtt_us\":7678,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":828816}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236937163,
+      "monotonic_rtt_us": 7678,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 828816
+      }
+    }
+  },
+  {
+    "round": 28,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 176.16,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236937389,\"monotonic_rtt_us\":7597,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":829042}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236937389,
+      "monotonic_rtt_us": 7597,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 829042
+      }
+    }
+  },
+  {
+    "round": 29,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 176.24,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236937616,\"monotonic_rtt_us\":7690,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":829268}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236937616,
+      "monotonic_rtt_us": 7690,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 829268
+      }
+    }
+  },
+  {
+    "round": 30,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 177.11,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236937844,\"monotonic_rtt_us\":7495,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":829496}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236937844,
+      "monotonic_rtt_us": 7495,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 829496
+      }
+    }
+  },
+  {
+    "round": 31,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 165.54,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236938059,\"monotonic_rtt_us\":7597,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":829712}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236938059,
+      "monotonic_rtt_us": 7597,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 829712
+      }
+    }
+  },
+  {
+    "round": 32,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 163.15,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236938273,\"monotonic_rtt_us\":7439,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":829925}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236938273,
+      "monotonic_rtt_us": 7439,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 829925
+      }
+    }
+  },
+  {
+    "round": 33,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 183.45,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236938506,\"monotonic_rtt_us\":7520,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":830159}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236938506,
+      "monotonic_rtt_us": 7520,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 830159
+      }
+    }
+  },
+  {
+    "round": 34,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 173.12,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236938729,\"monotonic_rtt_us\":7533,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":830382}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236938729,
+      "monotonic_rtt_us": 7533,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 830382
+      }
+    }
+  },
+  {
+    "round": 35,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 167.7,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236938947,\"monotonic_rtt_us\":7554,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":830600}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236938947,
+      "monotonic_rtt_us": 7554,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 830600
+      }
+    }
+  },
+  {
+    "round": 36,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 172.1,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236939170,\"monotonic_rtt_us\":7591,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":830822}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236939170,
+      "monotonic_rtt_us": 7591,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 830822
+      }
+    }
+  },
+  {
+    "round": 37,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 171.98,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236939392,\"monotonic_rtt_us\":7614,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":831044}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236939392,
+      "monotonic_rtt_us": 7614,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 831044
+      }
+    }
+  },
+  {
+    "round": 38,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 175.72,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236939609,\"monotonic_rtt_us\":16093,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":831271}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236939609,
+      "monotonic_rtt_us": 16093,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 831271
+      }
+    }
+  },
+  {
+    "round": 39,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 171.54,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236939841,\"monotonic_rtt_us\":7433,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":831493}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236939841,
+      "monotonic_rtt_us": 7433,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 831493
+      }
+    }
+  },
+  {
+    "round": 40,
+    "target": "mc",
+    "exit_code": 0,
+    "wall_elapsed_ms": 172.46,
+    "raw_output": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236940062,\"monotonic_rtt_us\":7989,\"target\":\"MC\",\"target_id\":2,\"cmd\":\"GET_TEMP\",\"req_seq\":4,\"resp_seq\":4,\"temp_info\":{\"temperature_c\":24.50,\"current_temp_centi_c\":2450,\"target_temp_centi_c\":0,\"raw_adc_value\":3200,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":831715}}",
+    "raw_error": "",
+    "parsed": {
+      "status": "SUCCESS",
+      "exit_code": 0,
+      "utc_time_ms": 1793236940062,
+      "monotonic_rtt_us": 7989,
+      "target": "MC",
+      "target_id": 2,
+      "cmd": "GET_TEMP",
+      "req_seq": 4,
+      "resp_seq": 4,
+      "temp_info": {
+        "temperature_c": 24.5,
+        "current_temp_centi_c": 2450,
+        "target_temp_centi_c": 0,
+        "raw_adc_value": 3200,
+        "sensor_status": 0,
+        "sensor_status_str": "OK",
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 831715
+      }
+    }
+  }
+]

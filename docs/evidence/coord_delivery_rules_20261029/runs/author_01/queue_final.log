@@ -1,0 +1,19 @@
+{
+  "mode": "read-only-queue-projection",
+  "runner_status": "not-deployed",
+  "next": {
+    "task": "AUTO-01",
+    "action": "prepare-ready",
+    "readiness_blockers": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "CR-03 accepted deliverable/version is not bound",
+      "CR-03 acceptance evidence path is missing"
+    ]
+  },
+  "limits": "does not launch agents, verify a live server verdict or change status"
+}

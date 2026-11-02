@@ -1,0 +1,4 @@
+
+[stderr]
+fatal: git upload-pack: not our ref 409846a5ce6c1b1d6115736e7129a71d85ebe875
+fatal: remote error: upload-pack: not our ref 409846a5ce6c1b1d6115736e7129a71d85ebe875

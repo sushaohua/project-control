@@ -1,0 +1,209 @@
+[
+  {
+    "name": "server_query",
+    "argv": [
+      "git",
+      "-C",
+      "soc-ap",
+      "-c",
+      "core.sshCommand=ssh -o BatchMode=yes -o ConnectTimeout=5",
+      "ls-remote",
+      "origin",
+      "refs/heads/main"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "started_utc": "2026-10-31T10:17:48.734861+00:00",
+    "exit_code": 0,
+    "log": "server_query.log",
+    "sha256": "248d2487e0bace533a8418d04b52ae663b50a4c77a502b5b9c21829f173d8051"
+  },
+  {
+    "name": "candidate_fetch",
+    "argv": [
+      "git",
+      "-C",
+      "/tmp/qa-hardware-realism-01a19173/soc-ap",
+      "-c",
+      "core.sshCommand=ssh -o BatchMode=yes -o ConnectTimeout=5",
+      "fetch",
+      "--no-tags",
+      "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+      "409846a5ce6c1b1d6115736e7129a71d85ebe875"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "started_utc": "2026-10-31T10:17:51.035994+00:00",
+    "exit_code": 128,
+    "log": "candidate_fetch.log",
+    "sha256": "f182881d4e79ec2b1cff9e955b430fc999bc7470c396f0a2ad17990aa8275ea2"
+  },
+  {
+    "name": "server_snapshot",
+    "argv": [
+      "git",
+      "-C",
+      "/tmp/qa-hardware-realism-01a19173/soc-ap",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "started_utc": "2026-10-31T10:17:55.144528+00:00",
+    "exit_code": 0,
+    "log": "server_snapshot.log",
+    "sha256": "a0dcc5b27c9fa216cc7cd3ec05017c171cc36e2ae2232b662f6e490face38ac0"
+  },
+  {
+    "name": "local_candidate",
+    "argv": [
+      "git",
+      "-C",
+      "soc-ap",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "started_utc": "2026-10-31T10:17:55.146009+00:00",
+    "exit_code": 0,
+    "log": "local_candidate.log",
+    "sha256": "9eaa1fdb363bfd2dc49b8984910a15d387f0bc4740718117aa6abc8c5b369946"
+  },
+  {
+    "name": "local_clean",
+    "argv": [
+      "git",
+      "-C",
+      "soc-ap",
+      "status",
+      "--porcelain"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "started_utc": "2026-10-31T10:17:55.147166+00:00",
+    "exit_code": 0,
+    "log": "local_clean.log",
+    "sha256": "a9f982d8cb8dbc81e6965814c7d33f2249d63fbd3467f8331ddca475f7e4377e"
+  },
+  {
+    "name": "candidate_delta",
+    "argv": [
+      "git",
+      "-C",
+      "soc-ap",
+      "diff",
+      "--stat",
+      "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+      "409846a5ce6c1b1d6115736e7129a71d85ebe875"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "started_utc": "2026-10-31T10:17:55.148968+00:00",
+    "exit_code": 0,
+    "log": "candidate_delta.log",
+    "sha256": "a60e8453b7a43d5c1db2e7e2f15f7b14e78b0cb373e9cae2198f93d760863339"
+  },
+  {
+    "name": "docker_capability",
+    "argv": [
+      "docker",
+      "version",
+      "--format",
+      "{{.Server.Version}}"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "started_utc": "2026-10-31T10:17:55.152016+00:00",
+    "exit_code": 0,
+    "log": "docker_capability.log",
+    "sha256": "e7ed7d162a4ef5bbc61f8eaaff2686d42244ce3723a1ebc707990e31b0c40e5f"
+  },
+  {
+    "name": "freshness_calls",
+    "argv": [
+      "rg",
+      "-n",
+      "dev_state_eval_version_freshness",
+      "services",
+      "tests"
+    ],
+    "cwd": "/tmp/qa-hardware-realism-01a19173/local_snapshot",
+    "started_utc": "2026-10-31T10:23:39.769388+00:00",
+    "exit_code": 0,
+    "log": "freshness_calls.log",
+    "sha256": "668001410974505915e574fb66a3d61104c51f0d5782e1606db368246bbe6834",
+    "scope": "static-inspection-not-product-test"
+  },
+  {
+    "name": "status_and_time",
+    "argv": [
+      "rg",
+      "-n",
+      "ONLINE_TIMEOUT|STALE_TIMEOUT|FRESHNESS_STALE_MS|FRESHNESS_FAULT_MS|\"NORMAL\"|\"DEGRADED\"",
+      "services/device_manager",
+      "contracts/twin/telemetry_types.h"
+    ],
+    "cwd": "/tmp/qa-hardware-realism-01a19173/local_snapshot",
+    "started_utc": "2026-10-31T10:23:39.774638+00:00",
+    "exit_code": 0,
+    "log": "status_and_time.log",
+    "sha256": "a12694c299d5e3b32d892809bcfaed19593a1b73a905ee7ceb1d0477849c0ebe",
+    "scope": "static-inspection-not-product-test"
+  },
+  {
+    "name": "transport",
+    "argv": [
+      "rg",
+      "-n",
+      "serial_read|POLLHUP|check_timeout|uart_mutex|fwd_uart_open|emit_link_state",
+      "services/forward",
+      "core/forward/transport/serial_posix.cpp"
+    ],
+    "cwd": "/tmp/qa-hardware-realism-01a19173/local_snapshot",
+    "started_utc": "2026-10-31T10:23:39.778051+00:00",
+    "exit_code": 0,
+    "log": "transport.log",
+    "sha256": "169413292a875a9d1f711e3a477bb9c6671a074b763a96b421d60ee40bd02315",
+    "scope": "static-inspection-not-product-test"
+  },
+  {
+    "name": "synthetic_jobs",
+    "argv": [
+      "rg",
+      "-n",
+      "DEFAULT_MESH|sin\\(|cos\\(|current_line|pos_x_um =|aisoc_job_step_progress|estop_active",
+      "services/ui_gateway/ui_gateway_job_ctrl.cpp",
+      "contracts/twin/job/job_executor.c"
+    ],
+    "cwd": "/tmp/qa-hardware-realism-01a19173/local_snapshot",
+    "started_utc": "2026-10-31T10:23:39.781544+00:00",
+    "exit_code": 0,
+    "log": "synthetic_jobs.log",
+    "sha256": "ff39d3a0b8bfd2993b9300b8d68736e3318e1fe4377b41e24fe5ffd576cd1d61",
+    "scope": "static-inspection-not-product-test"
+  },
+  {
+    "name": "frontend",
+    "argv": [
+      "rg",
+      "-n",
+      "isConnected = true|system_status|temperature_millic|quality|applyTelemetrySnapshot|updateDeviceVersion|onerror",
+      "browser_hmi/first_release/app.js"
+    ],
+    "cwd": "/tmp/qa-hardware-realism-01a19173/local_snapshot",
+    "started_utc": "2026-10-31T10:23:39.784902+00:00",
+    "exit_code": 0,
+    "log": "frontend.log",
+    "sha256": "b21603996f4b466698e4596e423fda9767fcedb4e868e23f5e5019365c40f00f",
+    "scope": "static-inspection-not-product-test"
+  },
+  {
+    "name": "http_errors",
+    "argv": [
+      "rg",
+      "-n",
+      "ui_gw_job_|send_json_and_close",
+      "services/ui_gateway/ui_gateway_server.cpp"
+    ],
+    "cwd": "/tmp/qa-hardware-realism-01a19173/local_snapshot",
+    "started_utc": "2026-10-31T10:23:39.786522+00:00",
+    "exit_code": 0,
+    "log": "http_errors.log",
+    "sha256": "cc838651db5ea402ca7876e939621389b59433e182895fcd96d3fde84df5ac7a",
+    "scope": "static-inspection-not-product-test"
+  }
+]

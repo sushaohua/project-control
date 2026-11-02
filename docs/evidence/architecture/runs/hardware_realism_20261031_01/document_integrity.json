@@ -1,0 +1,18 @@
+{
+  "checked_utc": "2026-10-31T10:24:17.419136+00:00",
+  "checks": [
+    "frontmatter required fields",
+    "11 defect IDs",
+    "relative evidence links",
+    "log and input hashes",
+    "26 unchanged source file hashes",
+    "clean soc-ap worktree",
+    "report whitespace"
+  ],
+  "result": "passed-document-integrity-only",
+  "whitespace_command_exit": 1,
+  "whitespace_stdout": "",
+  "whitespace_stderr": "",
+  "product_tests_executed": false,
+  "hardware_tests_executed": false
+}

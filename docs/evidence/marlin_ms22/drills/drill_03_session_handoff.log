@@ -1,0 +1,14 @@
+=== MS-22 Drill 03: Session Interruption & Handoff Recovery ===
+
+[Session A]: Completed Stage 1, saved checkpoint to session_stage1_checkpoint.json
+[Session A]: Process killed / context terminated.
+
+[Session B]: Starting fresh cold session (no shared memory)...
+[Session B]: Successfully loaded checkpoint from disk:
+  Previous Author: session-worker-alpha-001
+  Previous Stage:  STAGE_1_FLASH_VERIFIED
+  Target Next:     STAGE_2_PROTOCOL_CASCADE
+[Session B]: Verified workspace.json: 4 repos registered.
+[Session B]: Successfully resumed and completed Stage 2, generated session_stage2_completed.json
+
+=== Drill 03 Complete: Session Interruption & Zero-Memory Resume Verified ===

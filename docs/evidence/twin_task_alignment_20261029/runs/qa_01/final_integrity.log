@@ -1,0 +1,9 @@
+command: python3 inline final SHA256 recheck of manifest and 89 reviewed files
+cwd: /home/sushaohua/workspace/ai_soc_project
+{
+  "manifest_sha256": "9ffb1ff23a29e50f10d6e1634949e2a448a48c2962d988b9aa5404f8b71f3f25",
+  "candidate_manifest_v2_identical": true,
+  "manifest_entries": 89,
+  "recheck_errors": []
+}
+exit_code: 0

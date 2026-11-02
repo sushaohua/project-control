@@ -1,0 +1,75 @@
+[
+  {
+    "id": "tests",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "project-control/tools",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "tests.log"
+  },
+  {
+    "id": "graph",
+    "command": [
+      "python3",
+      "project-control/tools/check_task_graph.py",
+      "--workspace",
+      ".",
+      "--report",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/coord_delivery_rules_20261029/runs/author_01/graph.json"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 1,
+    "log": "graph.log"
+  },
+  {
+    "id": "queue",
+    "command": [
+      "python3",
+      "project-control/tools/coord_queue.py",
+      "--workspace",
+      "."
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 1,
+    "log": "queue.log"
+  },
+  {
+    "id": "done_gate_negative",
+    "command": [
+      "python3",
+      "project-control/tools/check_task_graph.py",
+      "--workspace",
+      ".",
+      "--check-done",
+      "TWIN-01",
+      "--report",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/coord_delivery_rules_20261029/runs/author_01/twin01_done_gate.json"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 1,
+    "log": "done_gate_negative.log"
+  },
+  {
+    "id": "before_done_gate",
+    "command": [
+      "python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/coord_delivery_rules_20261029/runs/author_01/before/project-control/tools/check_task_graph.py",
+      "--workspace",
+      ".",
+      "--check-done",
+      "TWIN-01"
+    ],
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "exit_code": 0,
+    "log": "before_done_gate.log"
+  }
+]

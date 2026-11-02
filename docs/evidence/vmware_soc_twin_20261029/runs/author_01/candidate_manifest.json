@@ -1,0 +1,26 @@
+[
+  {
+    "path": "project-control/docs/planning/vmware_soc_twin_development_plan_20261029.md",
+    "sha256": "1d1c9d26d6126dd7771afdfcd9a7a5f862b8bbcd245cd60b366b64bc36db5b31"
+  },
+  {
+    "path": "project-control/docs/baseline/B0_方案基线.md",
+    "sha256": "2e8e3a7e5e8e86317733dcb3c7d79c34c5b225b2820f9ccd59d7c124b7f79965"
+  },
+  {
+    "path": "project-control/docs/planning/soc_system_architecture_input_register_20261029.md",
+    "sha256": "4c5c6ea97bbb3cb3b1a16e931d2dc18f32667a3517e6da8bae19478473f987cc"
+  },
+  {
+    "path": "project-control/docs/interfaces/soc_temperature_module_architecture_icd_draft_20261028.md",
+    "sha256": "cd68ba84fbf47d0196fd81ae2e96e6fa3bb5f52915d34ded4910948e4a745172"
+  },
+  {
+    "path": "project-control/docs/planning/soc_ipc_selection_and_hmi_prototype_20261029.md",
+    "sha256": "2661e57b10fcae304eca19bce4cd3af7daf21ba2cdf19663ce931d161aedfb4d"
+  },
+  {
+    "path": "README.md",
+    "sha256": "8c2d91d5d4ca48b4bd1a360ffc6591a229b89fe20e095c2e1ee802808e2cde42"
+  }
+]

@@ -1,0 +1,25 @@
+core/forward/transport/serial_posix.cpp:120:    const short err_mask = static_cast<short>(POLLERR | POLLHUP | POLLNVAL);
+core/forward/transport/serial_posix.cpp:171:bool serial_read(SerialContext* ctx,
+core/forward/transport/serial_posix.cpp:196:    const short err_mask = static_cast<short>(POLLERR | POLLHUP | POLLNVAL);
+services/forward/forward_dbus.cpp:60:    pthread_mutex_lock(&state->uart_mutex);
+services/forward/forward_dbus.cpp:65:    pthread_mutex_unlock(&state->uart_mutex);
+services/forward/forward_dbus.cpp:89:    pthread_mutex_lock(&state->uart_mutex);
+services/forward/forward_dbus.cpp:95:    pthread_mutex_unlock(&state->uart_mutex);
+services/forward/forward_dbus.cpp:116:    pthread_mutex_lock(&state->uart_mutex);
+services/forward/forward_dbus.cpp:119:    pthread_mutex_unlock(&state->uart_mutex);
+services/forward/forward_uart.cpp:19:static bool check_timeout(uint32_t start_ms, uint32_t timeout_ms) {
+services/forward/forward_uart.cpp:25:aisoc_fwd_status_t fwd_uart_open(forward_service_state_t* state) {
+services/forward/forward_uart.cpp:108:    while (!check_timeout(start_ms, params->timeout_ms)) {
+services/forward/forward_uart.cpp:110:        minimc::serial_read(&state->serial_ctx, &s_buf, 20, &bytes_read);
+services/forward/forward_service.cpp:33:    pthread_mutex_init(&state->uart_mutex, nullptr);
+services/forward/forward_service.cpp:71:    fwd_uart_open(state);
+services/forward/forward_service.cpp:100:    pthread_mutex_lock(&state->uart_mutex);
+services/forward/forward_service.cpp:102:        fwd_uart_open(state);
+services/forward/forward_service.cpp:105:        pthread_mutex_unlock(&state->uart_mutex);
+services/forward/forward_service.cpp:121:    pthread_mutex_unlock(&state->uart_mutex);
+services/forward/forward_service.cpp:154:aisoc_fwd_status_t forward_service_emit_link_state(
+services/forward/forward_service.cpp:179:    pthread_mutex_lock(&state->uart_mutex);
+services/forward/forward_service.cpp:181:    pthread_mutex_unlock(&state->uart_mutex);
+services/forward/forward_service.cpp:182:    pthread_mutex_destroy(&state->uart_mutex);
+
+[stderr]

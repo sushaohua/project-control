@@ -1,0 +1,1 @@
+{"error": "task graph has structural errors: AUTO-01/CR-03: shared writes lack dependency ordering; AUTO-02/CR-03: shared writes lack dependency ordering"}

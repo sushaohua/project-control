@@ -1,0 +1,22 @@
+[
+  {
+    "path": "project-control/docs/baseline/B0_方案基线.md",
+    "sha256": "46a3f87a514312ea27160ceaf407aeae5fc318126d93ef4ba42ea04526ce9b34"
+  },
+  {
+    "path": "project-control/docs/planning/soc_system_architecture_input_register_20261029.md",
+    "sha256": "57151d51062307188daf47e65932aef49972c7da4ab73db5d7e99885a49cd25a"
+  },
+  {
+    "path": "project-control/docs/interfaces/soc_temperature_module_architecture_icd_draft_20261028.md",
+    "sha256": "0c7b4ed64d7c388f3bc4075266e9bb80d05ec8243dff1d0719047ae4e5a751ae"
+  },
+  {
+    "path": "project-control/docs/planning/soc_ipc_selection_and_hmi_prototype_20261029.md",
+    "sha256": "f64733879e00cdb4d3632c4419325b31f1d677787305967b4a46cb19440ee576"
+  },
+  {
+    "path": "README.md",
+    "sha256": "a0db8f72c752dbdac9763fee475aa64bcde152afa972bc7b60f77f75cc0b40f0"
+  }
+]

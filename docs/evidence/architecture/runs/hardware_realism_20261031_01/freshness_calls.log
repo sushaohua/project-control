@@ -1,0 +1,7 @@
+services/device_manager/device_manager_state.h:127:aisoc_dev_status_t dev_state_eval_version_freshness(
+tests/device_manager/twin/test_device_manager.cpp:584:    TEST_CHECK(dev_state_eval_version_freshness(&state, t0 + (AISOC_DEV_VER_ONLINE_TIMEOUT_NS / 2ULL)) == AISOC_DEV_OK, "Eval delta online");
+tests/device_manager/twin/test_device_manager.cpp:590:    TEST_CHECK(dev_state_eval_version_freshness(&state, t0 + AISOC_DEV_VER_ONLINE_TIMEOUT_NS + 1000ULL) == AISOC_DEV_OK, "Eval delta stale");
+tests/device_manager/twin/test_device_manager.cpp:596:    TEST_CHECK(dev_state_eval_version_freshness(&state, t0 + AISOC_DEV_VER_STALE_TIMEOUT_NS + 1000ULL) == AISOC_DEV_OK, "Eval delta offline");
+services/device_manager/device_manager_state.cpp:680:aisoc_dev_status_t dev_state_eval_version_freshness(
+
+[stderr]

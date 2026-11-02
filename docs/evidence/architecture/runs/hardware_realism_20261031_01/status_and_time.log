@@ -1,0 +1,13 @@
+services/device_manager/device_manager_state.h:90:#define AISOC_DEV_VER_ONLINE_TIMEOUT_NS  5000000000ULL  /* 5 seconds: ONLINE threshold */
+services/device_manager/device_manager_state.h:91:#define AISOC_DEV_VER_STALE_TIMEOUT_NS   15000000000ULL /* 15 seconds: STALE threshold */
+services/device_manager/device_manager_state.cpp:197:        strncpy(state->snapshot.system_status_desc, "DEGRADED", sizeof(state->snapshot.system_status_desc) - 1U);
+services/device_manager/device_manager_state.cpp:205:        strncpy(state->snapshot.system_status_desc, "NORMAL", sizeof(state->snapshot.system_status_desc) - 1U);
+services/device_manager/device_manager_state.cpp:207:        strncpy(state->snapshot.system_status_desc, "DEGRADED", sizeof(state->snapshot.system_status_desc) - 1U);
+services/device_manager/device_manager_state.cpp:671:    if (delta_ns < AISOC_DEV_VER_ONLINE_TIMEOUT_NS) {
+services/device_manager/device_manager_state.cpp:673:    } else if (delta_ns < AISOC_DEV_VER_STALE_TIMEOUT_NS) {
+contracts/twin/telemetry_types.h:103:#define AISOC_FRESHNESS_STALE_MS             3000U
+contracts/twin/telemetry_types.h:104:#define AISOC_FRESHNESS_FAULT_MS             10000U
+contracts/twin/telemetry_types.h:333:    if (elapsed_ms < AISOC_FRESHNESS_STALE_MS) {
+contracts/twin/telemetry_types.h:335:    } else if (elapsed_ms < AISOC_FRESHNESS_FAULT_MS) {
+
+[stderr]

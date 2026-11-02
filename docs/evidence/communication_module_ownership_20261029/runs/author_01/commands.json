@@ -1,0 +1,15 @@
+[
+  {
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "command": [
+      "python3",
+      "project-control/tools/check_task_graph.py",
+      "--workspace",
+      ".",
+      "--report",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/communication_module_ownership_20261029/runs/author_01/graph_final.json"
+    ],
+    "exit_code": 0,
+    "log": "graph_final.log"
+  }
+]

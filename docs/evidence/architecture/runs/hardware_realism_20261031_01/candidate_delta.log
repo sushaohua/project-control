@@ -1,0 +1,14 @@
+ browser_hmi/first_release/app.js               | 288 +++++++++++++++++++++++++
+ browser_hmi/first_release/index.html           | 243 ++++++++++++++++++++-
+ browser_hmi/first_release/styles.css           | 288 +++++++++++++++++++++++++
+ browser_hmi/first_release/test_hmi_contract.py |  28 +++
+ services/ui_gateway/CMakeLists.txt             |   1 +
+ services/ui_gateway/ui_gateway_job_ctrl.cpp    | 218 +++++++++++++++++++
+ services/ui_gateway/ui_gateway_job_ctrl.h      |  95 ++++++++
+ services/ui_gateway/ui_gateway_server.cpp      | 145 +++++++++++++
+ services/ui_gateway/ui_gateway_service.cpp     |   8 +
+ tests/ui_gateway/twin/CMakeLists.txt           |   1 +
+ tests/ui_gateway/twin/test_ui_gateway.cpp      |  73 ++++++-
+ 11 files changed, 1384 insertions(+), 4 deletions(-)
+
+[stderr]

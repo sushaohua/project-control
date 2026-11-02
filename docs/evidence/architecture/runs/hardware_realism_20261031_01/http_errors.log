@@ -1,0 +1,28 @@
+219:static void send_json_and_close(client_conn_t* client, int code, const char* json_body) {
+230:    ui_gw_job_get_status_json(buf, sizeof(buf));
+231:    send_json_and_close(client, 200, buf);
+237:    ui_gw_job_get_model_list_json(buf, sizeof(buf));
+238:    send_json_and_close(client, 200, buf);
+255:    ui_gw_job_start(model);
+256:    send_json_and_close(client, 200, "{\"status\":\"ok\",\"message\":\"Job started\"}");
+261:    ui_gw_job_pause();
+262:    send_json_and_close(client, 200, "{\"status\":\"ok\",\"message\":\"Job paused\"}");
+267:    ui_gw_job_resume();
+268:    send_json_and_close(client, 200, "{\"status\":\"ok\",\"message\":\"Job resumed\"}");
+273:    ui_gw_job_cancel();
+274:    send_json_and_close(client, 200, "{\"status\":\"ok\",\"message\":\"Job cancelled\"}");
+287:    ui_gw_job_jog(axis, step);
+290:    send_json_and_close(client, 200, buf);
+307:    ui_gw_job_home(axes);
+308:    send_json_and_close(client, 200, "{\"status\":\"ok\",\"message\":\"Homing triggered\"}");
+314:    ui_gw_job_get_mesh_json(buf, sizeof(buf));
+315:    send_json_and_close(client, 200, buf);
+320:    ui_gw_job_trigger_leveling();
+321:    send_json_and_close(client, 200, "{\"status\":\"ok\",\"message\":\"Leveling triggered\"}");
+326:    ui_gw_job_trigger_estop();
+327:    send_json_and_close(client, 200, "{\"status\":\"ok\",\"estop_active\":true,\"message\":\"Emergency stop triggered!\"}");
+332:    ui_gw_job_clear_estop();
+333:    send_json_and_close(client, 200, "{\"status\":\"ok\",\"estop_active\":false,\"message\":\"E-STOP cleared\"}");
+379:        send_json_and_close(client, 200, "{\"status\":\"ok\",\"message\":\"Upload staged\"}");
+
+[stderr]

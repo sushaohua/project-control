@@ -1,0 +1,11 @@
+{
+  "drill_id": "DRILL-SESS-03",
+  "stage": "STAGE_2_PROTOCOL_CASCADE_COMPLETED",
+  "resumed_by_session": "session-worker-beta-002",
+  "preceding_checkpoint": "session_stage1_checkpoint.json",
+  "cascade_test": "GET_VERSION & PING PASS",
+  "handoff_to_coord": {
+    "receiver": "COORD",
+    "status": "READY_FOR_RECEIPT"
+  }
+}

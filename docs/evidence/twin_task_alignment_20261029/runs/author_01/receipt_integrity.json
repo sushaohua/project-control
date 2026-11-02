@@ -1,0 +1,10 @@
+{
+  "received_at": "2026-10-29T14:17:17+08:00",
+  "candidate_files": 89,
+  "candidate_manifest_sha256": "9ffb1ff23a29e50f10d6e1634949e2a448a48c2962d988b9aa5404f8b71f3f25",
+  "qa_report_sha256": "a50cf9b8e942344deb920185a419235bf0f8683ff633f3e18be229d4ce24b9a4",
+  "arch_report_sha256": "55fc1f267a33ceff3aa486467adfd77f66c76853a617b5bcd5a6d11c03bd64cf",
+  "historical_done_preserved": 46,
+  "input_task_states_preserved": 86,
+  "errors": []
+}

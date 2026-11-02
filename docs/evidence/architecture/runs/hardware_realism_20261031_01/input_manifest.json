@@ -1,0 +1,26 @@
+[
+  {
+    "path": "project-control/.agents/rules/codex_qa_review.md",
+    "sha256": "37a9d3d925c96a58d604712ccb96ffead24719441ea004a5d0ea0672426ac9d7"
+  },
+  {
+    "path": "project-control/.agents/rules/delivery_and_coord_gate.md",
+    "sha256": "15a1b121a7a8fcde0cba6285f02b6966008f5c59c77dfc3f19083d63746cf340"
+  },
+  {
+    "path": "project-control/.agents/rules/templates/QA审查报告模板.md",
+    "sha256": "9ed0a5a5f7860877f5fad96f1aeb86fda2c76059fef216406d05534391c5462c"
+  },
+  {
+    "path": "project-control/docs/planning/coord_autorun_tasklist_20261029.md",
+    "sha256": "6d2cd39621596491ef97b4c95ee77e315c2d1b35a23ca3d22427a98b6e2cc20e"
+  },
+  {
+    "path": "project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md",
+    "sha256": "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54"
+  },
+  {
+    "path": "project-control/manifest.yaml",
+    "sha256": "d6d716656ed92a64f7bebbd5c41d57f6288966b414e205924fd116d5747a7356"
+  }
+]

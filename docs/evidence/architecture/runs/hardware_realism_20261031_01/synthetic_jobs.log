@@ -1,0 +1,44 @@
+services/ui_gateway/ui_gateway_job_ctrl.cpp:17:static const float DEFAULT_MESH[5][5] = {
+services/ui_gateway/ui_gateway_job_ctrl.cpp:38:            s_mesh[r][c] = DEFAULT_MESH[r][c];
+services/ui_gateway/ui_gateway_job_ctrl.cpp:48:    if (s_job.estop_active) state_str = "ESTOP_FAULT";
+services/ui_gateway/ui_gateway_job_ctrl.cpp:56:        "{\"job_state\":\"%s\",\"model_name\":\"%s\",\"current_line\":%u,"
+services/ui_gateway/ui_gateway_job_ctrl.cpp:60:        "\"estop_active\":%s,\"is_homed\":%s,\"last_gcode\":\"%s\"}",
+services/ui_gateway/ui_gateway_job_ctrl.cpp:61:        state_str, s_job.model_name, s_job.current_line, s_job.total_lines,
+services/ui_gateway/ui_gateway_job_ctrl.cpp:64:        s_job.heater_duty_percent, s_job.estop_active ? "true" : "false",
+services/ui_gateway/ui_gateway_job_ctrl.cpp:71:    if (s_job.estop_active) return UI_GW_ERR_INVALID_PARAM;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:77:    s_job.current_line = 0U;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:94:    if (s_job.estop_active || s_job.state != UI_JOB_STATE_PAUSED) return UI_GW_ERR_INVALID_PARAM;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:102:    s_job.current_line = 0U;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:109:    if (s_job.estop_active) return UI_GW_ERR_INVALID_PARAM;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:129:    if (s_job.estop_active) return UI_GW_ERR_INVALID_PARAM;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:157:    if (s_job.estop_active) return UI_GW_ERR_INVALID_PARAM;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:160:            s_mesh[r][c] = DEFAULT_MESH[r][c];
+services/ui_gateway/ui_gateway_job_ctrl.cpp:180:    s_job.estop_active = true;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:187:    s_job.estop_active = false;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:198:    if (s_job.state != UI_JOB_STATE_PRINTING || s_job.estop_active) return;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:203:    if (s_job.current_line < s_job.total_lines) {
+services/ui_gateway/ui_gateway_job_ctrl.cpp:204:        s_job.current_line += 1U;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:205:        s_job.progress_permille = (s_job.current_line * 1000U) / s_job.total_lines;
+services/ui_gateway/ui_gateway_job_ctrl.cpp:206:        s_job.pos_x_mm = 50.0f + 30.0f * std::sin((float)s_job.current_line * 0.1f);
+services/ui_gateway/ui_gateway_job_ctrl.cpp:207:        s_job.pos_y_mm = 50.0f + 30.0f * std::cos((float)s_job.current_line * 0.1f);
+services/ui_gateway/ui_gateway_job_ctrl.cpp:208:        s_job.pos_z_mm = 0.2f * (float)(s_job.current_line / 10U + 1U);
+contracts/twin/job/job_executor.c:51:    if (exec->engine.estop_active) {
+contracts/twin/job/job_executor.c:84:            return aisoc_job_step_progress(&exec->engine, 1U);
+contracts/twin/job/job_executor.c:89:        return aisoc_job_step_progress(&exec->engine, 1U);
+contracts/twin/job/job_executor.c:101:        exec->pos_x_um = 0;
+contracts/twin/job/job_executor.c:107:        if (cmd->has_x != 0U) { exec->pos_x_um = 0; exec->homed_mask |= MINIMC_HOMED_X; }
+contracts/twin/job/job_executor.c:116:        return aisoc_job_step_progress(&exec->engine, 1U);
+contracts/twin/job/job_executor.c:133:        exec->pos_x_um = cmd->pos_x_um;
+contracts/twin/job/job_executor.c:148:    return aisoc_job_step_progress(&exec->engine, 1U);
+contracts/twin/job/job_executor.c:172:        return aisoc_job_step_progress(&exec->engine, 1U);
+contracts/twin/job/job_executor.c:184:    if (exec->engine.estop_active) {
+contracts/twin/job/job_executor.c:211:    if (exec->engine.estop_active) {
+contracts/twin/job/job_executor.c:227:    if (exec->engine.estop_active) {
+contracts/twin/job/job_executor.c:338:    exec->pos_x_um = report->pos_x_um;
+contracts/twin/job/job_executor.c:358:    out_report->pos_x_um = exec->pos_x_um;
+contracts/twin/job/job_executor.c:376:    out_snapshot->current_line = exec->engine.current_line;
+contracts/twin/job/job_executor.c:380:        const uint64_t num = (uint64_t)exec->engine.current_line * 1000ULL;
+contracts/twin/job/job_executor.c:388:    out_snapshot->estop_active = exec->engine.estop_active ? 1U : 0U;
+contracts/twin/job/job_executor.c:389:    out_snapshot->pos_x_um = exec->pos_x_um;
+
+[stderr]

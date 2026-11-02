@@ -1,0 +1,15 @@
+{
+  "AGENTS.md": "6b7ddc5fe1ee61b3a0b6584c42e225dbae97d7021a2e85d5bff317a29de72bc0",
+  "README.md": "7f7ef56b7e3594e48d395010ef2d79f7f4fcdf250c73bc56af27f394dc556043",
+  "project-control/.agents/rules/04_公共看板与读写协议.md": "64d17311e583aaffe93b81314460b610477b1ba80202ccf6f61dd012a8733e99",
+  "project-control/.agents/rules/codex_qa_review.md": "4bf6e84c0ba74dc38eed6dad835a3c930721536dcad6b1e863adc37ee688795e",
+  "project-control/.agents/rules/templates/任务卡模板.md": "bb886fd1ee82aff63def03780f6609f228b67c2afd8eb6a60298e3b5365a34b6",
+  "project-control/.agents/rules/templates/角色任务提示词.md": "5408cbf1c2f7dccfa22d4484da5c7aa1fdfc8f448bd74b71d565490502541552",
+  "project-control/.agents/rules/templates/QA审查报告模板.md": "96460ed701f73afdad2e58657b5ca4157d29cceca6b1342cf2417f5ee64a6509",
+  "project-control/docs/guides/templates/task_run_record.md": "e43285eb27f3114edf863d67bdf42b705b7453fb55f508280caab7a10749e958",
+  "project-control/tools/check_task_graph.py": "a34380c2d83450021a354e933711555e3f66462f99ae7f7141399eade1090bed",
+  "project-control/tools/test_check_task_graph.py": "d5c0c2c1b0928743e8d89eef7b53979f0fa9c42749ffb643408d33c196525863",
+  "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md": "d690f72f148a2fa1c5a0c5dd63afcb27d9a2fa7c51c478e85cabca4f1b486ffc",
+  "project-control/docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md": "a1bf81d6d188589626ec52532b488fbef638e181c91a926bde0279afd9a9b091",
+  "project-control/docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md": "58896a2b7be4bb9e1a907c3c1e5c6a614eac11bf25ed274e7e3a572a4492ee16"
+}

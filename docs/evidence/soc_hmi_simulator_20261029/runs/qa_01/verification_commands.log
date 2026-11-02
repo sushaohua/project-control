@@ -1,0 +1,21 @@
+UTC 2026-10-29T03:05:53Z
+$ node --check artifacts/soc_hmi_simulator_20261029/app.js
+exit=0
+UTC 2026-10-29T03:05:53Z
+$ node project-control/docs/evidence/soc_hmi_simulator_20261029/runs/qa_01/node_state_checks.js
+PASS UNKNOWN -> FRESH after valid local sample
+PASS stale retains last value and only expires TH
+PASS sensor FAULT has no temperature value
+PASS disconnect retains stale value; recovery waits for a new sample
+PASS restart clears snapshots/history, increments generation, then recovers on sample
+PASS history bounded at 60; invalid scenario ignored
+exit=0
+UTC 2026-10-29T03:05:53Z
+$ rg -n -i 'fetch\(|XMLHttpRequest|WebSocket|EventSource|https?://|navigator\.serial|serialport|writeFile|heater|motor|gpio' artifacts/soc_hmi_simulator_20261029
+rg_exit=1 (no matches expected)
+UTC 2026-10-29T03:05:53Z
+$ browser executable/module availability probe
+playwright: unavailable
+puppeteer: unavailable
+jsdom: unavailable
+probe_exit=0

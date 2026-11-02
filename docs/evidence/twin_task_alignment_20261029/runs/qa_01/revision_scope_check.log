@@ -1,0 +1,58 @@
+command: python3 inline read-only YAML check
+cwd: /home/sushaohua/workspace/ai_soc_project
+{
+  "changed_existing_cards": 40,
+  "changed_ids": [
+    "CR-07",
+    "MS-01",
+    "MS-02",
+    "MS-03",
+    "MS-04",
+    "MS-05",
+    "MS-06",
+    "MS-08",
+    "MS-09",
+    "MS-10",
+    "MS-11",
+    "MS-12",
+    "MS-13",
+    "MS-14",
+    "MS-15",
+    "MS-16",
+    "MS-17",
+    "MS-18",
+    "MS-19",
+    "MS-20",
+    "MS-21",
+    "MS-22",
+    "TASK-001",
+    "TASK-002",
+    "TASK-003",
+    "TASK-004",
+    "TASK-005",
+    "TASK-006",
+    "TASK-007",
+    "TASK-008",
+    "TASK-009",
+    "TASK-010",
+    "TASK-011",
+    "TASK-012",
+    "TASK-013",
+    "TASK-014",
+    "TASK-015",
+    "TASK-016",
+    "TASK-017",
+    "TASK-018"
+  ],
+  "revision_errors": [],
+  "signature_revision_errors": [],
+  "graph_summary": {
+    "canonical_task_count": 102,
+    "microtask_count": 60,
+    "errors": [],
+    "dependency_cycles": [],
+    "shared_write_pair_count": 85,
+    "unordered_shared_write_pair_count": 0
+  }
+}
+exit_code: 0

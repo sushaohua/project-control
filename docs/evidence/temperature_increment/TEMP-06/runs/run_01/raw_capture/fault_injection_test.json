@@ -1,0 +1,27 @@
+[
+  {
+    "phase": "baseline_normal",
+    "exit_code": 0,
+    "out": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236966564,\"monotonic_rtt_us\":8562,\"target\":\"TH\",\"target_id\":3,\"cmd\":\"GET_TEMP\",\"req_seq\":5,\"resp_seq\":5,\"temp_info\":{\"temperature_c\":121.58,\"current_temp_centi_c\":12158,\"target_temp_centi_c\":0,\"raw_adc_value\":2062,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":899007}}"
+  },
+  {
+    "phase": "fault_inject_disable_usart",
+    "exit_code": 0,
+    "out": "[OK] 已成功切断 [TH] USART1 物理通信!\n{\n  \"raw_hex\": \"0x00000000\",\n  \"status\": \"CLOSED (已切断/去使能)\",\n  \"UEN\": false,\n  \"TEN\": false,\n  \"REN\": false,\n  \"IDLEIEN\": false,\n  \"RDBFIE\": false,\n  \"role\": \"TH\",\n  \"uart\": \"USART1\",\n  \"desc\": \"TH-MC 级联通信串口 (连接主控)\",\n  \"probe_id\": \"0483:3748:\",\n  \"ctrl1_addr\": \"0x4001100C\"\n}"
+  },
+  {
+    "phase": "query_under_fault",
+    "exit_code": 1,
+    "out": "{\"status\":\"TIMEOUT\",\"exit_code\":1,\"utc_time_ms\":1793236968420,\"target\":\"TH\",\"cmd\":\"GET_TEMP\",\"req_seq\":5,\"error_msg\":\"Timeout waiting for response from target 0x03 after 300 ms\",\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0}"
+  },
+  {
+    "phase": "fault_recovery_enable_usart",
+    "exit_code": 0,
+    "out": "[OK] 已成功开通恢复 [TH] USART1 物理通信!\n{\n  \"raw_hex\": \"0x0000202C\",\n  \"status\": \"OPEN (正常使能)\",\n  \"UEN\": true,\n  \"TEN\": true,\n  \"REN\": true,\n  \"IDLEIEN\": false,\n  \"RDBFIE\": true,\n  \"role\": \"TH\",\n  \"uart\": \"USART1\",\n  \"desc\": \"TH-MC 级联通信串口 (连接主控)\",\n  \"probe_id\": \"0483:3748:\",\n  \"ctrl1_addr\": \"0x4001100C\"\n}"
+  },
+  {
+    "phase": "query_after_recovery",
+    "exit_code": 0,
+    "out": "{\"status\":\"SUCCESS\",\"exit_code\":0,\"utc_time_ms\":1793236970526,\"monotonic_rtt_us\":8411,\"target\":\"TH\",\"target_id\":3,\"cmd\":\"GET_TEMP\",\"req_seq\":5,\"resp_seq\":5,\"temp_info\":{\"temperature_c\":121.27,\"current_temp_centi_c\":12127,\"target_temp_centi_c\":0,\"raw_adc_value\":2070,\"sensor_status\":0,\"sensor_status_str\":\"OK\",\"heater_duty_percent\":0,\"sample_timestamp_ms\":902271}}"
+  }
+]

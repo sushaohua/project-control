@@ -1,0 +1,13 @@
+{
+  "drill_id": "DRILL-SESS-03",
+  "stage": "STAGE_1_FLASH_VERIFIED",
+  "timestamp": "2026-10-28T18:35:00+08:00",
+  "author_session": "session-worker-alpha-001",
+  "verified_hardware": {
+    "mc_uid": "053023904C96C0000D819709",
+    "th_uid": "053173C58023C000127C0707",
+    "mc_vtor": "0x08020000",
+    "th_vtor": "0x08004000"
+  },
+  "next_required_stage": "STAGE_2_PROTOCOL_CASCADE"
+}

@@ -1,0 +1,31 @@
+command: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s project-control/tools -p test_check_task_graph.py -v
+cwd: /home/sushaohua/workspace/ai_soc_project
+test_check_task_graph_scale_and_params (test_check_task_graph.TestCodingStandards) ... ok
+test_candidate_descriptor_rejects_bogus_commits (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 10: 候选清单中填入全 0/全 1 等伪造 commit 必须报错 ... ok
+test_done_acceptance_rejects_rejected_decision (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 8: 独立评审结论为 REJECTED 必须拒绝 Done 验收 ... ok
+test_done_acceptance_rejects_self_review (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 7: 作者兼独立评审者必须拒绝 Done 验收 ... ok
+test_done_acceptance_rejects_uncompleted_predecessor (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 9: 前置任务非 Done 时，本任务不能被接受为 Done ... ok
+test_duplicate_task_id_rejected (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 2: 重复 Task ID 必须非零退出并报告错误 ... ok
+test_glob_write_scope_overlap_detected (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 3: glob 路径包含（如 ** 与具体文件）无依赖顺序时必须被拦截 ... ok
+test_readiness_blocker_on_blocked_task (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 4: 带有 blocked=true 的任务必须阻止推进到 Ready/InProgress ... ok
+test_readiness_blocker_on_bogus_commit (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 6: dispatch_binding 中填入 bogus commit 时必须拦截 ... ok
+test_readiness_blocker_on_expired_lease (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 5: 租约过期的任务必须生成 blocker ... ok
+test_twin_cards_use_full_microtask_gates (test_check_task_graph.TestTaskGraphNegativeCases)
+新任务族不得绕过结构、依赖和Ready门禁。 ... ok
+test_unquoted_colon_yaml_causes_error (test_check_task_graph.TestTaskGraphNegativeCases)
+反例 1: YAML 含未引用冒号导致解析异常，工具必须报错并定位 ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.008s
+
+OK
+exit_code: 0

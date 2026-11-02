@@ -1,0 +1,136 @@
+command: python3 /tmp/qa_integrity.py
+cwd: /home/sushaohua/workspace/ai_soc_project
+{
+  "candidate_manifest_sha256": "9ffb1ff23a29e50f10d6e1634949e2a448a48c2962d988b9aa5404f8b71f3f25",
+  "manifest_entries": 89,
+  "missing": [],
+  "hash_mismatches": [],
+  "input_card_count": 86,
+  "status_drift": [],
+  "blocked_drift": [],
+  "done_hash_drift": [],
+  "twin_card_count": 16,
+  "twin_cards": [
+    {
+      "id": "TWIN-01",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-02",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-03",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-04",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-05",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-06",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-07",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-08",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-09",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-10",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-11",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-12",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-13",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-14",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-15",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    },
+    {
+      "id": "TWIN-16",
+      "status": "Backlog",
+      "blocked": "false",
+      "owner": "null",
+      "lease": "null"
+    }
+  ],
+  "coverage_count": 102,
+  "coverage_status_counts": {
+    "Backlog": 55,
+    "Verify": 1,
+    "Done": 46
+  },
+  "consistency_errors": [],
+  "new_broken_links": []
+}
+exit_code: 0

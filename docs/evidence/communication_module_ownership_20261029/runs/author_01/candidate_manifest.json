@@ -1,0 +1,22 @@
+{
+  "README.md": "d47bc9e90fcafd921436e86ac56daae3777f59562895f7b3bb471081cb229b81",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-02.md": "4a7c1a5faeadc774e9b12742363265991a7e89714e5d08fe0e1d87b5798357c4",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-04.md": "188052805c849dbd355b76f273e9062210df54b27a04c782f85d1f16b04551e8",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-05.md": "3c36990e1ee463047678decf18d5787e84535a66ee1d7dff45bcb5bbe2af361a",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-06.md": "ec4cc377aa6580e5df0bcfe0ebaa8ed91c49f71c3b02a9f41900e6720ee693a0",
+  "project-control/.agents/rules/02_模块与Agent职责.md": "c8f62635265ccf0cc19d1ecd9285e0948b6f048ca1b9fa7c2b9ed23d491160e6",
+  "project-control/.agents/rules/06_通信工程师职责与接口边界.md": "45d37e6f242c08c9e5f890ed876e4197016b7773b7fc4701e6e0970afda57845",
+  "project-control/docs/baseline/B0_方案基线.md": "b16e4365baf876b059ac80533436b0fed8137a668a7907639a555a2d5391ee40",
+  "project-control/docs/planning/communication_modules_ownership_20261029.md": "0265d387e6278b1171485a7f3e9c5441a4bb94c9b0edb45dce6f7e2143396c4b",
+  "project-control/docs/planning/coord_autorun_queue_20261029.yaml": "c99c08dad46637b06bb54d8aa0b3f33322b9a6f88573909d264c66cc690f3b2a",
+  "project-control/docs/planning/coord_autorun_tasklist_20261029.md": "fcd0810424fc2c5b658e10f977b83be18be6da6833139df9c83b6815506985e8",
+  "project-control/docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md": "d7ed9c3a0ebccda331da0789c78031061c146bc3d6d455fa78b76113b09c2b80",
+  "project-control/docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md": "6d066f9958c4383b8872a60998a4a5f2d88b8dca958c79a9fcfce6b402a507c8",
+  "soc-ap/README.md": "bb74e5b133093468c06a6d067141c741119239beb22d63274ed8a019dd44e438",
+  "soc-ap/middleware/README.md": "b23ed52dc1cb25fa13c27d39d4ae42d38cb447b839b85eb698f65917f6a66fa7",
+  "soc-ap/middleware/dbus/README.md": "54e96498d89e2eec4569605a9fccea3129a01d7d0a27e27640892e8779b898d2",
+  "soc-ap/middleware/dds/README.md": "f420e6068a5eaaf30dad3a6cd75a910ba82e82b932736ba0940b8f20267a2c3f",
+  "soc-ap/third_party/README.md": "3521f8b5352767b95721df0bd9798eda2344e88d520338889488a777332377aa",
+  "soc-ap/third_party/dbus/README.md": "2e86153089a9963144fc5e0e726db2ac337e78e4e9d71d100cae8a9d02ee75b4",
+  "soc-ap/third_party/dds/README.md": "d5d4e887ed5cd2ea9918df2c350cae7ec502e768fa40bbe43fa3064b9cce42b3"
+}

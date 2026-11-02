@@ -1,0 +1,25 @@
+=== MS-22 Drill 02: Candidate Version Invalidation & Re-verification ===
+
+[Step 1: Upstream Release RC1]
+RC1 Artifact SHA256: 72848027210dd936ee8df064a4403953b52b991a2789cd7b302f420ae451a1b0
+RC1 QA Report SHA256: c7c749389f5fe1cb6297d8319ad3a4ca11a146794ad7a2d0a2ccd9042c984074
+
+[Step 2: Upstream Bug Fix -> RC2 Release]
+RC2 Artifact SHA256: 6ba70ff50b5456120b26f8573044ff2296dfadb55334877cd2991d5446b1d780
+
+[Step 3: Downstream Consumer Checks Candidate Match]
+  [REJECTED] Downstream dependency mismatch!
+  Expected: 72848027210dd936ee8df064a4403953b52b991a2789cd7b302f420ae451a1b0
+  Received: 6ba70ff50b5456120b26f8573044ff2296dfadb55334877cd2991d5446b1d780
+  -> Old RC1 approval CANNOT be applied to RC2!
+
+[Step 4: Re-running Independent QA Verification on RC2]
+New RC2 QA Report SHA256: bdf163fa1201e0419b5d7cdb3e9156f8aa026a26402358771a88e80ad22c97ce
+
+[Step 5: COORD Updates Task Card Binding]
+Task Card successfully updated with new binding:
+  accepted_version: 6ba70ff50b5456120b26f8573044ff2296dfadb55334877cd2991d5446b1d780
+  report_sha256:    bdf163fa1201e0419b5d7cdb3e9156f8aa026a26402358771a88e80ad22c97ce
+-> Step 5 PASSED: Clean version invalidation and re-binding cycle achieved.
+
+=== Drill 02 Complete: Version Change & Invalidation Cycle Successfully Verified ===

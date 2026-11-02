@@ -1,0 +1,18 @@
+=== MS-22 Drill 01: Missing Inputs & Out-of-Bounds Rejection ===
+
+[Case 1: Missing Dispatch Binding & Unmet Predecessor]
+Card Status: Ready
+Blockers Detected (3):
+  - [BLOCKED] dispatch input commit/diff contains invalid/bogus hash
+  - [BLOCKED] NON-EXISTENT-PRED is not Done
+  - [BLOCKED] NON-EXISTENT-PRED acceptance evidence file does not exist: docs/none.md
+-> Case 1 PASSED: Gating mechanism successfully intercepted missing inputs and unmet predecessor.
+
+[Case 2: Escaping / Unbounded Write Scope]
+Scope Violations Detected (3):
+  - [VIOLATION] unbounded/escaping write path: ../../etc/passwd
+  - [VIOLATION] unbounded/escaping write path: **
+  - [VIOLATION] allowed_paths differs from write_scope
+-> Case 2 PASSED: Gating mechanism successfully intercepted path escape and boundary discrepancy.
+
+=== Drill 01 Complete: All 2 Gating Defenses Successfully Verified ===

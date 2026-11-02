@@ -1,0 +1,66 @@
+[
+  {
+    "id": "baseline_tool_tests",
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin_task_alignment_20261029/runs/author_01/before/project-control/tools",
+      "-p",
+      "test_check_task_graph.py",
+      "-v"
+    ],
+    "exit_code": 1,
+    "log": "baseline_tool_tests_final.log"
+  },
+  {
+    "id": "graph",
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "command": [
+      "python3",
+      "project-control/tools/check_task_graph.py",
+      "--workspace",
+      ".",
+      "--report",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin_task_alignment_20261029/runs/author_01/graph_final.json"
+    ],
+    "exit_code": 0,
+    "log": "graph_final.log"
+  },
+  {
+    "id": "tool_tests",
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "project-control/tools",
+      "-p",
+      "test_check_task_graph.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "log": "tool_tests_final.log"
+  },
+  {
+    "id": "ready_negative",
+    "cwd": "/home/sushaohua/workspace/ai_soc_project",
+    "command": [
+      "python3",
+      "project-control/tools/check_task_graph.py",
+      "--workspace",
+      ".",
+      "--check-ready",
+      "TWIN-01",
+      "--report",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin_task_alignment_20261029/runs/author_01/ready_negative.json"
+    ],
+    "exit_code": 2,
+    "log": "ready_negative_final.log"
+  }
+]

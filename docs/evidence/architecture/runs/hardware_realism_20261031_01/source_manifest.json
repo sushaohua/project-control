@@ -1,0 +1,262 @@
+[
+  {
+    "path": "soc-ap/services/forward/forward_uart.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "c3ef74942cda2269a5cadf634c495667e0df5499f800447c31293801c147eee7",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "c3ef74942cda2269a5cadf634c495667e0df5499f800447c31293801c147eee7",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/forward/forward_service.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "d83b0b58551631445fc13f903d58f83352c3bd48cc8d9d6b94113947e5516779",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "d83b0b58551631445fc13f903d58f83352c3bd48cc8d9d6b94113947e5516779",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/forward/forward_main.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "f28311637be3bb52090a5a885f021aab5be3468cca7b38500f61edd7f63ba360",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "f28311637be3bb52090a5a885f021aab5be3468cca7b38500f61edd7f63ba360",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/forward/forward_dbus.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "64b6858432beb952a2647552feaab01c3368072ac3382bc6793c9f9bd437ad0d",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "64b6858432beb952a2647552feaab01c3368072ac3382bc6793c9f9bd437ad0d",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/core/forward/transport/serial_posix.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "acebeda5e9daca324f10e16b8d2d598c4f1a822f82cf48971691fba27dd72c4b",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "acebeda5e9daca324f10e16b8d2d598c4f1a822f82cf48971691fba27dd72c4b",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/device_manager/device_manager_service.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "d62affbbc275cede4acf4e7aec49541d7005649aed3b313b324afd1362f949eb",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "d62affbbc275cede4acf4e7aec49541d7005649aed3b313b324afd1362f949eb",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/device_manager/device_manager_state.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "8d23fc1f622b016a7f3d36d5adb42692ebd6d7ec544227d03ebcb352dd668936",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "8d23fc1f622b016a7f3d36d5adb42692ebd6d7ec544227d03ebcb352dd668936",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/device_manager/device_manager_state.h",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "0d569c52160f032fd7f78592b36c45f77b439b94146c2c8970bace58a07aba76",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "0d569c52160f032fd7f78592b36c45f77b439b94146c2c8970bace58a07aba76",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/device_manager/device_manager_dbus.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "56c097b4087e724c3f79d4f7a34d5bcb7f35c7c2fa2733b48d193afb9b5339c2",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "56c097b4087e724c3f79d4f7a34d5bcb7f35c7c2fa2733b48d193afb9b5339c2",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/device_manager/device_manager_main.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "cdc5db59cefc7e6922fa9049692b934c41324e3e55a4ce3e009b85331e92a4cd",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "cdc5db59cefc7e6922fa9049692b934c41324e3e55a4ce3e009b85331e92a4cd",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/ui_gateway/ui_gateway_job_ctrl.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "66bf81bdd365b97fa7de2b8abc4b0e6735863148935cb63bd5c9919a8e6083de",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": false,
+    "server_sha256": null,
+    "server_bytes_match": false
+  },
+  {
+    "path": "soc-ap/services/ui_gateway/ui_gateway_job_ctrl.h",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "08aa0ba7ccce8f7f323f3d057cb178c1cdf0df0ee8f01038ad57b298e4d4ba3b",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": false,
+    "server_sha256": null,
+    "server_bytes_match": false
+  },
+  {
+    "path": "soc-ap/services/ui_gateway/ui_gateway_http.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "ac1d1eae3a4fbea5612ae521bfacf94dbe140feb56a54e9385089e1c31d97146",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "ac1d1eae3a4fbea5612ae521bfacf94dbe140feb56a54e9385089e1c31d97146",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/ui_gateway/ui_gateway_service.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "fb7864d3b640b8d44af11569f4c5049467fe8737d23a07ce587865243fbab981",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "1af673bd728fea9167952d8cf4efa80121b018d438b44396a020eb61dd8d51dd",
+    "server_bytes_match": false
+  },
+  {
+    "path": "soc-ap/services/ui_gateway/ui_gateway_server.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "89fb9eacbc9f2380d256fe745bde72083e76635c5b038ca1484d0ad2037a4c12",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "1872a4d21e8925c64584d68b25d2331a22c039a9e058d1bce9127ef9ebd01dfa",
+    "server_bytes_match": false
+  },
+  {
+    "path": "soc-ap/services/ui_gateway/ui_gateway_dbus.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "d6ae2eb1b55f51dcd3cb3e4ac10c390e0a169a27a037f0031c219401ced4fb24",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "d6ae2eb1b55f51dcd3cb3e4ac10c390e0a169a27a037f0031c219401ced4fb24",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/services/ui_gateway/ui_gateway_types.h",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "8b778d9ade40be2184ef30c344a6cde74d7e902f193e4dc5a3476c485744ea8c",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "8b778d9ade40be2184ef30c344a6cde74d7e902f193e4dc5a3476c485744ea8c",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/browser_hmi/first_release/app.js",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "11c99bbf91cb8cd58027510c3455c9d92525664d1bc05b797857b9a583ad7ba2",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "2644c53c543cc103368e9f5b705d5bf7f4964e6f0c737b2be9b1fdcbb15f8473",
+    "server_bytes_match": false
+  },
+  {
+    "path": "soc-ap/browser_hmi/first_release/index.html",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "a96dd60bb9d9d691266b7a0507d595fb7e493c0bdd918724c95f8d5064ebd5a4",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "9623062b2ee7094cf40488bb882d05ad40df0ab41219b406b77ee79a820ba92b",
+    "server_bytes_match": false
+  },
+  {
+    "path": "soc-ap/contracts/twin/job/job_executor.c",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "9fb9cdb455a93c90ccc2cbe7614cb267b5deb0ac93f7ff05217e7d9548996d9b",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "9fb9cdb455a93c90ccc2cbe7614cb267b5deb0ac93f7ff05217e7d9548996d9b",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/contracts/twin/job/job_executor.h",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "963c91f54ca173e0d8c38fa2c205e3090d6755a2e7326decce782ddf549953ab",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "963c91f54ca173e0d8c38fa2c205e3090d6755a2e7326decce782ddf549953ab",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/contracts/twin/telemetry_types.h",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "e485b1183e3bd7cf9c512a7643f70bac8998b364e21cebaf4ae8ab4429601e61",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "e485b1183e3bd7cf9c512a7643f70bac8998b364e21cebaf4ae8ab4429601e61",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/tests/device_manager/twin/test_device_manager.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "8d1875896acdeca1d1f2c40d7ae77c78587c0b4d1131e847fe30581f9762d54b",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "8d1875896acdeca1d1f2c40d7ae77c78587c0b4d1131e847fe30581f9762d54b",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/middleware/dds/src/aisoc_dds_pub.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "85bbda320fd5c064f692e7596543b6aecb3addf042a5f36406a27f7a31fcef1a",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "85bbda320fd5c064f692e7596543b6aecb3addf042a5f36406a27f7a31fcef1a",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "c01e907582542f75a463cfa2b26df442b18717d707ab2a39fa371ebc6ab67c1c",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "c01e907582542f75a463cfa2b26df442b18717d707ab2a39fa371ebc6ab67c1c",
+    "server_bytes_match": true
+  },
+  {
+    "path": "soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp",
+    "local_commit": "409846a5ce6c1b1d6115736e7129a71d85ebe875",
+    "sha256": "a83978c549e27f69a599944c0e0b0902a0cd2420875916e19dd0a85b21eac987",
+    "workspace_matches": true,
+    "server_commit": "ca6c40b2fdfc421ef628100f8b2d40fe64869d85",
+    "server_file_exists": true,
+    "server_sha256": "a83978c549e27f69a599944c0e0b0902a0cd2420875916e19dd0a85b21eac987",
+    "server_bytes_match": true
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "project-control/docs/guides/07_第一次启动与日常使用.md": {
+    "sha256": "f62e6ce16d18e085a1b4b77dc7e918db8af5c1b90bd23fd6cfb0a089b93524df",
+    "size": 8850
+  },
+  "project-control/docs/guides/09_How-to_项目负责人操作手册.md": {
+    "sha256": "9048e8150d90a6df2b1887835c7a6db03a1546590d40657cec91c98d5f2ae028",
+    "size": 6659
+  },
+  "project-control/docs/guides/minimc_v2_task_execution.md": {
+    "sha256": "ff328262f2f1dbe69ab473e39018befbeea0d2ee5e10226f48519ea17ee743a4",
+    "size": 13071
+  },
+  "project-control/docs/guides/new_project_setup_howto.md": {
+    "sha256": "dd0d94ceff35cf63eb5b0342ab21b9c1725851e34ba1ff9fd3139a6eb1cc9f4d",
+    "size": 5657
+  },
+  "project-control/docs/guides/standalone_workspace.md": {
+    "sha256": "cc29ebf77476d031c08d0fc85a107bcdae34fde0ce4c3180d15f4b440ab359de",
+    "size": 3866
+  },
+  "project-control/docs/guides/templates/task_run_record.md": {
+    "sha256": "e2552fc21af97e3407e7e4b39d7b9095f48c1b35c87014d6ca2c44178cdd7bb7",
+    "size": 4857
+  },
+  "project-control/docs/guides/workspace_restore.md": {
+    "sha256": "df32f5462f19adcf92af891e72228733f8600263f4690d2135134b677bbab119",
+    "size": 2827
+  }
+}

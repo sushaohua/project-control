@@ -1,0 +1,15 @@
+[
+  "project-control/.agents/rules/04_公共看板与读写协议.md",
+  "project-control/.agents/rules/codex_qa_review.md",
+  "AGENTS.md",
+  "README.md",
+  "project-control/.agents/rules/templates/任务卡模板.md",
+  "project-control/.agents/rules/templates/角色任务提示词.md",
+  "project-control/.agents/rules/templates/QA审查报告模板.md",
+  "project-control/docs/guides/templates/task_run_record.md",
+  "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+  "project-control/.agents/kanban/microtasks/coord_automation/AUTO-01.md",
+  "project-control/docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+  "project-control/.agents/kanban/microtasks/coord_automation/AUTO-02.md",
+  "project-control/docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md"
+]

@@ -1,0 +1,4 @@
+command: python3 inline relative-Markdown-link check
+cwd: /home/sushaohua/workspace/ai_soc_project
+{'local_markdown_links_checked': 106, 'broken': []}
+exit_code: 0

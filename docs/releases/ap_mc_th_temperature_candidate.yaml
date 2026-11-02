@@ -1,0 +1,95 @@
+candidate_id: ap-mc-th-temperature-telemetry-candidate-20261029-01
+release_tag: v2.0.4-telemetry-rc3
+created: '2026-10-29T09:10:00+08:00'
+status: candidate-for-temp06-hil
+supersedes: ap-mc-th-readonly-cascade-candidate-20261028-02
+supersedes_reason: "增量集成方案 A：扩展 AP-MC-TH 真实双端温度遥测采集与穿透闭环 (0x14 GET_TEMP/TEMP_REPORT)，MC 采集热床室温与原生中继保持，TH 采集喷头 ADC 查表换算并消除死等，AP 提供 CLI --cmd temp 查询并硬性锁定加热占空比 0%。"
+
+scope:
+  description: AP-MC-TH 三端温度遥测闭环候选包 (RC3)，支持单跳 MC 热床遥测与双跳 TH 喷头遥测 (0x14 GET_TEMP)，硬件安全占空比 0% 强制约束，用于 TEMP-05 物理台架联调与 TEMP-06 独立 HIL 验收
+  capability: ap-mc-th-temperature-telemetry-read-only
+  hardware_bound: true
+  primary_work_package: TASK-012
+
+repositories:
+  soc-ap:
+    commit: 4445c8fedc21bafef5e6c971fcb54cec703f0e71
+    branch: main
+    artifacts:
+      - path: build/host/bin/soc-ap
+        sha256: 5a1e31eb34ea6b2d36c6cac2abe6c10d0da37daeb5474ce8236a664f95d22776
+        size_bytes: 42208
+        role: AP (Host Application CLI)
+        execution_env: VMware Ubuntu Linux (/dev/ttyUSB0 @ 115200 8N1)
+        features:
+          - "支持 --cmd temp 查询，输出 JSON/人类可读文本"
+          - "16 字节小端紧凑解包 minimc_temp_report_payload_t"
+          - "加热占空比非零安全熔断 (EXIT_CODE_SAFETY_FAULT = 3)"
+  mcu-p3:
+    commit: 1246ea9cb441d074ea444f53320f5632fefcd503
+    branch: feat/soc-debug
+    artifacts:
+      - path: motion-controller-mcu/build/fw_mc.bin
+        sha256: 16ea3c9fac94b8facc56ac394f5fc3a2f3ab644877224ded75fe112573352703
+        size_bytes: 370036
+        role: MC (Motion Controller)
+        chip: AT32F435VGT7
+        chip_uid: "053023904C96C0000D819709"
+        probe_id: "0483:3748:75003800120000334C41534E"
+        flash_base_address: '0x08020000'
+        uart_upstream: USART2 (PA2/PA3 @ 115200 8N1)
+        uart_downstream: USART6 (PC6/PC7 @ 921600 8N1)
+        features:
+          - "本地响应发往 MC 的 0x14 温度查询 (24.50℃，占空比锁死 0%)"
+          - "对发往 TH (0x03) 的 0x14 查询执行原生零拷贝/线速透明路由中继"
+      - path: color-engine-mcu/io_toggle/build/fw_th.bin
+        sha256: d3a1be722c611b567a9a5cd565a9ef2f724bfefdfde8bb2a0bc7573d6113e011
+        size_bytes: 71804
+        role: TH (Toolhead Controller)
+        chip: AT32F423CCT7
+        chip_uid: "053173C58023C000127C0707"
+        probe_id: "0483:3748:"
+        flash_base_address: '0x08004000'
+        uart_cascade: USART1 (PA9/PA10 @ 921600 8N1)
+        features:
+          - "消除 ADC 采样无界死等，绑定 ADC_POLL_TIMEOUT_CYCLES (10000U) 保护"
+          - "NTC 100K B3950 线性查表与分段插值"
+          - "开路/短路/超时传感器故障状态码判定"
+          - "强制锁定 heater_duty_percent = 0%，硬件定时器 PWM 清零"
+      - path: color-engine-mcu/io_toggle/build/anchor.bin
+        sha256: 8098ff2d8ada5caa4992b1c05062be5b62ee73216a04377608622dc8ac219d21
+        size_bytes: 140
+        role: TH Sector 127 Signature Anchor
+        chip: AT32F423CCT7
+        flash_base_address: '0x0803F800'
+        purpose: "AT32F423 Bootloader App 跳转有效性校验锚点"
+  project-control:
+    commit: a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819
+    branch: main
+    artifacts:
+      - path: docs/interfaces/ap_mc_th_telemetry_icd.md
+        sha256: 74361f23ee27f513c0df195c796c42961a1d3c5fb352a72a91c7f70f23033a8d
+      - path: docs/operations/ap_mc_th_joint_debug.md
+        sha256: 0efab9666cf7f85802525efd019f6a5cfbf90289d0c6411516f1c4e979d50da0
+
+protocol:
+  specification: project-control/docs/interfaces/ap_mc_th_telemetry_icd.md
+  revision: 2.0.4-telemetry
+  sha256: 74361f23ee27f513c0df195c796c42961a1d3c5fb352a72a91c7f70f23033a8d
+  icd_version: MiniMCProto v2.0 Rev 2.0.4-telemetry (AP-MC-TH Telemetry ICD)
+
+verification:
+  test_environment: VMware Ubuntu 22.04 + /dev/ttyUSB0 + AT32F435 MC + AT32F423 TH
+  hil_readiness: true
+  bench_measurements:
+    single_hop_mc:
+      ping_rtt_us: 7647
+      temp_rtt_us_avg: 7525
+      temp_reading_centi_c: 2450
+      heater_duty_percent: 0
+    two_hop_th:
+      ping_rtt_us: 8188
+      temp_rtt_us_avg: 8527
+      heater_duty_percent: 0
+      fault_injection_timeout_verified: true
+      self_recovery_verified: true

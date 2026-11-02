@@ -1,0 +1,42 @@
+{
+  "source": "/home/sushaohua/.codex/sessions/2026/10/31/rollout-2026-10-31T18-14-12-01a19173-e092-7781-ae54-54efdb0cce87.jsonl",
+  "extraction": "Only current-session metadata and first turn context; no credentials or message bodies.",
+  "records": [
+    {
+      "type": "session_meta",
+      "payload": {
+        "id": "01a19173-e092-7781-ae54-54efdb0cce87",
+        "timestamp": "2026-10-31T10:14:12.884Z",
+        "cwd": "/home/sushaohua/workspace/ai_soc_project",
+        "originator": "codex_exec",
+        "cli_version": "0.166.0",
+        "source": "exec",
+        "model_provider": "openai"
+      }
+    },
+    {
+      "type": "turn_context",
+      "payload": {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "cwd": "/home/sushaohua/workspace/ai_soc_project",
+        "approval_policy": "never",
+        "sandbox_policy": {
+          "type": "workspace-write",
+          "writable_roots": [
+            "/home/sushaohua/agents/mcu-p3/.agents",
+            "/home/sushaohua/projects/amlogic/.agents",
+            "/home/sushaohua/projects/boot/bootloaderth/.agents",
+            "/home/sushaohua/projects/mcu-p3/.agents",
+            "/home/sushaohua/workspace/ai_soc_project/.agents",
+            "/home/sushaohua/workspace/ai_soc_project/mcu-p3/.agents",
+            "/home/sushaohua/workspace/ai_soc_project/project-control/.agents"
+          ],
+          "network_access": true,
+          "exclude_tmpdir_env_var": false,
+          "exclude_slash_tmp": false
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "README.md": "c258c64eb80a2062034f59ba2e82b9b183528f4a7cc3be245ae3f83af7739a4f",
+  "soc-ap/README.md": "f5b6b795d2b67f796bbc1c9bdc3c75735a066ecc136b564ff4d7203a770646a0",
+  "soc-ap/third_party/README.md": "d043386e9706d9088a218c9809af479820c8055ff535083af60c9a70c54f230d",
+  "project-control/.agents/rules/02_模块与Agent职责.md": "0c5c240a23b59b0ff71cbf94a3355c1949ab888db4bc382de1c5d08ca073d9bb",
+  "project-control/.agents/rules/06_通信工程师职责与接口边界.md": "17bacb8756ae08bd44924a8e880070bfcb4a6cdf37380f7bb8d078e2cbd1c96d",
+  "project-control/docs/planning/coord_autorun_tasklist_20261029.md": "eaaa3f68bffd6c98a6af0bf74f47208cb5add79ae8af924acd3575e74059907b",
+  "project-control/docs/planning/coord_autorun_queue_20261029.yaml": "aa22e059a3e98f94965759b42a66eff2a4e876f2a21252e70b189641fe0a4236",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-02.md": "ae80788ead1ed369cbc6a5f1880a622fe7712f1540b30fd90940ac8068f61a4a",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-04.md": "2a197d2331c9bce62ea123472b0c1597340c4e3937055b902bef6681511bd835",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-05.md": "5446eedbc8c99da642e877a1528f2b38c0dfadf173b5f2529ea512bd757af983",
+  "project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-06.md": "2c7cc573f2bb61ce97e45fe866d23b0e848368f746259ba2eecf52a23ff75fe4",
+  "project-control/docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md": "56d6dff07fe85ba9c99dcaf6767e1e042b847147a02adde634463d569c74e78b",
+  "project-control/docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md": "0c8a891bf6ebc0c1da0f70725db0df03a202873de8481994dc1222b92a47014d",
+  "project-control/docs/baseline/B0_方案基线.md": "e2d429fec620304a6d74804ed3c6e157d9c0d715c385165400c2cc025ffc4125"
+}

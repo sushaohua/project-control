@@ -1,0 +1,604 @@
+{
+  "MS-12": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms12_20261007_214108.md",
+    "sha256": "2642930e9fd1f25a11ef3a07acaf12954ed64aa020cf46eb98716fe107ff6c96",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-16": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms16_20261007_214108.md",
+    "sha256": "5407ef6b74540f26e5f8e167ea0e46f5a51786c0412911b93a245d972456ee62",
+    "revision": 5,
+    "status": "Backlog",
+    "blocked": true
+  },
+  "MS-19": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms19_20261008_083854.md",
+    "sha256": "fd0e88de8829f54d2c82bf5de2a426805ccfa6b5759fe071e36c1cca7ec81097",
+    "revision": 2,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-08": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms08_20261007_214108.md",
+    "sha256": "c5c83f78c50607d867634eede05218a251e1c4bd0b259ec1d79d58f682e60e67",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-22": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms22_20261008_083854.md",
+    "sha256": "ea602639ecafef8483635c6bff56e466d507c3c19bb2f28c7b485ecad7b09cea",
+    "revision": 2,
+    "status": "Verify",
+    "blocked": false
+  },
+  "MS-04": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms04_20261007_214108.md",
+    "sha256": "63c1984c6de491fb0e78feb06b1dda111ba39ff3fe101fe5336094012703cddb",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-15": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms15_20261007_214108.md",
+    "sha256": "e67ef438b066b8f8551d13d6e44fc5bef87d3cbcfc26a4d78e5631b008120553",
+    "revision": 5,
+    "status": "Backlog",
+    "blocked": true
+  },
+  "MS-14": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms14_20261007_214108.md",
+    "sha256": "9b9eb19cfc3457e4a71b7637edebf15d3bdc86b2466256c20fc1f424d4cad105",
+    "revision": 5,
+    "status": "Backlog",
+    "blocked": true
+  },
+  "MS-05": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms05_20261007_214108.md",
+    "sha256": "99a721d9f1fac34ba46e11afeff0685355ce9b19a65c81b284f7be6ad902ae64",
+    "revision": 5,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-09": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms09_20261007_214108.md",
+    "sha256": "66b4c684b43b9d66bc271fee0aa7c0416dc73fc137fcf2e7b6553265e02c02c3",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-10": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms10_20261007_214108.md",
+    "sha256": "9230959aaf9525877560fbd548ed01fd0cb465b530bcf601b3095b07a6bdbd37",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-18": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms18_20261008_083854.md",
+    "sha256": "e6791af30cc003bea2cbe5d3813be389df61766c558bdcc875e7d0f8ccf3e042",
+    "revision": 3,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-11": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms11_20261007_214108.md",
+    "sha256": "11edac56fa76ad154d69bfd2138f8da02e3b42f6fb6b69c66c48c08c1a2f20ae",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-02": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms02_20261007_214108.md",
+    "sha256": "ea1eb5bfb8cdc250f92e24ed78e2a0506b99ed6283a5c87fe9f4d082ea43da4c",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-06": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms06_20261007_214108.md",
+    "sha256": "07f5af0e56ec0d392d353aadda20a349283b6f47b304ebd613085a050f0d302a",
+    "revision": 5,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-07": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+    "sha256": "5845138996b182b26eac2744eba0dd941a065f1066f7b15b49a6296a533d6f1c",
+    "revision": 5,
+    "status": "Done",
+    "blocked": false
+  },
+  "MS-01": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms01_20261007_214108.md",
+    "sha256": "30d57f060fba4e589561a622e1cb288fe2943ba9ae0dd3f17c24f51675347e19",
+    "revision": 7,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-17": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms17_20261007_214108.md",
+    "sha256": "0c921767acb956dd8fe0441a5f389fd0aec84d9168a1eef5140f41a70c129a0b",
+    "revision": 6,
+    "status": "Backlog",
+    "blocked": true
+  },
+  "MS-03": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms03_20261007_214108.md",
+    "sha256": "2a67b2b4d56c4d24f57220263f5ec6ed06a431731e41fbaf57e99b0cb1893326",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-21": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms21_20261008_083854.md",
+    "sha256": "2f8cc504d6b5b019e7376b8cde4054dddf8bdf0bd5d2d282ea4ab7c6eb701dfe",
+    "revision": 3,
+    "status": "Backlog",
+    "blocked": true
+  },
+  "MS-13": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms13_20261007_214108.md",
+    "sha256": "f6cdc49b22feffb001cdaead4ad2fc36c309fbf3022535252665386e2a35fca0",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "MS-20": {
+    "path": "project-control/.agents/kanban/milestones/marlin_ms20_20261008_083854.md",
+    "sha256": "5c17bad5a0c1472d029ce57194f781734e76b68f3aafa04d618be3be1efbff6a",
+    "revision": 2,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TEMP-03": {
+    "path": "project-control/.agents/kanban/microtasks/temperature_telemetry/TEMP-03.md",
+    "sha256": "ff5555ddc58fb67f1a05d73fd5b47caf6f3a0d421034e60c83f927008a1bdf7b",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "TEMP-02": {
+    "path": "project-control/.agents/kanban/microtasks/temperature_telemetry/TEMP-02.md",
+    "sha256": "545052559e458e0a57c0f4a95dd95a0164963ef9e40c45c7df51ec4d9c3bceca",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "TEMP-05": {
+    "path": "project-control/.agents/kanban/microtasks/temperature_telemetry/TEMP-05.md",
+    "sha256": "07741663a26455d82a316416a639987245b3371f1178633ecf70cf72976e666d",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "TEMP-04": {
+    "path": "project-control/.agents/kanban/microtasks/temperature_telemetry/TEMP-04.md",
+    "sha256": "7a4c0e8dc491ea96c182f2bec6c10e01c43c275760c82604f46bb1116d52ec05",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "TEMP-01": {
+    "path": "project-control/.agents/kanban/microtasks/temperature_telemetry/TEMP-01.md",
+    "sha256": "431063a22c84ae1c7955340119d811df7f395f1cd0f031cde1d70f545ca33aa4",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "TEMP-06": {
+    "path": "project-control/.agents/kanban/microtasks/temperature_telemetry/TEMP-06.md",
+    "sha256": "abce418a8fc2bb7fd018fac30399f12c50c7f7d0046c432c86a6fc711134b10a",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "TEMP-07": {
+    "path": "project-control/.agents/kanban/microtasks/temperature_telemetry/TEMP-07.md",
+    "sha256": "e849139dc7569c3a718fbcdb4a84a8e773f1bcfe0567091bef0eda0e0865726e",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-02T": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-02T.md",
+    "sha256": "e7cbaf43524109f9089d0c31a665edb481ebf0852c556e1e6b5fa86e09dbbd04",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-08": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-08.md",
+    "sha256": "bd812862c0d50e163de152e5d455fa74e350b86d652458514248666d0c7b67c2",
+    "revision": 2,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-01": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-01.md",
+    "sha256": "14b502be979f09159cc7d95b5504c41d59cf45109664fb2d2fec9a2ca0282ca0",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-00": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-00.md",
+    "sha256": "3543321f481fa8e90229ae03364f1f98e54389f622ab9b39263c2712d80822f1",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-04": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-04.md",
+    "sha256": "1f03860a320a0ccd2e23d98a3679358f9406ec82de473ea06d7e5f8c7110fedb",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-11": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-11.md",
+    "sha256": "5388f6c4a6a0bb2fd096437dd7f0e606319101e4e88dabed93412b6745a8bfce",
+    "revision": 2,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-05": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-05.md",
+    "sha256": "1c483212fc47c696e2f3a7d901b1a2a22b8f10f3630267775961b41c62ef5482",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-06": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-06.md",
+    "sha256": "9e589a7baf794276449596a12427fd7e6cb2662ef95a0160d45233ad9a4efa82",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-07": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-07.md",
+    "sha256": "4ba975ccac38058a3554b842d88749cc03c7661e356041ae451c19465c05ae4f",
+    "revision": 2,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "CR-02": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-02.md",
+    "sha256": "bc2decedbe61df81a548b367a0097b07257cdd25dfec8bc28e050b381ede412d",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-02Q": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-02Q.md",
+    "sha256": "323448f39e6a98fbb57e91e31ecbd2803f88c86561f1a5becc39c07fe34c5a6d",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-12": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-12.md",
+    "sha256": "d1aaa5d7239be726a57c358f1fcafd69179aa5c366e7d461b69f60b4ac4c6440",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-10": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-10.md",
+    "sha256": "9fe71af23eb132dbc9d794e1aaa4f95d08d94e561c8ecd2c2011d74f9c25674e",
+    "revision": 2,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-03": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-03.md",
+    "sha256": "5c78d98806a67d4d38904eb36b36dd1c4559f0202eeb9e310e55ab770f22903f",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "CR-09": {
+    "path": "project-control/.agents/kanban/microtasks/cascade_recovery/CR-09.md",
+    "sha256": "bb46fc47d286ece663d6036de1cc587885cdf09bc1fef0b2ec62dc9591c03f26",
+    "revision": 2,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P03D": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P03D.md",
+    "sha256": "30227f25f1253b3acec81465289a631ccf4155053d5dead463703a634472f289",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P04B": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P04B.md",
+    "sha256": "32a03cf6b5d090814cd073156148e0653450c1e75d70ec1cc10bea319ebbbca8",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P02C": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P02C.md",
+    "sha256": "1f112c304369d07bf37c256c5e70c1374d2075e8cf3f598c6c59447a6509f62d",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P04A": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P04A.md",
+    "sha256": "0e82f1db8945b012a7ca476fdb8644cf63be41e609ebe0cb372d3a18e0ba6eea",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P04D": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P04D.md",
+    "sha256": "9b0b5a3ee147980e89bed9b9e9f8d010a0d474ec730bc6a6ba00af4fba5e2be9",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P05B": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P05B.md",
+    "sha256": "3b89d58da8744b47e0a1d0c1f4384368edd362d5efa89bf029bc68f0514629f2",
+    "revision": 2,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P04C": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P04C.md",
+    "sha256": "13701f78c4733c061f619a0f8665bcbd6521e9b6914db3114ee6906e9bcc3642",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P05A": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P05A.md",
+    "sha256": "e3e602228375eb5e847eacc325417487a9ba34e107cae4c572f6dbcf6e8f7936",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P01C": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P01C.md",
+    "sha256": "8c646bec7ee93c4d8f2896541fa5e325c1f15da9f3e8ade7a62d0f7a2e7304bf",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P03C": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P03C.md",
+    "sha256": "e4458b1fde2de3f7838e061d3feb0f41d7ac97cc009ee46470dff4f5a8e95103",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P01B": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P01B.md",
+    "sha256": "2d0e5b6d6304182ac69672a15d8cec0e50af97080ce313f0efeb14e31e7e0049",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P02A": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P02A.md",
+    "sha256": "c3bc6072941888c525a17d8820a7af0a19668602ad9819a6ba122c65cd033f4f",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P03E": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P03E.md",
+    "sha256": "43ff0546726f80cbf1dabc6bf461d4f62d757d2f686a32e12f108b55f394a227",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P0506": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P0506.md",
+    "sha256": "5084ed65db590738aae0299f37331b2e5f89427125203bb46ccd407ea98fb4f9",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P03A": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P03A.md",
+    "sha256": "9eab9b205ea211acde8033501a6dd19472c96bc9d3e38a4a4cea5bfa9c830813",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P03F": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P03F.md",
+    "sha256": "bd78301183bf01dc79b5fb1918820f058850903593322a85e79f14222ff3159f",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P02B": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P02B.md",
+    "sha256": "8070b38616a81fc083c13e4e98421d5a192eb19efd607d3879c69e15766560c5",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P01A": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P01A.md",
+    "sha256": "86d5697e6ed345fb9ee2f0ad814e2a762bc623c21a3d544e5544309c09245712",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P03B": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P03B.md",
+    "sha256": "67c3c089175849788b4b1a04145bc877e52df59ba60a3c7fb7328689ad699d3b",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "V2-P01D": {
+    "path": "project-control/.agents/kanban/microtasks/minimc_v2/V2-P01D.md",
+    "sha256": "fc34bc681e21b1c3b5c5e2a5eafabdc70040a9ef47e99d7e4279b7655ffbd8ed",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "MCQ-0106": {
+    "path": "project-control/.agents/kanban/microtasks/mc_firmware/MCQ-0106.md",
+    "sha256": "adf30755336309f9aa7f481cf15da7d4a5a1204db7e7e759f051c7740654a7bf",
+    "revision": 1,
+    "status": "Done",
+    "blocked": true
+  },
+  "MCQ-0105": {
+    "path": "project-control/.agents/kanban/microtasks/mc_firmware/MCQ-0105.md",
+    "sha256": "cad9f8145fdb4342819b9e7ce0c34bc41adb6de96dce7002d5b1f7b60372416c",
+    "revision": 1,
+    "status": "Done",
+    "blocked": false
+  },
+  "TASK-004": {
+    "path": "project-control/docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+    "sha256": "fd94b496c697073127f81cf083285b91d99d558c6f5579e709b4ca7ced3162bc",
+    "revision": 6,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-009": {
+    "path": "project-control/docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md",
+    "sha256": "0b82ffc55e2c3d2e95fdb5ab0858e9f30a7a25abf3b51e986a4b7fb3d48b25f4",
+    "revision": 5,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-016": {
+    "path": "project-control/docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md",
+    "sha256": "a1703bba6d81b8069f1cdfb7a1e448be3132726535470f27846bb76748f13262",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-014": {
+    "path": "project-control/docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md",
+    "sha256": "c1da3fe3c28b07815f51cf76314377ae16f72524f9ffff17ea485b6052d78abe",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-002": {
+    "path": "project-control/docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md",
+    "sha256": "9f8ffebcf8623e4a7617f5618b7fe72fb2ab59b15209db598b1ff1efe9600354",
+    "revision": 5,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-018": {
+    "path": "project-control/docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md",
+    "sha256": "56d7e42762da12f986643a74aa4a5a1e793a12b32ef0af19bb96cb085982c9c4",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-005": {
+    "path": "project-control/docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+    "sha256": "9aa201eb4543aaf3cc0bb9572318f891c13251c2dff4be42d12701eb216ef7c4",
+    "revision": 8,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-011": {
+    "path": "project-control/docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md",
+    "sha256": "5fe2686ec9f115808d33c00e28421472e6238c6b884bd5acda73010149f360ef",
+    "revision": 6,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-013": {
+    "path": "project-control/docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md",
+    "sha256": "78b7d4d6ddfa5b08c91508940b5e13ea331eb903f25839e5eeaf5a2791c190eb",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-017": {
+    "path": "project-control/docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md",
+    "sha256": "c44036490333363ecd1a6822e02fcb09cd70f8ec33be0fc2b40f96208a3f334c",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-003": {
+    "path": "project-control/docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md",
+    "sha256": "32be27fa0e3945ba7774bed447e8d5f002148b574a2c5d72a1c500ee0036d569",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-001": {
+    "path": "project-control/docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md",
+    "sha256": "c2ccbe002e7e5dce1dc65956e4a95419864037a3cfaaff339bb276ba95187d0e",
+    "revision": 6,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-010": {
+    "path": "project-control/docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+    "sha256": "f1dd7f2b43ff2ef9cc641c358a2055ab75f2f85cb632846c1a5de86f242b5b75",
+    "revision": 9,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-015": {
+    "path": "project-control/docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md",
+    "sha256": "7741a1acba4e19a6a2071ae1acc1198624ce6f76f16792c0e062dfd4a20faca2",
+    "revision": 4,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-008": {
+    "path": "project-control/docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md",
+    "sha256": "93771a0d76335828e52b4b240eec3186435c1d225b99a67a00360dd9f6f64173",
+    "revision": 5,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-006": {
+    "path": "project-control/docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md",
+    "sha256": "a72dc7b139a2cb9b78fad5d7348d9a0b5e14c2a7104f0a77d789793925505e4a",
+    "revision": 7,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-007": {
+    "path": "project-control/docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md",
+    "sha256": "58197ef7d66441b9d7f297e2a29447aea8863af7a5749338a473f4330f0609b4",
+    "revision": 7,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "TASK-012": {
+    "path": "project-control/docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md",
+    "sha256": "c8b65b9c3a444f7cbd68145ed1101e5925d87abd5181e277ee91653260829d0e",
+    "revision": 7,
+    "status": "Backlog",
+    "blocked": false
+  },
+  "PL-01": {
+    "path": "project-control/docs/planning/product/product_pl01_20261008_083854.md",
+    "sha256": "ba5e751a4114d77fd61e9362cd9eda97eb7a68b1f85695694ab972247e14a401",
+    "revision": 3,
+    "status": "Done",
+    "blocked": false
+  },
+  "PL-02": {
+    "path": "project-control/docs/planning/product/product_pl02_20261008_083854.md",
+    "sha256": "f5a0e4c1674f8e1bbba45b9644c259063862d6d5d04354a57ad9838fab2b322c",
+    "revision": 4,
+    "status": "Done",
+    "blocked": false
+  }
+}
