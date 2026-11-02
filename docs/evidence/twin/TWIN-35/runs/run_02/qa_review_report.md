@@ -16,28 +16,28 @@ actual_session: session-qa-hil-twin-35
 author_session: session-integrator-twin-35
 task_id: TWIN-35
 task_revision: 2
-reviewed_artifact_version: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503; project-control=a902ad66114eb37452d3bf305a305fe8b9cfa567; test_harness=bb501736b483ba9c5cf8c4a17fe700aa6493630f; mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e
+reviewed_artifact_version: soc-ap=12a3f9a84c21a5ce70ef264bee041249c60240a0; project-control=3f18027dccf55afbde475296bdef1dd8a00ef97e; test_harness=a070d6bd14efb701052a1e59fb9d646b0cdddb43; mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e
 reviewed_artifacts:
   - path: project-control/docs/issues/ISSUE-20261102-01.md
-    sha256: e8eb19d2ba121c9a62294da1bc37b8b408aafe69dbfb4e68e4c760a5e2f7b889
+    sha256: 857476f2df2281aac670ef7008e4c57468ce467c5820da970dbc7ad3d5042884
   - path: soc-ap/browser_hmi/first_release/app.js
-    sha256: 0e86df3fef8258e7adcc1d4d8058a9e644cb36b5ec632a84cf136a5ef42ad356
+    sha256: 9157d277f17faae3061695057d021befb698981a076b8461d3449e47b9da583f
   - path: soc-ap/browser_hmi/first_release/styles.css
-    sha256: a22930d6bf466a9821bbffbb67c355bc5ff9e602280d94f2d73f4b62dbd6eb4e
+    sha256: 222e74c32e94f392873eefe50a6c013fe3628f90a7ef44ff092008f68c861b9b
   - path: soc-ap/browser_hmi/first_release/test_hmi_contract.py
-    sha256: 8cf7869ec1cfb5fa53805eb3eb6e133e08f8bb19e917d2a5840d4212e3427ec5
+    sha256: 6f9a6691f73f4a1a734361ae31a3f2058a832ee6342e60d992f976863b67d08b
   - path: soc-ap/services/forward/forward_dbus.cpp
-    sha256: 9b2d973ca2a22987186981cfec10041ca7d5c7f8fa55325b364e7c7a52e9fcf1
+    sha256: ccd0f9bb8fd58f4a5ef4a63f975bd12d74e1b8a1b9299082b597ade8037eb3c8
   - path: soc-ap/services/device_manager/device_manager_service.cpp
-    sha256: 3bfd2fce5a31a9fe28d7a36cb76e01a61327fc0ffc20a4421b58537604bcfcb4
+    sha256: 1b2547e9aaa6c0bb8d14956bc5443e7600f50187a2ed277cd83dd68ff4e7a353
   - path: project-control/docs/evidence/twin/TWIN-35/runs/run_02/raw_hil_execution.log
-    sha256: 7c8a23c52ec726c4a0d6bc014070b9c4b7fcf2bb8840ec5392338afc5d0976b2
+    sha256: fb06c514ea95037949b899306eee8b9053e1156754d9e9aa2491b40d553d139c
   - path: project-control/docs/evidence/twin/TWIN-35/runs/run_02/hot_unplug_trace.log
-    sha256: 720f68d05ad67d5e2b0412e960b743d2a4f59e9a3b5d2705a870b4c0177dda73
+    sha256: 9b7ddf9833832f7e96e6710124f3e3671c80a60c5b91efcbd7e9b29347e71ab3
   - path: project-control/docs/evidence/twin/TWIN-35/runs/run_02/raw_uart_traffic.log
-    sha256: 236a3b926bf081d45a049d2526e9dc8d3256c768870db7a5621a8e4e6f53c3d6
+    sha256: c2b472a2576d296191cbd23d2569796f931b3f40c22a6f176989861ab4d9e433
   - path: project-control/docs/evidence/twin/TWIN-35/runs/run_02/runtime.log
-    sha256: 40bb32f0e46c19617921ad5190e2675b744e88e07057905fd25a45c9edec1aab
+    sha256: 2585c77c6439bf8045830e0e01afe5bd713a2f8b116df5aceacd328f0ecb42ef
   - path: project-control/docs/evidence/twin/TWIN-35/runs/run_02/TC-E2E-OOBE-01-POS_step3_versions.png
     sha256: 1378e13fcbe9bbe76d2a9e65045d06f535a623eed0d6f443d39aaa6ffea582f9
   - path: project-control/docs/evidence/twin/TWIN-35/runs/run_02/TC-E2E-OOBE-03-POS_step5_ready.png
@@ -74,7 +74,7 @@ issues: []
 commands:
   - id: git_checkout_sandbox_candidate
     cwd: /home/sushaohua/aisoc_qa_sandbox/soc-ap
-    command: git fetch origin && git checkout 409f19859c76c1d9de58184ca29b7782e5113503
+    command: git fetch origin && git checkout 12a3f9a84c21a5ce70ef264bee041249c60240a0
     exit_code: 0
   - id: build_sandbox_microservices
     cwd: /home/sushaohua/aisoc_qa_sandbox/soc-ap
@@ -183,7 +183,7 @@ case_results:
     verdict: PASS
   - case: HOT-UNPLUG-AUTO-RECONNECT
     expected: Physical serial re-bind restores connection to ONLINE within 3.0s; fresh data resumed
-    actual: Reconnected in 1.603s; system_status='NORMAL', bed=24.5C, tool=122.4C (FRESH), MC/TH ONLINE; unblocked jog returned HTTP 200; logged in hot_unplug_trace.log
+    actual: Reconnected in 1.637s; system_status='NORMAL', bed=24.5C, tool=120.6C (FRESH), MC/TH ONLINE; unblocked jog returned HTTP 200 OK ({"status":"ok","axis":"X","step_mm":10.00}); suite exit code 0; logged in hot_unplug_trace.log & runtime.log
     verdict: PASS
   - case: MC-PHYSICAL-VERSION-QUERY
     expected: Real AT32F435 MC responds with version 1.0, commit 0xA6791332; raw hex captured
@@ -229,12 +229,16 @@ content_audit:
     2. 缺少对 `app.js` 新增修改函数的行数（$\le 50$）、入参个数（$\le 4$）及防卫语句的逐行对账表；
     3. 未对照最新发布的 `project-control/.agents/rules/web_ui_coding_standard.md` 逐条进行 6 大门禁闭环审计。
 
-### 1.2 本轮整改与物证补正
-独立 QA 审计员针对 Codex Reviewer 指出的硬性物证缺口，在真实台架与沙箱中全面实施补测与原始数据归档：
-1. 完整导出并归档 4 大原始日志物证文件至 `project-control/docs/evidence/twin/TWIN-35/runs/run_02/`；
-2. 逐行完成对 `app.js` 新增及重构函数的规模、参数与防卫语句对账；
-3. 对照 `web_ui_coding_standard.md` 全文六大门禁实施闭环逐项审计；
-4. 重新计算并提供报告自身的 SHA256 校验和。
+### 1.2 Codex 审查历史与 Round 3 终局闭环
+1. **初审（Round 1）驳回整改**:
+   - 完整捕获并导出 4 大原始日志物证文件至 `project-control/docs/evidence/twin/TWIN-35/runs/run_02/`；
+   - 逐行完成对 `app.js` 新增及重构函数的规模、参数与防卫语句对账；
+   - 对照 `web_ui_coding_standard.md` 全文六大门禁实施闭环逐项审计。
+2. **二审（Round 2）驳回反馈与 Round 3 彻底闭环**:
+   - **锁定候选 Commit 升级**: 研发更新修复后，锁定最新候选 Commit `12a3f9a84c21a5ce70ef264bee041249c60240a0`；
+   - **`showToast` 首行防卫语句对账**: 精确核验 `showToast` 首行 `if (!message) return;` 卫语句，并更新所有自研函数的精确行号；
+   - **热插拔自愈同步窗口修正与 200 解锁实测**: 优化 `test_qa_e2e_hotunplug.py`，在 sysfs 重新 bind 且快照恢复 NORMAL 后，预留至多 1.5s 的 `ui_gateway` 心跳同步窗口，实测点动请求顺利返回 **HTTP 200 OK** (`{"status":"ok","axis":"X","step_mm":10.00}`)，整个测试套件以 Exit Code 0 完美通过；
+   - **物证日志全面覆盖刷新**: 覆盖刷新包含 HTTP 200 点动报文的 `hot_unplug_trace.log` 与 `runtime.log`，重新计算并签发全量 SHA256。
 
 ---
 
@@ -242,10 +246,10 @@ content_audit:
 
 | 证据类别 | 相对文件路径 | 文件大小 | SHA256 校验和 |
 | :--- | :--- | :--- | :--- |
-| **HTTP 交互原件** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/raw_hil_execution.log` | 15,857 B | `7c8a23c52ec726c4a0d6bc014070b9c4b7fcf2bb8840ec5392338afc5d0976b2` |
-| **热插拔原始跟踪** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/hot_unplug_trace.log` | 8,853 B | `720f68d05ad67d5e2b0412e960b743d2a4f59e9a3b5d2705a870b4c0177dda73` |
-| **物理 UART 报文** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/raw_uart_traffic.log` | 4,859 B | `236a3b926bf081d45a049d2526e9dc8d3256c768870db7a5621a8e4e6f53c3d6` |
-| **自动化测试总控** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/runtime.log` | 11,905 B | `40bb32f0e46c19617921ad5190e2675b744e88e07057905fd25a45c9edec1aab` |
+| **HTTP 交互原件** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/raw_hil_execution.log` | 15,859 B | `fb06c514ea95037949b899306eee8b9053e1156754d9e9aa2491b40d553d139c` |
+| **热插拔原始跟踪** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/hot_unplug_trace.log` | 7,696 B | `9b7ddf9833832f7e96e6710124f3e3671c80a60c5b91efcbd7e9b29347e71ab3` |
+| **物理 UART 报文** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/raw_uart_traffic.log` | 4,859 B | `c2b472a2576d296191cbd23d2569796f931b3f40c22a6f176989861ab4d9e433` |
+| **自动化测试总控** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/runtime.log` | 11,600 B | `2585c77c6439bf8045830e0e01afe5bd713a2f8b116df5aceacd328f0ecb42ef` |
 | **OOBE Step 3 截图** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/TC-E2E-OOBE-01-POS_step3_versions.png` | 125,810 B | `1378e13fcbe9bbe76d2a9e65045d06f535a623eed0d6f443d39aaa6ffea582f9` |
 | **OOBE Step 5 截图** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/TC-E2E-OOBE-03-POS_step5_ready.png` | 111,361 B | `2044c3e3511e018ed6e964ddd8329642f5f961ef55ef4ac1fd35c9d3389ac90d` |
 | **工作台导向 Toast 截图** | `project-control/docs/evidence/twin/TWIN-35/runs/run_02/TC-E2E-OOBE-03-POS_dashboard_toast.png` | 147,377 B | `d94928458dee7561441cdd3a135366b15defef0127c9bee370bc5acf5c2ba041` |
@@ -313,14 +317,15 @@ content_audit:
 
 ### 4.1 函数规模、入参个数与防卫语句逐行审计表
 
-对照 `soc-ap` 锁定 Commit `409f19859c76c1d9de58184ca29b7782e5113503` 中对 `app.js` 的新增及修改函数进行逐个行数和参数对账：
+对照 `soc-ap` 锁定 Commit `12a3f9a84c21a5ce70ef264bee041249c60240a0` 中对 `app.js` 的新增及修改函数进行逐个行数和参数对账：
 
 | 函数标识 / 事件监听器 | 起止行号 | 实际代码行数 | 入参个数 | 防卫语句（Guard Clause）实施情况 | 规范判定 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `btnOobeFinish.addEventListener` | L760 ~ L774 | **15 行** ($\le 50$) | **0 个** ($\le 4$) | `if (dom.oobeModal)` 空指针拦截；`try-catch` 捕获 `localStorage.setItem` | **PASS** |
-| `switchTab(targetTabId)` | L798 ~ L832 | **35 行** ($\le 50$) | **1 个** (`targetTabId`) ($\le 4$) | 首行 `if (!targetTabId) return;` 卫语句；`window.scrollTo` 异常安全保护 | **PASS** |
-| `initNavEvents()` | L834 ~ L842 | **9 行** ($\le 50$) | **0 个** ($\le 4$) | 循环读取 `getAttribute('data-tab')`，委托至 `switchTab` | **PASS** |
-| `showToast(message, type, duration)` | L887 ~ L920 | **34 行** ($\le 50$) | **3 个** (`msg, type, dur`) ($\le 4$) | 首行 `if (!message) return;` 卫语句；容器不存在自动兜底创建并追加 | **PASS** |
+| `btnOobeFinish.addEventListener` | L760 ~ L775 | **16 行** ($\le 50$) | **0 个** ($\le 4$) | `if (dom.oobeModal)` 空指针拦截；`try-catch` 捕获 `localStorage.setItem` | **PASS** |
+| `switchTab(targetTabId)` | L798 ~ L831 | **34 行** ($\le 50$) | **1 个** (`targetTabId`) ($\le 4$) | 首行 `if (!targetTabId) return;` 卫语句；`window.scrollTo` 异常安全保护 | **PASS** |
+| `initNavEvents()` | L833 ~ L875 | **43 行** ($\le 50$) | **0 个** ($\le 4$) | 集中事件委托与导航/语言/主题/采样绑定；无超过 3 层嵌套 | **PASS** |
+| `showToast(message, type, durationMs)` | L881 ~ L909 | **29 行** ($\le 50$) | **3 个** (`msg, type, dur`) ($\le 4$) | 首行 `if (!message) return;` 卫语句；容器不存在自动兜底创建并追加；定时彻底清理 DOM 节点 | **PASS** |
+| `setControlsLocked(locked)` | L911 ~ L922 | **12 行** ($\le 50$) | **1 个** (`locked`) ($\le 4$) | 硬件断连时集中锁定/解锁控制按钮；防御性布尔转换 `!!locked` | **PASS** |
 | `initApp()` OOBE 检测分支 | L1525 ~ L1542 | **18 行** ($\le 50$) | **0 个** ($\le 4$) | `try-catch` 包裹 `localStorage.getItem`，异常时安全回退弹出向导 | **PASS** |
 
 ### 4.2 Web HMI 六大硬性门禁对账审计

@@ -1,14 +1,14 @@
 ==============================================================================
 AI-SoC QA Independent HIL Automated Test Suite Full Execution Log (runtime.log)
-Execution Time: 2026-11-01 21:14:49.996
+Execution Time: 2026-11-01 21:30:31.764
 Reviewer Role: QA (session-qa-hil-twin-35)
-Candidate Pinned Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
+Candidate Pinned Commit: soc-ap=12a3f9a84c21a5ce70ef264bee041249c60240a0
 Target Machine: VMware Twin (192.168.77.134:8080) + AT32F435 MC + AT32F423 TH
 ==============================================================================
 
 ##############################################################################
 ### [EXECUTE] C-INTEGRATION-PRINT-LOOP
-### Start: 2026-11-01 21:14:49.996
+### Start: 2026-11-01 21:30:31.764
 ### Command: /home/sushaohua/aisoc_qa_sandbox/soc-ap/build/tests/integration/test_first_release_print_loop
 ### Working Directory: /home/sushaohua/aisoc_qa_sandbox/soc-ap
 ##############################################################################
@@ -37,11 +37,11 @@ Target Machine: VMware Twin (192.168.77.134:8080) + AT32F435 MC + AT32F423 TH
 === ALL TWIN-30 INTEGRATION TESTS PASSED (10/10 Suites 100% Green) ===
 ===================================================================
 
-### End: 2026-11-01 21:14:49.998 | Exit Code: 0 | Verdict: PASS
+### End: 2026-11-01 21:30:31.766 | Exit Code: 0 | Verdict: PASS
 
 ##############################################################################
 ### [EXECUTE] HARNESS-FIRST-RELEASE-SUITE
-### Start: 2026-11-01 21:14:49.998
+### Start: 2026-11-01 21:30:31.766
 ### Command: python3 /home/sushaohua/aisoc_qa_sandbox/test_harness/static_checks/twin/run_first_release_cases.py
 ### Working Directory: /home/sushaohua/aisoc_qa_sandbox/test_harness
 ##############################################################################
@@ -60,11 +60,11 @@ AI-SoC First Release Automated Test Suite Execution (TWIN-10 ~ TWIN-35)
 ------------------------------------------------------------------------
 Total Suites: 9, Passed: 9, Failed: 0
 
-### End: 2026-11-01 21:14:50.038 | Exit Code: 0 | Verdict: PASS
+### End: 2026-11-01 21:30:31.800 | Exit Code: 0 | Verdict: PASS
 
 ##############################################################################
 ### [EXECUTE] HMI-CONTRACT-SUITE
-### Start: 2026-11-01 21:14:50.038
+### Start: 2026-11-01 21:30:31.800
 ### Command: python3 test_hmi_contract.py
 ### Working Directory: /home/sushaohua/aisoc_qa_sandbox/soc-ap/browser_hmi/first_release
 ##############################################################################
@@ -74,15 +74,15 @@ Ran 10 tests in 0.008s
 
 OK
 
-### End: 2026-11-01 21:14:50.078 | Exit Code: 0 | Verdict: PASS
+### End: 2026-11-01 21:30:31.840 | Exit Code: 0 | Verdict: PASS
 
 ##############################################################################
 ### [EXECUTE] BROWSER-OOBE-CDP-AUTOMATION
-### Start: 2026-11-01 21:14:50.078
+### Start: 2026-11-01 21:30:31.840
 ### Command: python3 /home/sushaohua/aisoc_qa_sandbox/run_qa_e2e_oobe_browser.py
 ### Working Directory: /home/sushaohua/aisoc_qa_sandbox
 ##############################################################################
-DevTools listening on ws://127.0.0.1:9222/devtools/browser/185f2de0-53a6-4493-8f3b-a6f56d60b088
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/f3499324-2096-4618-ac3d-10078bfece79
 ==================================================================
 === TC-E2E-OOBE-01-POS & TC-E2E-OOBE-03-POS BROWSER VERIFICATION ===
 ==================================================================
@@ -92,34 +92,34 @@ DevTools listening on ws://127.0.0.1:9222/devtools/browser/185f2de0-53a6-4493-8f
   TH Version Text: '固件版本: v1.0 (0x6356C05A)'
   MC Status Badge: '已连接 (在线)' (class: 'check-result-badge badge-success')
   TH Status Badge: '已连接 (在线)' (class: 'check-result-badge badge-success')
-[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-01-POS_step3_versions.png (170704 b64 bytes)
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-01-POS_step3_versions.png (167764 b64 bytes)
 [PASS] TC-E2E-OOBE-01-POS: Cold start version probe and display verified!
 
 [STEP 3->4] Clicking '下一步' to Step 4 (Sensors)...
 [STEP 4->5] Clicking '下一步' to Step 5 (Finish Step)...
   Finish button display: 'inline-flex'
-[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-POS_step5_ready.png (151012 b64 bytes)
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-POS_step5_ready.png (148204 b64 bytes)
 [ACTION] Clicking '进入打印控制台' (btn-oobe-finish)...
   Modal display after finish: 'none'
   Dashboard active: True
   LocalStorage['aisoc_oobe_completed']: 'true'
   Toast Text: '✅ 新机自检向导已完成，已进入控制台'
   Toast Class: 'hmi-toast toast-success'
-[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-POS_dashboard_toast.png (199416 b64 bytes)
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-POS_dashboard_toast.png (193524 b64 bytes)
 [PASS] TC-E2E-OOBE-03-POS: Wizard completion, tab-dashboard navigation, toast and persistence verified!
 
 [RELOAD] Testing TC-E2E-OOBE-03-NEG: Page Reload Persistence Check...
   Reloaded Modal display: 'none'
   Reloaded Dashboard active: True
   Reloaded LocalStorage: 'true'
-[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-NEG_refreshed_no_modal.png (190840 b64 bytes)
+[SCREENSHOT] Saved: /home/sushaohua/aisoc_qa_sandbox/evidence/TC-E2E-OOBE-03-NEG_refreshed_no_modal.png (184556 b64 bytes)
 [PASS] TC-E2E-OOBE-03-NEG: Reloaded persistence verified, OOBE modal does not pop up!
 
-### End: 2026-11-01 21:15:00.561 | Exit Code: 0 | Verdict: PASS
+### End: 2026-11-01 21:30:42.232 | Exit Code: 0 | Verdict: PASS
 
 ##############################################################################
 ### [EXECUTE] HOT-UNPLUG-RECOVERY-SUITE
-### Start: 2026-11-01 21:15:00.561
+### Start: 2026-11-01 21:30:42.232
 ### Command: python3 /home/sushaohua/aisoc_qa_sandbox/test_qa_e2e_hotunplug.py
 ### Working Directory: /home/sushaohua/aisoc_qa_sandbox
 ##############################################################################
@@ -128,12 +128,12 @@ DevTools listening on ws://127.0.0.1:9222/devtools/browser/185f2de0-53a6-4493-8f
 ==================================================================
 === QA INDEPENDENT HOT-UNPLUG & RECOVERY END-TO-END REGRESSION ===
 ==================================================================
-[PRE-CHECK] Forward Service PID: 3571328
+[PRE-CHECK] Forward Service PID: 3580719
 [ONLINE BASELINE] Status: NORMAL, MC: ONLINE, TH: ONLINE
 [ONLINE JOG] Status Code: 200, Resp: {'status': 'ok', 'axis': 'X', 'step_mm': 10.0}
 
 [ACTION] Triggering USB Serial Unplug (unbinding 1-2.1:1.0)...
-[DECAY CHECK] OFFLINE reached: True in 1.72s (Contract: <= 3.0s)
+[DECAY CHECK] OFFLINE reached: True in 0.32s (Contract: <= 3.0s)
   Bed Millic: 2147483646 (Expected: 2147483646, 0x7FFFFFFE)
   Tool Millic: 2147483646 (Expected: 2147483646, 0x7FFFFFFE)
   Bed Celsius: None (Expected: None/null)
@@ -152,39 +152,33 @@ DevTools listening on ws://127.0.0.1:9222/devtools/browser/185f2de0-53a6-4493-8f
   POST /api/v1/jobs/start -> HTTP 503, Resp: {'error': 503, 'message': 'Hardware offline: cannot start job'}
 
 [ACTION] Triggering USB Serial Reconnect (binding 1-2.1:1.0)...
-[RECOVERY CHECK] ONLINE restored: True in 1.58s (Contract: <= 3.0s)
+[RECOVERY CHECK] ONLINE restored: True in 1.44s (Contract: <= 3.0s)
   Bed Temp: 24.5 C (Quality: FRESH)
-  Tool Temp: 122.5 C (Quality: FRESH)
+  Tool Temp: 120.7 C (Quality: FRESH)
   MC Commit: 0xA6791332
   TH Commit: 0x6356C05A
-  Unblocked POST /api/v1/motion/jog -> HTTP 503, Resp: {'error': 503, 'message': 'Hardware offline: cannot jog motion'}
-Traceback (most recent call last):
-  File "/home/sushaohua/aisoc_qa_sandbox/test_qa_e2e_hotunplug.py", line 197, in <module>
-    run_hotunplug_test()
-    ~~~~~~~~~~~~~~~~~~^^
-  File "/home/sushaohua/aisoc_qa_sandbox/test_qa_e2e_hotunplug.py", line 191, in run_hotunplug_test
-    assert jog_unblk_c == 200
-           ^^^^^^^^^^^^^^^^^^
-AssertionError
+  Unblocked POST /api/v1/motion/jog -> HTTP 200, Resp: {'status': 'ok', 'axis': 'X', 'step_mm': 10.0}
 
-### End: 2026-11-01 21:15:06.765 | Exit Code: 1 | Verdict: FAIL
+[PASS] HOT-UNPLUG AND AUTO-RECOVERY ALL VERIFIED 100% GREEN!
+
+### End: 2026-11-01 21:30:47.673 | Exit Code: 0 | Verdict: PASS
 
 ##############################################################################
 ### [EXECUTE] DBUS-MC-VERSION-QUERY
-### Start: 2026-11-01 21:15:06.765
+### Start: 2026-11-01 21:30:47.673
 ### Command: /home/sushaohua/aisoc_qa_sandbox/soc-ap/build/bin/soc-ap --query-version --target mc --json
 ### Working Directory: /home/sushaohua/aisoc_qa_sandbox/soc-ap
 ##############################################################################
-{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793596506767,"monotonic_rtt_us":7510,"target":"MC","target_id":2,"cmd":"GET_VERSION","req_seq":0,"resp_seq":0,"version_info":{"proto_ver":"2.0","firmware_ver":"1.0","boot_id":"0x01020304","git_commit":"0xA6791332","capabilities":"0x00000003"}}
+{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793597447676,"monotonic_rtt_us":17172,"target":"MC","target_id":2,"cmd":"GET_VERSION","req_seq":0,"resp_seq":0,"version_info":{"proto_ver":"2.0","firmware_ver":"1.0","boot_id":"0x01020304","git_commit":"0xA6791332","capabilities":"0x00000003"}}
 
-### End: 2026-11-01 21:15:06.775 | Exit Code: 0 | Verdict: PASS
+### End: 2026-11-01 21:30:47.693 | Exit Code: 0 | Verdict: PASS
 
 ##############################################################################
 ### [EXECUTE] DBUS-TH-VERSION-QUERY
-### Start: 2026-11-01 21:15:06.775
+### Start: 2026-11-01 21:30:47.693
 ### Command: /home/sushaohua/aisoc_qa_sandbox/soc-ap/build/bin/soc-ap --query-version --target th --json
 ### Working Directory: /home/sushaohua/aisoc_qa_sandbox/soc-ap
 ##############################################################################
-{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793596506778,"monotonic_rtt_us":8044,"target":"TH","target_id":3,"cmd":"GET_VERSION","req_seq":2,"resp_seq":2,"version_info":{"proto_ver":"2.0","firmware_ver":"1.0","boot_id":"0x8877AA55","git_commit":"0x6356C05A","capabilities":"0x00000007"}}
+{"status":"SUCCESS","exit_code":0,"utc_time_ms":1793597447696,"monotonic_rtt_us":8210,"target":"TH","target_id":3,"cmd":"GET_VERSION","req_seq":2,"resp_seq":2,"version_info":{"proto_ver":"2.0","firmware_ver":"1.0","boot_id":"0x8877AA55","git_commit":"0x6356C05A","capabilities":"0x00000007"}}
 
-### End: 2026-11-01 21:15:06.786 | Exit Code: 0 | Verdict: PASS
+### End: 2026-11-01 21:30:47.704 | Exit Code: 0 | Verdict: PASS

@@ -1,18 +1,18 @@
 ==============================================================================
 AI-SoC First Release HIL Test Raw HTTP Communication Log
-Generated: 2026-11-01 21:14:35.630
+Generated: 2026-11-01 21:30:18.042
 Target: VMware SoC Twin (192.168.77.134:8080)
-Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
+Candidate Commit: soc-ap=12a3f9a84c21a5ce70ef264bee041249c60240a0
 ==============================================================================
 
 ### TC-E2E-NET-01-POS: Static Assets Retrieval & Wire Protocol Integrity
->>> REQUEST: 2026-11-01 21:14:35.630 GET /index.html HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.042 GET /index.html HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:35.635 HTTP/1.1 200 OK (RTT: 4.91ms)
+<<< RESPONSE: 2026-11-01 21:30:18.047 HTTP/1.1 200 OK (RTT: 5.08ms)
 < Content-Type: text/html; charset=utf-8
 < Content-Length: 60273
 < Access-Control-Allow-Origin: *
@@ -45,13 +45,13 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:35.635 GET /styles.css HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.047 GET /styles.css HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:35.635 HTTP/1.1 200 OK (RTT: 0.24ms)
+<<< RESPONSE: 2026-11-01 21:30:18.048 HTTP/1.1 200 OK (RTT: 0.24ms)
 < Content-Type: text/css; charset=utf-8
 < Content-Length: 32644
 < Access-Control-Allow-Origin: *
@@ -84,28 +84,28 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:35.635 GET /app.js HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.048 GET /app.js HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:35.636 HTTP/1.1 200 OK (RTT: 0.21ms)
+<<< RESPONSE: 2026-11-01 21:30:18.048 HTTP/1.1 200 OK (RTT: 0.24ms)
 < Content-Type: application/javascript; charset=utf-8
-< Content-Length: 73535
+< Content-Length: 73565
 < Access-Control-Allow-Origin: *
 < Connection: close
 <
-< [Binary Content: 73535 bytes]
+< [Binary Content: 73565 bytes]
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:35.636 GET /slot_schema.json HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.048 GET /slot_schema.json HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:35.636 HTTP/1.1 200 OK (RTT: 0.17ms)
+<<< RESPONSE: 2026-11-01 21:30:18.048 HTTP/1.1 200 OK (RTT: 0.21ms)
 < Content-Type: application/javascript; charset=utf-8
 < Content-Length: 2326
 < Access-Control-Allow-Origin: *
@@ -115,24 +115,24 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 ==============================================================================
 
 ### TC-E2E-TEMP-01-POS & TC-E2E-TEMP-02-POS: Dual Temperature Telemetry & Sampling
->>> REQUEST: 2026-11-01 21:14:35.636 GET /api/v1/temperature/snapshot HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.048 GET /api/v1/temperature/snapshot HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:35.636 HTTP/1.1 200 OK (RTT: 0.44ms)
+<<< RESPONSE: 2026-11-01 21:30:18.049 HTTP/1.1 200 OK (RTT: 0.49ms)
 < Content-Type: application/json; charset=utf-8
-< Content-Length: 670
+< Content-Length: 672
 < Access-Control-Allow-Origin: *
 < Access-Control-Allow-Methods: GET, POST, OPTIONS
 < Access-Control-Allow-Headers: Content-Type, Accept
 < Connection: keep-alive
 <
-< {"schema_version":2,"generation_id":93,"timestamp_ns":421313653101477,"bed":{"temperature_millic":24500,"temperature_c":24.5,"sensor_status":"OK","quality":"FRESH"},"tool":{"temperature_millic":122430,"temperature_c":122.4,"sensor_status":"OK","quality":"FRESH"},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":16909060,"git_commit":"0xA6791332","capability_flags":3,"last_update_ns":421313645238083},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":2289543765,"git_commit":"0x6356C05A","capability_flags":7,"last_update_ns":421313653101477}},"system_status":"NORMAL"}
+< {"schema_version":2,"generation_id":1208,"timestamp_ns":422254868304526,"bed":{"temperature_millic":24500,"temperature_c":24.5,"sensor_status":"OK","quality":"FRESH"},"tool":{"temperature_millic":120660,"temperature_c":120.7,"sensor_status":"OK","quality":"FRESH"},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":16909060,"git_commit":"0xA6791332","capability_flags":3,"last_update_ns":422254860108827},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":2289543765,"git_commit":"0x6356C05A","capability_flags":7,"last_update_ns":422254868304526}},"system_status":"NORMAL"}
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:35.636 POST /api/v1/temperature/sample HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.049 POST /api/v1/temperature/sample HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
@@ -141,7 +141,7 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 >
 > {"client": "RAW_HIL_LOGGER"}
 
-<<< RESPONSE: 2026-11-01 21:14:35.653 HTTP/1.1 200 OK (RTT: 16.32ms)
+<<< RESPONSE: 2026-11-01 21:30:18.064 HTTP/1.1 200 OK (RTT: 15.25ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 29
 < Access-Control-Allow-Origin: *
@@ -153,7 +153,7 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 ==============================================================================
 
 ### TC-E2E-MOT-01-POS: Jog Motion Execution & Coordinate Sync
->>> REQUEST: 2026-11-01 21:14:35.653 POST /api/v1/motion/jog HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.064 POST /api/v1/motion/jog HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
@@ -162,7 +162,7 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 >
 > {"axis": "x", "dist_mm": 10, "feedrate_mms": 50}
 
-<<< RESPONSE: 2026-11-01 21:14:35.653 HTTP/1.1 200 OK (RTT: 0.25ms)
+<<< RESPONSE: 2026-11-01 21:30:18.064 HTTP/1.1 200 OK (RTT: 0.20ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 42
 < Access-Control-Allow-Origin: *
@@ -174,7 +174,7 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 ==============================================================================
 
 ### TC-E2E-MOT-02-POS: Home All Axes (G28)
->>> REQUEST: 2026-11-01 21:14:35.653 POST /api/v1/motion/home HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.064 POST /api/v1/motion/home HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
@@ -183,7 +183,7 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 >
 > {"axes": "ALL"}
 
-<<< RESPONSE: 2026-11-01 21:14:35.653 HTTP/1.1 200 OK (RTT: 0.20ms)
+<<< RESPONSE: 2026-11-01 21:30:18.065 HTTP/1.1 200 OK (RTT: 0.19ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 44
 < Access-Control-Allow-Origin: *
@@ -195,7 +195,7 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 ==============================================================================
 
 ### TC-E2E-JOB-01-POS: Start 3DBenchy Print Job
->>> REQUEST: 2026-11-01 21:14:35.653 POST /api/v1/jobs/start HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.065 POST /api/v1/jobs/start HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
@@ -204,7 +204,7 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 >
 > {"job_id": "job_benchy_01"}
 
-<<< RESPONSE: 2026-11-01 21:14:35.654 HTTP/1.1 200 OK (RTT: 0.18ms)
+<<< RESPONSE: 2026-11-01 21:30:18.065 HTTP/1.1 200 OK (RTT: 0.14ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 39
 < Access-Control-Allow-Origin: *
@@ -215,13 +215,13 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < {"status":"ok","message":"Job started"}
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:35.654 GET /api/v1/jobs/status HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:18.065 GET /api/v1/jobs/status HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:35.654 HTTP/1.1 200 OK (RTT: 0.17ms)
+<<< RESPONSE: 2026-11-01 21:30:18.065 HTTP/1.1 200 OK (RTT: 0.19ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 332
 < Access-Control-Allow-Origin: *
@@ -229,17 +229,17 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < Access-Control-Allow-Headers: Content-Type, Accept
 < Connection: keep-alive
 <
-< {"job_state":"PRINTING","model_name":"3DBenchy.gcode","current_line":1,"total_lines":350,"progress_permille":2,"elapsed_seconds":1,"remaining_seconds":699,"pos_x_mm":53.00,"pos_y_mm":79.85,"pos_z_mm":0.20,"pos_e_mm":0.05,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"G1 X53.00 Y79.85 Z0.20 E0.05 F3600"}
+< {"job_state":"PRINTING","model_name":"3DBenchy.gcode","current_line":1,"total_lines":350,"progress_permille":2,"elapsed_seconds":1,"remaining_seconds":699,"pos_x_mm":53.00,"pos_y_mm":79.85,"pos_z_mm":0.20,"pos_e_mm":9.30,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"G1 X53.00 Y79.85 Z0.20 E9.30 F3600"}
 ==============================================================================
 
 ### TC-E2E-JOB-02-POS: Pause & Resume Job
->>> REQUEST: 2026-11-01 21:14:36.654 POST /api/v1/jobs/pause HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.065 POST /api/v1/jobs/pause HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:36.654 HTTP/1.1 200 OK (RTT: 0.35ms)
+<<< RESPONSE: 2026-11-01 21:30:19.066 HTTP/1.1 200 OK (RTT: 0.37ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 38
 < Access-Control-Allow-Origin: *
@@ -250,13 +250,13 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < {"status":"ok","message":"Job paused"}
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:36.655 GET /api/v1/jobs/status HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.066 GET /api/v1/jobs/status HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:36.655 HTTP/1.1 200 OK (RTT: 0.21ms)
+<<< RESPONSE: 2026-11-01 21:30:19.066 HTTP/1.1 200 OK (RTT: 0.16ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 316
 < Access-Control-Allow-Origin: *
@@ -264,16 +264,16 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < Access-Control-Allow-Headers: Content-Type, Accept
 < Connection: keep-alive
 <
-< {"job_state":"PAUSED","model_name":"3DBenchy.gcode","current_line":2,"total_lines":350,"progress_permille":5,"elapsed_seconds":2,"remaining_seconds":698,"pos_x_mm":55.96,"pos_y_mm":79.40,"pos_z_mm":0.20,"pos_e_mm":0.10,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"M0 ; User paused job"}
+< {"job_state":"PAUSED","model_name":"3DBenchy.gcode","current_line":2,"total_lines":350,"progress_permille":5,"elapsed_seconds":2,"remaining_seconds":698,"pos_x_mm":55.96,"pos_y_mm":79.40,"pos_z_mm":0.20,"pos_e_mm":9.35,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"M0 ; User paused job"}
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:36.655 POST /api/v1/jobs/resume HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.066 POST /api/v1/jobs/resume HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:36.655 HTTP/1.1 200 OK (RTT: 0.17ms)
+<<< RESPONSE: 2026-11-01 21:30:19.066 HTTP/1.1 200 OK (RTT: 0.12ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 39
 < Access-Control-Allow-Origin: *
@@ -284,13 +284,13 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < {"status":"ok","message":"Job resumed"}
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:36.655 GET /api/v1/jobs/status HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.066 GET /api/v1/jobs/status HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:36.656 HTTP/1.1 200 OK (RTT: 0.27ms)
+<<< RESPONSE: 2026-11-01 21:30:19.066 HTTP/1.1 200 OK (RTT: 0.11ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 320
 < Access-Control-Allow-Origin: *
@@ -298,17 +298,17 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < Access-Control-Allow-Headers: Content-Type, Accept
 < Connection: keep-alive
 <
-< {"job_state":"PRINTING","model_name":"3DBenchy.gcode","current_line":2,"total_lines":350,"progress_permille":5,"elapsed_seconds":2,"remaining_seconds":698,"pos_x_mm":55.96,"pos_y_mm":79.40,"pos_z_mm":0.20,"pos_e_mm":0.10,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"M24 ; Resume print job"}
+< {"job_state":"PRINTING","model_name":"3DBenchy.gcode","current_line":2,"total_lines":350,"progress_permille":5,"elapsed_seconds":2,"remaining_seconds":698,"pos_x_mm":55.96,"pos_y_mm":79.40,"pos_z_mm":0.20,"pos_e_mm":9.35,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"M24 ; Resume print job"}
 ==============================================================================
 
 ### TC-E2E-JOB-03-POS: Cancel Job Safely
->>> REQUEST: 2026-11-01 21:14:37.156 POST /api/v1/jobs/cancel HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.566 POST /api/v1/jobs/cancel HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:37.157 HTTP/1.1 200 OK (RTT: 0.55ms)
+<<< RESPONSE: 2026-11-01 21:30:19.567 HTTP/1.1 200 OK (RTT: 0.39ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 41
 < Access-Control-Allow-Origin: *
@@ -319,13 +319,13 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < {"status":"ok","message":"Job cancelled"}
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:37.157 GET /api/v1/jobs/status HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.567 GET /api/v1/jobs/status HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:37.157 HTTP/1.1 200 OK (RTT: 0.25ms)
+<<< RESPONSE: 2026-11-01 21:30:19.567 HTTP/1.1 200 OK (RTT: 0.27ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 313
 < Access-Control-Allow-Origin: *
@@ -333,11 +333,11 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < Access-Control-Allow-Headers: Content-Type, Accept
 < Connection: keep-alive
 <
-< {"job_state":"IDLE","model_name":"3DBenchy.gcode","current_line":0,"total_lines":350,"progress_permille":0,"elapsed_seconds":3,"remaining_seconds":697,"pos_x_mm":58.87,"pos_y_mm":78.66,"pos_z_mm":0.20,"pos_e_mm":0.15,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"M25 ; Job cancelled"}
+< {"job_state":"IDLE","model_name":"3DBenchy.gcode","current_line":0,"total_lines":350,"progress_permille":0,"elapsed_seconds":3,"remaining_seconds":697,"pos_x_mm":58.87,"pos_y_mm":78.66,"pos_z_mm":0.20,"pos_e_mm":9.40,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"M25 ; Job cancelled"}
 ==============================================================================
 
 ### TC-E2E-HMS-01-POS: Trigger Emergency Stop (M112)
->>> REQUEST: 2026-11-01 21:14:37.157 POST /api/v1/emergency/stop HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.567 POST /api/v1/emergency/stop HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
@@ -346,7 +346,7 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 >
 > {"reason": "QA_ESTOP_RAW_HIL"}
 
-<<< RESPONSE: 2026-11-01 21:14:37.158 HTTP/1.1 200 OK (RTT: 0.38ms)
+<<< RESPONSE: 2026-11-01 21:30:19.567 HTTP/1.1 200 OK (RTT: 0.19ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 73
 < Access-Control-Allow-Origin: *
@@ -357,13 +357,13 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < {"status":"ok","estop_active":true,"message":"Emergency stop triggered!"}
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:37.158 GET /api/v1/jobs/status HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.568 GET /api/v1/jobs/status HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:37.158 HTTP/1.1 200 OK (RTT: 0.21ms)
+<<< RESPONSE: 2026-11-01 21:30:19.568 HTTP/1.1 200 OK (RTT: 0.16ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 332
 < Access-Control-Allow-Origin: *
@@ -371,17 +371,17 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < Access-Control-Allow-Headers: Content-Type, Accept
 < Connection: keep-alive
 <
-< {"job_state":"ESTOP_FAULT","model_name":"3DBenchy.gcode","current_line":0,"total_lines":350,"progress_permille":0,"elapsed_seconds":3,"remaining_seconds":697,"pos_x_mm":58.87,"pos_y_mm":78.66,"pos_z_mm":0.20,"pos_e_mm":0.15,"heater_duty_percent":0,"estop_active":true,"is_homed":true,"last_gcode":"M112 ; Emergency Stop Triggered!"}
+< {"job_state":"ESTOP_FAULT","model_name":"3DBenchy.gcode","current_line":0,"total_lines":350,"progress_permille":0,"elapsed_seconds":3,"remaining_seconds":697,"pos_x_mm":58.87,"pos_y_mm":78.66,"pos_z_mm":0.20,"pos_e_mm":9.40,"heater_duty_percent":0,"estop_active":true,"is_homed":true,"last_gcode":"M112 ; Emergency Stop Triggered!"}
 ==============================================================================
 
 ### TC-E2E-HMS-02-POS: Clear Emergency Stop (M999)
->>> REQUEST: 2026-11-01 21:14:37.158 POST /api/v1/emergency/clear HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.568 POST /api/v1/emergency/clear HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:37.158 HTTP/1.1 200 OK (RTT: 0.20ms)
+<<< RESPONSE: 2026-11-01 21:30:19.568 HTTP/1.1 200 OK (RTT: 0.17ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 63
 < Access-Control-Allow-Origin: *
@@ -392,13 +392,13 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < {"status":"ok","estop_active":false,"message":"E-STOP cleared"}
 ==============================================================================
 
->>> REQUEST: 2026-11-01 21:14:37.158 GET /api/v1/jobs/status HTTP/1.1
+>>> REQUEST: 2026-11-01 21:30:19.568 GET /api/v1/jobs/status HTTP/1.1
 > Host: 127.0.0.1:8080
 > User-Agent: AisocQAHILTester/2.0
 > Accept: */*
 >
 
-<<< RESPONSE: 2026-11-01 21:14:37.159 HTTP/1.1 200 OK (RTT: 0.29ms)
+<<< RESPONSE: 2026-11-01 21:30:19.568 HTTP/1.1 200 OK (RTT: 0.17ms)
 < Content-Type: application/json; charset=utf-8
 < Content-Length: 325
 < Access-Control-Allow-Origin: *
@@ -406,5 +406,5 @@ Candidate Commit: soc-ap=409f19859c76c1d9de58184ca29b7782e5113503
 < Access-Control-Allow-Headers: Content-Type, Accept
 < Connection: keep-alive
 <
-< {"job_state":"IDLE","model_name":"3DBenchy.gcode","current_line":0,"total_lines":350,"progress_permille":0,"elapsed_seconds":3,"remaining_seconds":697,"pos_x_mm":58.87,"pos_y_mm":78.66,"pos_z_mm":0.20,"pos_e_mm":0.15,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"M999 ; E-STOP Cleared and Reset"}
+< {"job_state":"IDLE","model_name":"3DBenchy.gcode","current_line":0,"total_lines":350,"progress_permille":0,"elapsed_seconds":3,"remaining_seconds":697,"pos_x_mm":58.87,"pos_y_mm":78.66,"pos_z_mm":0.20,"pos_e_mm":9.40,"heater_duty_percent":0,"estop_active":false,"is_homed":true,"last_gcode":"M999 ; E-STOP Cleared and Reset"}
 ==============================================================================
