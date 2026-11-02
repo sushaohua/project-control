@@ -1,10 +1,10 @@
 ---
 id: RULE-COORD-DELIVERY-GATE-20261029
-revision: 3
+revision: 4
 status: current-rule
 owner: COORD
 date: 2026-10-29
-updated: '2026-11-02T07:03:42+00:00'
+updated: '2026-11-02T07:53:52+00:00'
 authorization: 用户要求将问题写进调度规则，COORD逐卡拉起Agent自闭环，QA使用独立Codex与独立沙箱并以服务器代码为准
 ---
 
@@ -38,7 +38,10 @@ flowchart TD
 ### 1.1 COORD 代码只读与派单唯一性硬铁律 (Machine Invariant)
 
 1. **业务代码库写入物理级封锁**：COORD 的写入权限严格受限于 `project-control/`（任务卡、Issue、调度记录、验收方案及顶层配置）。**严禁 COORD 直接修改 `soc-ap/`、`mcu-p3/`、`test_harness/` 业务代码仓库**。
-2. **研发与验收动作唯一合法通道 (`invoke_subagent`)**：凡是涉及编写代码、修改逻辑、编译单测、集成打包、独立验收，COORD 的第一且唯一合法动作是使用 `invoke_subagent` 派发对应专门角色（`ENG-*`、`INTEGRATOR`、`QA`）。严禁在 COORD 主会话中亲自写代码或伪造单兵闭环。如果 COORD 试图直接编辑业务代码，即刻视为违反交付门禁。
+2. **工程任务委派**：代码编写、业务修改、作者自检、集成打包等工程工作，COORD 必须通过 `invoke_subagent` 委派对应 `ENG-*` 或 `INTEGRATOR`，不得在主会话中代做。QA 编写测试计划、独立预期和测试工具仍按既有职责派单，其产物须接受独立复核。
+3. **正式独立 QA**：正式 QA 必须使用独立 Codex 会话，按权威 `codex_qa_review.md` 执行。仅通过 `invoke_subagent` 创建名为 QA 的普通子 Agent，不构成合规的独立 QA；只有实际启动独立 Codex 并提供可核验的会话和运行证据，才满足会话要求。派发工具名称、角色名或计划别名不能替代这些证据。
+4. **QA 执行顺序与调度授权**：由受控 Python Runner 确定性执行服务器锁定候选的独立 Docker 构建与测试，固化并校验客观证据，再启动独立 Codex 对同一候选及证据进行只读审阅。COORD 可以启动或委派启动该流程，这不属于 COORD 代做工程任务；不得在主会话直接运行被审代码的构建和测试，也不得让普通子 Agent 的自测、自评或手写报告替代该流程。独立 Codex 不负责启动 Docker 或补写测试计划。
+5. **收件与关闭**：必须取得与准确候选绑定的实际审阅结果、QA 报告非作者复核及必要 Owner 接受后，COORD 才能推进完成或关闭 Issue。调用失败、超时、证据不足或 `BLOCKED/INCONCLUSIVE` 时保持待审并记录阻塞及解除条件，禁止回退 `self`、提前批准或事后补签；保留历史报告，后续复验另建 run。
 
 当前会话内的连续工具循环与常驻服务分开：会话结束不能声称仍在自动调度。没有持久化运行器时，保存队列游标、候选、实际Agent ID和等待事件，下一会话恢复。AUTO-02部署验收后，才可声称其已验证的常驻/重启能力。
 
