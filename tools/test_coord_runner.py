@@ -1051,10 +1051,15 @@ class CodexAndSandboxIsolationGateTest(unittest.TestCase):
         fake_codex.chmod(0o755)
         adapter = CodexReviewAdapter(codex_bin=fake_codex)
         with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(returncode=1, stderr="Authentication error 401", stdout="")
+            def auth_failure(*args, **kwargs):
+                kwargs["stderr"].write("Authentication error 401")
+                return subprocess.CompletedProcess(args[0], 1)
+            mock_run.side_effect = auth_failure
             with self.assertRaises(CoordRunnerError) as ctx:
                 adapter.execute_review("prompt", self.root)
-            self.assertIn("Authentication error", str(ctx.exception))
+            self.assertIn("Codex execution failed", str(ctx.exception))
+            logs = Path(str(ctx.exception).split("logs: ", 1)[1])
+            self.assertIn("Authentication error", (logs / "codex.stderr").read_text())
 
     def test_plain_directory_sandbox_rejected(self):
         import delivery_checks as gate

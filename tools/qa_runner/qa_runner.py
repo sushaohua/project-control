@@ -541,6 +541,7 @@ class QARunner:
             c_res = run_command_in_sandbox(sandbox_dir, cmd, subpath, cid)
             res_dict = {
                 "command": cmd, "exit_code": str(c_res.returncode),
+                "subpath": subpath,
                 "duration": f"{c_res.duration_seconds:.2f}s",
                 "output": (c_res.stdout + "\n" + c_res.stderr).strip(),
             }
@@ -556,6 +557,8 @@ class QARunner:
 
     def execute_run(self, req: QARunRequest) -> tuple:
         """Execute complete isolated QA workflow in read-only container sandbox."""
+        if not req.commands or not any(item.get("kind", "test") == "test" for item in req.commands):
+            raise QARunnerError("At least one accepted test command is required; zero checks cannot pass")
         self.verify_target_commits(req.targets)
         run_id = f"run_{datetime.datetime.now().strftime('%H%M%S')}"
         sandbox_dir = create_isolated_sandbox(self.sandbox_base, req.task_id, run_id)

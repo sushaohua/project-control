@@ -3,17 +3,23 @@
 
 import argparse
 import hashlib
+import inspect
 import json
 from pathlib import Path
 import signal
 import subprocess
 import sys
 import time
+import tempfile
+import traceback
 from typing import Callable, Dict, List, Optional, Set
 
 if __package__:
     from .checkpoint import CheckpointManager
     from .codex_adapter import CodexReviewAdapter
+    from .codex_qa import execute_sandbox, validate_server_proof
+    from .qa_contract import create_qa_request, repository_from_card
+    from .review_bundle import execute_candidate_audit
     from .errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from .lease_manager import LeaseManager
     from .models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
@@ -23,6 +29,9 @@ else:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
     from coord_runner.checkpoint import CheckpointManager
     from coord_runner.codex_adapter import CodexReviewAdapter
+    from coord_runner.codex_qa import execute_sandbox, validate_server_proof
+    from coord_runner.qa_contract import create_qa_request, repository_from_card
+    from coord_runner.review_bundle import execute_candidate_audit
     from coord_runner.errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from coord_runner.lease_manager import LeaseManager
     from coord_runner.models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
@@ -124,6 +133,7 @@ class CoordRunner:
             raise CoordRunnerError(f"Missing agent_executor for {record.task_id}: fail-closed enforced")
         commit = self.agent_executor(record.task_id, record)
         self.state_machine.validate_commit_sha(commit)
+        self._archive_qa_run(record)
         record.candidate_commit = commit
         self.state_machine.transition(record, TaskState.CANDIDATE_PUSHED)
 
@@ -132,23 +142,39 @@ class CoordRunner:
             self.state_machine.transition(record, TaskState.SANDBOX_QA)
         if self.qa_executor is None:
             raise CoordRunnerError(f"Missing qa_executor for {record.task_id}: fail-closed enforced")
+        args = (record.task_id, record.candidate_commit, record.task_revision)
         try:
-            verdict = self.qa_executor(record.task_id, record.candidate_commit, record.task_revision)
+            inspect.signature(self.qa_executor).bind(*args)
         except TypeError:
-            verdict = self.qa_executor(record.task_id, record.candidate_commit)
-        ok = self.state_machine.validate_qa_verdict(record, verdict)
+            args = args[:2]
+        verdict = self.qa_executor(*args)
+        record.runtime_context["qa_result"] = verdict
+        if self.qa_executor == self.default_qa_executor:
+            ok = self._validate_sandbox_execution(record, verdict)
+        else:
+            ok = self.state_machine.validate_qa_verdict(record, verdict)
         if ok:
             self.state_machine.transition(record, TaskState.REVIEW)
         return ok
 
+    def _validate_sandbox_execution(self, record: TaskExecutionRecord, verdict: dict) -> bool:
+        """Completed failed tests may be audited, but are never relabelled as passed."""
+        if verdict.get("execution_completed") is not True:
+            raise CoordRunnerError("Sandbox execution is incomplete")
+        if verdict.get("candidate_commit") != record.candidate_commit or verdict.get("task_revision") != record.task_revision:
+            raise CoordRunnerError("Sandbox execution does not bind the active candidate")
+        proof = validate_server_proof(verdict.get("server_qa"), verdict["request"])
+        if proof["passed"] != verdict.get("passed"):
+            raise CoordRunnerError("Sandbox result was changed before audit")
+        return True
+
     def _invoke_reviewer(self, role: str, record: TaskExecutionRecord) -> dict:
+        args = (record.task_id, record.candidate_commit, role)
         try:
-            return self.review_executor(record.task_id, record.candidate_commit, role)
+            inspect.signature(self.review_executor).bind(*args)
         except TypeError:
-            try:
-                return self.review_executor(record.task_id, record.candidate_commit, record)
-            except TypeError:
-                return self.review_executor(record.task_id, record.candidate_commit)
+            args = args[:2]
+        return self.review_executor(*args)
 
     def _resolve_qa_report_ref(self, record: TaskExecutionRecord, qa_entry: dict) -> tuple:
         rep_path = qa_entry.get("report_path")
@@ -192,17 +218,7 @@ class CoordRunner:
         if not qa_entry:
             return True
         if qa_entry.get("report_review"):
-            try:
-                self.state_machine._validate_qa_report_review(
-                    qa_entry, author, self.config.workspace_root
-                )
-                return True
-            except GateValidationError as err:
-                ev = self.state_machine._extract_review_failure_evidence(qa_entry["report_review"])
-                self.state_machine.handle_remediation(
-                    record, f"Pre-existing QA report review invalid: {err}", ev
-                )
-                return False
+            return self._validate_existing_report_review(record, qa_entry, author)
         rep_path, rep_sha = self._resolve_qa_report_ref(record, qa_entry)
         report_res = self._invoke_report_reviewer(record, rep_path, rep_sha)
         report_res.setdefault("role", "ARCH")
@@ -225,8 +241,24 @@ class CoordRunner:
             "decision": report_res.get("decision"),
             "report_path": rep_path,
             "report_sha256": rep_sha,
+            "review_report_path": report_res.get("report_path"),
+            "review_report_sha256": report_res.get("report_sha256"),
         }
         return True
+
+    def _validate_existing_report_review(self, record: TaskExecutionRecord,
+                                         qa_entry: dict, author: str) -> bool:
+        try:
+            if self.review_executor == self.default_review_executor:
+                review = qa_entry["report_review"]
+                self._resolve_qa_report_ref(record, {"report_path": review.get("review_report_path"),
+                                                   "report_sha256": review.get("review_report_sha256")})
+            self.state_machine._validate_qa_report_review(qa_entry, author, self.config.workspace_root)
+            return True
+        except GateValidationError as err:
+            evidence = self.state_machine._extract_review_failure_evidence(qa_entry["report_review"])
+            self.state_machine.handle_remediation(record, f"Pre-existing QA report review invalid: {err}", evidence)
+            return False
 
     def _execute_review_phase(self, record: TaskExecutionRecord, card: dict) -> bool:
         if self.review_executor is None:
@@ -235,8 +267,10 @@ class CoordRunner:
         required_roles = [req_raw] if isinstance(req_raw, str) else list(req_raw)
         if "review_assignments" not in card or not isinstance(card["review_assignments"], dict):
             card["review_assignments"] = {"reviewer_sessions": []}
-        sessions = card["review_assignments"].setdefault("reviewer_sessions", [])
-        approved_roles = {e.get("role") for e in sessions if e.get("decision") == "APPROVED"}
+        sessions = record.runtime_context.setdefault(
+            "review_entries", card["review_assignments"].get("reviewer_sessions", []))
+        card["review_assignments"]["reviewer_sessions"] = sessions
+        approved_roles = {e.get("role") for e in sessions if self._review_entry_current(e, record)}
         author_session = record.session_id or ""
         for role in required_roles:
             if role in approved_roles:
@@ -246,13 +280,89 @@ class CoordRunner:
             ok = self.state_machine.validate_review_verdict(record, entry, author_session)
             if not ok:
                 return False
+            sessions[:] = [previous for previous in sessions if previous.get("role") != role]
             sessions.append(entry)
             approved_roles.add(role)
         if "QA" in required_roles:
             if not self._ensure_qa_report_review(record, sessions, author_session):
                 return False
+        self.state_machine.validate_done_acceptance(card, self.config.workspace_root)
         self.state_machine.transition(record, TaskState.DONE)
         return True
+
+    def _review_entry_current(self, entry: dict, record: TaskExecutionRecord) -> bool:
+        if entry.get("decision") != "APPROVED":
+            return False
+        if self.review_executor != self.default_review_executor:
+            return True
+        if entry.get("commit_sha") != record.candidate_commit or entry.get("reviewed_task_revision") != record.task_revision:
+            return False
+        try:
+            self._resolve_qa_report_ref(record, entry)
+            return True
+        except (CoordRunnerError, OSError):
+            return False
+
+    def _block_task(self, record: TaskExecutionRecord, error: Exception) -> None:
+        context = record.runtime_context
+        evidence_dir = Path(tempfile.mkdtemp(prefix=f"coord_error_{record.task_id}_"))
+        path = evidence_dir / "error.json"
+        data = {"task_id": record.task_id, "task_revision": record.task_revision,
+                "candidate_commit": record.candidate_commit, "phase": record.state,
+                "error": str(error), "traceback": traceback.format_exc()}
+        path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        ref = {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        context.setdefault("execution_errors", []).append(ref)
+        context["blocked_reason"] = str(error)
+        if record.state != TaskState.ESCALATED.value:
+            context["resume_state"] = record.state
+            record.state = TaskState.BLOCKED.value
+        record.waiting_events.append(f"execution-blocked:{path}")
+
+    def _process_task_safely(self, task_id: str, card: dict) -> None:
+        record = self.in_flight_tasks[task_id]
+        if record.state in {TaskState.BLOCKED.value, TaskState.ESCALATED.value}:
+            return
+        try:
+            self.process_task(task_id, card)
+        except Exception as error:
+            self._block_task(record, error)
+        finally:
+            self.save_checkpoint()
+
+    def _archive_qa_run(self, record: TaskExecutionRecord) -> None:
+        result = record.runtime_context.pop("qa_result", None)
+        reviews = record.runtime_context.pop("review_entries", [])
+        if result:
+            proof = result.get("server_qa") or {}
+            history = {"candidate_commit": result.get("candidate_commit"),
+                       "run_dir": (result.get("request") or {}).get("run_dir"),
+                       "server_qa": {"path": proof.get("path"), "sha256": proof.get("sha256")},
+                       "reviews": reviews}
+            record.runtime_context.setdefault("previous_qa_runs", []).append(history)
+
+    def resume_task(self, task_id: str, rerun_sandbox: bool = False) -> None:
+        """Resume only after COORD resolves the blocker; never silently auto-retry."""
+        record = self.in_flight_tasks.get(task_id)
+        if not record or record.state != TaskState.BLOCKED.value:
+            raise CoordRunnerError(f"Task {task_id} is not blocked")
+        card = self.load_cards().get(task_id)
+        if not card or card.get("revision") != record.task_revision or card.get("blocked"):
+            raise CoordRunnerError("Resolve task inputs/revision before resuming")
+        previous = record.runtime_context.get("resume_state")
+        if previous not in {TaskState.IN_PROGRESS.value, TaskState.CANDIDATE_PUSHED.value,
+                            TaskState.SANDBOX_QA.value, TaskState.REVIEW.value}:
+            raise CoordRunnerError("Blocked task has no safe resume phase")
+        if rerun_sandbox:
+            if not record.candidate_commit:
+                raise CoordRunnerError("Cannot rerun sandbox without an exact candidate")
+            self._archive_qa_run(record)
+            previous = TaskState.SANDBOX_QA.value
+        self.lease_mgr.release_task_leases(task_id)
+        record.leases = self._acquire_task_leases(task_id, card)
+        record.state = previous
+        record.runtime_context.pop("blocked_reason", None)
+        self.save_checkpoint()
 
     def _parse_qa_runner_output(self, stdout: str, stderr: str) -> dict:
         prefix = "[SERVER QA REF] "
@@ -319,28 +429,18 @@ class CoordRunner:
         candidate_commit: str,
         revision: int = 1,
     ) -> dict:
-        qa_script = self.config.workspace_root / "project-control" / "tools" / "qa_runner" / "qa_runner.py"
-        repo = self._resolve_task_repo(task_id)
-        cmd = [
-            sys.executable, str(qa_script),
-            "--task", task_id,
-            "--revision", str(revision),
-            "--repo-commit", f"{repo}={candidate_commit}",
-        ]
-        proc = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            cwd=str(self.config.workspace_root),
-            timeout=300,
-        )
-        server_qa = self._parse_qa_runner_output(proc.stdout, proc.stderr)
-        return {
-            "passed": proc.returncode == 0,
+        """Execute the frozen sandbox test plan directly, before model audit."""
+        self.state_machine.validate_commit_sha(candidate_commit)
+        card = self.load_cards().get(task_id)
+        if not card:
+            raise CoordRunnerError(f"Missing accepted task card for {task_id}")
+        candidate = {
+            "repository": repository_from_card(card),
             "candidate_commit": candidate_commit,
-            "task_id": task_id,
-            "server_qa": server_qa,
+            "task_revision": revision,
         }
+        request = create_qa_request(self.config.workspace_root, card, candidate)
+        return execute_sandbox(request)
 
     def default_review_executor(
         self,
@@ -348,33 +448,14 @@ class CoordRunner:
         candidate_commit: str,
         role_or_record: object = "QA",
     ) -> dict:
-        role = "QA"
-        extra = ""
-        if isinstance(role_or_record, dict):
-            role = role_or_record.get("role", "ARCH")
-            if role_or_record.get("report_path"):
-                p = role_or_record.get("report_path")
-                s = role_or_record.get("report_sha256")
-                extra = f" Review QA report at {p} (sha256: {s})."
-        elif isinstance(role_or_record, str):
-            role = role_or_record
-        adapter = CodexReviewAdapter()
-        prompt = (
-            f"Review task {task_id} as role {role} with candidate commit {candidate_commit}.{extra} "
-            "Verify implementation against task contract and state APPROVED or REJECTED."
-        )
-        res = adapter.execute_review(prompt, self.config.workspace_root)
-        return {
-            "reviewer_session": res.session_id,
-            "session": res.session_id,
-            "role": role,
-            "decision": res.decision,
-            "model": adapter.default_model,
-            "commit_sha": candidate_commit,
-            "task_id": task_id,
-            "tokens_used": res.tokens_used,
-            "summary": res.output_text[:200] if res.output_text else "",
-        }
+        record = self.in_flight_tasks.get(task_id)
+        if not record or record.candidate_commit != candidate_commit:
+            raise CoordRunnerError("Review requires an active exact candidate")
+        qa_result = record.runtime_context.get("qa_result")
+        if not qa_result or qa_result.get("candidate_commit") != candidate_commit:
+            raise CoordRunnerError("Review requires the completed objective sandbox evidence")
+        review = role_or_record if isinstance(role_or_record, dict) else {"role": role_or_record}
+        return execute_candidate_audit(CodexReviewAdapter(), qa_result, review)
 
     def wire_production_executors(self) -> None:
         if self.agent_executor is None:
@@ -392,6 +473,8 @@ class CoordRunner:
             if not self._execute_qa_phase(record, card):
                 return record.state
         if record.state == TaskState.REVIEW.value:
+            if record.task_id in self.in_flight_tasks:
+                self.save_checkpoint()
             if not self._execute_review_phase(record, card):
                 return record.state
         if record.state == TaskState.DONE.value:
@@ -407,7 +490,7 @@ class CoordRunner:
         in_flight_keys = list(self.in_flight_tasks.keys())
         for task_id in in_flight_keys:
             card = cards.get(task_id, {"id": task_id})
-            self.process_task(task_id, card)
+            self._process_task_safely(task_id, card)
         queue = self.scheduler.load_queue(self.config.queue_file)
         ctx = ScheduleContext(
             queue=queue,
@@ -431,6 +514,11 @@ class CoordRunner:
             "dispatched": dispatched,
             "in_flight": list(self.in_flight_tasks.keys()),
             "completed": sorted(self.completed_tasks),
+            "blocked": {key: record.runtime_context.get("blocked_reason", "")
+                        for key, record in self.in_flight_tasks.items()
+                        if record.state == TaskState.BLOCKED.value},
+            "escalated": [key for key, record in self.in_flight_tasks.items()
+                          if record.state == TaskState.ESCALATED.value],
         }
 
     def run_once(self) -> Dict[str, object]:
@@ -444,7 +532,9 @@ class CoordRunner:
         completed_initial = len(self.completed_tasks)
         while len(self.completed_tasks) - completed_initial < max_tasks:
             info = self.step()
-            if not info["dispatched"] and not info["in_flight"]:
+            runnable = any(record.state not in {TaskState.BLOCKED.value, TaskState.ESCALATED.value}
+                           for record in self.in_flight_tasks.values())
+            if not info["dispatched"] and not runnable:
                 break
         self.save_checkpoint()
         return len(self.completed_tasks) - completed_initial
@@ -472,10 +562,17 @@ def create_cli_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", default="project-control/config/coord_runner/coord_config.yaml",
                         help="Path to coord_runner YAML config")
     parser.add_argument("--once", action="store_true", help="Execute single step and exit")
+    parser.add_argument("--resume-task", help="Explicitly retry a blocked task after resolving its blocker")
+    parser.add_argument("--rerun-sandbox", action="store_true", help="With --resume-task, retain old evidence and rerun tests")
     parser.add_argument("--max-tasks", type=int, default=0, help="Execute up to N tasks and exit")
     parser.add_argument("--daemon", action="store_true", help="Run polling daemon mode")
     parser.add_argument("--poll-interval", type=float, default=None, help="Polling interval in seconds")
     return parser
+
+
+def emit_summary(summary: dict) -> int:
+    print(json.dumps(summary, ensure_ascii=False))
+    return 2 if summary.get("blocked") or summary.get("escalated") else 0
 
 
 def main() -> int:
@@ -488,17 +585,25 @@ def main() -> int:
     config = CoordRunnerConfig.from_dict(raw_cfg, base_dir)
     runner = CoordRunner(config)
     runner.wire_production_executors()
+    if args.resume_task:
+        runner.restore_from_checkpoint()
+        runner.resume_task(args.resume_task, rerun_sandbox=args.rerun_sandbox)
+    elif args.rerun_sandbox:
+        parser.error("--rerun-sandbox requires --resume-task")
     if args.once:
-        runner.run_once()
-        return 0
+        return emit_summary(runner.run_once())
     if args.max_tasks > 0:
-        runner.run_tasks(args.max_tasks)
-        return 0
+        completed = runner.run_tasks(args.max_tasks)
+        return emit_summary({"completed_count": completed,
+                             "blocked": {key: record.runtime_context.get("blocked_reason", "")
+                                         for key, record in runner.in_flight_tasks.items()
+                                         if record.state == TaskState.BLOCKED.value},
+                             "escalated": [key for key, record in runner.in_flight_tasks.items()
+                                           if record.state == TaskState.ESCALATED.value]})
     if args.daemon:
         runner.run_daemon(args.poll_interval)
         return 0
-    runner.run_once()
-    return 0
+    return emit_summary(runner.run_once())
 
 
 if __name__ == "__main__":

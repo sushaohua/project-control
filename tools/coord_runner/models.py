@@ -76,6 +76,7 @@ class TaskExecutionRecord:
     waiting_events: List[str] = field(default_factory=list)
     leases: List[str] = field(default_factory=list)
     updated_at: float = field(default_factory=time.time)
+    runtime_context: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         """Serialize task record to dictionary."""
@@ -89,6 +90,7 @@ class TaskExecutionRecord:
             "waiting_events": list(self.waiting_events),
             "leases": list(self.leases),
             "updated_at": self.updated_at,
+            "runtime_context": dict(self.runtime_context),
         }
 
     @classmethod
@@ -104,6 +106,7 @@ class TaskExecutionRecord:
             waiting_events=list(data.get("waiting_events", [])),
             leases=list(data.get("leases", [])),
             updated_at=float(data.get("updated_at", time.time())),
+            runtime_context=dict(data.get("runtime_context", {})),
         )
 
 
