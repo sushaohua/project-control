@@ -1,0 +1,2665 @@
+==============================================================================
+AI-SoC QA Independent Build & Test Execution Log (runtime.log)
+Execution Time: 2026-11-02T15:56:43+08:00
+Candidate Pinned Commits:
+  mcu-p3: 31a7c6891264ac154c421eaead77c4e4d23acd3e
+  soc-ap: 0975efc2736ca3d71b57345e7ba7b4141e2b6d5f
+==============================================================================
+
+### [1/4] Build & Pack Motion Controller (MC)
+make: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu'
+[VERSION][DEV] 生成 16bit 时间特征码: 0x8094 (V2.0.1-8094 1102)
+[VERSION] 生成头文件: build/version_autogen.h
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+Build type: Debug
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build
+cmake --build build -j4
+make[1]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[2]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[3]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[3]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+[ 30%] Built target AT32_Drivers
+make[3]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[3]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[3]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+[ 32%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/at32f435_437_int.c.obj
+[ 32%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/at32f435_437_wk_config.c.obj
+[ 34%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/main.c.obj
+[ 35%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_usart.c.obj
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c:36:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
+  344 | #define NULL                             0
+      | 
+In file included from /usr/include/newlib/stdlib.h:16,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:12,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:5,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c:34:
+/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
+  395 | #define NULL ((void *)0)
+      | 
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/main.c:52:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
+  344 | #define NULL                             0
+      | 
+In file included from /usr/include/newlib/stdlib.h:16,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:12,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/main.c:46:
+/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
+  395 | #define NULL ((void *)0)
+      | 
+[ 36%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_dma.c.obj
+[ 38%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/motherboard.c.obj
+[ 38%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/Timeout.c.obj
+[ 39%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/mem_api.c.obj
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/mem_api.c: In function 'sd_open':
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/motherboard.c:9:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
+  344 | #define NULL                             0
+      | 
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/mem_api.c:44:36: warning: unused parameter 'path' [-Wunused-parameter]
+   44 | unsigned sd_open(FIL *pFile, char *path, uint8_t flags)
+      |                              ~~~~~~^~~~
+In file included from /usr/include/newlib/stdlib.h:16,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:12,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:5,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/motherboard.c:1:
+/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
+  395 | #define NULL ((void *)0)
+      | 
+[ 40%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/ConfigurationStore.c.obj
+[ 41%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/Marlin_main.c.obj
+[ 42%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/planner.c.obj
+[ 43%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/qr_solve.c.obj
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:30:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c: In function 'kill':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:896:3: note: in expansion of macro 'disable_x'
+  896 |   disable_x();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:897:3: note: in expansion of macro 'disable_y'
+  897 |   disable_y();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:898:3: note: in expansion of macro 'disable_z'
+  898 |   disable_z();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:898:3: note: in expansion of macro 'disable_z'
+  898 |   disable_z();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:899:3: note: in expansion of macro 'disable_a'
+  899 |   disable_a();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:900:3: note: in expansion of macro 'disable_b'
+  900 |   disable_b();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c: In function 'get_command':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:957:10: warning: unused variable 'checksum' [-Wunused-variable]
+  957 |  uint8_t checksum = 0;
+      |          ^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c: At top level:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1228:56: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1228 | XYZ_CONSTS_FROM_CONFIG(float, base_min_pos,    MIN_POS);
+      |                                                        ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1232:56: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1232 | XYZ_CONSTS_FROM_CONFIG(float, base_max_pos,    MAX_POS);
+      |                                                        ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1234:57: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1234 | XYZ_CONSTS_FROM_CONFIG(float, base_home_pos,   HOME_POS);
+      |                                                         ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1235:59: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1235 | XYZ_CONSTS_FROM_CONFIG(float, max_length,      MAX_LENGTH);
+      |                                                           ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1236:64: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1236 | XYZ_CONSTS_FROM_CONFIG(float, home_retract_mm, HOME_RETRACT_MM);
+      |                                                                ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1237:57: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1237 | XYZ_CONSTS_FROM_CONFIG(signed char, home_dir,  HOME_DIR);
+      |                                                         ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c: In function 'process_commands':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2460:76: warning: multi-line comment [-Wcomment]
+ 2460 |     if ( (axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]))   // \
+      |                                                                            ^
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:30:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3467:11: note: in expansion of macro 'disable_a'
+ 3467 |           disable_a();
+      |           ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3468:11: note: in expansion of macro 'disable_b'
+ 3468 |           disable_b();
+      |           ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3476:30: note: in expansion of macro 'disable_x'
+ 3476 |           if(code_seen('X')) disable_x();
+      |                              ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3477:30: note: in expansion of macro 'disable_y'
+ 3477 |           if(code_seen('Y')) disable_y();
+      |                              ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3478:30: note: in expansion of macro 'disable_z'
+ 3478 |           if(code_seen('Z')) disable_z();
+      |                              ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3478:30: note: in expansion of macro 'disable_z'
+ 3478 |           if(code_seen('Z')) disable_z();
+      |                              ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3481:15: note: in expansion of macro 'disable_a'
+ 3481 |               disable_a();
+      |               ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3482:15: note: in expansion of macro 'disable_b'
+ 3482 |               disable_b();
+      |               ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4733:32: warning: '%s' directive writing up to 95 bytes into a region of size 30 [-Wformat-overflow=]
+ 4733 |    sprintf(commandstr_process,"%s\"",cmdbuffer[bufindr]);
+      |                                ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4733:4: note: 'sprintf' output between 2 and 97 bytes into a destination of size 30
+ 4733 |    sprintf(commandstr_process,"%s\"",cmdbuffer[bufindr]);
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[ 45%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/stepper.c.obj
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:94:36: warning: missing braces around initializer [-Wmissing-braces]
+   94 | matrix_3x3 plan_bed_level_matrix = {
+      |                                    ^
+   95 |  1.0, 0.0, 0.0,
+      |  {
+......
+   98 | };
+      | }
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c: In function 'planner_reverse_pass_kernel':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:281:43: warning: unused parameter 'previous' [-Wunused-parameter]
+  281 | void planner_reverse_pass_kernel(block_t *previous, block_t *current, block_t *next) {
+      |                                  ~~~~~~~~~^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c: In function 'planner_forward_pass_kernel':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:334:80: warning: unused parameter 'next' [-Wunused-parameter]
+  334 | void planner_forward_pass_kernel(block_t *previous, block_t *current, block_t *next) {
+      |                                                                       ~~~~~~~~~^~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:56:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c: In function 'check_axes_activity':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:551:38: note: in expansion of macro 'disable_x'
+  551 |   if((DISABLE_X) && (x_active == 0)) disable_x();
+      |                                      ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:552:38: note: in expansion of macro 'disable_y'
+  552 |   if((DISABLE_Y) && (y_active == 0)) disable_y();
+      |                                      ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:553:38: note: in expansion of macro 'disable_z'
+  553 |   if((DISABLE_Z) && (z_active == 0)) disable_z();
+      |                                      ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:553:38: note: in expansion of macro 'disable_z'
+  553 |   if((DISABLE_Z) && (z_active == 0)) disable_z();
+      |                                      ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c: In function 'plan_buffer_line':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:1123:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+ 1123 |     if(((float)block->acceleration_st * (float)block->steps_b / (float)block->step_event_count) > axis_steps_per_sqr_second[B_AXIS])
+      |     ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:1125:2: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+ 1125 |  if(((float)block->acceleration_st * (float)block->steps_c / (float)block->step_event_count) > axis_steps_per_sqr_second[C_AXIS])
+      |  ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:59:1: warning: 'static' is not at beginning of declaration [-Wold-style-declaration]
+   59 | volatile static unsigned long step_events_completed; // The number of step events executed in the current block
+      | ^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:206:1: warning: multi-line comment [-Wcomment]
+  206 | // uses:"mov   r4, r2 \n\t" \
+      | ^
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:24:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'tmr7_global_callback':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:661:9: note: in expansion of macro 'WRITE'
+  661 |         WRITE(X_DIR_PIN, !INVERT_X_DIR);
+      |         ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:678:9: note: in expansion of macro 'WRITE'
+  678 |         WRITE(Y_DIR_PIN, !INVERT_Y_DIR);
+      |         ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:799:9: note: in expansion of macro 'WRITE'
+  799 |         WRITE(Z_DIR_PIN,!INVERT_Z_DIR);
+      |         ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:802:11: note: in expansion of macro 'WRITE'
+  802 |           WRITE(Z2_DIR_PIN,!INVERT_Z_DIR);
+      |           ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:36:70: note: in expansion of macro 'WRITE'
+   36 |     #define NORM_A_DIR() { if(current_block->active_extruder == 1) { WRITE(B_DIR_PIN, !INVERT_B_DIR); } else { WRITE(A_DIR_PIN, !INVERT_A_DIR); }}
+      |                                                                      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:814:9: note: in expansion of macro 'NORM_A_DIR'
+  814 |         NORM_A_DIR();
+      |         ^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:36:112: note: in expansion of macro 'WRITE'
+   36 |     #define NORM_A_DIR() { if(current_block->active_extruder == 1) { WRITE(B_DIR_PIN, !INVERT_B_DIR); } else { WRITE(A_DIR_PIN, !INVERT_A_DIR); }}
+      |                                                                                                                ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:814:9: note: in expansion of macro 'NORM_A_DIR'
+  814 |         NORM_A_DIR();
+      |         ^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:40:26: note: in expansion of macro 'WRITE'
+   40 |     #define NORM_B_DIR() WRITE(B_DIR_PIN, !INVERT_B_DIR)
+      |                          ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:825:9: note: in expansion of macro 'NORM_B_DIR'
+  825 |         NORM_B_DIR();
+      |         ^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:936:11: note: in expansion of macro 'WRITE'
+  936 |           WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
+      |           ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:959:11: note: in expansion of macro 'WRITE'
+  959 |           WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
+      |           ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:977:11: note: in expansion of macro 'WRITE'
+  977 |           WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
+      |           ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:980:13: note: in expansion of macro 'WRITE'
+  980 |             WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
+      |             ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:35:73: note: in expansion of macro 'WRITE'
+   35 |     #define WRITE_A_STEP(v) { if(current_block->active_extruder == 1) { WRITE(B_STEP_PIN, v); } else { WRITE(A_STEP_PIN, v); }}
+      |                                                                         ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:995:11: note: in expansion of macro 'WRITE_A_STEP'
+  995 |           WRITE_A_STEP(!INVERT_A_STEP_PIN);
+      |           ^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:35:104: note: in expansion of macro 'WRITE'
+   35 |     #define WRITE_A_STEP(v) { if(current_block->active_extruder == 1) { WRITE(B_STEP_PIN, v); } else { WRITE(A_STEP_PIN, v); }}
+      |                                                                                                        ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:995:11: note: in expansion of macro 'WRITE_A_STEP'
+  995 |           WRITE_A_STEP(!INVERT_A_STEP_PIN);
+      |           ^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:39:29: note: in expansion of macro 'WRITE'
+   39 |     #define WRITE_B_STEP(v) WRITE(B_STEP_PIN, v)
+      |                             ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1004:11: note: in expansion of macro 'WRITE_B_STEP'
+ 1004 |           WRITE_B_STEP(!INVERT_B_STEP_PIN);
+      |           ^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'BspStepperInit':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1209:2: note: in expansion of macro 'disable_x'
+ 1209 |  disable_x();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1210:2: note: in expansion of macro 'disable_y'
+ 1210 |  disable_y();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1211:2: note: in expansion of macro 'disable_z'
+ 1211 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1211:2: note: in expansion of macro 'disable_z'
+ 1211 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1212:2: note: in expansion of macro 'disable_a'
+ 1212 |  disable_a();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1213:2: note: in expansion of macro 'disable_b'
+ 1213 |  disable_b();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'disable_all_stepmotor':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1222:2: note: in expansion of macro 'disable_x'
+ 1222 |  disable_x();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1223:2: note: in expansion of macro 'disable_y'
+ 1223 |  disable_y();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1224:2: note: in expansion of macro 'disable_z'
+ 1224 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1224:2: note: in expansion of macro 'disable_z'
+ 1224 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1225:2: note: in expansion of macro 'disable_a'
+ 1225 |  disable_a();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1226:2: note: in expansion of macro 'disable_b'
+ 1226 |  disable_b();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'finishAndDisableSteppers':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1357:2: note: in expansion of macro 'disable_x'
+ 1357 |  disable_x();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1358:2: note: in expansion of macro 'disable_y'
+ 1358 |  disable_y();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1359:2: note: in expansion of macro 'disable_z'
+ 1359 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1359:2: note: in expansion of macro 'disable_z'
+ 1359 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1360:2: note: in expansion of macro 'disable_a'
+ 1360 |  disable_a();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1361:2: note: in expansion of macro 'disable_b'
+ 1361 |  disable_b();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'load_filamant_init':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1384:4: note: in expansion of macro 'WRITE'
+ 1384 |    WRITE(A_DIR_PIN,!INVERT_A_DIR);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1388:4: note: in expansion of macro 'WRITE'
+ 1388 |    WRITE(B_DIR_PIN,!INVERT_B_DIR);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1396:5: note: in expansion of macro 'WRITE'
+ 1396 |     WRITE(A_DIR_PIN,!INVERT_A_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1397:5: note: in expansion of macro 'WRITE'
+ 1397 |     WRITE(B_DIR_PIN,!INVERT_B_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'unload_filamantinit':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1410:4: note: in expansion of macro 'WRITE'
+ 1410 |    WRITE(A_DIR_PIN,!INVERT_A_DIR);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1414:4: note: in expansion of macro 'WRITE'
+ 1414 |    WRITE(B_DIR_PIN,!INVERT_B_DIR);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1422:5: note: in expansion of macro 'WRITE'
+ 1422 |     WRITE(A_DIR_PIN,!INVERT_A_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1423:5: note: in expansion of macro 'WRITE'
+ 1423 |     WRITE(B_DIR_PIN,!INVERT_B_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'loadorunload_filamant':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1465:6: note: in expansion of macro 'WRITE'
+ 1465 |      WRITE(A_STEP_PIN,!INVERT_A_STEP_PIN);
+      |      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1469:6: note: in expansion of macro 'WRITE'
+ 1469 |      WRITE(B_STEP_PIN,!INVERT_A_STEP_PIN);
+      |      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1473:6: note: in expansion of macro 'WRITE'
+ 1473 |      WRITE(A_STEP_PIN,!INVERT_A_STEP_PIN);
+      |      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1474:6: note: in expansion of macro 'WRITE'
+ 1474 |      WRITE(B_STEP_PIN,!INVERT_A_STEP_PIN);
+      |      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1521:5: note: in expansion of macro 'WRITE'
+ 1521 |     WRITE(A_STEP_PIN,!INVERT_A_STEP_PIN);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1525:5: note: in expansion of macro 'WRITE'
+ 1525 |     WRITE(B_STEP_PIN,!INVERT_A_STEP_PIN);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1529:5: note: in expansion of macro 'WRITE'
+ 1529 |     WRITE(A_STEP_PIN,!INVERT_A_STEP_PIN);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1530:5: note: in expansion of macro 'WRITE'
+ 1530 |     WRITE(B_STEP_PIN,!INVERT_A_STEP_PIN);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'babystep_z':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1574:5: note: in expansion of macro 'WRITE'
+ 1574 |     WRITE(Z2_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1575:5: note: in expansion of macro 'WRITE'
+ 1575 |     WRITE(Z_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1595:5: note: in expansion of macro 'WRITE'
+ 1595 |     WRITE(Z2_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1596:5: note: in expansion of macro 'WRITE'
+ 1596 |     WRITE(Z_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1610:5: note: in expansion of macro 'WRITE'
+ 1610 |     WRITE(Z2_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1611:5: note: in expansion of macro 'WRITE'
+ 1611 |     WRITE(Z_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1613:4: note: in expansion of macro 'WRITE'
+ 1613 |    WRITE(Z2_STEP_PIN,!INVERT_Z_STEP_PIN);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1614:4: note: in expansion of macro 'WRITE'
+ 1614 |    WRITE(Z_STEP_PIN,!INVERT_Z_STEP_PIN);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'digitalPotWrite':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1777:26: warning: unused parameter 'address' [-Wunused-parameter]
+ 1777 | void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl example
+      |                      ~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1777:39: warning: unused parameter 'value' [-Wunused-parameter]
+ 1777 | void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl example
+      |                                   ~~~~^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'digipot_current':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1811:30: warning: unused parameter 'driver' [-Wunused-parameter]
+ 1811 | void digipot_current(uint8_t driver, int current)
+      |                      ~~~~~~~~^~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1811:42: warning: unused parameter 'current' [-Wunused-parameter]
+ 1811 | void digipot_current(uint8_t driver, int current)
+      |                                      ~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'microstep_ms':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1849:27: warning: unused parameter 'driver' [-Wunused-parameter]
+ 1849 | void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
+      |                   ~~~~~~~~^~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1849:42: warning: unused parameter 'ms1' [-Wunused-parameter]
+ 1849 | void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
+      |                                   ~~~~~~~^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1849:54: warning: unused parameter 'ms2' [-Wunused-parameter]
+ 1849 | void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
+      |                                               ~~~~~~~^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'microstep_mode':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1875:29: warning: unused parameter 'driver' [-Wunused-parameter]
+ 1875 | void microstep_mode(uint8_t driver, uint8_t stepping_mode)
+      |                     ~~~~~~~~^~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1875:45: warning: unused parameter 'stepping_mode' [-Wunused-parameter]
+ 1875 | void microstep_mode(uint8_t driver, uint8_t stepping_mode)
+      |                                     ~~~~~~~~^~~~~~~~~~~~~
+At top level:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:86:13: warning: 'old_y_min_endstop' defined but not used [-Wunused-variable]
+   86 | static bool old_y_min_endstop=false;
+      |             ^~~~~~~~~~~~~~~~~
+[ 46%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/vector_3.c.obj
+[ 47%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/filament_runout.c.obj
+[ 48%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_lcd/dgus_t300spro.c.obj
+[ 49%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_lcd/memu_gui.c.obj
+[ 50%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_lcd/gui_cmd_list.c.obj
+[ 51%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/eeprom_at24cxx.c.obj
+[ 52%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/heater.c.obj
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'printing_page_data_update_flag':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:985:9: warning: using integer absolute value function 'abs' when argument is of floating point type 'float' [-Wabsolute-value]
+  985 |     if((abs(Extruder_One.current_temperature - UI_Page_info.old_extruder_current_temp )>1 ) || (abs(Platform.current_temperature - UI_Page_info.old_bed_current_temp )>1))
+      |         ^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:985:97: warning: using integer absolute value function 'abs' when argument is of floating point type 'float' [-Wabsolute-value]
+  985 |     if((abs(Extruder_One.current_temperature - UI_Page_info.old_extruder_current_temp )>1 ) || (abs(Platform.current_temperature - UI_Page_info.old_bed_current_temp )>1))
+      |                                                                                                 ^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'preheat_date_updata':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:1270:9: warning: using integer absolute value function 'abs' when argument is of floating point type 'float' [-Wabsolute-value]
+ 1270 |     if((abs(Extruder_One.current_temperature - UI_Page_info.old_extruder_current_temp )>1 ) || (abs(Platform.current_temperature - UI_Page_info.old_bed_current_temp )>1))
+      |         ^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:1270:97: warning: using integer absolute value function 'abs' when argument is of floating point type 'float' [-Wabsolute-value]
+ 1270 |     if((abs(Extruder_One.current_temperature - UI_Page_info.old_extruder_current_temp )>1 ) || (abs(Platform.current_temperature - UI_Page_info.old_bed_current_temp )>1))
+      |                                                                                                 ^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'reopen_print_file':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2167:32: warning: format '%d' expects argument of type 'int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+ 2167 |     sprintf(strings,"filesize:%d,sd_pos:%d",filesize,sd_pos);
+      |                               ~^            ~~~~~~~~
+      |                                |            |
+      |                                int          uint32_t {aka long unsigned int}
+      |                               %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2167:42: warning: format '%d' expects argument of type 'int', but argument 4 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+ 2167 |     sprintf(strings,"filesize:%d,sd_pos:%d",filesize,sd_pos);
+      |                                         ~^           ~~~~~~
+      |                                          |           |
+      |                                          int         uint32_t {aka long unsigned int}
+      |                                         %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'gui_decode_data':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2478:56: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+ 2478 |             back_keycode = ((uint8_t)ptr_data[7]) << 8 & 0xFF00 | ((uint8_t)ptr_data[8]);
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2484:57: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+ 2484 |             back_keycode = ((uint32_t)ptr_data[7] << 24 & 0xFF000000 \
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2486:45: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+ 2486 |                 | (uint8_t)ptr_data[9] << 8 & 0x0000FF00 | (uint8_t)ptr_data[10]);
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2492:52: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+ 2492 |         back_address = ((uint8_t)ptr_data[4]) << 8 & 0xFF00 | ((uint8_t)ptr_data[5]);
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2502:35: warning: format '%x' expects argument of type 'unsigned int', but argument 3 has type 'long int' [-Wformat=]
+ 2502 |         printf("addr:0x%x data:0x%x\n",back_address,back_keycode);
+      |                                  ~^                 ~~~~~~~~~~~~
+      |                                   |                 |
+      |                                   unsigned int      long int
+      |                                  %lx
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2541:29: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2541 |     printf("filament_Range:%d\r\n",UI_Page_info.filament_Range);
+      |                            ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                             |                  |
+      |                             int                int32_t {aka long int}
+      |                            %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2627:31: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2627 |     printf("filament_A_Range:%d\r\n",UI_Page_info.filament_A_Range);
+      |                              ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                               |                  |
+      |                               int                int32_t {aka long int}
+      |                              %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2660:31: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2660 |     printf("filament_B_Range:%d\r\n",UI_Page_info.filament_B_Range);
+      |                              ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                               |                  |
+      |                               int                int32_t {aka long int}
+      |                              %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2672:31: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2672 |     printf("filament_C_Range:%d\r\n",UI_Page_info.filament_C_Range);
+      |                              ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                               |                  |
+      |                               int                int32_t {aka long int}
+      |                              %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2684:31: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2684 |     printf("filament_D_Range:%d\r\n",UI_Page_info.filament_D_Range);
+      |                              ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                               |                  |
+      |                               int                int32_t {aka long int}
+      |                              %ld
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:5,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'gui_processReturnKeyCode':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2927:4: note: in expansion of macro 'disable_x'
+ 2927 |    disable_x();
+      |    ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3167:4: note: in expansion of macro 'disable_x'
+ 3167 |    disable_x();
+      |    ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3168:13: note: in expansion of macro 'disable_y'
+ 3168 |             disable_y();
+      |             ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2877:13: warning: unused variable 'e0_index' [-Wunused-variable]
+ 2877 |     uint8_t e0_index;
+      |             ^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2876:9: warning: variable 'covertToInt' set but not used [-Wunused-but-set-variable]
+ 2876 |     int covertToInt;
+      |         ^~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2875:9: warning: variable 'x0x1_Offset' set but not used [-Wunused-but-set-variable]
+ 2875 |     int x0x1_Offset;
+      |         ^~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2874:9: warning: variable 'x0MovePos' set but not used [-Wunused-but-set-variable]
+ 2874 |     int x0MovePos;
+      |         ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2873:9: warning: variable 'offsetPosAddress' set but not used [-Wunused-but-set-variable]
+ 2873 |     int offsetPosAddress;
+      |         ^~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'gui_clearVariableBuffer':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3600:9: warning: unused variable 'i' [-Wunused-variable]
+ 3600 |  size_t i = 0;
+      |         ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3598:61: warning: unused parameter 'var_count' [-Wunused-parameter]
+ 3598 | void gui_clearVariableBuffer(uint16_t start_address, size_t var_count, size_t var_len)
+      |                                                      ~~~~~~~^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'gui_writeFilenameToTable':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3674:9: warning: unused variable 'i' [-Wunused-variable]
+ 3674 |     int i = 0;
+      |         ^
+At top level:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3751:13: warning: 'filament_control' defined but not used [-Wunused-function]
+ 3751 | static void filament_control(void)
+      |             ^~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2248:13: warning: 'gui_wait_screen_ready' defined but not used [-Wunused-function]
+ 2248 | static bool gui_wait_screen_ready(void)
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c: In function 'gui_updateFilenameInTable':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:104:11: warning: unused variable 'name_show_address' [-Wunused-variable]
+  104 |  uint16_t name_show_address = 0x0013;
+      |           ^~~~~~~~~~~~~~~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c: In function 'gui_nextPage':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.h:16:41: warning: pointer targets in passing argument 2 of 'gui_updateReminderText' differ in signedness [-Wpointer-sign]
+   16 | #define MSG_SD_LASTPAGE                 "It is already the last page"
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                         |
+      |                                         char *
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:271:49: note: in expansion of macro 'MSG_SD_LASTPAGE'
+  271 |   gui_updateReminderText(reminder_text_address, MSG_SD_LASTPAGE, MSG_SD_LASTPAGE_LEN);
+      |                                                 ^~~~~~~~~~~~~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.h:4,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:295:62: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'char *'
+  295 | void gui_updateReminderText(uint16_t address, const uint8_t* message, uint8_t message_len);
+      |                                               ~~~~~~~~~~~~~~~^~~~~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c: In function 'gui_previousPage':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.h:18:41: warning: pointer targets in passing argument 2 of 'gui_updateReminderText' differ in signedness [-Wpointer-sign]
+   18 | #define MSG_SD_FIRSTPAGE                "It is already the first page"
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                         |
+      |                                         char *
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:294:49: note: in expansion of macro 'MSG_SD_FIRSTPAGE'
+  294 |   gui_updateReminderText(reminder_text_address, MSG_SD_FIRSTPAGE, MSG_SD_FIRSTPAGE_LEN);
+      |                                                 ^~~~~~~~~~~~~~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.h:4,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:295:62: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'char *'
+  295 | void gui_updateReminderText(uint16_t address, const uint8_t* message, uint8_t message_len);
+      |                                               ~~~~~~~~~~~~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c: In function 'gui_backtoLastPage':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:365:24: warning: comparison is always true due to limited range of data type [-Wtype-limits]
+  365 |  if (gui_dgus.prevPage != -1)
+      |                        ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.c:72:1: warning: missing initializer for field 'AutoLevelflag' of 'EEPROM' {aka 'struct EEPROM'} [-Wmissing-field-initializers]
+   72 | };
+      | ^
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.h:100:17: note: 'AutoLevelflag' declared here
+  100 | uint8_t         AutoLevelflag;
+      |                 ^~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.c: In function 'error_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.c:85:21: warning: format '%d' expects argument of type 'int', but argument 2 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+   85 |   printf("I2C2 err:%d\r\n",error_code);
+      |                    ~^      ~~~~~~~~~~
+      |                     |      |
+      |                     int    uint32_t {aka long unsigned int}
+      |                    %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c: In function 'thermal_runaway_protection':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c:807:25: warning: this statement may fall through [-Wimplicit-fallthrough=]
+  807 |         heater->trstate = TRStable;
+      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c:810:7: note: here
+  810 |       case TRStable:
+      |       ^~~~
+[ 53%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/thermistor.c.obj
+[ 54%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/led.c.obj
+[ 56%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/poweroff.c.obj
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:9:1: warning: 'static' is not at beginning of declaration [-Wold-style-declaration]
+    9 | const static int MAX_TEMP = 300;
+      | ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c: In function 'Thermistor_Update':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:107:22: warning: unused variable 'avg_ex2' [-Wunused-variable]
+  107 |     int16_t avg,avg1,avg_ex2,avg_botbox,avg_box;   //平均温度值
+      |                      ^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:106:24: warning: unused variable 'temp_ex2' [-Wunused-variable]
+  106 |     int16_t temp,temp1,temp_ex2,temp_botbox,temp_box;   //温度值
+      |                        ^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:103:13: warning: unused variable 'cumulative_ex2' [-Wunused-variable]
+  103 |     int16_t cumulative_ex2 = 0;
+      |             ^~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:57:13: warning: ISO C forbids forward references to 'enum' types [-Wpedantic]
+   57 | extern enum PauseState paused;
+      |             ^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c: In function 'power_off_save_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:210:12: warning: comparison of integer expressions of different signedness: 'uint32_t' {aka 'long unsigned int'} and 'int' [-Wsign-compare]
+  210 |  if(sd_pos < total_poweroff_cnt_nouse)
+      |            ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c: In function 'power_off_printer_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:303:24: warning: format '%d' expects argument of type 'int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  303 |  sprintf(stts,"sd_pos:%d.name:%s\r\n",sd_pos,FileDir);
+      |                       ~^              ~~~~~~
+      |                        |              |
+      |                        int            uint32_t {aka long unsigned int}
+      |                       %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:303:31: warning: '%s' directive writing up to 99 bytes into a region of size between 76 and 86 [-Wformat-overflow=]
+  303 |  sprintf(stts,"sd_pos:%d.name:%s\r\n",sd_pos,FileDir);
+      |                               ^~             ~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:303:2: note: 'sprintf' output between 17 and 126 bytes into a destination of size 100
+  303 |  sprintf(stts,"sd_pos:%d.name:%s\r\n",sd_pos,FileDir);
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[ 57%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/fileinfomenuevent.c.obj
+[ 58%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/filemenushow.c.obj
+[ 59%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/levelmenushow.c.obj
+[ 60%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/manunalmovemenushow.c.obj
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c: In function 'print_finish_handle':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c:350:6: warning: unused variable 'i' [-Wunused-variable]
+  350 |  int i = 0;
+      |      ^
+At top level:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c:624:13: warning: 'f423_stop_printf' defined but not used [-Wunused-function]
+  624 | static void f423_stop_printf(void)
+      |             ^~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c: In function 'utf8_to_unicode':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c:87:33: warning: comparison is always true due to limited range of data type [-Wtype-limits]
+   87 |   else if (utf8 >= 0xe0 && utf8 <= 0xff)
+      |                                 ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c: In function 'get_gcode_num':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c:134:92: warning: comparison between pointer and integer
+  134 |    if((strstr(name_file, "gcode") || strstr(name_file, "gco") || strstr(name_file, "GCO")) == NULL)continue;
+      |                                                                                            ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c: In function 'Filelist_Scan':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c:207:92: warning: comparison between pointer and integer
+  207 |    if((strstr(name_file, "gcode") || strstr(name_file, "gco") || strstr(name_file, "GCO")) == NULL)continue;
+      |                                                                                            ^~
+[ 61%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/printprocessmenushow.c.obj
+[ 62%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/minimc_proto.c.obj
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/printprocessmenushow.c:61:1: warning: 'static' is not at beginning of declaration [-Wold-style-declaration]
+   61 | const static uint32_t ONE_HOUR = 3600000000U;
+      | ^~~~~
+[ 63%] Linking C executable Marlin_AT32.elf
+Memory region         Used Size  Region Size  %age Used
+           FLASH:      371132 B       896 KB     40.45%
+             RAM:       26768 B       384 KB      6.81%
+Generating Marlin_AT32.bin and Marlin_AT32.hex
+make[3]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+[100%] Built target Marlin_AT32
+make[2]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[1]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+==================================================
+ [PACK] 固件打包完成
+ - 原始输入文件: build/Marlin_AT32.bin (371132 字节)
+ - 有效代码净载: 371132 字节
+ - 目标板卡架构: 0x43500001 [MC (AT32F435)]
+ - 固件版本编号: 0x02008094
+ - 注入构建时间: 1793606203 (2026-11-02 15:56:43)
+ - SHA-256 摘要: bf5272355ff8d8a4194c5017498291064ba8fa3512895294c31f820933c28491
+ - 最终输出文件: build/fw_mc.bin (371260 字节)
+==================================================
+make: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu'
+
+### [2/4] Build & Pack Color Engine (TH)
+make: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle'
+[VERSION][DEV] 生成 16bit 时间特征码: 0xF9CB (V2.0.1-F9CB 1102)
+[VERSION] 生成头文件: build/version_autogen.h
+make[1]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle'
+[CC] src/user/main.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:3:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:3:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:3:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:3:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:3:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:3:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:3:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/motor_control.h:18,
+                 from src/user/main.c:3:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:3:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:3:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:3:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:3:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:3:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:3:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:3:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:3:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:3:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:166: warning: "TEMP_0_PIN" redefined
+  166 | #define TEMP_0_PIN get_adc(1)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:105: note: this is the location of the previous definition
+  105 | #define TEMP_0_PIN ADC_CHANNEL_5
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:167: warning: "TEMP_BED_PIN" redefined
+  167 | #define TEMP_BED_PIN get_adc(2)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:108: note: this is the location of the previous definition
+  108 | #define TEMP_BED_PIN -1
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:172: warning: "HEATER_BED_PIN" redefined
+  172 | #define HEATER_BED_PIN GPIO_PINS_6
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:59: note: this is the location of the previous definition
+   59 | #define HEATER_BED_PIN -1
+      | 
+In file included from src/user/main.c:18:
+inc/pins.h:174: warning: "HEATER_0_PIN" redefined
+  174 | #define HEATER_0_PIN GPIO_PINS_7
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:9:
+inc/temperature_control/temperature.h:56: note: this is the location of the previous definition
+   56 | #define HEATER_0_PIN 1
+      | 
+[CC] src/app/minimc_proto.c
+[CC] src/app/ConfigurationStore.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from src/app/ConfigurationStore.c:1:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+src/app/ConfigurationStore.c: In function 'Config_PrintSettings':
+src/app/ConfigurationStore.c:81:23: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'double' [-Wformat=]
+   81 |     printf("  M201 X%ld" ,max_acceleration_units_per_sq_second[0] );
+      |                     ~~^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                       |                                       |
+      |                       long int                                double
+      |                     %f
+src/app/ConfigurationStore.c:82:17: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'double' [-Wformat=]
+   82 |     printf(" Y%ld" , max_acceleration_units_per_sq_second[1] );
+      |               ~~^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                 |                                        |
+      |                 long int                                 double
+      |               %f
+src/app/ConfigurationStore.c:83:17: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'double' [-Wformat=]
+   83 |     printf(" Z%ld" ,max_acceleration_units_per_sq_second[2] );
+      |               ~~^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                 |                                       |
+      |                 long int                                double
+      |               %f
+src/app/ConfigurationStore.c:84:17: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'double' [-Wformat=]
+   84 |     printf(" E%ld\r\n" ,max_acceleration_units_per_sq_second[3]);
+      |               ~~^       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                 |                                           |
+      |                 long int                                    double
+      |               %f
+At top level:
+src/app/ConfigurationStore.c:161:17: warning: 'GetPage' defined but not used [-Wunused-function]
+  161 | static uint32_t GetPage(uint32_t Addr)
+      |                 ^~~~~~~
+[CC] src/app/gcodeplayer.c
+[CC] src/app/heater.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:166: warning: "TEMP_0_PIN" redefined
+  166 | #define TEMP_0_PIN get_adc(1)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:105: note: this is the location of the previous definition
+  105 | #define TEMP_0_PIN ADC_CHANNEL_5
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:167: warning: "TEMP_BED_PIN" redefined
+  167 | #define TEMP_BED_PIN get_adc(2)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:108: note: this is the location of the previous definition
+  108 | #define TEMP_BED_PIN -1
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:172: warning: "HEATER_BED_PIN" redefined
+  172 | #define HEATER_BED_PIN GPIO_PINS_6
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:59: note: this is the location of the previous definition
+   59 | #define HEATER_BED_PIN -1
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:174: warning: "HEATER_0_PIN" redefined
+  174 | #define HEATER_0_PIN GPIO_PINS_7
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:56: note: this is the location of the previous definition
+   56 | #define HEATER_0_PIN 1
+      | 
+[CC] src/app/motion_control.c
+[CC] src/app/motor_control.c
+In file included from src/app/motor_control.c:16:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+[CC] src/app/mycontrol.c
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:6:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:6:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:6:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:6:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:6:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:6:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:6:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:6:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:56: warning: "HEATER_0_PIN" redefined
+   56 | #define HEATER_0_PIN 1
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:174: note: this is the location of the previous definition
+  174 | #define HEATER_0_PIN GPIO_PINS_7
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:59: warning: "HEATER_BED_PIN" redefined
+   59 | #define HEATER_BED_PIN -1
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:172: note: this is the location of the previous definition
+  172 | #define HEATER_BED_PIN GPIO_PINS_6
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:6:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:6:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:6:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:6:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:6:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:6:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:6:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:6:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:6:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:105: warning: "TEMP_0_PIN" redefined
+  105 | #define TEMP_0_PIN ADC_CHANNEL_5
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:166: note: this is the location of the previous definition
+  166 | #define TEMP_0_PIN get_adc(1)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:15:
+inc/temperature_control/temperature.h:108: warning: "TEMP_BED_PIN" redefined
+  108 | #define TEMP_BED_PIN -1
+      | 
+In file included from src/app/mycontrol.c:8:
+inc/pins.h:167: note: this is the location of the previous definition
+  167 | #define TEMP_BED_PIN get_adc(2)
+      | 
+src/app/mycontrol.c: In function 'loop':
+src/app/mycontrol.c:468:2: warning: this 'else' clause does not guard... [-Wmisleading-indentation]
+  468 |  else
+      |  ^~~~
+src/app/mycontrol.c:471:3: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'else'
+  471 |   USART3_forward_service(); //推进监听转发的FIFO发送：DMA发完一行自动补下一行，突发不丢
+      |   ^~~~~~~~~~~~~~~~~~~~~~
+src/app/mycontrol.c:443:13: warning: unused variable 'send_time' [-Wunused-variable]
+  443 |  static int send_time = 0;
+      |             ^~~~~~~~~
+src/app/mycontrol.c:442:23: warning: unused variable 'led_time' [-Wunused-variable]
+  442 |  static unsigned long led_time = 1000;
+      |                       ^~~~~~~~
+src/app/mycontrol.c:441:16: warning: unused variable 'time_save' [-Wunused-variable]
+  441 |  unsigned long time_save = 0;
+      |                ^~~~~~~~~
+src/app/mycontrol.c:440:7: warning: unused variable 'cbuf' [-Wunused-variable]
+  440 |  char cbuf[100];
+      |       ^~~~
+src/app/mycontrol.c: In function 'get_command':
+src/app/mycontrol.c:652:13: warning: unused variable 'ok_count' [-Wunused-variable]
+  652 |  static int ok_count = 0;            //这个变量暂时没有使用到
+      |             ^~~~~~~~
+src/app/mycontrol.c: In function 'run_z_probe':
+src/app/mycontrol.c:997:1: warning: no return statement in function returning non-void [-Wreturn-type]
+  997 | }
+      | ^
+src/app/mycontrol.c: In function 'G29_CMD':
+src/app/mycontrol.c:1191:22: warning: unused variable 'distance_from_center' [-Wunused-variable]
+ 1191 |    float measured_z, distance_from_center, xProbe;
+      |                      ^~~~~~~~~~~~~~~~~~~~
+src/app/mycontrol.c: In function 'process_commands':
+src/app/mycontrol.c:2468:8: warning: variable 'beepP' set but not used [-Wunused-but-set-variable]
+ 2468 |    int beepP = 1000;
+      |        ^~~~~
+src/app/mycontrol.c:2920:9: warning: unused variable 'isFind' [-Wunused-variable]
+ 2920 |    char isFind = 0;
+      |         ^~~~~~
+src/app/mycontrol.c:2981:17: warning: unused variable 'itemp2' [-Wunused-variable]
+ 2981 |     int itemp1, itemp2;
+      |                 ^~~~~~
+src/app/mycontrol.c:2981:9: warning: unused variable 'itemp1' [-Wunused-variable]
+ 2981 |     int itemp1, itemp2;
+      |         ^~~~~~
+src/app/mycontrol.c:2980:14: warning: unused variable 'reset_addr' [-Wunused-variable]
+ 2980 |     uint32_t reset_addr = 0;
+      |              ^~~~~~~~~~
+src/app/mycontrol.c:3047:18: warning: variable 'make_move' set but not used [-Wunused-but-set-variable]
+ 3047 |    volatile bool make_move = false;
+      |                  ^~~~~~~~~
+src/app/mycontrol.c: In function 'ClearToSend':
+src/app/mycontrol.c:3120:6: warning: unused variable 'free_num' [-Wunused-variable]
+ 3120 |  int free_num = USART1_dma_free();
+      |      ^~~~~~~~
+src/app/mycontrol.c:3113:23: warning: unused variable 'send_time' [-Wunused-variable]
+ 3113 |  static unsigned long send_time = 0;
+      |                       ^~~~~~~~~
+src/app/mycontrol.c:3112:7: warning: unused variable 'cbuf' [-Wunused-variable]
+ 3112 |  char cbuf[25];
+      |       ^~~~
+src/app/mycontrol.c: In function 'get_coordinates':
+src/app/mycontrol.c:3135:16: warning: variable 'seen' set but not used [-Wunused-but-set-variable]
+ 3135 |  volatile bool seen[7] = {false, false, false, false,false,false,false};
+      |                ^~~~
+At top level:
+src/app/mycontrol.c:3113:23: warning: 'send_time' defined but not used [-Wunused-variable]
+ 3113 |  static unsigned long send_time = 0;
+      |                       ^~~~~~~~~
+src/app/mycontrol.c:652:13: warning: 'ok_count' defined but not used [-Wunused-variable]
+  652 |  static int ok_count = 0;            //这个变量暂时没有使用到
+      |             ^~~~~~~~
+src/app/mycontrol.c:442:23: warning: 'led_time' defined but not used [-Wunused-variable]
+  442 |  static unsigned long led_time = 1000;
+      |                       ^~~~~~~~
+src/app/mycontrol.c:443:13: warning: 'send_time' defined but not used [-Wunused-variable]
+  443 |  static int send_time = 0;
+      |             ^~~~~~~~~
+src/app/mycontrol.c:1087:13: warning: 'AutoHitBed' defined but not used [-Wunused-function]
+ 1087 | static void AutoHitBed() // 自动往下运动，直到触碰到Z_Min开关,并设置Z为0
+      |             ^~~~~~~~~~
+src/app/mycontrol.c:1025:14: warning: 'probe_pt' defined but not used [-Wunused-function]
+ 1025 | static float probe_pt(float x, float y, float z_before)
+      |              ^~~~~~~~
+src/app/mycontrol.c:832:13: warning: 'homeaxis' defined but not used [-Wunused-function]
+  832 | static void homeaxis(int axis)
+      |             ^~~~~~~~
+src/app/mycontrol.c:289:22: warning: 'door_move_time' defined but not used [-Wunused-variable]
+  289 | static unsigned long door_move_time = 0;
+      |                      ^~~~~~~~~~~~~~
+src/app/mycontrol.c:257:13: warning: 'gcode_N' defined but not used [-Wunused-variable]
+  257 | static long gcode_N, gcode_LastN, Stopped_gcode_LastN = 0;
+      |             ^~~~~~~
+[CC] src/app/planner.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from src/app/planner.c:12:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+src/app/planner.c:43: warning: "CRITICAL_SECTION_START" redefined
+   43 | #define CRITICAL_SECTION_START()  __disable_irq()
+      | 
+In file included from src/app/planner.c:15:
+inc/mycontrol.h:116: note: this is the location of the previous definition
+  116 | #define CRITICAL_SECTION_START __disable_irq()
+      | 
+src/app/planner.c:44: warning: "CRITICAL_SECTION_END" redefined
+   44 | #define CRITICAL_SECTION_END()    __enable_irq()
+      | 
+In file included from src/app/planner.c:15:
+inc/mycontrol.h:117: note: this is the location of the previous definition
+  117 | #define CRITICAL_SECTION_END __enable_irq()
+      | 
+src/app/planner.c: In function 'plan_buffer_line':
+src/app/planner.c:639:1: warning: multi-line comment [-Wcomment]
+  639 | //   block->millimeters = sqrt(delta_mm[X_AXIS] * delta_mm[X_AXIS] + delta_mm[Y_AXIS] * delta_mm[Y_AXIS] \
+      | ^
+[CC] src/app/stepper.c
+In file included from inc/Configuration.h:729,
+                 from inc/stepper.h:30,
+                 from src/app/stepper.c:12:
+src/app/stepper.c: In function 'calc_timer':
+inc/Configuration_adv.h:29:28: warning: unsigned conversion from 'int' to 'short unsigned int' changes value from '200000' to '3392' [-Woverflow]
+   29 | #define MAX_STEP_FREQUENCY 200000
+      |                            ^~~~~~
+src/app/stepper.c:109:17: note: in expansion of macro 'MAX_STEP_FREQUENCY'
+  109 |     step_rate = MAX_STEP_FREQUENCY;
+      |                 ^~~~~~~~~~~~~~~~~~
+src/app/stepper.c: In function 'st_interrupt_handler':
+src/app/stepper.c:320:29: warning: variable 'act_z' set but not used [-Wunused-but-set-variable]
+  320 |  char act_x = 0, act_y = 0, act_z = 0, act_a = 0,act_b = 0,act_c = 0,act_d = 0;
+      |                             ^~~~~
+src/app/stepper.c:320:18: warning: variable 'act_y' set but not used [-Wunused-but-set-variable]
+  320 |  char act_x = 0, act_y = 0, act_z = 0, act_a = 0,act_b = 0,act_c = 0,act_d = 0;
+      |                  ^~~~~
+src/app/stepper.c:320:7: warning: variable 'act_x' set but not used [-Wunused-but-set-variable]
+  320 |  char act_x = 0, act_y = 0, act_z = 0, act_a = 0,act_b = 0,act_c = 0,act_d = 0;
+      |       ^~~~~
+src/app/stepper.c:319:7: warning: unused variable 'limit_hit' [-Wunused-variable]
+  319 |  bool limit_hit;
+      |       ^~~~~~~~~
+src/app/stepper.c:316:11: warning: unused variable 'cnt' [-Wunused-variable]
+  316 |  uint32_t cnt = 0;  //计数测试
+      |           ^~~
+[CC] src/app/temperature.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+src/app/temperature.c: In function 'manage_heater':
+src/app/temperature.c:109:14: warning: unused variable 'pwm_debug_count' [-Wunused-variable]
+  109 |   static int pwm_debug_count = 0; // 移到这里，在所有可执行语句之前
+      |              ^~~~~~~~~~~~~~~
+src/app/temperature.c: In function 'get_heat_sensor_data':
+src/app/temperature.c:490:9: warning: unused variable 'R_target' [-Wunused-variable]
+  490 |   float R_target;
+      |         ^~~~~~~~
+src/app/temperature.c:489:9: warning: unused variable 'target_equiv' [-Wunused-variable]
+  489 |   float target_equiv;
+      |         ^~~~~~~~~~~~
+src/app/temperature.c:488:7: warning: unused variable 'simulated_raw' [-Wunused-variable]
+  488 |   int simulated_raw;
+      |       ^~~~~~~~~~~~~
+src/app/temperature.c:484:16: warning: unused variable 'simulated_temp' [-Wunused-variable]
+  484 |   static float simulated_temp = 25.0f;
+      |                ^~~~~~~~~~~~~~
+src/app/temperature.c:483:14: warning: unused variable 'test_mode' [-Wunused-variable]
+  483 |   static int test_mode = 0;
+      |              ^~~~~~~~~
+src/app/temperature.c:482:14: warning: unused variable 'debug_count' [-Wunused-variable]
+  482 |   static int debug_count = 0;
+      |              ^~~~~~~~~~~
+At top level:
+src/app/temperature.c:482:14: warning: 'debug_count' defined but not used [-Wunused-variable]
+src/app/temperature.c:483:14: warning: 'test_mode' defined but not used [-Wunused-variable]
+  483 |   static int test_mode = 0;
+      |              ^~~~~~~~~
+src/app/temperature.c:484:16: warning: 'simulated_temp' defined but not used [-Wunused-variable]
+  484 |   static float simulated_temp = 25.0f;
+      |                ^~~~~~~~~~~~~~
+src/app/temperature.c:109:14: warning: 'pwm_debug_count' defined but not used [-Wunused-variable]
+  109 |   static int pwm_debug_count = 0; // 移到这里，在所有可执行语句之前
+      |              ^~~~~~~~~~~~~~~
+src/app/temperature.c:69:12: warning: 'maxttemp_raw' defined but not used [-Wunused-variable]
+   69 | static int maxttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS(HEATER_0_RAW_HI_TEMP, HEATER_1_RAW_HI_TEMP, HEATER_2_RAW_HI_TEMP);
+      |            ^~~~~~~~~~~~
+src/app/temperature.c:68:12: warning: 'minttemp_raw' defined but not used [-Wunused-variable]
+   68 | static int minttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS(HEATER_0_RAW_LO_TEMP, HEATER_1_RAW_LO_TEMP, HEATER_2_RAW_LO_TEMP);
+      |            ^~~~~~~~~~~~
+src/app/temperature.c: In function 'get_heat_sensor_data':
+src/app/temperature.c:561:26: warning: array subscript 1 is above array bounds of 'int[1]' [-Warray-bounds]
+  561 |   current_temperature_raw[1] = 0;
+      |   ~~~~~~~~~~~~~~~~~~~~~~~^~~
+src/app/temperature.c:13:5: note: while referencing 'current_temperature_raw'
+   13 | int current_temperature_raw[EXTRUDERS] = {0};
+      |     ^~~~~~~~~~~~~~~~~~~~~~~
+src/app/temperature.c:565:26: warning: array subscript 2 is above array bounds of 'int[1]' [-Warray-bounds]
+  565 |   current_temperature_raw[2] = 0;
+      |   ~~~~~~~~~~~~~~~~~~~~~~~^~~
+src/app/temperature.c:13:5: note: while referencing 'current_temperature_raw'
+   13 | int current_temperature_raw[EXTRUDERS] = {0};
+      |     ^~~~~~~~~~~~~~~~~~~~~~~
+[CC] src/app/thermistor_adc.c
+[CC] src/app/thermistortables.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+[CC] src/app/Timeout.c
+[CC] src/app/motherboard.c
+In file included from src/app/motherboard.c:4:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+[CC] at32f423_board/at32f423_board.c
+[CC] src/bsp/adc.c
+[CC] src/bsp/at32f423_clock.c
+[CC] src/bsp/at32f423_int.c
+[CC] src/bsp/pwm.c
+src/bsp/pwm.c: In function 'MX_TIM3_Init':
+src/bsp/pwm.c:19:26: warning: unused variable 'tmr_oc_init_struct' [-Wunused-variable]
+   19 |   tmr_output_config_type tmr_oc_init_struct;
+      |                          ^~~~~~~~~~~~~~~~~~
+[CC] src/bsp/tim.c
+[CC] src/bsp/usart.c
+[CC] src/bsp/wk_exint.c
+[CC] src/bsp/wk_gpio.c
+[CC] libraries/drivers/src/at32f423_acc.c
+[CC] libraries/drivers/src/at32f423_adc.c
+[CC] libraries/drivers/src/at32f423_can.c
+[CC] libraries/drivers/src/at32f423_crc.c
+[CC] libraries/drivers/src/at32f423_crm.c
+[CC] libraries/drivers/src/at32f423_dac.c
+[CC] libraries/drivers/src/at32f423_debug.c
+[CC] libraries/drivers/src/at32f423_dma.c
+[CC] libraries/drivers/src/at32f423_ertc.c
+[CC] libraries/drivers/src/at32f423_exint.c
+[CC] libraries/drivers/src/at32f423_flash.c
+[CC] libraries/drivers/src/at32f423_gpio.c
+[CC] libraries/drivers/src/at32f423_i2c.c
+[CC] libraries/drivers/src/at32f423_misc.c
+[CC] libraries/drivers/src/at32f423_pwc.c
+[CC] libraries/drivers/src/at32f423_scfg.c
+[CC] libraries/drivers/src/at32f423_spi.c
+[CC] libraries/drivers/src/at32f423_tmr.c
+[CC] libraries/drivers/src/at32f423_usart.c
+[CC] libraries/drivers/src/at32f423_usb.c
+[CC] libraries/drivers/src/at32f423_wdt.c
+[CC] libraries/drivers/src/at32f423_wwdt.c
+[CC] libraries/drivers/src/at32f423_xmc.c
+[CC] libraries/cmsis/cm4/device_support/system_at32f423.c
+[AS] libraries/cmsis/cm4/device_support/startup/gcc/startup_at32f423.s
+[LD] build/fw_th.elf
+--- Firmware Memory Size Report ---
+   text	   data	    bss	    dec	    hex	filename
+  70820	    820	  17820	  89460	  15d74	build/fw_th.elf
+make[1]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle'
+[PACK] Generating signed firmware with 128B Trailer & 140B Anchor...
+==================================================
+ [PACK] 固件打包完成
+ - 原始输入文件: build/fw_th.bin (71676 字节)
+ - 有效代码净载: 71676 字节
+ - 目标板卡架构: 0x42300001 [TH (AT32F423)]
+ - 固件版本编号: 0x0200F9CB
+ - 注入构建时间: 1793606204 (2026-11-02 15:56:44)
+ - SHA-256 摘要: 99f4a7889ab08b2270711474661bde0c6cc5a6bd0cd2837bff2ab9b1bb64663c
+ - 最终输出文件: build/fw_th.bin (71804 字节)
+ - Sector 127 锚点: build/anchor.bin (140 字节)
+==================================================
+make: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle'
+
+### [3/4] Run soc-ap ctest suite
+Test project /home/sushaohua/workspace/ai_soc_project/soc-ap/build
+    Start 1: host_runtime_smoke
+1/2 Test #1: host_runtime_smoke ...............   Passed    0.11 sec
+    Start 2: cascade_query_cases
+2/2 Test #2: cascade_query_cases ..............   Passed    2.32 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   2.43 sec
+
+### [4/4] Run test_ui_gateway unit tests
+========================================================================
+TWIN-09 & TWIN-32 UI Gateway HTTP/Job/Motion Verification Test Suite
+========================================================================
+[RUN ] test_parse_get_snapshot
+[PASS] test_parse_get_snapshot
+[RUN ] test_parse_post_sample
+[PASS] test_parse_post_sample
+[RUN ] test_parse_sse_stream
+[PASS] test_parse_sse_stream
+[RUN ] test_build_json_response
+[PASS] test_build_json_response
+[RUN ] test_sse_event_formatting
+[PASS] test_sse_event_formatting
+[RUN ] test_sse_headers_building
+[PASS] test_sse_headers_building
+[RUN ] test_null_ptr_guards
+[PASS] test_null_ptr_guards
+[RUN ] test_network_routes
+[UI_GW DEBUG] HTTP GET '/api/v1/temperature/snapshot' from fd=7
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] HTTP POST '/api/v1/temperature/sample' from fd=7
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] HTTP GET '/api/v1/temperature/stream' from fd=7
+[UI_GW DEBUG] GET /api/v1/temperature/stream -> Client fd=7 connected to SSE stream
+[PASS] test_network_routes
+[RUN ] test_job_lifecycle_and_motion
+[PASS] test_job_lifecycle_and_motion
+[RUN ] test_estop_interlock_and_mesh
+[PASS] test_estop_interlock_and_mesh
+[RUN ] test_twin_snapshot_offline_fields
+[PASS] test_twin_snapshot_offline_fields
+[RUN ] test_offline_503_blocking
+[UI_GW DEBUG] HTTP POST '/api/v1/motion/jog' from fd=7
+[UI_GW DEBUG] HTTP POST '/api/v1/motion/home' from fd=7
+[UI_GW DEBUG] HTTP POST '/api/v1/leveling/trigger' from fd=7
+[UI_GW DEBUG] HTTP POST '/api/v1/jobs/start' from fd=7
+[UI_GW DEBUG] HTTP POST '/api/v1/jobs/resume' from fd=7
+[UI_GW DEBUG] HTTP POST '/api/v1/motion/jog' from fd=7
+[PASS] test_offline_503_blocking
+[RUN ] test_job_link_lost_pause
+[PASS] test_job_link_lost_pause
+[RUN ] test_service_heartbeat_online_sync
+[PASS] test_service_heartbeat_online_sync
+========================================================================
+Total: Passed=14, Failed=0
+========================================================================

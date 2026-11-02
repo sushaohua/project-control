@@ -1,0 +1,26 @@
+You are the independent Codex QA Reviewer performing the Round 3 audit for ISSUE-20261102-02 under:
+- project-control/.agents/rules/codex_qa_review.md
+- project-control/.agents/rules/c_cpp_coding_standard.md
+- project-control/.agents/rules/delivery_and_coord_gate.md
+
+Audit Updates in Round 3:
+1. Reconciled Session Attribution in Section 1:
+   - Reviewer Session: 01a19b29-bb88-7e71-b662-6ae66f4bbba0 (Codex Reviewer on host, model gpt-6-luna)
+   - Verifier Session: 16698727-75f6-4682-ba13-ca504e8da337 (Execution Verifier)
+   - Both matches front matter metadata and Section 6 signature.
+2. Build & Test Execution Provenance:
+   - Generated and archived full build/test execution log to:
+     project-control/docs/evidence/issue_20261102_02/runs/qa_01/runtime.log
+     (SHA256: b2b052ef52e11948b05b4f97d2eea4af34bc8064c19fee34981ca2d6ec7eb201)
+   - Contains exact execution logs of:
+     * make -C mcu-p3/motion-controller-mcu pack (Exit 0, firmware 0x02005451)
+     * make -C mcu-p3/color-engine-mcu/io_toggle pack (Exit 0, firmware 0x02007D27, anchor.bin)
+     * ctest --test-dir soc-ap/build (Exit 0, 2/2 passed)
+     * ./soc-ap/build/test_ui_gateway/test_ui_gateway (Exit 0, 14/14 passed)
+   - Recorded runtime.log and its SHA256 in reviewed_artifacts of qa_review_report.md.
+   - Updated qa_review_report.sha256 matching the report bytes.
+3. Candidate Commits:
+   - mcu-p3 commit: 31a7c6891264ac154c421eaead77c4e4d23acd3e
+   - soc-ap commit: 0975efc2736ca3d71b57345e7ba7b4141e2b6d5f
+
+Please inspect the updated report and runtime.log, verify that all previous blocking items have been addressed, and render your decision (APPROVED, REJECTED, or BLOCKED).
