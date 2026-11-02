@@ -26,13 +26,13 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-41
-    session: null
-    session_evidence: null
-    decision: PENDING
+    session: session-qa-twin-41
+    session_evidence: docs/evidence/twin/TWIN-41/runs/qa_01/qa_review_report.md
+    decision: APPROVED
     reviewed_task_revision: 1
-    artifact_version: null
-    evidence: null
-    report_sha256: null
+    artifact_version: project-control=001bef072dc5195ab64ef51099b0027ca6e5e413
+    evidence: docs/evidence/twin/TWIN-41/runs/qa_01/qa_review_report.md
+    report_sha256: e83ccfe82869ec550acda5e43efc8964fccb4b40a3eb550bf278b694a1cda2e4
   - role: ARCH
     platform: codex
     model: gpt-6-luna
