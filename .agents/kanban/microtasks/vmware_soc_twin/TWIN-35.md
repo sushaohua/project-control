@@ -1,20 +1,20 @@
 ---
 id: TWIN-35
 title: TWIN-35 VMware宿主机端到端Web界面操作打印闭环综合验收
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261029
 task_kind: integration
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: false
-planning_status: planned
-owner: null
+planning_status: in_progress
+owner: session-integrator-twin-35
 proposed_owner: INTEGRATOR
 executor:
   role: INTEGRATOR
-  agent_id: null
-  run_id: null
+  agent_id: session-integrator-twin-35
+  run_id: run_02
 reviewer:
 - ARCH
 - QA
@@ -25,43 +25,38 @@ review_assignments:
   - role: QA
     platform: codex
     model: gpt-6-luna
-    planned_session_alias: planned-qa-twin-35
-    session: null
-    session_evidence: null
+    planned_session_alias: session-qa-hil-twin-35
+    session: session-qa-hil-twin-35
+    session_evidence: docs/evidence/twin/TWIN-35/runs/run_02/qa_session.jsonl
     decision: PENDING
-    reviewed_task_revision: 1
+    reviewed_task_revision: 2
     artifact_version: null
     evidence: null
     report_sha256: null
   - role: ARCH
     platform: codex
     model: gpt-6-luna
-    planned_session_alias: planned-arch-twin-35
-    session: null
-    session_evidence: null
+    planned_session_alias: session-arch-review-35
+    session: session-arch-review-35
+    session_evidence: docs/evidence/twin/TWIN-35/runs/run_02/arch_session.jsonl
     decision: PENDING
-    reviewed_task_revision: 1
+    reviewed_task_revision: 2
     artifact_version: null
     evidence: null
     report_sha256: null
   verifier_session: null
-  integrator_session: null
+  integrator_session: session-integrator-twin-35
 primary_work_package: TASK-010
 related_work_packages:
 - TASK-009
 - TASK-011
 depends_on:
-- TWIN-33
-- TWIN-34
+- TWIN-30
 dependency_conditions:
-- task: TWIN-33
-  accepted_version: soc-ap=ca6c40b2fdfc421ef628100f8b2d40fe64869d85
-  acceptance_evidence: docs/evidence/twin/TWIN-33/runs/run_01/qa_review_report.md
-  required: 继承TWIN-33打印工作台组件
-- task: TWIN-34
-  accepted_version: soc-ap=ca6c40b2fdfc421ef628100f8b2d40fe64869d85
-  acceptance_evidence: docs/evidence/twin/TWIN-34/runs/run_01/qa_review_report.md
-  required: 继承TWIN-34轴控与调平网格组件
+- task: TWIN-30
+  accepted_version: project-control=3347b2c5898d9ba943a5ba0c9a7ea2b7b25203b5
+  acceptance_evidence: docs/evidence/twin/TWIN-30/runs/run_01/qa_review_report.md
+  required: 继承TWIN-30 Web HMI全流程基线与版本展示UI
 scope_status: mapped
 allowed_repositories:
 - soc-ap
@@ -75,16 +70,18 @@ allowed_paths:
 - soc-ap/tests/integration/**
 - project-control/docs/evidence/twin/TWIN-35/**
 source_baseline:
-  project-control: 2ee77a21ca48b84b24f3f66e572c56663ad69a12
-  soc-ap: ca6c40b2fdfc421ef628100f8b2d40fe64869d85
+  project-control: 4960ec3c77aafb2e6b9c00fc7f6fda1f0f4aad27
+  soc-ap: 8581872d76d52f939a6e0042a3ab1a138b5cd363
   mcu-p3: 04231388c842c1ce3e5b71675d0dc118a65edf2e
-  test_harness: 0b7497ba43158841eb3c4af7f16e477b9c30c2c5
-base_commit: ca6c40b2fdfc421ef628100f8b2d40fe64869d85
+  test_harness: 3a10e16beae43e51fc9673925179471e43f66114
+base_commit: 8581872d76d52f939a6e0042a3ab1a138b5cd363
 candidate_commit: null
 dispatch_binding:
-  source_commit: ca6c40b2fdfc421ef628100f8b2d40fe64869d85
+  source_commit: 8581872d76d52f939a6e0042a3ab1a138b5cd363
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-  consumed_artifact_versions: {}
+  consumed_artifact_versions:
+    TWIN-41: 69212b70073f42ad87f3b19e1464c0386d090d14
+    TWIN-42: 69212b70073f42ad87f3b19e1464c0386d090d14
 protocol_input:
   path: project-control/docs/planning/ui_ux_end_to_end_interaction_design_20261031.md
   sha256: bde64b69b88556659cee48c87d2e648ad51d60a76b88250cc8f317102ff5e7f2
@@ -92,13 +89,18 @@ protocol_input:
 read_sources:
 - project-control/docs/planning/product/first_release_scope_decision_20261029.md
 - soc-ap/tests/integration/test_first_release_print_loop.c
+- project-control/.agents/rules/e2e_issue_verification_flow.md
 worktree: soc-ap
-lease: null
+lease:
+  owner: session-integrator-twin-35
+  task_revision: 2
+  lease_id: lease-twin-35-run-02
+  expires_at: '2026-11-03T18:00:00+08:00'
 resources:
 - resource: vmware-cluster-8080
   location: 192.168.77.134:8080
   exclusive: true
-  pending: Ready前落实
+  pending: []
 budget:
   planned_checkpoint_minutes: 60
   max_evidence_based_corrections: 2
@@ -106,16 +108,53 @@ budget:
 checkpoint: 开工前绑定；端到端集成测试自检；双独立沙箱检查；收件
 execution_contract: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
 readiness_pending: []
+trigger_contracts:
+- feature_id: FEAT-HMI-004-OOBE
+  trigger_owner: ENG-FWD (aisoc_forward_service / aisoc_device_manager)
+  trigger_event: 开机检测到USB连接或Web端进入向导触发CMD_GET_VERSION
+  contract_ref: project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md
+  call_chain:
+  - Web UI (app.js)
+  - UI Gateway (/api/v1/temperature/snapshot)
+  - D-Bus (org.aisoc.Device)
+  - Forward Service (CMD_GET_VERSION 0x01)
+  - MiniMCProto (MC/TH 0x02/0x03)
+  completion_signal: 返回CMD_VERSION_REPORT，devices.mc/th更新为ONLINE且valid=true
+  deadline_and_failure: 3000ms超时，超时保留UNKNOWN并记录Issue
+  retry_cancel_reconnect: 拔线后3s衰退至OFFLINE，重连后自愈重读
+  not_applicable_reason: null
+- feature_id: FEAT-MOT-001-JOG
+  trigger_owner: ENG-STATE / ENG-FWD
+  trigger_event: 用户点击轴控罗盘Jog按钮
+  contract_ref: soc-ap/contracts/minimcproto/v2-commands.md
+  call_chain:
+  - Web UI (/api/v1/motion/jog)
+  - UI Gateway
+  - D-Bus (MotionService)
+  - Forward Service (G0/G1)
+  - MC (ACK)
+  completion_signal: MC回传ACK且坐标刷新
+  deadline_and_failure: 5000ms超时，超时返回HTTP 504并Toast报错
+  retry_cancel_reconnect: 幂等点动，防止连续狂点堆积
+  not_applicable_reason: null
+normal_e2e_acceptance:
+  plan_ref: project-control/docs/planning/e2e_normal_flow_acceptance_plan_20261102.md
+  coverage_matrix: project-control/docs/planning/e2e_normal_flow_acceptance_plan_20261102.md#用例覆盖矩阵
+  required_gates:
+  - software
+  - real-hil
+  issue_refs:
+  - ISSUE-20261102-01
 deliverables:
   artifacts:
   - soc-ap/tests/integration/test_web_print_loop.py
-  record: docs/evidence/twin/TWIN-35/runs/<actual-run>/result.md
+  record: docs/evidence/twin/TWIN-35/runs/run_02/result.md
 rollback:
   steps:
   - 仅回退本票候选；保存失败证据和原状态
 handoff:
   receiver_role: COORD
-  receiver_session: session-coord-autorun
+  receiver_session: session-coord-main
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-35
   acknowledgement: null
@@ -131,16 +170,17 @@ verification:
   - 验证网页端开始/暂停/继续/取消按钮与后台状态机同步
   - 验证网页端红色 E-STOP 紧急急停按钮即时熔断
   - 验证 5x5 调平热力图与手动轴控响应
+  - 验证新机向导 OOBE 正常连接探测、有效数据显示与工作台导航持久化
   - 严格保持 Option A 强电 0% 锁死安全基线
   negative_cases:
   - 任何升温命令严禁输出到物理发热元件
 required_evidence_level: server-sandbox-and-independent-review
 verification_environment: docker-qa-sandbox-and-isolated-codex
 qa_review_policy: project-control/.agents/rules/codex_qa_review.md
-updated: '2026-10-31T17:30:00+08:00'
+updated: '2026-11-02T12:00:00+08:00'
 ---
 
-# TWIN-35 VMware宿主机端到端Web界面操作打印闭环综合验收
+# TWIN-35 VMware宿主机端到端Web界面操作打印闭环综合验收 (Revision 2)
 
 ## 任务目标
-由 INTEGRATOR 联合 QA，在 VMware 真实运行环境（`192.168.77.134:8080`）完成端到端 Web 界面操作打印闭环综合验收。
+由 INTEGRATOR 联合 QA，在 VMware 真实运行环境（`192.168.77.134:8080`）完成“当前功能正常流程优先”的端到端 Web 界面操作打印闭环综合验收与 Issue 闭环。
