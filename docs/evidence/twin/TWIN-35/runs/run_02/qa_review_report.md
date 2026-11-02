@@ -12,7 +12,7 @@ requested_model: gpt-6-luna
 actual_model: gpt-6-luna
 model_override_ref: null
 planned_session_alias: planned-qa-twin-35
-actual_session: 01a19ac4-c3fe-7ef2-816a-71918ebcd5bf
+actual_session: 01a19ac6-cb27-7e10-9be9-555256c71011
 author_session: 6f94fd50-14cc-4b73-8837-03d6b03d5707
 verifier_session: 00c153ce-1d55-49b4-a3aa-7df50e168c29
 codex_audit_sessions:
@@ -39,6 +39,12 @@ codex_audit_sessions:
     platform: codex
     model: gpt-6-luna
     tokens: 42184
+    decision: REJECTED
+  - round: 5
+    session_id: 01a19ac6-cb27-7e10-9be9-555256c71011
+    platform: codex
+    model: gpt-6-luna
+    tokens: 35144
     decision: IN_REVIEW
 task_id: TWIN-35
 task_revision: 2
@@ -79,7 +85,9 @@ reviewed_artifacts:
   - path: project-control/docs/evidence/twin/TWIN-35/runs/run_02/sessions/verifier_session_00c153ce-1d55-49b4-a3aa-7df50e168c29.jsonl
     sha256: f8333e003dbe01fb5cebdbaa40195f0922db947a366ffcdcf87625fd69086aa5
   - path: project-control/docs/evidence/twin/TWIN-35/runs/run_02/sessions/author_session_6f94fd50-14cc-4b73-8837-03d6b03d5707.jsonl
-    sha256: 89dd246e8f9b6fcf041263fb53d5ba2e10a4e3c05e7ccea246b2dbaa38ecc78d
+    sha256: 35ad55612bb8ab7a59ed10b6bee033f0d0f65133751f416d071af9ce202b6205
+  - path: project-control/docs/evidence/twin/TWIN-35/runs/run_02/sessions/codex_session_01a19ac6-cb27-7e10-9be9-555256c71011.jsonl
+    sha256: 592dda19523a262bf424c1da712786c29bcdc7deca36dab73abeee85eb6e04c3
 protocol_and_expectations:
   - path: project-control/docs/planning/e2e_normal_flow_acceptance_plan_20261102.md
     commit: 6fac9ba
@@ -260,7 +268,8 @@ content_audit:
     * `sessions/codex_session_01a19ac2-3b0e-7f33-a29c-7589f26ccbf9.jsonl` (SHA256: `d0b93439...`)
     * `sessions/codex_session_01a19ac4-c3fe-7ef2-816a-71918ebcd5bf.jsonl` (SHA256: `19971c03...`)
     * `sessions/verifier_session_00c153ce-1d55-49b4-a3aa-7df50e168c29.jsonl` (SHA256: `f8333e00...`)
-    * `sessions/author_session_6f94fd50-14cc-4b73-8837-03d6b03d5707.jsonl` (SHA256: `89dd246e...`)
+    * `sessions/author_session_6f94fd50-14cc-4b73-8837-03d6b03d5707.jsonl` (SHA256: `35ad5561...`)
+    * `sessions/codex_session_01a19ac6-cb27-7e10-9be9-555256c71011.jsonl` (SHA256: `592dda19...`)
 - **Codex 审查员首次裁决记录**:
   - **审查员会话 ID**: `01a19aa3-e0c5-72e0-bbb6-b555f99586f4`
   - **审查员模型**: `gpt-6.1-sol`
@@ -387,7 +396,7 @@ content_audit:
 
 ## 5. 验收审查结论与签署意见
 
-经独立 QA 评审员（Codex 终审会话 `01a19ac4-c3fe-7ef2-816a-71918ebcd5bf`，台架执行会话 `00c153ce-1d55-49b4-a3aa-7df50e168c29`，完整运行日志存档于 `sessions/` 目录）在真实 VMware SoC Twin 与 AT32F435/AT32F423 真实台架上的严密复测与物证补正：
+经独立 QA 评审员（Codex 终审会话 `01a19ac6-cb27-7e10-9be9-555256c71011`，台架执行会话 `00c153ce-1d55-49b4-a3aa-7df50e168c29`，完整运行日志存档于 `sessions/` 目录）在真实 VMware SoC Twin 与 AT32F435/AT32F423 真实台架上的严密复测与物证补正：
 1. **物证完整性**：底层 HTTP 交互报文原件（`raw_hil_execution.log`）、串口拔插与 CPU 采样原始数据（`hot_unplug_trace.log`）、真实物理 UART TX/RX Hex 帧（`raw_uart_traffic.log`）以及测试全量回显（`runtime.log`）均已完整捕获并归档；
 2. **规范完备性**：`app.js` 所有新增与修改函数 100% 满足单一职责、$\le 50$ 行与 $\le 4$ 参数门禁；对照 `web_ui_coding_standard.md` 六大硬性门禁逐项核验全部合格；
 3. **功能闭环**：`ISSUE-20261102-01` 在真实 Google Chrome 浏览器中经 CDP 自动化执行完全通过，正常流程 10 大切片与拔线自愈恢复全部验证通过。
