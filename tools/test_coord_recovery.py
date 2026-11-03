@@ -254,6 +254,22 @@ class FiveSourceReconciliationTest(unittest.TestCase):
         self.assertTrue(self.reconciler.check_in_flight_revision("TASK-REVISION", 2))
         self.assertFalse(self.reconciler.check_in_flight_revision("TASK-REVISION", 1))
 
+    def test_record_revision_conflict_referral_p1_07(self):
+        state = CoordState(schema_version=1, in_flight_tasks={
+            "TASK-REVISION": TaskExecutionRecord("TASK-REVISION", state=TaskState.IN_PROGRESS.value, task_revision=1),
+        })
+        self.store.save_coord_state(state)
+        self.assertIsNone(self.reconciler.record_revision_conflict_referral("TASK-REVISION", 1))
+        self.assertIsNone(self.reconciler.record_revision_conflict_referral("TASK-OTHER", 2))
+        ref = self.reconciler.record_revision_conflict_referral("TASK-REVISION", 2)
+        self.assertIsNotNone(ref)
+        self.assertEqual(ref["action"], "COORDINATOR_REFERRAL")
+        self.assertEqual(ref["active_revision"], 1)
+        self.assertEqual(ref["incoming_revision"], 2)
+        meta_val = self.store.get_meta("referral:TASK-REVISION:rev2")
+        self.assertIsNotNone(meta_val)
+        self.assertIn('"action": "COORDINATOR_REFERRAL"', meta_val)
+
     def test_cas_conflict_detection_p1_13(self):
         f = self.base / "card.md"
         f.write_text("original content", encoding="utf-8")

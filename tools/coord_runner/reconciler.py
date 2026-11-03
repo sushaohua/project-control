@@ -251,6 +251,31 @@ class FiveSourceReconciler:
         rec = state.in_flight_tasks[task_id]
         return rec.state in {TaskState.IN_PROGRESS.value, TaskState.CANDIDATE_PUSHED.value} and rec.task_revision != new_revision
 
+    def record_revision_conflict_referral(
+        self,
+        task_id: str,
+        incoming_revision: int,
+        reason: str = "IN_FLIGHT_REVISION_CONFLICT",
+    ) -> Optional[Dict[str, object]]:
+        """P1-07: Records a COORDINATOR_REFERRAL audit record when in-flight revision conflict occurs."""
+        state = self.state_store.load_coord_state()
+        if not state or task_id not in state.in_flight_tasks:
+            return None
+        rec = state.in_flight_tasks[task_id]
+        if rec.task_revision == incoming_revision:
+            return None
+        referral = {
+            "action": "COORDINATOR_REFERRAL",
+            "task_id": task_id,
+            "active_revision": rec.task_revision,
+            "incoming_revision": incoming_revision,
+            "active_state": rec.state,
+            "reason": reason,
+        }
+        meta_key = f"referral:{task_id}:rev{incoming_revision}"
+        self.state_store.set_meta(meta_key, json.dumps(referral, sort_keys=True))
+        return referral
+
     def verify_cas_write(self, target_path: Path, expected_sha: str) -> None:
         """P1-13: Refuse write and raise CasConflictError if target file hash differs from expected."""
         target = Path(target_path).resolve()
