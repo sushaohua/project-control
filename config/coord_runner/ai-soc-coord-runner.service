@@ -1,0 +1,16 @@
+[Unit]
+Description=AI SoC COORD Task Runner Daemon (Single Instance User Service)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sushaohua/workspace/ai_soc_project
+Environment="PYTHONPATH=/home/sushaohua/workspace/ai_soc_project/project-control"
+Environment="PYTHONUNBUFFERED=1"
+Environment="PYTHONDONTWRITEBYTECODE=1"
+ExecStart=/usr/bin/python3 -m tools.coord_runner --daemon --config project-control/config/coord_runner/coord_config.yaml
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
