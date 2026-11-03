@@ -101,3 +101,12 @@
 5. **`check_ast_coding_standard`**:
    - 命令：`AUTO-03.md` 定义的 AST 函数行数（$\le 50$ 行）与参数个数（$\le 4$ 参）扫描
    - 结果：`AST violations: []` — **exit 0**（100% 合规）。
+
+---
+
+## 返工记录 (Rework Records)
+
+### Rework 01 (2026-11-03)
+- **缺陷参考**: `QA-AUTO03-R3-01` (见 `docs/evidence/coord_automation/AUTO-03/runs/run_03/qa_review_report.md`)
+- **返工说明工件**: [`rework_note_01.md`](rework_note_01.md)
+- **处理摘要**: 任务卡 `AUTO-03.md` 的 `base_commit` 和 `source_baseline.project-control` 已更正对齐至已批准的第一阶段规划基线 `b7a0a706b9d5683c69989faa4e6d4f6007826915`。对齐后 `git diff b7a0a706..HEAD` 包含确切 46 个文件，100% 严格落在 `allowed_paths` 白名单范围内。

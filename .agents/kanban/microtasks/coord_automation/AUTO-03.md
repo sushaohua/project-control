@@ -109,14 +109,14 @@ forbidden_paths:
   - boot/bootloadermc/**
   - boot/bootloaderth/**
 source_baseline:
-  project-control: b4af2d32601a07d448ac8d67a07c57f5b9ab36ac
+  project-control: b7a0a706b9d5683c69989faa4e6d4f6007826915
   soc-ap: 427dd6d82caceebb7b4642e78f1dbfa96ff5fc84
   mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
   test_harness: ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414
-base_commit: b4af2d32601a07d448ac8d67a07c57f5b9ab36ac
+base_commit: b7a0a706b9d5683c69989faa4e6d4f6007826915
 candidate_commit: null
 dispatch_binding:
-  source_commit: b4af2d32601a07d448ac8d67a07c57f5b9ab36ac
+  source_commit: b7a0a706b9d5683c69989faa4e6d4f6007826915
   workspace_diff_sha256: 736c674846d52dee8985cae0654388560199cb33f3041365bd62fae7d91710ad
   consumed_artifact_versions:
     confirmation_rev2: 63c1225d60c377a662bebaa0328f9bc95c19daccaa61d9f2766bc989f06f3f98
