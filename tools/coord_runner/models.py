@@ -146,6 +146,26 @@ class CoordState:
         )
 
 
+def resolve_state_db_path(ws_root: Path, explicit: Optional[Path]) -> Path:
+    """Resolve state DB path to shared host location or isolate in test workspace."""
+    if explicit is not None:
+        return Path(explicit).resolve()
+    ws = Path(ws_root).resolve()
+    if ws == Path(".").resolve() or ws.name in {"ai_soc_project", "project-control"}:
+        return Path("/home/sushaohua/.local/share/ai_soc_coord_runner/state.sqlite3")
+    return (ws / "state.sqlite3").resolve()
+
+
+def resolve_lock_path(ws_root: Path, explicit: Optional[Path]) -> Path:
+    """Resolve process lock path to shared host location or isolate in test workspace."""
+    if explicit is not None:
+        return Path(explicit).resolve()
+    ws = Path(ws_root).resolve()
+    if ws == Path(".").resolve() or ws.name in {"ai_soc_project", "project-control"}:
+        return Path("/home/sushaohua/.local/share/ai_soc_coord_runner/coord_runner.lock")
+    return (ws / "coord_runner.lock").resolve()
+
+
 @dataclass
 class CoordRunnerConfig:
     """Configuration settings for COORD runner."""
@@ -163,6 +183,8 @@ class CoordRunnerConfig:
     codex_bin: Path = field(default_factory=lambda: Path("/home/sushaohua/.local/bin/codex"))
     default_model: str = "gpt-6-luna"
     jobs_dir: Path = field(default_factory=lambda: Path("project-control/tools/coord_runner/runtime_jobs"))
+    state_db_file: Optional[Path] = None
+    lock_file: Optional[Path] = None
 
     @classmethod
     def from_dict(cls, data: dict, base_dir: Optional[Path] = None) -> "CoordRunnerConfig":
@@ -179,19 +201,17 @@ class CoordRunnerConfig:
         in_root = (base / intake_sec.get("root_dir", "project-control/docs/work_intake")).resolve()
         leg_q = (base / intake_sec.get("legacy_queue_file", "project-control/docs/planning/coord_autorun_queue_20261029.yaml")).resolve()
         j_dir = (base / intake_sec.get("jobs_dir", "project-control/tools/coord_runner/runtime_jobs")).resolve()
+        s_db = Path(runner_sec["state_db_file"]) if "state_db_file" in runner_sec else None
+        l_file = Path(runner_sec["lock_file"]) if "lock_file" in runner_sec else None
         return cls(
-            workspace_root=ws,
-            queue_file=qf,
-            checkpoint_file=cf,
+            workspace_root=ws, queue_file=qf, checkpoint_file=cf,
             poll_interval_seconds=float(runner_sec.get("poll_interval_seconds", 5.0)),
             default_lease_duration_seconds=float(runner_sec.get("default_lease_duration_seconds", 1800.0)),
             max_parallel_implementation=int(limits_sec.get("max_parallel_implementation", 2)),
             max_evidence_based_corrections=int(limits_sec.get("max_evidence_based_corrections", 2)),
-            exclusive_devices=list(devs),
-            intake_root=in_root,
-            legacy_queue_file=leg_q,
+            exclusive_devices=list(devs), intake_root=in_root, legacy_queue_file=leg_q,
             isolate_legacy_queue=bool(intake_sec.get("isolate_legacy_queue", True)),
             codex_bin=Path(intake_sec.get("codex_bin", "/home/sushaohua/.local/bin/codex")),
             default_model=str(intake_sec.get("default_model", "gpt-6-luna")),
-            jobs_dir=j_dir,
+            jobs_dir=j_dir, state_db_file=s_db, lock_file=l_file,
         )

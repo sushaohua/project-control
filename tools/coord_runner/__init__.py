@@ -29,13 +29,25 @@ from .errors import (
     ResourceConflictError,
     StateTransitionError,
 )
+from .job_launcher import (
+    JobLauncher,
+    get_proc_starttime,
+    is_proc_alive,
+    write_atomic_json,
+)
 from .lease_manager import LeaseManager, LeaseRequest
+from .m2_drill import execute_m2_live_drill
 from .models import (
     CoordRunnerConfig,
     CoordState,
     Lease,
     TaskExecutionRecord,
     TaskState,
+)
+from .reconciler import (
+    FiveSourceReconciler,
+    ReconcileReport,
+    ReconcileStatus,
 )
 from .role_adapter import (
     CodexRoleAdapter,
@@ -56,6 +68,7 @@ from .role_adapter import (
 from .runner import CoordRunner
 from .scheduler import CoordScheduler, ScheduleContext
 from .state_machine import CoordStateMachine
+from .state_store import StateStore
 from .work_intake import (
     IntakeErrorRecord,
     IntakeLifecycleNotice,
@@ -90,12 +103,15 @@ __all__ = [
     "CoordinateRequest",
     "DemandDispatchPlan",
     "DependencyUnmetError",
+    "execute_m2_live_drill",
     "FileDigestSnapshot",
+    "FiveSourceReconciler",
     "GateValidationError",
     "IntakeErrorRecord",
     "IntakeLifecycleNotice",
     "IntakeScanResult",
     "IntakeValidationError",
+    "JobLauncher",
     "Lease",
     "LeaseExpiredError",
     "LeaseManager",
@@ -103,6 +119,8 @@ __all__ = [
     "MultiRoleSplitSpec",
     "ParsedInstruction",
     "ParsedSubmission",
+    "ReconcileReport",
+    "ReconcileStatus",
     "RemediationLimitExceededError",
     "ResourceConflictError",
     "RoleAdapterConfig",
@@ -112,6 +130,7 @@ __all__ = [
     "RoleTaskRequest",
     "RoleTaskResult",
     "ScheduleContext",
+    "StateStore",
     "StateTransitionError",
     "TaskExecutionRecord",
     "TaskLinkUpdate",
@@ -122,10 +141,13 @@ __all__ = [
     "compute_bytes_sha256",
     "compute_file_sha256",
     "create_exclusive",
+    "get_proc_starttime",
+    "is_proc_alive",
     "parse_submission_markdown",
     "read_with_digest",
     "record_write_intent",
     "route_intake_demand",
     "verify_independent_codex_review_entry",
+    "write_atomic_json",
     "write_cas",
 ]

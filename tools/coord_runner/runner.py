@@ -20,14 +20,21 @@ if __package__:
     from .codex_adapter import CodexReviewAdapter
     from .codex_qa import execute_sandbox, validate_server_proof
     from .m1_drill import execute_m1_live_drill
+    from .m2_drill import execute_m2_live_drill
     from .qa_contract import create_qa_request, repository_from_card
     from .review_bundle import execute_candidate_audit
     from .errors import CoordRunnerError, GateValidationError, ResourceConflictError
+    from .job_launcher import JobLauncher
     from .lease_manager import LeaseManager
-    from .models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
-    from .role_adapter import CodexRoleAdapter, RoleAdapterConfig, RoleTaskRequest
+    from .models import (
+        CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState,
+        resolve_lock_path, resolve_state_db_path,
+    )
+    from .reconciler import FiveSourceReconciler, ReconcileReport, ReconcileStatus
+    from .role_adapter import CodexRoleAdapter, RoleAdapterConfig, RoleJobHandle, RoleTaskRequest
     from .scheduler import CoordScheduler, ScheduleContext
     from .state_machine import CoordStateMachine
+    from .state_store import StateStore
     from .work_intake import WorkIntakeManager
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -36,14 +43,21 @@ else:
     from coord_runner.codex_adapter import CodexReviewAdapter
     from coord_runner.codex_qa import execute_sandbox, validate_server_proof
     from coord_runner.m1_drill import execute_m1_live_drill
+    from coord_runner.m2_drill import execute_m2_live_drill
     from coord_runner.qa_contract import create_qa_request, repository_from_card
     from coord_runner.review_bundle import execute_candidate_audit
     from coord_runner.errors import CoordRunnerError, GateValidationError, ResourceConflictError
+    from coord_runner.job_launcher import JobLauncher
     from coord_runner.lease_manager import LeaseManager
-    from coord_runner.models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
-    from coord_runner.role_adapter import CodexRoleAdapter, RoleAdapterConfig, RoleTaskRequest
+    from coord_runner.models import (
+        CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState,
+        resolve_lock_path, resolve_state_db_path,
+    )
+    from coord_runner.reconciler import FiveSourceReconciler, ReconcileReport, ReconcileStatus
+    from coord_runner.role_adapter import CodexRoleAdapter, RoleAdapterConfig, RoleJobHandle, RoleTaskRequest
     from coord_runner.scheduler import CoordScheduler, ScheduleContext
     from coord_runner.state_machine import CoordStateMachine
+    from coord_runner.state_store import StateStore
     from coord_runner.work_intake import WorkIntakeManager
 
 
@@ -73,6 +87,22 @@ class CoordRunner:
             codex_bin=self.config.codex_bin,
             default_model=self.config.default_model,
         ))
+        db_p = resolve_state_db_path(self.config.workspace_root, self.config.state_db_file)
+        lock_p = resolve_lock_path(self.config.workspace_root, self.config.lock_file)
+        self.state_store = StateStore(
+            db_path=db_p,
+            lock_path=lock_p,
+        )
+        self.job_launcher = JobLauncher(
+            workspace_root=self.config.workspace_root,
+            codex_bin=self.config.codex_bin,
+            default_model=self.config.default_model,
+        )
+        self.reconciler = FiveSourceReconciler(
+            workspace_root=self.config.workspace_root,
+            state_store=self.state_store,
+            codex_home=Path.home() / ".codex",
+        )
         self.in_flight_tasks: Dict[str, TaskExecutionRecord] = {}
         self.completed_tasks: Set[str] = set()
         self.cursor: Optional[str] = None
@@ -82,9 +112,12 @@ class CoordRunner:
         self.review_executor: Optional[Callable] = None
 
     def restore_from_checkpoint(self) -> bool:
-        state = self.checkpoint_mgr.safe_load(self.config.checkpoint_file)
+        state = self.state_store.load_coord_state()
         if state is None:
-            return False
+            state = self.checkpoint_mgr.safe_load(self.config.checkpoint_file)
+            if state is None:
+                return False
+            self.state_store.save_coord_state(state)
         self.cursor = state.cursor
         self.completed_tasks = set(state.completed_tasks)
         self.in_flight_tasks = dict(state.in_flight_tasks)
@@ -99,6 +132,7 @@ class CoordRunner:
             completed_tasks=sorted(self.completed_tasks),
             leases=self.lease_mgr.get_active_leases(),
         )
+        self.state_store.save_coord_state(state)
         self.checkpoint_mgr.save_checkpoint(self.config.checkpoint_file, state)
 
     def load_cards(self) -> dict:
@@ -151,6 +185,8 @@ class CoordRunner:
         return record
 
     def _execute_agent_phase(self, record: TaskExecutionRecord, card: dict) -> None:
+        if record.runtime_context.get("async_job_id"):
+            return
         if self.agent_executor is None:
             raise CoordRunnerError(f"Missing agent_executor for {record.task_id}: fail-closed enforced")
         commit = self.agent_executor(record.task_id, record)
@@ -572,8 +608,49 @@ class CoordRunner:
             del self.in_flight_tasks[task_id]
         return record.state
 
+    def dispatch_async_role_task(self, task_id: str, card: dict) -> RoleJobHandle:
+        """Launch background async role worker process for task; returns handle."""
+        record = self.in_flight_tasks.get(task_id)
+        if not record:
+            raise CoordRunnerError(f"Task {task_id} not in flight")
+        self._verify_card_approval(task_id, card)
+        req = self._build_agent_role_request(task_id, record, card)
+        attempt = record.corrections_count + 1
+        dispatch_key = f"{task_id}:rev{record.task_revision}:{req.role}:implement:{attempt}"
+        handle = self.role_adapter.submit_role_task_async(req, dispatch_key, self.job_launcher)
+        self.state_store.save_role_job({
+            "job_id": handle.job_id, "dispatch_key": dispatch_key, "task_id": task_id,
+            "task_revision": record.task_revision, "role": req.role, "phase": req.phase,
+            "status": ReconcileStatus.RUNNING.value, "job_dir": str(handle.job_dir),
+        })
+        record.runtime_context["async_job_id"] = handle.job_id
+        record.runtime_context["dispatch_key"] = dispatch_key
+        return handle
+
+    def _check_async_job_completions(self) -> None:
+        """Advance any background tasks that have transitioned to COMPLETED status."""
+        for task_id, record in list(self.in_flight_tasks.items()):
+            if record.state != TaskState.IN_PROGRESS.value:
+                continue
+            job_id = record.runtime_context.get("async_job_id")
+            if not job_id:
+                continue
+            job_rec = self.state_store.get_role_job(job_id)
+            if not job_rec or job_rec.get("status") != ReconcileStatus.COMPLETED.value:
+                continue
+            res = self.role_adapter.collect_role_result(job_id)
+            record.candidate_commit = str(res.candidate_commit)
+            record.session_id = str(res.thread_id)
+            record.runtime_context["role_job_id"] = res.job_id
+            record.runtime_context["dispatch_key"] = res.dispatch_key
+            record.runtime_context.pop("async_job_id", None)
+            self.state_machine.transition(record, TaskState.CANDIDATE_PUSHED)
+
     def step(self) -> Dict[str, object]:
+        self.reconciler.protect_active_leases(self.lease_mgr, self.config.jobs_dir)
         self.lease_mgr.prune_expired_leases()
+        self.reconciler.reconcile_active_jobs(self.config.jobs_dir)
+        self._check_async_job_completions()
         cards = self.load_cards()
         in_flight_keys = list(self.in_flight_tasks.keys())
         for task_id in in_flight_keys:
@@ -610,22 +687,30 @@ class CoordRunner:
         }
 
     def run_once(self) -> Dict[str, object]:
-        self.restore_from_checkpoint()
-        result = self.step()
-        self.save_checkpoint()
-        return result
+        self.state_store.acquire_process_lock()
+        try:
+            self.restore_from_checkpoint()
+            result = self.step()
+            self.save_checkpoint()
+            return result
+        finally:
+            self.state_store.release_process_lock()
 
     def run_tasks(self, max_tasks: int) -> int:
-        self.restore_from_checkpoint()
-        completed_initial = len(self.completed_tasks)
-        while len(self.completed_tasks) - completed_initial < max_tasks:
-            info = self.step()
-            runnable = any(record.state not in {TaskState.BLOCKED.value, TaskState.ESCALATED.value}
-                           for record in self.in_flight_tasks.values())
-            if not info["dispatched"] and not runnable:
-                break
-        self.save_checkpoint()
-        return len(self.completed_tasks) - completed_initial
+        self.state_store.acquire_process_lock()
+        try:
+            self.restore_from_checkpoint()
+            completed_initial = len(self.completed_tasks)
+            while len(self.completed_tasks) - completed_initial < max_tasks:
+                info = self.step()
+                runnable = any(record.state not in {TaskState.BLOCKED.value, TaskState.ESCALATED.value}
+                               for record in self.in_flight_tasks.values())
+                if not info["dispatched"] and not runnable:
+                    break
+            self.save_checkpoint()
+            return len(self.completed_tasks) - completed_initial
+        finally:
+            self.state_store.release_process_lock()
 
     def _signal_handler(self, signum: int, frame: object) -> None:
         self._running = False
@@ -633,6 +718,7 @@ class CoordRunner:
 
     def run_daemon(self, poll_interval: Optional[float] = None) -> None:
         interval = poll_interval if poll_interval is not None else self.config.poll_interval_seconds
+        self.state_store.acquire_process_lock()
         self.restore_from_checkpoint()
         self._running = True
         signal.signal(signal.SIGINT, self._signal_handler)
@@ -643,6 +729,8 @@ class CoordRunner:
                 time.sleep(interval)
         finally:
             self.save_checkpoint()
+            self.state_store.release_process_lock()
+            self.save_checkpoint()
 
 
 def create_cli_parser() -> argparse.ArgumentParser:
@@ -652,6 +740,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
     parser.add_argument("--once", action="store_true", help="Execute single step and exit")
     parser.add_argument("--intake-scan", action="store_true", help="Scan work_intake MD/YAML records and exit")
     parser.add_argument("--drill-dir", default="", help="Execute bounded M1 host live drill in directory")
+    parser.add_argument("--drill-m2-dir", default="", help="Execute bounded M2 host recovery drill in directory")
     parser.add_argument("--resume-task", help="Explicitly retry a blocked task after resolving its blocker")
     parser.add_argument("--rerun-sandbox", action="store_true", help="With --resume-task, retain old evidence and rerun tests")
     parser.add_argument("--max-tasks", type=int, default=0, help="Execute up to N tasks and exit")
@@ -681,6 +770,10 @@ def main() -> int:
     config = _load_cli_config(args.config)
     if args.drill_dir:
         drill_res = execute_m1_live_drill(config.workspace_root, Path(args.drill_dir), config.codex_bin)
+        print(json.dumps(drill_res, ensure_ascii=False, indent=2))
+        return 0
+    if args.drill_m2_dir:
+        drill_res = execute_m2_live_drill(config.workspace_root, Path(args.drill_m2_dir))
         print(json.dumps(drill_res, ensure_ascii=False, indent=2))
         return 0
     runner = CoordRunner(config)

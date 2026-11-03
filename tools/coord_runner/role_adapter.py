@@ -22,6 +22,7 @@ from .errors import (
     CoordRunnerError,
     GateValidationError,
 )
+from .job_launcher import JobLauncher
 
 DEFAULT_CODEX_BIN = Path("/home/sushaohua/.local/bin/codex")
 DEFAULT_MODEL = "gpt-6-luna"
@@ -519,15 +520,17 @@ class CodexRoleAdapter:
         index[job_id] = {"job_id": job_id, "dispatch_key": dispatch_key, "job_dir": str(job_dir)}
         idx_path.write_text(json.dumps(index, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    def submit_role_task(self, request: RoleTaskRequest, dispatch_key: str) -> RoleJobHandle:
-        """Launch single-step `codex exec -m gpt-6-luna` role session with dispatch_key & path audit."""
+    def _build_codex_job_bundle(
+        self,
+        request: RoleTaskRequest,
+        dispatch_key: str,
+    ) -> Tuple[Path, str, List[str], str]:
         sandbox = self._validate_role_request_and_sandbox(request, dispatch_key)
         job_id = f"job_{request.task_id}_{uuid.uuid4().hex[:10]}"
         job_dir = self.jobs_dir / job_id
         job_dir.mkdir(parents=True, exist_ok=False)
         self._register_dispatch_index(dispatch_key, job_id, job_dir)
         workdir = (request.workdir or self.workspace_root).resolve()
-        watch_root = (request.watch_dir or workdir).resolve()
         full_prompt = f"[COORD_DISPATCH_KEY:{dispatch_key}]\n{request.prompt}"
         meta = {
             "job_id": job_id, "dispatch_key": dispatch_key, "task_id": request.task_id,
@@ -541,7 +544,6 @@ class CodexRoleAdapter:
         (job_dir / "job_meta.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
         (job_dir / "schema.json").write_text(json.dumps(_role_output_schema()), encoding="utf-8")
         (job_dir / "prompt.txt").write_text(full_prompt, encoding="utf-8")
-        before = self._snapshot_tree(watch_root) if sandbox == "workspace-write" else {}
         cmd = [
             str(self.codex_bin), "exec", "--skip-git-repo-check",
             "--sandbox", sandbox, "-c", 'approval_policy="never"',
@@ -549,6 +551,13 @@ class CodexRoleAdapter:
             "--json", "--output-schema", str(job_dir / "schema.json"),
             "-o", str(job_dir / "final.json"), "-",
         ]
+        return job_dir, sandbox, cmd, full_prompt
+
+    def submit_role_task(self, request: RoleTaskRequest, dispatch_key: str) -> RoleJobHandle:
+        """Launch single-step `codex exec -m gpt-6-luna` role session with dispatch_key & path audit."""
+        job_dir, sandbox, cmd, full_prompt = self._build_codex_job_bundle(request, dispatch_key)
+        watch_root = (request.watch_dir or request.workdir or self.workspace_root).resolve()
+        before = self._snapshot_tree(watch_root) if sandbox == "workspace-write" else {}
         self._execute_codex_subprocess(cmd, full_prompt, job_dir)
         if sandbox == "workspace-write":
             after = self._snapshot_tree(watch_root)
@@ -561,8 +570,23 @@ class CodexRoleAdapter:
             )
         raw_events = (job_dir / "codex_events.jsonl").read_text(encoding="utf-8")
         thread_id, _ = _parse_codex_jsonl(raw_events)
-        return RoleJobHandle(job_id=job_id, dispatch_key=dispatch_key, role=request.role,
+        return RoleJobHandle(job_id=job_dir.name, dispatch_key=dispatch_key, role=request.role,
                              sandbox_mode=sandbox, job_dir=job_dir, thread_id=thread_id)
+
+    def submit_role_task_async(
+        self,
+        request: RoleTaskRequest,
+        dispatch_key: str,
+        launcher: Optional[JobLauncher] = None,
+    ) -> RoleJobHandle:
+        """Launch non-blocking asynchronous role task in background; returns durable handle immediately."""
+        job_dir, sandbox, cmd, full_prompt = self._build_codex_job_bundle(request, dispatch_key)
+        active_launcher = launcher or JobLauncher(self.workspace_root, self.codex_bin, self.default_model)
+        active_launcher.launch_async(job_dir, cmd, full_prompt)
+        return RoleJobHandle(
+            job_id=job_dir.name, dispatch_key=dispatch_key, role=request.role,
+            sandbox_mode=sandbox, job_dir=job_dir, thread_id=None,
+        )
 
     def _lookup_host_sqlite_thread(self, dispatch_key: str) -> Optional[str]:
         db_path = self.codex_home / "state_5.sqlite"
