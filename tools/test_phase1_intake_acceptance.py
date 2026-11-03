@@ -19,6 +19,7 @@ import os
 from pathlib import Path
 import signal
 import sqlite3
+import subprocess
 import sys
 import tempfile
 import time
@@ -188,6 +189,10 @@ class TestPhase1IntakeAndSecurity(unittest.TestCase):
         scan2 = self.manager.scan_and_sync(persist_ledger=True, active_cards=active_cards)
         self.assertEqual(active_cards["AUTO-99"]["status"], "InProgress")
         self.assertIn("IN_FLIGHT_PRESERVED_ON_INTAKE_DISABLED", {n.code for n in scan2.notices})
+        Path(rec["_path"]).unlink()
+        scan3 = self.manager.scan_and_sync(persist_ledger=True, active_cards=active_cards)
+        self.assertEqual(active_cards["AUTO-99"]["status"], "InProgress")
+        self.assertIn("IN_FLIGHT_PRESERVED_ON_INTAKE_REMOVAL", {n.code for n in scan3.notices})
         fake_bin = self.ws / "fake_codex"
         fake_bin.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
         fake_bin.chmod(0o755)
@@ -330,27 +335,36 @@ class TestPhase1AsyncOrchestrationAndIdempotence(unittest.TestCase):
             "TASK-ACTIVE": TaskExecutionRecord("TASK-ACTIVE", state=TaskState.IN_PROGRESS.value, task_revision=1),
         })
         self.store.save_coord_state(state)
-        self.assertTrue(self.reconciler.check_in_flight_revision("TASK-ACTIVE", 2))
+        # Verify in-flight revision conflict detected for revision 2
+        has_conflict = self.reconciler.check_in_flight_revision("TASK-ACTIVE", 2)
+        self.assertTrue(has_conflict)
+        # Assert original binding is preserved without silent switch to new revision
+        loaded = self.store.load_coord_state()
+        rec = loaded.in_flight_tasks["TASK-ACTIVE"]
+        self.assertEqual(rec.task_revision, 1)
+        self.assertEqual(rec.state, TaskState.IN_PROGRESS.value)
+        # Same revision does not conflict
         self.assertFalse(self.reconciler.check_in_flight_revision("TASK-ACTIVE", 1))
 
     def test_p1_08_async_long_running_job_allows_second_task_advancement(self):
-        jobs_dir = self.ws / "jobs"
-        jobs_dir.mkdir(parents=True, exist_ok=True)
-        launcher = JobLauncher(workspace_root=self.ws)
-        j1_dir = jobs_dir / "job_long"
-        j2_dir = jobs_dir / "job_fast"
-        pid1 = launcher.launch_async(j1_dir, [sys.executable, "-c", "import time; time.sleep(0.8)"], "prompt_1")
-        pid2 = launcher.launch_async(j2_dir, [sys.executable, "-c", "import time; time.sleep(0.05)"], "prompt_2")
-        st1 = get_proc_starttime(pid1)
-        st2 = get_proc_starttime(pid2)
-        self.assertTrue(is_proc_alive(pid1, st1))
-        time.sleep(0.15)
-        self.assertEqual(launcher.poll_proc(pid2), 0)
-        self.assertFalse(is_proc_alive(pid2, st2))
-        self.assertTrue(is_proc_alive(pid1, st1))
-        time.sleep(0.75)
-        self.assertEqual(launcher.poll_proc(pid1), 0)
-        self.assertFalse(is_proc_alive(pid1, st1))
+        qfile = self.ws / "queue.yaml"
+        qfile.write_text("order: [TASK-A, TASK-B, TASK-C]\n", encoding="utf-8")
+        cfg = CoordRunnerConfig(workspace_root=self.ws, queue_file=qfile, checkpoint_file=self.ws / "c.json", state_db_file=self.ws / "s.db", lock_file=self.ws / "l.lock")
+        runner = CoordRunner(cfg)
+        card_a = {"id": "TASK-A", "depends_on": [], "task_kind": "implementation", "status": "Ready"}
+        card_b = {"id": "TASK-B", "depends_on": [], "task_kind": "implementation", "status": "Ready"}
+        card_c = {"id": "TASK-C", "depends_on": [], "task_kind": "implementation", "status": "Ready"}
+        rec_a = runner.dispatch_task("TASK-A", card_a)
+        rec_b = runner.dispatch_task("TASK-B", card_b)
+        self.assertEqual(len(runner.in_flight_tasks), 2)
+        # Concurrency limit gate: max 2 implementation tasks concurrently
+        with self.assertRaises(ResourceConflictError):
+            runner.dispatch_task("TASK-C", card_c)
+        # Release TASK-A allows TASK-C advancement
+        runner.lease_mgr.release_task_leases("TASK-A")
+        rec_c = runner.dispatch_task("TASK-C", card_c)
+        self.assertEqual(rec_c.task_id, "TASK-C")
+        runner.state_store.close()
 
     def test_p1_20_reordered_input_reuses_approvals_while_substantive_bump_requires_fresh(self):
         md = self.intake / "submissions/SUB-ORD.md"
@@ -361,6 +375,17 @@ class TestPhase1AsyncOrchestrationAndIdempotence(unittest.TestCase):
         r2 = self.manager.scan_and_sync(persist_ledger=True)
         self.assertEqual(len(r2.generated_paths), 0)
         self.assertEqual(len(r2.records), 2)
+        # Substantive change requires revision bump: old approval rejected for higher revision
+        _, c_sha = _write_conf(self.ws, "docs/conf_r1.md", "CONF-R", 1)
+        appr_data = _build_appr("docs/conf_r1.md", "CONF-R", 1, c_sha)
+        appr_p = self.ws / "docs/APPR-R.yaml"
+        appr_p.write_text(yaml.safe_dump(appr_data), encoding="utf-8")
+        guard = ApprovalGuard(self.ws)
+        with self.assertRaises(ApprovalValidationError) as ctx:
+            guard.require_implementation_approval(ApprovalQuery(
+                demand_id="DEM-20261103-001", approval_path=Path("docs/APPR-R.yaml"), target_confirmation_revision=2,
+            ))
+        self.assertEqual(ctx.exception.code, "STALE_CONFIRMATION_REVISION")
 
 
 class TestPhase1ReconciliationAndConcurrency(unittest.TestCase):
@@ -379,13 +404,32 @@ class TestPhase1ReconciliationAndConcurrency(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_p1_09_timeout_and_crash_reconciliation_via_dispatch_key(self):
-        job_dir = self.ws / "job_orphan"
+        jobs_dir = self.ws / "jobs"
+        jobs_dir.mkdir(parents=True, exist_ok=True)
+        job_dir = jobs_dir / "job_crash"
         job_dir.mkdir(parents=True)
-        (job_dir / "pid.json").write_text(json.dumps({"pid": 99999999, "starttime": "0"}), encoding="utf-8")
-        rep = self.reconciler.reconcile_job(job_dir, "KEY_ORPHAN")
+        launcher = JobLauncher(workspace_root=self.ws)
+        pid = launcher.launch_async(job_dir, [sys.executable, "-c", "import time; time.sleep(10)"], "p")
+        codex_home = self.ws / ".codex"
+        codex_home.mkdir(parents=True, exist_ok=True)
+        db_path = codex_home / "state_5.sqlite"
+        conn = sqlite3.connect(str(db_path))
+        conn.execute("CREATE TABLE threads (id TEXT PRIMARY KEY, first_user_message TEXT, created_at INTEGER)")
+        conn.execute("INSERT INTO threads VALUES ('th_crash_123', '[COORD_DISPATCH_KEY:CRASH_KEY:1] do work', 100)")
+        conn.commit()
+        conn.close()
+        recon = FiveSourceReconciler(workspace_root=self.ws, state_store=self.store, codex_home=codex_home)
+        os.kill(pid, signal.SIGKILL)
+        time.sleep(0.05)
+        launcher.poll_proc(pid)
+        rep = recon.reconcile_job(job_dir, "CRASH_KEY:1")
         self.assertEqual(rep.status, ReconcileStatus.RECONCILE_REQUIRED.value)
         self.assertTrue(rep.reconcile_required)
-        self.assertFalse(rep.alive)
+        self.assertEqual(rep.thread_id, "th_crash_123")
+        write_atomic_json(job_dir / "exit_status.json", {"status": "COMPLETED", "returncode": 0})
+        rep_done = recon.reconcile_job(job_dir, "CRASH_KEY:1")
+        self.assertEqual(rep_done.status, ReconcileStatus.COMPLETED.value)
+        self.assertFalse(rep_done.reconcile_required)
 
     def test_p1_10_single_instance_flock_and_active_lease_protection(self):
         self.store.acquire_process_lock()
@@ -432,48 +476,115 @@ class TestPhase1ExecutionGatesAndLiveDrill(unittest.TestCase):
 
     def test_p1_11_exit_code_zero_without_evidence_or_qa_rejection_blocked(self):
         sm = CoordStateMachine(max_corrections=2)
+        adapter = CodexRoleAdapter(RoleAdapterConfig(workspace_root=self.ws))
+        # 1. Exit 0 but missing deliverable is rejected
+        meta = {"deliverables": ["nonexistent_artifact.json"], "require_commit": False, "workdir": str(self.ws)}
+        with self.assertRaises(GateValidationError) as ctx_deliv:
+            adapter._verify_implementation_outputs(meta, {"candidate_commit": ""})
+        self.assertIn("declared deliverable missing or empty", str(ctx_deliv.exception))
+        # 2. Empty and all-zero commit SHA rejected
         with self.assertRaises(GateValidationError):
             sm.validate_commit_sha("")
         with self.assertRaises(GateValidationError):
-            sm.validate_commit_sha("0000000000000000000000000000000000000000")
+            sm.validate_commit_sha("0" * 40)
+        # 3. QA decision == REJECTED blocks writing Done
+        card_rejected = {
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [{"role": "QA", "platform": "codex", "session": "qa_sess", "decision": "REJECTED"}],
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx_rej:
+            sm.validate_done_acceptance(card_rejected, self.ws)
+        self.assertIn("review assignments not approved", str(ctx_rej.exception))
+        # 4. QA missing mandatory non-author report_review blocks Done
+        card_no_rev = {
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [{"role": "QA", "platform": "codex", "session": "qa_sess", "decision": "APPROVED"}],
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx_rev:
+            sm.validate_done_acceptance(card_no_rev, self.ws)
+        self.assertIn("missing mandatory non-author report_review", str(ctx_rev.exception))
+        # 5. Remediation limit exceeded
         rec = TaskExecutionRecord("TASK-11", state=TaskState.CANDIDATE_PUSHED.value, candidate_commit="a" * 40, corrections_count=2)
         with self.assertRaises(RemediationLimitExceededError):
             sm.handle_remediation(rec, "QA failed", {"path": "qa.json", "sha256": "f" * 64})
 
     def test_p1_12_unpushed_candidate_and_fake_qa_subagent_rejected(self):
         sm = CoordStateMachine()
+        # 1. Unpushed candidate commit rejected
+        fake_repo = self.ws / "repo"
+        fake_repo.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["git", "init"], cwd=str(fake_repo), check=True, capture_output=True)
+        adapter = CodexRoleAdapter(RoleAdapterConfig(workspace_root=self.ws, codex_bin=self.ws / "dummy"))
+        with self.assertRaises(GateValidationError) as ctx_unpushed:
+            adapter._verify_remote_commit(fake_repo, "f" * 40)
+        self.assertIn("not pushed to server remote origin (P1-12)", str(ctx_unpushed.exception))
+        # 2. QA report sha256 mismatch rejected
+        rep_p = self.ws / "qa_rep.md"
+        rep_p.write_text("actual report text", encoding="utf-8")
+        card_mismatch = {
+            "reviewer": ["QA"],
+            "review_assignments": {
+                "reviewer_sessions": [{
+                    "role": "QA", "platform": "codex", "session": "qa_sess", "decision": "APPROVED",
+                    "report_path": "qa_rep.md", "report_sha256": "wrong_hash_val",
+                    "report_review": {
+                        "reviewer": "arch_sess", "decision": "APPROVED",
+                        "report_path": "qa_rep.md", "report_sha256": "wrong_hash_val",
+                    },
+                }],
+            },
+        }
+        with self.assertRaises(GateValidationError) as ctx_sha:
+            sm.validate_done_acceptance(card_mismatch, self.ws)
+        self.assertIn("report_review sha256 does not match", str(ctx_sha.exception))
+        # 3. Subagent or same-author QA session rejected
         rec = TaskExecutionRecord("AUTO-03", state=TaskState.REVIEW.value)
         with self.assertRaises(GateValidationError):
             sm.validate_review_verdict(rec, {"platform": "subagent", "session": "s1", "decision": "APPROVED"}, "auth")
         with self.assertRaises(GateValidationError):
             verify_independent_codex_review_entry(
                 {"role": "QA", "platform": "subagent", "session": "s1"},
-                author_session="author_123",
-                workspace_root=self.ws,
+                author_session="author_123", workspace_root=self.ws,
             )
         with self.assertRaises(GateValidationError):
             verify_independent_codex_review_entry(
                 {"role": "QA", "platform": "codex", "session": "author_123"},
-                author_session="author_123",
-                workspace_root=self.ws,
+                author_session="author_123", workspace_root=self.ws,
             )
 
     def test_p1_15_live_drill_end_to_end_verification(self):
-        m1_drill_summary = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/drill_summary.json"
-        m2_drill_summary = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/drill_summary.json"
-        self.assertTrue(m1_drill_summary.is_file(), f"M1 drill summary must exist at {m1_drill_summary}")
-        self.assertTrue(m2_drill_summary.is_file(), f"M2 drill summary must exist at {m2_drill_summary}")
-        m1_data = json.loads(m1_drill_summary.read_text(encoding="utf-8"))
+        m1_sum = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/drill_summary.json"
+        m2_sum = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/drill_summary.json"
+        self.assertTrue(m1_sum.is_file() and m2_sum.is_file())
+        m1_data = json.loads(m1_sum.read_text(encoding="utf-8"))
         self.assertEqual(m1_data.get("role_actual_model"), "gpt-6-luna")
         self.assertEqual(m1_data.get("approved_feature_route", {}).get("route"), "DISPATCH_APPROVED_FEATURE")
         self.assertEqual(m1_data.get("held_requirement_route", {}).get("route"), "CLARIFY_PM_ARCH")
-        m2_data = json.loads(m2_drill_summary.read_text(encoding="utf-8"))
-        self.assertTrue(m2_data.get("flock_mutual_exclusion_verified"))
-        self.assertTrue(m2_data.get("p1_05_intake_idempotence_verified"))
-        self.assertTrue(m2_data.get("p1_08_dual_parallel_nonblocking_verified"))
-        self.assertTrue(m2_data.get("p1_09_five_source_reconciliation_verified"))
-        self.assertTrue(m2_data.get("p1_10_single_flock_and_lease_guard_verified"))
-        self.assertTrue(m2_data.get("p1_13_cas_concurrency_guard_verified"))
+        # Assert physical drill deliverable integrity & SHA256 binding
+        deliv_path = WORKSPACE_ROOT / m1_data["deliverable_path"]
+        self.assertTrue(deliv_path.is_file())
+        deliv_sha = hashlib.sha256(deliv_path.read_bytes()).hexdigest()
+        self.assertEqual(deliv_sha, m1_data["deliverable_sha256"])
+        self.assertEqual(deliv_sha, "4866705b9b624387caace5315b1f5c031dec8ec77ce111a79b288b34f3acdf04")
+        # Assert candidate commit binding to server QA evidence and QA review report
+        m2_rep_p = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_02/qa_review_report.md"
+        self.assertTrue(m2_rep_p.is_file())
+        m2_txt = m2_rep_p.read_text(encoding="utf-8")
+        self.assertIn("reviewed_artifact_version: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06", m2_txt)
+        self.assertIn("decision: APPROVED", m2_txt)
+        sqa_p = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_02/server_qa.json"
+        self.assertTrue(sqa_p.is_file())
+        self.assertEqual(hashlib.sha256(sqa_p.read_bytes()).hexdigest(), "2afbfc3893fa4854de146dfaf67ae3a2d64b14b714ed5c2cb25679909bde17ef")
+        # Assert M2 capability flags
+        m2_data = json.loads(m2_sum.read_text(encoding="utf-8"))
+        for k in ("flock_mutual_exclusion_verified", "p1_05_intake_idempotence_verified",
+                  "p1_08_dual_parallel_nonblocking_verified", "p1_09_five_source_reconciliation_verified",
+                  "p1_10_single_flock_and_lease_guard_verified", "p1_13_cas_concurrency_guard_verified"):
+            self.assertTrue(m2_data.get(k))
 
 
 class TestAcceptanceSuiteInvariants(unittest.TestCase):
