@@ -4,14 +4,17 @@
 import ast
 import configparser
 import json
+import multiprocessing
 import os
 from pathlib import Path
 import shutil
+import signal
 import tempfile
 import time
 import unittest
 from typing import Dict, List, Optional, Tuple
 
+from tools.coord_runner.errors import ResourceConflictError
 from tools.coord_runner.models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
 from tools.coord_runner.runner import CoordRunner
 from tools.coord_runner.service_ctl import (
@@ -25,6 +28,38 @@ from tools.coord_runner.service_ctl import (
     verify_crontab_isolation,
 )
 from tools.coord_runner.state_store import StateStore
+
+
+def _run_daemon_worker(ws_dir: str, ready_file: str) -> None:
+    """Helper worker executing daemon service in a separate OS process for lifecycle testing."""
+    ws = Path(ws_dir)
+    cfg = CoordRunnerConfig(
+        workspace_root=ws,
+        intake_root=ws / "intake",
+        queue_file=ws / "queue.yaml",
+        state_db_file=ws / "state.sqlite3",
+        lock_file=ws / "coord_runner.lock",
+        checkpoint_file=ws / "checkpoint.json",
+        jobs_dir=ws / "jobs",
+    )
+    runner = CoordRunner(cfg)
+    rec = TaskExecutionRecord(
+        "TASK-INFLIGHT",
+        state=TaskState.IN_PROGRESS.value,
+        task_revision=2,
+        runtime_context={"async_job_id": "job_daemon_async"},
+    )
+    runner.in_flight_tasks["TASK-INFLIGHT"] = rec
+    runner.completed_tasks.add("TASK-PREV")
+    runner.save_checkpoint()
+    runner.state_store.save_coord_state(CoordState(
+        schema_version=1,
+        in_flight_tasks={"TASK-INFLIGHT": rec},
+        completed_tasks=["TASK-PREV"],
+    ))
+    runner.state_store.acquire_process_lock()
+    Path(ready_file).write_text("READY", encoding="utf-8")
+    runner.run_daemon(poll_interval=0.05)
 
 
 class MockCommandRunner:
@@ -138,6 +173,20 @@ class CrontabIsolationGateTest(unittest.TestCase):
         self.assertEqual(len(res["forbidden_entries"]), 1)
         self.assertIn("coord_runner", res["forbidden_entries"][0])
 
+    def test_crontab_command_failure_reports_not_clean(self):
+        def failing_runner(cmd: List[str]) -> Tuple[int, str]:
+            return 1, "crontab: must be privileged to use -u / permission denied"
+        res = verify_crontab_isolation(runner=failing_runner)
+        self.assertFalse(res["crontab_clean"])
+        self.assertIn("failed", res.get("error", ""))
+
+    def test_absent_crontab_reports_clean(self):
+        def no_crontab_runner(cmd: List[str]) -> Tuple[int, str]:
+            return 1, "no crontab for sushaohua"
+        res = verify_crontab_isolation(runner=no_crontab_runner)
+        self.assertTrue(res["crontab_clean"])
+        self.assertEqual(res["active_entries_count"], 0)
+
 
 class P1_14_ZeroIdleModelConsumptionAndRecoveryTest(unittest.TestCase):
     """P1-14 verification: Zero LLM/model calls on idle cycles and seamless stop/start recovery."""
@@ -208,29 +257,40 @@ class P1_14_ZeroIdleModelConsumptionAndRecoveryTest(unittest.TestCase):
         finally:
             runner.state_store.release_process_lock()
 
-    def test_service_stop_and_restart_recovery_preserves_state_and_locks(self):
-        runner_1 = self._build_runner_with_spies()
-        runner_1.state_store.acquire_process_lock()
-        rec = TaskExecutionRecord("TASK-INFLIGHT", state=TaskState.IN_PROGRESS.value, task_revision=2)
-        runner_1.in_flight_tasks["TASK-INFLIGHT"] = rec
-        runner_1.completed_tasks.add("TASK-PREV")
-        runner_1.save_checkpoint()
-        runner_1.state_store.save_coord_state(CoordState(
-            schema_version=1,
-            in_flight_tasks={"TASK-INFLIGHT": rec},
-            completed_tasks=["TASK-PREV"],
-        ))
+    def test_service_process_sigterm_stop_and_restart_recovery(self):
+        ready_file = self.ws / "daemon_ready.txt"
+        proc = multiprocessing.Process(
+            target=_run_daemon_worker,
+            args=(str(self.ws), str(ready_file)),
+        )
+        proc.start()
+        try:
+            for _ in range(50):
+                if ready_file.is_file():
+                    break
+                time.sleep(0.05)
+            self.assertTrue(ready_file.is_file(), "Daemon failed to signal readiness")
 
-        runner_1.state_store.release_process_lock()
+            runner_probe = CoordRunner(self.cfg)
+            with self.assertRaises(ResourceConflictError):
+                runner_probe.state_store.acquire_process_lock()
 
-        runner_2 = self._build_runner_with_spies()
-        self.assertTrue(runner_2.state_store.acquire_process_lock())
-        runner_2.restore_from_checkpoint()
-        self.assertIn("TASK-INFLIGHT", runner_2.in_flight_tasks)
-        self.assertEqual(runner_2.in_flight_tasks["TASK-INFLIGHT"].task_revision, 2)
-        self.assertEqual(runner_2.in_flight_tasks["TASK-INFLIGHT"].state, TaskState.IN_PROGRESS.value)
-        self.assertIn("TASK-PREV", runner_2.completed_tasks)
-        runner_2.state_store.release_process_lock()
+            os.kill(proc.pid, signal.SIGTERM)
+            proc.join(timeout=5.0)
+            self.assertEqual(proc.exitcode, 0, "Daemon should exit with 0 on SIGTERM")
+
+            runner_restarted = CoordRunner(self.cfg)
+            self.assertTrue(runner_restarted.state_store.acquire_process_lock())
+            runner_restarted.restore_from_checkpoint()
+            self.assertIn("TASK-INFLIGHT", runner_restarted.in_flight_tasks)
+            self.assertEqual(runner_restarted.in_flight_tasks["TASK-INFLIGHT"].task_revision, 2)
+            self.assertEqual(runner_restarted.in_flight_tasks["TASK-INFLIGHT"].state, TaskState.IN_PROGRESS.value)
+            self.assertIn("TASK-PREV", runner_restarted.completed_tasks)
+            runner_restarted.state_store.release_process_lock()
+        finally:
+            if proc.is_alive():
+                os.kill(proc.pid, signal.SIGKILL)
+                proc.join(timeout=1.0)
 
 
 class ASTScaleAndParameterGateTest(unittest.TestCase):

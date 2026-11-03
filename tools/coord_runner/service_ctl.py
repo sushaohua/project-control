@@ -131,7 +131,14 @@ def verify_crontab_isolation(runner: Optional[CmdRunner] = None) -> Dict[str, ob
     run_fn = runner or default_exec_cmd
     rc, out = run_fn(["crontab", "-l"])
     if rc != 0:
-        return {"crontab_clean": True, "detail": "No crontab installed or inaccessible"}
+        if "no crontab for" in out.lower():
+            return {"crontab_clean": True, "active_entries_count": 0, "forbidden_entries": [], "detail": out}
+        return {
+            "crontab_clean": False,
+            "error": f"Crontab command failed with exit code {rc}: {out}",
+            "active_entries_count": 0,
+            "forbidden_entries": [],
+        }
     lines = [line.strip() for line in out.splitlines() if line.strip() and not line.strip().startswith("#")]
     forbidden = [line for line in lines if "coord_runner" in line or "ai-soc-coord" in line]
     return {
