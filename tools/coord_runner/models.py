@@ -189,6 +189,18 @@ class CoordRunnerConfig:
     state_db_file: Optional[Path] = None
     lock_file: Optional[Path] = None
 
+    def __post_init__(self) -> None:
+        ws = Path(self.workspace_root).resolve()
+        self.workspace_root = ws
+        if not self.checkpoint_file.is_absolute():
+            shared_names = {"ai_soc_project", "project-control", "workspace"}
+            if not os.access(ws, os.W_OK) or ws.name in shared_names:
+                self.checkpoint_file = Path("/home/sushaohua/.local/share/ai_soc_coord_runner/coord_state.json")
+            else:
+                self.checkpoint_file = (ws / self.checkpoint_file).resolve()
+        if not self.queue_file.is_absolute():
+            self.queue_file = (ws / self.queue_file).resolve()
+
     @classmethod
     def from_dict(cls, data: dict, base_dir: Optional[Path] = None) -> "CoordRunnerConfig":
         """Create config from dictionary and optional base directory."""

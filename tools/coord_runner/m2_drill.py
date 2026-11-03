@@ -58,6 +58,7 @@ def _setup_drill_runner(drill_dir: Path, ws: Path) -> object:
         workspace_root=ws, queue_file=qfile,
         intake_root=intake_dir, state_db_file=db_file,
         lock_file=drill_dir / "coord_runner.lock", jobs_dir=jobs_dir,
+        checkpoint_file=drill_dir / "coord_state.json",
     )
     return CoordRunner(cfg)
 

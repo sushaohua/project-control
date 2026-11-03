@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "cursor": "DRILL-FAST",
+  "in_flight_tasks": {},
+  "completed_tasks": [
+    "DRILL-FAST",
+    "DRILL-LONG"
+  ],
+  "leases": [],
+  "last_updated": "2026-11-03T16:45:52.458512+08:00"
+}

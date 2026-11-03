@@ -26,7 +26,7 @@
 | `project-control/tools/coord_runner/job_launcher.py` | `9463a4daa5f25dbfdef4316294b77638170e3b3e961ab95919d9bd3bbb07e429` | 非阻塞异步作业拉起（`start_new_session=True`）；落盘包含 `/proc/<pid>/stat` 字段 22 `starttime` 的 `pid.json`（防 PID 重用误判）；原子落盘 `exit_status.json` |
 | `project-control/tools/coord_runner/reconciler.py` | `7ca66f749eee9dee332203f300be7e878e352cc27dec80e2e03f1f45904e2713` | 五源防重对账机制（对齐 SQLite、/proc、本地事件流、宿主 `state_5.sqlite` 及 `exit_status.json`）；实现孤儿进程收割、超时标记、断点恢复与租约活跃保护；实现 P1-05 Intake 重扫权威摘要防重 |
 | `project-control/tools/coord_runner/runner.py` | `ae24006f2d3bd97436a5210f8fa7a489a3a9a7b4994762b2bdde64e39b93d485` | 接入 `StateStore` 作为单一权威恢复源；集成 `JobLauncher` 与 `FiveSourceReconciler`；将外置异步作业调度与完成态收集闭环接入生产 `step()` 流程；支持非阻塞双任务并发推进 |
-| `project-control/tools/test_coord_recovery.py` | `f0cd7888691b69f6205a34185a787728299593a255cc6332ded32dbff068dc5b` | 覆盖 WAL 单一恢复源、异步双卡并发推进（长耗时异步作业不阻塞无冲突就绪任务推进）、重扫幂等、新版冲突保护、超时/孤儿五源对账、flock 单实例锁、租约活跃保护及 AST 门禁（18 项测试） |
+| `project-control/tools/test_coord_recovery.py` | `aa0de0a8fa43e49be44245e0e76f277c518e40a482c464203b0dd9f3465f658e` | 覆盖 WAL 单一恢复源、异步双卡并发推进（长耗时异步作业不阻塞无冲突就绪任务推进）、重扫幂等、新版冲突保护、超时/孤儿五源对账、flock 单实例锁、租约活跃保护及 AST 门禁（18 项测试） |
 
 ### 2. 配套模块与物证演练（白名单内）
 - `project-control/tools/coord_runner/work_intake.py`: `WorkIntakeManager` 接入 `FiveSourceReconciler`，实现需求摘要向权威 SQLite 存储登记与重扫防重

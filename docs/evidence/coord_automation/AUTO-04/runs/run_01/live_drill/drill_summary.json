@@ -1,7 +1,7 @@
 {
   "drill_id": "AUTO-04-M2-DRILL-02",
   "state_db_file": "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/state.sqlite3",
-  "state_db_sha256": "fbdc0fbfc9517fd72cb566e1c582bbd40be673f2b426ab449b69bc7aa0026c2c",
+  "state_db_sha256": "8ca84a40e3a892394fa4b945ed8aad0518f95b8c422722cf4cfcb4a56e20b4fa",
   "lock_file": "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/coord_runner.lock",
   "flock_mutual_exclusion_verified": true,
   "coordinator_dual_task_drill": {

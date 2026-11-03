@@ -310,6 +310,7 @@ class M2AsyncOrchestrationAndIdempotenceTest(unittest.TestCase):
             workspace_root=self.ws,
             intake_root=self.intake,
             queue_file=self.qfile,
+            checkpoint_file=self.ws / "coord_state.json",
             state_db_file=self.ws / "state.sqlite3",
             lock_file=self.ws / "coord_runner.lock",
             jobs_dir=self.ws / "jobs",
