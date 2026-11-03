@@ -73,19 +73,6 @@ review_assignments:
       artifact_version: ac820925bf14f5d2b4864dd1f01b9784939a453e
       evidence: docs/evidence/coord_automation/AUTO-05/runs/run_03/arch_review_report.md
       report_sha256: 0713f92ce4932e53a3c2b547e680299e91eeacdc6b4948484291345cc3092f04
-    - role: ARCH
-      platform: codex
-      model: gpt-6-luna
-      planned_session_alias: codex-arch-auto-05-review-run04
-      session: null
-      session_evidence:
-        path: null
-        sha256: null
-      decision: null
-      reviewed_task_revision: null
-      artifact_version: null
-      evidence: null
-      report_sha256: null
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010
@@ -120,7 +107,7 @@ source_baseline:
   mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
   test_harness: ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414
 base_commit: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
-candidate_commit: ac820925bf14f5d2b4864dd1f01b9784939a453e
+candidate_commit: null
 dispatch_binding:
   source_commit: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
