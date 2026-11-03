@@ -103,6 +103,8 @@ class CoordRunner:
             state_store=self.state_store,
             codex_home=Path.home() / ".codex",
         )
+        self.intake_mgr.reconciler = self.reconciler
+        self.async_role_dispatch = False
         self.in_flight_tasks: Dict[str, TaskExecutionRecord] = {}
         self.completed_tasks: Set[str] = set()
         self.cursor: Optional[str] = None
@@ -186,6 +188,9 @@ class CoordRunner:
 
     def _execute_agent_phase(self, record: TaskExecutionRecord, card: dict) -> None:
         if record.runtime_context.get("async_job_id"):
+            return
+        if self.async_role_dispatch or self.agent_executor == self.default_agent_executor:
+            self.dispatch_async_role_task(record.task_id, card)
             return
         if self.agent_executor is None:
             raise CoordRunnerError(f"Missing agent_executor for {record.task_id}: fail-closed enforced")
@@ -539,10 +544,18 @@ class CoordRunner:
     def scan_work_intake(self, persist_ledger: bool = True) -> dict:
         """Scan `docs/work_intake/` submissions/categories and return structured M1 intake summary."""
         res = self.intake_mgr.scan_and_sync(persist_ledger=persist_ledger, active_cards=self.load_cards())
+        idempotent_count = 0
+        for rec_id, rec in res.records.items():
+            dem_id = (rec.get("demand_ref") or {}).get("demand_id") or rec_id
+            rev = int(rec.get("revision", 1))
+            sha = rec.get("_sha256") or rec.get("source_refs", {}).get("submission_sha256", "")
+            if sha and self.reconciler.check_intake_idempotence(dem_id, rev, sha):
+                idempotent_count += 1
         return {
             "submissions_count": len(res.submissions),
             "generated_files": [str(p) for p in res.generated_paths],
             "valid_records": sorted(res.records.keys()),
+            "idempotent_records_count": idempotent_count,
             "errors": [e.__dict__ for e in res.errors],
             "notices": [n.__dict__ for n in res.notices],
         }
@@ -582,6 +595,7 @@ class CoordRunner:
         return execute_candidate_audit(CodexReviewAdapter(), qa_result, review)
 
     def wire_production_executors(self) -> None:
+        self.async_role_dispatch = True
         if self.agent_executor is None:
             self.agent_executor = self.default_agent_executor
         if self.qa_executor is None:
@@ -636,14 +650,27 @@ class CoordRunner:
             if not job_id:
                 continue
             job_rec = self.state_store.get_role_job(job_id)
-            if not job_rec or job_rec.get("status") != ReconcileStatus.COMPLETED.value:
+            if not job_rec:
+                continue
+            if job_rec.get("status") in {ReconcileStatus.FAILED.value, ReconcileStatus.RECONCILE_REQUIRED.value}:
+                record.runtime_context.pop("async_job_id", None)
+                self.state_machine.handle_remediation(
+                    record,
+                    f"Background job {job_id} failed with status {job_rec.get('status')}",
+                    {"job_id": job_id, "detail": job_rec.get("detail", "")},
+                )
+                continue
+            if job_rec.get("status") != ReconcileStatus.COMPLETED.value:
                 continue
             res = self.role_adapter.collect_role_result(job_id)
             record.candidate_commit = str(res.candidate_commit)
             record.session_id = str(res.thread_id)
             record.runtime_context["role_job_id"] = res.job_id
             record.runtime_context["dispatch_key"] = res.dispatch_key
+            record.runtime_context["actual_model"] = res.actual_model
             record.runtime_context.pop("async_job_id", None)
+            if res.candidate_commit:
+                self.state_machine.validate_commit_sha(res.candidate_commit)
             self.state_machine.transition(record, TaskState.CANDIDATE_PUSHED)
 
     def step(self) -> Dict[str, object]:
@@ -652,17 +679,13 @@ class CoordRunner:
         self.reconciler.reconcile_active_jobs(self.config.jobs_dir)
         self._check_async_job_completions()
         cards = self.load_cards()
-        in_flight_keys = list(self.in_flight_tasks.keys())
-        for task_id in in_flight_keys:
+        for task_id in list(self.in_flight_tasks.keys()):
             card = cards.get(task_id, {"id": task_id})
             self._process_task_safely(task_id, card)
         queue = self.scheduler.load_queue(self.config.queue_file)
         ctx = ScheduleContext(
-            queue=queue,
-            cards=cards,
-            completed_tasks=self.completed_tasks,
-            in_flight_tasks=set(self.in_flight_tasks.keys()),
-            lease_mgr=self.lease_mgr,
+            queue=queue, cards=cards, completed_tasks=self.completed_tasks,
+            in_flight_tasks=set(self.in_flight_tasks.keys()), lease_mgr=self.lease_mgr,
         )
         ready_tasks = self.scheduler.select_next_tasks(ctx)
         dispatched = []
@@ -671,6 +694,7 @@ class CoordRunner:
             try:
                 self.dispatch_task(task_id, card)
                 dispatched.append(task_id)
+                self._process_task_safely(task_id, card)
             except ResourceConflictError:
                 break
         self.save_checkpoint()

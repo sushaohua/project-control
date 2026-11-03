@@ -38,6 +38,7 @@ from coord_runner import (
     ResourceConflictError,
     RoleJobHandle,
     RoleTaskRequest,
+    RoleTaskResult,
     StateStore,
     TaskExecutionRecord,
     TaskState,
@@ -293,6 +294,104 @@ class DualTaskParallelConcurrencyTest(unittest.TestCase):
         self.runner.lease_mgr.release_task_leases("TASK-A")
         rec_c = self.runner.dispatch_task("TASK-C", card_c)
         self.assertEqual(rec_c.task_id, "TASK-C")
+
+
+class M2AsyncOrchestrationAndIdempotenceTest(unittest.TestCase):
+    """P1-05 & P1-08: Verify intake rescan idempotence and asynchronous non-blocking task execution."""
+
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.ws = Path(self.temp_dir.name)
+        self.intake = self.ws / "project-control/docs/work_intake"
+        self.intake.mkdir(parents=True, exist_ok=True)
+        self.qfile = self.ws / "queue.yaml"
+        self.qfile.write_text("order: []\n", encoding="utf-8")
+        self.cfg = CoordRunnerConfig(
+            workspace_root=self.ws,
+            intake_root=self.intake,
+            queue_file=self.qfile,
+            state_db_file=self.ws / "state.sqlite3",
+            lock_file=self.ws / "coord_runner.lock",
+            jobs_dir=self.ws / "jobs",
+        )
+        self.runner = CoordRunner(self.cfg)
+
+    def tearDown(self):
+        self.runner.state_store.close()
+        self.temp_dir.cleanup()
+
+    def test_intake_rescan_idempotence_guard_p1_05(self):
+        sub_dir = self.intake / "submissions"
+        sub_dir.mkdir(parents=True, exist_ok=True)
+        (sub_dir / "SUB-01.md").write_text(
+            "---\nsubmission_id: SUB-01\nrevision: 1\nsubmitter: sushaohua\n---\n"
+            "## 指令 1: 对账机制\n- explicit_demand_id: DEM-01\n- explicit_category_id: FEAT-01\n实现五源对账。\n",
+            encoding="utf-8",
+        )
+        res1 = self.runner.scan_work_intake(persist_ledger=True)
+        self.assertEqual(len(res1["generated_files"]), 1)
+        self.assertEqual(len(res1["valid_records"]), 1)
+        res2 = self.runner.scan_work_intake(persist_ledger=True)
+        self.assertEqual(len(res2["generated_files"]), 0)
+        self.assertEqual(res2["idempotent_records_count"], 1)
+        self.assertEqual(res1["valid_records"], res2["valid_records"])
+
+    def _setup_mock_role_jobs(self, jobs_dir):
+        def fake_submit(req, dkey, launcher=None):
+            j_dir = jobs_dir / f"job_{req.task_id}"
+            j_dir.mkdir(parents=True, exist_ok=True)
+            sleep_t = 0.8 if req.task_id == "TASK-LONG" else 0.05
+            cmd = [sys.executable, "-c", f"import time, sys; time.sleep({sleep_t}); sys.exit(0)"]
+            pid = self.runner.job_launcher.launch_async(j_dir, cmd, req.prompt)
+            return RoleJobHandle(job_id=j_dir.name, dispatch_key=dkey, role=req.role,
+                                 sandbox_mode="read-only", job_dir=j_dir)
+        return fake_submit
+
+    def _setup_mock_review_executors(self, commit):
+        self.runner.role_adapter.submit_role_task_async = self._setup_mock_role_jobs(self.runner.config.jobs_dir)
+        self.runner.role_adapter.collect_role_result = lambda jid: RoleTaskResult(
+            job_id=jid, dispatch_key="k", task_id="T", task_revision=1, role="INTEGRATOR",
+            thread_id="th1", actual_model="gpt-6-luna", tokens_used=10, summary="ok",
+            candidate_commit=commit, artifacts=[], events_path="", output_payload={},
+        )
+        self.runner.qa_executor = lambda tid, c: {
+            "passed": True, "candidate_commit": c,
+            "server_qa": {
+                "path": "server_qa.json", "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                "sandbox": {"kind": "container", "id": "c1"}, "task_revision": 1,
+            },
+        }
+        rep = self.ws / "qa_review_report.md"
+        rep.write_text("# QA Review Report\n", encoding="utf-8")
+        r_sha = hashlib.sha256(b"# QA Review Report\n").hexdigest()
+        self.runner.review_executor = lambda tid, c, role="QA": {
+            "session": f"rev_{tid}_{role if isinstance(role, str) else 'ARCH_REPORT'}",
+            "role": role if isinstance(role, str) else role.get("role", "ARCH"),
+            "decision": "APPROVED", "report_path": "qa_review_report.md", "report_sha256": r_sha,
+        }
+        self.runner.state_machine.validate_done_acceptance = lambda c, ws: None
+
+    def test_async_task_advances_while_long_job_running_p1_08(self):
+        commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        cards = {
+            "TASK-LONG": {"id": "TASK-LONG", "status": "Ready", "task_kind": "implementation", "depends_on": [], "review_assignments": {"reviewer_sessions": []}},
+            "TASK-FAST": {"id": "TASK-FAST", "status": "Ready", "task_kind": "implementation", "depends_on": [], "review_assignments": {"reviewer_sessions": []}},
+        }
+        self.qfile.write_text("order:\n  - TASK-LONG\n  - TASK-FAST\n", encoding="utf-8")
+        self.runner.load_cards = lambda: cards
+        self.runner._verify_card_approval = lambda tid, c: None
+        self._setup_mock_review_executors(commit)
+        self.runner.async_role_dispatch = True
+        s1 = self.runner.step()
+        self.assertEqual(sorted(s1["dispatched"]), ["TASK-FAST", "TASK-LONG"])
+        time.sleep(0.15)
+        s2 = self.runner.step()
+        self.assertIn("TASK-FAST", self.runner.completed_tasks)
+        self.assertIn("TASK-LONG", self.runner.in_flight_tasks)
+        self.assertEqual(self.runner.in_flight_tasks["TASK-LONG"].state, TaskState.IN_PROGRESS.value)
+        time.sleep(0.8)
+        s3 = self.runner.step()
+        self.assertIn("TASK-LONG", self.runner.completed_tasks)
 
 
 class ASTScaleAndParameterGateTest(unittest.TestCase):

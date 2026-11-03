@@ -1,0 +1,51 @@
+schema_version: 1
+id: FEAT-20261103-001
+revision: 1
+kind: feature
+enabled: true
+title: '- explicit_demand_id: DEM-DRILL-001'
+objective: '- explicit_demand_id: DEM-DRILL-001
+
+  - explicit_category_id: FEAT-DRILL-001
+
+  演练双任务并发。'
+source_refs:
+  submission_id: SUB-DRILL-01
+  submission_revision: 1
+  instruction_anchor: instruction_1
+  submission_path: project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/intake/submissions/SUB-DRILL-01.md
+  submission_sha256: fdf72fb22262742ea4770329f51014abc88ec2cb5029490bdf4fbcf9e08d446d
+  instruction_sha256: aef9595a6d7f0c1aed92f95716fd3901d74185a81db60821cbb5d872ede94cca
+  verbatim_instruction: '- explicit_demand_id: DEM-DRILL-001
+
+    - explicit_category_id: FEAT-DRILL-001
+
+    演练双任务并发。'
+  common_constraints: []
+  common_constraints_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+demand_ref:
+  demand_id: DEM-20261103-001
+  confirmation_id: null
+  confirmation_revision: null
+  confirmation_path: null
+  confirmation_sha256: null
+reported_by:
+  actor_type: HUMAN
+  actor_id: human_markdown_author
+  source_channel: markdown_submission
+authorization_refs:
+- path: project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/intake/submissions/SUB-DRILL-01.md
+  revision: 1
+  sha256: fdf72fb22262742ea4770329f51014abc88ec2cb5029490bdf4fbcf9e08d446d
+approval_refs: []
+requested_action: triage
+priority_hint: P2
+related_ids:
+  engineering_tasks: []
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: null
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: false

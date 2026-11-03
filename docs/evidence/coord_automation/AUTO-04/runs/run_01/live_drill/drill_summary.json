@@ -1,28 +1,35 @@
 {
-  "drill_id": "AUTO-04-M2-DRILL-01",
+  "drill_id": "AUTO-04-M2-DRILL-02",
   "state_db_file": "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/state.sqlite3",
-  "state_db_sha256": "da222962026b7924d381cc29bdb7476b80aa1fd0078dc6e29d1908122ad74674",
+  "state_db_sha256": "fbdc0fbfc9517fd72cb566e1c582bbd40be673f2b426ab449b69bc7aa0026c2c",
   "lock_file": "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/coord_runner.lock",
   "flock_mutual_exclusion_verified": true,
-  "async_dual_tasks_launched": [
-    "task_a",
-    "task_b"
-  ],
-  "async_tasks_reconciled": {
-    "task_a": {
-      "status": "COMPLETED",
-      "returncode": 0,
-      "exit_status_sha256": "0e111493fff56e2df9c6a0c0e685ae2993941d1fc69e5b9f645d956310149d82"
-    },
-    "task_b": {
-      "status": "COMPLETED",
-      "returncode": 0,
-      "exit_status_sha256": "e3626761af631fc924339ba9eac0dc50bbcd3bf83f11603e5c3399b80a223cc4"
-    }
+  "coordinator_dual_task_drill": {
+    "step1_dispatched": [
+      "DRILL-FAST",
+      "DRILL-LONG"
+    ],
+    "step2_completed": [
+      "DRILL-FAST",
+      "DRILL-LONG"
+    ],
+    "fast_done_while_long_active": true,
+    "long_job_active_in_flight": true,
+    "step3_both_tasks_completed": true
+  },
+  "work_intake_idempotence_drill": {
+    "scan1_generated_files": 1,
+    "scan1_valid_records": [
+      "FEAT-20261103-001"
+    ],
+    "scan2_generated_files": 0,
+    "scan2_idempotent_records_count": 1,
+    "idempotence_verified": true
   },
   "lease_active_protection_count": 1,
   "cas_write_conflict_detected": true,
-  "p1_08_dual_parallel_verified": true,
+  "p1_05_intake_idempotence_verified": true,
+  "p1_08_dual_parallel_nonblocking_verified": true,
   "p1_09_five_source_reconciliation_verified": true,
   "p1_10_single_flock_and_lease_guard_verified": true,
   "p1_13_cas_concurrency_guard_verified": true

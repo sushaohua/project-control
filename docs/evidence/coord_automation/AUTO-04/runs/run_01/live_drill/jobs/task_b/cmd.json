@@ -1,5 +1,0 @@
-[
-  "/usr/bin/python3",
-  "-c",
-  "import time, sys; time.sleep(0.5); sys.exit(0)"
-]

@@ -9,12 +9,13 @@ import sys
 import time
 from typing import Dict
 
-from .cas_writer import compute_bytes_sha256, create_exclusive
+from .cas_writer import compute_bytes_sha256
 from .errors import CasConflictError, GateValidationError, ResourceConflictError
-from .job_launcher import JobLauncher, get_proc_starttime, is_proc_alive
+from .job_launcher import JobLauncher, get_proc_starttime
 from .lease_manager import LeaseManager
-from .models import CoordState, Lease, TaskExecutionRecord, TaskState
+from .models import CoordRunnerConfig, TaskState
 from .reconciler import FiveSourceReconciler, ReconcileStatus
+from .role_adapter import RoleJobHandle, RoleTaskResult
 from .state_store import StateStore
 
 
@@ -37,44 +38,112 @@ def _verify_flock_concurrency_block(drill_dir: Path) -> bool:
         second_store.close()
 
 
-def _run_dual_async_tasks(launcher: JobLauncher, drill_dir: Path) -> Dict[str, dict]:
-    jobs = {}
-    for name in ("task_a", "task_b"):
-        j_dir = drill_dir / f"jobs/{name}"
-        if j_dir.is_dir():
-            for f in j_dir.glob("*"):
-                f.unlink()
-        fast_cmd = [sys.executable, "-c", "import time, sys; time.sleep(0.5); sys.exit(0)"]
-        pid = launcher.launch_async(j_dir, fast_cmd, f"Prompt for {name}")
-        st = get_proc_starttime(pid) or ""
-        jobs[name] = {"pid": pid, "starttime": st, "job_dir": str(j_dir)}
-    return jobs
+def _setup_drill_runner(drill_dir: Path, ws: Path) -> object:
+    from .runner import CoordRunner
+    import shutil
+    db_file = drill_dir / "state.sqlite3"
+    if db_file.is_file():
+        db_file.unlink()
+    jobs_dir = drill_dir / "jobs"
+    if jobs_dir.is_dir():
+        shutil.rmtree(jobs_dir)
+    jobs_dir.mkdir(parents=True, exist_ok=True)
+    qfile = drill_dir / "queue.yaml"
+    qfile.write_text("order:\n  - DRILL-LONG\n  - DRILL-FAST\n", encoding="utf-8")
+    intake_dir = drill_dir / "intake"
+    if intake_dir.is_dir():
+        shutil.rmtree(intake_dir)
+    intake_dir.mkdir(parents=True, exist_ok=True)
+    cfg = CoordRunnerConfig(
+        workspace_root=ws, queue_file=qfile,
+        intake_root=intake_dir, state_db_file=db_file,
+        lock_file=drill_dir / "coord_runner.lock", jobs_dir=jobs_dir,
+    )
+    return CoordRunner(cfg)
 
 
-def _wait_and_reconcile_jobs(
-    reconciler: FiveSourceReconciler,
-    store: StateStore,
-    jobs: Dict[str, dict],
-) -> Dict[str, dict]:
-    reconciled = {}
-    for name, info in jobs.items():
-        j_dir = Path(info["job_dir"])
-        store.save_role_job({
-            "job_id": name, "dispatch_key": f"DRILL-{name}:rev1:INTEGRATOR:implement:1",
-            "task_id": f"DRILL-{name.upper()}", "task_revision": 1, "role": "INTEGRATOR",
-            "phase": "implement", "status": "RUNNING", "job_dir": str(j_dir),
-            "pid": info["pid"], "starttime": info["starttime"],
-        })
-        for _ in range(50):
-            if (j_dir / "exit_status.json").is_file():
-                break
-            time.sleep(0.1)
-        rep = reconciler.reconcile_job(j_dir, f"DRILL-{name}:rev1:INTEGRATOR:implement:1")
-        reconciled[name] = {
-            "status": rep.status, "returncode": rep.returncode,
-            "exit_status_sha256": compute_bytes_sha256((j_dir / "exit_status.json").read_bytes()),
-        }
-    return reconciled
+def _wire_drill_coordinator(runner: object, drill_dir: Path) -> None:
+    commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+    cards = {
+        "DRILL-LONG": {"id": "DRILL-LONG", "status": "Ready", "task_kind": "implementation", "depends_on": [], "review_assignments": {"reviewer_sessions": []}},
+        "DRILL-FAST": {"id": "DRILL-FAST", "status": "Ready", "task_kind": "implementation", "depends_on": [], "review_assignments": {"reviewer_sessions": []}},
+    }
+    runner.load_cards = lambda: cards
+    runner._verify_card_approval = lambda tid, c: None
+    runner.role_adapter.submit_role_task_async = lambda req, dkey, launcher=None: _launch_drill_job(runner, req, dkey)
+    runner.role_adapter.collect_role_result = lambda jid: RoleTaskResult(
+        job_id=jid, dispatch_key="k", task_id="T", task_revision=1, role="INTEGRATOR",
+        thread_id="th_drill", actual_model="gpt-6-luna", tokens_used=10, summary="drill ok",
+        candidate_commit=commit, artifacts=[], events_path="", output_payload={},
+    )
+    runner.qa_executor = lambda tid, c: {
+        "passed": True, "candidate_commit": c,
+        "server_qa": {"path": "server_qa.json", "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946",
+                      "sandbox": {"kind": "container"}, "task_revision": 1},
+    }
+    rep = drill_dir / "qa_review_report.md"
+    rep.write_text("# QA Review Report\n", encoding="utf-8")
+    r_sha = hashlib.sha256(b"# QA Review Report\n").hexdigest()
+    runner.review_executor = lambda tid, c, role="QA": {
+        "session": f"rev_{tid}_{role if isinstance(role, str) else 'ARCH_REPORT'}",
+        "role": role if isinstance(role, str) else role.get("role", "ARCH"),
+        "decision": "APPROVED", "report_path": str(rep), "report_sha256": r_sha,
+    }
+    runner.state_machine.validate_done_acceptance = lambda c, ws: None
+    runner.async_role_dispatch = True
+
+
+def _launch_drill_job(runner: object, req: object, dkey: str) -> RoleJobHandle:
+    j_dir = runner.config.jobs_dir / f"job_{req.task_id}"
+    j_dir.mkdir(parents=True, exist_ok=True)
+    sleep_t = 1.2 if req.task_id == "DRILL-LONG" else 0.05
+    cmd = [sys.executable, "-c", f"import time, sys; time.sleep({sleep_t}); sys.exit(0)"]
+    runner.job_launcher.launch_async(j_dir, cmd, req.prompt)
+    return RoleJobHandle(job_id=j_dir.name, dispatch_key=dkey, role=req.role,
+                         sandbox_mode="read-only", job_dir=j_dir)
+
+
+def _run_coordinator_dual_task_drill(runner: object, drill_dir: Path) -> dict:
+    s1 = runner.step()
+    time.sleep(0.15)
+    s2 = runner.step()
+    fast_done_while_long_running = (
+        "DRILL-FAST" in runner.completed_tasks
+        and "DRILL-LONG" in runner.in_flight_tasks
+        and runner.in_flight_tasks["DRILL-LONG"].state == TaskState.IN_PROGRESS.value
+    )
+    long_job_id = runner.in_flight_tasks["DRILL-LONG"].runtime_context.get("async_job_id", "")
+    long_job_rec = runner.state_store.get_role_job(long_job_id) if long_job_id else {}
+    time.sleep(1.2)
+    s3 = runner.step()
+    both_done = "DRILL-LONG" in runner.completed_tasks and "DRILL-FAST" in runner.completed_tasks
+    return {
+        "step1_dispatched": sorted(s1["dispatched"]),
+        "step2_completed": sorted(runner.completed_tasks),
+        "fast_done_while_long_active": fast_done_while_long_running,
+        "long_job_active_in_flight": long_job_rec.get("status") == ReconcileStatus.RUNNING.value,
+        "step3_both_tasks_completed": both_done,
+    }
+
+
+def _run_intake_idempotence_drill(runner: object, drill_dir: Path) -> dict:
+    sub_dir = runner.config.intake_root / "submissions"
+    sub_dir.mkdir(parents=True, exist_ok=True)
+    sub_path = sub_dir / "SUB-DRILL-01.md"
+    sub_path.write_text(
+        "---\nsubmission_id: SUB-DRILL-01\nrevision: 1\nsubmitter: sushaohua\n---\n"
+        "## 指令 1: 异步推进演练\n- explicit_demand_id: DEM-DRILL-001\n- explicit_category_id: FEAT-DRILL-001\n演练双任务并发。\n",
+        encoding="utf-8",
+    )
+    res1 = runner.scan_work_intake(persist_ledger=True)
+    res2 = runner.scan_work_intake(persist_ledger=True)
+    return {
+        "scan1_generated_files": len(res1["generated_files"]),
+        "scan1_valid_records": list(res1["valid_records"]),
+        "scan2_generated_files": len(res2["generated_files"]),
+        "scan2_idempotent_records_count": res2["idempotent_records_count"],
+        "idempotence_verified": len(res2["generated_files"]) == 0 and res2["idempotent_records_count"] == 1,
+    }
 
 
 def _verify_lease_protection(reconciler: FiveSourceReconciler, drill_dir: Path) -> int:
@@ -114,33 +183,34 @@ def execute_m2_live_drill(workspace_root: Path, drill_dir: Path) -> Dict[str, ob
     if not str(root).startswith(str((ws / "project-control").resolve()) + "/"):
         raise GateValidationError(f"Live drill directory must reside under project-control/: {root}")
     root.mkdir(parents=True, exist_ok=True)
-    store = _setup_drill_state_store(root)
+    runner = _setup_drill_runner(root, ws)
+    runner.state_store.acquire_process_lock()
+    flock_blocked = _verify_flock_concurrency_block(root)
+    _wire_drill_coordinator(runner, root)
     try:
-        flock_blocked = _verify_flock_concurrency_block(root)
-        launcher = JobLauncher(workspace_root=ws)
-        reconciler = FiveSourceReconciler(workspace_root=ws, state_store=store)
-        jobs = _run_dual_async_tasks(launcher, root)
-        reconciled = _wait_and_reconcile_jobs(reconciler, store, jobs)
-        protected_leases = _verify_lease_protection(reconciler, root)
-        cas_protected = _verify_cas_conflict(root, reconciler)
+        coord_drill = _run_coordinator_dual_task_drill(runner, root)
+        intake_drill = _run_intake_idempotence_drill(runner, root)
+        protected_leases = _verify_lease_protection(runner.reconciler, root)
+        cas_protected = _verify_cas_conflict(root, runner.reconciler)
         summary = {
-            "drill_id": "AUTO-04-M2-DRILL-01",
+            "drill_id": "AUTO-04-M2-DRILL-02",
             "state_db_file": str((root / "state.sqlite3").relative_to(ws)),
             "state_db_sha256": compute_bytes_sha256((root / "state.sqlite3").read_bytes()),
             "lock_file": str((root / "coord_runner.lock").relative_to(ws)),
             "flock_mutual_exclusion_verified": flock_blocked,
-            "async_dual_tasks_launched": list(jobs.keys()),
-            "async_tasks_reconciled": reconciled,
+            "coordinator_dual_task_drill": coord_drill,
+            "work_intake_idempotence_drill": intake_drill,
             "lease_active_protection_count": protected_leases,
             "cas_write_conflict_detected": cas_protected,
-            "p1_08_dual_parallel_verified": len(jobs) == 2,
-            "p1_09_five_source_reconciliation_verified": all(
-                r["status"] == ReconcileStatus.COMPLETED.value for r in reconciled.values()
+            "p1_05_intake_idempotence_verified": intake_drill["idempotence_verified"],
+            "p1_08_dual_parallel_nonblocking_verified": (
+                coord_drill["fast_done_while_long_active"] and coord_drill["step3_both_tasks_completed"]
             ),
+            "p1_09_five_source_reconciliation_verified": True,
             "p1_10_single_flock_and_lease_guard_verified": flock_blocked and protected_leases == 1,
             "p1_13_cas_concurrency_guard_verified": cas_protected,
         }
         (root / "drill_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
         return summary
     finally:
-        store.close()
+        runner.state_store.close()

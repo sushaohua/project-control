@@ -1,0 +1,5 @@
+Execute approved task DRILL-FAST revision 1 as role INTEGRATOR.
+Title: DRILL-FAST
+Allowed paths: []
+Deliverables: []
+Commit and push exact candidate to origin and return structured JSON output.

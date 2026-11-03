@@ -24,16 +24,18 @@
 | --- | --- | --- |
 | `project-control/tools/coord_runner/state_store.py` | `d8858738f06a94c77c131ec3c497e5b600954785ee1689866e4485cc962fc637` | 外置 WAL SQLite 权威恢复源；支持配置覆盖隔离单测；实现 `fcntl.flock(LOCK_EX \| LOCK_NB)` 进程互斥锁与 `active_coord_thread_id` 状态持久化 |
 | `project-control/tools/coord_runner/job_launcher.py` | `9463a4daa5f25dbfdef4316294b77638170e3b3e961ab95919d9bd3bbb07e429` | 非阻塞异步作业拉起（`start_new_session=True`）；落盘包含 `/proc/<pid>/stat` 字段 22 `starttime` 的 `pid.json`（防 PID 重用误判）；原子落盘 `exit_status.json` |
-| `project-control/tools/coord_runner/reconciler.py` | `90289fed609ea8b5bc6b45c9a77bc2b7f3e2063976771feb7aa3afa7775d8602` | 五源防重对账机制（对齐 SQLite、/proc、本地事件流、宿主 `state_5.sqlite` 及 `exit_status.json`）；实现孤儿进程收割、超时标记、断点恢复与租约活跃保护 |
-| `project-control/tools/coord_runner/runner.py` | `7081e498370601acd05817c5570cdb7a5f13d030415378d7ac5a1f063f150e61` | 接入 `StateStore` 作为单一权威恢复源；集成 `JobLauncher` 与 `FiveSourceReconciler`；支持外置异步非阻塞调度与断电续接推进 |
-| `project-control/tools/test_coord_recovery.py` | `641d49979e8917c10e2da7ff403916f2e2979e01a70d2e2546ed25898848ab4f` | 覆盖 WAL 单一恢复源、异步双卡并发推进、重扫幂等、新版冲突保护、超时/孤儿五源对账、flock 单实例锁、租约活跃保护及 AST 门禁（16 项测试） |
+| `project-control/tools/coord_runner/reconciler.py` | `7ca66f749eee9dee332203f300be7e878e352cc27dec80e2e03f1f45904e2713` | 五源防重对账机制（对齐 SQLite、/proc、本地事件流、宿主 `state_5.sqlite` 及 `exit_status.json`）；实现孤儿进程收割、超时标记、断点恢复与租约活跃保护；实现 P1-05 Intake 重扫权威摘要防重 |
+| `project-control/tools/coord_runner/runner.py` | `ae24006f2d3bd97436a5210f8fa7a489a3a9a7b4994762b2bdde64e39b93d485` | 接入 `StateStore` 作为单一权威恢复源；集成 `JobLauncher` 与 `FiveSourceReconciler`；将外置异步作业调度与完成态收集闭环接入生产 `step()` 流程；支持非阻塞双任务并发推进 |
+| `project-control/tools/test_coord_recovery.py` | `f0cd7888691b69f6205a34185a787728299593a255cc6332ded32dbff068dc5b` | 覆盖 WAL 单一恢复源、异步双卡并发推进（长耗时异步作业不阻塞无冲突就绪任务推进）、重扫幂等、新版冲突保护、超时/孤儿五源对账、flock 单实例锁、租约活跃保护及 AST 门禁（18 项测试） |
 
 ### 2. 配套模块与物证演练（白名单内）
-- `project-control/tools/coord_runner/m2_drill.py` (`7f3fa5ed04fb334f421dc38b83eef65a9b5a3fd1d003e25c1db2ecbc171cf4f8`): 宿主机 M2 恢复与并发演练执行器
-- `project-control/tools/coord_runner/models.py` (`3cb73f482c966da352138de24f83396fda733d19a9a6c10f97dbdcd430871f42`): 补充 `state_db_file` 与 `lock_file` 解析及自动测试隔离
-- `project-control/tools/coord_runner/role_adapter.py` (`9461dfebb2ec64840f6c4ca3fec8fa6368d2c9117017437cec2f7794230193a2`): 补充 `submit_role_task_async` 异步外置调度接口
-- `project-control/tools/coord_runner/__init__.py` (`f0443a336bb2420fffb35b54e54eaf8fc00c71283053e86c254dafb405a7492e`): 导出 M2 新增模块与方法
-- `project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/drill_summary.json` (`f2d06885475152f21485d0a080f9595006f6c71070cff2018c092c6083d8563b`): 宿主机 M2 真实演练物证汇总
+- `project-control/tools/coord_runner/work_intake.py`: `WorkIntakeManager` 接入 `FiveSourceReconciler`，实现需求摘要向权威 SQLite 存储登记与重扫防重
+- `project-control/tools/coord_runner/m2_drill.py`: 宿主机 M2 恢复与真实 `CoordRunner` 双任务并发推进演练执行器
+- `project-control/tools/coord_runner/models.py`: 补充 `state_db_file` 与 `lock_file` 解析、Docker 沙箱只读挂载路径兼容与自动测试隔离
+- `project-control/tools/coord_runner/role_adapter.py`: 补充 `submit_role_task_async` 异步外置调度接口
+- `project-control/tools/coord_runner/__init__.py`: 导出 M2 新增模块与方法
+- `project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/drill_summary.json`: 宿主机 M2 真实演练物证汇总（`AUTO-04-M2-DRILL-02`）
+- `project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/rework_note_01.md`: 针对 QA 审计提出的 F-01 与 F-02 缺陷返工说明
 
 ---
 
@@ -41,9 +43,9 @@
 
 | 场景编号 | 设计要求摘要 | 实现落点 | 验证用例 / 实测证据 |
 | --- | --- | --- | --- |
-| `P1-05` | 同一记录 `(id, rev, content_sha256)` 重复扫描或重通知返回已有回执，零新增工程作业 | `reconciler.py:check_intake_idempotence`, `state_store.py:set_meta/get_meta` | `test_coord_recovery.py:test_rescan_idempotence_p1_05` |
+| `P1-05` | 同一记录 `(id, rev, content_sha256)` 重复扫描或重通知返回已有回执，零新增工程作业 | `reconciler.py:check_intake_idempotence/record_intake_digest`, `work_intake.py:_ingest_single_submission`, `runner.py:scan_work_intake` | `test_coord_recovery.py:test_intake_rescan_idempotence_guard_p1_05` + `live_drill` |
 | `P1-07` | 新 `revision` 遇到旧版在途任务不静默换输入或盲目重发，明确新旧绑定和影响交 COORD 裁决 | `reconciler.py:check_in_flight_revision`, `runner.py:dispatch_task` | `test_coord_recovery.py:test_in_flight_revision_conflict_p1_07` |
-| `P1-08` | 长耗时角色任务外置异步运行期间，另一条无冲突就绪任务真实推进（最多 2 卡并行） | `job_launcher.py:JobLauncher.launch_async` (`start_new_session=True`), `runner.py:step` (`max_parallel_implementation=2`) | `test_coord_recovery.py:test_max_parallel_implementation_allows_two_concurrent_tasks` + `live_drill` |
+| `P1-08` | 长耗时角色任务外置异步运行期间，另一条无冲突就绪任务真实推进（最多 2 卡并行） | `runner.py:_execute_agent_phase/step/_check_async_job_completions`, `job_launcher.py:launch_async` | `test_coord_recovery.py:test_async_task_advances_while_long_job_running_p1_08` + `live_drill` |
 | `P1-09` | 派单超时或崩溃后凭五源对账（SQLite, /proc, events, host DB, exit_status）续接；无法确认“从未启动”标 `RECONCILE_REQUIRED` 禁盲重发 | `reconciler.py:reconcile_job`, `_handle_orphan_job`, `_lookup_host_thread` | `test_coord_recovery.py:test_reconcile_orphan_killed_process_flags_reconcile_required_p1_09` + `test_reconcile_completed_job_from_exit_status` |
 | `P1-10` | `coord_runner.lock` 拦截多实例；租约在纸面上超时但底层 `/proc` 进程仍活跃时保护租约禁被抢占重派 | `state_store.py:acquire_process_lock`, `reconciler.py:protect_active_leases`, `runner.py:step` | `test_coord_recovery.py:test_single_instance_flock_mutual_exclusion` + `test_protect_active_leases_for_running_processes_p1_10` + `live_drill` |
 | `P1-13` | 写任务卡或状态前校验字节级 SHA256 CAS；遇人工或其他并发修改拒覆盖，保留操作意图 | `cas_writer.py:write_cas`, `reconciler.py:verify_cas_write` | `test_coord_recovery.py:test_cas_conflict_detection_p1_13` + `live_drill` |
@@ -53,22 +55,24 @@
 
 ## 宿主机真实 M2 演练物证（`live_drill`）
 
-通过命令 `python3 -m tools.coord_runner --drill-m2-dir docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill` 在宿主机执行 M2 真实演练：
-- **演练物证汇总**: `project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/drill_summary.json` (`SHA256: f2d06885475152f21485d0a080f9595006f6c71070cff2018c092c6083d8563b`)
+通过命令 `python3 project-control/tools/coord_runner/runner.py --drill-m2-dir project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill` 在宿主机执行 M2 真实演练：
+- **演练物证汇总**: `project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/drill_summary.json`
 - **单一权威恢复源 SQLite**:
-  - 文件：`docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/state.sqlite3` (`SHA256: da222962026b7924d381cc29bdb7476b80aa1fd0078dc6e29d1908122ad74674`)
+  - 文件：`docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/state.sqlite3`
   - 验证 WAL 模式及 `role_jobs`、`coord_meta`、`leases` 表事务读写完整性。
 - **flock 进程排他锁**:
   - 文件：`docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/coord_runner.lock`
-  - 验证首实例持有锁期间，第二实例调用 `acquire_process_lock()` 100% 触发 `ResourceConflictError`。
-- **异步双任务并发拉起与对账（P1-08 / P1-09）**:
-  - `task_a` 与 `task_b` 以独立 session (`start_new_session=True`) 并发拉起；
-  - 各种各自落盘 `/proc/<pid>/stat` 字段 22 `starttime` 绑定的 `pid.json`；
-  - 进程结束时原子落盘 `exit_status.json`（`task_a`: `0e111493...`, `task_b`: `e3626761...`），五源对账器确认双双为 `COMPLETED`。
+  - 验证首实例持有锁期间，第二实例调用 `acquire_process_lock()` 100% 触发 `ResourceConflictError` (`flock_mutual_exclusion_verified: true`)。
+- **Coordinator 双任务异步非阻塞推进（P1-08 / P1-09）**:
+  - `DRILL-LONG`（耗时 1.2s）与 `DRILL-FAST`（耗时 0.05s）在 `step()` 中并发拉起；
+  - 在 `DRILL-LONG` 外置持续运行期间，`DRILL-FAST` 成功在第二次 `step()` 中率先完成并推进至 `Done` (`fast_done_while_long_active: true`)；
+  - 后续 `DRILL-LONG` 进程结束并在第三次 `step()` 中推进至 `Done` (`step3_both_tasks_completed: true`)。
+- **Intake 重扫幂等防护（P1-05）**:
+  - 首扫生成 1 项需求 YAML 并向 SQLite 登记权威摘要；重扫同一输入未产生任何新文件且识别出 1 条幂等记录 (`idempotence_verified: true`)。
 - **活跃租约保护（P1-10）**:
-  - `DRILL-ACTIVE` 任务在纸面上租约已过期（`expires_at = time.time() - 10.0`），但对账器核验底层 `/proc/<pid>` 仍然存活且 starttime 一致，确定性自动续展租约，拦截抢占。
+  - `DRILL-ACTIVE` 任务在纸面上租约已过期（`expires_at = time.time() - 10.0`），但对账器核验底层 `/proc/<pid>` 仍然存活且 starttime 一致，确定性自动续展租约，拦截抢占 (`lease_active_protection_count: 1`)。
 - **CAS 并发修改冲突拦截（P1-13）**:
-  - `cas_test.md` 注入人工并发手改后，CAS 校验拦截覆盖并抛出 `CasConflictError`。
+  - `cas_test.md` 注入人工并发手改后，CAS 校验拦截覆盖并抛出 `CasConflictError` (`cas_write_conflict_detected: true`)。
 
 ---
 
@@ -79,7 +83,7 @@
    - 结果：`exit_code: 0`，`errors: []`，`dependency_cycles: []`，5 项核心工件哈希核验全部匹配。
 2. **`test_coord_recovery_m2`**:
    - 命令：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s project-control/tools -p 'test_coord_recovery.py' -v`
-   - 结果：`Ran 16 tests` — **OK (exit 0)**。
+   - 结果：`Ran 18 tests` — **OK (exit 0)**。
 3. **`test_work_intake_m1`**:
    - 命令：`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s project-control/tools -p 'test_work_intake.py' -v`
    - 结果：`Ran 15 tests` — **OK (exit 0)**。
@@ -92,3 +96,8 @@
 6. **`check_ast_coding_standard`**:
    - 命令：AST 函数规模（$\le 50$ 行）与参数个数（$\le 4$ 参）扫描全量自研模块（`coord_runner/*.py`、`test_coord_recovery.py`、`test_coord_runner.py`、`test_work_intake.py`）
    - 结果：`AST violations: []` — **exit 0**（100% 零违规通过）。
+
+---
+
+## QA 返工记录索引 (Rework History)
+- **Rework 01**: 详见 [rework_note_01.md](rework_note_01.md)，已彻底修复 QA 审计发现的 F-01（异步调度接入生产生命周期与非阻塞双任务推进）与 F-02（Intake 重扫权威摘要幂等防护闭环）。

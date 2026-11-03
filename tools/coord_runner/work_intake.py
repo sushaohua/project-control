@@ -314,11 +314,12 @@ def _check_category_record_refs(data: dict) -> None:
 class WorkIntakeManager:
     """Manages `docs/work_intake/` parsing, unique YAML generation, tamper ledger, and task linkage."""
 
-    def __init__(self, workspace_root: Path, intake_root: Optional[Path] = None, ledger_path: Optional[Path] = None):
+    def __init__(self, workspace_root: Path, intake_root: Optional[Path] = None, reconciler: Optional[object] = None):
         self.workspace_root = Path(workspace_root).resolve()
         default_intake = self.workspace_root / "project-control/docs/work_intake"
         self.intake_root = Path(intake_root).resolve() if intake_root else default_intake.resolve()
-        self.ledger_path = Path(ledger_path).resolve() if ledger_path else (self.intake_root / ".intake_digests.json")
+        self.ledger_path = self.intake_root / ".intake_digests.json"
+        self.reconciler = reconciler
 
     def _load_ledger(self) -> dict:
         if not self.ledger_path.is_file():
@@ -512,6 +513,11 @@ class WorkIntakeManager:
             if existing is not None or inst_key in ledger["ingested_instructions"]:
                 if existing is not None:
                     ledger["ingested_instructions"][inst_key] = existing["id"]
+                    if self.reconciler is not None:
+                        dem_id = (existing.get("demand_ref") or {}).get("demand_id") or existing["id"]
+                        rev = int(existing.get("revision", 1))
+                        content_sha = existing.get("_sha256") or sub.file_sha256
+                        self.reconciler.check_intake_idempotence(dem_id, rev, content_sha)
                 continue
             dem_id = inst.explicit_demand_id or self._allocate_unique_id("DEM", date_tag, used_ids)
             used_ids.add(dem_id)
@@ -527,6 +533,8 @@ class WorkIntakeManager:
             demand_to_cat[dem_id] = cat_id
             payload["_path"] = str(out_path)
             payload["_sha256"] = sha
+            if self.reconciler is not None:
+                self.reconciler.record_intake_digest(dem_id, 1, sha)
             result.generated_paths.append(out_path)
             result.records[cat_id] = payload
 

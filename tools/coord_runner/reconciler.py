@@ -219,6 +219,16 @@ class FiveSourceReconciler:
                 protected_count += 1
         return protected_count
 
+    def record_intake_digest(
+        self,
+        demand_id: str,
+        rev: int,
+        content_sha: str,
+    ) -> None:
+        """P1-05: Record authoritative digest in state_store for intake idempotence guard."""
+        meta_key = f"intake_digest:{demand_id}:rev{rev}"
+        self.state_store.set_meta(meta_key, content_sha)
+
     def check_intake_idempotence(
         self,
         demand_id: str,
@@ -228,7 +238,10 @@ class FiveSourceReconciler:
         """P1-05: Returns True if demand_id and revision with identical content_sha are already tracked."""
         meta_key = f"intake_digest:{demand_id}:rev{rev}"
         stored_sha = self.state_store.get_meta(meta_key)
-        return stored_sha is not None and stored_sha == content_sha
+        if stored_sha is None:
+            self.state_store.set_meta(meta_key, content_sha)
+            return False
+        return stored_sha == content_sha
 
     def check_in_flight_revision(self, task_id: str, new_revision: int) -> bool:
         """P1-07: Returns True if task is currently in-flight under a different revision."""
