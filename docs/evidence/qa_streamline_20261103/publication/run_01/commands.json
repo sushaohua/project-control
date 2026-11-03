@@ -1,0 +1,257 @@
+[
+  {
+    "label": "preflight_0",
+    "command": [
+      "git",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "diff",
+      "--name-only",
+      "-z"
+    ],
+    "exit_code": 0,
+    "log": "preflight_0.log"
+  },
+  {
+    "label": "untracked_control",
+    "command": [
+      "git",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "ls-files",
+      "--others",
+      "--exclude-standard",
+      "-z"
+    ],
+    "exit_code": 0,
+    "log": "untracked_control.log"
+  },
+  {
+    "label": "preflight_2",
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "diff",
+      "--name-only",
+      "-z"
+    ],
+    "exit_code": 0,
+    "log": "preflight_2.log"
+  },
+  {
+    "label": "check_staged_3",
+    "command": [
+      "git",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "diff",
+      "--cached",
+      "--name-only"
+    ],
+    "exit_code": 0,
+    "log": "check_staged_3.log"
+  },
+  {
+    "label": "check_staged_4",
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "diff",
+      "--cached",
+      "--name-only"
+    ],
+    "exit_code": 0,
+    "log": "check_staged_4.log"
+  },
+  {
+    "label": "control_add",
+    "command": [
+      "git",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "add",
+      "--",
+      ".agents/rules/04_公共看板与读写协议.md",
+      ".agents/rules/bootloader_role_boundaries.md",
+      ".agents/rules/codex_qa_review.md",
+      ".agents/rules/delivery_and_coord_gate.md",
+      ".agents/rules/e2e_issue_verification_flow.md",
+      ".agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+      ".agents/rules/templates/QA审查报告模板.md",
+      ".agents/rules/templates/任务卡模板.md",
+      ".agents/rules/templates/角色任务提示词.md",
+      "docs/guides/templates/qa_blackbox_issue_template.md",
+      "docs/guides/templates/task_run_record.md",
+      "docs/planning/coord_autorun_tasklist_20261029.md",
+      "docs/planning/independent_qa_vmware_execution_flow_20261103.md",
+      "docs/planning/qa_web_hmi_basecases_20261103.md",
+      "tools/check_task_graph.py",
+      "tools/coord_runner/README.md",
+      "tools/coord_runner/review_bundle.py",
+      "tools/coord_runner/runner.py",
+      "tools/coord_runner/state_machine.py",
+      "tools/delivery_checks.py",
+      "tools/test_delivery_checks.py",
+      "tools/test_qa_pipeline.py",
+      "docs/planning/qa_streamline_cutover_20261103.md",
+      "tools/coord_runner/review_policy.py",
+      "tools/test_review_policy.py",
+      "docs/evidence/qa_streamline_20261103/author/run_01/final_checks.json",
+      "docs/evidence/qa_streamline_20261103/author/run_01/self_check_results.json",
+      "docs/evidence/qa_streamline_20261103/author/run_01/source_manifest.json",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_check_task_graph.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_coord_recovery.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_coord_runner.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_coord_systemd_service.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_delivery_checks.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_phase1_intake_acceptance.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_qa_pipeline.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_qa_pipeline_final.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_review_policy.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/test_review_policy_final.log",
+      "docs/evidence/qa_streamline_20261103/author/run_01/whitespace_check.log",
+      "docs/evidence/qa_streamline_20261103/docs/run_01/AGENTS.md.candidate",
+      "docs/evidence/qa_streamline_20261103/docs/run_01/README.md",
+      "docs/evidence/qa_streamline_20261103/docs/run_01/root_rule_manifest.json",
+      "docs/evidence/qa_streamline_20261103/docs/run_01/root_rules.patch"
+    ],
+    "exit_code": 0,
+    "log": "control_add.log"
+  },
+  {
+    "label": "control_commit",
+    "command": [
+      "git",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "commit",
+      "-m",
+      "feat(qa): add streamlined independent review policy"
+    ],
+    "exit_code": 0,
+    "log": "control_commit.log"
+  },
+  {
+    "label": "control_head",
+    "command": [
+      "git",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "log": "control_head.log"
+  },
+  {
+    "label": "control_push",
+    "command": [
+      "git",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "push",
+      "origin",
+      "main"
+    ],
+    "exit_code": 0,
+    "log": "control_push.log"
+  },
+  {
+    "label": "control_url",
+    "command": [
+      "git",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "remote",
+      "get-url",
+      "origin"
+    ],
+    "exit_code": 0,
+    "log": "control_url.log"
+  },
+  {
+    "label": "control_ls_remote",
+    "command": [
+      "git",
+      "-C",
+      "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "ls-remote",
+      "origin",
+      "refs/heads/main"
+    ],
+    "exit_code": 0,
+    "log": "control_ls_remote.log"
+  },
+  {
+    "label": "root_add",
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "add",
+      "--",
+      "AGENTS.md",
+      "workspace.json"
+    ],
+    "exit_code": 0,
+    "log": "root_add.log"
+  },
+  {
+    "label": "root_commit",
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "commit",
+      "-m",
+      "chore(workspace): publish QA policy and recovery lock"
+    ],
+    "exit_code": 0,
+    "log": "root_commit.log"
+  },
+  {
+    "label": "root_head",
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "log": "root_head.log"
+  },
+  {
+    "label": "root_push",
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "push",
+      "origin",
+      "main"
+    ],
+    "exit_code": 0,
+    "log": "root_push.log"
+  },
+  {
+    "label": "root_url",
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "remote",
+      "get-url",
+      "origin"
+    ],
+    "exit_code": 0,
+    "log": "root_url.log"
+  },
+  {
+    "label": "root_ls_remote",
+    "command": [
+      "bash",
+      "tools/workspace_git.sh",
+      "ls-remote",
+      "origin",
+      "refs/heads/main"
+    ],
+    "exit_code": 0,
+    "log": "root_ls_remote.log"
+  }
+]

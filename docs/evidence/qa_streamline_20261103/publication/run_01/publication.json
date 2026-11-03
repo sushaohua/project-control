@@ -1,0 +1,118 @@
+{
+  "published_at": "2026-11-03T22:03:00.342970+08:00",
+  "status": "pushed-ls-remote-and-independent-server-fetch-verified",
+  "project-control": {
+    "commit": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+    "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+    "ref": "refs/heads/main"
+  },
+  "root": {
+    "commit": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+    "url": "ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git",
+    "ref": "refs/heads/main"
+  },
+  "qa_approved": false,
+  "independent_fetch_directory": "/tmp/qa_streamline_trusted_q0uazgt5",
+  "fetch_verification_commands": [
+    {
+      "label": "verify_root_init",
+      "command": [
+        "git",
+        "init",
+        "--bare",
+        "/tmp/qa_streamline_trusted_q0uazgt5/root.git"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "verify_root_fetch",
+      "command": [
+        "git",
+        "--git-dir=/tmp/qa_streamline_trusted_q0uazgt5/root.git",
+        "fetch",
+        "ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git",
+        "refs/heads/main"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "verify_root_sha",
+      "command": [
+        "git",
+        "--git-dir=/tmp/qa_streamline_trusted_q0uazgt5/root.git",
+        "rev-parse",
+        "FETCH_HEAD"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "verify_control_init",
+      "command": [
+        "git",
+        "init",
+        "/tmp/qa_streamline_trusted_q0uazgt5/project-control"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "verify_control_remote",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/qa_streamline_trusted_q0uazgt5/project-control",
+        "remote",
+        "add",
+        "origin",
+        "ssh://git@192.168.77.113:2222/sushaohua/project-control.git"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "verify_control_fetch",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/qa_streamline_trusted_q0uazgt5/project-control",
+        "fetch",
+        "--depth=50",
+        "origin",
+        "refs/heads/main"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "verify_control_sha",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/qa_streamline_trusted_q0uazgt5/project-control",
+        "rev-parse",
+        "FETCH_HEAD"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "trusted_checkout",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/qa_streamline_trusted_q0uazgt5/project-control",
+        "checkout",
+        "--detach",
+        "9f1ad485751118112fa077743fcc6acfb5857bc1"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "trusted_runner_hash",
+      "command": [
+        "git",
+        "-C",
+        "/tmp/qa_streamline_trusted_q0uazgt5/project-control",
+        "rev-parse",
+        "HEAD:tools/qa_runner/qa_runner.py"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

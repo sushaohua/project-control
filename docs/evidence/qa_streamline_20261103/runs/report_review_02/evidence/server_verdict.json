@@ -1,0 +1,11 @@
+{
+  "task_id": "QA-SIMPLIFY-20261103",
+  "task_revision": 1,
+  "run_id": "run_220816",
+  "verdict": "PASSED",
+  "exit_code": 0,
+  "summary": "All sandbox tests passed",
+  "build_count": 0,
+  "test_count": 9,
+  "timestamp": "2026-11-03T14:09:03.536953+00:00"
+}

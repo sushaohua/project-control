@@ -1,0 +1,11 @@
+{
+  "task_id": "QA-SIMPLIFY-20261103",
+  "task_revision": 1,
+  "candidate_commit": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+  "role": "ARCH",
+  "decision": "APPROVED",
+  "summary": "The bundle SHA256 matches 428c5ca1f8e4a01564950a9dc554f7bc6dc8bed060480a25de8af69c6f778178. The primary QA report SHA256 independently recomputes to 6b0a1568b8819f60cd99f3a20aa72626a9a39d9517905f29239b2b0edc27a297. Its findings and scope are consistent with the pinned candidate and separate frozen sandbox evidence.",
+  "findings": [],
+  "accepted_scope": "Bounded QA policy, runner, closure, and template simplification with legacy behavior retained until explicit migration; no scheduler rewrite. The pinned candidate and its diff match the report. Separate sandbox evidence binds the candidate commit and records all eight required suites passing (196 tests), plus the root recovery pin, AGENTS, and source hash check. Positive, negative, and recovery coverage is present. HIL, MCU builds, and live scheduler deployment are excluded for this policy-tool change.",
+  "unexecuted": []
+}

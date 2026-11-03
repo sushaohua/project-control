@@ -1,0 +1,105 @@
+{
+  "kind": "controlled-objective-evidence-not-independent-Codex-approval",
+  "trusted_baseline": "9f1ad485751118112fa077743fcc6acfb5857bc1",
+  "source_candidates": {
+    "project-control": {
+      "commit": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "refs/heads/main"
+    },
+    "root": {
+      "commit": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git",
+      "ref": "refs/heads/main"
+    }
+  },
+  "failed_attempts_preserved": [
+    "runs/qa_01"
+  ],
+  "runs": [
+    {
+      "run": "qa_02",
+      "snapshot": "/tmp/qa_streamline_trusted_q0uazgt5/sandboxes/QA-SIMPLIFY-20261103_run_220720_20261103_140720",
+      "container_id": "58144a07c319",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "test_counts": [
+        7,
+        25,
+        24,
+        74,
+        12,
+        19,
+        20,
+        15
+      ],
+      "unit_tests": 196,
+      "commands": 9,
+      "all_command_exit_codes": [
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "qa_result_sha256": "0d1c963afc9bd0acea3100b96c9f3f01bf1b0b916062dc0c027254cf79592295",
+      "server_qa_sha256": "29431a02128f937cf7ac2d0c880cb05e308b4974344da69656844f7c2f2684df"
+    },
+    {
+      "run": "report_review_02",
+      "snapshot": "/tmp/qa_streamline_trusted_q0uazgt5/sandboxes/QA-SIMPLIFY-20261103_run_220816_20261103_140816",
+      "container_id": "d5e9523472d7",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "test_counts": [
+        7,
+        25,
+        24,
+        74,
+        12,
+        19,
+        20,
+        15
+      ],
+      "unit_tests": 196,
+      "commands": 9,
+      "all_command_exit_codes": [
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "qa_result_sha256": "52c8ad34667a0ffc3c9f1346a19e013e5f677b877baf10822c91fad8d92531d8",
+      "server_qa_sha256": "1583e35473b5d43540c25ffdb1aa610c596bcd49242177149a683f1f4c097a6a"
+    }
+  ],
+  "trusted_input_files": [
+    {
+      "path": "trusted_inputs/codex_qa_review.md",
+      "sha256": "b7dfa803382ca6b5d21a6bdb13d345bb0e149226fd0b4c15494be318dd4624f2"
+    },
+    {
+      "path": "trusted_inputs/delivery_and_coord_gate.md",
+      "sha256": "c48f91e65766da74813cb85bb6e90b286ce27f0ac297c7e95a48e95af17590a6"
+    },
+    {
+      "path": "trusted_inputs/execution_plan.json",
+      "sha256": "890ba1c7e234d31135f7f7741a3de39f09c0bc3c646abed92511b04697232c31"
+    },
+    {
+      "path": "trusted_inputs/manifest.json",
+      "sha256": "2d77b9d10d815c8de92be20a8cb326476211cf7f269cc76aef3f1deb41ba29b9"
+    },
+    {
+      "path": "trusted_inputs/qa_config.yaml",
+      "sha256": "04a1db8b8014e45a96eb30bfd33046f83192118136a231b3d2682e6c2ab5ca47"
+    }
+  ]
+}

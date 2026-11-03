@@ -1,0 +1,23 @@
+[main cec9b34] feat(qa): add streamlined independent review policy
+ 43 files changed, 1351 insertions(+), 69 deletions(-)
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/final_checks.json
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/self_check_results.json
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/source_manifest.json
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_check_task_graph.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_coord_recovery.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_coord_runner.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_coord_systemd_service.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_delivery_checks.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_phase1_intake_acceptance.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_qa_pipeline.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_qa_pipeline_final.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_review_policy.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/test_review_policy_final.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/author/run_01/whitespace_check.log
+ create mode 100644 docs/evidence/qa_streamline_20261103/docs/run_01/AGENTS.md.candidate
+ create mode 100644 docs/evidence/qa_streamline_20261103/docs/run_01/README.md
+ create mode 100644 docs/evidence/qa_streamline_20261103/docs/run_01/root_rule_manifest.json
+ create mode 100644 docs/evidence/qa_streamline_20261103/docs/run_01/root_rules.patch
+ create mode 100644 docs/planning/qa_streamline_cutover_20261103.md
+ create mode 100644 tools/coord_runner/review_policy.py
+ create mode 100644 tools/test_review_policy.py

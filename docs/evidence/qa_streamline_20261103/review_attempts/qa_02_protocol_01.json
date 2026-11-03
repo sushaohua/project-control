@@ -1,0 +1,30 @@
+{
+  "status": "INCONCLUSIVE",
+  "classification": "review-output-protocol-rejected-not-code-rework",
+  "actual_session": "01a1a1bd-c1f8-7173-bb2a-b77a63949b43",
+  "candidate_commit": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+  "root_commit": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+  "reason": "Raw reviewer output said APPROVED but listed out-of-scope HIL in unexecuted; accepted legacy adapter rejects APPROVED with any unexecuted item. No accepted review report was issued. Raw files preserved, no source rework or repeated Docker tests.",
+  "files": [
+    {
+      "path": "runs/qa_02/reviews/06158b7634c34771864b30e4da9370e7/codex.jsonl",
+      "sha256": "4381619bdbd7db704af3f0c4b40ad85a6aa3edc6068bc19abe1342deb22c9581"
+    },
+    {
+      "path": "runs/qa_02/reviews/06158b7634c34771864b30e4da9370e7/codex.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/qa_02/reviews/06158b7634c34771864b30e4da9370e7/final.json",
+      "sha256": "f0be80eba2ca466d765a2be357c998b6b63724916228a0b9ff6f0cb18c1a9ceb"
+    },
+    {
+      "path": "runs/qa_02/reviews/06158b7634c34771864b30e4da9370e7/prompt.txt",
+      "sha256": "ca6d1d33d4b55251a64d1458cdce3271875a971b1af91eef441e7ee519c39d58"
+    },
+    {
+      "path": "runs/qa_02/reviews/06158b7634c34771864b30e4da9370e7/schema.json",
+      "sha256": "655e3e8985acd853241fc2755c9c47222becfa4b39b0e78668760909070b3566"
+    }
+  ]
+}

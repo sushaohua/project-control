@@ -1,7 +1,7 @@
 ---
 id: QA-SIMPLIFY-20261103
 revision: 1
-status: publication-authorized-awaiting-legacy-qa
+status: published-qa-approved-awaiting-coord-receipt
 date: 2026-11-03
 qa_policy: legacy
 ---
@@ -49,4 +49,23 @@ qa_policy: legacy
 
 根入口完整候选、补丁与规则镜像哈希见 [文档作者快照](../evidence/qa_streamline_20261103/docs/run_01/README.md)。根镜像本机一致不表示已远程发布。
 
-本专项提交/推送已获授权，交付操作继续由 INTEGRATOR 执行。分别在根仓与管理仓 `main` 形成有界候选；服务器核对准确提交，按本次 legacy 门禁接受，再登记生效版本与恢复条件。正式服务器沙箱 QA、独立 Codex 与报告非作者复核尚未完成；保持停机，不得将本记录的作者检查当作 Done 或恢复许可。
+本专项已按授权由 INTEGRATOR 分别在根仓与管理仓 `main` 发布，并完成独立服务器 fetch 核对。下列独立 QA 已批准准确候选；本助理只整理交付资料，正式收件仍待现有 COORD，调度继续保持停机。
+
+## 发布、独立 QA 与待收件入口
+
+- 管理仓源码候选：`cec9b34f8284f7b2580a7d219536d32b7b1ee849`，服务器 `ssh://git@192.168.77.113:2222/sushaohua/project-control.git`，ref `refs/heads/main`。
+- 根仓候选：`e5b7ec6d80259976b8a38e4164b5596311fed15f`，服务器 `ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git`，ref `refs/heads/main`；`workspace.json` 的管理仓恢复锁为上述源码候选，其他仓锁未改。
+- 可信执行器来自服务器独立取得的旧基线 `9f1ad485751118112fa077743fcc6acfb5857bc1`，未用新流程自批。`qa_02` 和 `report_review_02` 分别从服务器获取同一组五仓准确提交，使用两个独立 Docker 沙箱，各执行八套 **196 项测试**及根 AGENTS、恢复锁、九份源码 SHA256 核对，九条命令全部 exit 0；这是客观运行结果，独立结论另见下列报告。
+
+| 检查 | 实际独立 Codex 会话 | 结论与证据 |
+| --- | --- | --- |
+| 主 QA，代码与客观运行证据 | `01a1a1bf-39cd-74a0-a864-16d4f33b6d1c` | APPROVED；[原始报告](../evidence/qa_streamline_20261103/runs/qa_02/reviews/567487c89275475896c1b76474b1aac6/review_report.md)，SHA256 `6b0a1568b8819f60cd99f3a20aa72626a9a39d9517905f29239b2b0edc27a297` |
+| ARCH，非作者复核主报告与独立沙箱证据 | `01a1a1c1-8534-7dc1-9a21-612aa61b85d6` | APPROVED；[原始报告](../evidence/qa_streamline_20261103/runs/report_review_02/reviews/495ba427603b44a7be622474f69290f7/review_report.md)，SHA256 `fab8ddea4364814de81dc6f4836423e6abde1e353e804fd09603b1df7cc2f8cc`；独立重算并绑定前述主报告 SHA256 |
+
+两会话均为实际新启动、只读、`gpt-6-luna` 审阅，未 fork/resume 作者会话。两轮客观证据、容器身份、原始审阅 JSONL/final/schema/prompt、报告及条目已原文归档。首次执行的路径门禁拦截和首次主审输出协议拒收均保留，后者记录为 INCONCLUSIVE，不作为源码返修或有效接受。
+
+批准范围为本次 QA 策略、Runner/收件检查器、模板及当前流程文档。业务构建、真实 HIL、固件部署和常驻服务恢复不适用，不能据本次批准宣称已执行。
+
+**现有 COORD 的收件入口：**[机器核对交付清单](../evidence/qa_streamline_20261103/handoff_manifest.json)。该清单只核对准确候选、旧执行器、两轮证据、会话差异与报告字节，不新增自签 QA。本助理不代替原 COORD 签署收件、不改任何旧任务 Done、不启动服务。现有 COORD 须按上述确切版本收件并登记采用范围后，才可对新任务使用 `streamlined-v1`；未完成旧票仍按本文迁移表处理。
+
+后续证据/本记录作为独立元数据提交发布；受审源码候选始终为 `cec9b34f8284f7b2580a7d219536d32b7b1ee849`，根仓仍为 `e5b7ec6d80259976b8a38e4164b5596311fed15f`，不因证据归档递归换版或再次修改恢复锁。

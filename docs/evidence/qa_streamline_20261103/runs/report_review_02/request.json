@@ -1,0 +1,253 @@
+{
+  "task_id": "QA-SIMPLIFY-20261103",
+  "task_revision": 1,
+  "candidate_commit": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+  "repository": "project-control",
+  "targets": [
+    {
+      "name": "project-control",
+      "commit": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "main"
+    },
+    {
+      "name": "soc-ap",
+      "commit": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+      "ref": "main"
+    },
+    {
+      "name": "mcu-p3",
+      "commit": "e051111e68dd61896ed42c0961153b167b8bca41",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+      "ref": "feat/soc-debug"
+    },
+    {
+      "name": "test_harness",
+      "commit": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+      "ref": "main"
+    },
+    {
+      "name": "ai-soc-workspace",
+      "commit": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git",
+      "ref": "main"
+    }
+  ],
+  "commands": [
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_review_policy.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_delivery_checks.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_runner.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_check_task_graph.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_recovery.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_phase1_intake_acceptance.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_systemd_service.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -c 'from pathlib import Path; import hashlib,json; r=Path('\"'\"'ai-soc-workspace'\"'\"'); c=Path('\"'\"'project-control'\"'\"'); d=json.loads((r/'\"'\"'workspace.json'\"'\"').read_text()); assert next(x['\"'\"'commit'\"'\"'] for x in d['\"'\"'repositories'\"'\"'] if x['\"'\"'path'\"'\"']=='\"'\"'project-control'\"'\"')=='\"'\"'cec9b34f8284f7b2580a7d219536d32b7b1ee849'\"'\"'; assert (r/'\"'\"'AGENTS.md'\"'\"').read_bytes()==(c/'\"'\"'docs/evidence/qa_streamline_20261103/docs/run_01/AGENTS.md.candidate'\"'\"').read_bytes(); m=json.loads((c/'\"'\"'docs/evidence/qa_streamline_20261103/author/run_01/source_manifest.json'\"'\"').read_text()); assert all(hashlib.sha256((c/x['\"'\"'path'\"'\"']).read_bytes()).hexdigest()==x['\"'\"'sha256'\"'\"'] for x in m['\"'\"'files'\"'\"']); print('\"'\"'Root AGENTS, published recovery pin, and 9-file source manifest: PASS'\"'\"')'"
+    }
+  ],
+  "workspace": "/home/sushaohua/workspace/ai_soc_project",
+  "run_dir": "/tmp/qa_streamline_trusted_q0uazgt5/runs/report_review_02",
+  "timeout_seconds": 1200,
+  "contract": {
+    "id": "QA-SIMPLIFY-20261103",
+    "revision": 1,
+    "qa_policy": "legacy",
+    "task_kind": "implementation",
+    "owner": "/root/qa_policy_code",
+    "reviewer": [
+      "QA",
+      "ARCH"
+    ],
+    "source_baseline": {
+      "project-control": "9f1ad485751118112fa077743fcc6acfb5857bc1",
+      "soc-ap": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+      "mcu-p3": "e051111e68dd61896ed42c0961153b167b8bca41",
+      "test_harness": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+      "ai-soc-workspace": "233f24ea318e784234a70001ef23423d449a48c3"
+    },
+    "base_commit": "9f1ad485751118112fa077743fcc6acfb5857bc1",
+    "write_scope": {
+      "project-control": [
+        "tools/**",
+        ".agents/rules/**",
+        "docs/**"
+      ]
+    },
+    "required_evidence_level": "server-sandbox-verified",
+    "verification": {
+      "commands": [
+        {
+          "id": "accepted_check_1",
+          "cwd": "project-control",
+          "availability": "executable",
+          "expected": "accepted relevant tests pass; document and source pins match",
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_review_policy.py -v"
+        },
+        {
+          "id": "accepted_check_2",
+          "cwd": "project-control",
+          "availability": "executable",
+          "expected": "accepted relevant tests pass; document and source pins match",
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_delivery_checks.py -v"
+        },
+        {
+          "id": "accepted_check_3",
+          "cwd": "project-control",
+          "availability": "executable",
+          "expected": "accepted relevant tests pass; document and source pins match",
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v"
+        },
+        {
+          "id": "accepted_check_4",
+          "cwd": "project-control",
+          "availability": "executable",
+          "expected": "accepted relevant tests pass; document and source pins match",
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_runner.py -v"
+        },
+        {
+          "id": "accepted_check_5",
+          "cwd": "project-control",
+          "availability": "executable",
+          "expected": "accepted relevant tests pass; document and source pins match",
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_check_task_graph.py -v"
+        },
+        {
+          "id": "accepted_check_6",
+          "cwd": "project-control",
+          "availability": "executable",
+          "expected": "accepted relevant tests pass; document and source pins match",
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_recovery.py -v"
+        },
+        {
+          "id": "accepted_check_7",
+          "cwd": "project-control",
+          "availability": "executable",
+          "expected": "accepted relevant tests pass; document and source pins match",
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_phase1_intake_acceptance.py -v"
+        },
+        {
+          "id": "accepted_check_8",
+          "cwd": "project-control",
+          "availability": "executable",
+          "expected": "accepted relevant tests pass; document and source pins match",
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_systemd_service.py -v"
+        },
+        {
+          "id": "accepted_check_9",
+          "cwd": ".",
+          "availability": "executable",
+          "expected": "accepted relevant tests pass; document and source pins match",
+          "kind": "test",
+          "subpath": "",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -c 'from pathlib import Path; import hashlib,json; r=Path('\"'\"'ai-soc-workspace'\"'\"'); c=Path('\"'\"'project-control'\"'\"'); d=json.loads((r/'\"'\"'workspace.json'\"'\"').read_text()); assert next(x['\"'\"'commit'\"'\"'] for x in d['\"'\"'repositories'\"'\"'] if x['\"'\"'path'\"'\"']=='\"'\"'project-control'\"'\"')=='\"'\"'cec9b34f8284f7b2580a7d219536d32b7b1ee849'\"'\"'; assert (r/'\"'\"'AGENTS.md'\"'\"').read_bytes()==(c/'\"'\"'docs/evidence/qa_streamline_20261103/docs/run_01/AGENTS.md.candidate'\"'\"').read_bytes(); m=json.loads((c/'\"'\"'docs/evidence/qa_streamline_20261103/author/run_01/source_manifest.json'\"'\"').read_text()); assert all(hashlib.sha256((c/x['\"'\"'path'\"'\"']).read_bytes()).hexdigest()==x['\"'\"'sha256'\"'\"'] for x in m['\"'\"'files'\"'\"']); print('\"'\"'Root AGENTS, published recovery pin, and 9-file source manifest: PASS'\"'\"')'"
+        }
+      ]
+    },
+    "accepted_scope": "Bounded QA policy/runner/closure/template simplification; no scheduler rewrite. Independently review affected positive, negative and recovery behavior and evidence, not automatic acceptance based on author tests. Eight suites total 196 tests plus root recovery pin, AGENTS and source-hash checks. Business builds and HIL are not applicable: no business-code or hardware changes. Main QA first reviews candidate and objective evidence; a later independent session reviews its exact report hash, without demanding that downstream report review exist before primary report creation.",
+    "legacy_rules": [
+      {
+        "path": "/tmp/qa_streamline_trusted_q0uazgt5/legacy_inputs/codex_qa_review.md",
+        "sha256": "b7dfa803382ca6b5d21a6bdb13d345bb0e149226fd0b4c15494be318dd4624f2",
+        "source_commit": "9f1ad485751118112fa077743fcc6acfb5857bc1"
+      },
+      {
+        "path": "/tmp/qa_streamline_trusted_q0uazgt5/legacy_inputs/delivery_and_coord_gate.md",
+        "sha256": "c48f91e65766da74813cb85bb6e90b286ce27f0ac297c7e95a48e95af17590a6",
+        "source_commit": "9f1ad485751118112fa077743fcc6acfb5857bc1"
+      }
+    ]
+  },
+  "sandbox_command": [
+    "/usr/bin/python3",
+    "/tmp/qa_streamline_trusted_q0uazgt5/project-control/tools/qa_runner/qa_runner.py",
+    "--config",
+    "/tmp/qa_streamline_trusted_q0uazgt5/qa_config.yaml",
+    "--task",
+    "QA-SIMPLIFY-20261103",
+    "--revision",
+    "1",
+    "--output-dir",
+    "/tmp/qa_streamline_trusted_q0uazgt5/runs/report_review_02/evidence",
+    "--repo-commit",
+    "project-control=cec9b34f8284f7b2580a7d219536d32b7b1ee849:main",
+    "--repo-commit",
+    "soc-ap=427dd6d82caceebb7b4642e78f1dbfa96ff5fc84:main",
+    "--repo-commit",
+    "mcu-p3=e051111e68dd61896ed42c0961153b167b8bca41:feat/soc-debug",
+    "--repo-commit",
+    "test_harness=ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414:main",
+    "--repo-commit",
+    "ai-soc-workspace=e5b7ec6d80259976b8a38e4164b5596311fed15f:main",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_review_policy.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_delivery_checks.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_runner.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_check_task_graph.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_recovery.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_phase1_intake_acceptance.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_systemd_service.py -v",
+    "--cmd",
+    "test::PYTHONDONTWRITEBYTECODE=1 python3 -c 'from pathlib import Path; import hashlib,json; r=Path('\"'\"'ai-soc-workspace'\"'\"'); c=Path('\"'\"'project-control'\"'\"'); d=json.loads((r/'\"'\"'workspace.json'\"'\"').read_text()); assert next(x['\"'\"'commit'\"'\"'] for x in d['\"'\"'repositories'\"'\"'] if x['\"'\"'path'\"'\"']=='\"'\"'project-control'\"'\"')=='\"'\"'cec9b34f8284f7b2580a7d219536d32b7b1ee849'\"'\"'; assert (r/'\"'\"'AGENTS.md'\"'\"').read_bytes()==(c/'\"'\"'docs/evidence/qa_streamline_20261103/docs/run_01/AGENTS.md.candidate'\"'\"').read_bytes(); m=json.loads((c/'\"'\"'docs/evidence/qa_streamline_20261103/author/run_01/source_manifest.json'\"'\"').read_text()); assert all(hashlib.sha256((c/x['\"'\"'path'\"'\"']).read_bytes()).hexdigest()==x['\"'\"'sha256'\"'\"'] for x in m['\"'\"'files'\"'\"']); print('\"'\"'Root AGENTS, published recovery pin, and 9-file source manifest: PASS'\"'\"')'"
+  ]
+}

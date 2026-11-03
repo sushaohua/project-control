@@ -1,0 +1,44 @@
+schema_version: 1
+server:
+  gitlab_url: http://192.168.77.113
+  ssh_host: 192.168.77.113
+  ssh_port: 2222
+  ssh_user: git
+  api_timeout_seconds: 90
+  ssh_timeout_seconds: 90
+sandbox:
+  base_dir: /tmp/qa_streamline_trusted_q0uazgt5/sandboxes
+  kind: container
+  image: qa-sandbox:20261029
+  cleanup_after_run: false
+  enforce_clean_checkout: true
+repositories:
+  project-control:
+    url: ssh://git@192.168.77.113:2222/sushaohua/project-control.git
+    api_project_path: sushaohua/project-control
+    default_branch: main
+  soc-ap:
+    url: ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git
+    api_project_path: sushaohua/soc-ap
+    default_branch: main
+  mcu-p3:
+    url: ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git
+    api_project_path: sushaohua/mcu-p3
+    default_branch: feat/soc-debug
+  test_harness:
+    url: ssh://git@192.168.77.113:2222/sushaohua/test_harness.git
+    api_project_path: sushaohua/test_harness
+    default_branch: main
+  ai-soc-workspace:
+    url: ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git
+    api_project_path: sushaohua/ai-soc-workspace
+    default_branch: main
+timeouts:
+  git_clone_seconds: 300
+  build_seconds: 300
+  test_seconds: 300
+security:
+  disallow_local_worktrees: true
+  disallow_developer_mounts: true
+  disallow_sandbox_escape: true
+  require_remote_hash_verification: true
