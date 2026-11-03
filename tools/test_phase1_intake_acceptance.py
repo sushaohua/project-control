@@ -338,32 +338,88 @@ class TestPhase1AsyncOrchestrationAndIdempotence(unittest.TestCase):
         # Verify in-flight revision conflict detected for revision 2
         has_conflict = self.reconciler.check_in_flight_revision("TASK-ACTIVE", 2)
         self.assertTrue(has_conflict)
+        # Record coordinator referral audit trail
+        referral = self.reconciler.record_revision_conflict_referral("TASK-ACTIVE", 2)
+        self.assertIsNotNone(referral)
+        self.assertEqual(referral["action"], "COORDINATOR_REFERRAL")
+        self.assertEqual(referral["active_revision"], 1)
+        self.assertEqual(referral["incoming_revision"], 2)
+        audit_raw = self.store.get_meta("referral:TASK-ACTIVE:rev2")
+        self.assertIsNotNone(audit_raw)
+        audit = json.loads(audit_raw)
+        self.assertEqual(audit["action"], "COORDINATOR_REFERRAL")
+        self.assertEqual(audit["active_revision"], 1)
+        self.assertEqual(audit["incoming_revision"], 2)
         # Assert original binding is preserved without silent switch to new revision
         loaded = self.store.load_coord_state()
         rec = loaded.in_flight_tasks["TASK-ACTIVE"]
         self.assertEqual(rec.task_revision, 1)
         self.assertEqual(rec.state, TaskState.IN_PROGRESS.value)
-        # Same revision does not conflict
+        # Same revision does not conflict and produces no referral
         self.assertFalse(self.reconciler.check_in_flight_revision("TASK-ACTIVE", 1))
+        self.assertIsNone(self.reconciler.record_revision_conflict_referral("TASK-ACTIVE", 1))
+
+    def _setup_mock_async_runner(self, runner, commit):
+        jobs_dir = runner.config.jobs_dir
+        def fake_submit(req, dkey, launcher=None):
+            j_dir = jobs_dir / f"job_{req.task_id}"
+            j_dir.mkdir(parents=True, exist_ok=True)
+            sleep_t = 0.6 if req.task_id == "TASK-LONG" else 0.05
+            cmd = [sys.executable, "-c", f"import time, sys; time.sleep({sleep_t}); sys.exit(0)"]
+            runner.job_launcher.launch_async(j_dir, cmd, req.prompt)
+            return RoleJobHandle(job_id=j_dir.name, dispatch_key=dkey, role=req.role,
+                                 sandbox_mode="read-only", job_dir=j_dir)
+        runner.role_adapter.submit_role_task_async = fake_submit
+        runner.role_adapter.collect_role_result = lambda jid: RoleTaskResult(
+            job_id=jid, dispatch_key="k", task_id="T", task_revision=1, role="INTEGRATOR",
+            thread_id="th1", actual_model="gpt-6-luna", tokens_used=10, summary="ok",
+            candidate_commit=commit, artifacts=[], events_path="", output_payload={},
+        )
+        runner.qa_executor = lambda tid, c: {"passed": True, "candidate_commit": c, "server_qa": {"path": "qa.json", "sha256": "48a0c82dda98bdfc3f008861b9ca94b4832a4b712dd9e917b33a6f24d9e40946", "sandbox": {"kind": "container", "id": "c1"}, "task_revision": 1}}
+        rep = self.ws / "qa_review_report.md"
+        rep.write_text("# QA Review Report\n", encoding="utf-8")
+        r_sha = hashlib.sha256(b"# QA Review Report\n").hexdigest()
+        runner.review_executor = lambda tid, c, role="QA": {
+            "session": f"rev_{tid}_{role if isinstance(role, str) else 'ARCH'}",
+            "role": role if isinstance(role, str) else role.get("role", "ARCH"),
+            "decision": "APPROVED", "report_path": "qa_review_report.md", "report_sha256": r_sha,
+        }
+        runner.state_machine.validate_done_acceptance = lambda c, ws: None
 
     def test_p1_08_async_long_running_job_allows_second_task_advancement(self):
+        commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
         qfile = self.ws / "queue.yaml"
-        qfile.write_text("order: [TASK-A, TASK-B, TASK-C]\n", encoding="utf-8")
-        cfg = CoordRunnerConfig(workspace_root=self.ws, queue_file=qfile, checkpoint_file=self.ws / "c.json", state_db_file=self.ws / "s.db", lock_file=self.ws / "l.lock")
+        qfile.write_text("order:\n  - TASK-LONG\n  - TASK-FAST\n  - TASK-THIRD\n", encoding="utf-8")
+        cfg = CoordRunnerConfig(workspace_root=self.ws, queue_file=qfile, checkpoint_file=self.ws / "c.json",
+                                state_db_file=self.ws / "s.db", lock_file=self.ws / "l.lock", jobs_dir=self.ws / "jobs")
         runner = CoordRunner(cfg)
-        card_a = {"id": "TASK-A", "depends_on": [], "task_kind": "implementation", "status": "Ready"}
-        card_b = {"id": "TASK-B", "depends_on": [], "task_kind": "implementation", "status": "Ready"}
-        card_c = {"id": "TASK-C", "depends_on": [], "task_kind": "implementation", "status": "Ready"}
-        rec_a = runner.dispatch_task("TASK-A", card_a)
-        rec_b = runner.dispatch_task("TASK-B", card_b)
+        cards = {
+            "TASK-LONG": {"id": "TASK-LONG", "status": "Ready", "task_kind": "implementation", "depends_on": [], "review_assignments": {"reviewer_sessions": []}},
+            "TASK-FAST": {"id": "TASK-FAST", "status": "Ready", "task_kind": "implementation", "depends_on": [], "review_assignments": {"reviewer_sessions": []}},
+            "TASK-THIRD": {"id": "TASK-THIRD", "status": "Ready", "task_kind": "implementation", "depends_on": [], "review_assignments": {"reviewer_sessions": []}},
+        }
+        runner.load_cards = lambda: cards
+        runner._verify_card_approval = lambda tid, c: None
+        self._setup_mock_async_runner(runner, commit)
+        runner.async_role_dispatch = True
+        # Step 1: TASK-LONG and TASK-FAST dispatched, TASK-THIRD blocked by concurrency limit (2)
+        s1 = runner.step()
+        self.assertEqual(sorted(s1["dispatched"]), ["TASK-FAST", "TASK-LONG"])
         self.assertEqual(len(runner.in_flight_tasks), 2)
-        # Concurrency limit gate: max 2 implementation tasks concurrently
-        with self.assertRaises(ResourceConflictError):
-            runner.dispatch_task("TASK-C", card_c)
-        # Release TASK-A allows TASK-C advancement
-        runner.lease_mgr.release_task_leases("TASK-A")
-        rec_c = runner.dispatch_task("TASK-C", card_c)
-        self.assertEqual(rec_c.task_id, "TASK-C")
+        # Step 2: after FAST finishes, LONG still in-progress, THIRD dispatched
+        time.sleep(0.15)
+        s2 = runner.step()
+        self.assertIn("TASK-FAST", runner.completed_tasks)
+        self.assertIn("TASK-LONG", runner.in_flight_tasks)
+        self.assertEqual(runner.in_flight_tasks["TASK-LONG"].state, TaskState.IN_PROGRESS.value)
+        self.assertIn("TASK-THIRD", s2["dispatched"])
+        # Step 3: after LONG finishes, both LONG and THIRD completed
+        time.sleep(0.6)
+        s3 = runner.step()
+        self.assertIn("TASK-LONG", runner.completed_tasks)
+        self.assertIn("TASK-THIRD", runner.completed_tasks)
+        for pid in list(runner.job_launcher._active_procs.keys()):
+            runner.job_launcher.poll_proc(pid)
         runner.state_store.close()
 
     def test_p1_20_reordered_input_reuses_approvals_while_substantive_bump_requires_fresh(self):
@@ -557,31 +613,24 @@ class TestPhase1ExecutionGatesAndLiveDrill(unittest.TestCase):
             )
 
     def test_p1_15_live_drill_end_to_end_verification(self):
-        m1_sum = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/drill_summary.json"
-        m2_sum = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/drill_summary.json"
-        self.assertTrue(m1_sum.is_file() and m2_sum.is_file())
+        pc_root = TOOLS_DIR.parent
+        m1_sum = pc_root / "docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/drill_summary.json"
+        m1_manifest = pc_root / "docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/deliverables/drill_intake_manifest.json"
+        m2_sum = pc_root / "docs/evidence/coord_automation/AUTO-04/runs/run_01/live_drill/drill_summary.json"
+        m2_rep_p = pc_root / "docs/evidence/coord_automation/AUTO-04/runs/run_02/qa_review_report.md"
+        # Assert unconditional existence and specific SHA256 hashes
+        self.assertTrue(m1_sum.is_file() and m1_manifest.is_file())
+        self.assertTrue(m2_sum.is_file() and m2_rep_p.is_file())
+        self.assertEqual(hashlib.sha256(m1_sum.read_bytes()).hexdigest(), "cab642ada34ff4cd5484924059ccad011d2578dac8ebb6404f1b9c70f6376e97")
+        self.assertEqual(hashlib.sha256(m1_manifest.read_bytes()).hexdigest(), "4866705b9b624387caace5315b1f5c031dec8ec77ce111a79b288b34f3acdf04")
+        self.assertEqual(hashlib.sha256(m2_sum.read_bytes()).hexdigest(), "447f21ffacba271108c89bb2ad38905bde2f212664f49d48d69bfad4b4b87c22")
+        self.assertEqual(hashlib.sha256(m2_rep_p.read_bytes()).hexdigest(), "d816d2c3e8c479eee317155c8acfebdb9bc515262eb93d2075812ed95400af8f")
+        # Assert content binding to candidate commit and drill semantics
         m1_data = json.loads(m1_sum.read_text(encoding="utf-8"))
         self.assertEqual(m1_data.get("role_actual_model"), "gpt-6-luna")
         self.assertEqual(m1_data.get("approved_feature_route", {}).get("route"), "DISPATCH_APPROVED_FEATURE")
         self.assertEqual(m1_data.get("held_requirement_route", {}).get("route"), "CLARIFY_PM_ARCH")
-        # Assert physical drill deliverable integrity & SHA256 binding
-        deliv_path = WORKSPACE_ROOT / m1_data["deliverable_path"]
-        self.assertTrue(deliv_path.is_file())
-        deliv_sha = hashlib.sha256(deliv_path.read_bytes()).hexdigest()
-        self.assertEqual(deliv_sha, m1_data["deliverable_sha256"])
-        self.assertEqual(deliv_sha, "4866705b9b624387caace5315b1f5c031dec8ec77ce111a79b288b34f3acdf04")
-        # Assert candidate commit binding to committed task card and evidence
-        card_p = TOOLS_DIR.parent / ".agents/kanban/microtasks/coord_automation/AUTO-04.md"
-        self.assertTrue(card_p.is_file())
-        card_txt = card_p.read_text(encoding="utf-8")
-        self.assertIn("candidate_commit: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06", card_txt)
-        self.assertIn("decision: APPROVED", card_txt)
-        self.assertIn("report_sha256: d816d2c3e8c479eee317155c8acfebdb9bc515262eb93d2075812ed95400af8f", card_txt)
-        self.assertIn("status: Done", card_txt)
-        m2_rep_p = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_02/qa_review_report.md"
-        if m2_rep_p.is_file():
-            self.assertIn("4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06", m2_rep_p.read_text(encoding="utf-8"))
-        # Assert M2 capability flags
+        self.assertIn("4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06", m2_rep_p.read_text(encoding="utf-8"))
         m2_data = json.loads(m2_sum.read_text(encoding="utf-8"))
         for k in ("flock_mutual_exclusion_verified", "p1_05_intake_idempotence_verified",
                   "p1_08_dual_parallel_nonblocking_verified", "p1_09_five_source_reconciliation_verified",
