@@ -110,5 +110,5 @@ cd project-control
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_coord_systemd_service.py' -v
 ```
 预期结果：
-- 12 项测试 100% PASS。
+- 15 项测试 100% PASS。
 - 覆盖 unit 文件格式、CLI 生命周期、crontab 隔离门禁、P1-14 连续 20 轮空闲零模型调用断言、stop/restart 恢复及 AST 代码规范。
