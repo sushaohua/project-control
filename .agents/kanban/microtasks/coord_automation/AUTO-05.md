@@ -81,7 +81,7 @@ source_baseline:
   mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
   test_harness: ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414
 base_commit: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
-candidate_commit: 8a203cadab38a3f1233c27090321dc77b2fcfa75
+candidate_commit: bc7c766cf390ee844c92f66fc22f92faf28e1b8d
 dispatch_binding:
   source_commit: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
