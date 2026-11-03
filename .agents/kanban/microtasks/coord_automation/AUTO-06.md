@@ -20,8 +20,8 @@ executor:
   model: gpt-6-luna
   actual_model: null
   agent_id: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
-  run_id: run_02
-  rework_count: 1/2
+  run_id: run_03
+  rework_count: 2/2
 authorization:
   evidence: project-control/docs/work_intake/approvals/APPR-20261103-001.yaml
   scope: CONFIRM-INTAKE-P1-20261103 rev 2 全部批准（AUTO-05 通过后部署单个 systemd --user 服务并开启 enable-linger）
