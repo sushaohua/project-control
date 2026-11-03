@@ -187,6 +187,13 @@ class CrontabIsolationGateTest(unittest.TestCase):
         self.assertTrue(res["crontab_clean"])
         self.assertEqual(res["active_entries_count"], 0)
 
+    def test_missing_crontab_executable_reports_clean(self):
+        def not_found_runner(cmd: List[str]) -> Tuple[int, str]:
+            return 1, "[Errno 2] No such file or directory: 'crontab'"
+        res = verify_crontab_isolation(runner=not_found_runner)
+        self.assertTrue(res["crontab_clean"])
+        self.assertEqual(res["active_entries_count"], 0)
+
 
 class P1_14_ZeroIdleModelConsumptionAndRecoveryTest(unittest.TestCase):
     """P1-14 verification: Zero LLM/model calls on idle cycles and seamless stop/start recovery."""

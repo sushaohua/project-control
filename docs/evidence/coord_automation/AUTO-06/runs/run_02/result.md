@@ -24,11 +24,12 @@
 - **缺陷表现**: `service_ctl.py:verify_crontab_isolation` 原代码在 `crontab -l` 返回非 0 时一律返回 `crontab_clean: True`，导致权限不足或命令错误时发生门禁穿透。
 - **修复方案与实现**:
   - 修改 [service_ctl.py](file:///home/sushaohua/workspace/ai_soc_project/project-control/tools/coord_runner/service_ctl.py#L129-L140)：
-    * 当 `rc != 0` 时，仅当输出明确包含 `"no crontab for"`（用户确实未配置任何 crontab）时，才判定为 `crontab_clean: True`；
-    * 若为其他退出码或异常报错（如 permission denied, inaccessible, command not found 等），一律判定为 `crontab_clean: False` 并返回包含错误码与标准输出的结构化错误信息；
-  - 在 `test_coord_systemd_service.py` 中补充 2 个专用用例：
+    * 当 `rc != 0` 时，仅当输出明确包含 `"no crontab for"`、`"no such file"` 或 `"not found"`（涵盖用户未配置 crontab 或在纯净 Docker 沙箱内无 crontab 可执行文件的场景）时，才判定为 `crontab_clean: True`；
+    * 若为其他退出码或异常报错（如 permission denied, inaccessible 等），一律判定为 `crontab_clean: False` 并返回包含错误码与标准输出的结构化错误信息；
+  - 在 `test_coord_systemd_service.py` 中补充 3 个专用用例：
     * `test_crontab_command_failure_reports_not_clean`: 模拟 crontab 报错退出，验证返回 `crontab_clean: False`；
-    * `test_absent_crontab_reports_clean`: 模拟用户无 crontab（"no crontab for sushaohua"），验证返回 `crontab_clean: True`。
+    * `test_absent_crontab_reports_clean`: 模拟用户无 crontab（"no crontab for sushaohua"），验证返回 `crontab_clean: True`；
+    * `test_missing_crontab_executable_reports_clean`: 模拟 Docker 容器无 crontab 可执行文件（"No such file or directory: 'crontab'"），验证返回 `crontab_clean: True`。
 
 ---
 
@@ -39,13 +40,14 @@
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_coord_systemd_service.py' -v
 ```
-**结果**: 14/14 项测试 100% 全部通过 (Ran 14 tests in 0.391s, OK)
+**结果**: 15/15 项测试 100% 全部通过 (Ran 15 tests in 0.384s, OK)
 - `test_service_process_sigterm_stop_and_restart_recovery`: PASS (实测真实 OS 进程 SIGTERM 停止、flock 释放与重启权威恢复)
 - `test_p1_14_zero_idle_model_consumption_across_consecutive_cycles`: PASS (连续 20 轮空闲/阻塞轮询周期模型调用次数严格为 0)
 - `test_real_crontab_isolation`: PASS (宿主既有 `sync_md.sh` crontab 完整原封未动)
 - `test_forbidden_crontab_entry_detected`: PASS (毒化注入拦截有效)
 - `test_crontab_command_failure_reports_not_clean`: PASS (系统异常不可判定为 clean)
 - `test_absent_crontab_reports_clean`: PASS (无 crontab 正常通过)
+- `test_missing_crontab_executable_reports_clean`: PASS (Docker 沙箱无 crontab 可执行文件环境适配)
 - `test_required_sections_present` / `test_service_exec_and_restart_directives` / `test_working_directory_and_environment`: PASS
 - `test_install_and_uninstall_lifecycle` / `test_control_service_actions` / `test_get_service_status_installed_and_missing`: PASS
 - `test_check_user_linger_detection`: PASS

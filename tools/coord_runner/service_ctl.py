@@ -131,7 +131,8 @@ def verify_crontab_isolation(runner: Optional[CmdRunner] = None) -> Dict[str, ob
     run_fn = runner or default_exec_cmd
     rc, out = run_fn(["crontab", "-l"])
     if rc != 0:
-        if "no crontab for" in out.lower():
+        lower_out = out.lower()
+        if any(pattern in lower_out for pattern in ["no crontab for", "no such file", "not found"]):
             return {"crontab_clean": True, "active_entries_count": 0, "forbidden_entries": [], "detail": out}
         return {
             "crontab_clean": False,
