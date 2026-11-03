@@ -6,21 +6,22 @@ plan_revision: coord-intake-dispatch-phase1-20261103-rev2
 task_kind: verification
 development_stage: cross-stage
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: false
 blocked_reason: null
 recovery_condition: null
 planning_status: mapped-approved
 demand_id: DEM-INTAKE-P1-001
 feature: FEAT-INTAKE-20261103-001
-owner: null
+owner: 05bae949-06e3-40fa-828c-ce9818b335e2
 proposed_owner: QA
 executor:
   role: QA
   model: gpt-6-luna
   actual_model: null
-  agent_id: null
-  run_id: null
+  agent_id: 05bae949-06e3-40fa-828c-ce9818b335e2
+  run_id: run_02
+  rework_count: 1/2
 authorization:
   evidence: project-control/docs/work_intake/approvals/APPR-20261103-001.yaml
   scope: CONFIRM-INTAKE-P1-20261103 rev 2 全部批准（进入 M3 装服务前完成 M1/M2 19 项端到端独立验收）
@@ -37,15 +38,15 @@ review_assignments:
       platform: codex
       model: gpt-6-luna
       planned_session_alias: codex-arch-auto-05-review
-      session: null
+      session: 01a1a0b2-f27e-7072-b150-2c008217c3f6
       session_evidence:
-        path: null
-        sha256: null
-      decision: null
-      reviewed_task_revision: null
-      artifact_version: null
-      evidence: null
-      report_sha256: null
+        path: docs/evidence/coord_automation/AUTO-05/runs/run_01/arch_session.jsonl
+        sha256: 9cb7071e9c691002511e9c764016a6a4b73568574e4eef17515b027ca8428fe9
+      decision: REJECTED
+      reviewed_task_revision: 1
+      artifact_version: a49b986dbe98df3bb2dcd19da01c34777f8e19ae
+      evidence: docs/evidence/coord_automation/AUTO-05/runs/run_01/arch_review_report.md
+      report_sha256: 555c47881fffe22f03f8c54101ca9b3d00a168bcb4a0e47261c737dfdfcfafef
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010
@@ -54,8 +55,8 @@ depends_on:
   - AUTO-04
 dependency_conditions:
   - task: AUTO-04
-    accepted_version: null
-    acceptance_evidence: docs/evidence/coord_automation/AUTO-04/runs/run_01/result.md
+    accepted_version: 1
+    acceptance_evidence: docs/evidence/coord_automation/AUTO-04/runs/run_02/qa_review_report.md
     required: AUTO-03 与 AUTO-04 均已完成独立 QA 并收件 Done，锁定服务器候选后执行 M1/M2 19 项端到端验收
 scope_status: mapped
 allowed_repositories:
@@ -75,15 +76,15 @@ forbidden_paths:
   - boot/bootloadermc/**
   - boot/bootloaderth/**
 source_baseline:
-  project-control: b4af2d32601a07d448ac8d67a07c57f5b9ab36ac
+  project-control: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
   soc-ap: 427dd6d82caceebb7b4642e78f1dbfa96ff5fc84
   mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
   test_harness: ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414
-base_commit: null
-candidate_commit: null
+base_commit: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
+candidate_commit: e3aab3c09907c786dd5a44fe4b6e2c1966242ed7
 dispatch_binding:
-  source_commit: b4af2d32601a07d448ac8d67a07c57f5b9ab36ac
-  workspace_diff_sha256: 736c674846d52dee8985cae0654388560199cb33f3041365bd62fae7d91710ad
+  source_commit: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
+  workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   consumed_artifact_versions:
     confirmation_rev2: 63c1225d60c377a662bebaa0328f9bc95c19daccaa61d9f2766bc989f06f3f98
     approval_rev1: b7ea9ac9bdefc719fc46263c50e3a893d693ad63ae5166bc9085e4c71cc3f96d
@@ -96,7 +97,11 @@ read_sources:
   - project-control/.agents/rules/codex_qa_review.md
   - project-control/docs/planning/coord_intake_dispatch_phase1_confirmation_20261103.md
 worktree: /home/sushaohua/workspace/ai_soc_project
-lease: null
+lease:
+  owner: 05bae949-06e3-40fa-828c-ce9818b335e2
+  task_revision: 1
+  lease_id: lease_auto-05_20261103_01
+  expires_at: '2026-11-03T21:00:00+08:00'
 resources:
   - resource: project-control-qa-acceptance-suite
     location: /home/sushaohua/workspace/ai_soc_project/project-control
@@ -108,8 +113,7 @@ budget:
   on_limit: 保存证据交唯一 COORD，不修改受测实现代码促通过
 checkpoint: AUTO-04 候选冻结；独立验收套件与宿主机实景演练验证；独立 ARCH 复核报告；收件放行 M3
 execution_contract: project-control/docs/planning/coord_intake_dispatch_phase1_confirmation_20261103.md
-readiness_pending:
-  - 等待前置 AUTO-04 独立 QA 通过并收件 Done 后绑定锁定服务器候选与独立 QA 作者会话
+readiness_pending: []
 deliverables:
   artifacts:
     - project-control/tools/test_phase1_intake_acceptance.py
