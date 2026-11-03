@@ -1,5 +1,7 @@
 # 独立 QA 黑盒发现与 COORD Issue 交接模板
 
+> **切换补丁待接受：** 本文的 `streamlined-v1` 是候选策略定义，尚未正式发布。本次变更须先按 legacy 门禁接受，由 COORD 登记准确生效版本后启用；此前保持停机，旧任务按原门禁处理。切换与逐卡迁移见 `project-control/docs/planning/qa_streamline_cutover_20261103.md`。
+
 配套[独立 QA 执行流程](../../planning/independent_qa_vmware_execution_flow_20261103.md)。本模板对齐[现行 Issue 字段](../../../.agents/rules/e2e_issue_verification_flow.md)，扩展发现、buildno 和耐久交接信息；扩展 schema 是待实现/接受的合同，不声称现有 HUMAN 入口可以消费。模板不是实际 Issue，也不携带执行授权。
 
 发现者保存一个稳定 `finding_id` 的发现包，追加证据另有事件/版本，不覆盖已封存文件。同一事件重投复用 `event_id`；新观察用新事件。COORD 收件后分配正式 `issue_id` 并单写正式 Issue，回执指向发现包和准确哈希。空字段必须说明未知原因，尤其不能假造会话、构建号或硬件物证。
@@ -87,4 +89,4 @@ reason: null
 
 发现→收件→派单→修复就绪→独立复验→关闭各自留记录。发送失败保持待投递；收到重复事件返回原回执，不重复创建任务。正式 Issue/任务关联由 COORD 查重；不能仅凭相似标题合并不同根因。
 
-`verified_buildno >= fix_available_buildno` 不是关闭判据；必须核对同一发布序列、有效修复/依赖、原失败与必要回归结果、独立审阅/报告非作者复核。环境/证据不足保留阻塞，真实失败保留 FAIL，不能为填字段预签 APPROVED。
+`verified_buildno >= fix_available_buildno` 不是关闭判据；必须核对同一发布序列、有效修复/依赖、原失败与必要回归结果、独立审阅及所用qa_policy的必需接受（streamlined-v1不默认二次审报告，legacy保留）。环境/证据不足保留阻塞，真实失败保留 FAIL，不能为填字段预签 APPROVED。

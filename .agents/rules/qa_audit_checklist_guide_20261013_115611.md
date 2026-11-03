@@ -8,16 +8,18 @@ reviewers: [ARCH, COORD]
 tags: [qa, audit-checklist, process-audit, code-hygiene, verification]
 created: '2026-10-13 11:56:11'
 timezone: 北京时间（UTC+8）
-updated: '2026-10-27T20:16:05+08:00'
+updated: '2026-11-03T21:50:40+08:00'
 ---
 
 # 独立 QA 审查清单与过程审计指引 (QA Audit Checklist & Guide)
+
+> **切换补丁待接受：** 本文的 `streamlined-v1` 是候选策略定义，尚未正式发布。本次变更须先按 legacy 门禁接受，由 COORD 登记准确生效版本后启用；此前保持停机，旧任务按原门禁处理。切换与逐卡迁移见 `project-control/docs/planning/qa_streamline_cutover_20261103.md`。
 
 ## 当前审查平台
 
 2026-10-27起，新建/修订审查采用[独立QA报告模板](templates/QA审查报告模板.md)，任务与执行分别使用[任务卡模板](templates/任务卡模板.md)及[实际运行记录](../../docs/guides/templates/task_run_record.md)。历史报告/签署不回写。以下过程与结果检查按任务范围适用，文档任务不要求固件构建，负例按其冻结预期判断。
 
-所有后续独立 QA 审查和验收统一由独立 Codex 会话执行，默认模型为 `gpt-6-luna`；QA 作者报告的独立 ARCH 复核也使用独立 Codex 和该模型。按 [Codex QA 规则](codex_qa_review.md) 登记实际模型、会话、所审候选与报告哈希；获批准的模型例外也须记录实际模型和批准依据。原作者与实际检查者分开，保留原岗位。AGY 内部自检不能替代 Codex 独立签署，历史签署保留原记录。
+所有后续独立 QA 审查和验收统一由独立 Codex 会话执行，默认模型为 `gpt-6-luna`；QA 作者用例/预期/工具的非作者 ARCH 检查也使用独立 Codex 和该模型；streamlined-v1 不默认二次复核独立报告，legacy 保留原报告复核。按 [Codex QA 规则](codex_qa_review.md) 登记实际模型、会话、所审候选与报告哈希；获批准的模型例外也须记录实际模型和批准依据。原作者与实际检查者分开，保留原岗位。AGY 内部自检不能替代 Codex 独立签署，历史签署保留原记录。
 
 > **设计基准**：本指引旨在落实多 Agent 体系下的**司法独立原则**与**双轨审查机制（Dual-Track Audit）**。QA 绝不仅仅是跑测试用例的“测试员”，更是维护项目架构纪律与工程底线的**“过程审计官”**。
 > 本指引直接挂钩 [[AI_SoC_协作方案/human_input|human_input.md]] 与 [[AI_SoC_协作方案/single_ticket_atomic_microstep_design_20261013_113636|单票原子微步设计规范]]。

@@ -17,6 +17,7 @@ import yaml
 import check_task_graph as graph
 import coord_queue
 import delivery_checks as gate
+from coord_runner import CoordStateMachine, GateValidationError
 
 
 class DeliveryChecksTest(unittest.TestCase):
@@ -184,6 +185,71 @@ class DeliveryChecksTest(unittest.TestCase):
                 if isinstance(node, ast.FunctionDef):
                     self.assertLessEqual(node.end_lineno - node.lineno + 1, 50, node.name)
                     self.assertLessEqual(len(node.args.args) + len(node.args.kwonlyargs), 4, node.name)
+
+    def streamline(self, role="QA"):
+        self.card.update(qa_policy="streamlined-v1", reviewer=[role],
+                         candidate_commit="0123456789abcdef0123456789abcdef01234567",
+                         write_scope={"project-control": ["candidate.md"]})
+        self.card["verification"] = {"commands": [{"kind": "test", "cwd": ".", "command": "fixture-test",
+                                                 "expected": "all pass", "availability": "executable"}]}
+        self.proof.update(passed=True, test_results=[{"command": "fixture-test", "subpath": "", "exit_code": "0"}])
+        lock = {"repositories": [{"name": "project-control", "url": "ssh://fixture.invalid/control.git",
+                 "ref": "main", "commit": self.card["candidate_commit"]}]}
+        self.proof["server_lock"] = self.json_ref("lock.json", lock)
+        header = self.make_header(role, "fixture-primary")
+        header.update(reviewed_artifact_version=self.card["candidate_commit"],
+                      server_qa=self.json_ref("server-proof.json", self.proof))
+        entry = self.entry(role, "fixture-primary", header)
+        entry.update(platform="codex", decision="APPROVED", artifact_version=self.card["candidate_commit"],
+                     session_evidence=self.ref("primary.jsonl", json.dumps(
+                         {"type": "thread.started", "thread_id": "fixture-primary"}).encode()))
+        self.card["review_assignments"]["reviewer_sessions"] = [entry]
+        return header
+
+    def test_streamlined_accepts_one_primary_review_in_both_gates(self):
+        self.streamline()
+        self.assertEqual(gate.closure_errors(self.card, self.root), [])
+        CoordStateMachine().validate_done_acceptance(self.card, self.root)
+        self.assertNotIn("report_review", self.entries()[0])
+
+    def test_streamlined_qa_author_requires_independent_artifact_check(self):
+        self.streamline("ARCH")
+        self.card["executor"] = {"role": "QA", "agent_id": "fixture-author"}
+        self.assertEqual(gate.closure_errors(self.card, self.root), [])
+        self.card["executor"]["agent_id"] = "fixture-primary"
+        self.assertTrue(any("own artifact" in error for error in gate.closure_errors(self.card, self.root)))
+        with self.assertRaises(GateValidationError):
+            CoordStateMachine().validate_done_acceptance(self.card, self.root)
+
+    def test_streamlined_invalid_session_returns_errors_without_crashing(self):
+        self.streamline()
+        self.entries()[0]["session_evidence"] = self.ref("wrong.jsonl", b"not a Codex event")
+        self.assertTrue(any("thread.started" in error for error in gate.closure_errors(self.card, self.root)))
+
+    def test_streamlined_special_owner_remains_required(self):
+        self.streamline()
+        self.card["reviewer"].append("ENG-MC")
+        self.assertTrue(gate.closure_errors(self.card, self.root))
+        with self.assertRaises(GateValidationError):
+            CoordStateMachine().validate_done_acceptance(self.card, self.root)
+
+    def test_streamlined_wrong_candidate_and_missing_tests_fail_both_gates(self):
+        self.streamline()
+        self.card["candidate_commit"] = "abcdef0123456789abcdef0123456789abcdef0123"
+        self.assertTrue(gate.closure_errors(self.card, self.root))
+        with self.assertRaises(GateValidationError):
+            CoordStateMachine().validate_done_acceptance(self.card, self.root)
+        self.streamline()
+        self.proof["test_results"] = []
+        header = self.make_header("QA", "fixture-primary")
+        header.update(reviewed_artifact_version=self.card["candidate_commit"],
+                      server_qa=self.json_ref("server-proof.json", self.proof))
+        entry = self.entries()[0]
+        ref = self.ref("fixture-primary.md", ("---\n" + yaml.safe_dump(header) + "---\n").encode())
+        entry.update(evidence=ref["path"], report_sha256=ref["sha256"])
+        self.assertTrue(gate.closure_errors(self.card, self.root))
+        with self.assertRaises(GateValidationError):
+            CoordStateMachine().validate_done_acceptance(self.card, self.root)
 
 
 class QueueTest(unittest.TestCase):

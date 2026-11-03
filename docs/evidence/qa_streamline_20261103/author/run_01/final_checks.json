@@ -1,0 +1,42 @@
+{
+  "kind": "author-self-check-only",
+  "reason": "legacy report preservation and recursive artifact glob support after initial 8 suites",
+  "results": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_review_policy.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 7,
+      "log": "test_review_policy_final.log",
+      "sha256": "df329d20297ad883aee76b57e7ed23269bb875a2cb8de7e4627705ce8bf84f43"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_qa_pipeline.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 24,
+      "log": "test_qa_pipeline_final.log",
+      "sha256": "56644cab52c02ee4ce3472a014a08274cae80645a1e0e9e2dfa745e18e557e1c"
+    }
+  ]
+}

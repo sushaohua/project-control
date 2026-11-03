@@ -1,6 +1,8 @@
 # QA执行与独立审阅
 
-当前默认链路为：Runner确定性执行已接受的沙箱测试 → 固化并校验客观物证 → 准备准确源码与Diff → 新建只读Codex审阅 → 校验正式报告 → 非作者复核QA报告 → COORD收件。
+> **切换补丁待接受：** 本文的 `streamlined-v1` 是候选策略定义，尚未正式发布。本次变更须先按 legacy 门禁接受，由 COORD 登记准确生效版本后启用；此前保持停机，旧任务按原门禁处理。切换与逐卡迁移见 `project-control/docs/planning/qa_streamline_cutover_20261103.md`。
+
+新任务显式 `qa_policy: streamlined-v1`：作者实现与自检 → 锁定服务器准确候选 → Runner一次独立沙箱功能/必要回归测试 → 独立只读Codex审查代码、Diff及客观证据 → 程序校验 → COORD收件。普通默认QA；QA作者的用例/预期/工具默认由非作者独立ARCH检查；显式额外reviewer仍是必需岗位。缺省策略的旧卡保持legacy及报告非作者复核，非法策略阻断；未完成任务须逐卡记录迁移。
 
 ## 执行输入
 
@@ -15,7 +17,7 @@
 - `default_review_executor`只消费已有物证，确定性生成准确候选的Diff、请求和审阅包。Codex不负责启动Docker或组织测试，不读取作者工作树作为受测源码。
 - Codex以独立进程运行，显式`--sandbox read-only`，使用`--output-schema`与`--output-last-message`。进度JSONL、stderr与最终结果分别落盘；不拼接所有聊天文字当作JSON，也不靠字符串包含`APPROVED`判定。
 - 程序核对报告字段、任务/revision、候选、角色、实际thread ID和批准范围；必测项未执行不能批准。整体JSON代码块可去除外层围栏后校验，其余非法最终输出阻塞，不能猜测或补造决定。
-- 正式`review_report.md`、会话原始记录和哈希分别保存。QA报告由新的非作者审阅会话复核，独立复核报告与被审QA报告分别留痕。
+- 正式`review_report.md`、会话原始记录和哈希分别保存。`streamlined-v1` 不默认调用报告复核或为此重复Docker；legacy报告仍由新的非作者审阅会话复核，复核报告与原报告分别留痕。策略解析由共享 `tools/coord_runner/review_policy.py` 供Runner、状态机与收件检查器共用。
 
 ## 阻塞与重试
 

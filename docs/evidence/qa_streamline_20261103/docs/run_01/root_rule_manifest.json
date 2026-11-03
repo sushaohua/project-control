@@ -1,0 +1,87 @@
+{
+  "task_id": "QA-SIMPLIFY-20261103",
+  "task_revision": 1,
+  "artifact_kind": "author-document-check-not-independent-QA",
+  "author_agent": "/root/qa_policy_docs",
+  "observed_at": "2026-11-03T21:56:52.520778+08:00",
+  "root_base_commit": "233f24ea318e784234a70001ef23423d449a48c3",
+  "project_control_base_commit": "9f1ad485751118112fa077743fcc6acfb5857bc1",
+  "root_agents_candidate": {
+    "path": "AGENTS.md.candidate",
+    "sha256": "c9721b28d82ed45e856241323b8be18f4ec9304555c824f9b67c68488eb00504"
+  },
+  "root_patch": {
+    "path": "root_rules.patch",
+    "sha256": "0b3effe5b51b274d405f7a064a1ec7768eb0a28a0d30711a374419ee0c848a45"
+  },
+  "rule_mirrors": [
+    {
+      "canonical": "project-control/.agents/rules/04_公共看板与读写协议.md",
+      "mirror": ".agents/rules/04_公共看板与读写协议.md",
+      "canonical_sha256": "6aff88c3cbabce73423ab05ffc0fd7462f8bc7e9a726e531a7584adb437fe6dc",
+      "mirror_sha256": "6aff88c3cbabce73423ab05ffc0fd7462f8bc7e9a726e531a7584adb437fe6dc",
+      "identical": true
+    },
+    {
+      "canonical": "project-control/.agents/rules/bootloader_role_boundaries.md",
+      "mirror": ".agents/rules/bootloader_role_boundaries.md",
+      "canonical_sha256": "dd994915a0cbcd30b5b10f40b849af75aed1e74ab251932ba59d452596c240b8",
+      "mirror_sha256": "dd994915a0cbcd30b5b10f40b849af75aed1e74ab251932ba59d452596c240b8",
+      "identical": true
+    },
+    {
+      "canonical": "project-control/.agents/rules/codex_qa_review.md",
+      "mirror": ".agents/rules/codex_qa_review.md",
+      "canonical_sha256": "d6f59e72232c55d770aa3bcd65d06b1fe97a06e09e940107789792e21f7b7023",
+      "mirror_sha256": "d6f59e72232c55d770aa3bcd65d06b1fe97a06e09e940107789792e21f7b7023",
+      "identical": true
+    },
+    {
+      "canonical": "project-control/.agents/rules/delivery_and_coord_gate.md",
+      "mirror": ".agents/rules/delivery_and_coord_gate.md",
+      "canonical_sha256": "1f53b9a0893ae91c955a2822b7c5acd61467a47d811de89c74223998ab967d06",
+      "mirror_sha256": "1f53b9a0893ae91c955a2822b7c5acd61467a47d811de89c74223998ab967d06",
+      "identical": true
+    },
+    {
+      "canonical": "project-control/.agents/rules/e2e_issue_verification_flow.md",
+      "mirror": ".agents/rules/e2e_issue_verification_flow.md",
+      "canonical_sha256": "8ddf414b19a501b804fff47a983d0962408e977de1f948c94cf5ecdce9c45349",
+      "mirror_sha256": "8ddf414b19a501b804fff47a983d0962408e977de1f948c94cf5ecdce9c45349",
+      "identical": true
+    },
+    {
+      "canonical": "project-control/.agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+      "mirror": ".agents/rules/qa_audit_checklist_guide_20261013_115611.md",
+      "canonical_sha256": "01ba0f8aaeb211a355400d2ed63b8be8e973e83c77edaaa0106f835547f6c1ea",
+      "mirror_sha256": "01ba0f8aaeb211a355400d2ed63b8be8e973e83c77edaaa0106f835547f6c1ea",
+      "identical": true
+    },
+    {
+      "canonical": "project-control/.agents/rules/templates/QA审查报告模板.md",
+      "mirror": ".agents/rules/templates/QA审查报告模板.md",
+      "canonical_sha256": "5e725a007c7b515cf584c6f8551d6fa2ea844fb9139717e8ce52e92ab629b841",
+      "mirror_sha256": "5e725a007c7b515cf584c6f8551d6fa2ea844fb9139717e8ce52e92ab629b841",
+      "identical": true
+    },
+    {
+      "canonical": "project-control/.agents/rules/templates/任务卡模板.md",
+      "mirror": ".agents/rules/templates/任务卡模板.md",
+      "canonical_sha256": "73ce5eba9299d4902a5a232face06d2e20a7707fc32923f25ad15b88e5158ce7",
+      "mirror_sha256": "73ce5eba9299d4902a5a232face06d2e20a7707fc32923f25ad15b88e5158ce7",
+      "identical": true
+    },
+    {
+      "canonical": "project-control/.agents/rules/templates/角色任务提示词.md",
+      "mirror": ".agents/rules/templates/角色任务提示词.md",
+      "canonical_sha256": "9b7e496c4687d6db6c1f7638758dc38629dbadfb455408a6b404ef771006fd8d",
+      "mirror_sha256": "9b7e496c4687d6db6c1f7638758dc38629dbadfb455408a6b404ef771006fd8d",
+      "identical": true
+    }
+  ],
+  "scope_limitations": [
+    "This is an author document snapshot and mirror check, not independent QA.",
+    "No commit, push, server-sandbox verification or hardware test was performed by this author.",
+    "No task state or historical report/signature was modified."
+  ]
+}

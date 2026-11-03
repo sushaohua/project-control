@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Optional
 
 from delivery_checks import closure_errors
+from coord_runner.review_policy import resolve_review_policy
 
 try:
     import yaml
@@ -171,8 +172,12 @@ def _check_shared_inputs(task_id: str, card: dict, workspace: Path) -> list:
         if source and not (workspace / source).is_file():
             problems.append("missing shared input: " + source)
     sessions = (card.get("review_assignments") or {}).get("reviewer_sessions") or []
-    if {item.get("role") for item in sessions} != set(card.get("reviewer") or []):
-        problems.append("required reviewer roles differ from assignments")
+    try:
+        policy = resolve_review_policy(card)
+        if {item.get("role") for item in sessions} != set(policy.roles):
+            problems.append("required reviewer roles differ from assignments")
+    except ValueError as error:
+        problems.append(str(error))
     root = str((card.get("handoff") or {}).get("evidence_location") or "")
     if not root.startswith("docs/evidence/"):
         problems.append("handoff evidence root must start with docs/evidence/")
@@ -312,6 +317,12 @@ def done_acceptance_errors(
     for pred in card.get("depends_on", []):
         if cards.get(pred, {}).get("status") != "Done":
             errors.append(f"{task_id}: marked Done but predecessor {pred} is {cards.get(pred, {}).get('status')}")
+    try:
+        streamlined = resolve_review_policy(card).streamlined
+    except ValueError as error:
+        return errors + [task_id + ": " + str(error)]
+    if streamlined and workspace is not None:
+        return errors + [task_id + ": " + item for item in closure_errors(card, workspace)]
     author_identities = {
         card.get("owner"),
         (card.get("executor") or {}).get("agent_id")

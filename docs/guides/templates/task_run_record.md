@@ -1,5 +1,7 @@
 # 单票实际执行记录模板
 
+> **切换补丁待接受：** 本文的 `streamlined-v1` 是候选策略定义，尚未正式发布。本次变更须先按 legacy 门禁接受，由 COORD 登记准确生效版本后启用；此前保持停机，旧任务按原门禁处理。切换与逐卡迁移见 `project-control/docs/planning/qa_streamline_cutover_20261103.md`。
+
 模板版本：2026-10-27。与[任务卡](../../../.agents/rules/templates/任务卡模板.md)、[派单提示](../../../.agents/rules/templates/角色任务提示词.md)、[QA报告](../../../.agents/rules/templates/QA审查报告模板.md)配套。只在真实run复制到本票授权证据目录；模板和计划命令不是运行结果，空值不能改成示例PASS。
 
 ```yaml
@@ -82,4 +84,4 @@ HIL记录真实端点和部署身份，原始TX/RX带UTC毫秒及单调时钟/�
 
 真实run补充`candidate_server_lock`、`remote_verification`、`qa_sandbox`、`actual_session_evidence`及`trusted_runner_job`（均含准确路径/SHA256与身份映射）。区分作者自检与正式服务器沙箱QA。QA必须从服务器锁定提交重建；记录独立Git对象/工作区/输出、实际隔离机制、镜像/快照/账户/挂载/依赖及HIL设备窗口。不把本机worktree或新目录称为独立沙箱。
 
-QA报告和非作者复核分别绑定准确候选与报告哈希；报告发布在后续证据提交，明确被审源码commit，行政收件不触发无限递归重审。完整要求见[交付门禁](../../../.agents/rules/delivery_and_coord_gate.md)。
+独立QA报告绑定准确候选与报告哈希；`streamlined-v1` 不默认报告二次复核，legacy 的非作者复核仍分别绑定候选和报告哈希；报告发布在后续证据提交，明确被审源码commit，行政收件不触发无限递归重审。完整要求见[交付门禁](../../../.agents/rules/delivery_and_coord_gate.md)。

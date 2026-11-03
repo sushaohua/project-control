@@ -1,0 +1,69 @@
+{
+  "base_commit": "9f1ad485751118112fa077743fcc6acfb5857bc1",
+  "kind": "uncommitted-author-source-manifest",
+  "files": [
+    {
+      "path": "tools/coord_runner/review_policy.py",
+      "sha256": "57898082f78ea747761e8a1f5b4d60d26b9e4b6047e6cde74786f9dd9aee86f1"
+    },
+    {
+      "path": "tools/coord_runner/runner.py",
+      "sha256": "7a38b680be144d8d5a32346bde020227a64dfcee7eaf5942eb271ac4c59489e5"
+    },
+    {
+      "path": "tools/coord_runner/state_machine.py",
+      "sha256": "f46e05e4d6a7fe857987fad925972fc794d807e7db439d43b8095f8b4fdadbd9"
+    },
+    {
+      "path": "tools/coord_runner/review_bundle.py",
+      "sha256": "0e544b1aa617468aafef49aba8e890462a9155e9744266e197c13700965bb60e"
+    },
+    {
+      "path": "tools/delivery_checks.py",
+      "sha256": "80f0d0b0faeb3576661e18c91dfa848d0b2bd0808010a62123c5383714902d9d"
+    },
+    {
+      "path": "tools/check_task_graph.py",
+      "sha256": "797a670c081c799127579ac3797d53a1ec303d4f7edcf33f05799d3473123b97"
+    },
+    {
+      "path": "tools/test_delivery_checks.py",
+      "sha256": "d4e523ed3d3e9348bf85681215083d2388a1d8290819859aab428b54d73a1d77"
+    },
+    {
+      "path": "tools/test_qa_pipeline.py",
+      "sha256": "dd13dd3839b9da0989b1fa92515be0a12d15c85bd84b23616073f96899a98f04"
+    },
+    {
+      "path": "tools/test_review_policy.py",
+      "sha256": "8f0e7230ed18309f7ca332a3b8f8dfc690d59bc137a7194cd90f60a64e1df016"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "docs/evidence/qa_streamline_20261103/author/run_01/self_check_results.json",
+      "sha256": "81725c1ef76f37c7b08894fdce32166aac9a3ef1e176c0bd7bf50760bd60f577"
+    },
+    {
+      "path": "docs/evidence/qa_streamline_20261103/author/run_01/final_checks.json",
+      "sha256": "6c8cbceee92cc4fedd116d8e2e9a5dbcc612aaf9977e39ec1d60d056b2e0eb5a"
+    }
+  ],
+  "function_violations": [],
+  "whitespace_command": [
+    "git",
+    "diff",
+    "--check",
+    "--",
+    "tools/coord_runner/review_policy.py",
+    "tools/coord_runner/runner.py",
+    "tools/coord_runner/state_machine.py",
+    "tools/coord_runner/review_bundle.py",
+    "tools/delivery_checks.py",
+    "tools/check_task_graph.py",
+    "tools/test_delivery_checks.py",
+    "tools/test_qa_pipeline.py",
+    "tools/test_review_policy.py"
+  ],
+  "whitespace_exit_code": 0
+}

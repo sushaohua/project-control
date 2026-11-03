@@ -1,0 +1,151 @@
+{
+  "kind": "author-self-check-only",
+  "time": "2026-11-03T21:57:06.416973+08:00",
+  "independent_qa": false,
+  "results": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_review_policy.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 7,
+      "log": "test_review_policy.log",
+      "sha256": "aaf69bf315931a67c0039e5f5f0c46e505e97ae355de57c284ebc060516cef71"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_delivery_checks.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 25,
+      "log": "test_delivery_checks.log",
+      "sha256": "4d23341a74d64d38e3a4464021550c02d645c2c2c3caab047b0b2d6f289edf96"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_qa_pipeline.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 24,
+      "log": "test_qa_pipeline.log",
+      "sha256": "39ac71f32b0dbca4e0a7ae74c2e859995500d61ea29d040805981a16d1ea6eb1"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_coord_runner.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 74,
+      "log": "test_coord_runner.log",
+      "sha256": "ae30508e3f7f28fecfa7013ec53da011fb4e2cdd2ed7180585c5d74cc95c500f"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_check_task_graph.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 12,
+      "log": "test_check_task_graph.log",
+      "sha256": "23a7829b307154000f75ceaea84939fa0c659bf43f5cdab391de8d365d4ac374"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_coord_recovery.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 19,
+      "log": "test_coord_recovery.log",
+      "sha256": "361fe24c014c6c2d8b93451234487826265e59df7d9e802d7bfe51027538d7b7"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_phase1_intake_acceptance.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 20,
+      "log": "test_phase1_intake_acceptance.log",
+      "sha256": "e241230d5bb36134287e9bdadcc0ea148c46df7b5986f7e6b248c7c5506a28f2"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_coord_systemd_service.py",
+        "-v"
+      ],
+      "cwd": "/home/sushaohua/workspace/ai_soc_project/project-control",
+      "exit_code": 0,
+      "tests": 15,
+      "log": "test_coord_systemd_service.log",
+      "sha256": "79321a0bd6f94d24756b5c64dc0cbf1c778ac605db2af3b37af0dae16405b512"
+    }
+  ]
+}

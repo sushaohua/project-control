@@ -5,6 +5,7 @@ from pathlib import Path
 import hashlib
 import json
 import re
+import yaml
 from typing import Dict, Optional, Set
 
 from .errors import (
@@ -14,6 +15,7 @@ from .errors import (
     StateTransitionError,
 )
 from .models import TaskExecutionRecord, TaskState
+from .review_policy import resolve_review_policy
 
 HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
 
@@ -50,6 +52,10 @@ class CoordStateMachine:
         record.state = target.value
 
     def validate_ready(self, card: dict, completed_tasks: Set[str]) -> None:
+        try:
+            resolve_review_policy(card)
+        except ValueError as error:
+            raise GateValidationError(str(error)) from error
         if card.get("blocked"):
             raise GateValidationError(f"Task {card.get('id')} is marked as blocked")
         deps = card.get("depends_on", [])
@@ -225,12 +231,28 @@ class CoordStateMachine:
                 f"Fake Done rejected: QA entry report_path ({entry_path}) does not match report_review path ({r_path})"
             )
 
+    def _validate_primary_review(self, entry: dict, card: dict, workspace: Path) -> None:
+        try:
+            if __package__.startswith("tools."):
+                from ..delivery_checks import validate_streamlined_entry
+            else:
+                from delivery_checks import validate_streamlined_entry
+            validate_streamlined_entry(entry, card, workspace)
+        except (ValueError, OSError, KeyError, TypeError, yaml.YAMLError) as error:
+            raise GateValidationError(str(error)) from error
+
     def validate_done_acceptance(self, card: dict, workspace: Path) -> None:
+        try:
+            policy = resolve_review_policy(card)
+        except ValueError as error:
+            raise GateValidationError(str(error)) from error
         assignments = (card.get("review_assignments") or {}).get("reviewer_sessions") or []
         if not assignments:
             raise GateValidationError("Fake Done rejected: missing review assignments")
-        req_raw = card.get("reviewer") or []
-        required_roles = [req_raw] if isinstance(req_raw, str) else list(req_raw)
+        required_roles = policy.roles
+        roles = [entry.get("role") for entry in assignments]
+        if policy.streamlined and (set(roles) != set(required_roles) or len(roles) != len(set(roles))):
+            raise GateValidationError("Required reviewer roles are missing, duplicated or substituted")
         approved_roles = set()
         for entry in assignments:
             platform = entry.get("platform")
@@ -251,5 +273,7 @@ class CoordStateMachine:
                 raise GateValidationError(f"Fake Done rejected: required reviewer role {r} missing or not approved")
         author = card.get("session_id") or card.get("author_session") or card.get("owner")
         for entry in assignments:
-            if entry.get("role") == "QA" and "QA" in required_roles:
+            if policy.streamlined:
+                self._validate_primary_review(entry, card, workspace)
+            if policy.report_review_required and entry.get("role") == "QA" and "QA" in required_roles:
                 self._validate_qa_report_review(entry, author, workspace)

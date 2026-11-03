@@ -12,6 +12,7 @@ import yaml
 from .codex_adapter import CodexAuditOptions, audit_schema, parse_final_response
 from .codex_qa import read_qa_ref, validate_server_proof
 from .errors import CoordRunnerError
+from .review_policy import resolve_review_policy
 
 
 def file_ref(path: Path) -> dict:
@@ -119,6 +120,33 @@ def validate_audit(result: object, expected: dict) -> dict:
     return report
 
 
+def candidate_artifact_refs(bundle: dict) -> list:
+    """Bind declared deliverables to files in the independent pinned checkout."""
+    if not resolve_review_policy(bundle["request"]["contract"]).streamlined:
+        return []
+    result = []
+    names = (bundle["request"]["contract"].get("deliverables") or {}).get("artifacts") or []
+    for name in names:
+        matched = []
+        for source in bundle["diffs"]:
+            root = Path(source["source"]).resolve()
+            prefix = source["repository"] + "/"
+            relative = name[len(prefix):] if name.startswith(prefix) else name
+            if Path(relative).is_absolute() or ".." in Path(relative).parts:
+                raise CoordRunnerError("Deliverable path escapes the pinned checkout")
+            pattern = relative + "/*" if relative.endswith("/**") else relative
+            for path in root.glob(pattern):
+                if not path.is_file():
+                    continue
+                if root not in path.resolve().parents:
+                    raise CoordRunnerError("Deliverable symlink escapes the pinned checkout")
+                matched.append(file_ref(path))
+        if not matched:
+            raise CoordRunnerError(f"Declared deliverable is missing from pinned checkout: {name}")
+        result.extend(matched)
+    return list({item["path"]: item for item in result}.values())
+
+
 def save_audit_report(result: object, context: dict, audit_dir: Path) -> dict:
     report = validate_audit(result, context["expected"])
     if not context["bundle"]["server_qa"]["passed"] and report["decision"] == "APPROVED":
@@ -129,7 +157,8 @@ def save_audit_report(result: object, context: dict, audit_dir: Path) -> dict:
                     reviewer_roles=[report["role"]], reviewed_artifact_version=version,
                     server_qa=context["bundle"]["server_qa"], platform="codex",
                     model=context["model"], session_evidence=file_ref(audit_dir / "codex.jsonl"),
-                    reviewed_artifacts=[request["request_ref"]] + [item["diff"] for item in context["bundle"]["diffs"]],
+                    reviewed_artifacts=[request["request_ref"]] + [item["diff"] for item in context["bundle"]["diffs"]]
+                    + candidate_artifact_refs(context["bundle"]),
                     verification_scope=report["accepted_scope"],
                     verification_environment="docker-sandbox-and-independent-codex-audit")
     path = audit_dir / "review_report.md"

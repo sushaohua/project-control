@@ -1,0 +1,64 @@
+# Repository Guidelines
+
+## Workspace Structure
+
+This directory is a lightweight workspace entry Git repository containing six independent project Git repositories. The entry repository tracks root documentation, tools, and recovery commits for the four original repositories in `workspace.json`; child repositories are ignored rather than embedded or managed as submodules. Use `bash tools/workspace_git.sh ...` for entry Git operations in managed environments with a protected `.git/`; see `WORKSPACE.md`. `project-control/` holds project plans, requirements, engineering rules, and task records. `soc-ap/` is the SoC application scaffold, with `core/`, `config/`, `specs/`, and `tests/`. `mcu-p3/` contains the MC/TH application firmware. `test_harness/` keeps independent QA assets in `static_checks/`, `hil/`, and `test_cases/`. `boot/bootloadermc/` and `boot/bootloaderth/` are independent Bootloader repositories; their nested paths are not yet supported by the existing recovery script. Coordination rules and board files are duplicated in the root `.agents/` and `project-control/.agents/`; `project-control/` is marked canonical in `manifest.yaml`, so confirm the authoritative copy before editing either set.
+
+Treat existing symbolic links inside this workspace as local workspace paths: follow them to read or edit their intended target content. Keep access within the linked directory; a link does not authorize exploring unrelated paths outside its target.
+
+## Bootloader Roles and Branches
+
+`ENG_BOOT_MC` owns `boot/bootloadermc/` (`ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git`); `ENG_BOOT_TH` owns `boot/bootloaderth/` (`ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git`). Both develop exclusively on `soc_debug`, never on `main`; check the actual repository, branch and task scope before writing or pushing. Read the target repository's own `AGENTS.md`, `.agents/` and `docs/` before work. `ENG-MC`/`ENG-TH` retain application ownership in `mcu-p3/`. Follow `project-control/.agents/rules/bootloader_role_boundaries.md`; registering roles does not authorize Bootloader changes, flashing, or changes to the existing requirement to avoid Bootloader modifications for first-release upgrades. Local rule/document symlinks are not yet versioned for remote recovery or QA.
+
+## Independent QA
+
+All pending and new QA reviews and verification must use independent Codex sessions. Follow the canonical policy in `project-control/.agents/rules/codex_qa_review.md`, including the independent non-author review of QA-authored cases, expectations, and tools. The candidate `qa_policy: streamlined-v1` uses one independent QA round (code review plus functional and relevant regression tests) without default ARCH duplication or a second review of each QA report. It becomes effective only after this cutover patch passes the legacy gate and COORD records its exact release version; see `project-control/docs/planning/qa_streamline_cutover_20261103.md`. Tasks without an explicit policy remain legacy, including their report-review requirement; unfinished tasks require recorded migration. Explicit additional reviewers and necessary Owner acceptance remain required. Preserve completed historical signatures; planned session aliases do not indicate a running reviewer or approval.
+
+## COORD Dispatch and Server-based QA
+
+Follow `project-control/.agents/rules/delivery_and_coord_gate.md` and the canonical `project-control/docs/planning/coord_autorun_tasklist_20261029.md`. COORD launches actual role agents and closes each task before releasing dependent work. Formal QA requires deterministic builds and tests of exact server-fetched commits in an independent Docker sandbox, followed by an independent Codex session on the host that reviews a read-only snapshot of the same candidate and its evidence; a new thread, directory, or Git worktree alone is insufficient. Preserve historical records and bind runtime, server, sandbox, candidate, and report evidence; legacy tasks additionally retain non-author report-review evidence. For streamlined-v1, reuse validated sandbox facts for the same task revision, exact candidate, test plan, tools/configuration/dependencies, and evidence hashes; do not repeat Docker tests merely to review a report. A static checker or written queue does not establish a deployed scheduler or trusted QA service.
+
+### COORD Role Boundaries and Code Read-Only Invariant (COORD 角色边界与代码只读硬铁律)
+1. **代码库写入物理级封锁**：COORD 的写入权限严格受限于 `project-control/`（任务卡、Issue、调度记录、验收方案及顶层配置）。**严禁 COORD 直接修改 `soc-ap/`、`mcu-p3/`、`test_harness/`、`boot/bootloadermc/`、`boot/bootloaderth/` 业务代码仓库**。
+2. **工程任务委派**：代码编写、业务修改、作者自检、集成打包等工程工作，COORD 必须通过 `invoke_subagent` 委派对应 `ENG-*`、`ENG_BOOT_MC`、`ENG_BOOT_TH` 或 `INTEGRATOR`，不得在主会话中代做。QA 编写测试计划、独立预期和测试工具仍按既有职责派单，其产物须接受独立复核。
+3. **正式独立 QA**：正式 QA 必须使用独立 Codex 会话，按权威 `codex_qa_review.md` 执行。仅通过 `invoke_subagent` 创建名为 QA 的普通子 Agent，不构成合规的独立 QA；只有实际启动独立 Codex 并提供可核验的会话和运行证据，才满足会话要求。派发工具名称、角色名或计划别名不能替代这些证据。
+4. **QA 执行顺序与调度授权**：由受控 Python Runner 确定性执行服务器锁定候选的独立 Docker 构建与测试，固化并校验客观证据，再启动独立 Codex 对同一候选及证据进行只读审阅。COORD 可以启动或委派启动该流程，这不属于 COORD 代做工程任务；不得在主会话直接运行被审代码的构建和测试，也不得让普通子 Agent 的自测、自评或手写报告替代该流程。独立 Codex 不负责启动 Docker 或补写测试计划。
+5. **收件与关闭**：必须取得与准确候选绑定的实际审阅结果、所用 qa_policy 的必需接受及必要 Owner 接受后（streamlined-v1 不默认二次审报告；未迁移 legacy 保留原报告复核），COORD 才能推进完成或关闭 Issue。调用失败、超时、证据不足或 `BLOCKED/INCONCLUSIVE` 时保持待审并记录阻塞及解除条件，禁止回退 `self`、提前批准或事后补签；保留历史报告，后续复验另建 run。
+
+## Build and Test
+
+The repositories are currently scaffolds and do not define a workspace-wide build, test, or lint command. Check the target repository's README and the applicable task contract before running commands. Run Git operations from the relevant repository, for example `git -C soc-ap status`; each project repository has its own history. Do not report a build or test as passing unless it was actually run against the relevant implementation.
+
+## Style and Documentation
+
+Follow established conventions in the target module. Keep changes focused and put executable contracts and tests beside the code they govern; keep cross-project plans and decisions in `project-control/`. Existing project documentation is primarily Chinese, uses Markdown, and records task scope, prerequisites, evidence, and acceptance conditions. Preserve those conventions when editing these documents. No repository-wide formatter or linter is configured yet.
+
+## Coding Standards and Methodological Invariants (代码编写规范与硬性门禁)
+
+All code written across repositories (`soc-ap/`, `mcu-p3/`, `test_harness/`, `boot/bootloadermc/`, `boot/bootloaderth/`) must strictly comply with the engineering protocols absorbed from `/home/sushaohua/agents/mcu-p3/AGENTS.md` and canonicalized in `project-control/.agents/rules/c_cpp_coding_standard.md` (for C/C++ embedded firmware and systems) and `project-control/.agents/rules/web_ui_coding_standard.md` (for Web HMI frontend):
+1. **函数规模硬性门禁**：**严禁编写超 50 行的自研非结构体函数**。单个自研函数必须保持单一职责并控制在 50 行以内；复杂逻辑必须按阶段拆解为带 `static` 修饰的内部辅助函数。
+2. **入参个数硬性门禁**：**严禁编写超 4 个入参的自研非结构体函数**。自研函数参数严禁超过 4 个；若初始化、配置或执行需要较多参数，必须封装为专用结构体指针传入（如 `const config_t*` 或 `context_t*`）。
+3. **存量代码豁免原则**：自研新增代码 100% 严格执行上述门禁；第三方开源或继承自历史社区的存量代码（如 Marlin 运动控制器、系统库）以**最小修改预算 (Minimal Diff Budget)** 优先，严禁大范围无关重构或修改已有外部接口。若冻结 ABI 需兼容历史多参入口，公共包装函数必须将实现拆解委托给符合 $\le 50$ 行且 $\le 4$ 参的静态辅助函数。
+4. **内存与指针安全**：
+   - 指针显式化，严禁压缩指针运算黑魔法（如禁止 `*dst++ = *src++`，统一使用数组下标或分步拆行递增）。
+   - 严禁使用超过二级的多重指针（禁止 `***ptr`），指针解引用与取地址操作必须独立成行。
+   - 裸机及嵌入式 C++ 零动态堆内存分配（严禁 `new`, `delete`, `malloc`, `free` 及动态 STL 容器）。
+   - 禁用异常与 RTTI（`-fno-exceptions -fno-rtti`），显式两阶段初始化，编译期 `static_assert` 结构体布局校验。
+5. **控制流与接口防御**：
+   - 函数入参在前、出参在后，只读入参必须加 `const`。
+   - 对外公开函数入口第一行必须进行防御性空指针校验（Guard Clause），非法指针立即返回错误码。
+   - 状态返回值统一度量（强类型错误码或 `bool`），业务数据统一通过末尾出参传出。
+   - 卫语句优先，函数嵌套严禁超过 3 层；禁用嵌套三元运算符；复合逻辑条件拆解为具名临时布尔变量。
+6. **硬件与外设操作安全**：
+   - 寄存器读-改-写分步执行（Clear 后 Set），严禁单行合并清除与置位。
+   - 硬件轮询等待强制超时保护（严禁 `while(!FLAG);` 空死等循环，必须展开带超时计数器退出）。
+   - 严禁硬编码数值与魔数，位操作统一使用显式移位（`(1U << bit)`）或标准库位掩码宏。
+7. **通信闭环与硬件真实性强门禁**：
+   - 凡下发指令必绑定超时显式 ACK 闭环，严禁“发后即忘”（禁止无理由 `no_reply=TRUE`）；超时必须向上抛出强类型错误码。
+   - 所有通信超时、丢包或校验报错，必须携带结构化故障上下文（`target_node`, `sequence_id`, `elapsed_ms`, `error_code`），严禁匿名裸日志。
+   - 严禁开环纯本地定时器自增进度，作业推进必须严格以硬件执行 ACK 为基准；断连或丢 ACK 必须瞬时挂起为 `PAUSED`。
+   - 物理拔线容错硬指标：拔除 `/dev/ttyUSB*` 后 CPU 占用必须 $\le 2\%$（严禁忙轮询死循环）；3s 内状态机衰退并将失效温度打入哨兵值，Web 界面锁定控制并返回 HTTP 503/504。
+
+## Changes and Reviews
+
+Use concise, scoped commit subjects. Existing history uses Conventional Commit prefixes such as `docs:` and `chore:`. Keep each commit within one project repository and one logical change. For code work, follow the assigned task's repository and path boundaries, preserve independent QA evidence, and include affected modules plus build or hardware evidence in the review description. For documentation-only changes, identify the documents reviewed and any unverified assumptions.

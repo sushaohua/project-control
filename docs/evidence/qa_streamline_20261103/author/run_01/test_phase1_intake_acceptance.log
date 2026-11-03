@@ -1,0 +1,25 @@
+test_all_acceptance_functions_comply_with_ast_limits (test_phase1_intake_acceptance.TestAcceptanceSuiteInvariants) ... ok
+test_p1_03_approved_feature_scope_dispatches_while_unapproved_blocked (test_phase1_intake_acceptance.TestPhase1ApprovalAndAntiForgery) ... ok
+test_p1_18_partial_batch_approval_and_demand_only_confirmation (test_phase1_intake_acceptance.TestPhase1ApprovalAndAntiForgery) ... ok
+test_p1_19_anti_forgery_rejects_bogus_actors_stale_rev_and_fuzzy_prose (test_phase1_intake_acceptance.TestPhase1ApprovalAndAntiForgery) ... ok
+test_p1_05_intake_rescan_and_renotify_idempotence (test_phase1_intake_acceptance.TestPhase1AsyncOrchestrationAndIdempotence) ... ok
+test_p1_07_higher_revision_in_flight_conflict_delegation (test_phase1_intake_acceptance.TestPhase1AsyncOrchestrationAndIdempotence) ... ok
+test_p1_08_async_long_running_job_allows_second_task_advancement (test_phase1_intake_acceptance.TestPhase1AsyncOrchestrationAndIdempotence) ... ok
+test_p1_20_reordered_input_reuses_approvals_while_substantive_bump_requires_fresh (test_phase1_intake_acceptance.TestPhase1AsyncOrchestrationAndIdempotence) ... ok
+test_p1_11_exit_code_zero_without_evidence_or_qa_rejection_blocked (test_phase1_intake_acceptance.TestPhase1ExecutionGatesAndLiveDrill) ... ok
+test_p1_12_unpushed_candidate_and_fake_qa_subagent_rejected (test_phase1_intake_acceptance.TestPhase1ExecutionGatesAndLiveDrill) ... ok
+test_p1_15_live_drill_end_to_end_verification (test_phase1_intake_acceptance.TestPhase1ExecutionGatesAndLiveDrill) ... ok
+test_p1_01_batch_markdown_generates_unique_yamls_and_preserves_contracts (test_phase1_intake_acceptance.TestPhase1IntakeAndSecurity) ... ok
+test_p1_06_tampered_content_and_schema_version_isolated_from_valid_items (test_phase1_intake_acceptance.TestPhase1IntakeAndSecurity) ... ok
+test_p1_16_delete_or_disable_preserves_in_flight_and_blocks_shell_and_escape (test_phase1_intake_acceptance.TestPhase1IntakeAndSecurity) ... ok
+test_p1_09_timeout_and_crash_reconciliation_via_dispatch_key (test_phase1_intake_acceptance.TestPhase1ReconciliationAndConcurrency) ... ok
+test_p1_10_single_instance_flock_and_active_lease_protection (test_phase1_intake_acceptance.TestPhase1ReconciliationAndConcurrency) ... ok
+test_p1_13_cas_optimistic_concurrency_blocks_user_overwrite (test_phase1_intake_acceptance.TestPhase1ReconciliationAndConcurrency) ... ok
+test_p1_02_ambiguous_requirement_triggers_pm_arch_clarification (test_phase1_intake_acceptance.TestPhase1TriageAndMultiRole) ... ok
+test_p1_04_issue_root_cause_triage_routing_to_owner (test_phase1_intake_acceptance.TestPhase1TriageAndMultiRole) ... ok
+test_p1_17_single_demand_multi_role_split_preserves_demand_id (test_phase1_intake_acceptance.TestPhase1TriageAndMultiRole) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 1.466s
+
+OK

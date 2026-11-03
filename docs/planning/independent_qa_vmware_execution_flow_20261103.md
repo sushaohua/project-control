@@ -8,6 +8,8 @@ source: 用户要求生成独立 QA 流程、手册派生 basecase、可交 COOR
 
 # 独立 QA 沙箱构建与 VMware 真机黑盒验收流程
 
+> **切换补丁待接受：** 本文的 `streamlined-v1` 是候选策略定义，尚未正式发布。本次变更须先按 legacy 门禁接受，由 COORD 登记准确生效版本后启用；此前保持停机，旧任务按原门禁处理。切换与逐卡迁移见 `project-control/docs/planning/qa_streamline_cutover_20261103.md`。
+
 本文将 [QA 建议方案 v2](qa_automation_real_environment_acceptance_proposal_20261102_v2.md)落实为执行交接设计，沿用[交付门禁](../../.agents/rules/delivery_and_coord_gate.md)、[独立 QA 规则](../../.agents/rules/codex_qa_review.md)和[Issue 流转规则](../../.agents/rules/e2e_issue_verification_flow.md)。本文及配套清单仍需非作者独立复核；文档存在不表示运行器已支持或测试已执行。
 
 配套原件：[basecase 草案](qa_web_hmi_basecases_20261103.md)、[Issue 交接模板](../guides/templates/qa_blackbox_issue_template.md)、[四张问题卡及用户答复](qa_environment_decision_cards_20261103.md)。用户给出的 `Z:\home\sushaohua\workspace\ai_soc_project\...` 在本工作区按对应 Linux 路径读取。
@@ -29,7 +31,7 @@ source: 用户要求生成独立 QA 流程、手册派生 basecase、可交 COOR
 | INTEGRATOR / 发布工具 | 锁定服务器候选，分配组合 buildno，协调本轮 QA 重建制品清单、部署包、台架和修复映射 |
 | 受控 QA 执行器 / 授权台架人员 | Python 确定性拉取、构建、采集和测试；人员确认/实施烧录和必要物理动作，保护原始证据 |
 | 独立 Codex Reviewer | 在宿主独立会话只读审阅同一候选、需求、构建及 HIL 物证，不亲自连接物理设备或启动 Docker |
-| 报告非作者 Reviewer | 独立核对报告原始哈希、范围、候选及证据；未参与报告写作 |
+| 必要额外 Reviewer | 仅按开工明确的特殊范围追加；QA自编用例/预期/工具须非作者独立检查；streamlined-v1不默认二次审报告 |
 | 唯一开发 COORD | 收件回执、查重和分流、派修复任务、协调集成并核验关闭；QA 线不另设开发调度权 |
 
 单轮开工冻结：任务 ID/revision、需求和手册版本、逐项必测/不适用清单、base/delta 和工具版本、服务器 ref/完整 commit、构建合同、台架/账户/窗口、完成期限和证据目录。未接受的具体阈值只阻塞相应断言，不阻止其他已明确准备工作。
@@ -97,7 +99,7 @@ VM 快照不恢复 MCU Flash、外部目录、物理位置或耗材状态，恢�
 4. 每步有限等待并采集浏览器轨迹/截图、公开请求响应、真实双向帧、两路调试日志和适用物理效果。UI 与设备对账按同一请求/采样关联；“发送成功”“收到 ACK”“执行完成”分开判定。
 5. 每例逐次记录 `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`、原因和证据；这些是用例结果，不写入正式任务 status。保留第一次失败和全部重试。缺必需证据不能通过，测试工具错误交 QA 工具 Owner，不强派业务作者改代码。
 6. 一旦失败，先保存现场和证据，以[模板](../guides/templates/qa_blackbox_issue_template.md)生成发现包并通知 COORD；不等整轮报告或审阅结束。只阻塞依赖该失败的用例，继续同候选的独立用例；安全/通用环境前提丢失时停止相关硬件动作。
-7. 范围完成后固化结果、原始物证、Issue 和缺口清单。独立 Codex 只读审阅准确候选及证据，结果经程序校验、报告非作者复核和必要 Owner 接受后，由 COORD 分范围收件。格式错误/超时等记可重试或阻塞结果，禁止回退 self 或补造 APPROVED。
+7. 范围完成后固化结果、原始物证、Issue 和缺口清单。独立 Codex 只读审阅准确候选及证据，结果经程序校验、所用 qa_policy 的必需接受和必要 Owner 接受后（streamlined-v1 不默认二次审报告；legacy 保留原门禁），由 COORD 分范围收件。格式错误/超时等记可重试或阻塞结果，禁止回退 self 或补造 APPROVED。
 
 ## 6. Issue 交 COORD 与开发并行闭环
 
@@ -121,7 +123,7 @@ QA 运行中只接收通知、不换版。仅在本轮完成、空闲，或整�
 
 ## 7. 交付、退出与下一步
 
-本专项最小交付：已复核需求/用例；可重复构建合同及带 buildno 的实际制品；VM/硬件部署 SOP 和环境清单；自动化/采集工具；动态发现与 COORD 回执；新候选固定检查点复验；分范围独立报告及报告非作者复核。正式报告列全必测结果、软件/HIL/UI 人工范围、未关闭 Issue 和限制。
+本专项最小交付：已复核需求/用例；可重复构建合同及带 buildno 的实际制品；VM/硬件部署 SOP 和环境清单；自动化/采集工具；动态发现与 COORD 回执；新候选固定检查点复验；分范围独立报告及所用策略明确的必要接受。正式报告列全必测结果、软件/HIL/UI 人工范围、未关闭 Issue 和限制。
 
 完整接受要求同一最终组合的全部必测项具有有效证据及适用接受，原失败及回归闭环。部分能力可按事前冻结范围接受；运动、调平、供料等必须有相应实际效果，不能用版本查询、固件逻辑坐标或截图扩大结论。
 

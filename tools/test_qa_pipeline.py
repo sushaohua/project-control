@@ -131,6 +131,56 @@ class DeterministicQAPipelineTest(unittest.TestCase):
         self.assertTrue(Path(qa["report_review"]["review_report_path"]).is_file())
         self.assertIn("+after", next(self.created_runs[0].glob("diffs/*.patch")).read_text())
 
+    def test_streamlined_runs_one_sandbox_and_one_independent_audit(self):
+        self.card.update(qa_policy="streamlined-v1", reviewer=["QA"])
+        self.card["deliverables"] = {"artifacts": ["project-control/module.txt"]}
+        system, factory = self._patch_execution()
+        self.runner.step()
+        self.assertEqual(self.order, ["sandbox", "audit"])
+        self.assertEqual(system.run.call_count, 1)
+        self.assertEqual(factory.return_value.execute_audit.call_count, 1)
+        self.assertIn("AUTO-02", self.runner.completed_tasks)
+        self.assertNotIn("report_review", self.card["review_assignments"]["reviewer_sessions"][0])
+        from delivery_checks import closure_errors
+        import check_task_graph as graph
+        self.card["candidate_commit"] = self.commit
+        self.assertEqual(closure_errors(self.card, self.workspace), [])
+        self.assertEqual(graph.done_acceptance_errors("AUTO-02", self.card, {}, self.workspace), [])
+        self.repo.joinpath("module.txt").write_text("tampered source\n")
+        self.assertTrue(closure_errors(self.card, self.workspace))
+        with self.assertRaises(Exception):
+            self.runner.state_machine.validate_done_acceptance(self.card, self.workspace)
+
+    def test_streamlined_extra_arch_uses_same_completed_sandbox(self):
+        self.card["qa_policy"] = "streamlined-v1"
+        system, factory = self._patch_execution()
+        self.runner.step()
+        self.assertEqual(self.order, ["sandbox", "audit", "audit"])
+        self.assertEqual(system.run.call_count, 1)
+        self.assertEqual(factory.return_value.execute_audit.call_count, 2)
+        self.assertIn("AUTO-02", self.runner.completed_tasks)
+
+    def test_streamlined_qa_authored_tool_gets_one_arch_audit(self):
+        self.card.update(qa_policy="streamlined-v1", executor={"role": "QA"})
+        self.card.pop("reviewer")
+        self._patch_execution()
+        self.runner.step()
+        self.assertEqual(self.order, ["sandbox", "audit"])
+        self.assertIn("AUTO-02", self.runner.completed_tasks)
+        self.assertEqual(self.card["review_assignments"]["reviewer_sessions"][0]["role"], "ARCH")
+
+    def test_streamlined_resume_uses_completed_facts_and_rejects_tampering(self):
+        self.card.update(qa_policy="streamlined-v1", reviewer=["QA"])
+        self._patch_execution()
+        self.audit_failure = CoordRunnerError("review unavailable")
+        self.runner.step()
+        self.assertEqual(self.record.state, TaskState.BLOCKED.value)
+        self.audit_failure = None
+        self.runner.resume_task("AUTO-02")
+        self.runner.step()
+        self.assertEqual(self.order.count("sandbox"), 1)
+        self.assertIn("AUTO-02", self.runner.completed_tasks)
+
     def test_missing_plan_blocks_before_any_model_or_subprocess(self):
         system, factory = self._patch_execution()
         self.card["verification"]["commands"] = []

@@ -1,0 +1,30 @@
+test_artifact_change_invalidates_old_review (test_delivery_checks.DeliveryChecksTest) ... ok
+test_complete_recorded_evidence_passes_local_structure_only (test_delivery_checks.DeliveryChecksTest) ... ok
+test_coord_receipt_cannot_substitute_owner_report (test_delivery_checks.DeliveryChecksTest) ... ok
+test_current_task_revision_must_match (test_delivery_checks.DeliveryChecksTest) ... ok
+test_developer_mount_or_worktree_is_not_a_sandbox (test_delivery_checks.DeliveryChecksTest) ... ok
+test_done_label_cannot_release_unverified_twin_input (test_delivery_checks.DeliveryChecksTest) ... ok
+test_local_source_or_nonfresh_checkout_is_rejected (test_delivery_checks.DeliveryChecksTest) ... ok
+test_missing_required_owner_is_rejected (test_delivery_checks.DeliveryChecksTest) ... ok
+test_new_functions_keep_scale_and_parameter_limits (test_delivery_checks.DeliveryChecksTest) ... ok
+test_null_dependency_version_is_a_ready_blocker (test_delivery_checks.DeliveryChecksTest) ... ok
+test_placeholder_server_commit_is_rejected (test_delivery_checks.DeliveryChecksTest) ... ok
+test_qa_authored_artifact_also_requires_server_sandbox_review (test_delivery_checks.DeliveryChecksTest) ... ok
+test_qa_report_cannot_self_review (test_delivery_checks.DeliveryChecksTest) ... ok
+test_report_cannot_approve_a_different_candidate_version (test_delivery_checks.DeliveryChecksTest) ... ok
+test_report_review_cannot_reuse_qa_sandbox (test_delivery_checks.DeliveryChecksTest) ... ok
+test_role_alias_without_runtime_record_cannot_close (test_delivery_checks.DeliveryChecksTest) ... ok
+test_secondary_review_must_bind_exact_qa_report (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_accepts_one_primary_review_in_both_gates (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_invalid_session_returns_errors_without_crashing (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_qa_author_requires_independent_artifact_check (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_special_owner_remains_required (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_wrong_candidate_and_missing_tests_fail_both_gates (test_delivery_checks.DeliveryChecksTest) ... ok
+test_bootstrap_selected_before_business (test_delivery_checks.QueueTest) ... ok
+test_duplicate_or_unknown_queue_is_rejected (test_delivery_checks.QueueTest) ... ok
+test_existing_assignment_is_reported_before_new_dispatch (test_delivery_checks.QueueTest) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 0.118s
+
+OK

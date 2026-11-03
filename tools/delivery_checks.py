@@ -10,6 +10,18 @@ import subprocess
 from typing import Optional
 
 import yaml
+if __package__:
+    from .coord_runner.review_policy import candidate_repository, check_primary_identity, resolve_review_policy
+    from .coord_runner.role_adapter import verify_independent_codex_review_entry
+    from .coord_runner.errors import CoordRunnerError
+    from .coord_runner.codex_qa import read_qa_ref, validate_server_proof
+    from .coord_runner.qa_contract import freeze_commands
+else:
+    from coord_runner.review_policy import candidate_repository, check_primary_identity, resolve_review_policy
+    from coord_runner.role_adapter import verify_independent_codex_review_entry
+    from coord_runner.errors import CoordRunnerError
+    from coord_runner.codex_qa import read_qa_ref, validate_server_proof
+    from coord_runner.qa_contract import freeze_commands
 
 
 def _find_git_blob_by_sha256(path: Path, expected: str) -> Optional[bytes]:
@@ -171,6 +183,95 @@ def check_server_qa(header: dict, card: dict, workspace: Path) -> None:
             raise ValueError("server lock needs URL, ref and full commit per repository")
         if len(set(commit)) <= 1:
             raise ValueError("server lock contains a placeholder commit")
+    if resolve_review_policy(card).streamlined:
+        check_streamlined_proof(proof, repositories, card)
+
+
+def check_streamlined_proof(proof: dict, repositories: list, card: dict) -> None:
+    if proof.get("passed") is not True:
+        raise ValueError("Required objective checks have not passed")
+    candidate = card.get("candidate_commit")
+    repository = candidate_repository(card)
+    if not repository or not any(repo.get("name") == repository and repo.get("commit") == candidate
+                                 for repo in repositories):
+        raise ValueError("Server lock does not bind the candidate repository/commit")
+    planned = freeze_commands(card)
+    observed = proof.get("build_results", []) + proof.get("test_results", [])
+    if not proof.get("test_results") or len(observed) != len(planned):
+        raise ValueError("Required objective checks are missing")
+    expected = sorted((item["command"], item["subpath"]) for item in planned)
+    actual = sorted((item.get("command"), item.get("subpath")) for item in observed)
+    if actual != expected or any(str(item.get("exit_code")) != "0" for item in observed):
+        raise ValueError("Required objective checks did not match or pass")
+
+
+def check_streamlined_server_qa(header: dict, card: dict, workspace: Path) -> None:
+    ref = header.get("server_qa") or {}
+    if not Path(ref.get("path", "")).is_absolute():
+        check_server_qa(header, card, workspace)
+        return
+    artifacts = header.get("reviewed_artifacts") or []
+    requests = [item for item in artifacts if Path(item.get("path", "")).name == "request.json"]
+    if len(requests) != 1:
+        raise ValueError("Runtime primary review must bind the frozen QA request")
+    run_dir = Path(requests[0]["path"]).parent
+    _, raw = read_qa_ref(requests[0], run_dir)
+    request = json.loads(raw)
+    expected = {"task_id": card.get("id"), "task_revision": card.get("revision"),
+                "candidate_commit": card.get("candidate_commit")}
+    if any(request.get(key) != value for key, value in expected.items()):
+        raise ValueError("Runtime proof request does not bind the active candidate")
+    if request.get("run_dir") != str(run_dir):
+        raise ValueError("Runtime proof request directory changed")
+    proof = validate_server_proof(ref, request)
+    check_streamlined_proof(proof, request["targets"], card)
+
+
+def read_runtime_report(entry: dict) -> dict:
+    path = Path(entry.get("report_path") or entry.get("evidence") or "")
+    if not path.is_absolute() or not path.is_file():
+        raise ValueError("Runtime review report is missing")
+    raw = path.read_bytes()
+    if not raw or hashlib.sha256(raw).hexdigest() != entry.get("report_sha256"):
+        raise ValueError("Runtime review report SHA256 mismatch")
+    return report_header(raw)
+
+
+def check_runtime_candidate(header: dict, card: dict) -> None:
+    proof_ref = header.get("server_qa") or {}
+    proof = json.loads(Path(proof_ref["path"]).read_text())
+    root = Path(proof["sandbox"]["path"]).resolve()
+    paths = []
+    for artifact in header.get("reviewed_artifacts") or []:
+        path = Path(artifact.get("path", "")).resolve()
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != artifact.get("sha256"):
+            raise ValueError("Runtime reviewed artifact SHA256 mismatch")
+        if root in path.parents:
+            relative = str(path.relative_to(root))
+            paths.extend([relative, relative.split("/", 1)[-1]])
+    for name in (card.get("deliverables") or {}).get("artifacts") or []:
+        if not any(fnmatch.fnmatch(path, name) for path in paths):
+            raise ValueError("Declared deliverable is not covered by runtime review: " + name)
+
+
+def validate_streamlined_entry(entry: dict, card: dict, workspace: Path) -> dict:
+    verify_independent_codex_review_entry(entry, "", workspace)
+    name = entry.get("report_path") or entry.get("evidence") or ""
+    if Path(name).is_absolute():
+        header = read_runtime_report(entry)
+        check_primary_identity(entry, header, card)
+        check_streamlined_server_qa(header, card, workspace)
+        check_runtime_candidate(header, card)
+        if not header.get("accepted_scope") or header.get("unexecuted") != []:
+            raise ValueError("Runtime review lacks complete accepted scope")
+        return header
+    check_session(entry, workspace)
+    header = check_report(entry, card, workspace)
+    check_primary_identity(entry, header, card)
+    check_candidate(header, card, workspace)
+    check_audit(header)
+    check_streamlined_server_qa(header, card, workspace)
+    return header
 
 
 def check_audit(header: dict) -> None:
@@ -183,16 +284,22 @@ def check_audit(header: dict) -> None:
 
 def closure_errors(card: dict, workspace: Path) -> list:
     issues = []
+    try:
+        policy = resolve_review_policy(card)
+    except ValueError as error:
+        return [str(error)]
     entries = (card.get("review_assignments") or {}).get("reviewer_sessions") or []
     roles = [entry.get("role") for entry in entries]
-    required = card.get("reviewer") or []
-    required = [required] if isinstance(required, str) else required
+    required = policy.roles
     if not entries or not required:
         issues.append("independent review assignments are missing")
     if set(roles) != set(required) or len(roles) != len(set(roles)):
         issues.append("required reviewer roles are missing, duplicated or substituted")
     for entry in entries:
         try:
+            if policy.streamlined:
+                validate_streamlined_entry(entry, card, workspace)
+                continue
             check_session(entry, workspace)
             header = check_report(entry, card, workspace)
             check_candidate(header, card, workspace)
@@ -201,8 +308,8 @@ def closure_errors(card: dict, workspace: Path) -> list:
             if qa_review or (qa_author and entry.get("role") == "ARCH"):
                 check_audit(header)
                 check_server_qa(header, card, workspace)
-            if qa_review:
+            if qa_review and policy.report_review_required:
                 check_qa_report_review(entry, card, workspace, header)
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, yaml.YAMLError) as error:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, CoordRunnerError, yaml.YAMLError) as error:
             issues.append(str(entry.get("role")) + ": " + str(error))
     return issues

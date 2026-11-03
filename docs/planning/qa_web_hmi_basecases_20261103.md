@@ -7,9 +7,13 @@ status: case-specification-draft-not-executed-not-independently-reviewed
 
 # Web HMI 黑盒 basecase 与本轮 delta 草案
 
+> **切换补丁待接受：** 本文的 `streamlined-v1` 是候选策略定义，尚未正式发布。本次变更须先按 legacy 门禁接受，由 COORD 登记准确生效版本后启用；此前保持停机，旧任务按原门禁处理。切换与逐卡迁移见 `project-control/docs/planning/qa_streamline_cutover_20261103.md`。
+
 配套[独立 QA 执行流程](independent_qa_vmware_execution_flow_20261103.md)。基础来源为[用户手册 v1.0](../guides/web_hmi_user_manual_and_workflow_guide.md)，本轮观察 SHA256 为 `db171ebba2d7cc27eb9b6bae82b961a02a6f2bacd5f9ff645203acf6290cef1a`。执行前从服务器取得已接受版本并重新核对。表中编号是本专项用例草案编号，不是正式任务 ID，也不表示既有稳定基线已全部接受。
 
 ## 1. 来源与用例冻结
+
+本专项采用的策略须在任务卡明确：新卡 `qa_policy: streamlined-v1`，单轮独立 QA 审查代码和功能/回归证据；QA 自编用例/预期/工具须非作者独立检查，不递归增加报告复核。未迁移旧卡保留 legacy 门禁。
 
 basecase 覆盖手册 9 类功能及 7 阶段用户旅程，PM/ARCH 将每项映射至正式需求/准确 revision 和接受依据，独立 QA 据此细化自动化。未接受或不稳定的手册描述先作为候选 base，不能仅凭手册存在认定已稳定实现。产品范围内缺功能记失败，需求歧义阻塞相关断言，冻结项说明依据，禁止失败后删项。
 

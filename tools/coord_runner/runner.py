@@ -23,6 +23,7 @@ if __package__:
     from .m2_drill import execute_m2_live_drill
     from .qa_contract import create_qa_request, repository_from_card
     from .review_bundle import execute_candidate_audit
+    from .review_policy import resolve_review_policy
     from .errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from .job_launcher import JobLauncher
     from .lease_manager import LeaseManager
@@ -46,6 +47,7 @@ else:
     from coord_runner.m2_drill import execute_m2_live_drill
     from coord_runner.qa_contract import create_qa_request, repository_from_card
     from coord_runner.review_bundle import execute_candidate_audit
+    from coord_runner.review_policy import resolve_review_policy
     from coord_runner.errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from coord_runner.job_launcher import JobLauncher
     from coord_runner.lease_manager import LeaseManager
@@ -326,8 +328,8 @@ class CoordRunner:
     def _execute_review_phase(self, record: TaskExecutionRecord, card: dict) -> bool:
         if self.review_executor is None:
             raise CoordRunnerError(f"Missing review_executor for {record.task_id}: fail-closed enforced")
-        req_raw = card.get("reviewer") or ["QA"]
-        required_roles = [req_raw] if isinstance(req_raw, str) else list(req_raw)
+        policy = resolve_review_policy(card, ("QA",))
+        required_roles = policy.roles
         if "review_assignments" not in card or not isinstance(card["review_assignments"], dict):
             card["review_assignments"] = {"reviewer_sessions": []}
         sessions = record.runtime_context.setdefault(
@@ -346,10 +348,12 @@ class CoordRunner:
             sessions[:] = [previous for previous in sessions if previous.get("role") != role]
             sessions.append(entry)
             approved_roles.add(role)
-        if "QA" in required_roles:
+        if policy.report_review_required and "QA" in required_roles:
             if not self._ensure_qa_report_review(record, sessions, author_session):
                 return False
-        self.state_machine.validate_done_acceptance(card, self.config.workspace_root)
+        acceptance_card = dict(card, candidate_commit=record.candidate_commit,
+                               revision=record.task_revision, author_session=record.session_id)
+        self.state_machine.validate_done_acceptance(acceptance_card, self.config.workspace_root)
         self.state_machine.transition(record, TaskState.DONE)
         return True
 
@@ -616,7 +620,9 @@ class CoordRunner:
             if not self._execute_review_phase(record, card):
                 return record.state
         if record.state == TaskState.DONE.value:
-            self.state_machine.validate_done_acceptance(card, self.config.workspace_root)
+            acceptance_card = dict(card, candidate_commit=record.candidate_commit,
+                                   revision=record.task_revision, author_session=record.session_id)
+            self.state_machine.validate_done_acceptance(acceptance_card, self.config.workspace_root)
             self.completed_tasks.add(task_id)
             self.lease_mgr.release_task_leases(task_id)
             del self.in_flight_tasks[task_id]

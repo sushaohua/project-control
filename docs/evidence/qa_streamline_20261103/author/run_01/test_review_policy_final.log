@@ -1,0 +1,12 @@
+test_invalid_policy_is_rejected_before_dispatch (test_review_policy.ReviewPolicyTest) ... ok
+test_invalid_policy_or_roles_fail_closed (test_review_policy.ReviewPolicyTest) ... ok
+test_legacy_is_retained_without_explicit_migration (test_review_policy.ReviewPolicyTest) ... ok
+test_new_policy_and_primary_validator_functions_meet_scale_limits (test_review_policy.ReviewPolicyTest) ... ok
+test_package_entrypoint_imports_shared_gate_without_tools_path (test_review_policy.ReviewPolicyTest) ... ok
+test_qa_authored_tool_defaults_to_one_non_author_arch_check (test_review_policy.ReviewPolicyTest) ... ok
+test_streamlined_defaults_to_one_qa_and_retains_explicit_roles (test_review_policy.ReviewPolicyTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.059s
+
+OK

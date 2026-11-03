@@ -1,0 +1,20 @@
+test_systemd_tools_comply_with_ast_standards (test_coord_systemd_service.ASTScaleAndParameterGateTest) ... ok
+test_absent_crontab_reports_clean (test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_crontab_command_failure_reports_not_clean (test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_forbidden_crontab_entry_detected (test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_missing_crontab_executable_reports_clean (test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_real_crontab_isolation (test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_p1_14_zero_idle_model_consumption_across_consecutive_cycles (test_coord_systemd_service.P1_14_ZeroIdleModelConsumptionAndRecoveryTest) ... ok
+test_service_process_sigterm_stop_and_restart_recovery (test_coord_systemd_service.P1_14_ZeroIdleModelConsumptionAndRecoveryTest) ... ok
+test_check_user_linger_detection (test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok
+test_control_service_actions (test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok
+test_get_service_status_installed_and_missing (test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok
+test_install_and_uninstall_lifecycle (test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok
+test_required_sections_present (test_coord_systemd_service.SystemdUnitFileStructureTest) ... ok
+test_service_exec_and_restart_directives (test_coord_systemd_service.SystemdUnitFileStructureTest) ... ok
+test_working_directory_and_environment (test_coord_systemd_service.SystemdUnitFileStructureTest) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.424s
+
+OK

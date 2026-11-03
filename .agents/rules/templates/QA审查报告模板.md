@@ -2,12 +2,14 @@
 title: 独立 QA 与 QA 作者产物复核报告模板
 status: current-template
 template_version: '2026-10-27'
-updated: '2026-10-27T20:16:05+08:00'
+updated: '2026-11-03T21:50:40+08:00'
 ---
 
 # 独立审查报告模板
 
-本模板适用于独立QA，以及QA作者产物的独立ARCH复核；保留实际岗位。按[Codex QA规则](../codex_qa_review.md)运行，审阅者未参与本产物写作，不继承实现完整交互历史，只读业务源码。复制到新的授权run，不覆盖历史报告。
+> **切换补丁待接受：** 本文的 `streamlined-v1` 是候选策略定义，尚未正式发布。本次变更须先按 legacy 门禁接受，由 COORD 登记准确生效版本后启用；此前保持停机，旧任务按原门禁处理。切换与逐卡迁移见 `project-control/docs/planning/qa_streamline_cutover_20261103.md`。
+
+本模板适用于独立QA，以及QA作者用例/预期/工具的独立ARCH检查；保留实际岗位。`streamlined-v1` 单轮报告经程序校验后交 COORD；legacy 仍需报告非作者复核。按[Codex QA规则](../codex_qa_review.md)运行，审阅者未参与本产物写作，不继承实现完整交互历史，只读业务源码。复制到新的授权run，不覆盖历史报告。
 
 ```yaml
 template_version: '2026-10-27'
@@ -50,6 +52,10 @@ handoff:
   evidence_location: null
 ```
 
+### 报告格式与审阅内容
+
+Runner 自动审阅生成的 runtime 报告按实际 schema 使用 `summary`、`findings`、`accepted_scope`、`unexecuted` 表达审查结果，并由执行器绑定任务/revision、角色、完整候选、实际会话、交付物和服务器沙箱证据；该格式不生成 `content_audit` 的四个字段，不得补造四项 passed。记录式 canonical 报告仍按本模板填写 `content_audit.fact_sources`、`protocol_compatibility`、`claim_scope`、`architecture_completeness` 及实际依据。两种格式均须实质审阅事实来源、协议兼容、批准范围和架构/需求完整性，以及代码、正常/相关异常/恢复与必要回归证据；格式不同不减少审阅范围，未执行或证据不足不得批准。
+
 ## 1. 身份、候选与过程核查
 
 逐项写实际观察和证据；状态只能为“未执行/通过/失败/不适用（附理由）”，复制模板时不得预勾选：
@@ -57,7 +63,7 @@ handoff:
 | 检查项 | 要核对什么 | 实际结果 | 证据 |
 | --- | --- | --- | --- |
 | 输入/范围 | 任务revision、正式契约、前置能力、准确候选、授权路径 | 未执行 | 待实际填写 |
-| 独立性 | 作者与各独立检查者分离，QA作者报告另有独立复核 | 未执行 | 待实际填写 |
+| 独立性 | 作者与各独立检查者分离，QA自编用例/预期/工具有非作者检查；报告复核按策略 | 未执行 | 待实际填写 |
 | 原子步骤 | 先计划/前检、阶段边界、失败归因/熔断、保留用户改动 | 未执行 | 待实际填写 |
 | 代码/构建 | 适用的函数/参数/内存/ISR/DMA及告警门禁，不弱化检查 | 未执行 | 待实际填写 |
 | 证据真实 | 命令/cwd/退出码/原始输出/哈希/环境范围一致，未将模拟当HIL | 未执行 | 待实际填写 |
@@ -96,7 +102,7 @@ content_audit:
   protocol_compatibility: {result: pending, basis: null}
   claim_scope: {result: pending, basis: null}
   architecture_completeness: {result: pending, basis: null}
-# QA报告的非作者复核报告还必须填：
+# 仅legacy QA报告的非作者复核报告填写；streamlined-v1不默认增加此层：
 reviewed_qa_report_sha256: null
 ```
 
@@ -118,9 +124,9 @@ reviewed_qa_report_sha256: null
 
 `server_lock` JSON包含`repositories`数组，每仓有URL、ref、完整commit及所消费的准确版本；`checkout_log`记录从服务器fetch/checkout与clean检查；`runtime_log`记录镜像digest/VM快照、实际sandbox/会话、账户/挂载/隔离/命令/退出码/日志；`server_verdict`是可定位的可信服务端job/候选/会话与判定记录。源码来自服务器、沙箱隔离和结果真实性由AUTO-01的可信runner核实，不能用手写布尔值、作者目录或本地文件存在代替。离线检查工具只核记录结构/哈希，不提供真实性认证。
 
-任务卡Reviewer的`session_evidence`引用实际Codex/运行器导出，内容可定位该session。QA条目`report_review`记录另一非作者的role/session/session_evidence/reviewed_task_revision/evidence/report_sha256；其报告元数据绑定`reviewed_qa_report_sha256`。保留所有旧报告，新候选新run，不覆写旧签署。
+任务卡Reviewer的`session_evidence`引用实际Codex/运行器导出，内容可定位该session。仅 legacy 的 QA条目`report_review`记录另一非作者的role/session/session_evidence/reviewed_task_revision/evidence/report_sha256；其报告元数据绑定`reviewed_qa_report_sha256`。保留所有旧报告，新候选新run，不覆写旧签署。
 
-QA报告的非作者复核报告同样填写`server_qa`，在与原QA不同的独立沙箱中复核服务器候选及已发布报告；其沙箱ID必须不同。QA作者交付的预期/工具由ARCH复核时，也须有服务器基线和独立沙箱记录，但不递归要求再为这份ARCH复核无限增加检查层。
+`streamlined-v1` 不默认生成报告二次复核或为此重复 Docker 测试；按任务 revision、候选、测试计划/工具/配置/依赖及哈希核验同一份有效沙箱事实。legacy 的报告复核仍填写 `server_qa`，保持与原 QA 不同的独立沙箱。QA 作者交付的预期/工具由独立 ARCH 检查其方法、范围和准确版本；所需软件运行留服务器沙箱证据，不递归增加报告检查层。
 
 ## 正常流程覆盖与Issue复验补充（2026-11-02）
 
@@ -134,4 +140,4 @@ QA报告的非作者复核报告同样填写`server_qa`，在与原QA不同的�
 
 结论逐项说明软件门禁和HIL门禁是否必需、是否实际执行及其准确候选；单模块软件接受不外推组合HIL。任一范围内必测项缺失或无证据，不得给该功能/整体验收APPROVED。环境/来源阻塞按交付门禁§5.3记录；报告schema仅支持APPROVED/REJECTED时，缺条件保持待审并注明原因，不能填造APPROVED。
 
-Issue复验逐项关联原失败case、新服务器候选、独立重跑、正常/故障/恢复及受影响回归证据。作者自检或仅不再显示报错不构成修复验收；QA给出实际结果，非作者复核报告后由COORD登记关闭。历史报告的限制或撤回追加到新记录。
+Issue复验逐项关联原失败case、新服务器候选、独立重跑、正常/故障/恢复及受影响回归证据。作者自检或仅不再显示报错不构成修复验收；QA给出实际结果，按所用策略满足必需接受后由COORD登记关闭。历史报告的限制或撤回追加到新记录。

@@ -1,0 +1,29 @@
+test_commentary_cannot_corrupt_separate_schema_result (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_failed_process_cannot_fallback_or_approve (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_fenced_json_is_validated_as_one_document (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_non_json_final_cannot_approve_and_logs_survive (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_timeout_preserves_partial_events_and_error (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_blocked_task_does_not_retry_on_poll (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_daemon_survives_task_audit_error (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_exception_does_not_prevent_other_inflight_task (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_explicit_sandbox_rerun_preserves_previous_evidence (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_failed_objective_checks_are_audited_but_cannot_be_approved (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_finite_mode_returns_when_only_blocked_tasks_remain (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_hil_requirement_cannot_be_approved_by_software_profile (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_internal_typeerror_is_not_reinvoked_with_another_signature (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_invalid_audit_blocks_persists_and_resume_reuses_test_evidence (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_missing_cases_and_wrong_candidate_cannot_be_approved (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_missing_plan_blocks_before_any_model_or_subprocess (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_sandbox_then_independent_readonly_audits_and_bound_reports (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_sandbox_timeout_blocks_without_model_review (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_extra_arch_uses_same_completed_sandbox (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_qa_authored_tool_gets_one_arch_audit (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_resume_uses_completed_facts_and_rejects_tampering (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_runs_one_sandbox_and_one_independent_audit (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_tampered_evidence_prevents_resume_from_approving (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_valid_rejection_returns_to_author_with_report_evidence (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 2.242s
+
+OK
