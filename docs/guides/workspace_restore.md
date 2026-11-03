@@ -4,6 +4,11 @@
 公共脚本和四仓准确恢复版本；工程规则、任务、协议与验收证据仍以本控制仓为权威。
 完整步骤和环境限制见根目录 [WORKSPACE.md](../../../WORKSPACE.md)。
 
+2026-11-03 新增 `boot/bootloadermc`、`boot/bootloaderth` 两个独立 Bootloader 仓，均在 `soc_debug` 开发。
+现有自动恢复脚本和根 workspace.json 仍只处理原四仓；嵌套路径支持未实现前按 WORKSPACE.md 的 Bootloader 补充步骤手工取得，不能将嵌套路径直接写入旧清单。
+用户确认两仓规则/文档暂仅在本机通过原软链接使用，本轮不迁移、不上传这些内容。
+角色、分支和工具边界见[Bootloader 角色规则](../../.agents/rules/bootloader_role_boundaries.md)。
+
 ## 当前恢复方式
 
 在空父目录执行：

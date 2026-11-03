@@ -3,7 +3,7 @@ title: SoC 全栈模块和 Agent 职责矩阵
 date: 2026-09-30
 status: current-plan
 tags: [soc, ownership, multi-agent]
-updated: '2026-10-17 11:11:35'
+updated: '2026-11-03T02:08:59+00:00'
 timezone: 北京时间（UTC+8）
 plan_revision: marlin-r2
 ---
@@ -11,6 +11,8 @@ plan_revision: marlin-r2
 # 模块与 Agent 职责
 
 > **通信模块代码维护：** 用户已明确D-Bus与Fast DDS均在当前项目维护独立模块与源码。ENG-DBUS、ENG-DDS分别负责SDK实现、依赖源码/版本/补丁、配置、生成和测试；业务模块只接项目公开接口。具体路径、共享构建Owner和服务器沙箱验收见[模块维护规范](../../docs/planning/communication_modules_ownership_20261029.md)。
+
+> **2026-11-03 Bootloader 角色分离：** 用户新增 `ENG_BOOT_MC`、`ENG_BOOT_TH`，分别只负责独立仓库 `boot/bootloadermc/`、`boot/bootloaderth/`，开发分支均为 `soc_debug`，不得在主分支开发。`ENG-MC`、`ENG-TH` 保留 App 职责；当前只登记角色/仓库边界，首个目标稍后由 ARCH 明确并由 COORD 派单。规则和本机文档入口见[Bootloader 角色边界](bootloader_role_boundaries.md)。
 
 > **2026-10-29 当前阶段口径：** 用户已确认VMware→SoC两阶段尽量1:1孪生。阶段一就运行已接受的真实模块/进程/管理/IPC和可见浏览器界面，阶段二复用源码、契约、界面并作平台适配及实板复验。历史“先同进程/CLI、首轮不等UI或总线”仅适用原MS/CR最小查询，不作为本轮出口。新职责/依赖/独立验收按[两阶段执行总表](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)；最多两张实现票并行、唯一控制路径、真实HIL及独立检查要求保留。
 
@@ -39,7 +41,7 @@ AI 团队的岗位分为四类：
 | 类别       | 包含的角色                                                                                                         | 负责什么                  |
 | -------- | ------------------------------------------------------------------------------------------------------------- | --------------------- |
 | 需求、设计与协调 | PM、ARCH、DES-UI、COORD                                                                                        | 定义做什么，端到端人机交互与体验设计，拆成怎样的任务，安排与跟踪工作 |
-| 模块实现     | ENG-FWD、ENG-BSP、ENG-JOB、ENG-STATE、ENG-UI、ENG-NET、ENG-MEDIA、ENG-DDS、ENG-DBUS、ENG-MQTT、ENG-SIM；ENG-COLOR 后续按需拆出 | 在各自模块及任务范围内实现         |
+| 模块实现     | ENG-FWD、ENG-BSP、ENG-JOB、ENG-STATE、ENG-UI、ENG-NET、ENG-MEDIA、ENG-DDS、ENG-DBUS、ENG-MQTT、ENG-SIM、ENG-MC、ENG-TH、ENG_BOOT_MC、ENG_BOOT_TH；ENG-COLOR 后续按需拆出 | 在各自模块及任务范围内实现         |
 | 独立检查     | QA                                                                                                            | 根据指定输入和版本检查行为、故障及证据   |
 | 集成与交付    | INTEGRATOR                                                                                                    | 组合准确版本、构建装配、合入和交付候选   |
 
@@ -88,10 +90,12 @@ PM、ARCH 的早期讨论可以在主对话中分阶段完成。复杂方案采�
 | ENG-MQTT（MQTT 通信工程师）      | `middleware/mqtt/`、`services/mqtt_agent/`、`config/mqtt/`、`tests/mqtt/`     | MQTT 客户端／Broker 适配、连接与会话、TLS、QoS、订阅、重连、遗嘱、保留消息和有界缓存                | 标准消息传递、断网恢复、传输身份与 Broker ACL、资源证据                           | 定义业务命令和业务权限、绕开 gateway／STATE 执行动作、重写 Broker          |
 | ENG-SIM（模拟环境工程师）          | `sim/` 中映射并授权的配置、主机适配与故障工具                                                 | 维护轻量 Python Mock、字节分段/延迟/丢弃工具与硬件故障 SOP；工具与真实 MCU 生命周期/证据分开         | 启停、覆盖差异、故障开关和可复现日志；QA 独立验收                                  | 重写 Marlin 规划器、擅改生产 MC/SCM 协议、修改 FWD 或 QA 断言来使模拟通过    |
 | ENG-COLOR（混色算法工程师，后续按需拆出） | `algorithms/mixing/`、`tests/mixing/`                                       | 混色比例、色彩延迟、校准、材料参数、切片语义                                             | 带单位和版本的混色计划；标定样本和效果证据                                       | 两个 Agent 同时修改 JOB 内部算法、假设模型一定物理正确                    |
-| ENG-MC（MC 开发工程师）              | `mcu-p3/motion-controller-mcu/`（MC App）；`mcu-p3/bootloader/435/`（MC Bootloader），均在同一 `mcu-p3` Git 仓 | MC（AT32F435VGT7）固件代码、Bootloader、Marlin 业务 App、TH 中继升级状态机；代码撰写与构建可由 AI 协助执行 | MC 固件制品（`fw_mc.bin`）、构建日志、串口验证记录；板间 USART6 接口契约 | 直接操作 SoC 串口；修改 TH 固件目录；绕过人工门禁点自主烧录 |
-| ENG-TH（TH 开发工程师）              | `mcu-p3/color-engine-mcu/io_toggle/`（TH App）；`mcu-p3/bootloader/423/`（TH Bootloader），均在同一 `mcu-p3` Git 仓 | TH（AT32F423CCT7）Bootloader、Color Engine 混色业务 App；代码撰写与构建可由 AI 协助执行 | TH 固件制品（`fw_th.bin`）、构建日志、串口验证记录；板间 USART1 接口契约 | 直接操作 SoC 串口；修改 MC 固件目录；绕过人工门禁点自主烧录 |
+| ENG-MC（MC App 开发工程师） | `mcu-p3/motion-controller-mcu/`，分支 `feat/soc-debug` | MC Marlin App、本机业务和 App 侧中继/升级协作；Bootloader 变更提交对应 Owner | MC App 制品、构建/协议证据及与 Boot 的兼容契约 | 跨写 TH App 或独立 Boot 仓；绕过硬件门禁 |
+| ENG-TH（TH App 开发工程师） | `mcu-p3/color-engine-mcu/io_toggle/`，分支 `feat/soc-debug` | TH Color Engine App、App 侧升级触发和业务；Bootloader 变更提交对应 Owner | TH App 制品、构建/协议证据及与 Boot 的兼容契约 | 跨写 MC App 或独立 Boot 仓；绕过硬件门禁 |
+| ENG_BOOT_MC（MC Bootloader 开发工程师） | 独立仓 `boot/bootloadermc/`，分支 `soc_debug` | MC Bootloader 启动、App 校验/跳转、升级及恢复；遵循该仓 AGENTS.md、.agents、docs | Boot 制品/源码身份、构建和适用实机证据；与 MC App 的接受契约 | 在 main 开发；跨写 App、TH Boot 或 SoC；无具体授权擦写/复位 |
+| ENG_BOOT_TH（TH Bootloader 开发工程师） | 独立仓 `boot/bootloaderth/`，分支 `soc_debug` | TH Bootloader 启动、App 校验/跳转、升级及恢复；遵循该仓 AGENTS.md、.agents、docs | Boot 制品/源码身份、构建和适用实机证据；与 TH App 的接受契约 | 在 main 开发；跨写 App、MC Boot 或 SoC；无具体授权擦写/复位 |
 
-MC 与 TH 共用一个 `mcu-p3` 仓库，因此分支、HEAD 和工作区状态是仓库级属性；任务授权和代码所有权再按上述子目录划分。不要为 MC、TH 虚构独立 Git 分支或远程仓库。
+MC/TH App 共用一个 `mcu-p3` 仓库，分支、HEAD 和工作区状态是该仓级属性；两个 Bootloader 各有用户指定的独立 Git 仓及 `soc_debug`。App 的 `feat/soc-debug` 与 Boot 的 `soc_debug` 不同，任务须绑定准确仓库、URL、分支及路径，不能按板卡名混用。
 
 初期混色模块归 ENG-JOB，同一任务上下文维护；启用 ENG-COLOR 时先建立独立目录并完成所有权移交。存储和 HTTP／LAN 业务网关暂归 ENG-NET；DDS、D-Bus 和 MQTT 通信底座分别由三个专职工程师维护，边界见 [[AI_SoC_协作方案/06_通信工程师职责与接口边界]]。Mock 与故障工具由 ENG-SIM 维护；真实 MC/TH 业务由 ENG-MC/ENG-TH 实现，QA 独立验收，见 [[AI_SoC_协作方案/08_双MCU模拟器与联调验收]]。这些角色 ID 用于任务分工，不表示固定的 AI 编号，也不要求所有岗位同时运行。
 
@@ -128,6 +132,8 @@ SoC 侧 AI 不得跨越 ENG-MC／ENG-TH 的代码边界直接修改 MCU 调度�
 | 正式看板／任务版本／租约                            | COORD                 | 各角色提交事件，COORD 更新                       |
 | MC 固件（代码仓、制品、接口契约）                       | ENG-MC                | FWD 消费接口；ARCH 评审接口契约；QA 独立验收；AI 可协助代码与构建，4 类门禁见 §2 |
 | TH 固件（代码仓、制品、混色业务协议）                     | ENG-TH                | ENG-MC 通过 USART6 中继调用；ARCH 评审接口契约；AI 可协助代码与构建，4 类门禁见 §2 |
+| MC Bootloader 独立仓、制品及 Boot 端契约 | ENG_BOOT_MC | ENG-MC 提供 App 端接受；ARCH 定界；INTEGRATOR 锁定组合；QA 独立接受 |
+| TH Bootloader 独立仓、制品及 Boot 端契约 | ENG_BOOT_TH | ENG-TH 提供 App 端接受；ARCH 定界；INTEGRATOR 锁定组合；QA 独立接受 |
 | 固件装配／公共构建文件／合入                          | INTEGRATOR            | 各模块提交制品或 PR                            |
 
 ## 4. 接口如何防止职责重叠
@@ -168,7 +174,7 @@ ARCH 的 Marlin 对接工作是核查/接受本机接口，不是另一套生产
 
 ## 8. 通用编码规范与硬性门禁
 
-所有工程实现角色（ENG-*）在编写代码时，必须无条件遵循 [C/C++ 编码规范](c_cpp_coding_standard.md) 及主约束总纲：
+所有工程实现角色（`ENG-*` 及 `ENG_BOOT_MC`、`ENG_BOOT_TH`）在编写代码时，必须遵循 [C/C++ 编码规范](c_cpp_coding_standard.md) 及对应仓库主约束总纲：
 - **严禁编写超 50 行的自研非结构体函数**：复杂逻辑拆解为 `static` 辅助函数；
 - **严禁编写超 4 个入参的自研非结构体函数**：参数超额封装为配置/上下文结构体指针；
 - **自研模块 100% 严格执行门禁，存量代码遵循最小修改预算（Minimal Diff Budget）原则**；

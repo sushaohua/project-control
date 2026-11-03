@@ -1,10 +1,10 @@
 ---
 id: RULE-COORD-DELIVERY-GATE-20261029
-revision: 4
+revision: 5
 status: current-rule
 owner: COORD
 date: 2026-10-29
-updated: '2026-11-02T07:53:52+00:00'
+updated: '2026-11-03T02:08:59+00:00'
 authorization: 用户要求将问题写进调度规则，COORD逐卡拉起Agent自闭环，QA使用独立Codex与独立沙箱并以服务器代码为准
 ---
 
@@ -37,8 +37,8 @@ flowchart TD
 
 ### 1.1 COORD 代码只读与派单唯一性硬铁律 (Machine Invariant)
 
-1. **业务代码库写入物理级封锁**：COORD 的写入权限严格受限于 `project-control/`（任务卡、Issue、调度记录、验收方案及顶层配置）。**严禁 COORD 直接修改 `soc-ap/`、`mcu-p3/`、`test_harness/` 业务代码仓库**。
-2. **工程任务委派**：代码编写、业务修改、作者自检、集成打包等工程工作，COORD 必须通过 `invoke_subagent` 委派对应 `ENG-*` 或 `INTEGRATOR`，不得在主会话中代做。QA 编写测试计划、独立预期和测试工具仍按既有职责派单，其产物须接受独立复核。
+1. **业务代码库写入物理级封锁**：COORD 的写入权限严格受限于 `project-control/`（任务卡、Issue、调度记录、验收方案及顶层配置）。**严禁 COORD 直接修改 `soc-ap/`、`mcu-p3/`、`test_harness/`、`boot/bootloadermc/`、`boot/bootloaderth/` 业务代码仓库**。
+2. **工程任务委派**：代码编写、业务修改、作者自检、集成打包等工程工作，COORD 必须通过 `invoke_subagent` 委派对应 `ENG-*`、`ENG_BOOT_MC`、`ENG_BOOT_TH` 或 `INTEGRATOR`，不得在主会话中代做。QA 编写测试计划、独立预期和测试工具仍按既有职责派单，其产物须接受独立复核。
 3. **正式独立 QA**：正式 QA 必须使用独立 Codex 会话，按权威 `codex_qa_review.md` 执行。仅通过 `invoke_subagent` 创建名为 QA 的普通子 Agent，不构成合规的独立 QA；只有实际启动独立 Codex 并提供可核验的会话和运行证据，才满足会话要求。派发工具名称、角色名或计划别名不能替代这些证据。
 4. **QA 执行顺序与调度授权**：由受控 Python Runner 确定性执行服务器锁定候选的独立 Docker 构建与测试，固化并校验客观证据，再启动独立 Codex 对同一候选及证据进行只读审阅。COORD 可以启动或委派启动该流程，这不属于 COORD 代做工程任务；不得在主会话直接运行被审代码的构建和测试，也不得让普通子 Agent 的自测、自评或手写报告替代该流程。独立 Codex 不负责启动 Docker 或补写测试计划。
 5. **收件与关闭**：必须取得与准确候选绑定的实际审阅结果、QA 报告非作者复核及必要 Owner 接受后，COORD 才能推进完成或关闭 Issue。调用失败、超时、证据不足或 `BLOCKED/INCONCLUSIVE` 时保持待审并记录阻塞及解除条件，禁止回退 `self`、提前批准或事后补签；保留历史报告，后续复验另建 run。
@@ -48,8 +48,9 @@ flowchart TD
 ## 2. 服务器候选是QA唯一受测源码基线
 
 1. 作者先自检；INTEGRATOR核对差异、保留用户已有改动，再在有效授权内提交和推送。不得替别人提交未审阅改动、强推或自动合并冲突。已有发布授权可复用，不为每张普通任务重复索要授权。
-2. 每次候选锁定任务/revision/run、仓库URL、远端ref和完整commit；代码、契约、配置、依赖锁、测试预期和工具分别绑定。使用现有五仓体系：总仓、project-control、soc-ap、mcu-p3、test_harness；未涉及仓库也登记所消费的准确版本，不凭历史workspace.json推定已经同步。
+2. 每次候选锁定任务/revision/run、仓库URL、远端ref和完整commit；代码、契约、配置、依赖锁、测试预期和工具分别绑定。当前仓库体系含总仓、project-control、soc-ap、mcu-p3、test_harness，以及 boot/bootloadermc、boot/bootloaderth；未涉及仓库也登记所消费的准确版本，不凭历史workspace.json推定已经同步。
    各仓按各自登记的开发分支核验，不要求所有仓库对齐 `origin/main`。`mcu-p3` 当前指定远端分支为 `origin/feat/soc-debug`（本地 `feat/soc-debug`）；锁定和从服务器获取该分支的准确候选，分支不同于 `main` 本身不是拒绝理由。其他仓按各自任务/ref核验；服务器锁、检出记录和受审候选仍须一致。TWIN-06 run_02 报告中要求 MCU 对齐 `origin/main` 的判断不适用于该分支安排，历史报告原文保留；其中 project-control 候选与锁不一致等其他发现仍须独立处理，不因此改写审查结论或任务状态。
+   两个独立 Bootloader 仓均只允许在 `soc_debug` 开发，主责分别为 `ENG_BOOT_MC`、`ENG_BOOT_TH`。遵循[Bootloader 角色边界](bootloader_role_boundaries.md)及目标仓本地规则。嵌套仓路径、检查器白名单、QA/恢复工具尚需有界适配；本机规则软链接不能冒充已发布规则包。本轮只登记角色和仓库，不据此自动派开发/硬件任务。
 3. 使用候选分支/ref或等价的可定位候选；确认推送成功，并通过实际服务器查询及从服务器fetch后的完整commit对账。推送命令exit0、作者本机HEAD、旧bundle或refs名称本身都不能替代远端核实。
 4. QA只消费服务器上的锁定提交。禁止把未提交diff、作者目录、作者构建输出或未发布测试工具复制/挂载到QA后继续宣称服务器基线验收。测试工具/黄金预期也从服务器独立版本获取，QA不得照实现输出倒推预期。
 5. QA输出报告产生在候选之后。报告/日志发布为单独证据提交，明确它审阅的是先前源码候选C；收件状态提交D引用C及报告。只改报告/状态不无限递归生成“新源码候选”；业务、契约或配置变化则新建候选并复验。

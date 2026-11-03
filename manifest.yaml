@@ -1,5 +1,6 @@
 manifest_version: '1.0'
 timestamp: '2026-10-20T11:34:46+08:00'
+updated: '2026-11-03T02:08:59+00:00'
 coordinator: COORD
 status: task-contracts-mapped-not-dispatched
 repositories:
@@ -38,10 +39,43 @@ repositories:
         owner_role: ENG-TH
       mc_bootloader:
         path: bootloader/435
+        path_status: legacy-reference-only
+        active_repository: bootloadermc
+        active_workspace_path: boot/bootloadermc
+        owner_role: ENG_BOOT_MC
       th_bootloader:
         path: bootloader/423
-    branch_scope: MC and TH share this repository branch and commit; they are directory-scoped components, not separate Git
-      repositories.
+        path_status: legacy-reference-only
+        active_repository: bootloaderth
+        active_workspace_path: boot/bootloaderth
+        owner_role: ENG_BOOT_TH
+    branch_scope: MC and TH applications share this repository and feat/soc-debug; Bootloaders develop in their separate repositories on soc_debug.
+  bootloadermc:
+    url: ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git
+    local_path: ~/workspace/ai_soc_project/boot/bootloadermc
+    workspace_path: boot/bootloadermc
+    branch: soc_debug
+    upstream_branch: origin/soc_debug
+    prohibited_development_branches: [main, master]
+    owner_role: ENG_BOOT_MC
+    observed_commit: 01bfda29b82f0576cb255d0b4196aeda1edb8d2e
+    observation_status: local-and-remote-soc_debug-matched-20261103-no-build-or-hil
+    local_inputs: [AGENTS.md, .agents, docs]
+    input_distribution: local-only-untracked-symlinks-user-confirmed-20261103
+    automatic_tooling: nested-repository-support-not-yet-integrated
+  bootloaderth:
+    url: ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git
+    local_path: ~/workspace/ai_soc_project/boot/bootloaderth
+    workspace_path: boot/bootloaderth
+    branch: soc_debug
+    upstream_branch: origin/soc_debug
+    prohibited_development_branches: [main, master]
+    owner_role: ENG_BOOT_TH
+    observed_commit: 1e4f592feaf400e5d4a1932db5aa86e75e60832b
+    observation_status: local-and-remote-soc_debug-matched-20261103-no-build-or-hil
+    local_inputs: [AGENTS.md, .agents, docs]
+    input_distribution: local-only-untracked-symlinks-user-confirmed-20261103
+    automatic_tooling: nested-repository-support-not-yet-integrated
   test_harness:
     url: ssh://git@192.168.77.113:2222/sushaohua/test_harness.git
     local_path: ~/workspace/ai_soc_project/test_harness
