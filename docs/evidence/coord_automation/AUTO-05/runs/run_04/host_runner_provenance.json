@@ -1,0 +1,13 @@
+{
+  "candidate_commit": "dd46bec4623197ffa862dbaa8eba0880c923d7d5",
+  "base_commit": "4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06",
+  "qa_sandbox": {
+    "id": "AUTO-05_run_183251_20261103_103251",
+    "path": "/tmp/qa_sandboxes/AUTO-05_run_183251_20261103_103251",
+    "container_id": "64a1232efaf0",
+    "image": "qa-sandbox:20261029",
+    "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+    "exit_code": 137,
+    "note": "qa_runner.py runs detached sleep 3600 (PID 1), executes tests via docker exec (all exit 0), then stops with docker stop -t 2 (SIGKILL ExitCode 137)."
+  }
+}
