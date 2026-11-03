@@ -6,21 +6,21 @@ plan_revision: coord-intake-dispatch-phase1-20261103-rev2
 task_kind: integration
 development_stage: cross-stage
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: false
 blocked_reason: null
 recovery_condition: null
 planning_status: mapped-approved
 demand_id: DEM-INTAKE-P1-001
 feature: FEAT-INTAKE-20261103-001
-owner: null
+owner: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
 proposed_owner: INTEGRATOR
 executor:
   role: INTEGRATOR
   model: gpt-6-luna
   actual_model: null
-  agent_id: null
-  run_id: null
+  agent_id: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
+  run_id: run_01
 authorization:
   evidence: project-control/docs/work_intake/approvals/APPR-20261103-001.yaml
   scope: CONFIRM-INTAKE-P1-20261103 rev 2 全部批准（AUTO-05 通过后部署单个 systemd --user 服务并开启 enable-linger）
@@ -38,7 +38,7 @@ review_assignments:
       platform: codex
       model: gpt-6-luna
       planned_session_alias: codex-qa-auto-06-review
-      session: null
+      session: codex-qa-auto-06-review-s1
       session_evidence:
         path: null
         sha256: null
@@ -48,7 +48,7 @@ review_assignments:
       evidence: null
       report_sha256: null
       report_review:
-        session: null
+        session: codex-arch-auto-06-review-s1
         role: ARCH
         decision: null
         reviewed_task_revision: null
@@ -62,7 +62,7 @@ review_assignments:
       platform: codex
       model: gpt-6-luna
       planned_session_alias: codex-arch-auto-06-review
-      session: null
+      session: codex-arch-auto-06-review-s1
       session_evidence:
         path: null
         sha256: null
@@ -72,15 +72,15 @@ review_assignments:
       evidence: null
       report_sha256: null
   verifier_session: null
-  integrator_session: null
+  integrator_session: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
 primary_work_package: TASK-010
 related_work_packages: []
 depends_on:
   - AUTO-05
 dependency_conditions:
   - task: AUTO-05
-    accepted_version: null
-    acceptance_evidence: docs/evidence/coord_automation/AUTO-05/runs/run_01/result.md
+    accepted_version: 1
+    acceptance_evidence: docs/evidence/coord_automation/AUTO-05/runs/run_04/arch_review_report.md
     required: AUTO-05（M1/M2 19 项综合端到端独立验收）通过并收件 Done 后方可安装和启用 M3 后台服务
 scope_status: mapped
 allowed_repositories:
@@ -109,10 +109,10 @@ source_baseline:
   soc-ap: 427dd6d82caceebb7b4642e78f1dbfa96ff5fc84
   mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
   test_harness: ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414
-base_commit: null
+base_commit: 0acb940e79782490eb7781b0a6b7d5fbb53c69c6
 candidate_commit: null
 dispatch_binding:
-  source_commit: b4af2d32601a07d448ac8d67a07c57f5b9ab36ac
+  source_commit: 0acb940e79782490eb7781b0a6b7d5fbb53c69c6
   workspace_diff_sha256: 736c674846d52dee8985cae0654388560199cb33f3041365bd62fae7d91710ad
   consumed_artifact_versions:
     confirmation_rev2: 63c1225d60c377a662bebaa0328f9bc95c19daccaa61d9f2766bc989f06f3f98
@@ -126,7 +126,11 @@ read_sources:
   - project-control/.agents/rules/codex_qa_review.md
   - project-control/docs/planning/coord_intake_dispatch_phase1_confirmation_20261103.md
 worktree: /home/sushaohua/workspace/ai_soc_project
-lease: null
+lease:
+  owner: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
+  task_revision: 1
+  lease_id: lease_auto-06_20261103_01
+  expires_at: '2026-11-03T23:59:59+08:00'
 resources:
   - resource: host-systemd-user-coord-runner-service
     location: /home/sushaohua/.config/systemd/user/ai-soc-coord-runner.service
@@ -138,8 +142,7 @@ budget:
   on_limit: 停止/卸载新增用户态 service 并保存证据交唯一 COORD
 checkpoint: AUTO-05 收件核验；单实例 systemd --user 服务部署与回退脚本；零空耗与 stop/restart 恢复实测；独立 QA
 execution_contract: project-control/docs/planning/coord_intake_dispatch_phase1_confirmation_20261103.md
-readiness_pending:
-  - 等待前置 AUTO-05 独立验收通过并收件 Done 后绑定锁定服务器候选、部署会话与有效租约
+readiness_pending: []
 deliverables:
   artifacts:
     - project-control/config/coord_runner/ai-soc-coord-runner.service

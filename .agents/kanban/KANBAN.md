@@ -14,7 +14,7 @@ execution_mode: 任务状态只以原卡为准；计划岗位和别名不表示�
 
 | 类别 | 数量 | 实际状态投影 |
 | --- | ---: | --- |
-| AUTO | 4 | Done 3 (AUTO-03, AUTO-04, AUTO-05)、Backlog 1 (AUTO-06) |
+| AUTO | 4 | InProgress 1 (AUTO-06)、Done 3 (AUTO-03, AUTO-04, AUTO-05) |
 | CR | 15 | Backlog 1、Done 14 |
 | MCQ | 2 | Done 2 |
 | MS | 22 | Backlog 20、Done 1、Verify 1 |
