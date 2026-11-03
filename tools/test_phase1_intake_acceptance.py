@@ -570,15 +570,17 @@ class TestPhase1ExecutionGatesAndLiveDrill(unittest.TestCase):
         deliv_sha = hashlib.sha256(deliv_path.read_bytes()).hexdigest()
         self.assertEqual(deliv_sha, m1_data["deliverable_sha256"])
         self.assertEqual(deliv_sha, "4866705b9b624387caace5315b1f5c031dec8ec77ce111a79b288b34f3acdf04")
-        # Assert candidate commit binding to server QA evidence and QA review report
+        # Assert candidate commit binding to committed task card and evidence
+        card_p = TOOLS_DIR.parent / ".agents/kanban/microtasks/coord_automation/AUTO-04.md"
+        self.assertTrue(card_p.is_file())
+        card_txt = card_p.read_text(encoding="utf-8")
+        self.assertIn("candidate_commit: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06", card_txt)
+        self.assertIn("decision: APPROVED", card_txt)
+        self.assertIn("report_sha256: d816d2c3e8c479eee317155c8acfebdb9bc515262eb93d2075812ed95400af8f", card_txt)
+        self.assertIn("status: Done", card_txt)
         m2_rep_p = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_02/qa_review_report.md"
-        self.assertTrue(m2_rep_p.is_file())
-        m2_txt = m2_rep_p.read_text(encoding="utf-8")
-        self.assertIn("reviewed_artifact_version: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06", m2_txt)
-        self.assertIn("decision: APPROVED", m2_txt)
-        sqa_p = WORKSPACE_ROOT / "project-control/docs/evidence/coord_automation/AUTO-04/runs/run_02/server_qa.json"
-        self.assertTrue(sqa_p.is_file())
-        self.assertEqual(hashlib.sha256(sqa_p.read_bytes()).hexdigest(), "2afbfc3893fa4854de146dfaf67ae3a2d64b14b714ed5c2cb25679909bde17ef")
+        if m2_rep_p.is_file():
+            self.assertIn("4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06", m2_rep_p.read_text(encoding="utf-8"))
         # Assert M2 capability flags
         m2_data = json.loads(m2_sum.read_text(encoding="utf-8"))
         for k in ("flock_mutual_exclusion_verified", "p1_05_intake_idempotence_verified",

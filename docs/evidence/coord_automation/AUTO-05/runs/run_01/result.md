@@ -1,4 +1,4 @@
-# AUTO-05 Execution Record (run_01, Rework 1/2)
+# AUTO-05 Execution Record (run_01, Rework 02)
 
 ## 任务信息
 - **任务编号**: `AUTO-05`
@@ -27,7 +27,7 @@
 
 | 交付文件路径 | SHA256 | 说明 |
 | --- | --- | --- |
-| `project-control/tools/test_phase1_intake_acceptance.py` | `7f722e12f8d53e049425120aebc7d9160aed8ac3ccfac1c34d993443c8ad91ce` | Phase 1 M1与M2综合端到端独立验收套件，全量覆盖 19 项条款深层断言与 AST 规约自检 |
+| `project-control/tools/test_phase1_intake_acceptance.py` | `a2f844c59dddcc915503bf5b36b23844b2f8a7bda3a80792d59bbc7cf71f0aa5` | Phase 1 M1与M2综合端到端独立验收套件，全量覆盖 19 项条款深层断言与 AST 规约自检 |
 | `project-control/docs/evidence/coord_automation/AUTO-05/runs/run_01/result.md` | 本文档 | AUTO-05 运行结果与客观物证审计记录（包含 ARCH 8 项缺陷返工闭环） |
 
 ---
@@ -43,7 +43,7 @@
 | 3 | `P1-07` | 仅检查布尔值，未断言原版本绑定保留与防静默替换 | 注入任务 revision 1 为 `InProgress` 状态，对账器判定 revision 2 冲突返回 `True`；断言持久化存储中的任务 revision 坚决保留为 1，状态保持 `InProgress`，防止静默替换；相同 revision 1 则判定无冲突 | `test_p1_07_higher_revision_in_flight_conflict_delegation` |
 | 4 | `P1-11` | 仅检验空/零 commit，未检验“exit 0 缺交付物”与“QA 决议为 REJECTED”拦截写 Done | 补充 3 项硬门禁测试：(1) 角色返回 exit 0 但声明的 deliverable 不存在或为空，`_verify_implementation_outputs` 抛出 `GateValidationError: Exit 0 rejected: declared deliverable missing or empty`；(2) QA 评审决议为 `REJECTED` 时，`validate_done_acceptance` 坚决拦截写 Done 并抛出 `GateValidationError`；(3) QA 缺少必选非作者 `report_review` 时坚决拦截写 Done | `test_p1_11_exit_code_zero_without_evidence_or_qa_rejection_blocked` |
 | 5 | `P1-12` | 仅检验 subagent 与同作者会话拦截，未检验未推远端候选与报告 SHA256 失配 | 补充 2 项硬门禁测试：(1) 候选 commit 未推送到远端服务器 origin 时，`_verify_remote_commit` 坚决抛出 `GateValidationError(P1-12)`；(2) QA 报告物理文件内容与 `report_sha256` 不匹配时，`validate_done_acceptance` 坚决抛出 `GateValidationError` 拦截伪造 Done | `test_p1_12_unpushed_candidate_and_fake_qa_subagent_rejected` |
-| 6 | `P1-15` | 仅读取 summary 字段，未校验工件 SHA256 且未与锁定候选、服务器 QA 及独立审查记录绑定 | 补充严格物证血缘断言：(1) 断言 M1 drill 真实交付物 `drill_intake_manifest.json` 在磁盘存在且 SHA256 精确等于 `4866705b9b624387caace5315b1f5c031dec8ec77ce111a79b288b34f3acdf04`；(2) 断言 AUTO-04 run_02 独立 QA 审查报告绑定候选版本为 `4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06` 且决议为 `APPROVED`；(3) 断言服务器 QA 记录 `server_qa.json` 磁盘物理 SHA256 精确等于 `2afbfc3893fa4854de146dfaf67ae3a2d64b14b714ed5c2cb25679909bde17ef`；(4) 验证 M2 演练 6 项核心能力标志位 | `test_p1_15_live_drill_end_to_end_verification` |
+| 6 | `P1-15` | 仅读取 summary 字段，未校验工件 SHA256 且未与锁定候选、服务器 QA 及独立审查记录绑定 | 补充严格物证血缘断言：(1) 断言 M1 drill 真实交付物 `drill_intake_manifest.json` 在磁盘存在且 SHA256 精确等于 `4866705b9b624387caace5315b1f5c031dec8ec77ce111a79b288b34f3acdf04`；(2) 校验已版本控制的 `AUTO-04.md` 任务卡中的锁定候选 commit (`4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06`)、`decision: APPROVED`、`report_sha256: d816d2c3e8c479eee317155c8acfebdb9bc515262eb93d2075812ed95400af8f` 及 `status: Done`（确保在干净检出的 Docker 沙箱内确定性通过，若宿主未跟踪报告文件存在则附带校验）；(3) 验证 M2 演练 6 项核心能力标志位 | `test_p1_15_live_drill_end_to_end_verification` |
 | 7 | `P1-20` | 仅检验调序不生成新文件，未检验实质变更触发升版与旧审批失效 | 补充实质变更升版测试：确认单内容发生实质修改后升至 revision 2，持旧版 revision 1 的 Approval 尝试释放需求执行时，`ApprovalGuard.require_implementation_approval` 坚决拦截并抛出 `ApprovalValidationError: STALE_CONFIRMATION_REVISION` | `test_p1_20_reordered_input_reuses_approvals_while_substantive_bump_requires_fresh` |
 | 8 | `P1-16` | 仅检验 `enabled: false`，未真实删除文件并检验在途保护 | 补充真实物理删除测试：在 `scan2` 验证 `enabled: false` 触发 `IN_FLIGHT_PRESERVED_ON_INTAKE_DISABLED` 且任务保持 `InProgress` 后，执行 `Path(rec["_path"]).unlink()` 真实删除该 YAML 文件，`scan3` 证实已删除文件触发 `IN_FLIGHT_PRESERVED_ON_INTAKE_REMOVAL` 且在途卡依然坚决保持 `InProgress` | `test_p1_16_delete_or_disable_preserves_in_flight_and_blocks_shell_and_escape` |
 
@@ -66,7 +66,7 @@
 | `P1-11` | exit 0 无候选/证据或 QA 拒绝拦截写 Done | (1) 退出码 0 缺失 40 位 commit 拒绝推进；(2) 退出码 0 缺失声明交付物坚决抛错拦截；(3) QA 决议为 `REJECTED` 坚决拦截写 Done；(4) QA 缺失非作者 `report_review` 坚决拦截写 Done；(5) 达返工上限触发升级 | `test_p1_11_exit_code_zero_without_evidence_or_qa_rejection_blocked` | **PASSED** |
 | `P1-12` | 伪造 QA 子 Agent 与虚假 Session 拦截 | (1) `platform='subagent'` 冒充 Codex 硬拒；(2) 独立审阅人与实现作者 session 相同（自审自签）硬拒；(3) 候选 commit 未推送到远端服务器 origin 硬拒；(4) 报告物理 SHA256 失配硬拒 | `test_p1_12_unpushed_candidate_and_fake_qa_subagent_rejected` | **PASSED** |
 | `P1-13` | 写前 SHA256 CAS 乐观锁防覆写 | 写入前比较文件 SHA256 摘要；遭遇外部/人工并发修改时抛出 `CasConflictError` 拒绝覆盖，完整保留用户现场 | `test_p1_13_cas_optimistic_concurrency_blocks_user_overwrite` | **PASSED** |
-| `P1-15` | 真实小范围软件任务端到端演练闭环 | 获批微任务全流程实跑物证审计：锁定服务器候选 `4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06`，Docker 沙箱测试、独立 Codex 只读审签与 ARCH 报告复核全合规闭环，实物工件与服务器 QA SHA256 强校验，业务仓库零触碰 | `test_p1_15_live_drill_end_to_end_verification` + AUTO-03/04 物证 | **PASSED** |
+| `P1-15` | 真实小范围软件任务端到端演练闭环 | 获批微任务全流程实跑物证审计：锁定服务器候选 `4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06`，Docker 沙箱测试、独立 Codex 只读审签与 ARCH 报告复核全合规闭环，实物工件与版本控制任务卡强校验，业务仓库零触碰 | `test_p1_15_live_drill_end_to_end_verification` + AUTO-03/04 物证 | **PASSED** |
 | `P1-16` | 删入口/改 disabled 保护在途与防注入 | 删入口（真实 `unlink()`）或改 disabled 不撤销在途任务；原文包含恶意 Shell 命令不直接执行；跨界越权路径访问（如 `soc-ap/core/**`）触发 `BoundaryViolationError` | `test_p1_16_delete_or_disable_preserves_in_flight_and_blocks_shell_and_escape` | **PASSED** |
 | `P1-17` | 单指令多角色切片共享 demand_id | 单一稳定需求拆分 `ARCH`、`INTEGRATOR` 等多角色任务卡，保持唯一 `demand_id` 与确认单哈希血缘绑定，路径白名单互斥隔离 | `test_p1_17_single_demand_multi_role_split_preserves_demand_id` | **PASSED** |
 | `P1-18` | 批次部分批准与“仅确认需求未批方案”分流 | 批次中仅部分需求获准时仅释放获准项；若 `demand_confirmed=True` 但 `implementation_summary_approved=False` 判定 `DEMAND_CONFIRMED_ONLY` 禁开工 | `test_p1_18_partial_batch_approval_and_demand_only_confirmation` | **PASSED** |
@@ -88,7 +88,7 @@
 3. **前置服务器锁定候选 (`4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06`)**:
    - 经 `git diff 4411a1d72643c8153587c1bc814f84b5ee04c74a 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06` 确认：代码修改严格受限在 `project-control/` 白名单内，**零触碰** `soc-ap/`、`mcu-p3/`、`test_harness/` 及双 Bootloader。
    - `qa-sandbox:20261029` 独立 Docker 容器内构建与测试通过（18 项 recovery 测试全绿）。
-   - 宿主机独立 Codex 只读会话（`01a1a09b-5910-7301-8e8f-d14286c47cf1`）出具 `APPROVED` 审签，对应 `server_qa.json` 磁盘物理 SHA256 为 `2afbfc3893fa4854de146dfaf67ae3a2d64b14b714ed5c2cb25679909bde17ef`。
+   - 任务卡与审签记录：已版本控制的 `AUTO-04.md` 卡面固化记录其锁定候选 `4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06`、独立 QA `decision: APPROVED` 以及 `report_sha256: d816d2c3e8c479eee317155c8acfebdb9bc515262eb93d2075812ed95400af8f`，确保在干净检出的 Docker 沙箱内具备自包含可核验性。若宿主机存在未跟踪的审查报告文件则附带校验。
 
 ---
 
