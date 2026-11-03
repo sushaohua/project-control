@@ -1,0 +1,2772 @@
+=== Docker Container Inspect: 62d5cd9d452a ===
+{
+  "id": "62d5cd9d452a8bebb0766a6f4413a001532ac8ca3822020d493aba71fb52b06a",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-03T10:01:49.990567955Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/AUTO-05_run_180128_20261103_100128",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (.) PYTHONDONTWRITEBYTECODE=1 python3 project-control/tools/check_task_graph.py --workspace . -> 0
+{
+  "scope": "static planning validation, not execution/approval/QA acceptance",
+  "canonical_task_count": 134,
+  "microtask_count": 92,
+  "errors": [],
+  "dependency_cycles": [],
+  "shared_write_pairs": [
+    {
+      "tasks": [
+        "CR-00",
+        "CR-08"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-09"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-10"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-00",
+        "CR-12"
+      ],
+      "paths": [
+        "project-control/docs/evidence/cascade_recovery/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "CR-11"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-01",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P01A"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P01B"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "V2-P02C"
+      ],
+      "paths": [
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "TEMP-01"
+      ],
+      "paths": [
+        "project-control/docs/interfaces/**",
+        "soc-ap/contracts/minimcproto/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02",
+        "TWIN-01"
+      ],
+      "paths": [
+        "project-control/docs/interfaces/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-02T",
+        "TWIN-28"
+      ],
+      "paths": [
+        "test_harness/hil/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-03",
+        "CR-11"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-03",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P02A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P02B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03C"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03D"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt",
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TEMP-04"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt",
+        "soc-ap/core/forward/**",
+        "soc-ap/core/host/**",
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-05"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-06"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-07"
+      ],
+      "paths": [
+        "soc-ap/core/host/**",
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-08"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-09"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-10"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-22"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-23"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-25"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-27"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-29"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-30"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-32"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-33"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-34"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-35"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-36"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-37"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-38"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-04",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "MCQ-0105"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/inc/wk_usart.*",
+        "mcu-p3/motion-controller-mcu/project/src/main.c",
+        "mcu-p3/motion-controller-mcu/project/src/memu_gui.c",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/inc/wk_usart.*",
+        "mcu-p3/motion-controller-mcu/project/src/main.c",
+        "mcu-p3/motion-controller-mcu/project/src/memu_gui.c",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TWIN-21"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TWIN-24"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-05",
+        "TWIN-26"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/wk_usart.*",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TEMP-02"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-06",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-07",
+        "MCQ-0105"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-07",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.*",
+        "mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "CR-11",
+        "TEMP-07"
+      ],
+      "paths": [
+        "project-control/.agents/kanban/**",
+        "project-control/docs/handoff/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-01",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/delivery_checks.py",
+        "project-control/tools/qa_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-02",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/coord_queue.py",
+        "project-control/tools/coord_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-02",
+        "AUTO-03"
+      ],
+      "paths": [
+        "project-control/config/coord_runner/**",
+        "project-control/tools/coord_queue.py",
+        "project-control/tools/coord_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-02",
+        "AUTO-04"
+      ],
+      "paths": [
+        "project-control/config/coord_runner/**",
+        "project-control/tools/coord_queue.py",
+        "project-control/tools/coord_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-02",
+        "AUTO-06"
+      ],
+      "paths": [
+        "project-control/config/coord_runner/**",
+        "project-control/tools/coord_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-03",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/coord_queue.py",
+        "project-control/tools/coord_runner/**",
+        "project-control/tools/test_coord_runner.py",
+        "project-control/tools/test_work_intake.py"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-03",
+        "AUTO-04"
+      ],
+      "paths": [
+        "project-control/config/coord_runner/**",
+        "project-control/docs/work_intake/**",
+        "project-control/tools/coord_queue.py",
+        "project-control/tools/coord_runner/**",
+        "project-control/tools/test_coord_runner.py",
+        "project-control/tools/test_work_intake.py"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-03",
+        "AUTO-06"
+      ],
+      "paths": [
+        "project-control/config/coord_runner/**",
+        "project-control/tools/coord_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-04",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/coord_queue.py",
+        "project-control/tools/coord_runner/**",
+        "project-control/tools/test_coord_recovery.py",
+        "project-control/tools/test_coord_runner.py",
+        "project-control/tools/test_work_intake.py"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-04",
+        "AUTO-06"
+      ],
+      "paths": [
+        "project-control/config/coord_runner/**",
+        "project-control/tools/coord_runner/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-05",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/test_phase1_intake_acceptance.py"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "AUTO-06",
+        "CR-03"
+      ],
+      "paths": [
+        "project-control/tools/coord_runner/**",
+        "project-control/tools/test_coord_systemd_service.py"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "MCQ-0106"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/CMakeLists.txt",
+        "mcu-p3/motion-controller-mcu/Makefile",
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TWIN-21"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TWIN-24"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0105",
+        "TWIN-26"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TEMP-01"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TEMP-03"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TWIN-21"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TWIN-24"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "MCQ-0106",
+        "TWIN-26"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/**",
+        "mcu-p3/motion-controller-mcu/project/src/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03B",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03C",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P03E",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04A",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04B",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P04C",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P0506",
+        "V2-P05A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P0506",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "V2-P05A",
+        "V2-P05B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/parser.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-01",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_telemetry.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-01",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/io_toggle/inc/minimc_telemetry.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-02",
+        "TWIN-16"
+      ],
+      "paths": [
+        "mcu-p3/color-engine-mcu/io_toggle/inc/thermistor_adc.h",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/thermistor_adc.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-03",
+        "TWIN-15"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-03",
+        "TWIN-21"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-03",
+        "TWIN-24"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P02A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03C"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P03E"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04A"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04B"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04C"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P04D"
+      ],
+      "paths": [
+        "soc-ap/core/forward/minimc/codec.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "V2-P0506"
+      ],
+      "paths": [
+        "soc-ap/CMakeLists.txt"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "TWIN-07"
+      ],
+      "paths": [
+        "soc-ap/core/host/query.cpp",
+        "soc-ap/core/host/query.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TEMP-04",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/protocol/test_telemetry.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-02",
+        "TWIN-17"
+      ],
+      "paths": [
+        "soc-ap/contracts/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-02",
+        "TWIN-23"
+      ],
+      "paths": [
+        "soc-ap/contracts/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-05",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/dds/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-06",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/dbus/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-07",
+        "TWIN-22"
+      ],
+      "paths": [
+        "soc-ap/services/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-07",
+        "TWIN-25"
+      ],
+      "paths": [
+        "soc-ap/services/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-07",
+        "TWIN-27"
+      ],
+      "paths": [
+        "soc-ap/services/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-07",
+        "TWIN-29"
+      ],
+      "paths": [
+        "soc-ap/services/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-07",
+        "TWIN-36"
+      ],
+      "paths": [
+        "soc-ap/services/forward/**",
+        "soc-ap/tests/forward/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-07",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/forward/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-08",
+        "TWIN-22"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/**",
+        "soc-ap/tests/device_manager/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-08",
+        "TWIN-25"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/**",
+        "soc-ap/tests/device_manager/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-08",
+        "TWIN-27"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/**",
+        "soc-ap/tests/device_manager/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-08",
+        "TWIN-29"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/**",
+        "soc-ap/tests/device_manager/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-08",
+        "TWIN-37"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/**",
+        "soc-ap/tests/device_manager/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-08",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/device_manager/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-09",
+        "TWIN-32"
+      ],
+      "paths": [
+        "soc-ap/services/ui_gateway/**",
+        "soc-ap/tests/ui_gateway/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-09",
+        "TWIN-38"
+      ],
+      "paths": [
+        "soc-ap/services/ui_gateway/**",
+        "soc-ap/tests/ui_gateway/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-09",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/ui_gateway/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-10",
+        "TWIN-33"
+      ],
+      "paths": [
+        "soc-ap/tests/ui/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-10",
+        "TWIN-34"
+      ],
+      "paths": [
+        "soc-ap/tests/ui/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-10",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/ui/twin/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-15",
+        "TWIN-21"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-15",
+        "TWIN-24"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc*",
+        "mcu-p3/motion-controller-mcu/project/src/minimc*"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-17",
+        "TWIN-23"
+      ],
+      "paths": [
+        "soc-ap/contracts/twin/job/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-20",
+        "TWIN-33"
+      ],
+      "paths": [
+        "soc-ap/browser_hmi/first_release/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-20",
+        "TWIN-34"
+      ],
+      "paths": [
+        "soc-ap/browser_hmi/first_release/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-20",
+        "TWIN-39"
+      ],
+      "paths": [
+        "soc-ap/browser_hmi/first_release/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-21",
+        "TWIN-24"
+      ],
+      "paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-22",
+        "TWIN-25"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/device_manager_state.cpp",
+        "soc-ap/services/forward/forward_protocol.cpp",
+        "soc-ap/tests/device_manager/twin/test_device_manager.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-22",
+        "TWIN-29"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/device_manager_state.cpp",
+        "soc-ap/services/forward/forward_protocol.cpp",
+        "soc-ap/tests/device_manager/twin/test_device_manager.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-22",
+        "TWIN-36"
+      ],
+      "paths": [
+        "soc-ap/services/forward/forward_protocol.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-22",
+        "TWIN-37"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/device_manager_state.cpp",
+        "soc-ap/tests/device_manager/twin/test_device_manager.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-22",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/device_manager/twin/test_device_manager.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-23",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/job/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-25",
+        "TWIN-29"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/device_manager_state.cpp",
+        "soc-ap/services/device_manager/device_manager_state.h",
+        "soc-ap/services/forward/forward_protocol.cpp",
+        "soc-ap/services/forward/forward_protocol.h",
+        "soc-ap/tests/device_manager/twin/test_device_manager.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-25",
+        "TWIN-36"
+      ],
+      "paths": [
+        "soc-ap/services/forward/forward_protocol.cpp",
+        "soc-ap/services/forward/forward_protocol.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-25",
+        "TWIN-37"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/device_manager_state.cpp",
+        "soc-ap/services/device_manager/device_manager_state.h",
+        "soc-ap/tests/device_manager/twin/CMakeLists.txt",
+        "soc-ap/tests/device_manager/twin/test_device_manager.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-25",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/device_manager/twin/CMakeLists.txt",
+        "soc-ap/tests/device_manager/twin/test_device_manager.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-27",
+        "TWIN-36"
+      ],
+      "paths": [
+        "soc-ap/services/forward/forward_service.cpp",
+        "soc-ap/services/forward/forward_service.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-27",
+        "TWIN-37"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/firmware_updater.cpp",
+        "soc-ap/services/device_manager/firmware_updater.h",
+        "soc-ap/tests/device_manager/twin/test_firmware_updater.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-27",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/device_manager/twin/test_firmware_updater.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-29",
+        "TWIN-36"
+      ],
+      "paths": [
+        "soc-ap/services/forward/forward_protocol.cpp",
+        "soc-ap/services/forward/forward_protocol.h"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-29",
+        "TWIN-37"
+      ],
+      "paths": [
+        "soc-ap/services/device_manager/device_manager_dbus.cpp",
+        "soc-ap/services/device_manager/device_manager_state.cpp",
+        "soc-ap/services/device_manager/device_manager_state.h",
+        "soc-ap/tests/device_manager/twin/test_device_manager.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-29",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/device_manager/twin/test_device_manager.cpp"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-30",
+        "TWIN-35"
+      ],
+      "paths": [
+        "soc-ap/tests/integration/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-30",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/integration/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-32",
+        "TWIN-38"
+      ],
+      "paths": [
+        "soc-ap/services/ui_gateway/**",
+        "soc-ap/tests/ui_gateway/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-32",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/ui_gateway/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-33",
+        "TWIN-34"
+      ],
+      "paths": [
+        "soc-ap/browser_hmi/first_release/**",
+        "soc-ap/tests/ui/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-33",
+        "TWIN-39"
+      ],
+      "paths": [
+        "soc-ap/browser_hmi/first_release/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-33",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/ui/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-34",
+        "TWIN-39"
+      ],
+      "paths": [
+        "soc-ap/browser_hmi/first_release/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-34",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/ui/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-35",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/integration/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-36",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/forward/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-37",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/device_manager/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-38",
+        "TWIN-40"
+      ],
+      "paths": [
+        "soc-ap/tests/ui_gateway/**"
+      ],
+      "dependency_ordered": true
+    },
+    {
+      "tasks": [
+        "TWIN-40",
+        "V2-P03D"
+      ],
+      "paths": [
+        "soc-ap/tests/**"
+      ],
+      "dependency_ordered": true
+    }
+  ],
+  "readiness_blockers": {
+    "CR-00": [
+      "lease has expired"
+    ],
+    "CR-01": [
+      "lease has expired"
+    ],
+    "CR-02": [
+      "lease has expired"
+    ],
+    "CR-02Q": [
+      "lease has expired"
+    ],
+    "CR-02T": [
+      "lease has expired"
+    ],
+    "CR-03": [
+      "lease has expired"
+    ],
+    "CR-04": [
+      "lease has expired"
+    ],
+    "CR-05": [
+      "lease has expired"
+    ],
+    "CR-06": [
+      "lease has expired"
+    ],
+    "CR-07": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "CR-00 accepted deliverable/version is not bound",
+      "CR-00 acceptance evidence path is missing",
+      "CR-05 accepted deliverable/version is not bound",
+      "CR-05 acceptance evidence path is missing"
+    ],
+    "CR-08": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-09": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-10": [
+      "actual owner/executor is not assigned consistently",
+      "author cannot be own independent reviewer",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-11": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "CR-12": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "CR-00 accepted deliverable/version is not bound",
+      "CR-00 acceptance evidence path is missing"
+    ],
+    "AUTO-01": [
+      "lease has expired"
+    ],
+    "AUTO-02": [
+      "lease has expired",
+      "AUTO-01 closure evidence: QA: evidence is empty or SHA256 does not match: project-control/tools/qa_runner/qa_runner.py",
+      "AUTO-01 closure evidence: ARCH: evidence is empty or SHA256 does not match: project-control/tools/qa_runner/qa_runner.py"
+    ],
+    "AUTO-03": [
+      "lease has expired"
+    ],
+    "AUTO-04": [],
+    "AUTO-05": [],
+    "AUTO-06": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "AUTO-05 is not Done",
+      "AUTO-05 accepted deliverable/version is not bound"
+    ],
+    "MCQ-0105": [
+      "actual worktree/working directory is not bound",
+      "lease has expired"
+    ],
+    "MCQ-0106": [
+      "task is marked blocked",
+      "actual worktree/working directory is not bound",
+      "lease has expired"
+    ],
+    "V2-P01A": [
+      "lease has expired"
+    ],
+    "V2-P01B": [
+      "lease has expired"
+    ],
+    "V2-P01C": [
+      "lease has expired"
+    ],
+    "V2-P01D": [
+      "lease has expired"
+    ],
+    "V2-P02A": [
+      "lease has expired"
+    ],
+    "V2-P02B": [
+      "lease has expired"
+    ],
+    "V2-P02C": [
+      "lease has expired"
+    ],
+    "V2-P03A": [
+      "lease has expired"
+    ],
+    "V2-P03B": [
+      "lease has expired"
+    ],
+    "V2-P03C": [
+      "lease has expired"
+    ],
+    "V2-P03D": [
+      "lease has expired"
+    ],
+    "V2-P03E": [
+      "lease has expired"
+    ],
+    "V2-P03F": [
+      "lease has expired"
+    ],
+    "V2-P04A": [
+      "lease has expired"
+    ],
+    "V2-P04B": [
+      "lease has expired"
+    ],
+    "V2-P04C": [
+      "lease has expired"
+    ],
+    "V2-P04D": [
+      "lease has expired"
+    ],
+    "V2-P0506": [
+      "lease has expired"
+    ],
+    "V2-P05A": [
+      "lease has expired"
+    ],
+    "V2-P05B": [
+      "lease has expired"
+    ],
+    "TEMP-01": [
+      "lease has expired"
+    ],
+    "TEMP-02": [
+      "lease has expired"
+    ],
+    "TEMP-03": [
+      "lease has expired"
+    ],
+    "TEMP-04": [
+      "lease has expired"
+    ],
+    "TEMP-05": [
+      "lease has expired"
+    ],
+    "TEMP-06": [
+      "lease has expired"
+    ],
+    "TEMP-07": [
+      "lease has expired"
+    ],
+    "TWIN-01": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "CR-11 accepted deliverable/version is not bound",
+      "CR-11 acceptance evidence path is missing"
+    ],
+    "TWIN-02": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-03": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-04": [
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-05": [
+      "actual owner/executor is not assigned consistently",
+      "lease does not match author/task revision"
+    ],
+    "TWIN-06": [
+      "actual owner/executor is not assigned consistently",
+      "lease does not match author/task revision"
+    ],
+    "TWIN-07": [
+      "lease has expired"
+    ],
+    "TWIN-08": [
+      "lease has expired"
+    ],
+    "TWIN-09": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-10": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-09 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-09 closure evidence: ARCH: evidence reference must contain path and sha256"
+    ],
+    "TWIN-11": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-07 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-07 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-08 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-08 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-09 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-09 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-10 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-10 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-15 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-15 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-16 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-16 closure evidence: ARCH: evidence reference must contain path and sha256"
+    ],
+    "TWIN-12": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-11 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-11 closure evidence: ARCH: evidence reference must contain path and sha256"
+    ],
+    "TWIN-13": [
+      "task is marked blocked",
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-04 accepted deliverable/version is not bound",
+      "TWIN-04 acceptance evidence path is missing",
+      "TWIN-12 accepted deliverable/version is not bound",
+      "TWIN-12 acceptance evidence path is missing",
+      "TWIN-12 closure evidence: ARCH: evidence reference must contain path and sha256"
+    ],
+    "TWIN-14": [
+      "task is marked blocked",
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-03 accepted deliverable/version is not bound",
+      "TWIN-03 acceptance evidence path is missing",
+      "TWIN-12 accepted deliverable/version is not bound",
+      "TWIN-12 acceptance evidence path is missing",
+      "TWIN-12 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-13 is not Done",
+      "TWIN-13 accepted deliverable/version is not bound",
+      "TWIN-13 acceptance evidence path is missing"
+    ],
+    "TWIN-15": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-16": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing"
+    ],
+    "TWIN-17": [
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "lease has expired"
+    ],
+    "TWIN-18": [
+      "actual owner/executor is not assigned consistently",
+      "actual worktree/working directory is not bound",
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "actual lease and checkpoint deadline are not registered",
+      "actual handoff receiver/transport is missing",
+      "TWIN-07 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-07 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-08 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-08 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-15 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-15 closure evidence: ARCH: evidence reference must contain path and sha256"
+    ],
+    "TWIN-19": [
+      "dispatch input commit/diff contains invalid/bogus hash",
+      "lease has expired"
+    ],
+    "TWIN-20": [
+      "lease has expired"
+    ],
+    "TWIN-21": [
+      "lease has expired"
+    ],
+    "TWIN-22": [
+      "lease has expired"
+    ],
+    "TWIN-23": [
+      "lease has expired"
+    ],
+    "TWIN-24": [
+      "lease has expired"
+    ],
+    "TWIN-25": [
+      "lease has expired"
+    ],
+    "TWIN-26": [
+      "task is marked blocked",
+      "lease has expired"
+    ],
+    "TWIN-27": [
+      "task is marked blocked",
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered"
+    ],
+    "TWIN-28": [
+      "task is marked blocked",
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-27 is not Done",
+      "TWIN-27 accepted deliverable/version is not bound",
+      "TWIN-27 acceptance evidence path is missing"
+    ],
+    "TWIN-29": [
+      "lease has expired"
+    ],
+    "TWIN-30": [
+      "lease has expired"
+    ],
+    "TWIN-31": [
+      "required independent reviewer session is not assigned",
+      "lease has expired"
+    ],
+    "TWIN-32": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-09 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-09 closure evidence: ARCH: evidence reference must contain path and sha256"
+    ],
+    "TWIN-33": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-10 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-10 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-31 is not Done",
+      "TWIN-31 acceptance evidence file does not exist: docs/evidence/twin/TWIN-31/runs/run_01/qa_review_report.md",
+      "TWIN-32 is not Done",
+      "TWIN-32 acceptance evidence file does not exist: docs/evidence/twin/TWIN-32/runs/run_01/qa_review_report.md"
+    ],
+    "TWIN-34": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-33 is not Done",
+      "TWIN-33 acceptance evidence file does not exist: docs/evidence/twin/TWIN-33/runs/run_01/qa_review_report.md"
+    ],
+    "TWIN-35": [
+      "lease does not match author/task revision"
+    ],
+    "TWIN-36": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-07 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-07 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-27 is not Done",
+      "TWIN-27 acceptance evidence file does not exist: docs/evidence/twin/TWIN-27/runs/run_01/qa_review_report.md"
+    ],
+    "TWIN-37": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-08 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-08 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-36 is not Done",
+      "TWIN-36 acceptance evidence file does not exist: docs/evidence/twin/TWIN-36/runs/run_01/qa_review_report.md"
+    ],
+    "TWIN-38": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-09 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-09 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-32 is not Done",
+      "TWIN-32 acceptance evidence file does not exist: docs/evidence/twin/TWIN-32/runs/run_01/qa_review_report.md",
+      "TWIN-37 is not Done",
+      "TWIN-37 acceptance evidence file does not exist: docs/evidence/twin/TWIN-37/runs/run_01/qa_review_report.md"
+    ],
+    "TWIN-39": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-33 is not Done",
+      "TWIN-33 acceptance evidence file does not exist: docs/evidence/twin/TWIN-33/runs/run_01/qa_review_report.md",
+      "TWIN-34 is not Done",
+      "TWIN-34 acceptance evidence file does not exist: docs/evidence/twin/TWIN-34/runs/run_01/qa_review_report.md",
+      "TWIN-38 is not Done",
+      "TWIN-38 acceptance evidence file does not exist: docs/evidence/twin/TWIN-38/runs/run_01/qa_review_report.md"
+    ],
+    "TWIN-40": [
+      "actual owner/executor is not assigned consistently",
+      "required independent reviewer session is not assigned",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-35 acceptance evidence file does not exist: docs/evidence/twin/TWIN-35/runs/run_01/qa_review_report.md",
+      "TWIN-35 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-35 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-36 is not Done",
+      "TWIN-36 acceptance evidence file does not exist: docs/evidence/twin/TWIN-36/runs/run_01/qa_review_report.md",
+      "TWIN-37 is not Done",
+      "TWIN-37 acceptance evidence file does not exist: docs/evidence/twin/TWIN-37/runs/run_01/qa_review_report.md",
+      "TWIN-38 is not Done",
+      "TWIN-38 acceptance evidence file does not exist: docs/evidence/twin/TWIN-38/runs/run_01/qa_review_report.md",
+      "TWIN-39 is not Done",
+      "TWIN-39 acceptance evidence file does not exist: docs/evidence/twin/TWIN-39/runs/run_01/qa_review_report.md"
+    ],
+    "TWIN-41": [
+      "actual owner/executor is not assigned consistently",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-08 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-08 closure evidence: ARCH: evidence reference must contain path and sha256"
+    ],
+    "TWIN-42": [
+      "actual owner/executor is not assigned consistently",
+      "actual lease and checkpoint deadline are not registered",
+      "TWIN-35 acceptance evidence file does not exist: docs/evidence/twin/TWIN-35/runs/run_01/qa_review_report.md",
+      "TWIN-35 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-35 closure evidence: ARCH: evidence reference must contain path and sha256",
+      "TWIN-40 is not Done",
+      "TWIN-40 acceptance evidence file does not exist: docs/evidence/twin/TWIN-40/runs/run_01/qa_review_report.md",
+      "TWIN-41 acceptance evidence file does not exist: docs/evidence/twin/TWIN-41/runs/run_01/qa_review_report.md",
+      "TWIN-41 closure evidence: QA: evidence reference must contain path and sha256",
+      "TWIN-41 closure evidence: ARCH: evidence reference must contain path and sha256"
+    ]
+  },
+  "card_paths": {
+    "CR-00": ".agents/kanban/microtasks/cascade_recovery/CR-00.md",
+    "CR-01": ".agents/kanban/microtasks/cascade_recovery/CR-01.md",
+    "CR-02": ".agents/kanban/microtasks/cascade_recovery/CR-02.md",
+    "CR-02Q": ".agents/kanban/microtasks/cascade_recovery/CR-02Q.md",
+    "CR-02T": ".agents/kanban/microtasks/cascade_recovery/CR-02T.md",
+    "CR-03": ".agents/kanban/microtasks/cascade_recovery/CR-03.md",
+    "CR-04": ".agents/kanban/microtasks/cascade_recovery/CR-04.md",
+    "CR-05": ".agents/kanban/microtasks/cascade_recovery/CR-05.md",
+    "CR-06": ".agents/kanban/microtasks/cascade_recovery/CR-06.md",
+    "CR-07": ".agents/kanban/microtasks/cascade_recovery/CR-07.md",
+    "CR-08": ".agents/kanban/microtasks/cascade_recovery/CR-08.md",
+    "CR-09": ".agents/kanban/microtasks/cascade_recovery/CR-09.md",
+    "CR-10": ".agents/kanban/microtasks/cascade_recovery/CR-10.md",
+    "CR-11": ".agents/kanban/microtasks/cascade_recovery/CR-11.md",
+    "CR-12": ".agents/kanban/microtasks/cascade_recovery/CR-12.md",
+    "AUTO-01": ".agents/kanban/microtasks/coord_automation/AUTO-01.md",
+    "AUTO-02": ".agents/kanban/microtasks/coord_automation/AUTO-02.md",
+    "AUTO-03": ".agents/kanban/microtasks/coord_automation/AUTO-03.md",
+    "AUTO-04": ".agents/kanban/microtasks/coord_automation/AUTO-04.md",
+    "AUTO-05": ".agents/kanban/microtasks/coord_automation/AUTO-05.md",
+    "AUTO-06": ".agents/kanban/microtasks/coord_automation/AUTO-06.md",
+    "MCQ-0105": ".agents/kanban/microtasks/mc_firmware/MCQ-0105.md",
+    "MCQ-0106": ".agents/kanban/microtasks/mc_firmware/MCQ-0106.md",
+    "V2-P01A": ".agents/kanban/microtasks/minimc_v2/V2-P01A.md",
+    "V2-P01B": ".agents/kanban/microtasks/minimc_v2/V2-P01B.md",
+    "V2-P01C": ".agents/kanban/microtasks/minimc_v2/V2-P01C.md",
+    "V2-P01D": ".agents/kanban/microtasks/minimc_v2/V2-P01D.md",
+    "V2-P02A": ".agents/kanban/microtasks/minimc_v2/V2-P02A.md",
+    "V2-P02B": ".agents/kanban/microtasks/minimc_v2/V2-P02B.md",
+    "V2-P02C": ".agents/kanban/microtasks/minimc_v2/V2-P02C.md",
+    "V2-P03A": ".agents/kanban/microtasks/minimc_v2/V2-P03A.md",
+    "V2-P03B": ".agents/kanban/microtasks/minimc_v2/V2-P03B.md",
+    "V2-P03C": ".agents/kanban/microtasks/minimc_v2/V2-P03C.md",
+    "V2-P03D": ".agents/kanban/microtasks/minimc_v2/V2-P03D.md",
+    "V2-P03E": ".agents/kanban/microtasks/minimc_v2/V2-P03E.md",
+    "V2-P03F": ".agents/kanban/microtasks/minimc_v2/V2-P03F.md",
+    "V2-P04A": ".agents/kanban/microtasks/minimc_v2/V2-P04A.md",
+    "V2-P04B": ".agents/kanban/microtasks/minimc_v2/V2-P04B.md",
+    "V2-P04C": ".agents/kanban/microtasks/minimc_v2/V2-P04C.md",
+    "V2-P04D": ".agents/kanban/microtasks/minimc_v2/V2-P04D.md",
+    "V2-P0506": ".agents/kanban/microtasks/minimc_v2/V2-P0506.md",
+    "V2-P05A": ".agents/kanban/microtasks/minimc_v2/V2-P05A.md",
+    "V2-P05B": ".agents/kanban/microtasks/minimc_v2/V2-P05B.md",
+    "TEMP-01": ".agents/kanban/microtasks/temperature_telemetry/TEMP-01.md",
+    "TEMP-02": ".agents/kanban/microtasks/temperature_telemetry/TEMP-02.md",
+    "TEMP-03": ".agents/kanban/microtasks/temperature_telemetry/TEMP-03.md",
+    "TEMP-04": ".agents/kanban/microtasks/temperature_telemetry/TEMP-04.md",
+    "TEMP-05": ".agents/kanban/microtasks/temperature_telemetry/TEMP-05.md",
+    "TEMP-06": ".agents/kanban/microtasks/temperature_telemetry/TEMP-06.md",
+    "TEMP-07": ".agents/kanban/microtasks/temperature_telemetry/TEMP-07.md",
+    "TWIN-01": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-01.md",
+    "TWIN-02": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-02.md",
+    "TWIN-03": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-03.md",
+    "TWIN-04": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-04.md",
+    "TWIN-05": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-05.md",
+    "TWIN-06": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-06.md",
+    "TWIN-07": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-07.md",
+    "TWIN-08": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-08.md",
+    "TWIN-09": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-09.md",
+    "TWIN-10": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-10.md",
+    "TWIN-11": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-11.md",
+    "TWIN-12": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-12.md",
+    "TWIN-13": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-13.md",
+    "TWIN-14": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-14.md",
+    "TWIN-15": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-15.md",
+    "TWIN-16": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-16.md",
+    "TWIN-17": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-17.md",
+    "TWIN-18": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-18.md",
+    "TWIN-19": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-19.md",
+    "TWIN-20": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-20.md",
+    "TWIN-21": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-21.md",
+    "TWIN-22": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-22.md",
+    "TWIN-23": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-23.md",
+    "TWIN-24": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-24.md",
+    "TWIN-25": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-25.md",
+    "TWIN-26": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-26.md",
+    "TWIN-27": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-27.md",
+    "TWIN-28": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-28.md",
+    "TWIN-29": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-29.md",
+    "TWIN-30": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-30.md",
+    "TWIN-31": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-31.md",
+    "TWIN-32": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-32.md",
+    "TWIN-33": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-33.md",
+    "TWIN-34": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-34.md",
+    "TWIN-35": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-35.md",
+    "TWIN-36": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-36.md",
+    "TWIN-37": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-37.md",
+    "TWIN-38": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-38.md",
+    "TWIN-39": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-39.md",
+    "TWIN-40": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-40.md",
+    "TWIN-41": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-41.md",
+    "TWIN-42": ".agents/kanban/microtasks/vmware_soc_twin/TWIN-42.md",
+    "MS-01": ".agents/kanban/milestones/marlin_ms01_20261007_214108.md",
+    "MS-02": ".agents/kanban/milestones/marlin_ms02_20261007_214108.md",
+    "MS-03": ".agents/kanban/milestones/marlin_ms03_20261007_214108.md",
+    "MS-04": ".agents/kanban/milestones/marlin_ms04_20261007_214108.md",
+    "MS-05": ".agents/kanban/milestones/marlin_ms05_20261007_214108.md",
+    "MS-06": ".agents/kanban/milestones/marlin_ms06_20261007_214108.md",
+    "MS-07": ".agents/kanban/milestones/marlin_ms07_20261007_214108.md",
+    "MS-08": ".agents/kanban/milestones/marlin_ms08_20261007_214108.md",
+    "MS-09": ".agents/kanban/milestones/marlin_ms09_20261007_214108.md",
+    "MS-10": ".agents/kanban/milestones/marlin_ms10_20261007_214108.md",
+    "MS-11": ".agents/kanban/milestones/marlin_ms11_20261007_214108.md",
+    "MS-12": ".agents/kanban/milestones/marlin_ms12_20261007_214108.md",
+    "MS-13": ".agents/kanban/milestones/marlin_ms13_20261007_214108.md",
+    "MS-14": ".agents/kanban/milestones/marlin_ms14_20261007_214108.md",
+    "MS-15": ".agents/kanban/milestones/marlin_ms15_20261007_214108.md",
+    "MS-16": ".agents/kanban/milestones/marlin_ms16_20261007_214108.md",
+    "MS-17": ".agents/kanban/milestones/marlin_ms17_20261007_214108.md",
+    "MS-18": ".agents/kanban/milestones/marlin_ms18_20261008_083854.md",
+    "MS-19": ".agents/kanban/milestones/marlin_ms19_20261008_083854.md",
+    "MS-20": ".agents/kanban/milestones/marlin_ms20_20261008_083854.md",
+    "MS-21": ".agents/kanban/milestones/marlin_ms21_20261008_083854.md",
+    "MS-22": ".agents/kanban/milestones/marlin_ms22_20261008_083854.md",
+    "PL-01": "docs/planning/product/product_pl01_20261008_083854.md",
+    "PL-02": "docs/planning/product/product_pl02_20261008_083854.md",
+    "TASK-001": "docs/planning/work_packages/TASK-001_收敛 FDM 产品需求和验收.md",
+    "TASK-002": "docs/planning/work_packages/TASK-002_交接现有双 MCU 能力与协议.md",
+    "TASK-003": "docs/planning/work_packages/TASK-003_核查 AP 硬件和 BSP 基线.md",
+    "TASK-004": "docs/planning/work_packages/TASK-004_锁定源码和可复现构建.md",
+    "TASK-005": "docs/planning/work_packages/TASK-005_冻结第一版控制和 AP-MCU 契约.md",
+    "TASK-006": "docs/planning/work_packages/TASK-006_实现独立模拟 MCU 和异常夹具.md",
+    "TASK-007": "docs/planning/work_packages/TASK-007_实现 forward 协议与传输.md",
+    "TASK-008": "docs/planning/work_packages/TASK-008_实现整机状态和统一指令准入.md",
+    "TASK-009": "docs/planning/work_packages/TASK-009_实现模拟控制 UI 闭环.md",
+    "TASK-010": "docs/planning/work_packages/TASK-010_验收首个多 Agent 端到端试点.md",
+    "TASK-011": "docs/planning/work_packages/TASK-011_实现离线作业引擎和混色样例.md",
+    "TASK-012": "docs/planning/work_packages/TASK-012_接入真实板和 MCU 并验证闭环.md",
+    "TASK-013": "docs/planning/work_packages/TASK-013_冻结 DDS D-Bus MQTT 通信契约.md",
+    "TASK-014": "docs/planning/work_packages/TASK-014_实现 DDS 底座和统一 SDK.md",
+    "TASK-015": "docs/planning/work_packages/TASK-015_实现 D-Bus 底座和统一 SDK.md",
+    "TASK-016": "docs/planning/work_packages/TASK-016_实现 MQTT 传输底座和会话恢复.md",
+    "TASK-017": "docs/planning/work_packages/TASK-017_验收三总线和统一控制路径.md",
+    "TASK-018": "docs/planning/work_packages/TASK-018_接入 MQTT 网关业务映射和授权.md"
+  },
+  "exit_code": 0
+}
+
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_phase1_intake_acceptance.py' -v -> 0
+
+test_all_acceptance_functions_comply_with_ast_limits (test_phase1_intake_acceptance.TestAcceptanceSuiteInvariants) ... ok
+test_p1_03_approved_feature_scope_dispatches_while_unapproved_blocked (test_phase1_intake_acceptance.TestPhase1ApprovalAndAntiForgery) ... ok
+test_p1_18_partial_batch_approval_and_demand_only_confirmation (test_phase1_intake_acceptance.TestPhase1ApprovalAndAntiForgery) ... ok
+test_p1_19_anti_forgery_rejects_bogus_actors_stale_rev_and_fuzzy_prose (test_phase1_intake_acceptance.TestPhase1ApprovalAndAntiForgery) ... ok
+test_p1_05_intake_rescan_and_renotify_idempotence (test_phase1_intake_acceptance.TestPhase1AsyncOrchestrationAndIdempotence) ... ok
+test_p1_07_higher_revision_in_flight_conflict_delegation (test_phase1_intake_acceptance.TestPhase1AsyncOrchestrationAndIdempotence) ... ok
+test_p1_08_async_long_running_job_allows_second_task_advancement (test_phase1_intake_acceptance.TestPhase1AsyncOrchestrationAndIdempotence) ... ok
+test_p1_20_reordered_input_reuses_approvals_while_substantive_bump_requires_fresh (test_phase1_intake_acceptance.TestPhase1AsyncOrchestrationAndIdempotence) ... ok
+test_p1_11_exit_code_zero_without_evidence_or_qa_rejection_blocked (test_phase1_intake_acceptance.TestPhase1ExecutionGatesAndLiveDrill) ... ok
+test_p1_12_unpushed_candidate_and_fake_qa_subagent_rejected (test_phase1_intake_acceptance.TestPhase1ExecutionGatesAndLiveDrill) ... ok
+test_p1_15_live_drill_end_to_end_verification (test_phase1_intake_acceptance.TestPhase1ExecutionGatesAndLiveDrill) ... ok
+test_p1_01_batch_markdown_generates_unique_yamls_and_preserves_contracts (test_phase1_intake_acceptance.TestPhase1IntakeAndSecurity) ... ok
+test_p1_06_tampered_content_and_schema_version_isolated_from_valid_items (test_phase1_intake_acceptance.TestPhase1IntakeAndSecurity) ... ok
+test_p1_16_delete_or_disable_preserves_in_flight_and_blocks_shell_and_escape (test_phase1_intake_acceptance.TestPhase1IntakeAndSecurity) ... ok
+test_p1_09_timeout_and_crash_reconciliation_via_dispatch_key (test_phase1_intake_acceptance.TestPhase1ReconciliationAndConcurrency) ... ok
+test_p1_10_single_instance_flock_and_active_lease_protection (test_phase1_intake_acceptance.TestPhase1ReconciliationAndConcurrency) ... ok
+test_p1_13_cas_optimistic_concurrency_blocks_user_overwrite (test_phase1_intake_acceptance.TestPhase1ReconciliationAndConcurrency) ... ok
+test_p1_02_ambiguous_requirement_triggers_pm_arch_clarification (test_phase1_intake_acceptance.TestPhase1TriageAndMultiRole) ... ok
+test_p1_04_issue_root_cause_triage_routing_to_owner (test_phase1_intake_acceptance.TestPhase1TriageAndMultiRole) ... ok
+test_p1_17_single_demand_multi_role_split_preserves_demand_id (test_phase1_intake_acceptance.TestPhase1TriageAndMultiRole) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.418s
+
+OK
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_coord_recovery.py' -v && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_coord_runner.py' -v -> 0
+
+test_all_coord_runner_modules_comply_with_ast_standards (test_coord_recovery.ASTScaleAndParameterGateTest) ... ok
+test_max_parallel_implementation_allows_two_concurrent_tasks (test_coord_recovery.DualTaskParallelConcurrencyTest) ... ok
+test_cas_conflict_detection_p1_13 (test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_in_flight_revision_conflict_p1_07 (test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_protect_active_leases_for_running_processes_p1_10 (test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_reconcile_alive_running_job (test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_reconcile_completed_job_from_exit_status (test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_reconcile_orphan_killed_process_flags_reconcile_required_p1_09 (test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_rescan_idempotence_p1_05 (test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_async_job_launch_creates_pid_and_exit_status (test_coord_recovery.JobLauncherAndPidStarttimeTest) ... ok
+test_get_proc_starttime_matches_proc_stat (test_coord_recovery.JobLauncherAndPidStarttimeTest) ... ok
+test_write_atomic_json_guarantees_file_integrity (test_coord_recovery.JobLauncherAndPidStarttimeTest) ... ok
+test_async_task_advances_while_long_job_running_p1_08 (test_coord_recovery.M2AsyncOrchestrationAndIdempotenceTest) ... ok
+test_intake_rescan_idempotence_guard_p1_05 (test_coord_recovery.M2AsyncOrchestrationAndIdempotenceTest) ... ok
+test_metadata_and_role_job_persistence (test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok
+test_save_and_restore_coord_state (test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok
+test_single_instance_flock_mutual_exclusion (test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok
+test_sqlite_wal_mode_and_tables_initialized (test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 1.669s
+
+OK
+test_checkpoint_corrupt_defense (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_checkpoint_roundtrip (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_crash_and_restart_recovery_drill (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_crash_and_restart_recovery_drill_from_disk_sandbox_qa (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_process_level_kill_and_restart_recovery_drill (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_codex_auth_failure_blocked (test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_codex_unavailable_blocked (test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_docker_container_sandbox_passed (test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_plain_directory_sandbox_rejected (test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_daemon_signal_handling (test_coord_runner.ExecutionModesTest) ... ok
+test_default_agent_executor_invokes_role_adapter_with_approval (test_coord_runner.ExecutionModesTest) ... ok
+test_default_agent_executor_rejects_unapproved_or_unpushed_candidate (test_coord_runner.ExecutionModesTest) ... ok
+test_ensure_qa_report_review_preexisting_invalid_review_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_ensure_qa_report_review_preexisting_valid_review_accepted (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_dedicated_reviewer_typeerror_fails_without_fallback (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_multi_role (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_preexisting_invalid_report_review_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_qa_report_review_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_valid_report_review_approved_to_done (test_coord_runner.ExecutionModesTest) ... ok
+test_invoke_report_reviewer_passes_req_dict (test_coord_runner.ExecutionModesTest) ... ok
+test_missing_executor_fails_closed (test_coord_runner.ExecutionModesTest) ... ok
+test_production_executors_wiring (test_coord_runner.ExecutionModesTest) ... ok
+test_run_once_mode (test_coord_runner.ExecutionModesTest) ... ok
+test_run_tasks_finite_mode (test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_missing_entry_path_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_missing_entry_sha_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_missing_file_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_prefill_mismatch_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_sandbox_qa_restart_recovery_progresses (test_coord_runner.ExecutionModesTest) ... ok
+test_uart_conflict_rolls_back_implementation_lease (test_coord_runner.ExecutionModesTest) ... ok
+test_verify_server_commit_variants (test_coord_runner.ExecutionModesTest) ... ok
+test_exclusive_device_conflict_uart (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_implementation_concurrency_limit (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_lease_expiration_and_prune (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_lease_renewal_and_expired_renewal_fails (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_release_lease_frees_resource (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_legacy_queue_and_twin_tasks_explicitly_isolated (test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_module_cli_intake_scan_runs_cleanly (test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_scheduler_enforces_done_acceptance_errors_on_predecessors (test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_subagent_platform_and_planned_alias_rejected_in_state_machine (test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_python_functions_scale_and_parameters_limits (test_coord_runner.MethodologicalInvariantsTest) ... ok
+test_author_self_review_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_candidate_commit_validation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_any_review_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_entry_missing_report_sha (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_missing_report_review (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_file_not_found_on_disk (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_file_tampered_or_sha_mismatch (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_by_author (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_missing_report_path_or_sha (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_self_reviewed (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_sha_mismatch (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_unapproved (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_required_role_missing (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_evidence_based_remediation_validation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_fake_done_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_max_corrections_exceeded_escalation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_developer_mounts_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_failure_triggers_remediation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_commit_mismatch_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_invalid_sandbox_kind_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_missing_server_qa_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_missing_task_revision_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_string_false_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_task_revision_mismatch_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_remediation_missing_evidence_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_review_rejection_triggers_remediation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_state_machine_invalid_transition (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_state_machine_positive_flow (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_blocked_task_filtered (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_bootstrap_prioritized_over_order (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_completed_tasks_filtered (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_resource_unavailable_blocked (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_unmet_dependencies_blocked (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+
+----------------------------------------------------------------------
+Ran 74 tests in 15.679s
+
+OK
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_qa_runner.py' -v && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_delivery_checks.py' -v -> 0
+
+test_evidence_bundle_delivery_checks_compatibility (test_qa_runner.CommandAndEvidenceTest) ... ok
+test_parse_helpers (test_qa_runner.CommandAndEvidenceTest) ... ok
+test_repo_default_branch_and_explicit_override (test_qa_runner.CommandAndEvidenceTest) ... ok
+test_run_command_in_sandbox_escape_blocked (test_qa_runner.CommandAndEvidenceTest) ... ok
+test_run_command_in_sandbox_success (test_qa_runner.CommandAndEvidenceTest) ... ok
+test_validate_commit_sha_negative_format (test_qa_runner.CommitAndUrlValidationTest) ... ok
+test_validate_commit_sha_placeholder_rejected (test_qa_runner.CommitAndUrlValidationTest) ... ok
+test_validate_commit_sha_positive (test_qa_runner.CommitAndUrlValidationTest) ... ok
+test_validate_remote_url_negative (test_qa_runner.CommitAndUrlValidationTest) ... ok
+test_validate_remote_url_positive (test_qa_runner.CommitAndUrlValidationTest) ... ok
+test_harness_runner_execution (test_qa_runner.HarnessRunnerTest) ... ok
+test_python_functions_scale_and_parameters_limits (test_qa_runner.MethodologicalInvariantsTest) ... ok
+test_create_isolated_sandbox (test_qa_runner.SandboxIsolationTest) ... ok
+test_sandbox_path_forbidden_roots (test_qa_runner.SandboxIsolationTest) ... ok
+test_sanitize_path_component (test_qa_runner.SandboxIsolationTest) ... ok
+test_stop_docker_sandbox_preserves_container_state (test_qa_runner.SandboxIsolationTest) ... ok
+test_validate_sandbox_subpath_escape (test_qa_runner.SandboxIsolationTest) ... ok
+test_verify_clean_worktree_detection (test_qa_runner.SandboxIsolationTest) ... ok
+test_check_ssh_connection_parsing (test_qa_runner.ServerVerificationTest) ... ok
+test_gitlab_client_init_requires_token (test_qa_runner.ServerVerificationTest) ... ok
+test_verify_server_commit_positive (test_qa_runner.ServerVerificationTest) ... ok
+test_verify_server_commit_unpushed_rejection (test_qa_runner.ServerVerificationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.017s
+
+OK
+test_artifact_change_invalidates_old_review (test_delivery_checks.DeliveryChecksTest) ... ok
+test_complete_recorded_evidence_passes_local_structure_only (test_delivery_checks.DeliveryChecksTest) ... ok
+test_coord_receipt_cannot_substitute_owner_report (test_delivery_checks.DeliveryChecksTest) ... ok
+test_current_task_revision_must_match (test_delivery_checks.DeliveryChecksTest) ... ok
+test_developer_mount_or_worktree_is_not_a_sandbox (test_delivery_checks.DeliveryChecksTest) ... ok
+test_done_label_cannot_release_unverified_twin_input (test_delivery_checks.DeliveryChecksTest) ... ok
+test_local_source_or_nonfresh_checkout_is_rejected (test_delivery_checks.DeliveryChecksTest) ... ok
+test_missing_required_owner_is_rejected (test_delivery_checks.DeliveryChecksTest) ... ok
+test_new_functions_keep_scale_and_parameter_limits (test_delivery_checks.DeliveryChecksTest) ... ok
+test_null_dependency_version_is_a_ready_blocker (test_delivery_checks.DeliveryChecksTest) ... ok
+test_placeholder_server_commit_is_rejected (test_delivery_checks.DeliveryChecksTest) ... ok
+test_qa_authored_artifact_also_requires_server_sandbox_review (test_delivery_checks.DeliveryChecksTest) ... ok
+test_qa_report_cannot_self_review (test_delivery_checks.DeliveryChecksTest) ... ok
+test_report_cannot_approve_a_different_candidate_version (test_delivery_checks.DeliveryChecksTest) ... ok
+test_report_review_cannot_reuse_qa_sandbox (test_delivery_checks.DeliveryChecksTest) ... ok
+test_role_alias_without_runtime_record_cannot_close (test_delivery_checks.DeliveryChecksTest) ... ok
+test_secondary_review_must_bind_exact_qa_report (test_delivery_checks.DeliveryChecksTest) ... ok
+test_bootstrap_selected_before_business (test_delivery_checks.QueueTest) ... ok
+test_duplicate_or_unknown_queue_is_rejected (test_delivery_checks.QueueTest) ... ok
+test_existing_assignment_is_reported_before_new_dispatch (test_delivery_checks.QueueTest) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.085s
+
+OK
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -c "import ast, pathlib, sys; bad=[]; [bad.append((str(p), n.name, n.end_lineno-n.lineno+1, len(n.args.posonlyargs)+len(n.args.args)+len(n.args.kwonlyargs)+(1 if n.args.vararg else 0)+(1 if n.args.kwarg else 0))) for p in [pathlib.Path('tools/test_phase1_intake_acceptance.py')] for n in ast.walk(ast.parse(p.read_text(encoding='utf-8'))) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and ((n.end_lineno-n.lineno+1)>50 or (len(n.args.posonlyargs)+len(n.args.args)+len(n.args.kwonlyargs)+(1 if n.args.vararg else 0)+(1 if n.args.kwarg else 0))>4)]; print('AST violations:', bad); sys.exit(1 if bad else 0)" -> 0
+AST violations: []
+
