@@ -6,21 +6,22 @@ plan_revision: coord-intake-dispatch-phase1-20261103-rev2
 task_kind: implementation
 development_stage: cross-stage
 dispatchable: true
-status: Backlog
+status: Done
 blocked: false
 blocked_reason: null
 recovery_condition: null
-planning_status: mapped-approved
+planning_status: completed
 demand_id: DEM-INTAKE-P1-001
 feature: FEAT-INTAKE-20261103-001
-owner: null
+owner: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
 proposed_owner: INTEGRATOR
 executor:
   role: INTEGRATOR
   model: gpt-6-luna
   actual_model: null
-  agent_id: null
-  run_id: null
+  agent_id: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
+  run_id: run_02
+  rework_count: 1/2
 authorization:
   evidence: project-control/docs/work_intake/approvals/APPR-20261103-001.yaml
   scope: CONFIRM-INTAKE-P1-20261103 rev 2 全部批准（M1 独立 QA 通过后启动 M2 持续推进与恢复）
@@ -38,49 +39,49 @@ review_assignments:
       platform: codex
       model: gpt-6-luna
       planned_session_alias: codex-qa-auto-04-review
-      session: null
+      session: 01a1a09b-5910-7301-8e8f-d14286c47cf1
       session_evidence:
-        path: null
-        sha256: null
-      decision: null
-      reviewed_task_revision: null
-      artifact_version: null
-      evidence: null
-      report_sha256: null
+        path: docs/evidence/coord_automation/AUTO-04/runs/run_02/codex_session.jsonl
+        sha256: 5a5210159435af7c3d6e9ecf76ef51aa0adcc6791c27775b3b04fd2a80b04407
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
+      evidence: docs/evidence/coord_automation/AUTO-04/runs/run_02/qa_review_report.md
+      report_sha256: d816d2c3e8c479eee317155c8acfebdb9bc515262eb93d2075812ed95400af8f
       report_review:
-        session: null
+        session: 01a1a09c-785a-70a3-b74e-2d30468aec65
         role: ARCH
-        decision: null
-        reviewed_task_revision: null
-        artifact_version: null
-        evidence: null
-        report_sha256: null
+        decision: APPROVED
+        reviewed_task_revision: 1
+        artifact_version: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
+        evidence: docs/evidence/coord_automation/AUTO-04/runs/run_02/arch_review_report.md
+        report_sha256: 51d92527cc187b0d2f095fcd68116bf827e1cf15de5fd06318368d9605b6e06f
         session_evidence:
-          path: null
-          sha256: null
+          path: docs/evidence/coord_automation/AUTO-04/runs/run_02/arch_session.jsonl
+          sha256: 380f0aba56ea4d52f94f325d2fc4b9303d1fbc53567f8e440446af3a7237e270
     - role: ARCH
       platform: codex
       model: gpt-6-luna
       planned_session_alias: codex-arch-auto-04-review
-      session: null
+      session: 01a1a09c-785a-70a3-b74e-2d30468aec65
       session_evidence:
-        path: null
-        sha256: null
-      decision: null
-      reviewed_task_revision: null
-      artifact_version: null
-      evidence: null
-      report_sha256: null
+        path: docs/evidence/coord_automation/AUTO-04/runs/run_02/arch_session.jsonl
+        sha256: 380f0aba56ea4d52f94f325d2fc4b9303d1fbc53567f8e440446af3a7237e270
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
+      evidence: docs/evidence/coord_automation/AUTO-04/runs/run_02/arch_review_report.md
+      report_sha256: 51d92527cc187b0d2f095fcd68116bf827e1cf15de5fd06318368d9605b6e06f
   verifier_session: null
-  integrator_session: null
+  integrator_session: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
 primary_work_package: TASK-010
 related_work_packages: []
 depends_on:
   - AUTO-03
 dependency_conditions:
   - task: AUTO-03
-    accepted_version: null
-    acceptance_evidence: docs/evidence/coord_automation/AUTO-03/runs/run_01/result.md
+    accepted_version: 1
+    acceptance_evidence: docs/evidence/coord_automation/AUTO-03/runs/run_04/qa_review_report.md
     required: AUTO-03（M1 手动单步）经服务器沙箱与独立 Codex QA、非作者 ARCH 报告复核全部通过并收件 Done 后方可启动 M2
 scope_status: mapped
 allowed_repositories:
@@ -111,15 +112,15 @@ forbidden_paths:
   - boot/bootloadermc/**
   - boot/bootloaderth/**
 source_baseline:
-  project-control: b4af2d32601a07d448ac8d67a07c57f5b9ab36ac
+  project-control: 4411a1d72643c8153587c1bc814f84b5ee04c74a
   soc-ap: 427dd6d82caceebb7b4642e78f1dbfa96ff5fc84
   mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
   test_harness: ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414
-base_commit: null
-candidate_commit: null
+base_commit: 4411a1d72643c8153587c1bc814f84b5ee04c74a
+candidate_commit: 4c58c46be12af0e4dcfc4ef6f40dd162c5b18c06
 dispatch_binding:
-  source_commit: b4af2d32601a07d448ac8d67a07c57f5b9ab36ac
-  workspace_diff_sha256: 736c674846d52dee8985cae0654388560199cb33f3041365bd62fae7d91710ad
+  source_commit: 4411a1d72643c8153587c1bc814f84b5ee04c74a
+  workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   consumed_artifact_versions:
     confirmation_rev2: 63c1225d60c377a662bebaa0328f9bc95c19daccaa61d9f2766bc989f06f3f98
     approval_rev1: b7ea9ac9bdefc719fc46263c50e3a893d693ad63ae5166bc9085e4c71cc3f96d
@@ -133,20 +134,23 @@ read_sources:
   - project-control/docs/planning/coord_intake_dispatch_phase1_confirmation_20261103.md
   - project-control/docs/evidence/coord_automation/phase1_prep_20261103/integrator_host_interface_verification_20261103.md
 worktree: /home/sushaohua/workspace/ai_soc_project
-lease: null
+lease:
+  owner: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
+  task_revision: 1
+  lease_id: lease_auto-04_20261103_01
+  expires_at: '2026-11-03T20:00:00+08:00'
 resources:
   - resource: project-control-coord-runner-worktree
     location: /home/sushaohua/workspace/ai_soc_project/project-control
     exclusive: true
-    pending: 待 AUTO-03 Done 后登记实际会话与有效租约
+    pending: 保护工作区既有未提交修改；严禁触碰业务代码仓库与双 Bootloader
 budget:
   planned_checkpoint_minutes: 30
   max_evidence_based_corrections: 2
   on_limit: 保存失败证据与检查点交唯一 COORD，仅回退本票差异
 checkpoint: AUTO-03 收件核验；SQLite 单一恢复源与异步作业并发实现；超时/崩溃五源对账恢复自检；独立 QA
 execution_contract: project-control/docs/planning/coord_intake_dispatch_phase1_confirmation_20261103.md
-readiness_pending:
-  - 等待前置 AUTO-03 正式独立 QA 通过并收件 Done 后绑定准确输入 commit、执行会话与租约
+readiness_pending: []
 deliverables:
   artifacts:
     - project-control/tools/coord_runner/state_store.py
@@ -163,7 +167,7 @@ handoff:
   receiver_session: 8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5
   transport: tools.send_message
   evidence_location: docs/evidence/coord_automation/AUTO-04
-  acknowledgement: null
+  acknowledgement: approved
 verification:
   commands:
     - id: check_graph

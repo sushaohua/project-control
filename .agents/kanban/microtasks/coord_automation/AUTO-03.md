@@ -6,11 +6,11 @@ plan_revision: coord-intake-dispatch-phase1-20261103-rev2
 task_kind: implementation
 development_stage: cross-stage
 dispatchable: true
-status: Ready
+status: Done
 blocked: false
 blocked_reason: null
 recovery_condition: null
-planning_status: mapped-approved
+planning_status: completed
 demand_id: DEM-INTAKE-P1-001
 feature: FEAT-INTAKE-20261103-001
 owner: 25b63893-2611-41ff-87d7-0b9f82cf0375
@@ -18,7 +18,7 @@ proposed_owner: INTEGRATOR
 executor:
   role: INTEGRATOR
   model: gpt-6-luna
-  actual_model: null
+  actual_model: gpt-6-luna
   agent_id: 25b63893-2611-41ff-87d7-0b9f82cf0375
   run_id: run_01
 authorization:
@@ -38,39 +38,39 @@ review_assignments:
       platform: codex
       model: gpt-6-luna
       planned_session_alias: codex-qa-auto-03-review
-      session: pending-codex-qa-auto-03
+      session: 01a1a054-853a-7ab2-b722-308e48d7d298
       session_evidence:
-        path: null
-        sha256: null
-      decision: null
-      reviewed_task_revision: null
-      artifact_version: null
-      evidence: null
-      report_sha256: null
+        path: docs/evidence/coord_automation/AUTO-03/runs/run_04/codex_session.jsonl
+        sha256: a0f80ef1110a4fb7bf304f1743668ed720b16e93a4ac362fd8b37aeede34978c
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: 4411a1d72643c8153587c1bc814f84b5ee04c74a
+      evidence: docs/evidence/coord_automation/AUTO-03/runs/run_04/qa_review_report.md
+      report_sha256: ae90200e505aaddee3ef7cd1df71f676fc44e968da1404457345c7961328c28b
       report_review:
-        session: null
+        session: 01a1a056-1c0d-7e51-80f5-6c74e68bad0f
         role: ARCH
-        decision: null
-        reviewed_task_revision: null
-        artifact_version: null
-        evidence: null
-        report_sha256: null
+        decision: APPROVED
+        reviewed_task_revision: 1
+        artifact_version: 4411a1d72643c8153587c1bc814f84b5ee04c74a
+        evidence: docs/evidence/coord_automation/AUTO-03/runs/run_04/arch_review_report.md
+        report_sha256: caf0193f1f1eae3881a7fea0a5d8c39e65550264472664b258999231603b1da1
         session_evidence:
-          path: null
-          sha256: null
+          path: docs/evidence/coord_automation/AUTO-03/runs/run_04/arch_session.jsonl
+          sha256: 3cbcc72d01a63f57190a76957077a33994c052a34d84221cd9f84444535e2d9b
     - role: ARCH
       platform: codex
       model: gpt-6-luna
       planned_session_alias: codex-arch-auto-03-review
-      session: pending-codex-arch-auto-03
+      session: 01a1a056-1c0d-7e51-80f5-6c74e68bad0f
       session_evidence:
-        path: null
-        sha256: null
-      decision: null
-      reviewed_task_revision: null
-      artifact_version: null
-      evidence: null
-      report_sha256: null
+        path: docs/evidence/coord_automation/AUTO-03/runs/run_04/arch_session.jsonl
+        sha256: 3cbcc72d01a63f57190a76957077a33994c052a34d84221cd9f84444535e2d9b
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: 4411a1d72643c8153587c1bc814f84b5ee04c74a
+      evidence: docs/evidence/coord_automation/AUTO-03/runs/run_04/arch_review_report.md
+      report_sha256: caf0193f1f1eae3881a7fea0a5d8c39e65550264472664b258999231603b1da1
   verifier_session: null
   integrator_session: 25b63893-2611-41ff-87d7-0b9f82cf0375
 primary_work_package: TASK-010
@@ -114,7 +114,7 @@ source_baseline:
   mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
   test_harness: ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414
 base_commit: b7a0a706b9d5683c69989faa4e6d4f6007826915
-candidate_commit: null
+candidate_commit: 4411a1d72643c8153587c1bc814f84b5ee04c74a
 dispatch_binding:
   source_commit: b7a0a706b9d5683c69989faa4e6d4f6007826915
   workspace_diff_sha256: 736c674846d52dee8985cae0654388560199cb33f3041365bd62fae7d91710ad
@@ -170,7 +170,7 @@ handoff:
   receiver_session: 8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5
   transport: tools.send_message
   evidence_location: docs/evidence/coord_automation/AUTO-03
-  acknowledgement: null
+  acknowledgement: approved
 verification:
   commands:
     - id: check_graph
