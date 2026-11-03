@@ -1,0 +1,19 @@
+schema_version: 1
+confirmation_id: CONFIRM-INTAKE-P1-20261103
+revision: 2
+demand_id: DEM-INTAKE-P1-001
+submission_ref:
+  id: SUB-20261103-001
+  revision: 1
+  raw_archive_path: project-control/docs/evidence/coord_automation/phase1_prep_20261103/raw_submission_20261103_01.md
+  raw_archive_sha256: f740af045cd3f6dc7d91bc05603849c8c12924e67c9e8e4e0eb4d7e585e944ac
+canonical_markdown:
+  path: project-control/docs/planning/coord_intake_dispatch_phase1_confirmation_20261103.md
+  revision: 2
+  sha256: 63c1225d60c377a662bebaa0328f9bc95c19daccaa61d9f2766bc989f06f3f98
+prepared_by:
+  coord_session: 8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5
+  pm_session: 4eb5c2eb-b365-45bf-b6a2-2dbf0aa86a08
+  integrator_session: 25b63893-2611-41ff-87d7-0b9f82cf0375
+  arch_session: de6e7ac5-adc5-4382-b0d5-442f63e175ac
+status: approved-by-human

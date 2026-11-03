@@ -1,0 +1,40 @@
+schema_version: 1
+approval_id: APPR-20261103-001
+revision: 1
+approved_at: '2026-11-03T13:19:32+08:00'
+approved_by:
+  actor_type: HUMAN
+  actor_id: sushaohua
+  source_channel: coord_interactive_session
+  coord_session: 8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5
+  verbatim_decision: "全部批准。"
+bound_confirmation:
+  confirmation_id: CONFIRM-INTAKE-P1-20261103
+  revision: 2
+  path: project-control/docs/planning/coord_intake_dispatch_phase1_confirmation_20261103.md
+  sha256: 63c1225d60c377a662bebaa0328f9bc95c19daccaa61d9f2766bc989f06f3f98
+bound_submission:
+  submission_id: SUB-20261103-001
+  revision: 1
+  raw_archive_path: project-control/docs/evidence/coord_automation/phase1_prep_20261103/raw_submission_20261103_01.md
+  raw_archive_sha256: f740af045cd3f6dc7d91bc05603849c8c12924e67c9e8e4e0eb4d7e585e944ac
+approval_mode: full_batch_approval
+approved_demands:
+  - demand_id: DEM-INTAKE-P1-001
+    demand_confirmed: true
+    implementation_summary_approved: true
+    approved_items:
+      - item_1_phase1_objectives_m1_m2_m3_scope_p1_01_to_20_and_auto_03_to_06
+      - item_2a_bounded_non_production_software_drill_in_project_control_for_p1_15
+      - item_2b_m3_systemd_user_enable_linger_with_wsl2_sleep_boundary_note
+    model_policy:
+      default_model: gpt-6-luna
+      cli_executor: /home/sushaohua/.local/bin/codex
+      overrides_approved: []
+    exclusions_enforced:
+      - no_qa_auto_generated_issues
+      - no_qa_fixed_round_version_switch_or_buildno
+      - no_soc_ap_or_mcu_p3_business_code_changes
+      - no_bootloadermc_or_bootloaderth_changes
+      - no_mcu_flashing_or_physical_hardware_operations
+      - no_downgrade_of_server_pinned_docker_and_independent_codex_qa_gates

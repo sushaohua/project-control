@@ -41,6 +41,10 @@ child_tasks:
 - TWIN-12
 - TWIN-14
 - AUTO-02
+- AUTO-03
+- AUTO-04
+- AUTO-05
+- AUTO-06
 - TWIN-30
 - TWIN-35
 - TWIN-40
