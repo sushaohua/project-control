@@ -1,0 +1,43 @@
+{
+  "remote_refs": {
+    "project-control": "abc0b497d1d56c8e9fbbf65df5ae6abde2ee87c6\trefs/heads/main",
+    "soc-ap": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84\trefs/heads/main",
+    "mcu-p3": "e051111e68dd61896ed42c0961153b167b8bca41\trefs/heads/feat/soc-debug",
+    "test_harness": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414\trefs/heads/main"
+  },
+  "docker_inspect_58a086fc1479": {
+    "Id": "58a086fc1479017f790e98c24bc5567f139e600c89de277067f8a6a9512791bf",
+    "Image": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+    "ConfigImage": "qa-sandbox:20261029",
+    "State": {
+      "Status": "exited",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 0,
+      "ExitCode": 137,
+      "Error": "",
+      "StartedAt": "2026-11-03T06:08:57.139821136Z",
+      "FinishedAt": "2026-11-03T06:09:19.3181608Z"
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/tmp/qa_sandboxes/AUTO-03_run_140836_20261103_060836",
+        "Destination": "/workspace",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  "legacy_queue_unchanged": {
+    "baseline_commit": "b4af2d32601a07d448ac8d67a07c57f5b9ab36ac",
+    "candidate_commit": "abc0b497d1d56c8e9fbbf65df5ae6abde2ee87c6",
+    "baseline_sha256": "819fed4f9ca02149f2eafbc29bd27e76960d0075a25b3406ff76cb60be6d0ec1",
+    "candidate_sha256": "819fed4f9ca02149f2eafbc29bd27e76960d0075a25b3406ff76cb60be6d0ec1",
+    "equal": true
+  }
+}

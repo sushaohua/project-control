@@ -1,0 +1,80 @@
+{
+  "remote_refs": {
+    "project-control": "abc0b497d1d56c8e9fbbf65df5ae6abde2ee87c6\trefs/heads/main",
+    "soc-ap": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84\trefs/heads/main",
+    "mcu-p3": "e051111e68dd61896ed42c0961153b167b8bca41\trefs/heads/feat/soc-debug",
+    "test_harness": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414\trefs/heads/main"
+  },
+  "qa_container_inspect": {
+    "Id": "0cd68c3b582c17e3609bd3012b9a3b927b124ca8efbbc1c13a3f407c0938e046",
+    "Image": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+    "ConfigImage": "qa-sandbox:20261029",
+    "ConfigCmd": [
+      "sleep",
+      "3600"
+    ],
+    "DaemonContainerStopNote": "qa_runner.py starts container with PID 1 = sleep 3600, runs each test step via docker exec (all 5 steps returned exit_code=0 in server_qa.json/runtime.log), then calls docker stop -t 2 which sends SIGKILL (ExitCode 137 = 128+9) to PID 1 sleep 3600.",
+    "State": {
+      "Status": "exited",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 0,
+      "ExitCode": 137,
+      "Error": "",
+      "StartedAt": "2026-11-03T06:13:03.373386002Z",
+      "FinishedAt": "2026-11-03T06:13:25.376338913Z"
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/tmp/qa_sandboxes/AUTO-03_run_141246_20261103_061246",
+        "Destination": "/workspace",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  "arch_container_inspect": {
+    "Id": "a81c4285cc1f367c98104427ded277a635efe4acfbf835df5825f198994d9ccd",
+    "Image": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+    "ConfigImage": "qa-sandbox:20261029",
+    "ConfigCmd": [
+      "sleep",
+      "3600"
+    ],
+    "State": {
+      "Status": "exited",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 0,
+      "ExitCode": 137,
+      "Error": "",
+      "StartedAt": "2026-11-03T06:13:51.733163594Z",
+      "FinishedAt": "2026-11-03T06:14:13.965931593Z"
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/tmp/qa_sandboxes/AUTO-03_run_141328_20261103_061328",
+        "Destination": "/workspace",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  "legacy_queue_unchanged": {
+    "baseline_commit": "b4af2d32601a07d448ac8d67a07c57f5b9ab36ac",
+    "candidate_commit": "abc0b497d1d56c8e9fbbf65df5ae6abde2ee87c6",
+    "baseline_sha256": "819fed4f9ca02149f2eafbc29bd27e76960d0075a25b3406ff76cb60be6d0ec1",
+    "candidate_sha256": "819fed4f9ca02149f2eafbc29bd27e76960d0075a25b3406ff76cb60be6d0ec1",
+    "equal": true
+  }
+}
