@@ -3,6 +3,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
+import os
 from pathlib import Path
 import time
 from typing import Dict, List, Optional
@@ -151,7 +152,8 @@ def resolve_state_db_path(ws_root: Path, explicit: Optional[Path]) -> Path:
     if explicit is not None:
         return Path(explicit).resolve()
     ws = Path(ws_root).resolve()
-    if ws == Path(".").resolve() or ws.name in {"ai_soc_project", "project-control"}:
+    shared_names = {"ai_soc_project", "project-control", "workspace"}
+    if ws == Path(".").resolve() or ws.name in shared_names or not os.access(ws, os.W_OK):
         return Path("/home/sushaohua/.local/share/ai_soc_coord_runner/state.sqlite3")
     return (ws / "state.sqlite3").resolve()
 
@@ -161,7 +163,8 @@ def resolve_lock_path(ws_root: Path, explicit: Optional[Path]) -> Path:
     if explicit is not None:
         return Path(explicit).resolve()
     ws = Path(ws_root).resolve()
-    if ws == Path(".").resolve() or ws.name in {"ai_soc_project", "project-control"}:
+    shared_names = {"ai_soc_project", "project-control", "workspace"}
+    if ws == Path(".").resolve() or ws.name in shared_names or not os.access(ws, os.W_OK):
         return Path("/home/sushaohua/.local/share/ai_soc_coord_runner/coord_runner.lock")
     return (ws / "coord_runner.lock").resolve()
 
