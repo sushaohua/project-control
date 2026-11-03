@@ -168,9 +168,14 @@ class CoordStateMachine:
         review_entry: dict,
         author_session: str,
     ) -> bool:
+        platform = review_entry.get("platform")
+        if platform is not None and platform != "codex":
+            raise GateValidationError(
+                f"Ordinary subagent or non-Codex platform ({platform!r}) cannot substitute for independent Codex"
+            )
         reviewer_session = review_entry.get("session") or review_entry.get("reviewer_session")
-        if not reviewer_session:
-            raise GateValidationError("Reviewer session ID is missing")
+        if not reviewer_session or str(reviewer_session).startswith(("pending-", "planned-", "subagent-", "alias-")):
+            raise GateValidationError(f"Reviewer session ID is missing or planned alias: {reviewer_session!r}")
         if author_session and reviewer_session == author_session:
             raise GateValidationError(
                 f"Self-review rejected: author session {author_session} cannot review own work"
@@ -228,6 +233,14 @@ class CoordStateMachine:
         required_roles = [req_raw] if isinstance(req_raw, str) else list(req_raw)
         approved_roles = set()
         for entry in assignments:
+            platform = entry.get("platform")
+            if platform is not None and platform != "codex":
+                raise GateValidationError(
+                    f"Fake Done rejected: non-Codex reviewer platform ({platform!r}) cannot close task"
+                )
+            sess = str(entry.get("session") or entry.get("reviewer_session") or "")
+            if sess.startswith(("pending-", "planned-", "subagent-", "alias-")):
+                raise GateValidationError(f"Fake Done rejected: planned alias reviewer session ({sess})")
             if entry.get("decision") != "APPROVED":
                 raise GateValidationError("Fake Done rejected: review assignments not approved")
             role = entry.get("role")

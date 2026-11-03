@@ -1,0 +1,44 @@
+{
+  "drill_task_id": "AUTO-03-DRILL-01",
+  "intake_generated_count": 2,
+  "intake_errors": [],
+  "approved_feature_route": {
+    "demand_id": "DEM-20261103-001",
+    "kind": "feature",
+    "route": "DISPATCH_APPROVED_FEATURE",
+    "sandbox_mode": "workspace-write",
+    "target_roles": [
+      "INTEGRATOR"
+    ],
+    "implementation_released": true,
+    "held_reason": null
+  },
+  "held_requirement_route": {
+    "demand_id": "DEM-20261103-002",
+    "kind": "requirement",
+    "route": "CLARIFY_PM_ARCH",
+    "sandbox_mode": "read-only",
+    "target_roles": [
+      "PM",
+      "ARCH"
+    ],
+    "implementation_released": false,
+    "held_reason": "WAITING_PM_ARCH_CLARIFICATION"
+  },
+  "coord_live_thread_id": "01a19ff8-7fe0-7d52-8e4c-2f38dad3a7f4",
+  "coord_live_model": "gpt-6-luna",
+  "coord_live_tokens": 13843,
+  "coord_second_call_action": "NOOP",
+  "coord_second_call_model_invoked": false,
+  "role_job_id": "job_AUTO-03-DRILL-01_8f2d267410",
+  "role_dispatch_key": "AUTO-03-DRILL-01:rev1:INTEGRATOR:implement:1",
+  "role_query_state": "COMPLETED",
+  "role_thread_id": "01a19ff8-92e3-7703-be3a-977a1dc4d835",
+  "role_actual_model": "gpt-6-luna",
+  "role_tokens_used": 34037,
+  "role_events_path": "project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/jobs/job_AUTO-03-DRILL-01_8f2d267410/codex_events.jsonl",
+  "deliverable_path": "project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/deliverables/drill_intake_manifest.json",
+  "deliverable_sha256": "4866705b9b624387caace5315b1f5c031dec8ec77ce111a79b288b34f3acdf04",
+  "post_role_lifecycle_state": "AWAITING_SERVER_CANDIDATE_AND_INDEPENDENT_QA",
+  "auto_done_written": false
+}

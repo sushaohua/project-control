@@ -1,0 +1,21 @@
+{
+  "job_id": "job_AUTO-03-DRILL-01_8f2d267410",
+  "dispatch_key": "AUTO-03-DRILL-01:rev1:INTEGRATOR:implement:1",
+  "task_id": "AUTO-03-DRILL-01",
+  "task_revision": 1,
+  "demand_id": "DEM-20261103-001",
+  "role": "INTEGRATOR",
+  "phase": "implement",
+  "sandbox_mode": "workspace-write",
+  "requested_model": "gpt-6-luna",
+  "allowed_paths": [
+    "project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/deliverables/**"
+  ],
+  "forbidden_paths": [],
+  "deliverables": [
+    "project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/deliverables/drill_intake_manifest.json"
+  ],
+  "require_commit": false,
+  "workdir": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill",
+  "started_at": "2026-11-03T13:53:50.061716+08:00"
+}

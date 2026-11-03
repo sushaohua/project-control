@@ -150,13 +150,19 @@ class CoordState:
 class CoordRunnerConfig:
     """Configuration settings for COORD runner."""
     workspace_root: Path = field(default_factory=lambda: Path("."))
-    queue_file: Path = field(default_factory=lambda: Path("project-control/docs/planning/coord_autorun_queue_20261029.yaml"))
+    queue_file: Path = field(default_factory=lambda: Path("project-control/docs/work_intake/work_intake_queue.yaml"))
     checkpoint_file: Path = field(default_factory=lambda: Path("project-control/tools/coord_runner/coord_state.json"))
     poll_interval_seconds: float = 5.0
     default_lease_duration_seconds: float = 1800.0
     max_parallel_implementation: int = 2
     max_evidence_based_corrections: int = 2
     exclusive_devices: List[str] = field(default_factory=lambda: ["uart", "hardware-serial", "hil-device", "probe"])
+    intake_root: Path = field(default_factory=lambda: Path("project-control/docs/work_intake"))
+    legacy_queue_file: Path = field(default_factory=lambda: Path("project-control/docs/planning/coord_autorun_queue_20261029.yaml"))
+    isolate_legacy_queue: bool = False
+    codex_bin: Path = field(default_factory=lambda: Path("/home/sushaohua/.local/bin/codex"))
+    default_model: str = "gpt-6-luna"
+    jobs_dir: Path = field(default_factory=lambda: Path("project-control/tools/coord_runner/runtime_jobs"))
 
     @classmethod
     def from_dict(cls, data: dict, base_dir: Optional[Path] = None) -> "CoordRunnerConfig":
@@ -165,17 +171,27 @@ class CoordRunnerConfig:
         runner_sec = data.get("runner", {})
         limits_sec = data.get("limits", {})
         res_sec = data.get("resources", {})
-        ws = base / runner_sec.get("workspace_root", ".")
-        qf = base / runner_sec.get("queue_file", "project-control/docs/planning/coord_autorun_queue_20261029.yaml")
-        cf = base / runner_sec.get("checkpoint_file", "project-control/tools/coord_runner/coord_state.json")
+        intake_sec = data.get("work_intake", {})
+        ws = (base / runner_sec.get("workspace_root", ".")).resolve()
+        qf = (base / runner_sec.get("queue_file", "project-control/docs/work_intake/work_intake_queue.yaml")).resolve()
+        cf = (base / runner_sec.get("checkpoint_file", "project-control/tools/coord_runner/coord_state.json")).resolve()
         devs = res_sec.get("exclusive_devices", ["uart", "hardware-serial", "hil-device", "probe"])
+        in_root = (base / intake_sec.get("root_dir", "project-control/docs/work_intake")).resolve()
+        leg_q = (base / intake_sec.get("legacy_queue_file", "project-control/docs/planning/coord_autorun_queue_20261029.yaml")).resolve()
+        j_dir = (base / intake_sec.get("jobs_dir", "project-control/tools/coord_runner/runtime_jobs")).resolve()
         return cls(
-            workspace_root=ws.resolve(),
-            queue_file=qf.resolve(),
-            checkpoint_file=cf.resolve(),
+            workspace_root=ws,
+            queue_file=qf,
+            checkpoint_file=cf,
             poll_interval_seconds=float(runner_sec.get("poll_interval_seconds", 5.0)),
             default_lease_duration_seconds=float(runner_sec.get("default_lease_duration_seconds", 1800.0)),
             max_parallel_implementation=int(limits_sec.get("max_parallel_implementation", 2)),
             max_evidence_based_corrections=int(limits_sec.get("max_evidence_based_corrections", 2)),
             exclusive_devices=list(devs),
+            intake_root=in_root,
+            legacy_queue_file=leg_q,
+            isolate_legacy_queue=bool(intake_sec.get("isolate_legacy_queue", True)),
+            codex_bin=Path(intake_sec.get("codex_bin", "/home/sushaohua/.local/bin/codex")),
+            default_model=str(intake_sec.get("default_model", "gpt-6-luna")),
+            jobs_dir=j_dir,
         )

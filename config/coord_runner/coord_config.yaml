@@ -2,10 +2,18 @@ schema_version: 1
 
 runner:
   workspace_root: "."
-  queue_file: "project-control/docs/planning/coord_autorun_queue_20261029.yaml"
+  queue_file: "project-control/docs/work_intake/work_intake_queue.yaml"
   checkpoint_file: "project-control/tools/coord_runner/coord_state.json"
   poll_interval_seconds: 5.0
   default_lease_duration_seconds: 1800.0
+
+work_intake:
+  root_dir: "project-control/docs/work_intake"
+  legacy_queue_file: "project-control/docs/planning/coord_autorun_queue_20261029.yaml"
+  isolate_legacy_queue: true
+  codex_bin: "/home/sushaohua/.local/bin/codex"
+  default_model: "gpt-6-luna"
+  jobs_dir: "project-control/tools/coord_runner/runtime_jobs"
 
 limits:
   max_parallel_implementation: 2

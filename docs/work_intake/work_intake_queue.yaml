@@ -1,0 +1,10 @@
+schema_version: 1
+queue_domain: work_intake
+isolate_legacy_queue: true
+legacy_queue_ref: project-control/docs/planning/coord_autorun_queue_20261029.yaml
+bootstrap: []
+order:
+  - AUTO-03
+  - AUTO-04
+  - AUTO-05
+  - AUTO-06

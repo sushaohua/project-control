@@ -741,14 +741,25 @@ class ExecutionModesTest(unittest.TestCase):
         self.assertEqual(runner.qa_executor, runner.default_qa_executor)
         self.assertEqual(runner.review_executor, runner.default_review_executor)
 
-    def test_default_agent_executor_resolves_head(self):
+    def test_default_agent_executor_invokes_role_adapter_with_approval(self):
         runner = CoordRunner(CoordRunnerConfig(workspace_root=WORKSPACE_ROOT))
-        rec = TaskExecutionRecord("AUTO-02", state=TaskState.IN_PROGRESS.value)
-        with patch.object(runner, "_verify_server_commit") as mock_verify:
-            commit = runner.default_agent_executor("AUTO-02", rec)
-            self.assertEqual(len(commit), 40)
-            runner.state_machine.validate_commit_sha(commit)
-            mock_verify.assert_called_once()
+        rec = TaskExecutionRecord("AUTO-03", state=TaskState.IN_PROGRESS.value, task_revision=1)
+        commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
+        fake_handle = MagicMock(job_id="job_auto03_1")
+        fake_res = MagicMock(
+            job_id="job_auto03_1", dispatch_key="AUTO-03:rev1:INTEGRATOR:implement:1",
+            thread_id="01a19fcc-real-codex-thread", actual_model="gpt-6-luna",
+            candidate_commit=commit,
+        )
+        with patch.object(runner.role_adapter, "submit_role_task", return_value=fake_handle) as m_sub:
+            with patch.object(runner.role_adapter, "collect_role_result", return_value=fake_res):
+                with patch.object(runner, "_verify_server_commit") as m_verify:
+                    got = runner.default_agent_executor("AUTO-03", rec)
+        self.assertEqual(got, commit)
+        self.assertEqual(rec.session_id, "01a19fcc-real-codex-thread")
+        self.assertEqual(rec.runtime_context["actual_model"], "gpt-6-luna")
+        m_sub.assert_called_once()
+        m_verify.assert_called_once()
 
     def test_verify_server_commit_variants(self):
         runner = CoordRunner(self.cfg)
@@ -763,15 +774,24 @@ class ExecutionModesTest(unittest.TestCase):
             with self.assertRaises(CoordRunnerError):
                 runner._verify_server_commit(Path("/dummy"), "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819")
 
-    def test_default_agent_executor_rejects_unpushed_commit(self):
+    def test_default_agent_executor_rejects_unapproved_or_unpushed_candidate(self):
         runner = CoordRunner(CoordRunnerConfig(workspace_root=self.base))
-        rec = TaskExecutionRecord("AUTO-02", state=TaskState.IN_PROGRESS.value)
-        with patch.object(runner, "_verify_server_commit", side_effect=CoordRunnerError("unpushed")):
-            with patch("subprocess.run") as mock_run:
-                mock_run.return_value = MagicMock(returncode=0, stdout="a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819\n")
-                with self.assertRaises(CoordRunnerError) as ctx:
-                    runner.default_agent_executor("AUTO-02", rec)
-                self.assertIn("unpushed", str(ctx.exception))
+        rec = TaskExecutionRecord("UNAPPROVED-01", state=TaskState.IN_PROGRESS.value)
+        rec.runtime_context["card"] = {"id": "UNAPPROVED-01", "demand_id": "DEM-NONE", "authorization": {}}
+        with self.assertRaises(GateValidationError):
+            runner.default_agent_executor("UNAPPROVED-01", rec)
+        runner_ws = CoordRunner(CoordRunnerConfig(workspace_root=WORKSPACE_ROOT))
+        rec2 = TaskExecutionRecord("AUTO-03", state=TaskState.IN_PROGRESS.value)
+        fake_res = MagicMock(
+            job_id="j1", dispatch_key="k1", thread_id="01a19fcc-1",
+            actual_model="gpt-6-luna", candidate_commit="a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819",
+        )
+        with patch.object(runner_ws.role_adapter, "submit_role_task", return_value=MagicMock(job_id="j1")):
+            with patch.object(runner_ws.role_adapter, "collect_role_result", return_value=fake_res):
+                with patch.object(runner_ws, "_verify_server_commit", side_effect=CoordRunnerError("unpushed")):
+                    with self.assertRaises(CoordRunnerError) as ctx:
+                        runner_ws.default_agent_executor("AUTO-03", rec2)
+                    self.assertIn("unpushed", str(ctx.exception))
 
     def test_execute_review_phase_multi_role(self):
         runner = CoordRunner(self.cfg)
@@ -1098,6 +1118,56 @@ class CodexAndSandboxIsolationGateTest(unittest.TestCase):
             return b"ok"
         with patch("delivery_checks.read_ref", side_effect=fake_read_ref):
             gate.check_server_qa(header, {"id": "T1", "revision": 1}, self.root)
+
+
+class M1QueueIsolationAndDoneGateTest(unittest.TestCase):
+    def test_scheduler_enforces_done_acceptance_errors_on_predecessors(self):
+        sched = CoordScheduler(workspace_root=WORKSPACE_ROOT, isolate_legacy_queue=True)
+        fake_cards = {
+            "AUTO-FAKE-DONE": {"id": "AUTO-FAKE-DONE", "status": "Done", "depends_on": []},
+            "AUTO-NEXT": {"id": "AUTO-NEXT", "status": "Ready", "depends_on": ["AUTO-FAKE-DONE"]},
+        }
+        ctx_fake = ScheduleContext(queue={"order": ["AUTO-FAKE-DONE", "AUTO-NEXT"]}, cards=fake_cards)
+        self.assertEqual(sched.select_next_tasks(ctx_fake), [])
+        self.assertIn("AUTO-FAKE-DONE", ctx_fake.done_reconcile_errors)
+        import check_task_graph as graph
+        real_cards, _ = graph.check(WORKSPACE_ROOT)
+        ctx_real = ScheduleContext(
+            queue={"queue_domain": "work_intake", "order": ["AUTO-03", "AUTO-04"]},
+            cards=real_cards,
+        )
+        self.assertEqual(sched.select_next_tasks(ctx_real), ["AUTO-03"])
+
+    def test_legacy_queue_and_twin_tasks_explicitly_isolated(self):
+        from coord_runner.errors import ConfigError
+        sched = CoordScheduler(workspace_root=WORKSPACE_ROOT, isolate_legacy_queue=True)
+        legacy_q = WORKSPACE_ROOT / "project-control/docs/planning/coord_autorun_queue_20261029.yaml"
+        with self.assertRaises(ConfigError):
+            sched.load_queue(legacy_q)
+        with self.assertRaises(ConfigError):
+            sched.get_ordered_tasks({"queue_domain": "work_intake", "order": ["AUTO-03", "TWIN-15"]})
+        intake_q = WORKSPACE_ROOT / "project-control/docs/work_intake/work_intake_queue.yaml"
+        loaded = sched.load_queue(intake_q)
+        self.assertEqual(loaded["queue_domain"], "work_intake")
+
+    def test_subagent_platform_and_planned_alias_rejected_in_state_machine(self):
+        sm = CoordStateMachine()
+        rec = TaskExecutionRecord("AUTO-03", state=TaskState.REVIEW.value)
+        with self.assertRaises(GateValidationError):
+            sm.validate_review_verdict(rec, {"platform": "subagent", "session": "s1", "decision": "APPROVED"}, "auth")
+        with self.assertRaises(GateValidationError):
+            sm.validate_review_verdict(rec, {"platform": "codex", "session": "pending-codex-qa", "decision": "APPROVED"}, "auth")
+
+    def test_module_cli_intake_scan_runs_cleanly(self):
+        proc = subprocess.run(
+            [sys.executable, "-m", "tools.coord_runner", "--intake-scan"],
+            cwd=str(WORKSPACE_ROOT / "project-control"),
+            capture_output=True, text=True, timeout=20, check=False,
+        )
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr or proc.stdout)
+        payload = json.loads(proc.stdout)
+        self.assertIn("FEAT-INTAKE-20261103-001", payload["valid_records"])
+        self.assertEqual(payload["errors"], [])
 
 
 class MethodologicalInvariantsTest(unittest.TestCase):

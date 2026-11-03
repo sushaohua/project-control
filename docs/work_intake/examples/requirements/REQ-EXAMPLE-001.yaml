@@ -1,0 +1,34 @@
+schema_version: 1
+id: REQ-EXAMPLE-001
+revision: 1
+kind: requirement
+enabled: false
+title: 多批次需求合并确认时的展示粒度待澄清，请 PM 与 ARCH 先给出边界建议
+objective: "[requirement] 多批次需求合并确认时的展示粒度待澄清，请 PM 与 ARCH 先给出边界建议"
+source_refs:
+  submission_id: SUB-EXAMPLE-001
+  submission_revision: 1
+  instruction_anchor: instruction_3
+  submission_path: project-control/docs/work_intake/examples/example_batch_submission.md
+  submission_sha256: 0000000000000000000000000000000000000000000000000000000000000000
+  verbatim_instruction: "[requirement] 多批次需求合并确认时的展示粒度待澄清，请 PM 与 ARCH 先给出边界建议"
+demand_ref:
+  demand_id: DEM-EXAMPLE-003
+  confirmation_id: null
+  confirmation_revision: null
+reported_by:
+  actor_type: HUMAN
+  actor_id: example_author
+  source_channel: markdown_submission
+authorization_refs: []
+approval_refs: []
+requested_action: clarify
+priority_hint: P2
+related_ids:
+  engineering_tasks: []
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: unclear
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: false

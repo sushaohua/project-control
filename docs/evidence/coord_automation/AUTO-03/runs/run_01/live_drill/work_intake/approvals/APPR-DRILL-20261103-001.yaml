@@ -1,0 +1,28 @@
+schema_version: 1
+approval_id: APPR-DRILL-20261103-001
+revision: 1
+approved_at: '2026-11-03T13:19:32+08:00'
+approved_by:
+  actor_type: HUMAN
+  actor_id: sushaohua
+  source_channel: coord_interactive_session
+  coord_session: 8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5
+  verbatim_decision: 全部批准。
+parent_human_approval_ref:
+  path: project-control/docs/work_intake/approvals/APPR-20261103-001.yaml
+  sha256: b7ea9ac9bdefc719fc46263c50e3a893d693ad63ae5166bc9085e4c71cc3f96d
+bound_confirmation:
+  confirmation_id: CONFIRM-DRILL-20261103-001
+  revision: 1
+  path: project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/work_intake/confirmations/CONFIRM-DRILL-20261103-001.md
+  sha256: be39d9737b926231dd640cffdf8c76111ff1285a4c8cc7a82face5ac47998844
+approval_mode: partial_batch_approval
+approved_demands:
+- demand_id: DEM-20261103-001
+  demand_confirmed: true
+  implementation_summary_approved: true
+  approved_items:
+  - drill_manifest_generation
+  model_policy:
+    default_model: gpt-6-luna
+    overrides_approved: []

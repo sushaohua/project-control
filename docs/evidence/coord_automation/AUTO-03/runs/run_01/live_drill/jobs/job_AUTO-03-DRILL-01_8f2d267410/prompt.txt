@@ -1,0 +1,3 @@
+[COORD_DISPATCH_KEY:AUTO-03-DRILL-01:rev1:INTEGRATOR:implement:1]
+Role: INTEGRATOR. Bounded M1 drill task AUTO-03-DRILL-01.
+Write valid UTF-8 JSON to exact relative path `deliverables/drill_intake_manifest.json` with keys: `task_id` ('AUTO-03-DRILL-01'), `demand_id` ('DEM-20261103-001'), `category_id` ('FEAT-20261103-001'), `common_constraints_sha256` ('b3e5646f7950f16fbf96961fc758c3c90f7bcca767a4b29c99362646dd5776ff'), and `verified` (true). Touch NO other files. Then return JSON matching schema with status='COMPLETED', candidate_commit='', artifacts=['project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/deliverables/drill_intake_manifest.json'], summary='Generated bounded drill manifest', notes='M1 live drill'.

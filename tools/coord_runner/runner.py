@@ -15,28 +15,36 @@ import traceback
 from typing import Callable, Dict, List, Optional, Set
 
 if __package__:
+    from .approval_guard import ApprovalGuard, ApprovalQuery
     from .checkpoint import CheckpointManager
     from .codex_adapter import CodexReviewAdapter
     from .codex_qa import execute_sandbox, validate_server_proof
+    from .m1_drill import execute_m1_live_drill
     from .qa_contract import create_qa_request, repository_from_card
     from .review_bundle import execute_candidate_audit
     from .errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from .lease_manager import LeaseManager
     from .models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
+    from .role_adapter import CodexRoleAdapter, RoleAdapterConfig, RoleTaskRequest
     from .scheduler import CoordScheduler, ScheduleContext
     from .state_machine import CoordStateMachine
+    from .work_intake import WorkIntakeManager
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from coord_runner.approval_guard import ApprovalGuard, ApprovalQuery
     from coord_runner.checkpoint import CheckpointManager
     from coord_runner.codex_adapter import CodexReviewAdapter
     from coord_runner.codex_qa import execute_sandbox, validate_server_proof
+    from coord_runner.m1_drill import execute_m1_live_drill
     from coord_runner.qa_contract import create_qa_request, repository_from_card
     from coord_runner.review_bundle import execute_candidate_audit
     from coord_runner.errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from coord_runner.lease_manager import LeaseManager
     from coord_runner.models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState
+    from coord_runner.role_adapter import CodexRoleAdapter, RoleAdapterConfig, RoleTaskRequest
     from coord_runner.scheduler import CoordScheduler, ScheduleContext
     from coord_runner.state_machine import CoordStateMachine
+    from coord_runner.work_intake import WorkIntakeManager
 
 
 class CoordRunner:
@@ -52,8 +60,19 @@ class CoordRunner:
         self.state_machine = CoordStateMachine(
             max_corrections=self.config.max_evidence_based_corrections,
         )
-        self.scheduler = CoordScheduler(workspace_root=self.config.workspace_root)
+        self.scheduler = CoordScheduler(
+            workspace_root=self.config.workspace_root,
+            isolate_legacy_queue=self.config.isolate_legacy_queue,
+        )
         self.checkpoint_mgr = CheckpointManager()
+        self.approval_guard = ApprovalGuard(self.config.workspace_root)
+        self.intake_mgr = WorkIntakeManager(self.config.workspace_root, self.config.intake_root)
+        self.role_adapter = CodexRoleAdapter(RoleAdapterConfig(
+            workspace_root=self.config.workspace_root,
+            jobs_dir=self.config.jobs_dir,
+            codex_bin=self.config.codex_bin,
+            default_model=self.config.default_model,
+        ))
         self.in_flight_tasks: Dict[str, TaskExecutionRecord] = {}
         self.completed_tasks: Set[str] = set()
         self.cursor: Optional[str] = None
@@ -86,6 +105,9 @@ class CoordRunner:
         cards_dir = self.config.workspace_root / "project-control/.agents/kanban/microtasks"
         if not cards_dir.is_dir():
             return {}
+        tools_dir = str(Path(__file__).resolve().parent.parent)
+        if tools_dir not in sys.path:
+            sys.path.insert(0, tools_dir)
         import check_task_graph as graph
         cards, _ = graph.check(self.config.workspace_root)
         return cards
@@ -409,19 +431,85 @@ class CoordRunner:
                 f"Candidate commit {commit} is unpushed to server remote in {repo_dir}"
             )
 
-    def default_agent_executor(self, task_id: str, record: TaskExecutionRecord) -> str:
-        repo_name = self._resolve_task_repo(task_id)
+    def _verify_card_approval(self, task_id: str, card: dict) -> None:
+        auth = card.get("authorization") or {}
+        ev_path = auth.get("evidence")
+        demand_id = str(card.get("demand_id") or task_id)
+        exec_cfg = card.get("executor") or {}
+        query = ApprovalQuery(
+            demand_id=demand_id,
+            approval_path=Path(ev_path) if ev_path else None,
+            requested_model=str(exec_cfg.get("model") or self.config.default_model),
+            record_payload=card,
+        )
+        self.approval_guard.require_implementation_approval(query)
+
+    def _build_agent_role_request(
+        self,
+        task_id: str,
+        record: TaskExecutionRecord,
+        card: dict,
+    ) -> RoleTaskRequest:
+        repo_name = repository_from_card(card) if card.get("write_scope") else self._resolve_task_repo(task_id)
         repo_dir = self.config.workspace_root / repo_name
-        if not repo_dir.is_dir():
-            repo_dir = self.config.workspace_root
-        cmd = ["git", "-c", "safe.directory=*", "-C", str(repo_dir), "rev-parse", "HEAD"]
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
-        if proc.returncode != 0:
-            raise CoordRunnerError(f"Failed to resolve git HEAD in {repo_dir}: {proc.stderr.strip()}")
-        commit = proc.stdout.strip()
-        self.state_machine.validate_commit_sha(commit)
-        self._verify_server_commit(repo_dir, commit)
-        return commit
+        workdir = repo_dir if repo_dir.is_dir() else self.config.workspace_root
+        exec_cfg = card.get("executor") or {}
+        role = str(exec_cfg.get("role") or card.get("proposed_owner") or "INTEGRATOR")
+        model = str(exec_cfg.get("model") or self.config.default_model)
+        delivs = list((card.get("deliverables") or {}).get("artifacts") or [])
+        prompt = (
+            f"Execute approved task {task_id} revision {record.task_revision} as role {role}.\n"
+            f"Title: {card.get('title', task_id)}\n"
+            f"Allowed paths: {card.get('allowed_paths', [])}\n"
+            f"Deliverables: {delivs}\n"
+            f"Commit and push exact candidate to origin and return structured JSON output."
+        )
+        return RoleTaskRequest(
+            task_id=task_id,
+            task_revision=record.task_revision,
+            role=role,
+            phase="implement",
+            prompt=prompt,
+            demand_id=str(card.get("demand_id") or ""),
+            model=model,
+            workdir=workdir,
+            watch_dir=workdir,
+            allowed_paths=list(card.get("allowed_paths") or []),
+            forbidden_paths=list(card.get("forbidden_paths") or []),
+            deliverables=delivs,
+            approval_verified=True,
+            require_commit=True,
+        )
+
+    def default_agent_executor(self, task_id: str, record: TaskExecutionRecord) -> str:
+        """Dispatch approved role task via host `codex exec -m gpt-6-luna` (replaces passive HEAD lookup)."""
+        card = record.runtime_context.get("card") or self.load_cards().get(task_id)
+        if not isinstance(card, dict) or not card:
+            raise CoordRunnerError(f"Missing accepted task card for {task_id}")
+        self._verify_card_approval(task_id, card)
+        req = self._build_agent_role_request(task_id, record, card)
+        attempt = record.corrections_count + 1
+        dispatch_key = f"{task_id}:rev{record.task_revision}:{req.role}:implement:{attempt}"
+        handle = self.role_adapter.submit_role_task(req, dispatch_key)
+        res = self.role_adapter.collect_role_result(handle.job_id)
+        record.session_id = res.thread_id
+        record.runtime_context["role_job_id"] = res.job_id
+        record.runtime_context["dispatch_key"] = res.dispatch_key
+        record.runtime_context["actual_model"] = res.actual_model
+        self.state_machine.validate_commit_sha(res.candidate_commit)
+        self._verify_server_commit(Path(req.workdir or self.config.workspace_root), str(res.candidate_commit))
+        return str(res.candidate_commit)
+
+    def scan_work_intake(self, persist_ledger: bool = True) -> dict:
+        """Scan `docs/work_intake/` submissions/categories and return structured M1 intake summary."""
+        res = self.intake_mgr.scan_and_sync(persist_ledger=persist_ledger, active_cards=self.load_cards())
+        return {
+            "submissions_count": len(res.submissions),
+            "generated_files": [str(p) for p in res.generated_paths],
+            "valid_records": sorted(res.records.keys()),
+            "errors": [e.__dict__ for e in res.errors],
+            "notices": [n.__dict__ for n in res.notices],
+        }
 
     def default_qa_executor(
         self,
@@ -562,6 +650,8 @@ def create_cli_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", default="project-control/config/coord_runner/coord_config.yaml",
                         help="Path to coord_runner YAML config")
     parser.add_argument("--once", action="store_true", help="Execute single step and exit")
+    parser.add_argument("--intake-scan", action="store_true", help="Scan work_intake MD/YAML records and exit")
+    parser.add_argument("--drill-dir", default="", help="Execute bounded M1 host live drill in directory")
     parser.add_argument("--resume-task", help="Explicitly retry a blocked task after resolving its blocker")
     parser.add_argument("--rerun-sandbox", action="store_true", help="With --resume-task, retain old evidence and rerun tests")
     parser.add_argument("--max-tasks", type=int, default=0, help="Execute up to N tasks and exit")
@@ -575,16 +665,30 @@ def emit_summary(summary: dict) -> int:
     return 2 if summary.get("blocked") or summary.get("escalated") else 0
 
 
+def _load_cli_config(cfg_arg: str) -> CoordRunnerConfig:
+    import yaml
+    default_ws = Path(__file__).resolve().parents[3]
+    candidates = [Path(cfg_arg), default_ws / cfg_arg]
+    cfg_path = next((c.resolve() for c in candidates if c.is_file()), Path(cfg_arg).resolve())
+    raw_cfg = yaml.safe_load(cfg_path.read_text(encoding="utf-8")) if cfg_path.is_file() else {}
+    base_dir = cfg_path.parents[3] if cfg_path.is_file() and len(cfg_path.parents) >= 4 else default_ws
+    return CoordRunnerConfig.from_dict(raw_cfg or {}, base_dir)
+
+
 def main() -> int:
     parser = create_cli_parser()
     args = parser.parse_args()
-    cfg_path = Path(args.config)
-    import yaml
-    raw_cfg = yaml.safe_load(cfg_path.read_text(encoding="utf-8")) if cfg_path.is_file() else {}
-    base_dir = cfg_path.parent.parent.parent
-    config = CoordRunnerConfig.from_dict(raw_cfg, base_dir)
+    config = _load_cli_config(args.config)
+    if args.drill_dir:
+        drill_res = execute_m1_live_drill(config.workspace_root, Path(args.drill_dir), config.codex_bin)
+        print(json.dumps(drill_res, ensure_ascii=False, indent=2))
+        return 0
     runner = CoordRunner(config)
     runner.wire_production_executors()
+    if args.intake_scan:
+        summary = runner.scan_work_intake(persist_ledger=False)
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        return 1 if summary["errors"] else 0
     if args.resume_task:
         runner.restore_from_checkpoint()
         runner.resume_task(args.resume_task, rerun_sandbox=args.rerun_sandbox)
@@ -595,11 +699,11 @@ def main() -> int:
     if args.max_tasks > 0:
         completed = runner.run_tasks(args.max_tasks)
         return emit_summary({"completed_count": completed,
-                             "blocked": {key: record.runtime_context.get("blocked_reason", "")
-                                         for key, record in runner.in_flight_tasks.items()
-                                         if record.state == TaskState.BLOCKED.value},
-                             "escalated": [key for key, record in runner.in_flight_tasks.items()
-                                           if record.state == TaskState.ESCALATED.value]})
+                             "blocked": {k: r.runtime_context.get("blocked_reason", "")
+                                         for k, r in runner.in_flight_tasks.items()
+                                         if r.state == TaskState.BLOCKED.value},
+                             "escalated": [k for k, r in runner.in_flight_tasks.items()
+                                           if r.state == TaskState.ESCALATED.value]})
     if args.daemon:
         runner.run_daemon(args.poll_interval)
         return 0

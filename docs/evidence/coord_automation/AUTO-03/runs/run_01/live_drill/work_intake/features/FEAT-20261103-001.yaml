@@ -1,0 +1,53 @@
+schema_version: 1
+id: FEAT-20261103-001
+revision: 2
+kind: feature
+enabled: true
+title: 在受控演练目录生成 `deliverables/drill_intake_manifest.json`，记录稳定需求 ID 与公共约束 SHA256
+objective: '[feature] 在受控演练目录生成 `deliverables/drill_intake_manifest.json`，记录稳定需求 ID
+  与公共约束 SHA256'
+source_refs:
+  submission_id: SUB-DRILL-20261103-001
+  submission_revision: 1
+  instruction_anchor: instruction_1
+  submission_path: project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/work_intake/submissions/SUB-DRILL-20261103-001.md
+  submission_sha256: cf159f78c7af00ca5668f913bd1f59ab91e022fef0946e72cfee6bd85bb7829a
+  instruction_sha256: a9376ecf2ee8cfb0c35a56e289261d43f4b1a2dfce15194280497fdb74d6c46b
+  verbatim_instruction: '[feature] 在受控演练目录生成 `deliverables/drill_intake_manifest.json`，记录稳定需求
+    ID 与公共约束 SHA256'
+  common_constraints:
+  - 仅在 `project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/`
+    白名单内写入受控演练产物
+  - 严禁触碰 `soc-ap/`、`mcu-p3/`、`test_harness/` 及双 Bootloader，严禁安装后台服务
+  common_constraints_sha256: b3e5646f7950f16fbf96961fc758c3c90f7bcca767a4b29c99362646dd5776ff
+demand_ref:
+  demand_id: DEM-20261103-001
+  confirmation_id: CONFIRM-DRILL-20261103-001
+  confirmation_revision: 1
+  confirmation_path: project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/work_intake/confirmations/CONFIRM-DRILL-20261103-001.md
+  confirmation_sha256: be39d9737b926231dd640cffdf8c76111ff1285a4c8cc7a82face5ac47998844
+reported_by:
+  actor_type: HUMAN
+  actor_id: human_markdown_author
+  source_channel: markdown_submission
+authorization_refs:
+- path: project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/work_intake/submissions/SUB-DRILL-20261103-001.md
+  revision: 1
+  sha256: cf159f78c7af00ca5668f913bd1f59ab91e022fef0946e72cfee6bd85bb7829a
+approval_refs:
+- approval_id: APPR-DRILL-20261103-001
+  revision: 1
+  path: project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/work_intake/approvals/APPR-DRILL-20261103-001.yaml
+  sha256: 3ea1dfdab73c45ddaf5246563309635d10c9b13480705d050c49413326016dbd
+requested_action: execute
+priority_hint: P2
+related_ids:
+  engineering_tasks:
+  - AUTO-03-DRILL-01
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: null
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true

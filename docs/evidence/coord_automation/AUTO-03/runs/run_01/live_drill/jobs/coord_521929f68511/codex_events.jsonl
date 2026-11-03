@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"01a19ff8-7fe0-7d52-8e4c-2f38dad3a7f4"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"decision_id\":\"DEC-AUTO03-DRILL-01\",\"action\":\"DISPATCH_OWNER\",\"target_role\":\"INTEGRATOR\",\"target_task_id\":\"AUTO-03-DRILL-01\",\"rationale\":\"Demand 1 approved via exact SHA256; Demand 2 held for PM/ARCH clarification\",\"next_check_condition\":\"Collect INTEGRATOR deliverable and await formal QA\"}"}}
+{"type":"turn.completed","usage":{"input_tokens":13756,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":87,"reasoning_output_tokens":0}}

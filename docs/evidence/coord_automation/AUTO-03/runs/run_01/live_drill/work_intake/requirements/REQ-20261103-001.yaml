@@ -1,0 +1,46 @@
+schema_version: 1
+id: REQ-20261103-001
+revision: 1
+kind: requirement
+enabled: true
+title: 第二阶段告警汇总文案格式目标不清，待 PM 与 ARCH 澄清后再定是否实施
+objective: '[requirement] 第二阶段告警汇总文案格式目标不清，待 PM 与 ARCH 澄清后再定是否实施'
+source_refs:
+  submission_id: SUB-DRILL-20261103-001
+  submission_revision: 1
+  instruction_anchor: instruction_2
+  submission_path: project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/work_intake/submissions/SUB-DRILL-20261103-001.md
+  submission_sha256: cf159f78c7af00ca5668f913bd1f59ab91e022fef0946e72cfee6bd85bb7829a
+  instruction_sha256: 517620f140cbf8df1961a95e2f17c95f9e5aeba878d86d32b3f16852bd40a3c8
+  verbatim_instruction: '[requirement] 第二阶段告警汇总文案格式目标不清，待 PM 与 ARCH 澄清后再定是否实施'
+  common_constraints:
+  - 仅在 `project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/`
+    白名单内写入受控演练产物
+  - 严禁触碰 `soc-ap/`、`mcu-p3/`、`test_harness/` 及双 Bootloader，严禁安装后台服务
+  common_constraints_sha256: b3e5646f7950f16fbf96961fc758c3c90f7bcca767a4b29c99362646dd5776ff
+demand_ref:
+  demand_id: DEM-20261103-002
+  confirmation_id: null
+  confirmation_revision: null
+  confirmation_path: null
+  confirmation_sha256: null
+reported_by:
+  actor_type: HUMAN
+  actor_id: human_markdown_author
+  source_channel: markdown_submission
+authorization_refs:
+- path: project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/work_intake/submissions/SUB-DRILL-20261103-001.md
+  revision: 1
+  sha256: cf159f78c7af00ca5668f913bd1f59ab91e022fef0946e72cfee6bd85bb7829a
+approval_refs: []
+requested_action: clarify
+priority_hint: P2
+related_ids:
+  engineering_tasks: []
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: unclear
+  proposed_owner_role: null
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: false

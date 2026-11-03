@@ -1,0 +1,11 @@
+{
+  "AUTO-03-DRILL-01:rev1:INTEGRATOR:implement:1": {
+    "job_id": "job_AUTO-03-DRILL-01_8f2d267410",
+    "job_dir": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/jobs/job_AUTO-03-DRILL-01_8f2d267410"
+  },
+  "job_AUTO-03-DRILL-01_8f2d267410": {
+    "job_id": "job_AUTO-03-DRILL-01_8f2d267410",
+    "dispatch_key": "AUTO-03-DRILL-01:rev1:INTEGRATOR:implement:1",
+    "job_dir": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/coord_automation/AUTO-03/runs/run_01/live_drill/jobs/job_AUTO-03-DRILL-01_8f2d267410"
+  }
+}

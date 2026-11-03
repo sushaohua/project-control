@@ -1,0 +1,1 @@
+{"decision_id":"DEC-AUTO03-DRILL-01","action":"DISPATCH_OWNER","target_role":"INTEGRATOR","target_task_id":"AUTO-03-DRILL-01","rationale":"Demand 1 approved via exact SHA256; Demand 2 held for PM/ARCH clarification","next_check_condition":"Collect INTEGRATOR deliverable and await formal QA"}
