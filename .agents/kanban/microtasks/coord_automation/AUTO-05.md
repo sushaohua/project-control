@@ -18,10 +18,10 @@ proposed_owner: QA
 executor:
   role: QA
   model: gpt-6-luna
-  actual_model: null
+  actual_model: gpt-6-luna
   agent_id: 05bae949-06e3-40fa-828c-ce9818b335e2
-  run_id: run_02
-  rework_count: 1/2
+  run_id: run_04
+  rework_count: 2/2
 authorization:
   evidence: project-control/docs/work_intake/approvals/APPR-20261103-001.yaml
   scope: CONFIRM-INTAKE-P1-20261103 rev 2 全部批准（进入 M3 装服务前完成 M1/M2 19 项端到端独立验收）
@@ -47,6 +47,45 @@ review_assignments:
       artifact_version: a49b986dbe98df3bb2dcd19da01c34777f8e19ae
       evidence: docs/evidence/coord_automation/AUTO-05/runs/run_01/arch_review_report.md
       report_sha256: 555c47881fffe22f03f8c54101ca9b3d00a168bcb4a0e47261c737dfdfcfafef
+    - role: ARCH
+      platform: codex
+      model: gpt-6-luna
+      planned_session_alias: codex-arch-auto-05-review-run02
+      session: 01a1a0dd-26f2-72e0-8298-6536a2fd1f43
+      session_evidence:
+        path: docs/evidence/coord_automation/AUTO-05/runs/run_02/arch_session.jsonl
+        sha256: 8a79a3f150ae476765c8b6130fa357dc1dc16b160dc2b4201748c621ee68ad03
+      decision: REJECTED
+      reviewed_task_revision: 1
+      artifact_version: bc7c766cf390ee844c92f66fc22f92faf28e1b8d
+      evidence: docs/evidence/coord_automation/AUTO-05/runs/run_02/arch_review_report.md
+      report_sha256: 7b3846c4a3e7b74bb7e9236a6c9b0f4d0b2084c83dee07093b0ad4e556703724
+    - role: ARCH
+      platform: codex
+      model: gpt-6-luna
+      planned_session_alias: codex-arch-auto-05-review-run03
+      session: 01a1a0ee-0679-76d1-9c20-066e075402e4
+      session_evidence:
+        path: docs/evidence/coord_automation/AUTO-05/runs/run_03/arch_session.jsonl
+        sha256: 7617a4b83061aabbabfb1c933de9ebd5cf6fbbf398a8509b3b6d55fd7f183401
+      decision: REJECTED
+      reviewed_task_revision: 1
+      artifact_version: ac820925bf14f5d2b4864dd1f01b9784939a453e
+      evidence: docs/evidence/coord_automation/AUTO-05/runs/run_03/arch_review_report.md
+      report_sha256: 0713f92ce4932e53a3c2b547e680299e91eeacdc6b4948484291345cc3092f04
+    - role: ARCH
+      platform: codex
+      model: gpt-6-luna
+      planned_session_alias: codex-arch-auto-05-review-run04
+      session: null
+      session_evidence:
+        path: null
+        sha256: null
+      decision: null
+      reviewed_task_revision: null
+      artifact_version: null
+      evidence: null
+      report_sha256: null
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010
