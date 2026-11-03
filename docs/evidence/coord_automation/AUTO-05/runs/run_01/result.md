@@ -27,7 +27,7 @@
 
 | 交付文件路径 | SHA256 | 说明 |
 | --- | --- | --- |
-| `project-control/tools/test_phase1_intake_acceptance.py` | `7b1510a43897d59a7da9739b621aa86143770b587673d99ac69fca3fd7e5b36a` | Phase 1 M1与M2综合端到端独立验收套件，覆盖全部 19 项条款正反例与 AST 自检 |
+| `project-control/tools/test_phase1_intake_acceptance.py` | `daa6c01dfdeffda968d3b8b296021ea2e1516a2169a3b4cde6b26f4f57a212b9` | Phase 1 M1与M2综合端到端独立验收套件，覆盖全部 19 项条款正反例与 AST 自检 |
 | `project-control/docs/evidence/coord_automation/AUTO-05/runs/run_01/result.md` | 本文档 | AUTO-05 运行结果与客观物证审计记录 |
 
 ---

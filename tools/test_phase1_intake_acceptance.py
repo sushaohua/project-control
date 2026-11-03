@@ -188,7 +188,10 @@ class TestPhase1IntakeAndSecurity(unittest.TestCase):
         scan2 = self.manager.scan_and_sync(persist_ledger=True, active_cards=active_cards)
         self.assertEqual(active_cards["AUTO-99"]["status"], "InProgress")
         self.assertIn("IN_FLIGHT_PRESERVED_ON_INTAKE_DISABLED", {n.code for n in scan2.notices})
-        adapter = CodexRoleAdapter(RoleAdapterConfig(workspace_root=self.ws))
+        fake_bin = self.ws / "fake_codex"
+        fake_bin.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        fake_bin.chmod(0o755)
+        adapter = CodexRoleAdapter(RoleAdapterConfig(workspace_root=self.ws, codex_bin=fake_bin))
         with self.assertRaises(BoundaryViolationError):
             adapter.submit_role_task(RoleTaskRequest("T-SOC", 1, "ENG-FWD", "implement", "p", allowed_paths=["soc-ap/core/**"], approval_verified=True), "k_soc")
 
