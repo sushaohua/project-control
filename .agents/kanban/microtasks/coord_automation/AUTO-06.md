@@ -6,11 +6,11 @@ plan_revision: coord-intake-dispatch-phase1-20261103-rev2
 task_kind: integration
 development_stage: cross-stage
 dispatchable: true
-status: InProgress
+status: Done
 blocked: false
 blocked_reason: null
 recovery_condition: null
-planning_status: mapped-approved
+planning_status: completed
 demand_id: DEM-INTAKE-P1-001
 feature: FEAT-INTAKE-20261103-001
 owner: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
@@ -18,7 +18,7 @@ proposed_owner: INTEGRATOR
 executor:
   role: INTEGRATOR
   model: gpt-6-luna
-  actual_model: null
+  actual_model: gpt-6-luna
   agent_id: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
   run_id: run_03
   rework_count: 2/2
@@ -39,39 +39,39 @@ review_assignments:
       platform: codex
       model: gpt-6-luna
       planned_session_alias: codex-qa-auto-06-review
-      session: codex-qa-auto-06-review-s1
+      session: 01a1a117-89e7-7722-bbb2-615797ee1001
       session_evidence:
-        path: null
-        sha256: null
-      decision: null
-      reviewed_task_revision: null
-      artifact_version: null
-      evidence: null
-      report_sha256: null
+        path: docs/evidence/coord_automation/AUTO-06/runs/run_03/codex_session.jsonl
+        sha256: 8ed84ae80fc144c5ef976e5a0d86abf21c109930d171f91c8e3f0a98391690bc
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: e6e4291a9608473cae2604dceb521c930d0c341f
+      evidence: docs/evidence/coord_automation/AUTO-06/runs/run_03/qa_review_report.md
+      report_sha256: 0490c773e15038441192ef4fb95b7f81e28a4457d7cfc1210b3fc9ba252d30a0
       report_review:
-        session: codex-arch-auto-06-review-s1
+        session: 01a1a119-f3e4-7e42-91ce-d99bece975cd
         role: ARCH
-        decision: null
-        reviewed_task_revision: null
-        artifact_version: null
-        evidence: null
-        report_sha256: null
+        decision: APPROVED
+        reviewed_task_revision: 1
+        artifact_version: e6e4291a9608473cae2604dceb521c930d0c341f
+        evidence: docs/evidence/coord_automation/AUTO-06/runs/run_03/arch_review_report.md
+        report_sha256: 9d43153ee05f2da9e243a66275ed824edba843b3e94d669dc933dd5ee3062d18
         session_evidence:
-          path: null
-          sha256: null
+          path: docs/evidence/coord_automation/AUTO-06/runs/run_03/arch_session.jsonl
+          sha256: 9d830a924bb70c75520312465d4cf7cc39d662a527241551dea89feca1cf6180
     - role: ARCH
       platform: codex
       model: gpt-6-luna
       planned_session_alias: codex-arch-auto-06-review
-      session: codex-arch-auto-06-review-s1
+      session: 01a1a119-f3e4-7e42-91ce-d99bece975cd
       session_evidence:
-        path: null
-        sha256: null
-      decision: null
-      reviewed_task_revision: null
-      artifact_version: null
-      evidence: null
-      report_sha256: null
+        path: docs/evidence/coord_automation/AUTO-06/runs/run_03/arch_session.jsonl
+        sha256: 9d830a924bb70c75520312465d4cf7cc39d662a527241551dea89feca1cf6180
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: e6e4291a9608473cae2604dceb521c930d0c341f
+      evidence: docs/evidence/coord_automation/AUTO-06/runs/run_03/arch_review_report.md
+      report_sha256: 9d43153ee05f2da9e243a66275ed824edba843b3e94d669dc933dd5ee3062d18
   verifier_session: null
   integrator_session: 482f7dba-d6ce-4ecc-92d4-29608bc1ffd4
 primary_work_package: TASK-010
@@ -111,7 +111,7 @@ source_baseline:
   mcu-p3: e051111e68dd61896ed42c0961153b167b8bca41
   test_harness: ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414
 base_commit: 0acb940e79782490eb7781b0a6b7d5fbb53c69c6
-candidate_commit: null
+candidate_commit: e6e4291a9608473cae2604dceb521c930d0c341f
 dispatch_binding:
   source_commit: 0acb940e79782490eb7781b0a6b7d5fbb53c69c6
   workspace_diff_sha256: 736c674846d52dee8985cae0654388560199cb33f3041365bd62fae7d91710ad
@@ -159,7 +159,7 @@ handoff:
   receiver_session: 8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5
   transport: tools.send_message
   evidence_location: docs/evidence/coord_automation/AUTO-06
-  acknowledgement: null
+  acknowledgement: approved
 verification:
   commands:
     - id: check_graph
