@@ -1136,7 +1136,12 @@ class M1QueueIsolationAndDoneGateTest(unittest.TestCase):
             queue={"queue_domain": "work_intake", "order": ["AUTO-03", "AUTO-04"]},
             cards=real_cards,
         )
-        expected_next = ["AUTO-04"] if real_cards.get("AUTO-03", {}).get("status") == "Done" else ["AUTO-03"]
+        if real_cards.get("AUTO-04", {}).get("status") == "Done":
+            expected_next = []
+        elif real_cards.get("AUTO-03", {}).get("status") == "Done":
+            expected_next = ["AUTO-04"]
+        else:
+            expected_next = ["AUTO-03"]
         self.assertEqual(sched.select_next_tasks(ctx_real), expected_next)
 
     def test_legacy_queue_and_twin_tasks_explicitly_isolated(self):
