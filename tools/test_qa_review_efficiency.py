@@ -81,6 +81,20 @@ class QAReviewEfficiencyTest(unittest.TestCase):
         self.assertEqual(_prior_review(prior, "QA")["report_path"], "qa.md")
         self.assertEqual(_prior_review(prior, "ENG"), {})
 
+    def test_no_same_role_history_uses_full_first_review(self):
+        result = build_reverification_context(
+            {"candidate_commit": "b" * 40},
+            [{"candidate_commit": "a" * 40, "reviews": [{"role": "QA"}]}],
+            {"request": {"candidate_commit": "b" * 40, "run_dir": "/unused"}}, "ARCH")
+        self.assertEqual(result, {})
+
+    def test_same_role_history_without_report_reference_blocks(self):
+        with self.assertRaises(CoordRunnerError):
+            build_reverification_context(
+                {"candidate_commit": "b" * 40},
+                [{"candidate_commit": "a" * 40, "reviews": [{"role": "ARCH"}]}],
+                {"request": {"candidate_commit": "b" * 40, "run_dir": "/unused"}}, "ARCH")
+
     def test_real_pipeline_blocks_bad_artifact_and_stale_card_before_model(self):
         for change in ("missing_artifact", "stale_candidate"):
             fixture = test_qa_pipeline.DeterministicQAPipelineTest(
