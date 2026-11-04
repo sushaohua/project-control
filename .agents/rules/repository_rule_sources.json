@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "canonical_repository": "project-control",
+  "canonical_rules": ".agents/rules",
+  "scope": "仅规则；不分发docs过程文档，不自动更换现有本机链接",
+  "snapshot_version": "各分发快照SOURCE.json中的完整来源提交；不能假定自动跟随最新版本",
+  "repositories": {
+    "project-control": {
+      "branch": "main",
+      "entry": "AGENTS.md",
+      "mode": "canonical",
+      "rules": ".agents/rules",
+      "shared_source": null,
+      "preserve_existing_links": false,
+      "read_receipt": "现有read_sources及接单回执；列规则路径、版本、适用环境和缺项"
+    },
+    "soc-ap": {
+      "branch": "main",
+      "entry": "AGENTS.md",
+      "mode": "native",
+      "rules": ".agents/rules",
+      "shared_source": ".agents/rules/shared/SOURCE.json",
+      "preserve_existing_links": false,
+      "read_receipt": "现有read_sources及接单回执；列规则路径、版本、适用环境和缺项"
+    },
+    "test_harness": {
+      "branch": "main",
+      "entry": "AGENTS.md",
+      "mode": "native",
+      "rules": ".agents/rules",
+      "shared_source": ".agents/rules/shared/SOURCE.json",
+      "preserve_existing_links": false,
+      "read_receipt": "现有read_sources及接单回执；列规则路径、版本、适用环境和缺项"
+    },
+    "mcu-p3": {
+      "branch": "feat/soc-debug",
+      "entry": ".repo-rules/AGENTS.md",
+      "mode": "bundle",
+      "rules": ".repo-rules/.agents/rules",
+      "shared_source": ".repo-rules/SOURCE.json",
+      "preserve_existing_links": true,
+      "read_receipt": "现有read_sources及接单回执；列规则路径、版本、适用环境和缺项"
+    },
+    "boot/bootloadermc": {
+      "branch": "soc_debug",
+      "entry": ".repo-rules/AGENTS.md",
+      "mode": "bundle",
+      "rules": ".repo-rules/.agents/rules",
+      "shared_source": ".repo-rules/SOURCE.json",
+      "preserve_existing_links": true,
+      "read_receipt": "现有read_sources及接单回执；列规则路径、版本、适用环境和缺项"
+    },
+    "boot/bootloaderth": {
+      "branch": "soc_debug",
+      "entry": ".repo-rules/AGENTS.md",
+      "mode": "bundle",
+      "rules": ".repo-rules/.agents/rules",
+      "shared_source": ".repo-rules/SOURCE.json",
+      "preserve_existing_links": true,
+      "read_receipt": "现有read_sources及接单回执；列规则路径、版本、适用环境和缺项"
+    }
+  }
+}
