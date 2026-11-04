@@ -1,0 +1,38 @@
+{
+  "task_id": "QA-EFFICIENCY-20261104",
+  "task_revision": 1,
+  "qa_policy": "streamlined-v1",
+  "trusted_runner_commit": "94226a2c655a3cd9fd23f14a5e641a247ed22ad9",
+  "baseline": {
+    "project-control": "94226a2c655a3cd9fd23f14a5e641a247ed22ad9",
+    "ai-soc-workspace": "f7af3e1e892378ad17a671fb06f6f7aff8b05cb7"
+  },
+  "required_test_modules": [
+    "test_qa_review_efficiency.py",
+    "test_qa_pipeline.py",
+    "test_coord_runner.py",
+    "test_delivery_checks.py",
+    "test_review_policy.py"
+  ],
+  "scope": [
+    "有验收条款或实际风险证据才阻断，非阻断建议可随APPROVED保留",
+    "模型调用前检查任务/候选/run/证据和制品，格式错误保持Blocked且不增加代码返工",
+    "复验提供既有报告引用与增量diff，不自动跨候选复用测试事实",
+    "首审尽量列全已识别问题，复验先摘要/差异按需读取证据"
+  ],
+  "excluded": [
+    "业务功能开发",
+    "真实HIL/烧录/部署服务",
+    "新decision或任务卡schema",
+    "哈希/CAS/租约修改",
+    "默认报告二次审查",
+    "历史签署改写"
+  ],
+  "preflight_expected": [
+    "旧候选/任务revision/run不一致时模型调用为0",
+    "缺失或篡改的必需引用/制品在模型前被拦截",
+    "报告格式错误保持Blocked且不增加代码返工",
+    "APPROVED可携带非阻断建议，必测缺项/失败证据仍不能APPROVED",
+    "复验引用前次报告和两候选间diff，不把旧通过当新通过"
+  ]
+}

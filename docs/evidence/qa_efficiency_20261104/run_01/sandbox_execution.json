@@ -1,0 +1,76 @@
+{
+  "command": [
+    "python3",
+    "/tmp/qa_efficiency_20261104/trusted/project-control/tools/qa_runner/qa_runner.py",
+    "--config",
+    "/tmp/qa_efficiency_20261104/qa_config.yaml",
+    "--task",
+    "QA-EFFICIENCY-20261104",
+    "--revision",
+    "1",
+    "--output-dir",
+    "/tmp/qa_efficiency_20261104/run_01/evidence",
+    "--repo-commit",
+    "project-control=567db517a981642f1cb2b052ca2ebd17c755653e:main",
+    "--repo-commit",
+    "ai-soc-workspace=5ff859af1fc2658fe1ffaabe06825e763cd506a5:main",
+    "--cmd",
+    "build:project-control:python3 -c 'from pathlib import Path; [compile(Path(p).read_text(),p,'\"'\"'exec'\"'\"') for p in ['\"'\"'tools/coord_runner/review_bundle.py'\"'\"','\"'\"'tools/coord_runner/runner.py'\"'\"','\"'\"'tools/test_qa_review_efficiency.py'\"'\"']]; print('\"'\"'Python syntax: PASS'\"'\"')'",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_review_efficiency.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_runner.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_delivery_checks.py -v",
+    "--cmd",
+    "test:project-control:PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_review_policy.py -v",
+    "--cmd",
+    "test::python3 -c 'from pathlib import Path; import json; d=json.loads(Path('\"'\"'ai-soc-workspace/workspace.json'\"'\"').read_text()); assert next(x['\"'\"'commit'\"'\"'] for x in d['\"'\"'repositories'\"'\"'] if x['\"'\"'path'\"'\"']=='\"'\"'project-control'\"'\"')=='\"'\"'567db517a981642f1cb2b052ca2ebd17c755653e'\"'\"'; assert '\"'\"'§5.4'\"'\"' in Path('\"'\"'ai-soc-workspace/AGENTS.md'\"'\"').read_text(); print('\"'\"'Root guidance and exact recovery pin: PASS'\"'\"')'"
+  ],
+  "commands": [
+    {
+      "kind": "build",
+      "subpath": "project-control",
+      "command": "python3 -c 'from pathlib import Path; [compile(Path(p).read_text(),p,'\"'\"'exec'\"'\"') for p in ['\"'\"'tools/coord_runner/review_bundle.py'\"'\"','\"'\"'tools/coord_runner/runner.py'\"'\"','\"'\"'tools/test_qa_review_efficiency.py'\"'\"']]; print('\"'\"'Python syntax: PASS'\"'\"')'"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_review_efficiency.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_runner.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_delivery_checks.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_review_policy.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "",
+      "command": "python3 -c 'from pathlib import Path; import json; d=json.loads(Path('\"'\"'ai-soc-workspace/workspace.json'\"'\"').read_text()); assert next(x['\"'\"'commit'\"'\"'] for x in d['\"'\"'repositories'\"'\"'] if x['\"'\"'path'\"'\"']=='\"'\"'project-control'\"'\"')=='\"'\"'567db517a981642f1cb2b052ca2ebd17c755653e'\"'\"'; assert '\"'\"'§5.4'\"'\"' in Path('\"'\"'ai-soc-workspace/AGENTS.md'\"'\"').read_text(); print('\"'\"'Root guidance and exact recovery pin: PASS'\"'\"')'"
+    }
+  ],
+  "candidates": {
+    "project-control": "567db517a981642f1cb2b052ca2ebd17c755653e",
+    "ai-soc-workspace": "5ff859af1fc2658fe1ffaabe06825e763cd506a5"
+  },
+  "started_at": "2026-11-04T07:03:44.040692+00:00",
+  "exit_code": 0,
+  "finished_at": "2026-11-04T07:04:08.109080+00:00"
+}

@@ -1,0 +1,16 @@
+{
+  "repositories": [
+    {
+      "name": "project-control",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "main",
+      "commit": "fd18d73dc127a0bfc097dfa1afe79fed88166b67"
+    },
+    {
+      "name": "ai-soc-workspace",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git",
+      "ref": "main",
+      "commit": "9f6e3076d073ab9591c295f3e1c78d1e0d69a6c8"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index 0721bdb..f75ed15 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -12,6 +12,8 @@ Treat existing symbolic links inside this workspace as local workspace paths: fo
+ 
+ ## Independent QA
+ 
++QA 效率纠偏按 `project-control/.agents/rules/delivery_and_coord_gate.md` §5.4 执行：明确阻断资格、程序预检、按差异复验和按需读取；非阻断建议可随批准报告保留。
++
+ All pending and new QA reviews and verification must use independent Codex sessions. Follow the canonical policy in `project-control/.agents/rules/codex_qa_review.md`, including the independent non-author review of QA-authored cases, expectations, and tools. The candidate `qa_policy: streamlined-v1` uses one independent QA round (code review plus functional and relevant regression tests) without default ARCH duplication or a second review of each QA report. It becomes effective only after this cutover patch passes the legacy gate and COORD records its exact release version; see `project-control/docs/planning/qa_streamline_cutover_20261103.md`. Tasks without an explicit policy remain legacy, including their report-review requirement; unfinished tasks require recorded migration. Explicit additional reviewers and necessary Owner acceptance remain required. Preserve completed historical signatures; planned session aliases do not indicate a running reviewer or approval.
+ 
+ ## COORD Dispatch and Server-based QA
+diff --git a/workspace.json b/workspace.json
+index e62373b..5cf5c9d 100644
+--- a/workspace.json
++++ b/workspace.json
+@@ -11,7 +11,7 @@
+       "path": "project-control",
+       "branch": "main",
+       "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+-      "commit": "94226a2c655a3cd9fd23f14a5e641a247ed22ad9"
++      "commit": "567db517a981642f1cb2b052ca2ebd17c755653e"
+     },
+     {
+       "path": "soc-ap",

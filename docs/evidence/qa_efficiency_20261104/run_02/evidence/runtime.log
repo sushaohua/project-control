@@ -1,0 +1,74 @@
+=== Docker Container Inspect: abb0143c5fb6 ===
+{
+  "id": "abb0143c5fb67be402c02ab4733e952aeb431baf248eff1d7c574ac8de1091b4",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-04T07:09:39.219550894Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_efficiency_20261104/sandboxes/QA-EFFICIENCY-20261104_run_150930_20261104_070930",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (project-control) python3 -c 'from pathlib import Path; [compile(Path(p).read_text(),p,'"'"'exec'"'"') for p in ['"'"'tools/coord_runner/review_bundle.py'"'"','"'"'tools/coord_runner/runner.py'"'"','"'"'tools/test_qa_review_efficiency.py'"'"']]; print('"'"'Python syntax: PASS'"'"')' -> 0
+Python syntax: PASS
+
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_review_efficiency.py -v -> 0
+
+test_approved_may_include_nonblocking_recommendation (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_current_card_revision_is_checked_before_freeze (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_frozen_manifest_and_declared_run_id_are_bound (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_no_same_role_history_uses_full_first_review (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_prior_report_must_match_current_reviewer_role (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_prompt_separates_first_review_and_recheck (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_real_pipeline_blocks_bad_artifact_and_stale_card_before_model (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_reverification_binds_prior_report_hash_and_candidate_delta (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_same_role_history_without_report_reference_blocks (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.181s
+
+OK
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v -> 0
+
+test_commentary_cannot_corrupt_separate_schema_result (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_failed_process_cannot_fallback_or_approve (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_fenced_json_is_validated_as_one_document (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_non_json_final_cannot_approve_and_logs_survive (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_timeout_preserves_partial_events_and_error (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_blocked_task_does_not_retry_on_poll (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_daemon_survives_task_audit_error (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_exception_does_not_prevent_other_inflight_task (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_explicit_sandbox_rerun_preserves_previous_evidence (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_failed_objective_checks_are_audited_but_cannot_be_approved (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_finite_mode_returns_when_only_blocked_tasks_remain (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_hil_requirement_cannot_be_approved_by_software_profile (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_internal_typeerror_is_not_reinvoked_with_another_signature (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_invalid_audit_blocks_persists_and_resume_reuses_test_evidence (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_missing_cases_and_wrong_candidate_cannot_be_approved (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_missing_plan_blocks_before_any_model_or_subprocess (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_sandbox_then_independent_readonly_audits_and_bound_reports (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_sandbox_timeout_blocks_without_model_review (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_extra_arch_uses_same_completed_sandbox (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_qa_authored_tool_gets_one_arch_audit (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_resume_uses_completed_facts_and_rejects_tampering (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_runs_one_sandbox_and_one_independent_audit (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_tampered_evidence_prevents_resume_from_approving (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_valid_rejection_returns_to_author_with_report_evidence (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 2.307s
+
+OK
+
+$ (.) python3 -c 'from pathlib import Path; import json; d=json.loads(Path('"'"'ai-soc-workspace/workspace.json'"'"').read_text()); assert next(x['"'"'commit'"'"'] for x in d['"'"'repositories'"'"'] if x['"'"'path'"'"']=='"'"'project-control'"'"')=='"'"'fd18d73dc127a0bfc097dfa1afe79fed88166b67'"'"'; assert '"'"'§5.4'"'"' in Path('"'"'ai-soc-workspace/AGENTS.md'"'"').read_text(); print('"'"'Root guidance and exact recovery pin: PASS'"'"')' -> 0
+Root guidance and exact recovery pin: PASS
+

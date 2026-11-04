@@ -1,0 +1,15 @@
+{
+  "source_candidates": {
+    "project-control": "fd18d73dc127a0bfc097dfa1afe79fed88166b67",
+    "ai-soc-workspace": "9f6e3076d073ab9591c295f3e1c78d1e0d69a6c8"
+  },
+  "verified_remote_heads": {
+    "project-control": "fd18d73dc127a0bfc097dfa1afe79fed88166b67",
+    "ai-soc-workspace": "9f6e3076d073ab9591c295f3e1c78d1e0d69a6c8"
+  },
+  "qa_policy": "streamlined-v1",
+  "decision": "APPROVED",
+  "review_session": "01a1a565-3d6c-7c22-bb0e-aee79df062dd",
+  "report_sha256": "22498d506c58a4cfdcb2cb6624d337b40709bec41eb7539cd0008820725b78eb",
+  "trusted_runner_commit": "94226a2c655a3cd9fd23f14a5e641a247ed22ad9"
+}

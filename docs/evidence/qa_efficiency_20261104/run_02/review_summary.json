@@ -1,0 +1,97 @@
+{
+  "expected": {
+    "task_id": "QA-EFFICIENCY-20261104",
+    "task_revision": 1,
+    "candidate_commit": "fd18d73dc127a0bfc097dfa1afe79fed88166b67",
+    "role": "QA"
+  },
+  "candidates": {
+    "project-control": "fd18d73dc127a0bfc097dfa1afe79fed88166b67",
+    "ai-soc-workspace": "9f6e3076d073ab9591c295f3e1c78d1e0d69a6c8"
+  },
+  "baseline": {
+    "project-control": "567db517a981642f1cb2b052ca2ebd17c755653e",
+    "ai-soc-workspace": "5ff859af1fc2658fe1ffaabe06825e763cd506a5"
+  },
+  "scope": [
+    "有验收条款或实际风险证据才阻断，非阻断建议可随APPROVED保留",
+    "模型调用前检查任务/候选/run/证据和制品，格式错误保持Blocked且不增加代码返工",
+    "复验提供既有报告引用与增量diff，不自动跨候选复用测试事实",
+    "首审尽量列全已识别问题，复验先摘要/差异按需读取证据"
+  ],
+  "previous_review": {
+    "session": "01a1a560-5ea0-7a20-995e-54694209b32c",
+    "decision": "REJECTED",
+    "report_ref": {
+      "path": "/tmp/qa_efficiency_20261104/audit_01/review_report.md",
+      "sha256": "527a2236a39d5b94d81be14530cacb0c586f5072e5f0302ff45019273b3b54c3"
+    },
+    "final_ref": {
+      "path": "/tmp/qa_efficiency_20261104/audit_01/final.json",
+      "sha256": "9280907c3a5f725554a5d69df65d63da748be735eb687f556d16c1ed7cb6ed93"
+    },
+    "findings": [
+      "阻断：review_bundle.py 的 build_reverification_context 在前次运行记录没有当前 role 的报告时，只写入 previous_report_status，仍生成差异并继续调用审阅器；review_prompt 还允许在没有报告时继续复验。这样复验可能在缺少可核验的同角色前次报告时给出 APPROVED。应将该报告缺失视为证据不足并保持 BLOCKED，不能继续批准。此行为违反 §5.4 对复验使用既有报告、记录和输入引用的要求，以及本任务“复验携带当前role的可核验旧报告及prev→current diff”的验收约束。发现位置：project-control/tools/coord_runner/review_bundle.py：build_reverification_context、review_prompt。",
+      "非阻断建议：本次新增 Python 工具模块的文件级 docstring 仍为英文（review_bundle.py 文件开头）；中文注释规范要求新增或修改的说明性注释及 docstring 使用中文。该说明性文字不影响运行行为，可作为非阻断建议。"
+    ]
+  },
+  "snapshots": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_efficiency_20261104/sandboxes/QA-EFFICIENCY-20261104_run_150930_20261104_070930/project-control",
+      "base_commit": "567db517a981642f1cb2b052ca2ebd17c755653e",
+      "candidate_commit": "fd18d73dc127a0bfc097dfa1afe79fed88166b67",
+      "diff": {
+        "path": "/tmp/qa_efficiency_20261104/run_02/diffs/project-control.patch",
+        "sha256": "4e7ed3427de57a583aaeebdeed213815caf3623ec852f83d81e285035454e915"
+      }
+    },
+    {
+      "repository": "ai-soc-workspace",
+      "source": "/tmp/qa_efficiency_20261104/sandboxes/QA-EFFICIENCY-20261104_run_150930_20261104_070930/ai-soc-workspace",
+      "base_commit": "5ff859af1fc2658fe1ffaabe06825e763cd506a5",
+      "candidate_commit": "9f6e3076d073ab9591c295f3e1c78d1e0d69a6c8",
+      "diff": {
+        "path": "/tmp/qa_efficiency_20261104/run_02/diffs/ai-soc-workspace.patch",
+        "sha256": "14815ea223590585bfa5132b82b9d39120dd74190c0bdce56ea7ac77a3233295"
+      }
+    }
+  ],
+  "validated_evidence": {
+    "server_qa_ref": {
+      "path": "/tmp/qa_efficiency_20261104/run_02/evidence/server_qa.json",
+      "sha256": "8dd3c0f8de675227d1ea82d25b12d9d0b99442cfb4bbdaddd9c5096dbac3b262"
+    },
+    "server_verdict_ref": {
+      "path": "/tmp/qa_efficiency_20261104/run_02/evidence/server_verdict.json",
+      "sha256": "bdbc34a69b9fb24c1906a84dd0a110ec25ecf466ad9f266d9f8bfaf6a60bdd46"
+    },
+    "runtime_log_ref": {
+      "path": "/tmp/qa_efficiency_20261104/run_02/evidence/runtime.log",
+      "sha256": "334cae3ded314dc1ca33e86e9584c84b6e69e681ba674608a44029a93903f356"
+    },
+    "container_id": "abb0143c5fb6",
+    "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+    "passed": true,
+    "unittest_count": 33,
+    "commands": [
+      {
+        "command": "python3 -c 'from pathlib import Path; [compile(Path(p).read_text(),p,'\"'\"'exec'\"'\"') for p in ['\"'\"'tools/coord_runner/review_bundle.py'\"'\"','\"'\"'tools/coord_runner/runner.py'\"'\"','\"'\"'tools/test_qa_review_efficiency.py'\"'\"']]; print('\"'\"'Python syntax: PASS'\"'\"')'",
+        "exit_code": "0"
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_review_efficiency.py -v",
+        "exit_code": "0"
+      },
+      {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v",
+        "exit_code": "0"
+      },
+      {
+        "command": "python3 -c 'from pathlib import Path; import json; d=json.loads(Path('\"'\"'ai-soc-workspace/workspace.json'\"'\"').read_text()); assert next(x['\"'\"'commit'\"'\"'] for x in d['\"'\"'repositories'\"'\"'] if x['\"'\"'path'\"'\"']=='\"'\"'project-control'\"'\"')=='\"'\"'fd18d73dc127a0bfc097dfa1afe79fed88166b67'\"'\"'; assert '\"'\"'§5.4'\"'\"' in Path('\"'\"'ai-soc-workspace/AGENTS.md'\"'\"').read_text(); print('\"'\"'Root guidance and exact recovery pin: PASS'\"'\"')'",
+        "exit_code": "0"
+      }
+    ]
+  },
+  "scope_note": "仅复验历史报告缺失时首审/阻塞分流修复，以及受影响流水线回归；首轮137项记录保留，不拼成新候选全套通过"
+}

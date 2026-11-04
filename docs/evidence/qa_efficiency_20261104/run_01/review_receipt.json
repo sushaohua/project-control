@@ -1,0 +1,7 @@
+{
+  "decision": "REJECTED",
+  "session": "01a1a560-5ea0-7a20-995e-54694209b32c",
+  "candidate_commit": "567db517a981642f1cb2b052ca2ebd17c755653e",
+  "report_sha256": "527a2236a39d5b94d81be14530cacb0c586f5072e5f0302ff45019273b3b54c3",
+  "followup": "若无同角色历史审阅则按完整首审；同角色已有记录缺少/篡改引用仍阻塞。对新候选定向复验，保留本轮拒绝。"
+}

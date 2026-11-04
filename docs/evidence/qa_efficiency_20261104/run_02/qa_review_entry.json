@@ -1,0 +1,24 @@
+{
+  "session": "01a1a565-3d6c-7c22-bb0e-aee79df062dd",
+  "reviewer_session": "01a1a565-3d6c-7c22-bb0e-aee79df062dd",
+  "role": "QA",
+  "platform": "codex",
+  "decision": "APPROVED",
+  "model": "gpt-6-luna",
+  "commit_sha": "fd18d73dc127a0bfc097dfa1afe79fed88166b67",
+  "task_id": "QA-EFFICIENCY-20261104",
+  "reviewed_task_revision": 1,
+  "artifact_version": "project-control=fd18d73dc127a0bfc097dfa1afe79fed88166b67; ai-soc-workspace=9f6e3076d073ab9591c295f3e1c78d1e0d69a6c8",
+  "report_path": "/tmp/qa_efficiency_20261104/audit_02/review_report.md",
+  "report_sha256": "22498d506c58a4cfdcb2cb6624d337b40709bec41eb7539cd0008820725b78eb",
+  "report_ref": {
+    "path": "/tmp/qa_efficiency_20261104/audit_02/review_report.md",
+    "sha256": "22498d506c58a4cfdcb2cb6624d337b40709bec41eb7539cd0008820725b78eb"
+  },
+  "summary": "定向复验通过：原阻断已修复，相关回归证据与两仓候选绑定一致。",
+  "tokens_used": 276058,
+  "session_evidence": {
+    "path": "/tmp/qa_efficiency_20261104/audit_02/codex.jsonl",
+    "sha256": "ddbf2b9fca2decb6e1b3ea4ab2d124fc10dadec75d791413c7cb79b40f91d761"
+  }
+}

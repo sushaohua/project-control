@@ -1,0 +1,137 @@
+{
+  "task_id": "QA-EFFICIENCY-20261104",
+  "task_revision": 1,
+  "candidate_commit": "567db517a981642f1cb2b052ca2ebd17c755653e",
+  "repository": "project-control",
+  "workspace": "/home/sushaohua/workspace/ai_soc_project",
+  "run_dir": "/tmp/qa_efficiency_20261104/run_01",
+  "targets": [
+    {
+      "name": "project-control",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "main",
+      "commit": "567db517a981642f1cb2b052ca2ebd17c755653e"
+    },
+    {
+      "name": "ai-soc-workspace",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git",
+      "ref": "main",
+      "commit": "5ff859af1fc2658fe1ffaabe06825e763cd506a5"
+    }
+  ],
+  "commands": [
+    {
+      "kind": "build",
+      "subpath": "project-control",
+      "command": "python3 -c 'from pathlib import Path; [compile(Path(p).read_text(),p,'\"'\"'exec'\"'\"') for p in ['\"'\"'tools/coord_runner/review_bundle.py'\"'\"','\"'\"'tools/coord_runner/runner.py'\"'\"','\"'\"'tools/test_qa_review_efficiency.py'\"'\"']]; print('\"'\"'Python syntax: PASS'\"'\"')'"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_review_efficiency.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_runner.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_delivery_checks.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "project-control",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_review_policy.py -v"
+    },
+    {
+      "kind": "test",
+      "subpath": "",
+      "command": "python3 -c 'from pathlib import Path; import json; d=json.loads(Path('\"'\"'ai-soc-workspace/workspace.json'\"'\"').read_text()); assert next(x['\"'\"'commit'\"'\"'] for x in d['\"'\"'repositories'\"'\"'] if x['\"'\"'path'\"'\"']=='\"'\"'project-control'\"'\"')=='\"'\"'567db517a981642f1cb2b052ca2ebd17c755653e'\"'\"'; assert '\"'\"'§5.4'\"'\"' in Path('\"'\"'ai-soc-workspace/AGENTS.md'\"'\"').read_text(); print('\"'\"'Root guidance and exact recovery pin: PASS'\"'\"')'"
+    }
+  ],
+  "contract": {
+    "id": "QA-EFFICIENCY-20261104",
+    "revision": 1,
+    "qa_policy": "streamlined-v1",
+    "write_scope": {
+      "project-control": [
+        ".agents/rules/codex_qa_review.md",
+        ".agents/rules/delivery_and_coord_gate.md",
+        ".agents/rules/templates/QA审查报告模板.md",
+        ".agents/rules/templates/角色任务提示词.md",
+        "tools/coord_runner/review_bundle.py",
+        "tools/coord_runner/runner.py",
+        "tools/test_qa_review_efficiency.py"
+      ]
+    },
+    "source_baseline": {
+      "project-control": "94226a2c655a3cd9fd23f14a5e641a247ed22ad9",
+      "ai-soc-workspace": "f7af3e1e892378ad17a671fb06f6f7aff8b05cb7"
+    },
+    "deliverables": {
+      "artifacts": [
+        "project-control/.agents/rules/codex_qa_review.md",
+        "project-control/.agents/rules/delivery_and_coord_gate.md",
+        "project-control/.agents/rules/templates/QA审查报告模板.md",
+        "project-control/.agents/rules/templates/角色任务提示词.md",
+        "project-control/tools/coord_runner/review_bundle.py",
+        "project-control/tools/coord_runner/runner.py",
+        "project-control/tools/test_qa_review_efficiency.py",
+        "ai-soc-workspace/AGENTS.md",
+        "ai-soc-workspace/workspace.json"
+      ]
+    },
+    "verification": {
+      "scope": [
+        "有验收条款或实际风险证据才阻断，非阻断建议可随APPROVED保留",
+        "模型调用前检查任务/候选/run/证据和制品，格式错误保持Blocked且不增加代码返工",
+        "复验提供既有报告引用与增量diff，不自动跨候选复用测试事实",
+        "首审尽量列全已识别问题，复验先摘要/差异按需读取证据"
+      ],
+      "commands": [
+        {
+          "kind": "build",
+          "subpath": "project-control",
+          "command": "python3 -c 'from pathlib import Path; [compile(Path(p).read_text(),p,'\"'\"'exec'\"'\"') for p in ['\"'\"'tools/coord_runner/review_bundle.py'\"'\"','\"'\"'tools/coord_runner/runner.py'\"'\"','\"'\"'tools/test_qa_review_efficiency.py'\"'\"']]; print('\"'\"'Python syntax: PASS'\"'\"')'"
+        },
+        {
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_review_efficiency.py -v"
+        },
+        {
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v"
+        },
+        {
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_runner.py -v"
+        },
+        {
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_delivery_checks.py -v"
+        },
+        {
+          "kind": "test",
+          "subpath": "project-control",
+          "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_review_policy.py -v"
+        },
+        {
+          "kind": "test",
+          "subpath": "",
+          "command": "python3 -c 'from pathlib import Path; import json; d=json.loads(Path('\"'\"'ai-soc-workspace/workspace.json'\"'\"').read_text()); assert next(x['\"'\"'commit'\"'\"'] for x in d['\"'\"'repositories'\"'\"'] if x['\"'\"'path'\"'\"']=='\"'\"'project-control'\"'\"')=='\"'\"'567db517a981642f1cb2b052ca2ebd17c755653e'\"'\"'; assert '\"'\"'§5.4'\"'\"' in Path('\"'\"'ai-soc-workspace/AGENTS.md'\"'\"').read_text(); print('\"'\"'Root guidance and exact recovery pin: PASS'\"'\"')'"
+        }
+      ]
+    }
+  }
+}

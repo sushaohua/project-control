@@ -1,0 +1,24 @@
+{
+  "session": "01a1a560-5ea0-7a20-995e-54694209b32c",
+  "reviewer_session": "01a1a560-5ea0-7a20-995e-54694209b32c",
+  "role": "QA",
+  "platform": "codex",
+  "decision": "REJECTED",
+  "model": "gpt-6-luna",
+  "commit_sha": "567db517a981642f1cb2b052ca2ebd17c755653e",
+  "task_id": "QA-EFFICIENCY-20261104",
+  "reviewed_task_revision": 1,
+  "artifact_version": "project-control=567db517a981642f1cb2b052ca2ebd17c755653e; ai-soc-workspace=5ff859af1fc2658fe1ffaabe06825e763cd506a5",
+  "report_path": "/tmp/qa_efficiency_20261104/audit_01/review_report.md",
+  "report_sha256": "527a2236a39d5b94d81be14530cacb0c586f5072e5f0302ff45019273b3b54c3",
+  "report_ref": {
+    "path": "/tmp/qa_efficiency_20261104/audit_01/review_report.md",
+    "sha256": "527a2236a39d5b94d81be14530cacb0c586f5072e5f0302ff45019273b3b54c3"
+  },
+  "summary": "审阅两仓本次差异、相关调度与审阅代码、适用的 §5.4 和中文注释规范。可信证据索引记录两仓候选提交及 137 项相关测试通过。发现一项复验路径可绕过必需的同角色历史报告，违反本轮验收约束。",
+  "tokens_used": 214243,
+  "session_evidence": {
+    "path": "/tmp/qa_efficiency_20261104/audit_01/codex.jsonl",
+    "sha256": "070968c1b8fde7d970d2532e18a83c39505163075cdcd226b3b7b133db73a44e"
+  }
+}

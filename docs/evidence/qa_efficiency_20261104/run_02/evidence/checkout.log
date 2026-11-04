@@ -1,0 +1,14 @@
+=== Checkout repository 'project-control' from ssh://git@192.168.77.113:2222/sushaohua/project-control.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/project-control.git -> 0
+$ git fetch origin fd18d73dc127a0bfc097dfa1afe79fed88166b67 -> 0
+From ssh://192.168.77.113:2222/sushaohua/project-control
+ * branch            fd18d73dc127a0bfc097dfa1afe79fed88166b67 -> FETCH_HEAD
+$ git checkout fd18d73dc127a0bfc097dfa1afe79fed88166b67 -> 0
+=== Checkout repository 'ai-soc-workspace' from ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git -> 0
+$ git fetch origin 9f6e3076d073ab9591c295f3e1c78d1e0d69a6c8 -> 0
+From ssh://192.168.77.113:2222/sushaohua/ai-soc-workspace
+ * branch            9f6e3076d073ab9591c295f3e1c78d1e0d69a6c8 -> FETCH_HEAD
+$ git checkout 9f6e3076d073ab9591c295f3e1c78d1e0d69a6c8 -> 0

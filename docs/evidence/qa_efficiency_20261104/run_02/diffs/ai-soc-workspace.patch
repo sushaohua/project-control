@@ -1,0 +1,13 @@
+diff --git a/workspace.json b/workspace.json
+index 5cf5c9d..486d545 100644
+--- a/workspace.json
++++ b/workspace.json
+@@ -11,7 +11,7 @@
+       "path": "project-control",
+       "branch": "main",
+       "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+-      "commit": "567db517a981642f1cb2b052ca2ebd17c755653e"
++      "commit": "fd18d73dc127a0bfc097dfa1afe79fed88166b67"
+     },
+     {
+       "path": "soc-ap",

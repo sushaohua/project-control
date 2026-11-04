@@ -1,0 +1,232 @@
+[
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/accepted_scope.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/accepted_scope.json",
+    "sha256": "f3f2e73fd4efb3ec38f1270fb0f1292c0ef3dccab74ebf1c72170ed3dd3db2d1"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/qa_config.yaml",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/qa_config.yaml",
+    "sha256": "04baf03c9d7509ed594babea9c46d96efb682b9bed77d513c70e2eaf10ceca34"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/review_receipt.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/review_receipt.json",
+    "sha256": "24bb5ae42cbd934ad6ae09cd17b6fbcf14522391dea1148f7232e720d1999527"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/sandbox_execution.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/sandbox_execution.json",
+    "sha256": "8929009e7ea858ca1c99936eaa56624df6cb40d24fdfe515547c0a896ad4b483"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/review_bundle.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/review_bundle.json",
+    "sha256": "63a35c8d020d001a53811423ee1ba0f23d1de4fdaae19d64d0dd9c51631c9b4a"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/source_manifest.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/source_manifest.json",
+    "sha256": "32f11c8b4a14f64aea23d89cf0742f018346e0692d129dcdecb2f85ffd755fcb"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/request.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/request.json",
+    "sha256": "3f304616dfc2811bcfd7d632482b1d0e0c174d9636fc7a800dc5ea0586849591"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/evidence/server_qa.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/evidence/server_qa.json",
+    "sha256": "f74349b1b39c29a773f1d2bab6cff0ffad89b1bf2b3f3c72507ffdd5335e3eea"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/evidence/server_verdict.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/evidence/server_verdict.json",
+    "sha256": "a52b8245c88746b2cb72aca0724cfa5dbe642ba6ed08a2ee46520174f5f3b843"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/evidence/server_lock.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/evidence/server_lock.json",
+    "sha256": "293c019eeffc3c5780bcbba911ba53124dda21e9dec07442c83b25aea9a1b202"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/evidence/runtime.log",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/evidence/runtime.log",
+    "sha256": "bec4147620a7c88a996553d915af5f333fb0c4abf642ea5b1f8304d52361174c"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/evidence/checkout.log",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/evidence/checkout.log",
+    "sha256": "bcceabd4ad73e3519386314e4f6508fa38b35d971111272b22465ee9927d326a"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/diffs/project-control.patch",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/diffs/project-control.patch",
+    "sha256": "630578ff1e9fc849d4e299bd613d69586cc33fd7d811d4efe44cc56425cdf838"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_01/diffs/ai-soc-workspace.patch",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/diffs/ai-soc-workspace.patch",
+    "sha256": "e3733f1bb630c34a0505c5bb4b3f9c0a2a3d8ccb21d722a83b07a33e9541607c"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_01/codex.stderr",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/audit/codex.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_01/prompt.txt",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/audit/prompt.txt",
+    "sha256": "ea2f8921b03e9644a98dda8e3e7a2760a0b3775ec058b8593e9258cf2fb81735"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_01/final.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/audit/final.json",
+    "sha256": "9280907c3a5f725554a5d69df65d63da748be735eb687f556d16c1ed7cb6ed93"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_01/codex.jsonl",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/audit/codex.jsonl",
+    "sha256": "070968c1b8fde7d970d2532e18a83c39505163075cdcd226b3b7b133db73a44e"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_01/schema.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/audit/schema.json",
+    "sha256": "655e3e8985acd853241fc2755c9c47222becfa4b39b0e78668760909070b3566"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_01/token_usage.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/audit/token_usage.json",
+    "sha256": "9f5eabf6d97fa163c51b1392aaa2f438cc0e27c6900a194cd30caa544a97328c"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_01/review_report.md",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/audit/review_report.md",
+    "sha256": "527a2236a39d5b94d81be14530cacb0c586f5072e5f0302ff45019273b3b54c3"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/qa_review_entry.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/qa_review_entry.json",
+    "sha256": "ab073547bc582996636036120907fb160c46471ddcdfc6ddadab25b70d06be1e"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/review_summary.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/review_summary.json",
+    "sha256": "f23ebc880d67a435735b5a308cc1820fd678fe275ca433ce9c7e7223edcf94c1"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/author_tests.log",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/author_tests.log",
+    "sha256": "50468ea7f33f3d32011343b3d59c0ffa2738c79f8a0ca4b94f42b7b638ff97e6"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/sandbox_host.log",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_01/sandbox_host.log",
+    "sha256": "8a84f6e2dafe0e3df3579661427ae87a7b7d7fadce5bf80cdf8995639ead845b"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/review_bundle.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/review_bundle.json",
+    "sha256": "63c112fecb832e061b6ad5b0c17d125c536d4c9315c2e9be5d569f0e834bf202"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/source_manifest.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/source_manifest.json",
+    "sha256": "bc818a38b7724490c0f07724117aac5ffc5ae1a283abee7f3221badb88c451d7"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/request.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/request.json",
+    "sha256": "7296e30390146fbf342f0c1ea04ecb4c1aa24fe9f9b3ee2c1a80afcc6d81b372"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/evidence/server_qa.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/evidence/server_qa.json",
+    "sha256": "8dd3c0f8de675227d1ea82d25b12d9d0b99442cfb4bbdaddd9c5096dbac3b262"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/evidence/server_verdict.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/evidence/server_verdict.json",
+    "sha256": "bdbc34a69b9fb24c1906a84dd0a110ec25ecf466ad9f266d9f8bfaf6a60bdd46"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/evidence/server_lock.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/evidence/server_lock.json",
+    "sha256": "fafb1fa6c47e5fb0733a8148c6561a733020844ac44b16a6d142f732cc808909"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/evidence/runtime.log",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/evidence/runtime.log",
+    "sha256": "334cae3ded314dc1ca33e86e9584c84b6e69e681ba674608a44029a93903f356"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/evidence/checkout.log",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/evidence/checkout.log",
+    "sha256": "da40488ecf53c61b863ed804b0afba81c9bc04b36c31e8fe93447b062dd4f9eb"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/diffs/project-control.patch",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/diffs/project-control.patch",
+    "sha256": "4e7ed3427de57a583aaeebdeed213815caf3623ec852f83d81e285035454e915"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/run_02/diffs/ai-soc-workspace.patch",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/diffs/ai-soc-workspace.patch",
+    "sha256": "14815ea223590585bfa5132b82b9d39120dd74190c0bdce56ea7ac77a3233295"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_02/codex.stderr",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/audit/codex.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_02/prompt.txt",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/audit/prompt.txt",
+    "sha256": "610e8c27fadd4d5560949cb6f93e3a965ce02cedfb3ae9158afb2857ef869dc5"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_02/final.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/audit/final.json",
+    "sha256": "9022bb262de69455c627355063253cc832616136f1025d862b3c7b6adef6c5c6"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_02/codex.jsonl",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/audit/codex.jsonl",
+    "sha256": "ddbf2b9fca2decb6e1b3ea4ab2d124fc10dadec75d791413c7cb79b40f91d761"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_02/schema.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/audit/schema.json",
+    "sha256": "655e3e8985acd853241fc2755c9c47222becfa4b39b0e78668760909070b3566"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/audit_02/review_report.md",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/audit/review_report.md",
+    "sha256": "22498d506c58a4cfdcb2cb6624d337b40709bec41eb7539cd0008820725b78eb"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/qa_review_entry_02.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/qa_review_entry.json",
+    "sha256": "52d56b407e804ef1ae1ecdf8a6bdaa6350580855c0833b11c3f81ee417b05fa1"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/review_summary_02.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/review_summary.json",
+    "sha256": "572d7e57f8d01266dce30ecbff00ed6b8ac3c5fd9b2142f36928fd670d5a8d6b"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/author_rework_01.log",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/author_tests.log",
+    "sha256": "839d03c4a7eaf921a431376505ce9e5dc8197ff88f4a7c5c37c6b36d35d09128"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/sandbox_execution_02.json",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/sandbox_execution.json",
+    "sha256": "cab9258c27803647c76ebd1e81e5fcef1ad3209028670c30155773a73904c05a"
+  },
+  {
+    "original_path": "/tmp/qa_efficiency_20261104/sandbox_host_02.log",
+    "archive_path": "docs/evidence/qa_efficiency_20261104/run_02/sandbox_host.log",
+    "sha256": "9f9cfe5cac234dcf67525dd32c83134bca7a9487a287daa93880a4e24cf1a67b"
+  }
+]

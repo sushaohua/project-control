@@ -1,0 +1,34 @@
+{
+  "base_commit": "94226a2c655a3cd9fd23f14a5e641a247ed22ad9",
+  "files": [
+    {
+      "path": ".agents/rules/codex_qa_review.md",
+      "sha256": "3b58f127d2fd737e81534c9680b64fa7b53a507b6de76cf710a2bbdb4a4a270a"
+    },
+    {
+      "path": ".agents/rules/delivery_and_coord_gate.md",
+      "sha256": "8a133bc99e02f928ca6d9aeafa76b706836ff3e795eb1c1faa2bb7d12ea031a9"
+    },
+    {
+      "path": ".agents/rules/templates/QA审查报告模板.md",
+      "sha256": "cef58492d356dc3bc8f1bc37e38c3587a9ccb542e11f6c2fcb14aae3fc47e6c9"
+    },
+    {
+      "path": ".agents/rules/templates/角色任务提示词.md",
+      "sha256": "ef228e2e8437600f05f64226b37355221e2f87cdcd2c38834188f2758e90ea67"
+    },
+    {
+      "path": "tools/coord_runner/review_bundle.py",
+      "sha256": "71fb62ed5ed7b128f721c04d64530ee2ad0160985fd5640247b594a594b90e10"
+    },
+    {
+      "path": "tools/coord_runner/runner.py",
+      "sha256": "f0ce6e643d78f1d92f02ff7acc9cf15fd28438a0de299175ab9d8738af85b4aa"
+    },
+    {
+      "path": "tools/test_qa_review_efficiency.py",
+      "sha256": "231cf1e7f1da116ee6147beef102bd77a8e83f8ce61c05d07e30e2f90a180bad"
+    }
+  ],
+  "candidate_commit": "fd18d73dc127a0bfc097dfa1afe79fed88166b67"
+}

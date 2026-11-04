@@ -1,0 +1,202 @@
+=== Docker Container Inspect: 8bd99a66b3f3 ===
+{
+  "id": "8bd99a66b3f389d511cb8b022fdca699a379ddc3010c6955a47b079b98ea7c5b",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-04T07:03:53.242627616Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_efficiency_20261104/sandboxes/QA-EFFICIENCY-20261104_run_150344_20261104_070344",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (project-control) python3 -c 'from pathlib import Path; [compile(Path(p).read_text(),p,'"'"'exec'"'"') for p in ['"'"'tools/coord_runner/review_bundle.py'"'"','"'"'tools/coord_runner/runner.py'"'"','"'"'tools/test_qa_review_efficiency.py'"'"']]; print('"'"'Python syntax: PASS'"'"')' -> 0
+Python syntax: PASS
+
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_review_efficiency.py -v -> 0
+
+test_approved_may_include_nonblocking_recommendation (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_current_card_revision_is_checked_before_freeze (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_frozen_manifest_and_declared_run_id_are_bound (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_prior_report_must_match_current_reviewer_role (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_prompt_separates_first_review_and_recheck (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_real_pipeline_blocks_bad_artifact_and_stale_card_before_model (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+test_reverification_binds_prior_report_hash_and_candidate_delta (test_qa_review_efficiency.QAReviewEfficiencyTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.177s
+
+OK
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_qa_pipeline.py -v -> 0
+
+test_commentary_cannot_corrupt_separate_schema_result (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_failed_process_cannot_fallback_or_approve (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_fenced_json_is_validated_as_one_document (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_non_json_final_cannot_approve_and_logs_survive (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_timeout_preserves_partial_events_and_error (test_qa_pipeline.CodexAdapterProtocolTest) ... ok
+test_blocked_task_does_not_retry_on_poll (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_daemon_survives_task_audit_error (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_exception_does_not_prevent_other_inflight_task (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_explicit_sandbox_rerun_preserves_previous_evidence (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_failed_objective_checks_are_audited_but_cannot_be_approved (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_finite_mode_returns_when_only_blocked_tasks_remain (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_hil_requirement_cannot_be_approved_by_software_profile (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_internal_typeerror_is_not_reinvoked_with_another_signature (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_invalid_audit_blocks_persists_and_resume_reuses_test_evidence (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_missing_cases_and_wrong_candidate_cannot_be_approved (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_missing_plan_blocks_before_any_model_or_subprocess (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_sandbox_then_independent_readonly_audits_and_bound_reports (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_sandbox_timeout_blocks_without_model_review (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_extra_arch_uses_same_completed_sandbox (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_qa_authored_tool_gets_one_arch_audit (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_resume_uses_completed_facts_and_rejects_tampering (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_streamlined_runs_one_sandbox_and_one_independent_audit (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_tampered_evidence_prevents_resume_from_approving (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+test_valid_rejection_returns_to_author_with_report_evidence (test_qa_pipeline.DeterministicQAPipelineTest) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 2.325s
+
+OK
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_coord_runner.py -v -> 0
+
+test_checkpoint_corrupt_defense (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_checkpoint_roundtrip (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_crash_and_restart_recovery_drill (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_crash_and_restart_recovery_drill_from_disk_sandbox_qa (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_process_level_kill_and_restart_recovery_drill (test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_codex_auth_failure_blocked (test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_codex_unavailable_blocked (test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_docker_container_sandbox_passed (test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_plain_directory_sandbox_rejected (test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_daemon_signal_handling (test_coord_runner.ExecutionModesTest) ... ok
+test_default_agent_executor_invokes_role_adapter_with_approval (test_coord_runner.ExecutionModesTest) ... ok
+test_default_agent_executor_rejects_unapproved_or_unpushed_candidate (test_coord_runner.ExecutionModesTest) ... ok
+test_ensure_qa_report_review_preexisting_invalid_review_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_ensure_qa_report_review_preexisting_valid_review_accepted (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_dedicated_reviewer_typeerror_fails_without_fallback (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_multi_role (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_preexisting_invalid_report_review_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_qa_report_review_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_valid_report_review_approved_to_done (test_coord_runner.ExecutionModesTest) ... ok
+test_invoke_report_reviewer_passes_req_dict (test_coord_runner.ExecutionModesTest) ... ok
+test_missing_executor_fails_closed (test_coord_runner.ExecutionModesTest) ... ok
+test_production_executors_wiring (test_coord_runner.ExecutionModesTest) ... ok
+test_run_once_mode (test_coord_runner.ExecutionModesTest) ... ok
+test_run_tasks_finite_mode (test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_missing_entry_path_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_missing_entry_sha_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_missing_file_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_prefill_mismatch_rejected (test_coord_runner.ExecutionModesTest) ... ok
+test_sandbox_qa_restart_recovery_progresses (test_coord_runner.ExecutionModesTest) ... ok
+test_uart_conflict_rolls_back_implementation_lease (test_coord_runner.ExecutionModesTest) ... ok
+test_verify_server_commit_variants (test_coord_runner.ExecutionModesTest) ... ok
+test_exclusive_device_conflict_uart (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_implementation_concurrency_limit (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_lease_expiration_and_prune (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_lease_renewal_and_expired_renewal_fails (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_release_lease_frees_resource (test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_legacy_queue_and_twin_tasks_explicitly_isolated (test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_module_cli_intake_scan_runs_cleanly (test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_scheduler_enforces_done_acceptance_errors_on_predecessors (test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_subagent_platform_and_planned_alias_rejected_in_state_machine (test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_python_functions_scale_and_parameters_limits (test_coord_runner.MethodologicalInvariantsTest) ... ok
+test_author_self_review_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_candidate_commit_validation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_any_review_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_entry_missing_report_sha (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_missing_report_review (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_file_not_found_on_disk (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_file_tampered_or_sha_mismatch (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_by_author (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_missing_report_path_or_sha (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_self_reviewed (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_sha_mismatch (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_unapproved (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_required_role_missing (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_evidence_based_remediation_validation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_fake_done_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_max_corrections_exceeded_escalation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_developer_mounts_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_failure_triggers_remediation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_commit_mismatch_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_invalid_sandbox_kind_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_missing_server_qa_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_missing_task_revision_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_string_false_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_task_revision_mismatch_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_remediation_missing_evidence_rejected (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_review_rejection_triggers_remediation (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_state_machine_invalid_transition (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_state_machine_positive_flow (test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_blocked_task_filtered (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_bootstrap_prioritized_over_order (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_completed_tasks_filtered (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_resource_unavailable_blocked (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_unmet_dependencies_blocked (test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+
+----------------------------------------------------------------------
+Ran 74 tests in 7.828s
+
+OK
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_delivery_checks.py -v -> 0
+
+test_artifact_change_invalidates_old_review (test_delivery_checks.DeliveryChecksTest) ... ok
+test_complete_recorded_evidence_passes_local_structure_only (test_delivery_checks.DeliveryChecksTest) ... ok
+test_coord_receipt_cannot_substitute_owner_report (test_delivery_checks.DeliveryChecksTest) ... ok
+test_current_task_revision_must_match (test_delivery_checks.DeliveryChecksTest) ... ok
+test_developer_mount_or_worktree_is_not_a_sandbox (test_delivery_checks.DeliveryChecksTest) ... ok
+test_done_label_cannot_release_unverified_twin_input (test_delivery_checks.DeliveryChecksTest) ... ok
+test_local_source_or_nonfresh_checkout_is_rejected (test_delivery_checks.DeliveryChecksTest) ... ok
+test_missing_required_owner_is_rejected (test_delivery_checks.DeliveryChecksTest) ... ok
+test_new_functions_keep_scale_and_parameter_limits (test_delivery_checks.DeliveryChecksTest) ... ok
+test_null_dependency_version_is_a_ready_blocker (test_delivery_checks.DeliveryChecksTest) ... ok
+test_placeholder_server_commit_is_rejected (test_delivery_checks.DeliveryChecksTest) ... ok
+test_qa_authored_artifact_also_requires_server_sandbox_review (test_delivery_checks.DeliveryChecksTest) ... ok
+test_qa_report_cannot_self_review (test_delivery_checks.DeliveryChecksTest) ... ok
+test_report_cannot_approve_a_different_candidate_version (test_delivery_checks.DeliveryChecksTest) ... ok
+test_report_review_cannot_reuse_qa_sandbox (test_delivery_checks.DeliveryChecksTest) ... ok
+test_role_alias_without_runtime_record_cannot_close (test_delivery_checks.DeliveryChecksTest) ... ok
+test_secondary_review_must_bind_exact_qa_report (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_accepts_one_primary_review_in_both_gates (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_invalid_session_returns_errors_without_crashing (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_qa_author_requires_independent_artifact_check (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_special_owner_remains_required (test_delivery_checks.DeliveryChecksTest) ... ok
+test_streamlined_wrong_candidate_and_missing_tests_fail_both_gates (test_delivery_checks.DeliveryChecksTest) ... ok
+test_bootstrap_selected_before_business (test_delivery_checks.QueueTest) ... ok
+test_duplicate_or_unknown_queue_is_rejected (test_delivery_checks.QueueTest) ... ok
+test_existing_assignment_is_reported_before_new_dispatch (test_delivery_checks.QueueTest) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 0.118s
+
+OK
+
+$ (project-control) PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p test_review_policy.py -v -> 0
+
+test_invalid_policy_is_rejected_before_dispatch (test_review_policy.ReviewPolicyTest) ... ok
+test_invalid_policy_or_roles_fail_closed (test_review_policy.ReviewPolicyTest) ... ok
+test_legacy_is_retained_without_explicit_migration (test_review_policy.ReviewPolicyTest) ... ok
+test_new_policy_and_primary_validator_functions_meet_scale_limits (test_review_policy.ReviewPolicyTest) ... ok
+test_package_entrypoint_imports_shared_gate_without_tools_path (test_review_policy.ReviewPolicyTest) ... ok
+test_qa_authored_tool_defaults_to_one_non_author_arch_check (test_review_policy.ReviewPolicyTest) ... ok
+test_streamlined_defaults_to_one_qa_and_retains_explicit_roles (test_review_policy.ReviewPolicyTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.072s
+
+OK
+
+$ (.) python3 -c 'from pathlib import Path; import json; d=json.loads(Path('"'"'ai-soc-workspace/workspace.json'"'"').read_text()); assert next(x['"'"'commit'"'"'] for x in d['"'"'repositories'"'"'] if x['"'"'path'"'"']=='"'"'project-control'"'"')=='"'"'567db517a981642f1cb2b052ca2ebd17c755653e'"'"'; assert '"'"'§5.4'"'"' in Path('"'"'ai-soc-workspace/AGENTS.md'"'"').read_text(); print('"'"'Root guidance and exact recovery pin: PASS'"'"')' -> 0
+Root guidance and exact recovery pin: PASS
+
