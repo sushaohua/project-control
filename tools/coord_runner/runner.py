@@ -22,7 +22,7 @@ if __package__:
     from .m1_drill import execute_m1_live_drill
     from .m2_drill import execute_m2_live_drill
     from .qa_contract import create_qa_request, repository_from_card
-    from .review_bundle import execute_candidate_audit
+    from .review_bundle import execute_candidate_audit, validate_current_review_inputs
     from .review_policy import resolve_review_policy
     from .errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from .job_launcher import JobLauncher
@@ -46,7 +46,7 @@ else:
     from coord_runner.m1_drill import execute_m1_live_drill
     from coord_runner.m2_drill import execute_m2_live_drill
     from coord_runner.qa_contract import create_qa_request, repository_from_card
-    from coord_runner.review_bundle import execute_candidate_audit
+    from coord_runner.review_bundle import execute_candidate_audit, validate_current_review_inputs
     from coord_runner.review_policy import resolve_review_policy
     from coord_runner.errors import CoordRunnerError, GateValidationError, ResourceConflictError
     from coord_runner.job_launcher import JobLauncher
@@ -326,6 +326,7 @@ class CoordRunner:
             return False
 
     def _execute_review_phase(self, record: TaskExecutionRecord, card: dict) -> bool:
+        """在调用默认独立审阅器前核对当前卡和冻结 QA 证据。"""
         if self.review_executor is None:
             raise CoordRunnerError(f"Missing review_executor for {record.task_id}: fail-closed enforced")
         policy = resolve_review_policy(card, ("QA",))
@@ -335,6 +336,8 @@ class CoordRunner:
         sessions = record.runtime_context.setdefault(
             "review_entries", card["review_assignments"].get("reviewer_sessions", []))
         card["review_assignments"]["reviewer_sessions"] = sessions
+        if self.review_executor == self.default_review_executor:
+            validate_current_review_inputs(record, card, record.runtime_context.get("qa_result"))
         approved_roles = {e.get("role") for e in sessions if self._review_entry_current(e, record)}
         author_session = record.session_id or ""
         for role in required_roles:
@@ -589,6 +592,7 @@ class CoordRunner:
         candidate_commit: str,
         role_or_record: object = "QA",
     ) -> dict:
+        """以当前精确候选和可核验历史上下文执行默认 QA 审阅。"""
         record = self.in_flight_tasks.get(task_id)
         if not record or record.candidate_commit != candidate_commit:
             raise CoordRunnerError("Review requires an active exact candidate")
@@ -596,6 +600,9 @@ class CoordRunner:
         if not qa_result or qa_result.get("candidate_commit") != candidate_commit:
             raise CoordRunnerError("Review requires the completed objective sandbox evidence")
         review = role_or_record if isinstance(role_or_record, dict) else {"role": role_or_record}
+        if review.get("review_kind") != "qa_report":
+            review = dict(review)
+            review["previous_qa_runs"] = list(record.runtime_context.get("previous_qa_runs", []))
         return execute_candidate_audit(CodexReviewAdapter(), qa_result, review)
 
     def wire_production_executors(self) -> None:
