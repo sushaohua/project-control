@@ -1,0 +1,21 @@
+Perform one independent read-only DOCUMENTATION REVIEW of the exact server-fetched clean candidates below. This is source-reviewed documentation, not software or HIL QA. Read the full scoped git diffs and relevant surrounding rules/templates/new handoff. Verify git HEADs and clean source. Check: ARCH produces technical task decomposition/dependencies/interfaces/source baseline/allowed paths; COORD records references, checks declared prerequisites and schedules resources; technical conflicts go back to ARCH rather than COORD editing fields to pass a checker. Existing accurate ARCH work may be reused. A main thread explicitly acting as COORD cannot use early PM/ARCH discussion to replace actual ARCH work. Engineering authors check the referenced ARCH input. Keep the already-simplified streamlined-v1 QA unchanged. There must be no new contract protocol, schema, fields, automated routing, lock exception, runtime code, or tests; root workspace.json may only update the project-control recovery pin, which must match its candidate. Do not demand security machinery, new controls, repeated QA, or unrelated cleanups. The user explicitly asked for a minimal role correction. Existing other COORD drafts and previous uncommitted handoff/intake/receipts were excluded intentionally. Do not inspect the author working tree or abandoned /tmp WIP. Do not build, run tests, write source, or start services. Reading git/hash/JSON and documentation is permitted. The actual user authorizes these two main pushes; this patch does not start business development or change product approval. Evaluate the handoff prompt accordingly. Return an independent decision and concrete findings in the output schema. accepted_scope must identify documentation-only review and its two exact candidates. unexecuted lists only missing required IN-SCOPE review work, not excluded software builds, tests, HIL or later COORD activity. APPROVED requires an empty unexecuted list.
+{
+  "expected": {
+    "task_id": "ARCH-GUARD-20261104",
+    "task_revision": 2,
+    "candidate_commit": "129ee5dce825f7d57d85afa17d19399428da064d",
+    "role": "QA"
+  },
+  "repositories": [
+    {
+      "path": "/tmp/arch_role_correction_review_20261104/project-control",
+      "base": "5964606826b604da81593ab13d0adecdb7728dc3",
+      "candidate": "129ee5dce825f7d57d85afa17d19399428da064d"
+    },
+    {
+      "path": "/tmp/arch_role_correction_review_20261104/ai-soc-workspace",
+      "base": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+      "candidate": "c0c3336d1f5a09c955ceddf1bf6c6b71484ada63"
+    }
+  ]
+}

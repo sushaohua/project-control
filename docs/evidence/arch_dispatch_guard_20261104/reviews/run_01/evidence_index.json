@@ -1,0 +1,39 @@
+{
+  "kind": "independent-documentation-review-evidence-index",
+  "task_id": "ARCH-GUARD-20261104",
+  "task_revision": 2,
+  "candidate_commit": "129ee5dce825f7d57d85afa17d19399428da064d",
+  "workspace_candidate_commit": "c0c3336d1f5a09c955ceddf1bf6c6b71484ada63",
+  "actual_session": "01a1a44c-ca56-7b72-9241-2b2d0dab38e6",
+  "model": "gpt-6-luna",
+  "decision": "APPROVED",
+  "findings": [],
+  "review_type": "documentation-only; not software or hardware verification",
+  "files": [
+    {
+      "path": "codex.jsonl",
+      "size_bytes": 376581,
+      "sha256": "3680b80dfb6598c4f6320b02fa73714a71c72020d9be23a4c9d38b780c992016"
+    },
+    {
+      "path": "final.json",
+      "size_bytes": 968,
+      "sha256": "2cc1aa2f9eb48e725e132adf90e51d149f304880c20f5c6d2d7186412d858af1"
+    },
+    {
+      "path": "schema.json",
+      "size_bytes": 607,
+      "sha256": "655e3e8985acd853241fc2755c9c47222becfa4b39b0e78668760909070b3566"
+    },
+    {
+      "path": "prompt.txt",
+      "size_bytes": 2569,
+      "sha256": "682a8b0e866f02e3dace0ae202596a199ffc8ae04395b1bf6c7c033a41538ed1"
+    },
+    {
+      "path": "documentation_review_entry.json",
+      "size_bytes": 1412,
+      "sha256": "5e4f7a4b211ebc2b20cb4eed3dade43f8774cf0e8649f0d86853c0264ae6a85a"
+    }
+  ]
+}

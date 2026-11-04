@@ -2,7 +2,7 @@
 id: ARCH-GUARD-20261104
 revision: 2
 date: 2026-11-04
-status: documentation-correction-in-progress
+status: published-documentation-correction
 qa_policy: streamlined-v1
 scope: role-and-dispatch-instruction-correction-only
 ---
@@ -31,6 +31,13 @@ scope: role-and-dispatch-instruction-correction-only
 
 开工前已有的收件、Debug/921600 概要、确认/intake 文件和前轮 handoff 修改按 [原有文件清单](../evidence/arch_dispatch_guard_20261104/preexisting_files.json) 保留，不顺带提交。本轮发布仅包括明确列出的纠偏文档及其检查记录；根入口与对应规则镜像保持一致。
 
-## 验证与交接
+## 验证、发布与交接
 
-按文档范围检查职责表述、模板和提示词是否一致，确认没有新增合同字段/接口指令或 QA 轮次；检查链接、差异空白、源码未变及既有文件保留情况，并安排一次独立文档审阅。不为纯职责文字修改重跑业务构建、硬件测试或调度器整套回归。交接见 [COORD 接续提示词](../handoff/ARCH_DISPATCH_GUARD_HANDOFF_20261104.md)。实际提交和发布结果待完成后登记。
+按文档范围检查职责表述、模板和提示词是否一致，确认没有新增合同字段/接口指令或 QA 轮次；检查链接、差异空白、源码未变及既有文件保留情况，并安排一次独立文档审阅。不为纯职责文字修改重跑业务构建、硬件测试或调度器整套回归。交接见 [COORD 接续提示词](../handoff/ARCH_DISPATCH_GUARD_HANDOFF_20261104.md)。
+
+- `project-control` 源码候选：`129ee5dce825f7d57d85afa17d19399428da064d`（`main`，已推送并由独立服务器 clone 核对）。
+- 根工作区候选：`c0c3336d1f5a09c955ceddf1bf6c6b71484ada63`（`main`，已推送）；`workspace.json` 的 `project-control.commit` 固定为上述源码候选。
+- 独立审阅：实际 Codex 会话 `01a1a44c-ca56-7b72-9241-2b2d0dab38e6`，`gpt-6-luna`，只读；结论 `APPROVED`，`findings: []`。这是文档审阅，不是软件或硬件测试。
+- 审阅原始材料和逐文件 SHA-256 索引见 [run_01 审阅证据](../evidence/arch_dispatch_guard_20261104/reviews/run_01/evidence_index.json)；发布命令、源码候选和双仓差异见 [publication run_01](../evidence/arch_dispatch_guard_20261104/publication/run_01/candidate.json)。
+
+本轮未运行软件构建、业务测试、服务或真实 ARCH 规划作业。既有 COORD 产物、用户概要/批准、旧任务及历史 QA 签署保留，不由本助理代签或改状态。

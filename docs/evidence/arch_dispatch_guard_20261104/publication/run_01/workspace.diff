@@ -1,0 +1,33 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index ff8d859..de0b0e4 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -20,10 +20,11 @@ Follow `project-control/.agents/rules/delivery_and_coord_gate.md` and the canoni
+ 
+ ### COORD Role Boundaries and Code Read-Only Invariant (COORD 角色边界与代码只读硬铁律)
+ 1. **代码库写入物理级封锁**：COORD 的写入权限严格受限于 `project-control/`（任务卡、Issue、调度记录、验收方案及顶层配置）。**严禁 COORD 直接修改 `soc-ap/`、`mcu-p3/`、`test_harness/`、`boot/bootloadermc/`、`boot/bootloaderth/` 业务代码仓库**。
+-2. **工程任务委派**：代码编写、业务修改、作者自检、集成打包等工程工作，COORD 必须通过 `invoke_subagent` 委派对应 `ENG-*`、`ENG_BOOT_MC`、`ENG_BOOT_TH` 或 `INTEGRATOR`，不得在主会话中代做。QA 编写测试计划、独立预期和测试工具仍按既有职责派单，其产物须接受独立复核。
+-3. **正式独立 QA**：正式 QA 必须使用独立 Codex 会话，按权威 `codex_qa_review.md` 执行。仅通过 `invoke_subagent` 创建名为 QA 的普通子 Agent，不构成合规的独立 QA；只有实际启动独立 Codex 并提供可核验的会话和运行证据，才满足会话要求。派发工具名称、角色名或计划别名不能替代这些证据。
+-4. **QA 执行顺序与调度授权**：由受控 Python Runner 确定性执行服务器锁定候选的独立 Docker 构建与测试，固化并校验客观证据，再启动独立 Codex 对同一候选及证据进行只读审阅。COORD 可以启动或委派启动该流程，这不属于 COORD 代做工程任务；不得在主会话直接运行被审代码的构建和测试，也不得让普通子 Agent 的自测、自评或手写报告替代该流程。独立 Codex 不负责启动 Docker 或补写测试计划。
+-5. **收件与关闭**：必须取得与准确候选绑定的实际审阅结果、所用 qa_policy 的必需接受及必要 Owner 接受后（streamlined-v1 不默认二次审报告；未迁移 legacy 保留原报告复核），COORD 才能推进完成或关闭 Issue。调用失败、超时、证据不足或 `BLOCKED/INCONCLUSIVE` 时保持待审并记录阻塞及解除条件，禁止回退 `self`、提前批准或事后补签；保留历史报告，后续复验另建 run。
++2. **ARCH 技术输入与 COORD 调度边界**：ARCH 实际角色交付负责技术任务拆分、依赖、接口、源码基线和允许路径的方案/任务依据；主对话分阶段讨论不能替代该产物，即使该主对话当前指定为 COORD 也不能据此代做 ARCH。COORD 只按现有字段登记引用、核对前置产物与当前任务/输入/路径一致，并安排执行者、资源租约和排程；不自行探索业务源码推导技术结论、不为通过脚本改写技术字段。缺少 ARCH 交付或出现技术冲突时交 ARCH 补充/裁决；不能以 COORD 口头确认代替，也不能绕开既有派单流程直接派普通 Agent 实现。共享资源等待由 COORD 排程，不改成技术依赖。
++3. **工程任务委派**：代码编写、业务修改、作者自检、集成打包等工程工作，COORD 必须通过 `invoke_subagent` 委派对应 `ENG-*`、`ENG_BOOT_MC`、`ENG_BOOT_TH` 或 `INTEGRATOR`，不得在主会话中代做。QA 编写测试计划、独立预期和测试工具仍按既有职责派单，其产物须接受独立复核。
++4. **正式独立 QA**：正式 QA 必须使用独立 Codex 会话，按权威 `codex_qa_review.md` 执行。仅通过 `invoke_subagent` 创建名为 QA 的普通子 Agent，不构成合规的独立 QA；只有实际启动独立 Codex 并提供可核验的会话和运行证据，才满足会话要求。派发工具名称、角色名或计划别名不能替代这些证据。
++5. **QA 执行顺序与调度授权**：由受控 Python Runner 确定性执行服务器锁定候选的独立 Docker 构建与测试，固化并校验客观证据，再启动独立 Codex 对同一候选及证据进行只读审阅。COORD 可以启动或委派启动该流程，这不属于 COORD 代做工程任务；不得在主会话直接运行被审代码的构建和测试，也不得让普通子 Agent 的自测、自评或手写报告替代该流程。独立 Codex 不负责启动 Docker 或补写测试计划。
++6. **收件与关闭**：必须取得与准确候选绑定的实际审阅结果、所用 qa_policy 的必需接受及必要 Owner 接受后（streamlined-v1 不默认二次审报告；未迁移 legacy 保留原报告复核），COORD 才能推进完成或关闭 Issue。调用失败、超时、证据不足或 `BLOCKED/INCONCLUSIVE` 时保持待审并记录阻塞及解除条件，禁止回退 `self`、提前批准或事后补签；保留历史报告，后续复验另建 run。
+ 
+ ## Build and Test
+ 
+diff --git a/workspace.json b/workspace.json
+index e797c65..2ce1ba1 100644
+--- a/workspace.json
++++ b/workspace.json
+@@ -11,7 +11,7 @@
+       "path": "project-control",
+       "branch": "main",
+       "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+-      "commit": "cec9b34f8284f7b2580a7d219536d32b7b1ee849"
++      "commit": "129ee5dce825f7d57d85afa17d19399428da064d"
+     },
+     {
+       "path": "soc-ap",

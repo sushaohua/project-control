@@ -1,0 +1,32 @@
+{
+  "scope": "documentation-only role-boundary correction",
+  "project_control": {
+    "repository": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+    "branch": "main",
+    "base": "5964606826b604da81593ab13d0adecdb7728dc3",
+    "candidate": "129ee5dce825f7d57d85afa17d19399428da064d",
+    "commit_subject": "docs: clarify ARCH and COORD task boundaries",
+    "pushed": true,
+    "ls_remote_main": "129ee5dce825f7d57d85afa17d19399428da064d",
+    "independent_fetch": "/tmp/arch_role_correction_pc_fetch_20261104"
+  },
+  "workspace": {
+    "repository": "ssh://git@192.168.77.113:2222/sushaohua/ai-soc-workspace.git",
+    "branch": "main",
+    "base": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+    "candidate": "c0c3336d1f5a09c955ceddf1bf6c6b71484ada63",
+    "commit_subject": "docs: sync ARCH task boundary guidance",
+    "pushed": true,
+    "independent_fetch": "/tmp/arch_role_correction_review_20261104/ai-soc-workspace"
+  },
+  "workspace_json_scope": "Only repositories[].commit for path=project-control changed.",
+  "review_snapshot": "/tmp/arch_role_correction_review_20261104",
+  "snapshot_manifest": "snapshot_manifest.json",
+  "diffs": ["project-control.diff", "workspace.diff"],
+  "independent_review": {
+    "status": "in progress",
+    "snapshot_path": "/tmp/arch_role_correction_review_20261104",
+    "evidence_path": "/tmp/arch_role_correction_review_20261104/documentation_audit_01"
+  },
+  "software_or_business_tests": "not run; documentation-only scope"
+}

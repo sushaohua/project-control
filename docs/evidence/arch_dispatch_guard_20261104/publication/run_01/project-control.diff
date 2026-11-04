@@ -1,0 +1,254 @@
+diff --git "a/.agents/rules/02_\346\250\241\345\235\227\344\270\216Agent\350\201\214\350\264\243.md" "b/.agents/rules/02_\346\250\241\345\235\227\344\270\216Agent\350\201\214\350\264\243.md"
+index 1cd8469..4755361 100755
+--- "a/.agents/rules/02_\346\250\241\345\235\227\344\270\216Agent\350\201\214\350\264\243.md"
++++ "b/.agents/rules/02_\346\250\241\345\235\227\344\270\216Agent\350\201\214\350\264\243.md"
+@@ -58,7 +58,7 @@ AI 团队的岗位分为四类：
+ 
+ PM 解释“做什么、为什么、先做什么”；DES-UI 解释“用户端到端怎么用、界面与状态怎么流转、体验如何闭环”；ARCH 解释“由哪些模块、通过什么接口完成”；COORD 依据已接受任务安排执行；模块工程师实现；QA 检查；INTEGRATOR 合入与交付。
+ 
+-PM、ARCH 的早期讨论可以在主对话中分阶段完成。复杂方案采用独立上下文评审；改变角色名称不能代替独立检查。COORD 是明确指定的协调岗位，可由主 Agent 承担，不表示已经部署自动调度服务。
++PM、ARCH 的早期讨论可以在主对话中分阶段完成；但明确指定为 COORD 的主对话不能据此代替 ARCH 实际角色交付技术拆分。ARCH 负责技术任务拆分、依赖、接口、源码基线和允许路径；COORD 只登记引用、核对已声明前置产物并安排执行者、资源租约和排程，不自行探索业务源码推导技术结论。缺少 ARCH 交付或发现技术冲突时交 ARCH 补充/裁决；COORD 不为通过脚本改写技术字段，共享资源等待仍由 COORD 排程。
+ 
+ ### 1.3 岗位怎样对应实际 Agent
+ 
+diff --git "a/.agents/rules/04_\345\205\254\345\205\261\347\234\213\346\235\277\344\270\216\350\257\273\345\206\231\345\215\217\350\256\256.md" "b/.agents/rules/04_\345\205\254\345\205\261\347\234\213\346\235\277\344\270\216\350\257\273\345\206\231\345\215\217\350\256\256.md"
+index ae569df..bcabbac 100755
+--- "a/.agents/rules/04_\345\205\254\345\205\261\347\234\213\346\235\277\344\270\216\350\257\273\345\206\231\345\215\217\350\256\256.md"
++++ "b/.agents/rules/04_\345\205\254\345\205\261\347\234\213\346\235\277\344\270\216\350\257\273\345\206\231\345\215\217\350\256\256.md"
+@@ -77,8 +77,8 @@ Verify 是“核对本卡完成条件”的阶段，不一定再启动一名 QA
+ | 项目     | 具体内容                               | 谁准备、缺了怎么办                             |
+ | ------ | ---------------------------------- | ------------------------------------- |
+ | 自己的任务  | ID/revision、一个结果、非目标、岗位；开工前登记实际执行者 | PM/ARCH 明确范围，COORD 派单；目标混杂先拆          |
+-| 输入版本   | 每项来源/前置卡、产物、准确版本、用途、使用条件；引用接受记录    | ARCH/模块/INTEGRATOR 核对；调查可核查未知，实现不能猜接口 |
+-| 允许修改范围 | 真实仓库/工作区、文件白名单、禁止项、证据输出、设备/命令范围    | COORD 在已有授权内落实；共享文件由 Owner 协调         |
++| 输入版本   | 每项来源/前置卡、产物、准确版本、用途、使用条件；引用接受记录    | 实现须引用 ARCH 实际角色交付的技术拆分/接口/依赖及准确输入；COORD 按现有卡片来源字段登记并核对前置产物，不自行从业务源码推导技术结论 |
++| 允许修改范围 | 真实仓库/工作区、文件白名单、禁止项、证据输出、设备/命令范围    | ARCH 提供技术路径/白名单；COORD 在已有授权内登记并核对；共享文件由 Owner 协调 |
+ | 完成标准   | 正常与相关故障的预期、步骤、证据层级、检查者及独立性         | QA/相关 Reviewer 核对；只有“测试通过”不够          |
+ | 向谁交结果  | 实际 COORD 入口、反馈方式、证据位置、回执与后续检查安排    | COORD 登记；没有服务就采用实际人工/主子渠道             |
+ 
+@@ -101,7 +101,7 @@ Verify 是“核对本卡完成条件”的阶段，不一定再启动一名 QA
+ 
+ ### 4.2 接单、占用和交付
+ 
+-1. COORD 准备卡与实际反馈入口，作者按五项返回简短回执；缺必要输入先记录问题。
++1. COORD 准备卡与实际反馈入口，作者按五项返回简短回执；实现作者核对卡片引用的 ARCH 实际交付及其版本/hash、当前任务、输入和允许路径一致。主对话分阶段讨论或 COORD 口头称已检查均不替代该产物；缺少来源或存在技术冲突时交 ARCH 补充/裁决，不由 COORD 为通过检查改写字段。读取和记录沿用 `read_sources`、`protocol_input`、`source_baseline`、`dispatch_binding`、`depends_on`、`write_scope`/`allowed_paths` 及实际执行者/会话记录，不扩展新 schema。
+ 2. 开工前 COORD 登记 `lease` 的 `owner/task_revision/lease_id/expires_at`，以及 `checkpoint` 和实际资源。它是人工占用记录，不是工具锁。期限由本任务投入和运行安排决定，不用固定时长假装适合所有任务。
+ 3. 到检查点或期限前，作者交进展；COORD 核对后明确续领并记录新期限。没有收到续领，过期后停止新增修改/设备操作，保留检查点。COORD 本轮结束不能假设仍会自动续租。
+ 4. 作者保存自己的证据，按登记渠道提交任务/revision、实际版本、产物、检查、缺口和下一步；COORD 明确“已收到”或“需补材料”。
+diff --git a/.agents/rules/delivery_and_coord_gate.md b/.agents/rules/delivery_and_coord_gate.md
+index 0dc3240..aa18b9c 100644
+--- a/.agents/rules/delivery_and_coord_gate.md
++++ b/.agents/rules/delivery_and_coord_gate.md
+@@ -50,10 +50,11 @@ flowchart TD
+ ### 1.1 COORD 代码只读与派单唯一性硬铁律 (Machine Invariant)
+ 
+ 1. **业务代码库写入物理级封锁**：COORD 的写入权限严格受限于 `project-control/`（任务卡、Issue、调度记录、验收方案及顶层配置）。**严禁 COORD 直接修改 `soc-ap/`、`mcu-p3/`、`test_harness/`、`boot/bootloadermc/`、`boot/bootloaderth/` 业务代码仓库**。
+-2. **工程任务委派**：代码编写、业务修改、作者自检、集成打包等工程工作，COORD 必须通过 `invoke_subagent` 委派对应 `ENG-*`、`ENG_BOOT_MC`、`ENG_BOOT_TH` 或 `INTEGRATOR`，不得在主会话中代做。QA 编写测试计划、独立预期和测试工具仍按既有职责派单，其产物须接受独立复核。
+-3. **正式独立 QA**：正式 QA 必须使用独立 Codex 会话，按权威 `codex_qa_review.md` 执行。仅通过 `invoke_subagent` 创建名为 QA 的普通子 Agent，不构成合规的独立 QA；只有实际启动独立 Codex 并提供可核验的会话和运行证据，才满足会话要求。派发工具名称、角色名或计划别名不能替代这些证据。
+-4. **QA 执行顺序与调度授权**：由受控 Python Runner 确定性执行服务器锁定候选的独立 Docker 构建与测试，固化并校验客观证据，再启动独立 Codex 对同一候选及证据进行只读审阅。COORD 可以启动或委派启动该流程，这不属于 COORD 代做工程任务；不得在主会话直接运行被审代码的构建和测试，也不得让普通子 Agent 的自测、自评或手写报告替代该流程。独立 Codex 不负责启动 Docker 或补写测试计划。
+-5. **收件与关闭**：必须取得与准确候选绑定的实际审阅结果、按 `qa_policy` 适用的必需接受及必要 Owner 接受后，COORD 才能推进完成或关闭 Issue。调用失败、超时、证据不足或 `BLOCKED/INCONCLUSIVE` 时保持待审并记录阻塞及解除条件，禁止回退 `self`、提前批准或事后补签；保留历史报告，后续复验另建 run。
++2. **ARCH 技术输入与 COORD 调度边界**：ARCH 实际角色交付负责技术任务拆分、依赖、接口、源码基线和允许路径的方案/任务依据；主对话分阶段讨论不能替代该产物，即使该主对话当前指定为 COORD 也不能据此代做 ARCH。COORD 只按现有字段登记引用、核对前置产物与当前任务/输入/路径一致，并安排执行者、资源租约和排程；不自行探索业务源码推导技术结论、不为通过脚本改写技术字段。缺少 ARCH 交付或出现技术冲突时交 ARCH 补充/裁决；不能以 COORD 口头确认代替，也不能绕开既有派单流程直接派普通 Agent 实现。共享资源等待由 COORD 排程，不改成技术依赖。
++3. **工程任务委派**：代码编写、业务修改、作者自检、集成打包等工程工作，COORD 必须通过 `invoke_subagent` 委派对应 `ENG-*`、`ENG_BOOT_MC`、`ENG_BOOT_TH` 或 `INTEGRATOR`，不得在主会话中代做。QA 编写测试计划、独立预期和测试工具仍按既有职责派单，其产物须接受独立复核。
++4. **正式独立 QA**：正式 QA 必须使用独立 Codex 会话，按权威 `codex_qa_review.md` 执行。仅通过 `invoke_subagent` 创建名为 QA 的普通子 Agent，不构成合规的独立 QA；只有实际启动独立 Codex 并提供可核验的会话和运行证据，才满足会话要求。派发工具名称、角色名或计划别名不能替代这些证据。
++5. **QA 执行顺序与调度授权**：由受控 Python Runner 确定性执行服务器锁定候选的独立 Docker 构建与测试，固化并校验客观证据，再启动独立 Codex 对同一候选及证据进行只读审阅。COORD 可以启动或委派启动该流程，这不属于 COORD 代做工程任务；不得在主会话直接运行被审代码的构建和测试，也不得让普通子 Agent 的自测、自评或手写报告替代该流程。独立 Codex 不负责启动 Docker 或补写测试计划。
++6. **收件与关闭**：必须取得与准确候选绑定的实际审阅结果、按 `qa_policy` 适用的必需接受及必要 Owner 接受后，COORD 才能推进完成或关闭 Issue。调用失败、超时、证据不足或 `BLOCKED/INCONCLUSIVE` 时保持待审并记录阻塞及解除条件，禁止回退 `self`、提前批准或事后补签；保留历史报告，后续复验另建 run。
+ 
+ 当前会话内的连续工具循环与常驻服务分开：会话结束不能声称仍在自动调度。没有持久化运行器时，保存队列游标、候选、实际Agent ID和等待事件，下一会话恢复。AUTO-02部署验收后，才可声称其已验证的常驻/重启能力。
+ 
+diff --git "a/.agents/rules/templates/\344\273\273\345\212\241\345\215\241\346\250\241\346\235\277.md" "b/.agents/rules/templates/\344\273\273\345\212\241\345\215\241\346\250\241\346\235\277.md"
+index eb9e0c0..3bd859d 100755
+--- "a/.agents/rules/templates/\344\273\273\345\212\241\345\215\241\346\250\241\346\235\277.md"
++++ "b/.agents/rules/templates/\344\273\273\345\212\241\345\215\241\346\250\241\346\235\277.md"
+@@ -81,11 +81,11 @@ review_assignments:
+ baseline: null
+ protocol_input: null # 使用协议时填 path / revision / sha256
+ icd_versions: []
+-source_baseline: {} # 仓库 -> 准确输入提交；不是将来产物的伪造提交
++source_baseline: {} # 仓库 -> 准确输入提交；与ARCH实际任务拆分引用的基线一致
+ base_commit: null # 单仓入口；多仓的准确输入在 version_bundle 中逐仓绑定
+ branch: null
+ worktree: null
+-dispatch_binding:
++dispatch_binding: # 派单绑定实际ARCH方案/拆分和输入版本，沿用本卡既有字段
+   source_commit: null
+   workspace_diff_sha256: null
+   consumed_artifact_versions: {}
+@@ -107,7 +107,7 @@ allowed_repositories: []
+ write_scope: {} # 仓库 -> 仓内具体文件/有界路径
+ allowed_paths: [] # 与 write_scope 等价的“仓库/路径”展开
+ forbidden_paths: []
+-read_sources: []
++read_sources: [] # 引用实际ARCH方案/任务拆分、来源会话交付及其他输入的准确路径/版本/hash
+ execution_contract: project-control/.agents/rules/04_公共看板与读写协议.md
+ resources: [] # 实际工作树、输出目录、设备/端口/探针、独占范围和交接
+ lease: null # 开工时 owner / task_revision / lease_id / expires_at（带时区）
+diff --git "a/.agents/rules/templates/\350\247\222\350\211\262\344\273\273\345\212\241\346\217\220\347\244\272\350\257\215.md" "b/.agents/rules/templates/\350\247\222\350\211\262\344\273\273\345\212\241\346\217\220\347\244\272\350\257\215.md"
+index 2cd2ea2..7d579c9 100755
+--- "a/.agents/rules/templates/\350\247\222\350\211\262\344\273\273\345\212\241\346\217\220\347\244\272\350\257\215.md"
++++ "b/.agents/rules/templates/\350\247\222\350\211\262\344\273\273\345\212\241\346\217\220\347\244\272\350\257\215.md"
+@@ -41,6 +41,7 @@ plan_revision: marlin-r2
+ 本轮只执行任务 {task_id} revision {revision}；反馈给登记的 COORD 入口 {receiver_session}。
+ 先核对任务、输入版本、可写范围、完成标准和实际接收方，返回简短接单回执。必要内容缺失先说明，不自行补造接口或授权。
+ 读取任务卡准确revision、当前有效授权、已接受ICD、父任务相关能力条件和独立预期，核对实际输入哈希。历史笔记和分析报告只作参考，不将静态配置当板上事实。
++实现作者接单前须核对 `read_sources`、`protocol_input`、`source_baseline`、`dispatch_binding`、`depends_on` 和 `write_scope`/`allowed_paths` 中引用的 ARCH 实际方案及本轮输入，确认其任务范围、版本/hash和允许路径与当前卡一致；不得以 COORD 口头“已检查”替代。缺少实际 ARCH 交付或出现技术冲突时回交 ARCH，COORD 不自行探索业务源码或为通过脚本改写技术字段。
+ 缺前置能力、blocked=true、租约过期、路径/设备占用冲突时停止受影响动作，记录DEPENDENCY_REQUEST；不由活跃会话单边补造下游能力。
+ 帧结构、业务命令、请求关联和硬件闭环分开判断；正常场景无有效响应为失败，故障注入按其预期判定。
+ 修改范围仅限任务的仓库与路径白名单；公共 schema、DTS、构建文件的修改必须由其 Owner 承担。
+diff --git a/docs/architecture/coord_intake_dispatch_phase1_design_20261103.md b/docs/architecture/coord_intake_dispatch_phase1_design_20261103.md
+index 8c596ca..96628c1 100644
+--- a/docs/architecture/coord_intake_dispatch_phase1_design_20261103.md
++++ b/docs/architecture/coord_intake_dispatch_phase1_design_20261103.md
+@@ -61,7 +61,7 @@ flowchart TD
+     E --> F[独立验收和收件闭环]
+ ```
+ 
+-调度控制器、COORD 决策及角色作业分别有运行身份。控制器不冒充 PM/ARCH，COORD 不代做业务工程，角色名不等于实际会话，接收回执不等于任务完成。
++调度控制器、COORD 决策及角色作业分别有运行身份。控制器不冒充 PM/ARCH，COORD 不代做业务工程，角色名不等于实际会话，接收回执不等于任务完成。工程实现的技术拆分、依赖、接口、基线和允许路径须引用 ARCH 实际角色交付；COORD 只登记引用、核对前置与安排资源排程，主对话分阶段讨论不代替 ARCH 产物。
+ 
+ 第一步必须核实实际宿主和调用能力：哪个实际 COORD 能接收程序请求、是否能保留原会话或建立受控恢复上下文、如何使用现行 `invoke_subagent`、如何查询任务及取回结果。工具名出现在旧文档中，不代表 Python 可直接调用。接口不可用时记录能力阻塞及可行方案，不能擅自改成所有角色都由另一种执行器代跑。
+ 
+diff --git a/docs/evidence/arch_dispatch_guard_20261104/preexisting_files.json b/docs/evidence/arch_dispatch_guard_20261104/preexisting_files.json
+new file mode 100644
+index 0000000..84b9521
+--- /dev/null
++++ b/docs/evidence/arch_dispatch_guard_20261104/preexisting_files.json
+@@ -0,0 +1,50 @@
++{
++  "kind": "preexisting-working-tree-preservation-record",
++  "base_commit": "5964606826b604da81593ab13d0adecdb7728dc3",
++  "files": [
++    {
++      "path": "docs/evidence/qa_streamline_20261103/handoff_manifest.json",
++      "sha256": "5f244a5ea2747cf4bb0dc94c88f405b30d6d1d9a5c0c197467299a37c0e486da"
++    },
++    {
++      "path": "docs/handoff/CODEX_ASSISTANT_HANDOFF_20261103.md",
++      "sha256": "daebb35474e47c7aa2681fd2752e4b2ac6753de0517f1a30562eefa1d8aa9d1a"
++    },
++    {
++      "path": "docs/handoff/HANDOFF_20261104.md",
++      "sha256": "e7cc35cd9e64d738fdfe1aac8aa174c205b48fe688fab29e8432aacf1d23eb94"
++    },
++    {
++      "path": "docs/planning/qa_streamline_cutover_20261103.md",
++      "sha256": "f0e4887d04b101ed83a56a975b749c41a132bf4289995dfd1dac71454f4946d7"
++    },
++    {
++      "path": "docs/evidence/qa_streamline_20261103/coord_receipt_20261104.json",
++      "sha256": "cfc5eed56afb8be6bacb2d322c9dbd580b040b4694d3ac3c23d6e8fb176d1cb9"
++    },
++    {
++      "path": "docs/planning/debug_and_921600_merged_implementation_summary_20261104.md",
++      "sha256": "d06a150444d4b126c2a7aa792cd2b2b40faf09d043775783de6fa89c4db3bd68"
++    },
++    {
++      "path": "docs/work_intake/.intake_digests.json",
++      "sha256": "576631096625e4fcebad3b310a817979febf65404c4547b1c0e74c52cfee1434"
++    },
++    {
++      "path": "docs/work_intake/confirmations/CONFIRM-DEBUG-BAUD-20261104.yaml",
++      "sha256": "59c0d027b9a4bd195e16c9af478c6ff85d34ae888ca9036e6d196108cc7c6759"
++    },
++    {
++      "path": "docs/work_intake/features/FEAT-20261104-001.yaml",
++      "sha256": "bd9fe126fe536ab04a4932e81b09266381c81e2cf0d4346844040105e8090010"
++    },
++    {
++      "path": "docs/work_intake/features/FEAT-20261104-002.yaml",
++      "sha256": "8a2b48b1543dbe21ed4fd2f0f012db4945c0da106944486c32d9b662b20bded8"
++    },
++    {
++      "path": "docs/work_intake/submissions/SUB-20261104-001.md",
++      "sha256": "9058016613a4a9ce4ba17c6dbaeb5463f5cd79f015794950efffc32ef91b594f"
++    }
++  ]
++}
+diff --git a/docs/handoff/ARCH_DISPATCH_GUARD_HANDOFF_20261104.md b/docs/handoff/ARCH_DISPATCH_GUARD_HANDOFF_20261104.md
+new file mode 100644
+index 0000000..6020ab2
+--- /dev/null
++++ b/docs/handoff/ARCH_DISPATCH_GUARD_HANDOFF_20261104.md
+@@ -0,0 +1,41 @@
++---
++title: ARCH 与 COORD 职责纠偏及开发接续
++revision: 2
++date: 2026-11-04
++status: documentation-correction-in-progress
++qa_policy: streamlined-v1
++---
++
++# ARCH 与 COORD 职责纠偏交接
++
++本轮按用户“仅仅纠偏”的要求，只调整职责规则、已有派单模板和接续提示词，见 [纠偏记录](../planning/arch_dispatch_guard_20261104.md)。Runner 等运行代码的未提交扩展已撤回，不新增合同协议、自动 ARCH 路由、权限/阶段锁改造；未启动业务开发、业务测试、烧录或服务。
++
++**ARCH 实际提供技术方案与任务拆分；COORD 引用并登记、核开工条件、安排执行和收件。** 主会话已指定为 COORD 时，不再借“主对话分阶段讨论”自行代做 ARCH 的技术依赖/路径分析。技术问题交 ARCH 修订，不为通过检查擅改字段；现有准确 ARCH 输入可复用，不要求每卡重复设计。
++
++已有用户批准且范围未变的内容继续引用；实际批准来源的登记由 COORD 按既有规则完成，不改现有概要正文或哈希以伪造批准。简化 QA 沿用 `streamlined-v1`，不加重复 ARCH 审查或报告复核。现有代码的能力和限制保持原样，本次文档修正不冒充程序强制封锁。
++
++## 给 COORD 的接续提示词
++
++```text
++你继续担任唯一COORD。先读取：
++project-control/docs/handoff/ARCH_DISPATCH_GUARD_HANDOFF_20261104.md
++以及其中引用的纠偏记录和更新后的职责/派单规则。
++
++先核实当前实际Agent、在途任务和写入占用，保留已有修改。
++实际委派ARCH接管复核Debug/921600概要的技术部分，完成任务拆分、技术依赖、
++接口边界、输入版本、路径白名单和验收依据；已有准确ARCH产物直接引用。
++记录实际ARCH执行者、方案位置和版本；你根据这些输入登记任务卡、
++核查前置接受与授权、安排资源和执行者，不自行翻业务源码补技术结论。
++检查发现技术依赖/路径/接口问题就交ARCH修订，不为通过脚本自行增删字段。
++
++沿用我已经给出的准确有效批准；未发生产品或范围实质变化，不重新批准整单。
++在现有授权、ARCH输入及开工条件齐全后，派对应ENG/INTEGRATOR启动开发。
++工程作者接单时核对ARCH输入与本卡范围，例行技术细节由团队处理。
++保持现有streamlined-v1单轮独立QA，不加重复ARCH审查或逐份报告复核。
++完整真机QA仍等Debug与921600两项交付后由你发起；授权人员确认并烧录后进入自动测试。
++沿用已确认的四项QA选择，Bootloader与硬件操作继续遵守原授权边界。
++```
++
++## 发布检查点
++
++本轮仅整理纠偏文档；准确提交和远端核对结果在实际完成后登记。既有 COORD 产物、用户概要/批准、旧任务及历史 QA 签署保留，不由本助理代签或改状态。
+diff --git a/docs/planning/arch_dispatch_guard_20261104.md b/docs/planning/arch_dispatch_guard_20261104.md
+new file mode 100644
+index 0000000..6eaa8dd
+--- /dev/null
++++ b/docs/planning/arch_dispatch_guard_20261104.md
+@@ -0,0 +1,36 @@
++---
++id: ARCH-GUARD-20261104
++revision: 2
++date: 2026-11-04
++status: documentation-correction-in-progress
++qa_policy: streamlined-v1
++scope: role-and-dispatch-instruction-correction-only
++---
++
++# ARCH 与 COORD 职责纠偏
++
++## 用户要求与范围收敛
++
++用户要求补齐 COORD 代做 ARCH 技术依赖/路径分析的职责缺口、沿用简化 QA 并推送远端，随后明确：“不要过度修复。仅仅纠偏即可。”本轮据此收敛为职责规则、现有派单模板注释和接续提示词的修正。
++
++不新增合同协议、来源包、自动规划路由、权限系统、阶段锁例外或审批环节；Runner、Ready 检查器和角色适配器的本轮未提交代码扩展已撤回。收敛后只做文档检查，不继续构建或代码测试；未启动业务开发、接管现有 COORD、部署服务、修改现有概要/批准或正式旧任务状态。
++
++## 纠偏后的分工
++
++- ARCH 实际负责技术任务拆分、技术 `depends_on`、接口边界、源码/文档输入、`write_scope`、`allowed_paths` 及技术验收依据；可复用已有准确、已接受的 ARCH 产物，无须每卡重做设计。
++- COORD 引用实际 ARCH 方案/任务拆分登记任务卡，核查前置交付和授权、安排人员/租约/资源先后；不在主会话自行翻业务源码补技术结论，也不通过换角色名称代做正式 ARCH 工作。
++- 依赖不明、路径/接口冲突、技术条件缺失时交 ARCH；COORD 不为了让脚本通过自行增删技术依赖或改变路径白名单。资源忙只影响排程，不擅自编码成技术依赖。
++- 沿用已有 `read_sources`、`protocol_input`、`dispatch_binding` 等输入引用；登记真实 ARCH Agent/会话、方案版本和位置，不引入新 schema。工程作者接单时核对 ARCH 输入与本卡范围，不以 COORD 口头“已检查”替代。
++- 已接受且无实质变化的需求/范围不重复向用户批准；实质变化只提交变化部分。`streamlined-v1` 的单轮独立 QA 不变，不增加每卡重复 ARCH 审查或报告二次复核。
++
++这是职责与执行指令纠偏，不宣称新增了运行时代码拦截、权限隔离或常驻自动规划能力。
++
++## 基线与在途改动
++
++管理仓开工基线为 `5964606826b604da81593ab13d0adecdb7728dc3`，根仓为 `e5b7ec6d80259976b8a38e4164b5596311fed15f`，均使用既定 `main`。本轮实际文档作者为 `/root/arch_boundary_docs`，主助理整理范围和交接；未提交的复杂设计与代码草稿已留存 `/tmp/arch_guard_wip_hold_20261104/`，不作为后续待实施要求。
++
++开工前已有的收件、Debug/921600 概要、确认/intake 文件和前轮 handoff 修改按 [原有文件清单](../evidence/arch_dispatch_guard_20261104/preexisting_files.json) 保留，不顺带提交。本轮发布仅包括明确列出的纠偏文档及其检查记录；根入口与对应规则镜像保持一致。
++
++## 验证与交接
++
++按文档范围检查职责表述、模板和提示词是否一致，确认没有新增合同字段/接口指令或 QA 轮次；检查链接、差异空白、源码未变及既有文件保留情况，并安排一次独立文档审阅。不为纯职责文字修改重跑业务构建、硬件测试或调度器整套回归。交接见 [COORD 接续提示词](../handoff/ARCH_DISPATCH_GUARD_HANDOFF_20261104.md)。实际提交和发布结果待完成后登记。

@@ -2,7 +2,7 @@
 title: ARCH 与 COORD 职责纠偏及开发接续
 revision: 2
 date: 2026-11-04
-status: documentation-correction-in-progress
+status: published-documentation-correction
 qa_policy: streamlined-v1
 ---
 
@@ -36,6 +36,10 @@ project-control/docs/handoff/ARCH_DISPATCH_GUARD_HANDOFF_20261104.md
 沿用已确认的四项QA选择，Bootloader与硬件操作继续遵守原授权边界。
 ```
 
-## 发布检查点
+## 发布与独立审阅回执
 
-本轮仅整理纠偏文档；准确提交和远端核对结果在实际完成后登记。既有 COORD 产物、用户概要/批准、旧任务及历史 QA 签署保留，不由本助理代签或改状态。
+- `project-control`：`129ee5dce825f7d57d85afa17d19399428da064d`，`main`，已推送；根工作区 `workspace.json` 已 pin 此源码候选。
+- 根工作区：`c0c3336d1f5a09c955ceddf1bf6c6b71484ada63`，`main`，已推送。
+- 独立文档审阅：会话 `01a1a44c-ca56-7b72-9241-2b2d0dab38e6`（`gpt-6-luna`，只读），`APPROVED`，无 findings。审阅证据见 [run_01 索引](../evidence/arch_dispatch_guard_20261104/reviews/run_01/evidence_index.json)。该结果不代表软件/硬件测试。
+
+发布命令和完整差异清单见 [publication run_01](../evidence/arch_dispatch_guard_20261104/publication/run_01/candidate.json)。这次仍是职责与执行指令纠偏，没有运行代码、改变现有 QA 策略或声称新增运行时拦截。

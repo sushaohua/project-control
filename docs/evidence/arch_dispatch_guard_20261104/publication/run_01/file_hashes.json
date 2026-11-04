@@ -1,0 +1,18 @@
+{
+  "candidate_files/project-control/.agents/rules/02_模块与Agent职责.md": "9a3abf55aa0c50b4b2988d4ea40748fecc9843efe1119d35e37612ba4fd5ddd6",
+  "candidate_files/project-control/.agents/rules/04_公共看板与读写协议.md": "cbdd7e67219aee48c166c1a2a63424919b0c06b78f51fb0746634098f19e8e9a",
+  "candidate_files/project-control/.agents/rules/delivery_and_coord_gate.md": "9f6f03d669525bde2dc302f148841932c3646761d9322f0f40a2c5d03c1e39e2",
+  "candidate_files/project-control/.agents/rules/templates/任务卡模板.md": "e2a143d348b6b6e428ed1b10c814cabe3d0bd896ecfae8370e8e3ccdd11ee41e",
+  "candidate_files/project-control/.agents/rules/templates/角色任务提示词.md": "5f9706ef7c2de228139c1243cad2f73e4ce991f0559912714f2eefac4c5b9d5a",
+  "candidate_files/project-control/docs/architecture/coord_intake_dispatch_phase1_design_20261103.md": "43163110c0bd60f3dec4d5b0eceb635a432190fc798442302fe606029c549246",
+  "candidate_files/project-control/docs/evidence/arch_dispatch_guard_20261104/preexisting_files.json": "ef8994e18b3a498237d7419580365147bf2033175cc290728d5668e101f03693",
+  "candidate_files/project-control/docs/handoff/ARCH_DISPATCH_GUARD_HANDOFF_20261104.md": "b64fbe8697e851d04882d64acd523e6ecf1d545e0b6da4e55b473d79e5220843",
+  "candidate_files/project-control/docs/planning/arch_dispatch_guard_20261104.md": "a177bd38eda9a27220f7203a0678253500f57279bad1e1405eea9d4cdeb9e9d9",
+  "candidate_files/workspace/AGENTS.md": "8b80c388186c3b0c7d5caf9314b86dbf71294b622bab824bb8866789c428ed1b",
+  "candidate_files/workspace/workspace.json": "58241182f6c903e6540fe221f49b848193481c29884331e2febfc2d2f5c7a302",
+  "candidate.json": "2dd98d72b6113f483a9ba03ef921dd93d9906fe29452b566b79670777e222194",
+  "command_log.md": "5195309019df4c3257bc4872f99ab09e378e1254f41dac10d0eecdd79e434a0a",
+  "snapshot_manifest.json": "8fb28a3e08cb5a4926ee42a47da92550eec115552533a71a3e9c2a3d540e5ff4",
+  "project-control.diff": "5d2d0ebc503ce465c71ba9f1832ddf0a6d610e0d868f16d40b93478198664253",
+  "workspace.diff": "4b3bc10c73233edda4785cfbbb11e42fdc7394281adfedad6be83985c05a9215"
+}
