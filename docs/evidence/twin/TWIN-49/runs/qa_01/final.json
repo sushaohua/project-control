@@ -1,0 +1,15 @@
+{
+  "task_id": "TWIN-49",
+  "task_revision": 1,
+  "candidate_commit": "cd87958209b050c0ef63e9be814dc8eca34b7d07",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "已核验冻结索引、请求、差异及相关源码哈希。Runner 记录全栈构建和三组 CTest 通过；但候选未满足部署前清理的明确接受条款。",
+  "findings": [
+    "阻断：接受范围要求部署前清理旧进程、端口/UART 占用、旧缓存和旧日志。候选 deploy_twin.sh 的 purge_previous_deployment 只停止受管 PID、按指定可执行文件名清理进程，并删除 PID、dbus.addr 和 runtime.env；没有清理占用配置端口或 UART 的其他进程，也没有清理旧日志。相关冻结源码哈希与索引一致。"
+  ],
+  "accepted_scope": "审阅范围为 TWIN-49 接受的软件及 POSIX PTY 验证：921600 波特率、0x10..0x1C 命令与双单播 ACK 闭环、网关 D-Bus 控制及离线/失败拦截、第三方库自动构建和部署前清理。跨编译器 ELF 构建与实体 MCU USB/UART HIL 属排除项；未声称这些硬件验证通过。",
+  "unexecuted": [
+    "未执行对占用配置端口或 UART 的遗留进程、旧日志清理行为的定向验证。"
+  ]
+}

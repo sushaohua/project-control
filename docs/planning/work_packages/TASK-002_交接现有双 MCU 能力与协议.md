@@ -33,6 +33,10 @@ child_tasks:
 - TWIN-21
 - TWIN-24
 - TWIN-26
+- TWIN-44
+- TWIN-45
+- TWIN-47
+- TWIN-48
 planning_relations: []
 related_tasks:
 - MS-03
