@@ -1,0 +1,50 @@
+{
+  "kind": "preexisting-working-tree-preservation-record",
+  "base_commit": "5964606826b604da81593ab13d0adecdb7728dc3",
+  "files": [
+    {
+      "path": "docs/evidence/qa_streamline_20261103/handoff_manifest.json",
+      "sha256": "5f244a5ea2747cf4bb0dc94c88f405b30d6d1d9a5c0c197467299a37c0e486da"
+    },
+    {
+      "path": "docs/handoff/CODEX_ASSISTANT_HANDOFF_20261103.md",
+      "sha256": "daebb35474e47c7aa2681fd2752e4b2ac6753de0517f1a30562eefa1d8aa9d1a"
+    },
+    {
+      "path": "docs/handoff/HANDOFF_20261104.md",
+      "sha256": "e7cc35cd9e64d738fdfe1aac8aa174c205b48fe688fab29e8432aacf1d23eb94"
+    },
+    {
+      "path": "docs/planning/qa_streamline_cutover_20261103.md",
+      "sha256": "f0e4887d04b101ed83a56a975b749c41a132bf4289995dfd1dac71454f4946d7"
+    },
+    {
+      "path": "docs/evidence/qa_streamline_20261103/coord_receipt_20261104.json",
+      "sha256": "cfc5eed56afb8be6bacb2d322c9dbd580b040b4694d3ac3c23d6e8fb176d1cb9"
+    },
+    {
+      "path": "docs/planning/debug_and_921600_merged_implementation_summary_20261104.md",
+      "sha256": "d06a150444d4b126c2a7aa792cd2b2b40faf09d043775783de6fa89c4db3bd68"
+    },
+    {
+      "path": "docs/work_intake/.intake_digests.json",
+      "sha256": "576631096625e4fcebad3b310a817979febf65404c4547b1c0e74c52cfee1434"
+    },
+    {
+      "path": "docs/work_intake/confirmations/CONFIRM-DEBUG-BAUD-20261104.yaml",
+      "sha256": "59c0d027b9a4bd195e16c9af478c6ff85d34ae888ca9036e6d196108cc7c6759"
+    },
+    {
+      "path": "docs/work_intake/features/FEAT-20261104-001.yaml",
+      "sha256": "bd9fe126fe536ab04a4932e81b09266381c81e2cf0d4346844040105e8090010"
+    },
+    {
+      "path": "docs/work_intake/features/FEAT-20261104-002.yaml",
+      "sha256": "8a2b48b1543dbe21ed4fd2f0f012db4945c0da106944486c32d9b662b20bded8"
+    },
+    {
+      "path": "docs/work_intake/submissions/SUB-20261104-001.md",
+      "sha256": "9058016613a4a9ce4ba17c6dbaeb5463f5cd79f015794950efffc32ef91b594f"
+    }
+  ]
+}
