@@ -1,0 +1,499 @@
+diff --git a/docs/evidence/coord_automation/AUTO-07/runs/author_01/result.md b/docs/evidence/coord_automation/AUTO-07/runs/author_01/result.md
+new file mode 100644
+index 0000000..88e7ba4
+--- /dev/null
++++ b/docs/evidence/coord_automation/AUTO-07/runs/author_01/result.md
+@@ -0,0 +1,68 @@
++---
++task_id: AUTO-07
++run_id: author_01
++role: INTEGRATOR
++session_id: 7812a1f6-5006-4971-a954-802f855cf20a
++demand_id: DEM-20261105-004
++issue_id: ISS-20261105-004
++arch_breakdown_ref:
++  path: project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md
++  revision: 1
++  sha256: a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e
++status: COMPLETED
++date: '2026-11-05T12:09:00+08:00'
++---
++
++# AUTO-07 作者自检与实现记录 (`author_01`)
++
++## 1. 规则与输入读取回执 (`read_sources`)
++
++| 规则/输入路径 | 版本/摘要 | 适用环境与核对结论 | 缺项 |
++| :--- | :--- | :--- | :--- |
++| `project-control/AGENTS.md` | `canonical` (`main`) | PC 仓总纲与角色边界 | 无 |
++| `project-control/.agents/rules/repository_rule_sources.json` | `schema_version: 1` | 六仓规则入口映射 | 无 |
++| `project-control/.agents/rules/repository_rule_boundaries.md` | `2026-11-04` | PC 全局规则与本机规则边界 | 无 |
++| `project-control/.agents/rules/c_cpp_coding_standard.md` | `v1.0` | 自研函数 $\le 50$ 行、入参 $\le 4$ 个门禁 | 无 |
++| `project-control/.agents/rules/code_documentation_standard.md` | `v1.1` | 新增/修改函数中文 docstring 与关键逻辑说明 | 无 |
++| `project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md` | `revision: 1` (`a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e`) | `ISS-20261105-004` ARCH 根因定位与修复方案 | 无 |
++
++---
++
++## 2. 修改内容摘要（严格受限于 `AUTO-07` `allowed_paths`）
++
++1. **`project-control/tools/coord_runner/runner.py`**：
++   - 在 `CoordRunner.__init__()` 中新增 `self.last_intake_summary: Optional[dict] = None` 状态缓存；
++   - 扩展 `CoordRunner.scan_work_intake(self, persist_ledger: bool = True, active_cards: Optional[Dict[str, dict]] = None) -> dict`，支持复用当轮已加载的 `active_cards`，避免同一轮检查点重复扫描看板目录；
++   - 在 `CoordRunner.restore_from_checkpoint()` 与 `CoordRunner.step()` 检查点中自动调用 `self.scan_work_intake(persist_ledger=True, ...)`，并在 `step()` 返回字典中增加 `"intake": intake_summary` 字段；
++   - 在 `CoordRunner.run_daemon()` 入口第一阶段（执行 `acquire_process_lock()` 与 `restore_from_checkpoint()` 之前）即设置 `self._running = True` 并注册 `SIGINT`/`SIGTERM` 信号处理器，消除 `restore_from_checkpoint()` 扫描收件期间收到 `SIGTERM` 时的信号注册竞态。
++2. **`project-control/tools/coord_runner/work_intake.py`**：
++   - 修复 `WorkIntakeManager.__init__()` 对相对路径 `intake_root` 的解析逻辑，确保相对路径基于 `self.workspace_root` 解析而非当前工作目录；
++   - 在 `WorkIntakeManager._save_ledger()` 中增加内容未变化时的幂等短路返回（`snap.text == payload` 时不重复写盘，且无收件目录且空账本时不创建空文件）；
++   - 扩展 `TaskLinkUpdate` 支持 `arch_breakdown: Optional[dict] = None`，提取辅助函数 `_apply_task_link_updates(data, update)`（$\le 50$ 行、2 入参），并在 `link_tasks_to_category_yaml()` 更新 `revision` 后无条件同步更新 `.intake_digests.json`。
++3. **`project-control/docs/work_intake/features/FEAT-20261104-001.yaml`、`FEAT-20261104-002.yaml` 与 `.intake_digests.json`**：
++   - 将追加了 `arch_breakdown` 的 `FEAT-20261104-001.yaml` 与 `FEAT-20261104-002.yaml` 从 `revision: 3` 递增至 `revision: 4`；
++   - 在 `.intake_digests.json` 中登记 `FEAT-20261104-001@r4` (`c0c40d2d79c1ca72653fc4717a7fb096223548400357f5d2415599220e093be0`) 与 `FEAT-20261104-002@r4` (`2636cb9093f4b17093e693db30d1aa8b1462bc85086e684439a0080cf614ebda`) 摘要，消除 `TAMPERED_SAME_REVISION` 告警。
++4. **`project-control/tools/test_coord_runner.py` 与 `project-control/tools/test_work_intake.py`**：
++   - 新增 `test_step_and_restore_checkpoints_auto_scan_intake_idempotently`（验证 `restore_from_checkpoint` 与 `step` 自动扫描收件、生成一次分类 YAML 且连续轮询幂等零模型调用）；
++   - 新增 `test_step_isolates_corrupt_submission_without_blocking_valid_intake_or_inflight`（验证坏文件隔离至 `intake.errors`，不阻断合法收件与在途任务）；
++   - 新增 `test_link_tasks_with_arch_breakdown_updates_revision_and_digest_ledger`（验证 `TaskLinkUpdate` 写入 `arch_breakdown` 自动递增 `revision` 并同步账本摘要）。
++
++---
++
++## 3. 自检命令与客观结果
++
++执行验证命令：
++```bash
++python3 -m tools.coord_runner --intake-scan && python3 -m unittest tools/test_work_intake.py tools/test_coord_runner.py tools/test_coord_recovery.py tools/test_coord_systemd_service.py -v
++```
++
++结果摘要：
++- `python3 -m tools.coord_runner --intake-scan`：退出码 `0`，`submissions_count: 5`，`valid_records: 8`（含 `FEAT-20261104-001`、`FEAT-20261104-002`、`ISS-20261105-004`、`REQ-20261105-001`），`idempotent_records_count: 8`，`errors: []`。
++- 单元测试套件：共运行 **126** 项测试（含 AST 函数规模 $\le 50$ 行与入参 $\le 4$ 个门禁、`P1-14` 连续空闲轮询零模型调用门禁），耗时 `31.144s`，全部 `OK`。
++
++---
++
++## 4. 历史边界与宿主机后台服务状态说明
++
++- **保留 `AUTO-06` 历史交付**：本任务未触碰 `AUTO-06.md` 及其历史证据，完整保留 `AUTO-06` 的 `Done` 状态。
++- **区分代码检查点就绪与宿主机后台 systemd 常驻状态**：本轮已完成 `CoordRunner` 启动/恢复与 `step()` 检查点自动收件的代码接线与自动化测试验证；按照用户确认（A1=方案A），为避免后台守护进程与当前交互式 COORD 会话争抢单实例文件锁（`coord_runner.lock`），**未在宿主机启用或启动 `ai-soc-coord-runner.service` 后台常驻服务**。
+diff --git a/docs/work_intake/.intake_digests.json b/docs/work_intake/.intake_digests.json
+index b735358..f904a15 100644
+--- a/docs/work_intake/.intake_digests.json
++++ b/docs/work_intake/.intake_digests.json
+@@ -3,9 +3,11 @@
+     "FEAT-20261104-001@r1": "d720d846261327f422e8b4111f937fe094d0185d6aba6606d67e7be89637aa13",
+     "FEAT-20261104-001@r2": "bd9fe126fe536ab04a4932e81b09266381c81e2cf0d4346844040105e8090010",
+     "FEAT-20261104-001@r3": "4602706f1d362b16a5c20373363a9f864e84f007fb36357ace949fcd1eb2ec9b",
++    "FEAT-20261104-001@r4": "65127659508f40a46a0e9a1bc018295ccafacb86cda3e1b14be987042ff3eec3",
+     "FEAT-20261104-002@r1": "7fbedb88d78c7662fdc5795cd7e37bbc7b18971e3a41792f4f365cf470f29e19",
+     "FEAT-20261104-002@r2": "8a2b48b1543dbe21ed4fd2f0f012db4945c0da106944486c32d9b662b20bded8",
+     "FEAT-20261104-002@r3": "30745d7453b9a54e3beb663854c55c861b4c2efcf6ecdc93f01071be927dd08a",
++    "FEAT-20261104-002@r4": "bf647d52410a52e41ad6595ede4e16515911ebfc919ba1f05e5d3d732ed124e4",
+     "FEAT-INTAKE-20261103-001@r1": "e93da471750efdabddaf8d3ceea27975dfe1594aaa332591629aa2144e89f3d1",
+     "ISS-20261105-001@r1": "2a73b7bf3a21ff53afe5f9ef6142ae8f7f77cc851703037516e5ab5daf4c2fb2",
+     "ISS-20261105-001@r2": "21d56ade331d36103af3a7cfb5edd3ff4e1810551148fb372214838ed064130d",
+diff --git a/docs/work_intake/features/FEAT-20261104-001.yaml b/docs/work_intake/features/FEAT-20261104-001.yaml
+index 0ceb73b..eeb3feb 100644
+--- a/docs/work_intake/features/FEAT-20261104-001.yaml
++++ b/docs/work_intake/features/FEAT-20261104-001.yaml
+@@ -1,6 +1,6 @@
+ schema_version: 1
+ id: FEAT-20261104-001
+-revision: 3
++revision: 4
+ kind: feature
+ enabled: true
+ title: MC/TH Debug：双路调试串口与用户 UI 的双向链路对账。
+diff --git a/docs/work_intake/features/FEAT-20261104-002.yaml b/docs/work_intake/features/FEAT-20261104-002.yaml
+index 68a2666..d651f02 100644
+--- a/docs/work_intake/features/FEAT-20261104-002.yaml
++++ b/docs/work_intake/features/FEAT-20261104-002.yaml
+@@ -1,6 +1,6 @@
+ schema_version: 1
+ id: FEAT-20261104-002
+-revision: 3
++revision: 4
+ kind: feature
+ enabled: true
+ title: VMware/AP↔MC 业务 UART 统一至921600。
+diff --git a/tools/coord_runner/runner.py b/tools/coord_runner/runner.py
+index 1c89a1b..6aad677 100644
+--- a/tools/coord_runner/runner.py
++++ b/tools/coord_runner/runner.py
+@@ -111,21 +111,29 @@ class CoordRunner:
+         self.completed_tasks: Set[str] = set()
+         self.cursor: Optional[str] = None
+         self._running = False
++        self.last_intake_summary: Optional[dict] = None
+         self.agent_executor: Optional[Callable] = None
+         self.qa_executor: Optional[Callable] = None
+         self.review_executor: Optional[Callable] = None
+ 
+     def restore_from_checkpoint(self) -> bool:
++        """从状态库或检查点文件恢复运行器游标、在途任务与租约，并在恢复检查点执行人工收件扫描。
++
++        返回值：
++        - bool：成功恢复既有检查点状态时返回 True，无历史检查点时返回 False。
++        """
+         state = self.state_store.load_coord_state()
+         if state is None:
+             state = self.checkpoint_mgr.safe_load(self.config.checkpoint_file)
+             if state is None:
++                self.scan_work_intake(persist_ledger=True)
+                 return False
+             self.state_store.save_coord_state(state)
+         self.cursor = state.cursor
+         self.completed_tasks = set(state.completed_tasks)
+         self.in_flight_tasks = dict(state.in_flight_tasks)
+         self.lease_mgr.restore_leases(state.leases)
++        self.scan_work_intake(persist_ledger=True)
+         return True
+ 
+     def save_checkpoint(self) -> None:
+@@ -548,9 +556,22 @@ class CoordRunner:
+         self._verify_server_commit(Path(req.workdir or self.config.workspace_root), str(res.candidate_commit))
+         return str(res.candidate_commit)
+ 
+-    def scan_work_intake(self, persist_ledger: bool = True) -> dict:
+-        """Scan `docs/work_intake/` submissions/categories and return structured M1 intake summary."""
+-        res = self.intake_mgr.scan_and_sync(persist_ledger=persist_ledger, active_cards=self.load_cards())
++    def scan_work_intake(
++        self,
++        persist_ledger: bool = True,
++        active_cards: Optional[Dict[str, dict]] = None,
++    ) -> dict:
++        """扫描 `docs/work_intake/` 提交单与三类工作项，更新幂等摘要并返回收件汇总。
++
++        参数：
++        - persist_ledger (bool)：是否将更新后的收件摘要账本写回磁盘，默认 True。
++        - active_cards (Optional[Dict[str, dict]])：可选的已加载看板任务字典，避免同一轮检查点重复加载。
++
++        返回值：
++        - dict：包含 `submissions_count`、`generated_files`、`valid_records`、`idempotent_records_count`、`errors` 与 `notices` 的字典。
++        """
++        cards = active_cards if active_cards is not None else self.load_cards()
++        res = self.intake_mgr.scan_and_sync(persist_ledger=persist_ledger, active_cards=cards)
+         idempotent_count = 0
+         for rec_id, rec in res.records.items():
+             dem_id = (rec.get("demand_ref") or {}).get("demand_id") or rec_id
+@@ -558,7 +579,7 @@ class CoordRunner:
+             sha = rec.get("_sha256") or rec.get("source_refs", {}).get("submission_sha256", "")
+             if sha and self.reconciler.check_intake_idempotence(dem_id, rev, sha):
+                 idempotent_count += 1
+-        return {
++        summary = {
+             "submissions_count": len(res.submissions),
+             "generated_files": [str(p) for p in res.generated_paths],
+             "valid_records": sorted(res.records.keys()),
+@@ -566,6 +587,8 @@ class CoordRunner:
+             "errors": [e.__dict__ for e in res.errors],
+             "notices": [n.__dict__ for n in res.notices],
+         }
++        self.last_intake_summary = summary
++        return summary
+ 
+     def default_qa_executor(
+         self,
+@@ -687,11 +710,17 @@ class CoordRunner:
+             self.state_machine.transition(record, TaskState.CANDIDATE_PUSHED)
+ 
+     def step(self) -> Dict[str, object]:
++        """执行单轮调度检查点：对账租约与在途作业、自动扫描人工收件、推进在途任务并派发就绪任务。
++
++        返回值：
++        - Dict[str, object]：包含游标、派发列表、在途/完成/阻塞/升级列表及 `intake` 收件汇总的字典。
++        """
+         self.reconciler.protect_active_leases(self.lease_mgr, self.config.jobs_dir)
+         self.lease_mgr.prune_expired_leases()
+         self.reconciler.reconcile_active_jobs(self.config.jobs_dir)
+         self._check_async_job_completions()
+         cards = self.load_cards()
++        intake_summary = self.scan_work_intake(persist_ledger=True, active_cards=cards)
+         for task_id in list(self.in_flight_tasks.keys()):
+             card = cards.get(task_id, {"id": task_id})
+             self._process_task_safely(task_id, card)
+@@ -721,6 +750,7 @@ class CoordRunner:
+                         if record.state == TaskState.BLOCKED.value},
+             "escalated": [key for key, record in self.in_flight_tasks.items()
+                           if record.state == TaskState.ESCALATED.value],
++            "intake": intake_summary,
+         }
+ 
+     def run_once(self) -> Dict[str, object]:
+@@ -754,13 +784,21 @@ class CoordRunner:
+         self.save_checkpoint()
+ 
+     def run_daemon(self, poll_interval: Optional[float] = None) -> None:
++        """启动后台轮询守护进程模式，入口优先注册 SIGINT/SIGTERM 信号处理以保证启动恢复期间优雅退出。
++
++        参数：
++        - poll_interval (Optional[float])：可选的轮询间隔秒数，默认取配置中的 `poll_interval_seconds`。
++
++        返回值：
++        - None：收到停止信号退出循环后保存检查点并释放单实例锁。
++        """
+         interval = poll_interval if poll_interval is not None else self.config.poll_interval_seconds
+-        self.state_store.acquire_process_lock()
+-        self.restore_from_checkpoint()
+         self._running = True
+         signal.signal(signal.SIGINT, self._signal_handler)
+         signal.signal(signal.SIGTERM, self._signal_handler)
++        self.state_store.acquire_process_lock()
+         try:
++            self.restore_from_checkpoint()
+             while self._running:
+                 self.step()
+                 time.sleep(interval)
+diff --git a/tools/coord_runner/work_intake.py b/tools/coord_runner/work_intake.py
+index 9869723..530cc6d 100644
+--- a/tools/coord_runner/work_intake.py
++++ b/tools/coord_runner/work_intake.py
+@@ -90,12 +90,14 @@ class IntakeScanResult:
+ 
+ @dataclass(frozen=True)
+ class TaskLinkUpdate:
+-    """Atomic update request linking an approved category YAML to formal task cards."""
++    """封装分类 YAML 与正式看板任务、确认单、批准单及 ARCH 拆解文档的关联更新参数。"""
++
+     category_yaml_path: Path
+     task_ids: List[str]
+     demand_ref_updates: Optional[dict] = None
+     approval_refs: Optional[List[dict]] = None
+     requested_action: Optional[str] = None
++    arch_breakdown: Optional[dict] = None
+ 
+ 
+ def _split_optional_frontmatter(raw_text: str) -> Tuple[dict, str]:
+@@ -315,9 +317,20 @@ class WorkIntakeManager:
+     """Manages `docs/work_intake/` parsing, unique YAML generation, tamper ledger, and task linkage."""
+ 
+     def __init__(self, workspace_root: Path, intake_root: Optional[Path] = None, reconciler: Optional[object] = None):
++        """初始化人工收件管理器，解析工作区与收件目录路径并绑定对账器。
++
++        参数：
++        - workspace_root (Path)：工作区根目录路径。
++        - intake_root (Optional[Path])：可选的收件目录路径（相对路径基于 `workspace_root` 解析）。
++        - reconciler (Optional[object])：可选的五源对账器实例，用于记录与核验幂等摘要。
++        """
+         self.workspace_root = Path(workspace_root).resolve()
+         default_intake = self.workspace_root / "project-control/docs/work_intake"
+-        self.intake_root = Path(intake_root).resolve() if intake_root else default_intake.resolve()
++        if intake_root is None:
++            self.intake_root = default_intake.resolve()
++        else:
++            raw_in = Path(intake_root)
++            self.intake_root = raw_in.resolve() if raw_in.is_absolute() else (self.workspace_root / raw_in).resolve()
+         self.ledger_path = self.intake_root / ".intake_digests.json"
+         self.reconciler = reconciler
+ 
+@@ -336,13 +349,25 @@ class WorkIntakeManager:
+         return {"submissions": {}, "categories": {}, "ingested_instructions": {}}
+ 
+     def _save_ledger(self, ledger: dict) -> None:
+-        self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
++        """将收件摘要账本以 CAS 方式写回磁盘；若账本内容未变化或无收件目录且账本为空则幂等短路返回。
++
++        参数：
++        - ledger (dict)：包含 `submissions`、`categories` 与 `ingested_instructions` 的摘要账本字典。
++
++        返回值：
++        - None：无返回值。
++        """
+         payload = json.dumps(ledger, indent=2, ensure_ascii=False, sort_keys=True)
+         if self.ledger_path.is_file():
+             snap = read_with_digest(self.ledger_path)
++            if snap.text == payload:
++                return
+             write_cas(self.ledger_path, payload, snap.sha256)
+-        else:
+-            create_exclusive(self.ledger_path, payload)
++            return
++        if not self.intake_root.is_dir() and not any(ledger.values()):
++            return
++        self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
++        create_exclusive(self.ledger_path, payload)
+ 
+     def _check_and_bind_digest(self, bucket: dict, item_id: str, rev_and_sha: Tuple[int, str]) -> None:
+         rev, sha = rev_and_sha
+@@ -585,28 +610,19 @@ class WorkIntakeManager:
+                 ))
+ 
+     def link_tasks_to_category_yaml(self, update: TaskLinkUpdate) -> str:
+-        """CAS-update a category YAML with confirmation/approval refs and linked formal Kanban task IDs."""
++        """以 CAS 方式更新分类 YAML 的关联字段、自动递增 revision 并同步写入 `.intake_digests.json` 账本。
++
++        参数：
++        - update (TaskLinkUpdate)：包含目标分类 YAML 路径、关联任务、确认/批准及 ARCH 拆解引用的更新请求。
++
++        返回值：
++        - str：更新后（或未发生实质变更时）分类 YAML 文件的完整 SHA-256 十六进制摘要。
++        """
+         snap = read_with_digest(update.category_yaml_path)
+         data = yaml.safe_load(snap.text)
+         if not isinstance(data, dict):
+             raise IntakeValidationError("Target category YAML is invalid", "CORRUPT_CATEGORY_YAML")
+-        if update.demand_ref_updates:
+-            data.setdefault("demand_ref", {}).update(update.demand_ref_updates)
+-        if update.approval_refs is not None:
+-            data["approval_refs"] = list(update.approval_refs)
+-        if update.requested_action is not None:
+-            if update.requested_action not in VALID_ACTIONS:
+-                raise IntakeValidationError(f"Invalid action: {update.requested_action}", "INVALID_REQUESTED_ACTION")
+-            data["requested_action"] = update.requested_action
+-        rel_ids = data.get("related_ids")
+-        if not isinstance(rel_ids, dict):
+-            rel_ids = {"legacy_refs": list(rel_ids or [])}
+-        existing_tasks = list(rel_ids.get("engineering_tasks") or [])
+-        for tid in update.task_ids:
+-            if tid not in existing_tasks:
+-                existing_tasks.append(tid)
+-        rel_ids["engineering_tasks"] = existing_tasks
+-        data["related_ids"] = rel_ids
++        _apply_task_link_updates(data, update)
+         if yaml.safe_dump(data, allow_unicode=True, sort_keys=False) == snap.text:
+             return snap.sha256
+         data["revision"] = int(data.get("revision", 1)) + 1
+@@ -620,8 +636,38 @@ class WorkIntakeManager:
+             summary=f"Link tasks {update.task_ids} to {data.get('id')}",
+         )
+         written_sha = write_cas(snap.path, new_text, snap.sha256, intent)
+-        if self.ledger_path.is_file():
+-            ledger = self._load_ledger()
+-            ledger["categories"][f"{data['id']}@r{data['revision']}"] = written_sha
+-            self._save_ledger(ledger)
++        ledger = self._load_ledger()
++        ledger["categories"][f"{data['id']}@r{data['revision']}"] = written_sha
++        self._save_ledger(ledger)
+         return written_sha
++
++
++def _apply_task_link_updates(data: dict, update: TaskLinkUpdate) -> None:
++    """将确认单、批准引用、请求动作、看板任务 ID 及 ARCH 拆解引用合并写入分类 YAML 字典。
++
++    参数：
++    - data (dict)：待原地更新的分类 YAML 字典对象。
++    - update (TaskLinkUpdate)：封装关联字段更新内容的请求对象。
++
++    返回值：
++    - None：原地修改 `data`，若 `requested_action` 非法则抛出 `IntakeValidationError`。
++    """
++    if update.demand_ref_updates:
++        data.setdefault("demand_ref", {}).update(update.demand_ref_updates)
++    if update.approval_refs is not None:
++        data["approval_refs"] = list(update.approval_refs)
++    if update.requested_action is not None:
++        if update.requested_action not in VALID_ACTIONS:
++            raise IntakeValidationError(f"Invalid action: {update.requested_action}", "INVALID_REQUESTED_ACTION")
++        data["requested_action"] = update.requested_action
++    rel_ids = data.get("related_ids")
++    if not isinstance(rel_ids, dict):
++        rel_ids = {"legacy_refs": list(rel_ids or [])}
++    existing_tasks = list(rel_ids.get("engineering_tasks") or [])
++    for tid in update.task_ids:
++        if tid not in existing_tasks:
++            existing_tasks.append(tid)
++    rel_ids["engineering_tasks"] = existing_tasks
++    if update.arch_breakdown is not None:
++        rel_ids["arch_breakdown"] = dict(update.arch_breakdown)
++    data["related_ids"] = rel_ids
+diff --git a/tools/test_coord_runner.py b/tools/test_coord_runner.py
+index 0dfe36f..f7f54fb 100644
+--- a/tools/test_coord_runner.py
++++ b/tools/test_coord_runner.py
+@@ -1175,6 +1175,58 @@ class M1QueueIsolationAndDoneGateTest(unittest.TestCase):
+         self.assertIn("FEAT-INTAKE-20261103-001", payload["valid_records"])
+         self.assertEqual(payload["errors"], [])
+ 
++    def test_step_and_restore_checkpoints_auto_scan_intake_idempotently(self):
++        """验证 restore_from_checkpoint 与 step 检查点自动扫描人工收件、生成一次分类 YAML 且连续轮询幂等零空耗。"""
++        with tempfile.TemporaryDirectory(prefix="auto07_intake_step_") as tmp:
++            ws = Path(tmp)
++            intake = ws / "project-control/docs/work_intake"
++            for sub in ("submissions", "issues", "features", "requirements"):
++                (intake / sub).mkdir(parents=True, exist_ok=True)
++            (intake / "submissions/SUB-AUTO07.md").write_text(
++                "1. [issue] 守护进程检查点自动收件接线验证\n", encoding="utf-8"
++            )
++            qfile = ws / "queue.yaml"
++            qfile.write_text("queue_domain: work_intake\norder: []\n", encoding="utf-8")
++            cfile = ws / "coord_state.json"
++            runner = CoordRunner(CoordRunnerConfig(workspace_root=ws, queue_file=qfile, checkpoint_file=cfile))
++            self.assertFalse(runner.restore_from_checkpoint())
++            self.assertIsNotNone(runner.last_intake_summary)
++            self.assertEqual(len(runner.last_intake_summary["generated_files"]), 1)
++            self.assertEqual(runner.last_intake_summary["errors"], [])
++            ledger_mtime_1 = (intake / ".intake_digests.json").stat().st_mtime_ns
++            step1 = runner.step()
++            self.assertEqual(step1["intake"]["generated_files"], [])
++            self.assertEqual(step1["intake"]["idempotent_records_count"], 1)
++            self.assertEqual(step1["dispatched"], [])
++            ledger_mtime_2 = (intake / ".intake_digests.json").stat().st_mtime_ns
++            self.assertEqual(ledger_mtime_1, ledger_mtime_2)
++            step2 = runner.step()
++            self.assertEqual(step2["intake"]["generated_files"], [])
++            self.assertEqual(step2["intake"]["idempotent_records_count"], 1)
++
++    def test_step_isolates_corrupt_submission_without_blocking_valid_intake_or_inflight(self):
++        """验证单份损坏收件文件在 step 检查点被隔离至 errors，不阻断合法提交单收件或在途任务推进。"""
++        with tempfile.TemporaryDirectory(prefix="auto07_corrupt_iso_") as tmp:
++            ws = Path(tmp)
++            intake = ws / "project-control/docs/work_intake"
++            for sub in ("submissions", "issues", "features", "requirements"):
++                (intake / sub).mkdir(parents=True, exist_ok=True)
++            (intake / "submissions/SUB-GOOD.md").write_text("1. [feature] 合法功能需求\n", encoding="utf-8")
++            (intake / "issues/BAD-CORRUPT.yaml").write_text(":::corrupt_yaml: [", encoding="utf-8")
++            qfile = ws / "queue.yaml"
++            qfile.write_text("queue_domain: work_intake\norder: []\n", encoding="utf-8")
++            cfile = ws / "coord_state.json"
++            runner = CoordRunner(CoordRunnerConfig(workspace_root=ws, queue_file=qfile, checkpoint_file=cfile))
++            runner.in_flight_tasks["AUTO-INFLIGHT"] = TaskExecutionRecord(
++                "AUTO-INFLIGHT", state=TaskState.BLOCKED.value, runtime_context={"blocked_reason": "hold"}
++            )
++            step_res = runner.step()
++            self.assertEqual(len(step_res["intake"]["generated_files"]), 1)
++            self.assertEqual(len(step_res["intake"]["valid_records"]), 1)
++            err_codes = {e["code"] for e in step_res["intake"]["errors"]}
++            self.assertIn("CORRUPT_CATEGORY_YAML", err_codes)
++            self.assertIn("AUTO-INFLIGHT", step_res["in_flight"])
++
+ 
+ class MethodologicalInvariantsTest(unittest.TestCase):
+     def test_python_functions_scale_and_parameters_limits(self):
+diff --git a/tools/test_work_intake.py b/tools/test_work_intake.py
+index 0e78624..860f6e2 100644
+--- a/tools/test_work_intake.py
++++ b/tools/test_work_intake.py
+@@ -222,6 +222,37 @@ class WorkIntakeBatchAndIsolationTest(unittest.TestCase):
+         reloaded = yaml.safe_load(Path(feat["_path"]).read_text(encoding="utf-8"))
+         self.assertEqual(reloaded["related_ids"]["engineering_tasks"], ["AUTO-03", "AUTO-04"])
+ 
++    def test_link_tasks_with_arch_breakdown_updates_revision_and_digest_ledger(self) -> None:
++        """验证 TaskLinkUpdate 写入 arch_breakdown 时自动递增 revision 并同步更新 .intake_digests.json 账本。"""
++        (self.intake / "submissions/SUB-ARCH-LINK.md").write_text(
++            "1. [issue] 验证 ARCH 方案关联与账本摘要同步\n", encoding="utf-8"
++        )
++        mgr = WorkIntakeManager(self.ws, self.intake)
++        res1 = mgr.scan_and_sync(persist_ledger=True)
++        self.assertEqual(res1.errors, [])
++        iss = next(iter(res1.records.values()))
++        iss_path = Path(iss["_path"])
++        arch_ref = {
++            "path": "project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md",
++            "revision": 1,
++            "sha256": "a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e",
++        }
++        new_sha = mgr.link_tasks_to_category_yaml(TaskLinkUpdate(
++            category_yaml_path=iss_path,
++            task_ids=["AUTO-07"],
++            requested_action="execute",
++            arch_breakdown=arch_ref,
++        ))
++        updated = yaml.safe_load(iss_path.read_text(encoding="utf-8"))
++        self.assertEqual(updated["revision"], 2)
++        self.assertEqual(updated["requested_action"], "execute")
++        self.assertEqual(updated["related_ids"]["engineering_tasks"], ["AUTO-07"])
++        self.assertEqual(updated["related_ids"]["arch_breakdown"], arch_ref)
++        ledger = json.loads((self.intake / ".intake_digests.json").read_text(encoding="utf-8"))
++        self.assertEqual(ledger["categories"][f"{iss['id']}@r2"], new_sha)
++        res2 = mgr.scan_and_sync(persist_ledger=False)
++        self.assertEqual(res2.errors, [])
++
+     def test_canonical_workspace_intake_and_disabled_examples(self) -> None:
+         mgr = WorkIntakeManager(WORKSPACE_ROOT)
+         res = mgr.scan_and_sync(persist_ledger=False)

@@ -111,6 +111,7 @@ class CoordRunner:
         self.completed_tasks: Set[str] = set()
         self.cursor: Optional[str] = None
         self._running = False
+        self._checkpoint_restored: bool = True
         self.last_intake_summary: Optional[dict] = None
         self.agent_executor: Optional[Callable] = None
         self.qa_executor: Optional[Callable] = None
@@ -780,32 +781,41 @@ class CoordRunner:
             self.state_store.release_process_lock()
 
     def _signal_handler(self, signum: int, frame: object) -> None:
+        """处理 SIGINT/SIGTERM 停止信号，标记退出循环并在已恢复检查点且持锁状态下持久化状态。
+
+        参数：
+        - signum (int)：接收到的操作系统信号编号。
+        - frame (object)：当前执行栈帧对象。
+        """
         self._running = False
-        self.save_checkpoint()
+        if getattr(self, "_checkpoint_restored", True):
+            self.save_checkpoint()
 
     def run_daemon(self, poll_interval: Optional[float] = None) -> None:
-        """启动后台轮询守护进程模式，入口优先注册 SIGINT/SIGTERM 信号处理以保证启动恢复期间优雅退出。
+        """启动后台轮询守护进程模式：先获取单实例排他锁，再注册信号处理与恢复检查点。
 
         参数：
         - poll_interval (Optional[float])：可选的轮询间隔秒数，默认取配置中的 `poll_interval_seconds`。
 
         返回值：
-        - None：收到停止信号退出循环后保存检查点并释放单实例锁。
+        - None：收到停止信号退出循环后在锁保护下保存检查点并释放单实例锁。
         """
         interval = poll_interval if poll_interval is not None else self.config.poll_interval_seconds
+        self.state_store.acquire_process_lock()
         self._running = True
+        self._checkpoint_restored = False
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
-        self.state_store.acquire_process_lock()
         try:
             self.restore_from_checkpoint()
+            self._checkpoint_restored = True
             while self._running:
                 self.step()
                 time.sleep(interval)
         finally:
-            self.save_checkpoint()
+            if self._checkpoint_restored:
+                self.save_checkpoint()
             self.state_store.release_process_lock()
-            self.save_checkpoint()
 
 
 def create_cli_parser() -> argparse.ArgumentParser:

@@ -1,0 +1,181 @@
+=== Docker Container Inspect: bc3398064d3a ===
+{
+  "id": "bc3398064d3aa040a7dcd4dc3de6c94d7cafd134fdac9e51b2f4294ee9b1c914",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-05T04:22:36.658783278Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/AUTO-07_run_122144_20261105_042144",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (project-control) python3 -m tools.coord_runner --intake-scan && python3 -m unittest tools/test_work_intake.py tools/test_coord_runner.py tools/test_coord_recovery.py tools/test_coord_systemd_service.py -v -> 0
+{
+  "submissions_count": 5,
+  "generated_files": [],
+  "valid_records": [
+    "FEAT-20261104-001",
+    "FEAT-20261104-002",
+    "FEAT-INTAKE-20261103-001",
+    "ISS-20261105-001",
+    "ISS-20261105-002",
+    "ISS-20261105-003",
+    "ISS-20261105-004",
+    "REQ-20261105-001"
+  ],
+  "idempotent_records_count": 8,
+  "errors": [],
+  "notices": [
+    {
+      "code": "IN_FLIGHT_PRESERVED_ON_INTAKE_REMOVAL",
+      "item_id": "['PILOT-REQ-06']",
+      "task_ids": [
+        "MS-22"
+      ],
+      "action": "preserve_in_flight_notify_coord",
+      "message": "Intake file missing for active task MS-22; in-flight work NOT auto-cancelled"
+    }
+  ]
+}
+
+test_canonical_workspace_approval_verified (tools.test_work_intake.ApprovalGuardAntiForgeryTest) ... ok
+test_p1_03_and_p1_18_partial_batch_subscope_and_demand_only_split (tools.test_work_intake.ApprovalGuardAntiForgeryTest) ... ok
+test_p1_19_rejects_forged_actor_stale_rev_tampered_hash_and_prose_keywords (tools.test_work_intake.ApprovalGuardAntiForgeryTest) ... ok
+test_cas_rejects_invalid_digest_missing_file_and_duplicate_exclusive (tools.test_work_intake.CasWriterTest) ... ok
+test_read_with_digest_and_write_cas_positive (tools.test_work_intake.CasWriterTest) ... ok
+test_write_cas_rejects_concurrent_edit_and_preserves_user_file (tools.test_work_intake.CasWriterTest) ... ok
+test_committed_m1_live_drill_evidence_verified (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok
+test_coordinate_readonly_resume_and_zero_call_noop (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok
+test_p1_02_p1_04_p1_17_routing_and_multi_role_split (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok
+test_p1_11_p1_12_p1_15_candidate_remote_reconcile_and_codex_reviewer_gates (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok
+test_p1_16_boundary_revert_and_forbidden_repo_block (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok
+test_canonical_workspace_intake_and_disabled_examples (tools.test_work_intake.WorkIntakeBatchAndIsolationTest) ... ok
+test_link_tasks_with_arch_breakdown_updates_revision_and_digest_ledger (tools.test_work_intake.WorkIntakeBatchAndIsolationTest)
+验证 TaskLinkUpdate 写入 arch_breakdown 时自动递增 revision 并同步更新 .intake_digests.json 账本。 ... ok
+test_p1_01_batch_md_generates_unique_three_category_yamls_and_links (tools.test_work_intake.WorkIntakeBatchAndIsolationTest) ... ok
+test_p1_06_tampered_same_revision_and_corrupt_records_isolated (tools.test_work_intake.WorkIntakeBatchAndIsolationTest) ... ok
+test_p1_16_disabled_or_deleted_preserves_in_flight_and_blocks_shell_or_forbidden_scope (tools.test_work_intake.WorkIntakeBatchAndIsolationTest) ... ok
+test_checkpoint_corrupt_defense (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_checkpoint_roundtrip (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_crash_and_restart_recovery_drill (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_crash_and_restart_recovery_drill_from_disk_sandbox_qa (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_process_level_kill_and_restart_recovery_drill (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok
+test_codex_auth_failure_blocked (tools.test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_codex_unavailable_blocked (tools.test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_docker_container_sandbox_passed (tools.test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_plain_directory_sandbox_rejected (tools.test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok
+test_daemon_signal_handling (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_default_agent_executor_invokes_role_adapter_with_approval (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_default_agent_executor_rejects_unapproved_or_unpushed_candidate (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_ensure_qa_report_review_preexisting_invalid_review_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_ensure_qa_report_review_preexisting_valid_review_accepted (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_dedicated_reviewer_typeerror_fails_without_fallback (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_multi_role (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_preexisting_invalid_report_review_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_qa_report_review_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_execute_review_phase_valid_report_review_approved_to_done (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_invoke_report_reviewer_passes_req_dict (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_missing_executor_fails_closed (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_production_executors_wiring (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_run_once_mode (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_run_tasks_finite_mode (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_missing_entry_path_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_missing_entry_sha_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_missing_file_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_runner_resolve_qa_report_prefill_mismatch_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_sandbox_qa_restart_recovery_progresses (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_uart_conflict_rolls_back_implementation_lease (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_verify_server_commit_variants (tools.test_coord_runner.ExecutionModesTest) ... ok
+test_exclusive_device_conflict_uart (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_implementation_concurrency_limit (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_lease_expiration_and_prune (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_lease_renewal_and_expired_renewal_fails (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_release_lease_frees_resource (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok
+test_legacy_queue_and_twin_tasks_explicitly_isolated (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_module_cli_intake_scan_runs_cleanly (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_scheduler_enforces_done_acceptance_errors_on_predecessors (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_step_and_restore_checkpoints_auto_scan_intake_idempotently (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest)
+验证 restore_from_checkpoint 与 step 检查点自动扫描人工收件、生成一次分类 YAML 且连续轮询幂等零空耗。 ... ok
+test_step_isolates_corrupt_submission_without_blocking_valid_intake_or_inflight (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest)
+验证单份损坏收件文件在 step 检查点被隔离至 errors，不阻断合法提交单收件或在途任务推进。 ... ok
+test_subagent_platform_and_planned_alias_rejected_in_state_machine (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok
+test_python_functions_scale_and_parameters_limits (tools.test_coord_runner.MethodologicalInvariantsTest) ... ok
+test_author_self_review_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_candidate_commit_validation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_any_review_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_entry_missing_report_sha (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_missing_report_review (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_file_not_found_on_disk (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_file_tampered_or_sha_mismatch (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_by_author (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_missing_report_path_or_sha (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_self_reviewed (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_sha_mismatch (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_qa_report_review_unapproved (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_done_rejected_when_required_role_missing (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_evidence_based_remediation_validation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_fake_done_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_max_corrections_exceeded_escalation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_developer_mounts_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_failure_triggers_remediation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_commit_mismatch_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_invalid_sandbox_kind_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_missing_server_qa_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_missing_task_revision_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_string_false_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_qa_verdict_task_revision_mismatch_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_remediation_missing_evidence_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_review_rejection_triggers_remediation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_state_machine_invalid_transition (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_state_machine_positive_flow (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok
+test_blocked_task_filtered (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_bootstrap_prioritized_over_order (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_completed_tasks_filtered (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_resource_unavailable_blocked (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_unmet_dependencies_blocked (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok
+test_all_coord_runner_modules_comply_with_ast_standards (tools.test_coord_recovery.ASTScaleAndParameterGateTest) ... ok
+test_max_parallel_implementation_allows_two_concurrent_tasks (tools.test_coord_recovery.DualTaskParallelConcurrencyTest) ... ok
+test_cas_conflict_detection_p1_13 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_in_flight_revision_conflict_p1_07 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_protect_active_leases_for_running_processes_p1_10 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_reconcile_alive_running_job (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_reconcile_completed_job_from_exit_status (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_reconcile_orphan_killed_process_flags_reconcile_required_p1_09 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_record_revision_conflict_referral_p1_07 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_rescan_idempotence_p1_05 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok
+test_async_job_launch_creates_pid_and_exit_status (tools.test_coord_recovery.JobLauncherAndPidStarttimeTest) ... ok
+test_get_proc_starttime_matches_proc_stat (tools.test_coord_recovery.JobLauncherAndPidStarttimeTest) ... ok
+test_write_atomic_json_guarantees_file_integrity (tools.test_coord_recovery.JobLauncherAndPidStarttimeTest) ... ok
+test_async_task_advances_while_long_job_running_p1_08 (tools.test_coord_recovery.M2AsyncOrchestrationAndIdempotenceTest) ... ok
+test_intake_rescan_idempotence_guard_p1_05 (tools.test_coord_recovery.M2AsyncOrchestrationAndIdempotenceTest) ... ok
+test_metadata_and_role_job_persistence (tools.test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok
+test_save_and_restore_coord_state (tools.test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok
+test_single_instance_flock_mutual_exclusion (tools.test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok
+test_sqlite_wal_mode_and_tables_initialized (tools.test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok
+test_systemd_tools_comply_with_ast_standards (tools.test_coord_systemd_service.ASTScaleAndParameterGateTest) ... ok
+test_absent_crontab_reports_clean (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_crontab_command_failure_reports_not_clean (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_forbidden_crontab_entry_detected (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_missing_crontab_executable_reports_clean (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_real_crontab_isolation (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok
+test_p1_14_zero_idle_model_consumption_across_consecutive_cycles (tools.test_coord_systemd_service.P1_14_ZeroIdleModelConsumptionAndRecoveryTest) ... ok
+test_service_process_sigterm_stop_and_restart_recovery (tools.test_coord_systemd_service.P1_14_ZeroIdleModelConsumptionAndRecoveryTest) ... ok
+test_check_user_linger_detection (tools.test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok
+test_control_service_actions (tools.test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok
+test_get_service_status_installed_and_missing (tools.test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok
+test_install_and_uninstall_lifecycle (tools.test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok
+test_required_sections_present (tools.test_coord_systemd_service.SystemdUnitFileStructureTest) ... ok
+test_service_exec_and_restart_directives (tools.test_coord_systemd_service.SystemdUnitFileStructureTest) ... ok
+test_working_directory_and_environment (tools.test_coord_systemd_service.SystemdUnitFileStructureTest) ... ok
+
+----------------------------------------------------------------------
+Ran 126 tests in 24.788s
+
+OK

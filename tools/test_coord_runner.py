@@ -845,6 +845,23 @@ class ExecutionModesTest(unittest.TestCase):
         self.assertFalse(runner._running)
         self.assertTrue(self.cfile.is_file())
 
+    def test_run_daemon_respects_single_instance_lock_and_guards_checkpoint(self):
+        """验证 run_daemon 在获取单实例锁前不注册信号或覆盖在途检查点，且恢复未完成前收到信号不写空检查点。"""
+        owner_runner = CoordRunner(self.cfg)
+        owner_runner.state_store.acquire_process_lock()
+        try:
+            owner_runner.in_flight_tasks["T-ACTIVE"] = TaskExecutionRecord("T-ACTIVE", state=TaskState.IN_PROGRESS.value)
+            owner_runner.save_checkpoint()
+            contender = CoordRunner(self.cfg)
+            contender._checkpoint_restored = False
+            contender._signal_handler(signal.SIGTERM, None)
+            self.assertIn("T-ACTIVE", owner_runner.checkpoint_mgr.load_checkpoint(self.cfile).in_flight_tasks)
+            with self.assertRaises(ResourceConflictError):
+                contender.run_daemon(poll_interval=0.01)
+            self.assertIn("T-ACTIVE", owner_runner.checkpoint_mgr.load_checkpoint(self.cfile).in_flight_tasks)
+        finally:
+            owner_runner.state_store.release_process_lock()
+
     def test_uart_conflict_rolls_back_implementation_lease(self):
         runner = CoordRunner(self.cfg)
         runner.lease_mgr.acquire_lease("OTHER", "uart", "other-owner")
