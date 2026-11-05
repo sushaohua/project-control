@@ -25,7 +25,11 @@ demand_id: DEM-20261105-005
 confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
 approval_id: APPR-20261105-003
 review_assignments:
-  reviewer_sessions: []
+  reviewer_sessions:
+    - role: QA
+      platform: codex
+      model: gpt-6-luna
+      planned_session_alias: planned-qa-twin-54
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010
@@ -57,22 +61,18 @@ dependency_conditions:
 scope_status: mapped
 allowed_repositories:
   - project-control
-  - test_harness
 write_scope:
   project-control:
     - docs/planning/web_hmi_full_qa_build_deploy_confirmation_20261105.md
     - docs/evidence/twin/TWIN-54/**
-  test_harness:
-    - hil/tests/**
-    - hil/tools/**
 allowed_paths:
   - project-control/docs/planning/web_hmi_full_qa_build_deploy_confirmation_20261105.md
   - project-control/docs/evidence/twin/TWIN-54/**
-  - test_harness/hil/tests/**
-  - test_harness/hil/tools/**
 forbidden_paths:
   - soc-ap/**
   - mcu-p3/**
+  - test_harness/**
+  - boot/**
   - boot/**
 source_baseline:
   project-control: 77c679616a09d9c82906ff9bdf27fefc6d6c343f

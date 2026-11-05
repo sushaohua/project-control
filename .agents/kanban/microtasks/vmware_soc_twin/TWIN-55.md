@@ -5,7 +5,7 @@ revision: 1
 plan_revision: vmware-soc-twin-20261105
 task_kind: verification
 development_stage: vmware-twin
-dispatchable: false
+dispatchable: true
 status: Backlog
 blocked: true
 blocked_reason: 等待TWIN-54完成Step 1-4制品封存并由用户确认Step 5具体固件烧录清单与排他台架窗口
@@ -20,14 +20,18 @@ executor:
 qa_policy: streamlined-v1
 reviewer:
   - QA
-verifier: QA
+verifier: null
 integrator: INTEGRATOR
 requirement_id: REQ-20261105-001
 demand_id: DEM-20261105-005
 confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
 approval_id: APPR-20261105-003
 review_assignments:
-  reviewer_sessions: []
+  reviewer_sessions:
+    - role: QA
+      platform: codex
+      model: gpt-6-luna
+      planned_session_alias: planned-qa-twin-55
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010

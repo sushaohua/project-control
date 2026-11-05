@@ -1,0 +1,37 @@
+# SHA256SUMS for AI-SoC Release Build build-20261105-001 (TWIN-54 / REQ-20261105-001)
+# Source Lock:
+#   project-control: 1a98934d236bf6ee9d33c92d87e6aa28afd14ea2 (AUTO-07 candidate: db20f47cab862b1068f45c08eaa9c25bbcfb316e)
+#   soc-ap:          79932746d225bb115010c5545ef3f7499482e137
+#   mcu-p3:          016e1236af75f6f19282d6b000f4b1b68bd96cc3
+#   test_harness:    d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+
+# --- 1. MCU Firmware Artifacts (Host arm-none-eabi-gcc 9.2.1) ---
+6bdb00ff0e7cda0b8b832ec37aa01a367244ce77bb85998f9b9c060b7c67c709  artifacts/mc/Marlin_AT32.elf
+d2b998173478bb72651daf7c55497e77cb8cb2c003c6220f05396a189b078963  artifacts/mc/Marlin_AT32.bin
+1e4bf2f50e7e4682444b8e8d35ce05c213427f86c95af5cffaf0081828241241  artifacts/mc/fw_mc.bin
+1b7a2f923cbea742f1e04c7a7e2f789617b1a62327d2017df32925200f436849  artifacts/th/fw_th.elf
+a2d4a50be058b7d06338d14945cb679f70386a94a4230d1254425b2ce5fe9afc  artifacts/th/fw_th.bin
+094343d5a0450020c58bddd13807c0dc4eb86bb444c70f867463c34032df42ef  artifacts/th/anchor.bin
+
+# --- 2. VMware SoC-AP & Web HMI Artifacts (VMware 192.168.77.134 GCC 15.2.0) ---
+76f627dc2873300499ee32a6797403e391579be2515772b9ac1ddac0f608a51b  vmware/build/runtime/aisoc_supervisor
+c13a44dc21a18064a5dd84cf35fe9d39b44d693c352899fbfafb90b80e67c259  vmware/build/forward/forward_service_daemon
+2a0313efcdef73e578a7498e8c2f9f7d0d83d4ea5918cff0ef9e88ceb4b9cc85  vmware/build/device_manager/device_manager_daemon
+41824294f0354a74315819ba60f46d133dc38c499ef5fe15a36213e9e53e0764  vmware/build/ui_gateway/ui-gateway
+41824294f0354a74315819ba60f46d133dc38c499ef5fe15a36213e9e53e0764  vmware/dist/vmware_twin/bin/ui-gateway
+003b2e80f67d940ab2619f03612018a77252543ae28198ffd2a56e51c452f541  vmware/build/host/bin/soc-ap
+212bdcb1de918966f9b0a7a4b7f2ad4f3a99af757e8cbc791a0ee26b05436801  vmware/build/host/bin/minimc-probe
+bd241a24e9fb64e0fdd16b0f84def5e6fe4397cdc13f721c605e7a3a02c90131  vmware/browser_hmi/first_release/index.html
+b61b372f286b2dd5c89de33b6dd57e55fc5d6a30f82b96dd077ab292c99cea29  vmware/browser_hmi/first_release/app.js
+b750052bcd4ca83602d610c647a0e5fb6e11a78de22947455a95ca7efb91c3a1  vmware/browser_hmi/first_release/styles.css
+
+# --- 3. Docker Sandbox SoC-AP Artifacts (qa-sandbox:20261029 GCC 9.4.0) ---
+cf4d841089b4cf9d4ff99885ffa48ccdd55fd5e483397c318337317cf51d70f6  docker/build/runtime/aisoc_supervisor
+57f2961740af026a65cd3fe7cc1861b57fcbfad548c7808a9c3e630ad4060e9e  docker/build/forward/forward_service_daemon
+ab2d9ce70b1c13bf93e3ae03bff363e587285dfe50e5219054b335ee169b322a  docker/build/device_manager/device_manager_daemon
+4256acc243e78a129bcf61bb4ceac1c53d5357d58ae5788cfb4db83b60ba165d  docker/build/ui_gateway/ui-gateway
+842711e40b0bd85497d26e5bcf3a146358a6704c6f519ec5b6f38262fa3860e0  docker/build/host/bin/soc-ap
+908fc7ea6b5fafff925389c3e43c649dacf66abe296bf5de33707360d21ce508  docker/build/host/bin/minimc-probe
+
+# --- 4. Pre-Run Legacy VMware Log Archive (Step 6) ---
+33038bdbd16c0d7efcbdce5f7db26b8590a38dd163ba41f0d9d86c10424b633d  vmware:/home/sushaohua/tmp/aisoc_legacy_archives/aisoc_twin_logs_pre_20261105-001_20261105T041015Z.tar.gz

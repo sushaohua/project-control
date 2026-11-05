@@ -6,7 +6,7 @@ plan_revision: coord-intake-dispatch-phase1-20261105
 task_kind: implementation
 development_stage: cross-stage
 dispatchable: true
-status: In-Progress
+status: Done
 blocked: false
 blocked_reason: null
 recovery_condition: null
@@ -15,6 +15,7 @@ demand_id: DEM-20261105-004
 issue_id: ISS-20261105-004
 confirmation_id: CONFIRM-COORD-INTAKE-20261105
 approval_id: APPR-20261105-002
+accepted_scope: "Software and unit/integration verification in qa-sandbox:20261029 of CoordRunner restore_from_checkpoint and step intake scanning, idempotent ledger persistence, TaskLinkUpdate arch_breakdown revision/digest synchronization, and FEAT-20261104-001/002 r4 ledger alignment. Live systemd user service activation on the host is excluded to avoid lock contention with the active interactive COORD session; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 owner: 7812a1f6-5006-4971-a954-802f855cf20a
 proposed_owner: INTEGRATOR
 executor:
@@ -27,7 +28,23 @@ reviewer:
 verifier: null
 integrator: INTEGRATOR
 review_assignments:
-  reviewer_sessions: []
+  reviewer_sessions:
+    - role: QA
+      platform: codex
+      model: gpt-6-luna
+      planned_session_alias: planned-qa-auto-07
+      session: 01a1a9f8-a896-7a82-8c44-97869ba95de0
+      reviewer_session: 01a1a9f8-a896-7a82-8c44-97869ba95de0
+      commit_sha: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
+      session_evidence:
+        path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/coord_automation/AUTO-07/runs/run_02/codex_events.jsonl
+        sha256: 3199c54796f7afbcdb545231dc4ba83bf220ec747a82e4bd6967afb92dbe9f6c
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: project-control=f4e45fb5cdd1d7c1fee405d9a720f19e200b126f; soc-ap=79932746d225bb115010c5545ef3f7499482e137; mcu-p3=016e1236af75f6f19282d6b000f4b1b68bd96cc3; test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+      report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/coord_automation/AUTO-07/runs/run_02/qa_review_report.md
+      evidence: docs/evidence/coord_automation/AUTO-07/runs/run_02/qa_review_report.md
+      report_sha256: 3be6966e70ccef9786208192862bbaa7472674f8b834ac20c949b078760874b5
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-010
@@ -72,15 +89,15 @@ forbidden_paths:
   - project-control/.agents/kanban/microtasks/coord_automation/AUTO-05.md
   - project-control/.agents/kanban/microtasks/coord_automation/AUTO-06.md
 source_baseline:
-  project-control: 77c679616a09d9c82906ff9bdf27fefc6d6c343f
+  project-control: 1a98934d236bf6ee9d33c92d87e6aa28afd14ea2
   soc-ap: 79932746d225bb115010c5545ef3f7499482e137
   mcu-p3: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
-base_commit: 77c679616a09d9c82906ff9bdf27fefc6d6c343f
+base_commit: 1a98934d236bf6ee9d33c92d87e6aa28afd14ea2
 branch: main
-candidate_commit: null
+candidate_commit: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
 dispatch_binding:
-  source_commit: 77c679616a09d9c82906ff9bdf27fefc6d6c343f
+  source_commit: 1a98934d236bf6ee9d33c92d87e6aa28afd14ea2
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   consumed_artifact_versions:
     arch_breakdown: a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e
@@ -133,7 +150,7 @@ handoff:
   receiver_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
   transport: docs
   evidence_location: docs/evidence/coord_automation/AUTO-07
-  acknowledgement: pending
+  acknowledgement: accepted
 verification:
   commands:
     - id: test_coord_intake_checkpoint_wiring_and_ledger_consistency

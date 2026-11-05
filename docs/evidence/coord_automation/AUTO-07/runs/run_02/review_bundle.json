@@ -1,0 +1,370 @@
+{
+  "request": {
+    "repository": "project-control",
+    "candidate_commit": "f4e45fb5cdd1d7c1fee405d9a720f19e200b126f",
+    "task_revision": 1,
+    "task_id": "AUTO-07",
+    "workspace": "/home/sushaohua/workspace/ai_soc_project",
+    "commands": [
+      {
+        "kind": "test",
+        "subpath": "project-control",
+        "command": "python3 -m tools.coord_runner --intake-scan && python3 -m unittest tools/test_work_intake.py tools/test_coord_runner.py tools/test_coord_recovery.py tools/test_coord_systemd_service.py -v",
+        "id": "test_coord_intake_checkpoint_wiring_and_ledger_consistency"
+      }
+    ],
+    "targets": [
+      {
+        "name": "project-control",
+        "commit": "f4e45fb5cdd1d7c1fee405d9a720f19e200b126f",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+        "ref": "main"
+      },
+      {
+        "name": "soc-ap",
+        "commit": "79932746d225bb115010c5545ef3f7499482e137",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+        "ref": "main"
+      },
+      {
+        "name": "mcu-p3",
+        "commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+        "ref": "feat/soc-debug"
+      },
+      {
+        "name": "test_harness",
+        "commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+        "ref": "main"
+      }
+    ],
+    "contract": {
+      "id": "AUTO-07",
+      "title": "AUTO-07 接通CoordRunner启动/恢复与step人工收件检查点并修复分类账本摘要同步",
+      "revision": 1,
+      "plan_revision": "coord-intake-dispatch-phase1-20261105",
+      "task_kind": "implementation",
+      "development_stage": "cross-stage",
+      "dispatchable": true,
+      "status": "Review",
+      "blocked": false,
+      "blocked_reason": null,
+      "recovery_condition": null,
+      "planning_status": "active",
+      "demand_id": "DEM-20261105-004",
+      "issue_id": "ISS-20261105-004",
+      "confirmation_id": "CONFIRM-COORD-INTAKE-20261105",
+      "approval_id": "APPR-20261105-002",
+      "accepted_scope": "Software and unit/integration verification in qa-sandbox:20261029 of CoordRunner restore_from_checkpoint and step intake scanning, idempotent ledger persistence, TaskLinkUpdate arch_breakdown revision/digest synchronization, and FEAT-20261104-001/002 r4 ledger alignment. Live systemd user service activation on the host is excluded to avoid lock contention with the active interactive COORD session; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass.",
+      "owner": "7812a1f6-5006-4971-a954-802f855cf20a",
+      "proposed_owner": "INTEGRATOR",
+      "executor": {
+        "role": "INTEGRATOR",
+        "agent_id": "7812a1f6-5006-4971-a954-802f855cf20a",
+        "run_id": "author_01"
+      },
+      "qa_policy": "streamlined-v1",
+      "reviewer": [
+        "QA"
+      ],
+      "verifier": null,
+      "integrator": "INTEGRATOR",
+      "review_assignments": {
+        "reviewer_sessions": [],
+        "verifier_session": null,
+        "integrator_session": null
+      },
+      "primary_work_package": "TASK-010",
+      "related_work_packages": [],
+      "depends_on": [
+        "AUTO-06"
+      ],
+      "dependency_conditions": [
+        {
+          "task": "AUTO-06",
+          "accepted_version": "e6e4291a9608473cae2604dceb521c930d0c341f",
+          "acceptance_evidence": "docs/evidence/coord_automation/AUTO-06/runs/run_03/qa_review_report.md",
+          "required": "继承AUTO-06已验收的CoordRunner单实例锁、SQLite恢复源与WorkIntakeManager收件底座（保留AUTO-06 Done状态与历史证据）"
+        }
+      ],
+      "scope_status": "mapped",
+      "allowed_repositories": [
+        "project-control"
+      ],
+      "write_scope": {
+        "project-control": [
+          "tools/coord_runner/runner.py",
+          "tools/coord_runner/work_intake.py",
+          "tools/test_coord_runner.py",
+          "tools/test_work_intake.py",
+          "docs/work_intake/features/FEAT-20261104-001.yaml",
+          "docs/work_intake/features/FEAT-20261104-002.yaml",
+          "docs/work_intake/.intake_digests.json",
+          "docs/evidence/coord_automation/AUTO-07/**"
+        ]
+      },
+      "allowed_paths": [
+        "project-control/tools/coord_runner/runner.py",
+        "project-control/tools/coord_runner/work_intake.py",
+        "project-control/tools/test_coord_runner.py",
+        "project-control/tools/test_work_intake.py",
+        "project-control/docs/work_intake/features/FEAT-20261104-001.yaml",
+        "project-control/docs/work_intake/features/FEAT-20261104-002.yaml",
+        "project-control/docs/work_intake/.intake_digests.json",
+        "project-control/docs/evidence/coord_automation/AUTO-07/**"
+      ],
+      "forbidden_paths": [
+        "soc-ap/**",
+        "mcu-p3/**",
+        "test_harness/**",
+        "boot/bootloadermc/**",
+        "boot/bootloaderth/**",
+        "project-control/.agents/kanban/microtasks/coord_automation/AUTO-03.md",
+        "project-control/.agents/kanban/microtasks/coord_automation/AUTO-04.md",
+        "project-control/.agents/kanban/microtasks/coord_automation/AUTO-05.md",
+        "project-control/.agents/kanban/microtasks/coord_automation/AUTO-06.md"
+      ],
+      "source_baseline": {
+        "project-control": "1a98934d236bf6ee9d33c92d87e6aa28afd14ea2",
+        "soc-ap": "79932746d225bb115010c5545ef3f7499482e137",
+        "mcu-p3": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+        "test_harness": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60"
+      },
+      "base_commit": "1a98934d236bf6ee9d33c92d87e6aa28afd14ea2",
+      "branch": "main",
+      "candidate_commit": "f4e45fb5cdd1d7c1fee405d9a720f19e200b126f",
+      "dispatch_binding": {
+        "source_commit": "1a98934d236bf6ee9d33c92d87e6aa28afd14ea2",
+        "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "consumed_artifact_versions": {
+          "arch_breakdown": "a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e"
+        }
+      },
+      "protocol_input": {
+        "path": "project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md",
+        "sha256": "a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e",
+        "revision": 1
+      },
+      "icd_versions": [
+        {
+          "path": "project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md",
+          "version": 1
+        }
+      ],
+      "read_sources": [
+        "project-control/.agents/rules/repository_rule_sources.json",
+        "project-control/.agents/rules/repository_rule_boundaries.md",
+        "project-control/.agents/rules/c_cpp_coding_standard.md",
+        "project-control/.agents/rules/code_documentation_standard.md",
+        "project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md"
+      ],
+      "worktree": "project-control",
+      "lease": {
+        "owner": "7812a1f6-5006-4971-a954-802f855cf20a",
+        "task_revision": 1,
+        "lease_id": "lease-auto-07-20261105-01",
+        "expires_at": "2026-11-05T18:00:00+08:00"
+      },
+      "resources": [
+        {
+          "resource": "coord-runner-test-env",
+          "location": "project-control",
+          "exclusive": true,
+          "pending": null
+        }
+      ],
+      "budget": {
+        "planned_checkpoint_minutes": 30,
+        "max_evidence_based_corrections": 2,
+        "on_limit": "保存证据交COORD"
+      },
+      "checkpoint": "开工前绑定；restore_from_checkpoint与step检查点接通scan_work_intake；FEAT-20261104-001/002 r4摘要对齐；独立沙箱与Codex QA审阅",
+      "execution_contract": "project-control/docs/planning/coord_autorun_tasklist_20261029.md",
+      "readiness_pending": [],
+      "deliverables": {
+        "artifacts": [
+          "project-control/tools/coord_runner/runner.py",
+          "project-control/tools/coord_runner/work_intake.py",
+          "project-control/tools/test_coord_runner.py",
+          "project-control/tools/test_work_intake.py",
+          "project-control/docs/work_intake/features/FEAT-20261104-001.yaml",
+          "project-control/docs/work_intake/features/FEAT-20261104-002.yaml",
+          "project-control/docs/work_intake/.intake_digests.json"
+        ],
+        "record": "docs/evidence/coord_automation/AUTO-07/runs/author_01/result.md"
+      },
+      "rollback": {
+        "steps": [
+          "git -C project-control checkout -- tools/coord_runner/runner.py tools/coord_runner/work_intake.py tools/test_coord_runner.py tools/test_work_intake.py docs/work_intake/features/FEAT-20261104-001.yaml docs/work_intake/features/FEAT-20261104-002.yaml docs/work_intake/.intake_digests.json"
+        ]
+      },
+      "handoff": {
+        "receiver_role": "COORD",
+        "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+        "transport": "docs",
+        "evidence_location": "docs/evidence/coord_automation/AUTO-07",
+        "acknowledgement": "pending"
+      },
+      "verification": {
+        "commands": [
+          {
+            "id": "test_coord_intake_checkpoint_wiring_and_ledger_consistency",
+            "cwd": "project-control",
+            "command": "python3 -m tools.coord_runner --intake-scan && python3 -m unittest tools/test_work_intake.py tools/test_coord_runner.py tools/test_coord_recovery.py tools/test_coord_systemd_service.py -v",
+            "expected": "coord_runner --intake-scan返回0且errors为空（FEAT-20261104-001@r4与FEAT-20261104-002@r4账本摘要一致）；test_work_intake、test_coord_runner（含step/restore检查点自动收件、重复检查幂等、坏文件隔离、AST函数<=50行且<=4参门禁）、test_coord_recovery与test_coord_systemd_service（含P1-14连续空闲轮询零模型调用）全部100% OK",
+            "availability": "available"
+          }
+        ],
+        "positive_cases": [
+          "CoordRunner在restore_from_checkpoint与step检查点自动调用scan_work_intake，新增Markdown提交单被识别一次并生成分类YAML，重复step不重复建单或调用模型",
+          "TaskLinkUpdate支持关联arch_breakdown并自动递增revision同步更新.intake_digests.json；FEAT-20261104-001/002升级为revision 4后--intake-scan零错误通过",
+          "在途任务(in_flight_tasks)、恢复记录与单实例锁保持一致，收件扫描不绕过ApprovalGuard批准、技术前置或LeaseManager租约"
+        ],
+        "negative_cases": [
+          "单份坏文件（格式损坏或同revision篡改）被隔离在intake.errors中，不阻断其他合法提交单收件，也不破坏在途任务恢复",
+          "空闲轮询或未获批准的收件项严禁触发任何大模型调用或未授权派单；严禁将代码测试通过伪造为宿主机后台systemd服务已启用运行"
+        ]
+      },
+      "required_evidence_level": "server-sandbox-and-independent-review",
+      "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+      "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+      "updated": "2026-11-05T11:57:30+08:00"
+    },
+    "run_dir": "/tmp/qa_AUTO-07_i2t0aado",
+    "timeout_seconds": 1140,
+    "sandbox_command": [
+      "/usr/bin/python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+      "--config",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+      "--task",
+      "AUTO-07",
+      "--revision",
+      "1",
+      "--output-dir",
+      "/tmp/qa_AUTO-07_i2t0aado/evidence",
+      "--repo-commit",
+      "project-control=f4e45fb5cdd1d7c1fee405d9a720f19e200b126f:main",
+      "--repo-commit",
+      "soc-ap=79932746d225bb115010c5545ef3f7499482e137:main",
+      "--repo-commit",
+      "mcu-p3=016e1236af75f6f19282d6b000f4b1b68bd96cc3:feat/soc-debug",
+      "--repo-commit",
+      "test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60:main",
+      "--cmd",
+      "test:project-control:python3 -m tools.coord_runner --intake-scan && python3 -m unittest tools/test_work_intake.py tools/test_coord_runner.py tools/test_coord_recovery.py tools/test_coord_systemd_service.py -v"
+    ],
+    "request_ref": {
+      "path": "/tmp/qa_AUTO-07_i2t0aado/request.json",
+      "sha256": "951e9e9893c56b426ecca05569f04c9a1a0a21b597e727ed71d658bea30fe975"
+    }
+  },
+  "server_qa": {
+    "task_id": "AUTO-07",
+    "task_revision": 1,
+    "source": "server-pinned-commits",
+    "fresh_checkout": true,
+    "sandbox": {
+      "kind": "container",
+      "container_id": "e0a194ef1ca7",
+      "id": "AUTO-07_run_122906_20261105_042906",
+      "image": "qa-sandbox:20261029",
+      "path": "/tmp/qa_sandboxes/AUTO-07_run_122906_20261105_042906",
+      "developer_mounts": [],
+      "container_inspect": {
+        "id": "e0a194ef1ca74ee956f45d4ce37aa9b70d403105165c4012a5d9535303bd1487",
+        "image": "qa-sandbox:20261029",
+        "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "created": "2026-11-05T04:29:34.364578249Z",
+        "state": "exited",
+        "mounts": [
+          {
+            "Type": "bind",
+            "Source": "/tmp/qa_sandboxes/AUTO-07_run_122906_20261105_042906",
+            "Destination": "/workspace",
+            "Mode": "ro",
+            "RW": false,
+            "Propagation": "rprivate"
+          }
+        ]
+      }
+    },
+    "server_lock": {
+      "path": "/tmp/qa_AUTO-07_i2t0aado/evidence/server_lock.json",
+      "sha256": "9c0a171a985e29258c4f33ae67088615f95eb29d2e25529cbe7a8eafe069a87b"
+    },
+    "checkout_log": {
+      "path": "/tmp/qa_AUTO-07_i2t0aado/evidence/checkout.log",
+      "sha256": "5997993e1203a29a5e07722f6b4467ca7a251d0d6c741dee5e6292bdc9e60299"
+    },
+    "runtime_log": {
+      "path": "/tmp/qa_AUTO-07_i2t0aado/evidence/runtime.log",
+      "sha256": "7b991e1b5e504267a11479f1c353e9afddcf18b0af5e78ac9171a9e1bbf9935d"
+    },
+    "server_verdict": {
+      "path": "/tmp/qa_AUTO-07_i2t0aado/evidence/server_verdict.json",
+      "sha256": "a9528a1e3f2cd543fd635a3caaaee2d5d4dd098692b41a3b4d63f3ec8190c786"
+    },
+    "tool_versions": {
+      "git": "git version 2.25.1",
+      "python": "Python 3.8.10"
+    },
+    "build_results": [],
+    "test_results": [
+      {
+        "command": "python3 -m tools.coord_runner --intake-scan && python3 -m unittest tools/test_work_intake.py tools/test_coord_runner.py tools/test_coord_recovery.py tools/test_coord_systemd_service.py -v",
+        "exit_code": "0",
+        "subpath": "project-control",
+        "duration": "29.66s",
+        "output": "{\n  \"submissions_count\": 5,\n  \"generated_files\": [],\n  \"valid_records\": [\n    \"FEAT-20261104-001\",\n    \"FEAT-20261104-002\",\n    \"FEAT-INTAKE-20261103-001\",\n    \"ISS-20261105-001\",\n    \"ISS-20261105-002\",\n    \"ISS-20261105-003\",\n    \"ISS-20261105-004\",\n    \"REQ-20261105-001\"\n  ],\n  \"idempotent_records_count\": 8,\n  \"errors\": [],\n  \"notices\": [\n    {\n      \"code\": \"IN_FLIGHT_PRESERVED_ON_INTAKE_REMOVAL\",\n      \"item_id\": \"['PILOT-REQ-06']\",\n      \"task_ids\": [\n        \"MS-22\"\n      ],\n      \"action\": \"preserve_in_flight_notify_coord\",\n      \"message\": \"Intake file missing for active task MS-22; in-flight work NOT auto-cancelled\"\n    }\n  ]\n}\n\ntest_canonical_workspace_approval_verified (tools.test_work_intake.ApprovalGuardAntiForgeryTest) ... ok\ntest_p1_03_and_p1_18_partial_batch_subscope_and_demand_only_split (tools.test_work_intake.ApprovalGuardAntiForgeryTest) ... ok\ntest_p1_19_rejects_forged_actor_stale_rev_tampered_hash_and_prose_keywords (tools.test_work_intake.ApprovalGuardAntiForgeryTest) ... ok\ntest_cas_rejects_invalid_digest_missing_file_and_duplicate_exclusive (tools.test_work_intake.CasWriterTest) ... ok\ntest_read_with_digest_and_write_cas_positive (tools.test_work_intake.CasWriterTest) ... ok\ntest_write_cas_rejects_concurrent_edit_and_preserves_user_file (tools.test_work_intake.CasWriterTest) ... ok\ntest_committed_m1_live_drill_evidence_verified (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok\ntest_coordinate_readonly_resume_and_zero_call_noop (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok\ntest_p1_02_p1_04_p1_17_routing_and_multi_role_split (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok\ntest_p1_11_p1_12_p1_15_candidate_remote_reconcile_and_codex_reviewer_gates (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok\ntest_p1_16_boundary_revert_and_forbidden_repo_block (tools.test_work_intake.RoleAdapterAndGatesTest) ... ok\ntest_canonical_workspace_intake_and_disabled_examples (tools.test_work_intake.WorkIntakeBatchAndIsolationTest) ... ok\ntest_link_tasks_with_arch_breakdown_updates_revision_and_digest_ledger (tools.test_work_intake.WorkIntakeBatchAndIsolationTest)\n验证 TaskLinkUpdate 写入 arch_breakdown 时自动递增 revision 并同步更新 .intake_digests.json 账本。 ... ok\ntest_p1_01_batch_md_generates_unique_three_category_yamls_and_links (tools.test_work_intake.WorkIntakeBatchAndIsolationTest) ... ok\ntest_p1_06_tampered_same_revision_and_corrupt_records_isolated (tools.test_work_intake.WorkIntakeBatchAndIsolationTest) ... ok\ntest_p1_16_disabled_or_deleted_preserves_in_flight_and_blocks_shell_or_forbidden_scope (tools.test_work_intake.WorkIntakeBatchAndIsolationTest) ... ok\ntest_checkpoint_corrupt_defense (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok\ntest_checkpoint_roundtrip (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok\ntest_crash_and_restart_recovery_drill (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok\ntest_crash_and_restart_recovery_drill_from_disk_sandbox_qa (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok\ntest_process_level_kill_and_restart_recovery_drill (tools.test_coord_runner.CheckpointAndRecoveryTest) ... ok\ntest_codex_auth_failure_blocked (tools.test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok\ntest_codex_unavailable_blocked (tools.test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok\ntest_docker_container_sandbox_passed (tools.test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok\ntest_plain_directory_sandbox_rejected (tools.test_coord_runner.CodexAndSandboxIsolationGateTest) ... ok\ntest_daemon_signal_handling (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_default_agent_executor_invokes_role_adapter_with_approval (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_default_agent_executor_rejects_unapproved_or_unpushed_candidate (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_ensure_qa_report_review_preexisting_invalid_review_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_ensure_qa_report_review_preexisting_valid_review_accepted (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_execute_review_phase_dedicated_reviewer_typeerror_fails_without_fallback (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_execute_review_phase_multi_role (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_execute_review_phase_preexisting_invalid_report_review_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_execute_review_phase_qa_report_review_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_execute_review_phase_valid_report_review_approved_to_done (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_invoke_report_reviewer_passes_req_dict (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_missing_executor_fails_closed (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_production_executors_wiring (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_run_daemon_respects_single_instance_lock_and_guards_checkpoint (tools.test_coord_runner.ExecutionModesTest)\n验证 run_daemon 在获取单实例锁前不注册信号或覆盖在途检查点，且恢复未完成前收到信号不写空检查点。 ... ok\ntest_run_once_mode (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_run_tasks_finite_mode (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_runner_resolve_qa_report_missing_entry_path_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_runner_resolve_qa_report_missing_entry_sha_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_runner_resolve_qa_report_missing_file_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_runner_resolve_qa_report_prefill_mismatch_rejected (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_sandbox_qa_restart_recovery_progresses (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_uart_conflict_rolls_back_implementation_lease (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_verify_server_commit_variants (tools.test_coord_runner.ExecutionModesTest) ... ok\ntest_exclusive_device_conflict_uart (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok\ntest_implementation_concurrency_limit (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok\ntest_lease_expiration_and_prune (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok\ntest_lease_renewal_and_expired_renewal_fails (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok\ntest_release_lease_frees_resource (tools.test_coord_runner.LeaseAndExclusivityTest) ... ok\ntest_legacy_queue_and_twin_tasks_explicitly_isolated (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok\ntest_module_cli_intake_scan_runs_cleanly (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok\ntest_scheduler_enforces_done_acceptance_errors_on_predecessors (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok\ntest_step_and_restore_checkpoints_auto_scan_intake_idempotently (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest)\n验证 restore_from_checkpoint 与 step 检查点自动扫描人工收件、生成一次分类 YAML 且连续轮询幂等零空耗。 ... ok\ntest_step_isolates_corrupt_submission_without_blocking_valid_intake_or_inflight (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest)\n验证单份损坏收件文件在 step 检查点被隔离至 errors，不阻断合法提交单收件或在途任务推进。 ... ok\ntest_subagent_platform_and_planned_alias_rejected_in_state_machine (tools.test_coord_runner.M1QueueIsolationAndDoneGateTest) ... ok\ntest_python_functions_scale_and_parameters_limits (tools.test_coord_runner.MethodologicalInvariantsTest) ... ok\ntest_author_self_review_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_candidate_commit_validation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_any_review_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_qa_entry_missing_report_sha (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_qa_missing_report_review (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_qa_report_file_not_found_on_disk (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_qa_report_file_tampered_or_sha_mismatch (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_qa_report_review_by_author (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_qa_report_review_missing_report_path_or_sha (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_qa_report_review_self_reviewed (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_qa_report_review_sha_mismatch (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_qa_report_review_unapproved (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_done_rejected_when_required_role_missing (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_evidence_based_remediation_validation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_fake_done_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_max_corrections_exceeded_escalation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_qa_developer_mounts_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_qa_failure_triggers_remediation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_qa_verdict_commit_mismatch_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_qa_verdict_invalid_sandbox_kind_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_qa_verdict_missing_server_qa_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_qa_verdict_missing_task_revision_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_qa_verdict_string_false_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_qa_verdict_task_revision_mismatch_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_remediation_missing_evidence_rejected (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_review_rejection_triggers_remediation (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_state_machine_invalid_transition (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_state_machine_positive_flow (tools.test_coord_runner.StateMachineAndRemediationTest) ... ok\ntest_blocked_task_filtered (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok\ntest_bootstrap_prioritized_over_order (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok\ntest_completed_tasks_filtered (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok\ntest_resource_unavailable_blocked (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok\ntest_unmet_dependencies_blocked (tools.test_coord_runner.TaskSelectionAndSchedulingTest) ... ok\ntest_all_coord_runner_modules_comply_with_ast_standards (tools.test_coord_recovery.ASTScaleAndParameterGateTest) ... ok\ntest_max_parallel_implementation_allows_two_concurrent_tasks (tools.test_coord_recovery.DualTaskParallelConcurrencyTest) ... ok\ntest_cas_conflict_detection_p1_13 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok\ntest_in_flight_revision_conflict_p1_07 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok\ntest_protect_active_leases_for_running_processes_p1_10 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok\ntest_reconcile_alive_running_job (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok\ntest_reconcile_completed_job_from_exit_status (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok\ntest_reconcile_orphan_killed_process_flags_reconcile_required_p1_09 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok\ntest_record_revision_conflict_referral_p1_07 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok\ntest_rescan_idempotence_p1_05 (tools.test_coord_recovery.FiveSourceReconciliationTest) ... ok\ntest_async_job_launch_creates_pid_and_exit_status (tools.test_coord_recovery.JobLauncherAndPidStarttimeTest) ... ok\ntest_get_proc_starttime_matches_proc_stat (tools.test_coord_recovery.JobLauncherAndPidStarttimeTest) ... ok\ntest_write_atomic_json_guarantees_file_integrity (tools.test_coord_recovery.JobLauncherAndPidStarttimeTest) ... ok\ntest_async_task_advances_while_long_job_running_p1_08 (tools.test_coord_recovery.M2AsyncOrchestrationAndIdempotenceTest) ... ok\ntest_intake_rescan_idempotence_guard_p1_05 (tools.test_coord_recovery.M2AsyncOrchestrationAndIdempotenceTest) ... ok\ntest_metadata_and_role_job_persistence (tools.test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok\ntest_save_and_restore_coord_state (tools.test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok\ntest_single_instance_flock_mutual_exclusion (tools.test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok\ntest_sqlite_wal_mode_and_tables_initialized (tools.test_coord_recovery.StateStoreAuthoritativeRecoveryTest) ... ok\ntest_systemd_tools_comply_with_ast_standards (tools.test_coord_systemd_service.ASTScaleAndParameterGateTest) ... ok\ntest_absent_crontab_reports_clean (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok\ntest_crontab_command_failure_reports_not_clean (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok\ntest_forbidden_crontab_entry_detected (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok\ntest_missing_crontab_executable_reports_clean (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok\ntest_real_crontab_isolation (tools.test_coord_systemd_service.CrontabIsolationGateTest) ... ok\ntest_p1_14_zero_idle_model_consumption_across_consecutive_cycles (tools.test_coord_systemd_service.P1_14_ZeroIdleModelConsumptionAndRecoveryTest) ... ok\ntest_service_process_sigterm_stop_and_restart_recovery (tools.test_coord_systemd_service.P1_14_ZeroIdleModelConsumptionAndRecoveryTest) ... ok\ntest_check_user_linger_detection (tools.test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok\ntest_control_service_actions (tools.test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok\ntest_get_service_status_installed_and_missing (tools.test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok\ntest_install_and_uninstall_lifecycle (tools.test_coord_systemd_service.ServiceControllerLifecycleTest) ... ok\ntest_required_sections_present (tools.test_coord_systemd_service.SystemdUnitFileStructureTest) ... ok\ntest_service_exec_and_restart_directives (tools.test_coord_systemd_service.SystemdUnitFileStructureTest) ... ok\ntest_working_directory_and_environment (tools.test_coord_systemd_service.SystemdUnitFileStructureTest) ... ok\n\n----------------------------------------------------------------------\nRan 127 tests in 24.219s\n\nOK"
+      }
+    ],
+    "passed": true,
+    "timestamp": "2026-11-05T04:30:07.355436+00:00",
+    "path": "/tmp/qa_AUTO-07_i2t0aado/evidence/server_qa.json",
+    "sha256": "e234d3e942943cadb3382f0267ca8b1e3e2bbd8059063b76af8750ff71bd11c2"
+  },
+  "diffs": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_sandboxes/AUTO-07_run_122906_20261105_042906/project-control",
+      "base_commit": "1a98934d236bf6ee9d33c92d87e6aa28afd14ea2",
+      "candidate_commit": "f4e45fb5cdd1d7c1fee405d9a720f19e200b126f",
+      "diff": {
+        "path": "/tmp/qa_AUTO-07_i2t0aado/diffs/project-control.patch",
+        "sha256": "ea35cb815580d4799daf013990bcd2a2b77f480a20b36202b83528a436580b5f"
+      }
+    },
+    {
+      "repository": "soc-ap",
+      "source": "/tmp/qa_sandboxes/AUTO-07_run_122906_20261105_042906/soc-ap",
+      "base_commit": "79932746d225bb115010c5545ef3f7499482e137",
+      "candidate_commit": "79932746d225bb115010c5545ef3f7499482e137",
+      "diff": {
+        "path": "/tmp/qa_AUTO-07_i2t0aado/diffs/soc-ap.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "mcu-p3",
+      "source": "/tmp/qa_sandboxes/AUTO-07_run_122906_20261105_042906/mcu-p3",
+      "base_commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+      "candidate_commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+      "diff": {
+        "path": "/tmp/qa_AUTO-07_i2t0aado/diffs/mcu-p3.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "test_harness",
+      "source": "/tmp/qa_sandboxes/AUTO-07_run_122906_20261105_042906/test_harness",
+      "base_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "candidate_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "diff": {
+        "path": "/tmp/qa_AUTO-07_i2t0aado/diffs/test_harness.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}
