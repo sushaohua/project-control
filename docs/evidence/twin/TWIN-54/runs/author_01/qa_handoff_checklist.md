@@ -15,7 +15,7 @@ date: '2026-11-05T13:06:00+08:00'
 - **组合版本号 (`buildno`)**：`build-20261105-002`
 - **锁定源码 Commit**：
   - `soc-ap` (`main`)：`79932746d225bb115010c5545ef3f7499482e137`（含 `TWIN-49`、`7c1f3509`、`TWIN-51`、`TWIN-52`、`TWIN-53` 全部修复）
-  - `mcu-p3` (`feat/soc-debug`)：`f9bff9c01fb7652aa04fd6a3d93dcbf5cbbc8419`（含 `TWIN-47` MC、`TWIN-48` TH 及 `TWIN-56` 16-bit `seq` 日志截断与 `s_mc_th_seq=0x0100U` 修复）
+  - `mcu-p3` (`feat/soc-debug`)：`891a8bb252814c83992a49b01fbe11ba83b92a1f`（含 `TWIN-47` MC、`TWIN-48` TH 及 `TWIN-56` 16-bit `seq` 日志截断与 `s_mc_th_seq=0x0100U` 修复）
   - `test_harness` (`main`)：`d14ed04321c6d4f5ddb35a8801604a8af53b5b60`
   - `project-control` (`main`)：`f4e45fb5cdd1d7c1fee405d9a720f19e200b126f`（含 `AUTO-07` 审阅通过提交）
   - `boot/bootloadermc` (`soc_debug`)：`4fc171ea61912561949b9a0cfc1da8975e4c39ba`（**只读封锁**）

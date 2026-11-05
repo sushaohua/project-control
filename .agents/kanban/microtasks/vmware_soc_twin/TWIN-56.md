@@ -74,13 +74,13 @@ forbidden_paths:
   - test_harness/**
   - boot/**
 source_baseline:
-  project-control: 2e25f0d25d86a412c4051f6df7dafb5e2bd3d337
+  project-control: 986f963da76a9fa243d997634ffa9fc9aaf74141
   soc-ap: 79932746d225bb115010c5545ef3f7499482e137
   mcu-p3: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
 branch: feat/soc-debug
-candidate_commit: 75f69aa374f543008c706634088d2b4bd10cf97c
+candidate_commit: f9bff9c01fb7652aa04fd6a3d93dcbf5cbbc8419
 dispatch_binding:
   source_commit: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855

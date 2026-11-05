@@ -2,7 +2,7 @@
 # Source Lock:
 #   project-control: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
 #   soc-ap:          79932746d225bb115010c5545ef3f7499482e137
-#   mcu-p3:          f9bff9c01fb7652aa04fd6a3d93dcbf5cbbc8419
+#   mcu-p3:          891a8bb252814c83992a49b01fbe11ba83b92a1f
 #   test_harness:    d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 
 # --- 1. MCU Firmware Artifacts (Host arm-none-eabi-gcc 9.2.1, TWIN-56 16-bit seq fixed) ---
