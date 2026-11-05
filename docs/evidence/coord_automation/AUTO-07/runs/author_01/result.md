@@ -33,7 +33,8 @@ date: '2026-11-05T12:09:00+08:00'
 1. **`project-control/tools/coord_runner/runner.py`**：
    - 在 `CoordRunner.__init__()` 中新增 `self.last_intake_summary: Optional[dict] = None` 状态缓存；
    - 扩展 `CoordRunner.scan_work_intake(self, persist_ledger: bool = True, active_cards: Optional[Dict[str, dict]] = None) -> dict`，支持复用当轮已加载的 `active_cards`，避免同一轮检查点重复扫描看板目录；
-   - 在 `CoordRunner.restore_from_checkpoint()` 与 `CoordRunner.step()` 检查点中自动调用 `self.scan_work_intake(persist_ledger=True, ...)`，并在 `step()` 返回字典中增加 `"intake": intake_summary` 字段。
+   - 在 `CoordRunner.restore_from_checkpoint()` 与 `CoordRunner.step()` 检查点中自动调用 `self.scan_work_intake(persist_ledger=True, ...)`，并在 `step()` 返回字典中增加 `"intake": intake_summary` 字段；
+   - 在 `CoordRunner.run_daemon()` 入口第一阶段（执行 `acquire_process_lock()` 与 `restore_from_checkpoint()` 之前）即设置 `self._running = True` 并注册 `SIGINT`/`SIGTERM` 信号处理器，消除 `restore_from_checkpoint()` 扫描收件期间收到 `SIGTERM` 时的信号注册竞态。
 2. **`project-control/tools/coord_runner/work_intake.py`**：
    - 修复 `WorkIntakeManager.__init__()` 对相对路径 `intake_root` 的解析逻辑，确保相对路径基于 `self.workspace_root` 解析而非当前工作目录；
    - 在 `WorkIntakeManager._save_ledger()` 中增加内容未变化时的幂等短路返回（`snap.text == payload` 时不重复写盘，且无收件目录且空账本时不创建空文件）；

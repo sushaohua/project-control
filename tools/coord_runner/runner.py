@@ -784,13 +784,21 @@ class CoordRunner:
         self.save_checkpoint()
 
     def run_daemon(self, poll_interval: Optional[float] = None) -> None:
+        """启动后台轮询守护进程模式，入口优先注册 SIGINT/SIGTERM 信号处理以保证启动恢复期间优雅退出。
+
+        参数：
+        - poll_interval (Optional[float])：可选的轮询间隔秒数，默认取配置中的 `poll_interval_seconds`。
+
+        返回值：
+        - None：收到停止信号退出循环后保存检查点并释放单实例锁。
+        """
         interval = poll_interval if poll_interval is not None else self.config.poll_interval_seconds
-        self.state_store.acquire_process_lock()
-        self.restore_from_checkpoint()
         self._running = True
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
+        self.state_store.acquire_process_lock()
         try:
+            self.restore_from_checkpoint()
             while self._running:
                 self.step()
                 time.sleep(interval)
