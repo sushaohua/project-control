@@ -22,10 +22,15 @@
     "REQ-20261105-001@r1": "65bc068701380c1f84a66b4670ca3fb1fc4b8c8602508d07f4ffed68e222ebe5",
     "REQ-20261105-001@r2": "c999c4e2f5622bea63a923d4588b7881c0d25a7a702966ded712f9f2d6363f8a",
     "REQ-20261105-002@r1": "863073a8edaf82282bf6ee321f12e1fd5a98e9c37f78ea93c41276463783a08a",
-    "REQ-20261105-002@r2": "3361190e8e8b4b1846102720ac2945ea3a168aa0b527f2a1a1ff8aab6512b50e"
+    "REQ-20261105-002@r2": "3361190e8e8b4b1846102720ac2945ea3a168aa0b527f2a1a1ff8aab6512b50e",
+    "REQ-20261105-003@r2": "f05e5f287902bbe06085a5e8e0848b9ffe9958a910dd9207766b5138f1d256a5",
+    "REQ-20261105-003@r3": "887284ec25a5887c8e53208eee4431496c5880a742847e78f2aa6005b3fb8aec",
+    "REQ-20261105-003@r4": "d9967df4be6b6334be41f5508c54c94e43498bcbb24070009b7b69e829088629"
   },
   "ingested_instructions": {
     "20261105_coord_intake_trigger_gap@r1:4c52aa0b49ad196362a7443b349b9e3eaee14832b6a6eef12483138de0803e7e": "ISS-20261105-004",
+    "20261105_minimc_v2_upgrade_coord_planning_prompt@r2:d7c9e418a22d7498dfacce736e0189c3ede8fd35f3b6e6d0b99cb6c27af9a0fe": "REQ-20261105-003",
+    "20261105_minimc_v2_upgrade_coord_planning_prompt@r3:dc27bc27aea553ff4c8315bf21a09945dd36f2ac38cc29bed96114c13a31be90": "REQ-20261105-003",
     "20261105_soc_ap_build_and_startup_issues@r1:68dc22edca2751cb5170215ae60fae166d1824c79fbcbb615d82de0c23df85ba": "ISS-20261105-002",
     "20261105_soc_ap_build_and_startup_issues@r1:695fe7ce3e2cd75d0513e14965e296ffcda761db7c6361ac424706fa72c206a0": "ISS-20261105-003",
     "20261105_soc_ap_build_and_startup_issues@r1:df4573135d6057d4a55aee0b361eb6c6f71b8b72c77062c2a6c0393190705f43": "ISS-20261105-001",
@@ -38,6 +43,8 @@
   },
   "submissions": {
     "20261105_coord_intake_trigger_gap@r1": "4e353ffb5450bd7af66f022ce0b0634baeb0987e9261797afcccae56ec57749a",
+    "20261105_minimc_v2_upgrade_coord_planning_prompt@r2": "01687e475a1ca1bbdc7a884f5afe2e5f27b65f5018ed17c49fa2fbf59eb79d71",
+    "20261105_minimc_v2_upgrade_coord_planning_prompt@r3": "4699feade73d9e621b5ead2bade96ba195c488446de6e215bbb9b5276dcfcc80",
     "20261105_soc_ap_build_and_startup_issues@r1": "5660ee81542768228ed17c2a0755ff066cec28665edcd6a5974048a23e3803ea",
     "20261105_twin55_issues_triage_and_remediation_followup@r1": "338ae2674a8aa5382d777a5f1349e7baf6e31c019692b257b1279b82dcfbddd3",
     "20261105_web_hmi_full_closed_loop_qa@r1": "db143168eb57dfd86f889c0b4987437d2b3e3a41f7bfe8688f721a253b3a98b5",
