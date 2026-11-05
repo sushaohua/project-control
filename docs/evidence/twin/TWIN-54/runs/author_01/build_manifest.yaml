@@ -1,12 +1,12 @@
 schema_version: 1
-buildno: build-20261105-001
+buildno: build-20261105-002
 task_id: TWIN-54
 run_id: author_01
 requirement_id: REQ-20261105-001
 demand_id: DEM-20261105-005
 confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
 approval_id: APPR-20261105-003
-generated_at: '2026-11-05T12:15:30+08:00'
+generated_at: '2026-11-05T13:06:00+08:00'
 generated_by:
   role: INTEGRATOR
   session_id: 7812a1f6-5006-4971-a954-802f855cf20a
@@ -14,15 +14,14 @@ generated_by:
 repositories:
   project-control:
     branch: main
-    commit: 1a98934d236bf6ee9d33c92d87e6aa28afd14ea2
-    auto07_candidate_commit: db20f47cab862b1068f45c08eaa9c25bbcfb316e
+    commit: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
   soc-ap:
     branch: main
     commit: 79932746d225bb115010c5545ef3f7499482e137
     clean_worktree: true
   mcu-p3:
     branch: feat/soc-debug
-    commit: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
+    commit: 75f69aa374f543008c706634088d2b4bd10cf97c
     clean_worktree: true
   test_harness:
     branch: main
@@ -49,21 +48,21 @@ mcu_firmware_artifacts:
     probe_id: "0483:3748:75003800120000334C41534E"
     app_flash_base_address: "0x08020000"
     protected_bootloader_range: "0x08000000-0x0801FFFF"
-    version_tag: "V2.0.1-C430 1105"
+    version_tag: "V2.0.1-229D 1105"
     files:
       fw_mc_bin:
-        host_path: "/tmp/aisoc_release_builds/build-20261105-001/artifacts/mc/fw_mc.bin"
+        host_path: "/tmp/aisoc_release_builds/build-20261105-002/artifacts/mc/fw_mc.bin"
         windows_staging_path: "C:\\Users\\EDY\\AppData\\Local\\Temp\\aisoc_build_20261105_001\\fw_mc.bin"
-        size_bytes: 383284
-        sha256: "1e4bf2f50e7e4682444b8e8d35ce05c213427f86c95af5cffaf0081828241241"
+        size_bytes: 383220
+        sha256: "94b495ebe474ac9fcba322156d917f271ef138964e2ca21001ab02eb5a3a0dba"
       marlin_at32_bin:
-        host_path: "/tmp/aisoc_release_builds/build-20261105-001/artifacts/mc/Marlin_AT32.bin"
-        size_bytes: 383156
-        sha256: "d2b998173478bb72651daf7c55497e77cb8cb2c003c6220f05396a189b078963"
+        host_path: "/tmp/aisoc_release_builds/build-20261105-002/artifacts/mc/Marlin_AT32.bin"
+        size_bytes: 383092
+        sha256: "33e44b0fbacddf528a082c588a48369308ea492a95c8f40dbcb91d540af6eb7d"
       marlin_at32_elf:
-        host_path: "/tmp/aisoc_release_builds/build-20261105-001/artifacts/mc/Marlin_AT32.elf"
-        size_bytes: 2396776
-        sha256: "6bdb00ff0e7cda0b8b832ec37aa01a367244ce77bb85998f9b9c060b7c67c709"
+        host_path: "/tmp/aisoc_release_builds/build-20261105-002/artifacts/mc/Marlin_AT32.elf"
+        size_bytes: 2392232
+        sha256: "cbb765fca8a41dd3c355defd5d229870e8862ab3369c938c71fa260bfaf88f00"
   th_board:
     chip: AT32F423CCT7
     chip_uid: 053173C58023C000127C0707
@@ -74,19 +73,19 @@ mcu_firmware_artifacts:
     heater_pwm_safety_lock: "0% (locked by hardware safety constraint)"
     files:
       fw_th_bin:
-        host_path: "/tmp/aisoc_release_builds/build-20261105-001/artifacts/th/fw_th.bin"
+        host_path: "/tmp/aisoc_release_builds/build-20261105-002/artifacts/th/fw_th.bin"
         windows_staging_path: "C:\\Users\\EDY\\AppData\\Local\\Temp\\aisoc_build_20261105_001\\fw_th.bin"
-        size_bytes: 77244
-        sha256: "a2d4a50be058b7d06338d14945cb679f70386a94a4230d1254425b2ce5fe9afc"
+        size_bytes: 77248
+        sha256: "9dc9eb8e05eb53a16471541a896210b42f7bae635913f97e950906f0b89fe11d"
       anchor_bin:
-        host_path: "/tmp/aisoc_release_builds/build-20261105-001/artifacts/th/anchor.bin"
+        host_path: "/tmp/aisoc_release_builds/build-20261105-002/artifacts/th/anchor.bin"
         windows_staging_path: "C:\\Users\\EDY\\AppData\\Local\\Temp\\aisoc_build_20261105_001\\anchor.bin"
         size_bytes: 140
-        sha256: "094343d5a0450020c58bddd13807c0dc4eb86bb444c70f867463c34032df42ef"
+        sha256: "7564309c8fe74ba59a7f836cc877ae9308521a3bc96df3afddc7f6b151440cd7"
       fw_th_elf:
-        host_path: "/tmp/aisoc_release_builds/build-20261105-001/artifacts/th/fw_th.elf"
-        size_bytes: 636008
-        sha256: "1b7a2f923cbea742f1e04c7a7e2f789617b1a62327d2017df32925200f436849"
+        host_path: "/tmp/aisoc_release_builds/build-20261105-002/artifacts/th/fw_th.elf"
+        size_bytes: 636016
+        sha256: "7a9473cb18194745ae807369641653016a314ac70b5898301a11670488f47279"
 
 vmware_soc_ap_artifacts:
   host: "sushaohua@192.168.77.134"
@@ -150,4 +149,4 @@ legacy_evidence_archive:
 
 step5_flash_status:
   flashed_in_this_step: false
-  awaiting_user_authorization_for_exact_hashes: true
+  user_authorized_step5_after_twin56_qa: true

@@ -1,17 +1,17 @@
-# SHA256SUMS for AI-SoC Release Build build-20261105-001 (TWIN-54 / REQ-20261105-001)
+# SHA256SUMS for AI-SoC Release Build build-20261105-002 (TWIN-54 / TWIN-56 / REQ-20261105-001)
 # Source Lock:
-#   project-control: 1a98934d236bf6ee9d33c92d87e6aa28afd14ea2 (AUTO-07 candidate: db20f47cab862b1068f45c08eaa9c25bbcfb316e)
+#   project-control: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
 #   soc-ap:          79932746d225bb115010c5545ef3f7499482e137
-#   mcu-p3:          016e1236af75f6f19282d6b000f4b1b68bd96cc3
+#   mcu-p3:          75f69aa374f543008c706634088d2b4bd10cf97c
 #   test_harness:    d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 
-# --- 1. MCU Firmware Artifacts (Host arm-none-eabi-gcc 9.2.1) ---
-6bdb00ff0e7cda0b8b832ec37aa01a367244ce77bb85998f9b9c060b7c67c709  artifacts/mc/Marlin_AT32.elf
-d2b998173478bb72651daf7c55497e77cb8cb2c003c6220f05396a189b078963  artifacts/mc/Marlin_AT32.bin
-1e4bf2f50e7e4682444b8e8d35ce05c213427f86c95af5cffaf0081828241241  artifacts/mc/fw_mc.bin
-1b7a2f923cbea742f1e04c7a7e2f789617b1a62327d2017df32925200f436849  artifacts/th/fw_th.elf
-a2d4a50be058b7d06338d14945cb679f70386a94a4230d1254425b2ce5fe9afc  artifacts/th/fw_th.bin
-094343d5a0450020c58bddd13807c0dc4eb86bb444c70f867463c34032df42ef  artifacts/th/anchor.bin
+# --- 1. MCU Firmware Artifacts (Host arm-none-eabi-gcc 9.2.1, TWIN-56 16-bit seq fixed) ---
+cbb765fca8a41dd3c355defd5d229870e8862ab3369c938c71fa260bfaf88f00  artifacts/mc/Marlin_AT32.elf
+33e44b0fbacddf528a082c588a48369308ea492a95c8f40dbcb91d540af6eb7d  artifacts/mc/Marlin_AT32.bin
+94b495ebe474ac9fcba322156d917f271ef138964e2ca21001ab02eb5a3a0dba  artifacts/mc/fw_mc.bin
+7a9473cb18194745ae807369641653016a314ac70b5898301a11670488f47279  artifacts/th/fw_th.elf
+9dc9eb8e05eb53a16471541a896210b42f7bae635913f97e950906f0b89fe11d  artifacts/th/fw_th.bin
+7564309c8fe74ba59a7f836cc877ae9308521a3bc96df3afddc7f6b151440cd7  artifacts/th/anchor.bin
 
 # --- 2. VMware SoC-AP & Web HMI Artifacts (VMware 192.168.77.134 GCC 15.2.0) ---
 76f627dc2873300499ee32a6797403e391579be2515772b9ac1ddac0f608a51b  vmware/build/runtime/aisoc_supervisor
