@@ -1,0 +1,377 @@
+{
+  "request": {
+    "repository": "mcu-p3",
+    "candidate_commit": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+    "task_revision": 1,
+    "task_id": "TWIN-56",
+    "workspace": "/home/sushaohua/workspace/ai_soc_project",
+    "commands": [
+      {
+        "kind": "test",
+        "subpath": "mcu-p3",
+        "command": "gcc -std=c11 -O2 -Wall -Wextra -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -I motion-controller-mcu/project/inc -I motion-controller-mcu/project/delay -I motion-controller-mcu/project/marlin -I motion-controller-mcu/project/marlin/marlin_core -I motion-controller-mcu/project/marlin/marlin_module -I motion-controller-mcu/libraries/drivers/inc -I motion-controller-mcu/libraries/cmsis/cm4/core_support -I motion-controller-mcu/libraries/cmsis/cm4/device_support motion-controller-mcu/project/src/minimc_proto.c motion-controller-mcu/project/src/test_twin44_mc_debug.c -o /tmp/test_twin47 && /tmp/test_twin47 && rm -f /tmp/test_twin47 && gcc -std=c11 -O2 -Wall -Wextra -no-pie -fno-pie -DAT32F423CCT7 -DUSE_STDPERIPH_DRIVER -DAT_START_F423_V1 -I color-engine-mcu/io_toggle/inc -I color-engine-mcu/io_toggle/inc/temperature_control -I color-engine-mcu/io_toggle/at32f423_board -I color-engine-mcu/io_toggle/src -I color-engine-mcu/io_toggle/src/app -I color-engine-mcu/io_toggle/libraries/cmsis/cm4/core_support -I color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support -I color-engine-mcu/io_toggle/libraries/drivers/inc color-engine-mcu/io_toggle/src/bsp/usart.c color-engine-mcu/io_toggle/src/app/minimc_proto.c color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c -o /tmp/test_twin48 && /tmp/test_twin48 && rm -f /tmp/test_twin48 && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --self-test",
+        "id": "build_and_test_mc_and_th_u16_seq_debug"
+      }
+    ],
+    "targets": [
+      {
+        "name": "project-control",
+        "commit": "99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+        "ref": "main"
+      },
+      {
+        "name": "soc-ap",
+        "commit": "79932746d225bb115010c5545ef3f7499482e137",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+        "ref": "main"
+      },
+      {
+        "name": "mcu-p3",
+        "commit": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+        "ref": "feat/soc-debug"
+      },
+      {
+        "name": "test_harness",
+        "commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+        "ref": "main"
+      }
+    ],
+    "contract": {
+      "id": "TWIN-56",
+      "title": "TWIN-56 MC/TH串口调试日志[MC-DBG]/[TH-DBG] 16-bit seq截断修复与MC本地级联号段隔离",
+      "revision": 1,
+      "plan_revision": "vmware-soc-twin-20261105",
+      "task_kind": "implementation",
+      "development_stage": "vmware-twin",
+      "dispatchable": true,
+      "status": "Review",
+      "blocked": false,
+      "planning_status": "active",
+      "owner": "7812a1f6-5006-4971-a954-802f855cf20a",
+      "proposed_owner": "ENG-MC",
+      "executor": {
+        "role": "ENG-MC",
+        "agent_id": "7812a1f6-5006-4971-a954-802f855cf20a",
+        "run_id": "author_01"
+      },
+      "qa_policy": "streamlined-v1",
+      "reviewer": [
+        "QA"
+      ],
+      "verifier": null,
+      "integrator": "INTEGRATOR",
+      "requirement_id": "REQ-20261105-001",
+      "demand_id": "DEM-20261105-005",
+      "confirmation_id": "CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105",
+      "approval_id": "APPR-20261105-003",
+      "accepted_scope": "C unit-test verification in Docker QA sandbox (gcc) of MC (AT32F435) and TH (AT32F423) 16-bit sequence number logging in [MC-DBG] (minimc_proto.h/c) and [TH-DBG] (usart.c), MC local cascade initial sequence offset s_mc_th_seq = 0x0100U in minimc_proto_init(), and debug_reconciliation_probe.py --self-test compatibility. Cross-compiler ELF build and physical MCU USB/UART HIL are not applicable in qa-sandbox:20261029 (host arm-none-eabi-gcc build is verified in author_01 and physical HIL in TWIN-55): qa-sandbox:20261029 provides host GCC/Python only and no physical MCU hardware; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass.",
+      "review_assignments": {
+        "reviewer_sessions": [
+          {
+            "role": "QA",
+            "platform": "codex",
+            "model": "gpt-6-luna",
+            "planned_session_alias": "planned-qa-twin-56"
+          }
+        ],
+        "verifier_session": null,
+        "integrator_session": null
+      },
+      "primary_work_package": "TASK-002",
+      "related_work_packages": [
+        "TASK-007",
+        "TASK-010"
+      ],
+      "depends_on": [
+        "TWIN-47",
+        "TWIN-48"
+      ],
+      "dependency_conditions": [
+        {
+          "task": "TWIN-47",
+          "accepted_version": "project-control=17e0887da07ceb3b017623b791b6a6999e837c79; soc-ap=c2c5a228c81488bca2178488a4e8a109b0472d72; mcu-p3=d86041814689b2f353d6fe0b372d31689b826a98; test_harness=30c21f74e74179994eb475c38cc4afc2c1427a26",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-47/runs/qa_03/qa_review_report.md",
+          "required": "继承TWIN-47 MC端控制命令结构与[MC-DBG]日志基线"
+        },
+        {
+          "task": "TWIN-48",
+          "accepted_version": "project-control=17e0887da07ceb3b017623b791b6a6999e837c79; soc-ap=c2c5a228c81488bca2178488a4e8a109b0472d72; mcu-p3=016e1236af75f6f19282d6b000f4b1b68bd96cc3; test_harness=30c21f74e74179994eb475c38cc4afc2c1427a26",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-48/runs/qa_01/qa_review_report.md",
+          "required": "继承TWIN-48 TH端级联控制与[TH-DBG]日志基线"
+        }
+      ],
+      "scope_status": "mapped",
+      "allowed_repositories": [
+        "mcu-p3",
+        "project-control"
+      ],
+      "write_scope": {
+        "mcu-p3": [
+          "motion-controller-mcu/project/inc/minimc_proto.h",
+          "motion-controller-mcu/project/src/minimc_proto.c",
+          "motion-controller-mcu/project/src/test_twin44_mc_debug.c",
+          "color-engine-mcu/io_toggle/src/bsp/usart.c",
+          "color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c"
+        ],
+        "project-control": [
+          "docs/evidence/twin/TWIN-56/**"
+        ]
+      },
+      "allowed_paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c",
+        "mcu-p3/motion-controller-mcu/project/src/test_twin44_mc_debug.c",
+        "mcu-p3/color-engine-mcu/io_toggle/src/bsp/usart.c",
+        "mcu-p3/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c",
+        "project-control/docs/evidence/twin/TWIN-56/**"
+      ],
+      "forbidden_paths": [
+        "soc-ap/**",
+        "test_harness/**",
+        "boot/**"
+      ],
+      "source_baseline": {
+        "project-control": "99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0",
+        "soc-ap": "79932746d225bb115010c5545ef3f7499482e137",
+        "mcu-p3": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+        "test_harness": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60"
+      },
+      "base_commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+      "branch": "feat/soc-debug",
+      "candidate_commit": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+      "dispatch_binding": {
+        "source_commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+        "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "consumed_artifact_versions": {
+          "arch_breakdown": "842d813e60688e081279b83e539a2aee8a10885817233db0e7c734b84fa1380a"
+        }
+      },
+      "protocol_input": {
+        "path": "project-control/docs/architecture/mcu_dbg_seq_u16_fix_arch_breakdown_20261105.md",
+        "sha256": "842d813e60688e081279b83e539a2aee8a10885817233db0e7c734b84fa1380a",
+        "revision": 1
+      },
+      "icd_versions": [
+        {
+          "path": "project-control/docs/architecture/mcu_dbg_seq_u16_fix_arch_breakdown_20261105.md",
+          "version": 1
+        }
+      ],
+      "read_sources": [
+        "project-control/.agents/rules/repository_rule_sources.json",
+        "project-control/.agents/rules/repository_rule_boundaries.md",
+        "mcu-p3/.repo-rules/AGENTS.md",
+        "mcu-p3/.repo-rules/SOURCE.json",
+        "project-control/.agents/rules/c_cpp_coding_standard.md",
+        "project-control/.agents/rules/code_documentation_standard.md",
+        "project-control/docs/architecture/mcu_dbg_seq_u16_fix_arch_breakdown_20261105.md"
+      ],
+      "worktree": "mcu-p3",
+      "lease": {
+        "owner": "7812a1f6-5006-4971-a954-802f855cf20a",
+        "task_revision": 1,
+        "lease_id": "lease-twin-56-20261105-01",
+        "expires_at": "2026-11-05T20:00:00+08:00"
+      },
+      "resources": [
+        {
+          "resource": "mcu-host-gcc-test-env",
+          "location": "mcu-p3",
+          "exclusive": true,
+          "pending": null
+        }
+      ],
+      "budget": {
+        "planned_checkpoint_minutes": 30,
+        "max_evidence_based_corrections": 2,
+        "on_limit": "保存证据交COORD"
+      },
+      "checkpoint": "开工前绑定；C模块单测与交叉编译自检；独立沙箱与QA审查；收件",
+      "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+      "readiness_pending": [],
+      "deliverables": {
+        "artifacts": [
+          "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+          "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c",
+          "mcu-p3/motion-controller-mcu/project/src/test_twin44_mc_debug.c",
+          "mcu-p3/color-engine-mcu/io_toggle/src/bsp/usart.c",
+          "mcu-p3/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c"
+        ],
+        "record": "docs/evidence/twin/TWIN-56/runs/author_01/result.md"
+      },
+      "rollback": {
+        "steps": [
+          "git -C mcu-p3 checkout -- motion-controller-mcu/ color-engine-mcu/io_toggle/"
+        ]
+      },
+      "handoff": {
+        "receiver_role": "COORD",
+        "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+        "transport": "docs",
+        "evidence_location": "docs/evidence/twin/TWIN-56",
+        "acknowledgement": "pending"
+      },
+      "verification": {
+        "commands": [
+          {
+            "id": "build_and_test_mc_and_th_u16_seq_debug",
+            "cwd": "mcu-p3",
+            "command": "gcc -std=c11 -O2 -Wall -Wextra -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -I motion-controller-mcu/project/inc -I motion-controller-mcu/project/delay -I motion-controller-mcu/project/marlin -I motion-controller-mcu/project/marlin/marlin_core -I motion-controller-mcu/project/marlin/marlin_module -I motion-controller-mcu/libraries/drivers/inc -I motion-controller-mcu/libraries/cmsis/cm4/core_support -I motion-controller-mcu/libraries/cmsis/cm4/device_support motion-controller-mcu/project/src/minimc_proto.c motion-controller-mcu/project/src/test_twin44_mc_debug.c -o /tmp/test_twin47 && /tmp/test_twin47 && rm -f /tmp/test_twin47 && gcc -std=c11 -O2 -Wall -Wextra -no-pie -fno-pie -DAT32F423CCT7 -DUSE_STDPERIPH_DRIVER -DAT_START_F423_V1 -I color-engine-mcu/io_toggle/inc -I color-engine-mcu/io_toggle/inc/temperature_control -I color-engine-mcu/io_toggle/at32f423_board -I color-engine-mcu/io_toggle/src -I color-engine-mcu/io_toggle/src/app -I color-engine-mcu/io_toggle/libraries/cmsis/cm4/core_support -I color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support -I color-engine-mcu/io_toggle/libraries/drivers/inc color-engine-mcu/io_toggle/src/bsp/usart.c color-engine-mcu/io_toggle/src/app/minimc_proto.c color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c -o /tmp/test_twin48 && /tmp/test_twin48 && rm -f /tmp/test_twin48 && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --self-test",
+            "expected": "容器/宿主gcc编译minimc_proto.c、test_twin44_mc_debug.c、usart.c、test_twin45_th_debug.c 0错误；验证MC本地minimc_proto_send_th_gcode首帧seq=257(0x0101U)及AP请求seq>255(如seq=301)在[MC-DBG]与[TH-DBG]中原样输出16-bit完整十进制数值无8-bit截断；全部正反例与debug_reconciliation_probe.py --self-test 100% PASS",
+            "availability": "available"
+          }
+        ],
+        "positive_cases": [
+          "MC minimc_proto.c与TH usart.c将[MC-DBG]/[TH-DBG]中的seq、ack_seq、last_seq、s_relay_seq升位为uint16_t，完整提取frame[8] | (frame[9] << 8U)，seq > 255原样输出无模256截断",
+          "minimc_proto_init()恢复s_mc_th_seq = 0x0100U，使MC本地发起的0x1C级联G-code帧从seq=257(0x0101U)起步，与AP序列号清晰区分"
+        ],
+        "negative_cases": [
+          "收到高位16-bit seq(>255)的CRC错误帧或未知命令帧时，输出[MC-DBG]/[TH-DBG] ERR或NACK日志且其中的16-bit seq保持完整无截断，后续合法帧立即恢复",
+          "调试环形缓冲满时非阻塞拒绝写入并累加丢包计数，排空后恢复正常16-bit seq输出"
+        ]
+      },
+      "required_evidence_level": "server-sandbox-and-independent-review",
+      "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+      "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+      "updated": "2026-11-05T12:53:40+08:00"
+    },
+    "run_dir": "/tmp/qa_TWIN-56_xe7ksfgn",
+    "timeout_seconds": 1140,
+    "sandbox_command": [
+      "/usr/bin/python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+      "--config",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+      "--task",
+      "TWIN-56",
+      "--revision",
+      "1",
+      "--output-dir",
+      "/tmp/qa_TWIN-56_xe7ksfgn/evidence",
+      "--repo-commit",
+      "project-control=99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0:main",
+      "--repo-commit",
+      "soc-ap=79932746d225bb115010c5545ef3f7499482e137:main",
+      "--repo-commit",
+      "mcu-p3=891a8bb252814c83992a49b01fbe11ba83b92a1f:feat/soc-debug",
+      "--repo-commit",
+      "test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60:main",
+      "--cmd",
+      "test:mcu-p3:gcc -std=c11 -O2 -Wall -Wextra -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -I motion-controller-mcu/project/inc -I motion-controller-mcu/project/delay -I motion-controller-mcu/project/marlin -I motion-controller-mcu/project/marlin/marlin_core -I motion-controller-mcu/project/marlin/marlin_module -I motion-controller-mcu/libraries/drivers/inc -I motion-controller-mcu/libraries/cmsis/cm4/core_support -I motion-controller-mcu/libraries/cmsis/cm4/device_support motion-controller-mcu/project/src/minimc_proto.c motion-controller-mcu/project/src/test_twin44_mc_debug.c -o /tmp/test_twin47 && /tmp/test_twin47 && rm -f /tmp/test_twin47 && gcc -std=c11 -O2 -Wall -Wextra -no-pie -fno-pie -DAT32F423CCT7 -DUSE_STDPERIPH_DRIVER -DAT_START_F423_V1 -I color-engine-mcu/io_toggle/inc -I color-engine-mcu/io_toggle/inc/temperature_control -I color-engine-mcu/io_toggle/at32f423_board -I color-engine-mcu/io_toggle/src -I color-engine-mcu/io_toggle/src/app -I color-engine-mcu/io_toggle/libraries/cmsis/cm4/core_support -I color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support -I color-engine-mcu/io_toggle/libraries/drivers/inc color-engine-mcu/io_toggle/src/bsp/usart.c color-engine-mcu/io_toggle/src/app/minimc_proto.c color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c -o /tmp/test_twin48 && /tmp/test_twin48 && rm -f /tmp/test_twin48 && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --self-test"
+    ],
+    "request_ref": {
+      "path": "/tmp/qa_TWIN-56_xe7ksfgn/request.json",
+      "sha256": "cff3433709bb2dc30103c65022e7811e2ee18f4c6813da2b293aca9216f9f98b"
+    }
+  },
+  "server_qa": {
+    "task_id": "TWIN-56",
+    "task_revision": 1,
+    "source": "server-pinned-commits",
+    "fresh_checkout": true,
+    "sandbox": {
+      "kind": "container",
+      "container_id": "469f5017c805",
+      "id": "TWIN-56_run_132214_20261105_052214",
+      "image": "qa-sandbox:20261029",
+      "path": "/tmp/qa_sandboxes/TWIN-56_run_132214_20261105_052214",
+      "developer_mounts": [],
+      "container_inspect": {
+        "id": "469f5017c80565e3e22bcebd7832c468c1215fbd2b6a1d3d8bfa64dc26383604",
+        "image": "qa-sandbox:20261029",
+        "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "created": "2026-11-05T05:22:33.141170285Z",
+        "state": "exited",
+        "mounts": [
+          {
+            "Type": "bind",
+            "Source": "/tmp/qa_sandboxes/TWIN-56_run_132214_20261105_052214",
+            "Destination": "/workspace",
+            "Mode": "ro",
+            "RW": false,
+            "Propagation": "rprivate"
+          }
+        ]
+      }
+    },
+    "server_lock": {
+      "path": "/tmp/qa_TWIN-56_xe7ksfgn/evidence/server_lock.json",
+      "sha256": "90934c986b215e34dec27cd8db7a075f80cae1d77400895836d588b220f8aa9a"
+    },
+    "checkout_log": {
+      "path": "/tmp/qa_TWIN-56_xe7ksfgn/evidence/checkout.log",
+      "sha256": "a740671d4fca348a38d271da4395e62609314de96786dffd1b01a4681bba7c46"
+    },
+    "runtime_log": {
+      "path": "/tmp/qa_TWIN-56_xe7ksfgn/evidence/runtime.log",
+      "sha256": "882317ffe2c375e35ee83765d8cb60635e3f067b94b7d24473236822a68f1072"
+    },
+    "server_verdict": {
+      "path": "/tmp/qa_TWIN-56_xe7ksfgn/evidence/server_verdict.json",
+      "sha256": "6390828d7da76fbed44c4e41a50be32d13518780931512519a71798b93b5ba28"
+    },
+    "tool_versions": {
+      "git": "git version 2.25.1",
+      "python": "Python 3.8.10"
+    },
+    "build_results": [],
+    "test_results": [
+      {
+        "command": "gcc -std=c11 -O2 -Wall -Wextra -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -I motion-controller-mcu/project/inc -I motion-controller-mcu/project/delay -I motion-controller-mcu/project/marlin -I motion-controller-mcu/project/marlin/marlin_core -I motion-controller-mcu/project/marlin/marlin_module -I motion-controller-mcu/libraries/drivers/inc -I motion-controller-mcu/libraries/cmsis/cm4/core_support -I motion-controller-mcu/libraries/cmsis/cm4/device_support motion-controller-mcu/project/src/minimc_proto.c motion-controller-mcu/project/src/test_twin44_mc_debug.c -o /tmp/test_twin47 && /tmp/test_twin47 && rm -f /tmp/test_twin47 && gcc -std=c11 -O2 -Wall -Wextra -no-pie -fno-pie -DAT32F423CCT7 -DUSE_STDPERIPH_DRIVER -DAT_START_F423_V1 -I color-engine-mcu/io_toggle/inc -I color-engine-mcu/io_toggle/inc/temperature_control -I color-engine-mcu/io_toggle/at32f423_board -I color-engine-mcu/io_toggle/src -I color-engine-mcu/io_toggle/src/app -I color-engine-mcu/io_toggle/libraries/cmsis/cm4/core_support -I color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support -I color-engine-mcu/io_toggle/libraries/drivers/inc color-engine-mcu/io_toggle/src/bsp/usart.c color-engine-mcu/io_toggle/src/app/minimc_proto.c color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c -o /tmp/test_twin48 && /tmp/test_twin48 && rm -f /tmp/test_twin48 && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --self-test",
+        "exit_code": "0",
+        "subpath": "mcu-p3",
+        "duration": "0.81s",
+        "output": "========================================================================\nTWIN-44 & TWIN-47 MC USART2 921600, Control Cmds & 0x1C Verification\n========================================================================\n[RUN ] test_usart2_921600_reconfig\n[PASS] test_usart2_921600_reconfig\n[RUN ] test_ring_buffer_trunc_drop_and_recovery\n[PASS] test_ring_buffer_trunc_drop_and_recovery\n[RUN ] test_honest_minimc_v2_queries_and_nack\n[PASS] test_honest_minimc_v2_queries_and_nack\n[RUN ] test_non_intrusive_notify_and_fault_sync\n[PASS] test_non_intrusive_notify_and_fault_sync\n[RUN ] test_tx_fail_suppresses_ack_and_recovers\n[PASS] test_tx_fail_suppresses_ack_and_recovers\n[RUN ] test_relay_timeout_crc_err_and_recovery\n[PASS] test_relay_timeout_crc_err_and_recovery\n[RUN ] test_th_relay_correlation_and_nack\n[PASS] test_th_relay_correlation_and_nack\n[RUN ] test_twin47_temp_home_move_stop\n[PASS] test_twin47_temp_home_move_stop\n[RUN ] test_twin47_job_filament_level_gcode\n[PASS] test_twin47_job_filament_level_gcode\n------------------------------------------------------------------------\nAll 9 TWIN-44/TWIN-47 test suites PASSED!\n========================================================================\n========================================================================\nTWIN-45 / TWIN-48 TH USART1 921600 Cascade & Control Suite\n========================================================================\n[RUN ] test_usart1_921600_and_usart3_115200_init\n[PASS] test_usart1_921600_and_usart3_115200_init\n[RUN ] test_cascade_rx_and_tx_logging\n[PASS] test_cascade_rx_and_tx_logging\n[RUN ] test_periodic_state_and_dynamic_sync\n[PASS] test_periodic_state_and_dynamic_sync\n[RUN ] test_negative_crc_err_bad_frame_and_recovery\n[PASS] test_negative_crc_err_bad_frame_and_recovery\n[RUN ] test_negative_usart1_send_raw_fail_and_recovery\n[PASS] test_negative_usart1_send_raw_fail_and_recovery\n[RUN ] test_negative_usart3_trunc_and_recovery\n[PASS] test_negative_usart3_trunc_and_recovery\n[RUN ] test_negative_usart3_ring_full_drop_and_recovery\n[PASS] test_negative_usart3_ring_full_drop_and_recovery\n[RUN ] test_twin48_set_temp_and_no_false_safety_lock\n[PASS] test_twin48_set_temp_and_no_false_safety_lock\n[RUN ] test_twin48_filament_and_stop\n[PASS] test_twin48_filament_and_stop\n[RUN ] test_twin48_gcode_queue_and_send_quick\n[PASS] test_twin48_gcode_queue_and_send_quick\n------------------------------------------------------------------------\nAll 10 TWIN-45 / TWIN-48 test suites PASSED!\n========================================================================\n[PASS] debug_reconciliation_probe.py self-test suite passed (11 fixtures generated).\n\nIn file included from motion-controller-mcu/libraries/cmsis/cm4/device_support/at32f435_437.h:428,\n                 from motion-controller-mcu/project/inc/at32f435_437_wk_config.h:37,\n                 from motion-controller-mcu/project/inc/wk_dma.h:36,\n                 from motion-controller-mcu/project/src/minimc_proto.c:2:\nmotion-controller-mcu/libraries/cmsis/cm4/core_support/core_cm4.h: In function '__NVIC_SetVector':\nmotion-controller-mcu/libraries/cmsis/cm4/core_support/core_cm4.h:1913:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]\n 1913 |   uint32_t *vectors = (uint32_t *)SCB->VTOR;\n      |                       ^\nmotion-controller-mcu/libraries/cmsis/cm4/core_support/core_cm4.h: In function '__NVIC_GetVector':\nmotion-controller-mcu/libraries/cmsis/cm4/core_support/core_cm4.h:1929:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]\n 1929 |   uint32_t *vectors = (uint32_t *)SCB->VTOR;\n      |                       ^\nIn file included from motion-controller-mcu/libraries/cmsis/cm4/device_support/at32f435_437.h:428,\n                 from motion-controller-mcu/project/marlin/configure.h:4,\n                 from motion-controller-mcu/project/marlin/marlin_core/planner.h:28,\n                 from motion-controller-mcu/project/src/test_twin44_mc_debug.c:17:\nmotion-controller-mcu/libraries/cmsis/cm4/core_support/core_cm4.h: In function '__NVIC_SetVector':\nmotion-controller-mcu/libraries/cmsis/cm4/core_support/core_cm4.h:1913:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]\n 1913 |   uint32_t *vectors = (uint32_t *)SCB->VTOR;\n      |                       ^\nmotion-controller-mcu/libraries/cmsis/cm4/core_support/core_cm4.h: In function '__NVIC_GetVector':\nmotion-controller-mcu/libraries/cmsis/cm4/core_support/core_cm4.h:1929:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]\n 1929 |   uint32_t *vectors = (uint32_t *)SCB->VTOR;\n      |                       ^"
+      }
+    ],
+    "passed": true,
+    "timestamp": "2026-11-05T05:22:36.581800+00:00",
+    "path": "/tmp/qa_TWIN-56_xe7ksfgn/evidence/server_qa.json",
+    "sha256": "a896bb2ae6a6a0021f2340552aecdd0507178d28be96b680e8eeb1ab670b9587"
+  },
+  "diffs": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_sandboxes/TWIN-56_run_132214_20261105_052214/project-control",
+      "base_commit": "99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0",
+      "candidate_commit": "99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0",
+      "diff": {
+        "path": "/tmp/qa_TWIN-56_xe7ksfgn/diffs/project-control.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "soc-ap",
+      "source": "/tmp/qa_sandboxes/TWIN-56_run_132214_20261105_052214/soc-ap",
+      "base_commit": "79932746d225bb115010c5545ef3f7499482e137",
+      "candidate_commit": "79932746d225bb115010c5545ef3f7499482e137",
+      "diff": {
+        "path": "/tmp/qa_TWIN-56_xe7ksfgn/diffs/soc-ap.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "mcu-p3",
+      "source": "/tmp/qa_sandboxes/TWIN-56_run_132214_20261105_052214/mcu-p3",
+      "base_commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+      "candidate_commit": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+      "diff": {
+        "path": "/tmp/qa_TWIN-56_xe7ksfgn/diffs/mcu-p3.patch",
+        "sha256": "5faf3da7a23352307b852d33bc8a51f376f8922566721cbf5e229150c905418e"
+      }
+    },
+    {
+      "repository": "test_harness",
+      "source": "/tmp/qa_sandboxes/TWIN-56_run_132214_20261105_052214/test_harness",
+      "base_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "candidate_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "diff": {
+        "path": "/tmp/qa_TWIN-56_xe7ksfgn/diffs/test_harness.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

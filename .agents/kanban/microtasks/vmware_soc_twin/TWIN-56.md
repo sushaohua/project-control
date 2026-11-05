@@ -6,9 +6,9 @@ plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
-planning_status: active
+planning_status: closed
 owner: 7812a1f6-5006-4971-a954-802f855cf20a
 proposed_owner: ENG-MC
 executor:
@@ -31,6 +31,18 @@ review_assignments:
       platform: codex
       model: gpt-6-luna
       planned_session_alias: planned-qa-twin-56
+      session: 01a1aa28-b5a7-70b1-901d-74be17e64077
+      reviewer_session: 01a1aa28-b5a7-70b1-901d-74be17e64077
+      commit_sha: 891a8bb252814c83992a49b01fbe11ba83b92a1f
+      session_evidence:
+        path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-56/runs/qa_03/codex_events.jsonl
+        sha256: cae4a4424acfe324a0af77f16e8acf019c44129881cec51912eb5f6d710e3050
+      decision: APPROVED
+      reviewed_task_revision: 1
+      artifact_version: project-control=99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0; soc-ap=79932746d225bb115010c5545ef3f7499482e137; mcu-p3=891a8bb252814c83992a49b01fbe11ba83b92a1f; test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+      report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-56/runs/qa_03/qa_review_report.md
+      evidence: docs/evidence/twin/TWIN-56/runs/qa_03/qa_review_report.md
+      report_sha256: 3766b355264f0259f2c4bb665a4a714dc896bd692eaa45fda9ddb2bafce0b377
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-002
@@ -74,13 +86,13 @@ forbidden_paths:
   - test_harness/**
   - boot/**
 source_baseline:
-  project-control: 986f963da76a9fa243d997634ffa9fc9aaf74141
+  project-control: 99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0
   soc-ap: 79932746d225bb115010c5545ef3f7499482e137
   mcu-p3: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
 branch: feat/soc-debug
-candidate_commit: f9bff9c01fb7652aa04fd6a3d93dcbf5cbbc8419
+candidate_commit: 891a8bb252814c83992a49b01fbe11ba83b92a1f
 dispatch_binding:
   source_commit: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -135,7 +147,7 @@ handoff:
   receiver_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-56
-  acknowledgement: pending
+  acknowledgement: accepted
 verification:
   commands:
     - id: build_and_test_mc_and_th_u16_seq_debug
