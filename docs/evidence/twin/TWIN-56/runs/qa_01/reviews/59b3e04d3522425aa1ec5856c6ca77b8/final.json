@@ -1,0 +1,16 @@
+{
+  "task_id": "TWIN-56",
+  "task_revision": 1,
+  "candidate_commit": "75f69aa374f543008c706634088d2b4bd10cf97c",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "定向差异、锁定证据及其哈希已核对。发现接受条款中的环形缓冲满行为不符合要求；另外，高位 seq 的负向日志缺少直接断言。评审说明未另存为文件：当前工作区为只读。",
+  "findings": [
+    "阻断：接受条款要求环形缓冲满时输出带完整 16-bit seq 的 ERR/NACK 日志并可恢复。MC 调试日志环满时的测试只验证写入被拒、drop 计数增加及排空后恢复；候选源码没有在该满缓冲路径输出 ERR/NACK。因此该条款已被源码和测试证据证明不符合。",
+    "阻断证据缺失：测试覆盖 CRC 错误和未知命令，但对应断言使用低位 seq（如 seq=6）；TH CRC 错误断言也未证明 seq>255。虽源码错误日志路径提取了 frame[8:9]，仍缺少接受范围要求的高位 seq 负向日志直接验证。"
+  ],
+  "accepted_scope": "审阅 TWIN-56 revision 1 锁定候选及接受的五个 MCU 文件，核查 MC/TH 16-bit 日志、MC 本地级联起始 seq、正向/负向/恢复行为及规定 GCC 与 probe 自测证据。server verdict、runtime log 和 request 的 SHA256 与索引一致；索引指定的整条命令记录 exit code 0，含两端套件与 probe 自测通过。交叉编译 ELF 构建和实体 MCU USB/UART HIL 明确排除在本验收范围外，本审阅不声称这些硬件验证已通过。",
+  "unexecuted": [
+    "接受范围内缺少 seq>255 的 CRC 错误、未知命令及环满 ERR/NACK 日志断言；只读审阅未补跑或修改测试。"
+  ]
+}
