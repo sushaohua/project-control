@@ -1,0 +1,75 @@
+schema_version: 1
+id: FEAT-20261104-002
+revision: 3
+kind: feature
+enabled: true
+title: VMware/AP↔MC 业务 UART 统一至921600。
+objective: 'VMware/AP↔MC 业务 UART 统一至921600。
+
+  参考需求确认单 project-control/docs/planning/vmware_mc_921600_requirement_confirmation_20261103.md，将
+  VMware/AP 与 MC 之间的业务串口默认及运行波特率由 115200 统一调整为 921600 8N1 无流控，不修改 Bootloader，并在两项功能交付后按四项已确认
+  QA 选择开展合并验收。'
+source_refs:
+  submission_id: SUB-20261104-001
+  submission_revision: 1
+  instruction_anchor: instruction_2
+  submission_path: project-control/docs/work_intake/submissions/SUB-20261104-001.md
+  submission_sha256: 9058016613a4a9ce4ba17c6dbaeb5463f5cd79f015794950efffc32ef91b594f
+  instruction_sha256: 2aeaa9ea2d2fbe70196c7793c05bc85ea3da7905296db22d8d24f455bd55f332
+  verbatim_instruction: 'VMware/AP↔MC 业务 UART 统一至921600。
+
+    参考需求确认单 project-control/docs/planning/vmware_mc_921600_requirement_confirmation_20261103.md，将
+    VMware/AP 与 MC 之间的业务串口默认及运行波特率由 115200 统一调整为 921600 8N1 无流控，不修改 Bootloader，并在两项功能交付后按四项已确认
+    QA 选择开展合并验收。'
+  common_constraints:
+  - '{''新任务显式 qa_policy'': ''streamlined-v1；未迁移旧任务继续 legacy，按切换记录逐卡处理。特殊变更的必要审查及真实
+    HIL 要求保留''}'
+  - 读取交接文档所引用的两份需求确认单。概要说明范围、角色分工、依赖、兼容/回退和验收方法；数值及已确认目标不重复询问。概要确认后再安排业务实现
+  - 沿用已确认的四项 QA 选择：使用现有 VMware并安排独占窗口/冻结快照；两项功能交付后首次完整验收；已有 MC/TH及完整台架；自动生成制品和烧录计划，由授权人员确认并烧录，再自动测试
+  - 工程实现、作者自检和集成按角色委派。正式 QA 使用真实独立 Codex 会话，普通子 Agent 不能代替。遵守 COORD 代码写入边界，不代写业务代码，不扩大到
+    Bootloader或未授权硬件操作
+  - 根仓和管理仓沿用 main，不默认另建专项分支；其他仓遵守各自规定分支。保留他人改动，只提交授权范围内成果
+  common_constraints_sha256: ba4a95df9b0638751e6834af58adc40121cfb7a99febe06b9e45d030e2f3ea1a
+demand_ref:
+  demand_id: DEM-20261104-002
+  confirmation_id: CONFIRM-DEBUG-BAUD-20261104
+  confirmation_revision: 2
+  confirmation_path: project-control/docs/planning/debug_and_921600_merged_implementation_summary_20261104.md
+  confirmation_sha256: c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec
+reported_by:
+  actor_type: HUMAN
+  actor_id: sushaohua
+  source_channel: coord_interactive_session
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+authorization_refs:
+- path: project-control/docs/work_intake/submissions/SUB-20261104-001.md
+  revision: 1
+  sha256: 9058016613a4a9ce4ba17c6dbaeb5463f5cd79f015794950efffc32ef91b594f
+approval_refs:
+- approval_id: APPR-20261104-001
+  revision: 1
+  path: project-control/docs/work_intake/approvals/APPR-20261104-001.yaml
+  sha256: 52aaedc4ebad17c60ad9a2af0e0d93ee73c23c3084b7e6fa68cd81720c10b91e
+  bound_confirmation_revision: 2
+  bound_confirmation_sha256: c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec
+  approved_scope: full_batch_approval
+requested_action: execute
+priority_hint: P2
+related_ids:
+  engineering_tasks:
+  - TWIN-43
+  - TWIN-44
+  - TWIN-46
+  arch_breakdown:
+    id: ARCH-BREAKDOWN-DEBUG-921600-20261104
+    revision: 5
+    arch_session: 433026bf-a1ff-4863-8f3e-7a5f43b016ff
+    path: project-control/docs/architecture/debug_reconciliation_and_921600_arch_breakdown_20261104.md
+    sha256: 256a0c4cbde4434b30774881bc48c6f769037eac30e4e15ece27514ac3be56b5
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: ENG-FWD
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: false

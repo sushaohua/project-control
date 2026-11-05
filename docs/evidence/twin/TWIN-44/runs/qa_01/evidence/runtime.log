@@ -1,0 +1,22 @@
+=== Docker Container Inspect: c006a9d8b3a3 ===
+{
+  "id": "c006a9d8b3a34d8a64b653b0f90487e9578966cbf5e9c452edc6d60ba259fad5",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-04T03:11:22.546688592Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-44_run_111104_20261104_031104",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (mcu-p3/motion-controller-mcu) make -j4 -> 2
+
+mkdir: cannot create directory 'build': Read-only file system
+make: *** [Makefile:11: all] Error 1

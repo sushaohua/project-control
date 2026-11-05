@@ -1,0 +1,369 @@
+{
+  "request": {
+    "repository": "soc-ap",
+    "candidate_commit": "75f8a1a670edabb21c8d3dfc79243e06f73099af",
+    "task_revision": 1,
+    "task_id": "TWIN-51",
+    "workspace": "/home/sushaohua/workspace/ai_soc_project",
+    "commands": [
+      {
+        "kind": "test",
+        "subpath": "soc-ap",
+        "command": "rm -rf /tmp/qa_twin51 && mkdir -p /tmp/qa_twin51 && (! grep -En \"backoff_(state|config)_t[[:space:]]+(st|cfg)[[:space:]]*;\" runtime/build/tests/test_backoff.cpp) && g++ -std=c++17 -O2 -Wall -Wextra -Werror -Wpedantic -Wmaybe-uninitialized -fno-exceptions -fno-rtti -Iruntime/common runtime/build/tests/test_backoff.cpp runtime/common/service_lifecycle.cpp -o /tmp/qa_twin51/test_backoff_strict && /tmp/qa_twin51/test_backoff_strict && cmake -S runtime/build -B /tmp/qa_twin51/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=\"-O2\" && cmake --build /tmp/qa_twin51/build --parallel && ctest --test-dir /tmp/qa_twin51/build --output-on-failure && rm -rf /tmp/qa_twin51",
+        "id": "build_and_test_backoff_werror_uninitialized"
+      }
+    ],
+    "targets": [
+      {
+        "name": "project-control",
+        "commit": "491158cd4f183a01517c36fb093821db54a8a6dd",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+        "ref": "main"
+      },
+      {
+        "name": "soc-ap",
+        "commit": "75f8a1a670edabb21c8d3dfc79243e06f73099af",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+        "ref": "main"
+      },
+      {
+        "name": "mcu-p3",
+        "commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+        "ref": "feat/soc-debug"
+      },
+      {
+        "name": "test_harness",
+        "commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+        "ref": "main"
+      }
+    ],
+    "contract": {
+      "id": "TWIN-51",
+      "title": "TWIN-51 修复test_backoff.cpp在GCC15下的-Werror=maybe-uninitialized编译阻断",
+      "revision": 1,
+      "plan_revision": "vmware-soc-twin-20261105",
+      "task_kind": "implementation",
+      "development_stage": "vmware-twin",
+      "dispatchable": true,
+      "status": "Review",
+      "blocked": false,
+      "planning_status": "actionable",
+      "owner": "7812a1f6-5006-4971-a954-802f855cf20a",
+      "proposed_owner": "INTEGRATOR",
+      "executor": {
+        "role": "INTEGRATOR",
+        "agent_id": "7812a1f6-5006-4971-a954-802f855cf20a",
+        "run_id": "author_01"
+      },
+      "qa_policy": "streamlined-v1",
+      "reviewer": [
+        "QA"
+      ],
+      "verifier": null,
+      "integrator": "INTEGRATOR",
+      "issue_id": "ISS-20261105-001",
+      "demand_id": "DEM-20261105-001",
+      "confirmation_id": "CONFIRM-SOC-AP-ISSUES-20261105",
+      "approval_id": "APPR-20261105-001",
+      "accepted_scope": "Software and C++17 strict-warning (-O2 -Wall -Wextra -Werror -Wmaybe-uninitialized) sandbox verification of soc-ap/runtime/build/tests/test_backoff.cpp explicit zero-initialization of backoff_state_t and backoff_config_t and runtime/build CTest suite. Cross-compiler ELF build and physical MCU USB/UART HIL are not applicable in qa-sandbox:20261029: qa-sandbox:20261029 provides host GCC/Python only and no physical MCU hardware; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass.",
+      "review_assignments": {
+        "reviewer_sessions": [
+          {
+            "role": "QA",
+            "platform": "codex",
+            "model": "gpt-6-luna",
+            "planned_session_alias": "planned-qa-twin-51",
+            "session": null,
+            "reviewer_session": null,
+            "commit_sha": null,
+            "session_evidence": null,
+            "decision": null,
+            "reviewed_task_revision": null,
+            "artifact_version": null,
+            "report_path": null,
+            "evidence": null,
+            "report_sha256": null
+          }
+        ],
+        "verifier_session": null,
+        "integrator_session": null
+      },
+      "primary_work_package": "TASK-004",
+      "related_work_packages": [
+        "TASK-010"
+      ],
+      "depends_on": [
+        "TWIN-04"
+      ],
+      "dependency_conditions": [
+        {
+          "task": "TWIN-04",
+          "accepted_version": "soc-ap=8f05b7396bb11fb011b0279c6a38f26a194507be; project-control=6b3556fb52002833ce57bc28ca236630bd8e907be",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-04/runs/run_01/qa_review_report.md",
+          "required": "继承TWIN-04 runtime/build与test_backoff单测构建基线"
+        }
+      ],
+      "scope_status": "mapped",
+      "allowed_repositories": [
+        "soc-ap",
+        "project-control"
+      ],
+      "write_scope": {
+        "soc-ap": [
+          "runtime/build/tests/test_backoff.cpp"
+        ],
+        "project-control": [
+          "docs/evidence/twin/TWIN-51/**"
+        ]
+      },
+      "allowed_paths": [
+        "soc-ap/runtime/build/tests/test_backoff.cpp",
+        "project-control/docs/evidence/twin/TWIN-51/**"
+      ],
+      "forbidden_paths": [
+        "mcu-p3/**",
+        "test_harness/**",
+        "boot/**",
+        "soc-ap/services/**",
+        "soc-ap/middleware/**",
+        "soc-ap/tools/**"
+      ],
+      "source_baseline": {
+        "project-control": "491158cd4f183a01517c36fb093821db54a8a6dd",
+        "soc-ap": "7c1f35091850b39f4ba3ff9b242043a62f3e5b74",
+        "mcu-p3": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+        "test_harness": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60"
+      },
+      "base_commit": "7c1f35091850b39f4ba3ff9b242043a62f3e5b74",
+      "branch": "main",
+      "candidate_commit": "75f8a1a670edabb21c8d3dfc79243e06f73099af",
+      "dispatch_binding": {
+        "source_commit": "7c1f35091850b39f4ba3ff9b242043a62f3e5b74",
+        "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "consumed_artifact_versions": {
+          "arch_breakdown": "a6500c608c2cbbc40104ff5001ff7b7d4eb7edee403e56ed705cbd1bfb32485e"
+        }
+      },
+      "protocol_input": {
+        "path": "project-control/docs/architecture/soc_ap_build_and_startup_issues_arch_breakdown_20261105.md",
+        "sha256": "a6500c608c2cbbc40104ff5001ff7b7d4eb7edee403e56ed705cbd1bfb32485e",
+        "revision": 2
+      },
+      "icd_versions": [
+        {
+          "path": "project-control/docs/architecture/soc_ap_build_and_startup_issues_arch_breakdown_20261105.md",
+          "version": 2
+        }
+      ],
+      "read_sources": [
+        "project-control/.agents/rules/repository_rule_sources.json",
+        "project-control/.agents/rules/repository_rule_boundaries.md",
+        "soc-ap/AGENTS.md",
+        "soc-ap/.agents/rules/shared/SOURCE.json",
+        "project-control/.agents/rules/c_cpp_coding_standard.md",
+        "project-control/.agents/rules/code_documentation_standard.md",
+        "project-control/docs/architecture/soc_ap_build_and_startup_issues_arch_breakdown_20261105.md"
+      ],
+      "worktree": "soc-ap",
+      "lease": {
+        "owner": "7812a1f6-5006-4971-a954-802f855cf20a",
+        "task_revision": 1,
+        "lease_id": "lease-twin-51-20261105-01",
+        "expires_at": "2026-11-05T16:00:00+08:00"
+      },
+      "resources": [
+        {
+          "resource": "integrator-build-env",
+          "location": "soc-ap",
+          "exclusive": true,
+          "pending": null
+        }
+      ],
+      "budget": {
+        "planned_checkpoint_minutes": 30,
+        "max_evidence_based_corrections": 2,
+        "on_limit": "保存证据交COORD"
+      },
+      "checkpoint": "开工前绑定；-O2 -Wall -Wextra -Werror -Wmaybe-uninitialized编译与CTest自检；独立沙箱与QA审查；收件",
+      "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+      "readiness_pending": [],
+      "deliverables": {
+        "artifacts": [
+          "soc-ap/runtime/build/tests/test_backoff.cpp"
+        ],
+        "record": "docs/evidence/twin/TWIN-51/runs/author_01/result.md"
+      },
+      "rollback": {
+        "steps": [
+          "git -C soc-ap checkout -- runtime/build/tests/test_backoff.cpp"
+        ]
+      },
+      "handoff": {
+        "receiver_role": "COORD",
+        "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+        "transport": "docs",
+        "evidence_location": "docs/evidence/twin/TWIN-51",
+        "acknowledgement": "received-author_01-75f8a1a670edabb21c8d3dfc79243e06f73099af"
+      },
+      "verification": {
+        "commands": [
+          {
+            "id": "build_and_test_backoff_werror_uninitialized",
+            "cwd": "soc-ap",
+            "command": "rm -rf /tmp/qa_twin51 && mkdir -p /tmp/qa_twin51 && (! grep -En \"backoff_(state|config)_t[[:space:]]+(st|cfg)[[:space:]]*;\" runtime/build/tests/test_backoff.cpp) && g++ -std=c++17 -O2 -Wall -Wextra -Werror -Wpedantic -Wmaybe-uninitialized -fno-exceptions -fno-rtti -Iruntime/common runtime/build/tests/test_backoff.cpp runtime/common/service_lifecycle.cpp -o /tmp/qa_twin51/test_backoff_strict && /tmp/qa_twin51/test_backoff_strict && cmake -S runtime/build -B /tmp/qa_twin51/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=\"-O2\" && cmake --build /tmp/qa_twin51/build --parallel && ctest --test-dir /tmp/qa_twin51/build --output-on-failure && rm -rf /tmp/qa_twin51",
+            "expected": "源码静态扫描确认无未初始化的backoff_state_t/backoff_config_t局部变量，g++ -O2 -Wall -Wextra -Werror -Wmaybe-uninitialized严格编译零告警通过，且runtime/build全套Release CTest（test_lifecycle、test_backoff、test_config_validator、test_heartbeat）100% PASS",
+            "availability": "available"
+          }
+        ],
+        "positive_cases": [
+          "test_backoff.cpp中所有栈上backoff_state_t与backoff_config_t结构体均显式零初始化，在-O2 -Wall -Wextra -Werror -Wmaybe-uninitialized下零告警编译通过",
+          "test_backoff_null_guards、test_backoff_progression、test_backoff_reset全部断言100%通过"
+        ],
+        "negative_cases": [
+          "严禁通过移除-Werror或添加-Wno-maybe-uninitialized掩盖未初始化告警；静态检查发现未初始化st/cfg裸声明时立即失败"
+        ]
+      },
+      "required_evidence_level": "server-sandbox-and-independent-review",
+      "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+      "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+      "updated": "2026-11-05T10:31:00+08:00"
+    },
+    "run_dir": "/tmp/qa_TWIN-51_kfeq5rgv",
+    "timeout_seconds": 1140,
+    "sandbox_command": [
+      "/usr/bin/python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+      "--config",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+      "--task",
+      "TWIN-51",
+      "--revision",
+      "1",
+      "--output-dir",
+      "/tmp/qa_TWIN-51_kfeq5rgv/evidence",
+      "--repo-commit",
+      "project-control=491158cd4f183a01517c36fb093821db54a8a6dd:main",
+      "--repo-commit",
+      "soc-ap=75f8a1a670edabb21c8d3dfc79243e06f73099af:main",
+      "--repo-commit",
+      "mcu-p3=016e1236af75f6f19282d6b000f4b1b68bd96cc3:feat/soc-debug",
+      "--repo-commit",
+      "test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60:main",
+      "--cmd",
+      "test:soc-ap:rm -rf /tmp/qa_twin51 && mkdir -p /tmp/qa_twin51 && (! grep -En \"backoff_(state|config)_t[[:space:]]+(st|cfg)[[:space:]]*;\" runtime/build/tests/test_backoff.cpp) && g++ -std=c++17 -O2 -Wall -Wextra -Werror -Wpedantic -Wmaybe-uninitialized -fno-exceptions -fno-rtti -Iruntime/common runtime/build/tests/test_backoff.cpp runtime/common/service_lifecycle.cpp -o /tmp/qa_twin51/test_backoff_strict && /tmp/qa_twin51/test_backoff_strict && cmake -S runtime/build -B /tmp/qa_twin51/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=\"-O2\" && cmake --build /tmp/qa_twin51/build --parallel && ctest --test-dir /tmp/qa_twin51/build --output-on-failure && rm -rf /tmp/qa_twin51"
+    ],
+    "request_ref": {
+      "path": "/tmp/qa_TWIN-51_kfeq5rgv/request.json",
+      "sha256": "2264730ccee17592ea86fc04a2e1d2d097fc4d24d6cd3644e5c3f2c321ebf44d"
+    }
+  },
+  "server_qa": {
+    "task_id": "TWIN-51",
+    "task_revision": 1,
+    "source": "server-pinned-commits",
+    "fresh_checkout": true,
+    "sandbox": {
+      "kind": "container",
+      "container_id": "108f5cd9bf61",
+      "id": "TWIN-51_run_104253_20261105_024253",
+      "image": "qa-sandbox:20261029",
+      "path": "/tmp/qa_sandboxes/TWIN-51_run_104253_20261105_024253",
+      "developer_mounts": [],
+      "container_inspect": {
+        "id": "108f5cd9bf61640f63c42714427226924748836574b0a30eed31681fa5b57a29",
+        "image": "qa-sandbox:20261029",
+        "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "created": "2026-11-05T02:43:17.057683435Z",
+        "state": "exited",
+        "mounts": [
+          {
+            "Type": "bind",
+            "Source": "/tmp/qa_sandboxes/TWIN-51_run_104253_20261105_024253",
+            "Destination": "/workspace",
+            "Mode": "ro",
+            "RW": false,
+            "Propagation": "rprivate"
+          }
+        ]
+      }
+    },
+    "server_lock": {
+      "path": "/tmp/qa_TWIN-51_kfeq5rgv/evidence/server_lock.json",
+      "sha256": "e0304cce1e519644583be7c4df76214d507f4eba067293edd3d3e1a57557f6fa"
+    },
+    "checkout_log": {
+      "path": "/tmp/qa_TWIN-51_kfeq5rgv/evidence/checkout.log",
+      "sha256": "61680e6ed1ca44a418deb676f444bb5bd5b7e03b49c27927218331d9188ff9fd"
+    },
+    "runtime_log": {
+      "path": "/tmp/qa_TWIN-51_kfeq5rgv/evidence/runtime.log",
+      "sha256": "a000d4bf718573696d8dfab85dbfdca1c8a3d3b45f6a2ad92455b9da3be4091d"
+    },
+    "server_verdict": {
+      "path": "/tmp/qa_TWIN-51_kfeq5rgv/evidence/server_verdict.json",
+      "sha256": "a99da46e39f093e597c1816e500e1c26e909114d66a0f16f37c9e647f6ea1711"
+    },
+    "tool_versions": {
+      "git": "git version 2.25.1",
+      "python": "Python 3.8.10"
+    },
+    "build_results": [],
+    "test_results": [
+      {
+        "command": "rm -rf /tmp/qa_twin51 && mkdir -p /tmp/qa_twin51 && (! grep -En \"backoff_(state|config)_t[[:space:]]+(st|cfg)[[:space:]]*;\" runtime/build/tests/test_backoff.cpp) && g++ -std=c++17 -O2 -Wall -Wextra -Werror -Wpedantic -Wmaybe-uninitialized -fno-exceptions -fno-rtti -Iruntime/common runtime/build/tests/test_backoff.cpp runtime/common/service_lifecycle.cpp -o /tmp/qa_twin51/test_backoff_strict && /tmp/qa_twin51/test_backoff_strict && cmake -S runtime/build -B /tmp/qa_twin51/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=\"-O2\" && cmake --build /tmp/qa_twin51/build --parallel && ctest --test-dir /tmp/qa_twin51/build --output-on-failure && rm -rf /tmp/qa_twin51",
+        "exit_code": "0",
+        "subpath": "soc-ap",
+        "duration": "0.88s",
+        "output": "Running Bounded Backoff Unit Tests...\nPASS: test_backoff_null_guards\nPASS: test_backoff_progression\nPASS: test_backoff_reset\nALL Bounded Backoff Unit Tests PASSED!\n-- The C compiler identification is GNU 9.4.0\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin51/build\n[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/workspace/soc-ap/runtime/common/service_lifecycle.cpp.o\n[ 16%] Linking CXX static library libaisoc_runtime_common.a\n[ 16%] Built target aisoc_runtime_common\n[ 33%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o\n[ 33%] Building CXX object CMakeFiles/aisoc_supervisor.dir/workspace/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 41%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o\n[ 50%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o\n[ 66%] Building CXX object CMakeFiles/test_supervisor_topology.dir/workspace/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 66%] Building CXX object CMakeFiles/aisoc_supervisor.dir/workspace/soc-ap/runtime/vmware/main.cpp.o\n[ 75%] Linking CXX executable test_backoff\n[ 83%] Linking CXX executable test_service_lifecycle\n[ 83%] Built target test_backoff\n[ 83%] Built target test_service_lifecycle\n[ 91%] Linking CXX executable test_supervisor_topology\n[100%] Linking CXX executable aisoc_supervisor\n[100%] Built target test_supervisor_topology\n[100%] Built target aisoc_supervisor\nTest project /tmp/qa_twin51/build\n    Start 1: test_service_lifecycle\n1/3 Test #1: test_service_lifecycle ...........   Passed    0.00 sec\n    Start 2: test_backoff\n2/3 Test #2: test_backoff .....................   Passed    0.00 sec\n    Start 3: test_supervisor_topology\n3/3 Test #3: test_supervisor_topology .........   Passed    0.04 sec\n\n100% tests passed out of 3\n\nTotal Test time (real) =   0.04 sec"
+      }
+    ],
+    "passed": true,
+    "timestamp": "2026-11-05T02:43:20.802336+00:00",
+    "path": "/tmp/qa_TWIN-51_kfeq5rgv/evidence/server_qa.json",
+    "sha256": "53915f2dd46d12f7c1c06f0546a9dec69648f4b112a217883db24a08fb1c4409"
+  },
+  "diffs": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_sandboxes/TWIN-51_run_104253_20261105_024253/project-control",
+      "base_commit": "491158cd4f183a01517c36fb093821db54a8a6dd",
+      "candidate_commit": "491158cd4f183a01517c36fb093821db54a8a6dd",
+      "diff": {
+        "path": "/tmp/qa_TWIN-51_kfeq5rgv/diffs/project-control.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "soc-ap",
+      "source": "/tmp/qa_sandboxes/TWIN-51_run_104253_20261105_024253/soc-ap",
+      "base_commit": "7c1f35091850b39f4ba3ff9b242043a62f3e5b74",
+      "candidate_commit": "75f8a1a670edabb21c8d3dfc79243e06f73099af",
+      "diff": {
+        "path": "/tmp/qa_TWIN-51_kfeq5rgv/diffs/soc-ap.patch",
+        "sha256": "b9694e6f23e4fafffe8426595f9b72a7b2b0fbc8dd765df418b53a998d1367c6"
+      }
+    },
+    {
+      "repository": "mcu-p3",
+      "source": "/tmp/qa_sandboxes/TWIN-51_run_104253_20261105_024253/mcu-p3",
+      "base_commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+      "candidate_commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+      "diff": {
+        "path": "/tmp/qa_TWIN-51_kfeq5rgv/diffs/mcu-p3.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "test_harness",
+      "source": "/tmp/qa_sandboxes/TWIN-51_run_104253_20261105_024253/test_harness",
+      "base_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "candidate_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "diff": {
+        "path": "/tmp/qa_TWIN-51_kfeq5rgv/diffs/test_harness.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

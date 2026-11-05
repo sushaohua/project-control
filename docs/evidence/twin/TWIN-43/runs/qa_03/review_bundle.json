@@ -1,0 +1,448 @@
+{
+  "request": {
+    "repository": "soc-ap",
+    "candidate_commit": "217a76e29c0c99897bf1993514b765cd771adb06",
+    "task_revision": 1,
+    "task_id": "TWIN-43",
+    "workspace": "/home/sushaohua/workspace/ai_soc_project",
+    "commands": [
+      {
+        "kind": "test",
+        "subpath": "soc-ap",
+        "command": "rm -rf /tmp/qa_twin43 && mkdir -p /tmp/qa_twin43/bin && cp -r ../soc-ap ../test_harness /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && python3 ../test_harness/static_checks/cascade/run_query_cases.py --test-host build/host/soc-ap --cases ../test_harness/test_cases/cascade/query_cases.json && python3 -c \"import pathlib; pathlib.Path(\\\"/tmp/test_serial_baud.cpp\\\").write_text(\\\"#include <cassert>\\n#include <cstdio>\\n#include <cstdlib>\\n#include <fcntl.h>\\n#include <unistd.h>\\n#include \\\\\\\"serial_posix.h\\\\\\\"\\n#include \\\\\\\"query.h\\\\\\\"\\nint main() {\\n  minimc::SerialConfig dflt;\\n  assert(dflt.baud_rate == 921600U);\\n  minimc::QueryOptions qdflt;\\n  assert(qdflt.baud_rate == 921600U);\\n  int mfd = posix_openpt(O_RDWR | O_NOCTTY);\\n  assert(mfd >= 0 && grantpt(mfd) == 0 && unlockpt(mfd) == 0);\\n  const char* pts = ptsname(mfd);\\n  assert(pts != nullptr);\\n  minimc::SerialContext ctx;\\n  minimc::SerialConfig bad{pts, 123456U};\\n  assert(!minimc::serial_open(&bad, &ctx) && !ctx.is_open && ctx.fd == -1);\\n  const uint32_t bauds[] = {921600U, 460800U, 115200U};\\n  for (uint32_t b : bauds) {\\n    minimc::SerialConfig ok{pts, b};\\n    assert(minimc::serial_open(&ok, &ctx) && ctx.is_open && ctx.fd >= 0);\\n    minimc::serial_close(&ctx);\\n    assert(!ctx.is_open && ctx.fd == -1);\\n  }\\n  close(mfd);\\n  printf(\\\\\\\"[PASS] serial_posix baud_to_speed & serial_open positive(921600/460800/115200) and negative(123456) verified\\\\\\\\n\\\\\\\");\\n  return 0;\\n}\\n\\\")\" && g++ -std=c++17 -O2 -Wall -Wextra -Werror -I core/forward/transport -I core/forward/minimc -I core/host core/forward/transport/serial_posix.cpp /tmp/test_serial_baud.cpp -o /tmp/test_serial_baud && /tmp/test_serial_baud && (! ./build/host/soc-ap --port /dev/null --baud 123456 --target mc --cmd version) && echo \"[PASS] parse_baud_rate rejected invalid baud 123456\"",
+        "id": "build_and_test_fullstack_921600"
+      },
+      {
+        "kind": "test",
+        "subpath": "test_harness",
+        "command": "python3 static_checks/twin/validate_schemas.py --root ..",
+        "id": "validate_manifest_schema"
+      },
+      {
+        "kind": "test",
+        "subpath": "soc-ap",
+        "command": "mkdir -p /tmp/qa_twin43/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin43/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport os,sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\nif os.environ.get(\\x27FORCE_CURL_FAIL\\x27)==\\x271\\x27:\\n sys.stdout.write(\\x27503\\x27) if w else None;sys.exit(0 if w else 22)\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755); pathlib.Path(\\\"/tmp/qa_twin43/custom_twin.conf\\\").write_text(\\\"AISOC_MODE=\\\\\\\"sim\\\\\\\"\\nAISOC_UART_DEVICE=\\\\\\\"/dev/null\\\\\\\"\\nAISOC_UART_BAUD=\\\\\\\"460800\\\\\\\"\\nAISOC_HTTP_BIND=\\\\\\\"0.0.0.0\\\\\\\"\\nAISOC_HTTP_PORT=\\\\\\\"18082\\\\\\\"\\nAISOC_WEB_ROOT=\\\\\\\"browser_hmi/first_release\\\\\\\"\\nAISOC_LOG_DIR=\\\\\\\"/tmp/aisoc_custom_logs\\\\\\\"\\nAISOC_AUTO_BUILD=\\\\\\\"0\\\\\\\"\\n\\\")\" && export PATH=\"/tmp/qa_twin43/bin:$PATH\" && ([ -d /tmp/qa_twin43/soc-ap ] || (cp -r ../soc-ap /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)))) && cd /tmp/qa_twin43/soc-ap && (! bash tools/deploy_twin.sh --config /tmp/nonexistent_twin.conf) && (! bash tools/deploy_twin.sh --mode hardware --uart /dev/nonexistent_ttyUSB99 --port 18080) && (! bash tools/deploy_twin.sh --status --port 18080) && (! bash tools/deploy_twin.sh --mode sim --baud 123456 --port 18080) && (! FORCE_CURL_FAIL=1 bash tools/deploy_twin.sh --mode sim --port 18080) && (! bash tools/deploy_twin.sh --status --port 18080) && [ ! -e /tmp/aisoc_twin_logs/ui_gateway.pid ] && [ ! -e /tmp/aisoc_twin_logs/device_manager.pid ] && [ ! -e /tmp/aisoc_twin_logs/forward.pid ] && [ ! -e /tmp/aisoc_twin_logs/dbus.pid ] && [ ! -e /tmp/aisoc_twin_logs/runtime.env ] && echo \"[PASS] post-launch health-check failure cleaned up all daemons and PID/runtime files\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --status | grep -E \"460800|18082\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --stop && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --baud 921600 --port 18083 && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --status | grep -E \"921600|18083\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --stop && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && rm -rf /tmp/qa_twin43 /tmp/aisoc_custom_logs",
+        "id": "verify_deploy_twin_sim_lifecycle"
+      }
+    ],
+    "targets": [
+      {
+        "name": "project-control",
+        "commit": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+        "ref": "main"
+      },
+      {
+        "name": "soc-ap",
+        "commit": "217a76e29c0c99897bf1993514b765cd771adb06",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+        "ref": "main"
+      },
+      {
+        "name": "mcu-p3",
+        "commit": "e051111e68dd61896ed42c0961153b167b8bca41",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+        "ref": "feat/soc-debug"
+      },
+      {
+        "name": "test_harness",
+        "commit": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+        "ref": "main"
+      }
+    ],
+    "contract": {
+      "id": "TWIN-43",
+      "title": "TWIN-43 AP/VMware 921600 波特率统一与全栈一键编译及配置化启动脚本",
+      "revision": 1,
+      "plan_revision": "vmware-soc-twin-20261104",
+      "task_kind": "implementation",
+      "development_stage": "vmware-twin",
+      "dispatchable": true,
+      "status": "Review",
+      "blocked": false,
+      "planning_status": "planned",
+      "owner": "6e214c7d-0965-4b36-805c-41c6f83a87bc",
+      "proposed_owner": "ENG-FWD",
+      "executor": {
+        "role": "ENG-FWD",
+        "agent_id": "6e214c7d-0965-4b36-805c-41c6f83a87bc",
+        "run_id": "author_01"
+      },
+      "qa_policy": "streamlined-v1",
+      "reviewer": [
+        "QA"
+      ],
+      "verifier": null,
+      "integrator": "INTEGRATOR",
+      "feature_id": "FEAT-20261104-002",
+      "confirmation_id": "CONFIRM-DEBUG-BAUD-20261104",
+      "approval_id": "APPR-20261104-001",
+      "accepted_scope": "Bounded software and POSIX PTY verification of 921600/460800/115200 baud support, invalid-baud rejection, manifest schema validation, and background daemon deploy_twin.sh lifecycle (--build-only, --config non-default loading and CLI override precedence, --mode sim/hardware preflight, post-launch health-check failure cleanup, and recovery). Interactive --foreground exec mode and physical hardware UART HIL are excluded from this software task scope.",
+      "review_assignments": {
+        "reviewer_sessions": [
+          {
+            "role": "QA",
+            "platform": "codex",
+            "model": "gpt-6-luna",
+            "planned_session_alias": "planned-qa-twin-43",
+            "session": "pending-codex-qa-twin-43",
+            "session_evidence": null,
+            "decision": "PENDING",
+            "reviewed_task_revision": 1,
+            "artifact_version": null,
+            "evidence": null,
+            "report_sha256": null
+          }
+        ],
+        "verifier_session": null,
+        "integrator_session": null
+      },
+      "primary_work_package": "TASK-007",
+      "related_work_packages": [
+        "TASK-004",
+        "TASK-010"
+      ],
+      "depends_on": [
+        "TWIN-04",
+        "TWIN-30"
+      ],
+      "dependency_conditions": [
+        {
+          "task": "TWIN-04",
+          "accepted_version": "soc-ap=8f05b7396bb11fb011b0279c6a38f26a194507be; project-control=6b3556fb52002833ce57bc28ca236630bd8e9073",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-04/runs/run_01/qa_review_report.md",
+          "required": "继承TWIN-04 VMware运行时构建与services_manifest.json配置基线"
+        },
+        {
+          "task": "TWIN-30",
+          "accepted_version": "soc-ap=7bb05218c39d6852cac5e8d86db845dbbedd7064; project-control=f7d18c48774a8787f0dfa1d1cbe9dddea9309a40",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-30/runs/run_01/qa_review_report.md",
+          "required": "继承TWIN-30 VMware全流程闭环与串口通信基线"
+        }
+      ],
+      "scope_status": "mapped",
+      "allowed_repositories": [
+        "soc-ap",
+        "project-control"
+      ],
+      "write_scope": {
+        "soc-ap": [
+          "core/forward/transport/serial_posix.h",
+          "core/forward/transport/serial_posix.cpp",
+          "core/host/main.cpp",
+          "core/host/query.h",
+          "core/host/query.cpp",
+          "config/runtime/vmware/**",
+          "config/runtime/common/**",
+          "dist/vmware_twin/config/services_manifest.json",
+          "tools/deploy_twin.sh"
+        ],
+        "project-control": [
+          "docs/evidence/twin/TWIN-43/**"
+        ]
+      },
+      "allowed_paths": [
+        "soc-ap/core/forward/transport/serial_posix.h",
+        "soc-ap/core/forward/transport/serial_posix.cpp",
+        "soc-ap/core/host/main.cpp",
+        "soc-ap/core/host/query.h",
+        "soc-ap/core/host/query.cpp",
+        "soc-ap/config/runtime/vmware/**",
+        "soc-ap/config/runtime/common/**",
+        "soc-ap/dist/vmware_twin/config/services_manifest.json",
+        "soc-ap/tools/deploy_twin.sh",
+        "project-control/docs/evidence/twin/TWIN-43/**"
+      ],
+      "forbidden_paths": [
+        "mcu-p3/**",
+        "test_harness/**",
+        "boot/**",
+        "soc-ap/contracts/**",
+        "soc-ap/services/**",
+        "soc-ap/tests/**",
+        "soc-ap/browser_hmi/**"
+      ],
+      "source_baseline": {
+        "project-control": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+        "soc-ap": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+        "mcu-p3": "e051111e68dd61896ed42c0961153b167b8bca41",
+        "test_harness": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414"
+      },
+      "base_commit": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+      "branch": "main",
+      "candidate_commit": "217a76e29c0c99897bf1993514b765cd771adb06",
+      "dispatch_binding": {
+        "source_commit": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+        "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "consumed_artifact_versions": {
+          "arch_breakdown": "dfcd39b56ed1a93c58faf9b62ebe2d4adaa4eecb9180d521ba3f97b29294731d",
+          "merged_summary": "c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec"
+        }
+      },
+      "protocol_input": {
+        "path": "project-control/docs/planning/debug_and_921600_merged_implementation_summary_20261104.md",
+        "sha256": "c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec",
+        "revision": 2
+      },
+      "icd_versions": [
+        {
+          "path": "soc-ap/contracts/twin/services_manifest_schema.json",
+          "version": "1.0.0"
+        },
+        {
+          "path": "project-control/docs/architecture/debug_reconciliation_and_921600_arch_breakdown_20261104.md",
+          "version": 8
+        }
+      ],
+      "read_sources": [
+        "project-control/docs/architecture/debug_reconciliation_and_921600_arch_breakdown_20261104.md",
+        "project-control/docs/planning/vmware_mc_921600_requirement_confirmation_20261103.md",
+        "soc-ap/contracts/twin/services_manifest_schema.json",
+        "soc-ap/core/forward/transport/serial_posix.h",
+        "soc-ap/core/forward/transport/serial_posix.cpp",
+        "soc-ap/services/forward/forward_main.cpp",
+        "soc-ap/tools/deploy_twin.sh"
+      ],
+      "worktree": "soc-ap",
+      "lease": {
+        "owner": "6e214c7d-0965-4b36-805c-41c6f83a87bc",
+        "task_revision": 1,
+        "lease_id": "lease-twin-43-20261104-01",
+        "expires_at": "2026-11-04T12:48:00+08:00"
+      },
+      "resources": [
+        {
+          "resource": "forward-build-env",
+          "location": "soc-ap",
+          "exclusive": true,
+          "pending": null
+        }
+      ],
+      "budget": {
+        "planned_checkpoint_minutes": 60,
+        "max_evidence_based_corrections": 2,
+        "on_limit": "保存证据交COORD"
+      },
+      "checkpoint": "开工前绑定；组件自检；独立沙箱与QA审查；收件",
+      "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+      "readiness_pending": [],
+      "deliverables": {
+        "artifacts": [
+          "soc-ap/core/forward/transport/serial_posix.h",
+          "soc-ap/core/forward/transport/serial_posix.cpp",
+          "soc-ap/core/host/query.h",
+          "soc-ap/core/host/query.cpp",
+          "soc-ap/config/runtime/vmware/services_manifest.json",
+          "soc-ap/config/runtime/common/services_manifest.json",
+          "soc-ap/config/runtime/vmware/aisoc_twin.conf",
+          "soc-ap/tools/deploy_twin.sh"
+        ],
+        "record": "docs/evidence/twin/TWIN-43/runs/author_01/result.md"
+      },
+      "rollback": {
+        "steps": [
+          "git -C soc-ap checkout -- core/forward/transport/serial_posix.h core/forward/transport/serial_posix.cpp core/host/ config/runtime/ dist/vmware_twin/config/ tools/deploy_twin.sh"
+        ]
+      },
+      "handoff": {
+        "receiver_role": "COORD",
+        "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+        "transport": "docs",
+        "evidence_location": "docs/evidence/twin/TWIN-43",
+        "acknowledgement": "COORD-RECEIVED-20261104T110200+0800"
+      },
+      "verification": {
+        "commands": [
+          {
+            "id": "build_and_test_fullstack_921600",
+            "cwd": "soc-ap",
+            "command": "rm -rf /tmp/qa_twin43 && mkdir -p /tmp/qa_twin43/bin && cp -r ../soc-ap ../test_harness /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && python3 ../test_harness/static_checks/cascade/run_query_cases.py --test-host build/host/soc-ap --cases ../test_harness/test_cases/cascade/query_cases.json && python3 -c \"import pathlib; pathlib.Path(\\\"/tmp/test_serial_baud.cpp\\\").write_text(\\\"#include <cassert>\\n#include <cstdio>\\n#include <cstdlib>\\n#include <fcntl.h>\\n#include <unistd.h>\\n#include \\\\\\\"serial_posix.h\\\\\\\"\\n#include \\\\\\\"query.h\\\\\\\"\\nint main() {\\n  minimc::SerialConfig dflt;\\n  assert(dflt.baud_rate == 921600U);\\n  minimc::QueryOptions qdflt;\\n  assert(qdflt.baud_rate == 921600U);\\n  int mfd = posix_openpt(O_RDWR | O_NOCTTY);\\n  assert(mfd >= 0 && grantpt(mfd) == 0 && unlockpt(mfd) == 0);\\n  const char* pts = ptsname(mfd);\\n  assert(pts != nullptr);\\n  minimc::SerialContext ctx;\\n  minimc::SerialConfig bad{pts, 123456U};\\n  assert(!minimc::serial_open(&bad, &ctx) && !ctx.is_open && ctx.fd == -1);\\n  const uint32_t bauds[] = {921600U, 460800U, 115200U};\\n  for (uint32_t b : bauds) {\\n    minimc::SerialConfig ok{pts, b};\\n    assert(minimc::serial_open(&ok, &ctx) && ctx.is_open && ctx.fd >= 0);\\n    minimc::serial_close(&ctx);\\n    assert(!ctx.is_open && ctx.fd == -1);\\n  }\\n  close(mfd);\\n  printf(\\\\\\\"[PASS] serial_posix baud_to_speed & serial_open positive(921600/460800/115200) and negative(123456) verified\\\\\\\\n\\\\\\\");\\n  return 0;\\n}\\n\\\")\" && g++ -std=c++17 -O2 -Wall -Wextra -Werror -I core/forward/transport -I core/forward/minimc -I core/host core/forward/transport/serial_posix.cpp /tmp/test_serial_baud.cpp -o /tmp/test_serial_baud && /tmp/test_serial_baud && (! ./build/host/soc-ap --port /dev/null --baud 123456 --target mc --cmd version) && echo \"[PASS] parse_baud_rate rejected invalid baud 123456\"",
+            "expected": "容器/tmp可写副本下全栈5目标编译0错误，CTest与14项cascade_query_cases（921600 PTY闭环）全部PASS，PTY实测serial_open支持921600/460800/115200并拒绝123456（fd==-1），soc-ap CLI拒绝--baud 123456",
+            "availability": "available"
+          },
+          {
+            "id": "validate_manifest_schema",
+            "cwd": "test_harness",
+            "command": "python3 static_checks/twin/validate_schemas.py --root ..",
+            "expected": "services_manifest.json (921600) Schema校验PASS，退出码0",
+            "availability": "available"
+          },
+          {
+            "id": "verify_deploy_twin_sim_lifecycle",
+            "cwd": "soc-ap",
+            "command": "mkdir -p /tmp/qa_twin43/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin43/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport os,sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\nif os.environ.get(\\x27FORCE_CURL_FAIL\\x27)==\\x271\\x27:\\n sys.stdout.write(\\x27503\\x27) if w else None;sys.exit(0 if w else 22)\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755); pathlib.Path(\\\"/tmp/qa_twin43/custom_twin.conf\\\").write_text(\\\"AISOC_MODE=\\\\\\\"sim\\\\\\\"\\nAISOC_UART_DEVICE=\\\\\\\"/dev/null\\\\\\\"\\nAISOC_UART_BAUD=\\\\\\\"460800\\\\\\\"\\nAISOC_HTTP_BIND=\\\\\\\"0.0.0.0\\\\\\\"\\nAISOC_HTTP_PORT=\\\\\\\"18082\\\\\\\"\\nAISOC_WEB_ROOT=\\\\\\\"browser_hmi/first_release\\\\\\\"\\nAISOC_LOG_DIR=\\\\\\\"/tmp/aisoc_custom_logs\\\\\\\"\\nAISOC_AUTO_BUILD=\\\\\\\"0\\\\\\\"\\n\\\")\" && export PATH=\"/tmp/qa_twin43/bin:$PATH\" && ([ -d /tmp/qa_twin43/soc-ap ] || (cp -r ../soc-ap /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)))) && cd /tmp/qa_twin43/soc-ap && (! bash tools/deploy_twin.sh --config /tmp/nonexistent_twin.conf) && (! bash tools/deploy_twin.sh --mode hardware --uart /dev/nonexistent_ttyUSB99 --port 18080) && (! bash tools/deploy_twin.sh --status --port 18080) && (! bash tools/deploy_twin.sh --mode sim --baud 123456 --port 18080) && (! FORCE_CURL_FAIL=1 bash tools/deploy_twin.sh --mode sim --port 18080) && (! bash tools/deploy_twin.sh --status --port 18080) && [ ! -e /tmp/aisoc_twin_logs/ui_gateway.pid ] && [ ! -e /tmp/aisoc_twin_logs/device_manager.pid ] && [ ! -e /tmp/aisoc_twin_logs/forward.pid ] && [ ! -e /tmp/aisoc_twin_logs/dbus.pid ] && [ ! -e /tmp/aisoc_twin_logs/runtime.env ] && echo \"[PASS] post-launch health-check failure cleaned up all daemons and PID/runtime files\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --status | grep -E \"460800|18082\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --stop && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --baud 921600 --port 18083 && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --status | grep -E \"921600|18083\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --stop && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && rm -rf /tmp/qa_twin43 /tmp/aisoc_custom_logs",
+            "expected": "缺失配置文件、hardware缺失串口设备、非法波特率123456及FORCE_CURL_FAIL=1启动后探活失败均以非0退出并彻底清理全部守护进程与PID/runtime.env文件；--config非默认参数(460800/18082)及CLI覆盖(921600/18083)优先级生效；连续两轮sim启停恢复闭环PASS",
+            "availability": "available"
+          }
+        ],
+        "positive_cases": [
+          "（软件与PTY仿真验收范围，交互式--foreground与物理硬件HIL不在本卡范围内）在POSIX PTY上实测serial_posix.cpp中baud_to_speed与serial_open支持921600(B921600)、460800(B460800)与115200(B115200)",
+          "SerialConfig与QueryOptions默认波特率统一为921600，services_manifest.json中ap_mc_uart.baud_rate统一为921600并通过validate_schemas.py校验",
+          "deploy_twin.sh读取默认config/runtime/vmware/aisoc_twin.conf与自定义--config配置文件(460800/18082)，CLI参数(--baud 921600 --port 18083)优先级高于配置文件，支持--build-only、--mode sim|hardware、--status、--stop及重复启停恢复生命周期"
+        ],
+        "negative_cases": [
+          "传入非法波特率（123456）时serial_open立即返回false并拒绝打开串口（fd==-1且is_open==false），soc-ap CLI、deploy_twin.sh传入--baud 123456或不存在的--config文件时均报错并以非0退出码拒绝执行",
+          "hardware模式下当指定AISOC_UART_DEVICE（/dev/nonexistent_ttyUSB99）不存在时以非0退出码终止且不降级启动sim进程；当守护进程启动后健康探活失败（FORCE_CURL_FAIL=1）时自动逆序停止全部已启动守护进程并清理全部PID/runtime.env文件，随后重新启动可正常恢复"
+        ]
+      },
+      "required_evidence_level": "server-sandbox-and-independent-review",
+      "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+      "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+      "updated": "2026-11-04T10:40:00+08:00"
+    },
+    "run_dir": "/tmp/qa_TWIN-43_sakxbni4",
+    "timeout_seconds": 1740,
+    "sandbox_command": [
+      "/usr/bin/python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+      "--config",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+      "--task",
+      "TWIN-43",
+      "--revision",
+      "1",
+      "--output-dir",
+      "/tmp/qa_TWIN-43_sakxbni4/evidence",
+      "--repo-commit",
+      "project-control=42b031efff970b01ee8cc8e5dd087387cdf9288f:main",
+      "--repo-commit",
+      "soc-ap=217a76e29c0c99897bf1993514b765cd771adb06:main",
+      "--repo-commit",
+      "mcu-p3=e051111e68dd61896ed42c0961153b167b8bca41:feat/soc-debug",
+      "--repo-commit",
+      "test_harness=ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414:main",
+      "--cmd",
+      "test:soc-ap:rm -rf /tmp/qa_twin43 && mkdir -p /tmp/qa_twin43/bin && cp -r ../soc-ap ../test_harness /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && python3 ../test_harness/static_checks/cascade/run_query_cases.py --test-host build/host/soc-ap --cases ../test_harness/test_cases/cascade/query_cases.json && python3 -c \"import pathlib; pathlib.Path(\\\"/tmp/test_serial_baud.cpp\\\").write_text(\\\"#include <cassert>\\n#include <cstdio>\\n#include <cstdlib>\\n#include <fcntl.h>\\n#include <unistd.h>\\n#include \\\\\\\"serial_posix.h\\\\\\\"\\n#include \\\\\\\"query.h\\\\\\\"\\nint main() {\\n  minimc::SerialConfig dflt;\\n  assert(dflt.baud_rate == 921600U);\\n  minimc::QueryOptions qdflt;\\n  assert(qdflt.baud_rate == 921600U);\\n  int mfd = posix_openpt(O_RDWR | O_NOCTTY);\\n  assert(mfd >= 0 && grantpt(mfd) == 0 && unlockpt(mfd) == 0);\\n  const char* pts = ptsname(mfd);\\n  assert(pts != nullptr);\\n  minimc::SerialContext ctx;\\n  minimc::SerialConfig bad{pts, 123456U};\\n  assert(!minimc::serial_open(&bad, &ctx) && !ctx.is_open && ctx.fd == -1);\\n  const uint32_t bauds[] = {921600U, 460800U, 115200U};\\n  for (uint32_t b : bauds) {\\n    minimc::SerialConfig ok{pts, b};\\n    assert(minimc::serial_open(&ok, &ctx) && ctx.is_open && ctx.fd >= 0);\\n    minimc::serial_close(&ctx);\\n    assert(!ctx.is_open && ctx.fd == -1);\\n  }\\n  close(mfd);\\n  printf(\\\\\\\"[PASS] serial_posix baud_to_speed & serial_open positive(921600/460800/115200) and negative(123456) verified\\\\\\\\n\\\\\\\");\\n  return 0;\\n}\\n\\\")\" && g++ -std=c++17 -O2 -Wall -Wextra -Werror -I core/forward/transport -I core/forward/minimc -I core/host core/forward/transport/serial_posix.cpp /tmp/test_serial_baud.cpp -o /tmp/test_serial_baud && /tmp/test_serial_baud && (! ./build/host/soc-ap --port /dev/null --baud 123456 --target mc --cmd version) && echo \"[PASS] parse_baud_rate rejected invalid baud 123456\"",
+      "--cmd",
+      "test:test_harness:python3 static_checks/twin/validate_schemas.py --root ..",
+      "--cmd",
+      "test:soc-ap:mkdir -p /tmp/qa_twin43/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin43/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport os,sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\nif os.environ.get(\\x27FORCE_CURL_FAIL\\x27)==\\x271\\x27:\\n sys.stdout.write(\\x27503\\x27) if w else None;sys.exit(0 if w else 22)\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755); pathlib.Path(\\\"/tmp/qa_twin43/custom_twin.conf\\\").write_text(\\\"AISOC_MODE=\\\\\\\"sim\\\\\\\"\\nAISOC_UART_DEVICE=\\\\\\\"/dev/null\\\\\\\"\\nAISOC_UART_BAUD=\\\\\\\"460800\\\\\\\"\\nAISOC_HTTP_BIND=\\\\\\\"0.0.0.0\\\\\\\"\\nAISOC_HTTP_PORT=\\\\\\\"18082\\\\\\\"\\nAISOC_WEB_ROOT=\\\\\\\"browser_hmi/first_release\\\\\\\"\\nAISOC_LOG_DIR=\\\\\\\"/tmp/aisoc_custom_logs\\\\\\\"\\nAISOC_AUTO_BUILD=\\\\\\\"0\\\\\\\"\\n\\\")\" && export PATH=\"/tmp/qa_twin43/bin:$PATH\" && ([ -d /tmp/qa_twin43/soc-ap ] || (cp -r ../soc-ap /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)))) && cd /tmp/qa_twin43/soc-ap && (! bash tools/deploy_twin.sh --config /tmp/nonexistent_twin.conf) && (! bash tools/deploy_twin.sh --mode hardware --uart /dev/nonexistent_ttyUSB99 --port 18080) && (! bash tools/deploy_twin.sh --status --port 18080) && (! bash tools/deploy_twin.sh --mode sim --baud 123456 --port 18080) && (! FORCE_CURL_FAIL=1 bash tools/deploy_twin.sh --mode sim --port 18080) && (! bash tools/deploy_twin.sh --status --port 18080) && [ ! -e /tmp/aisoc_twin_logs/ui_gateway.pid ] && [ ! -e /tmp/aisoc_twin_logs/device_manager.pid ] && [ ! -e /tmp/aisoc_twin_logs/forward.pid ] && [ ! -e /tmp/aisoc_twin_logs/dbus.pid ] && [ ! -e /tmp/aisoc_twin_logs/runtime.env ] && echo \"[PASS] post-launch health-check failure cleaned up all daemons and PID/runtime files\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --status | grep -E \"460800|18082\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --stop && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --baud 921600 --port 18083 && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --status | grep -E \"921600|18083\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --stop && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && rm -rf /tmp/qa_twin43 /tmp/aisoc_custom_logs"
+    ],
+    "request_ref": {
+      "path": "/tmp/qa_TWIN-43_sakxbni4/request.json",
+      "sha256": "4bb84a047e9c53e577ec4a348e6da8d6b01d58a8809911208dce15b9dfd0a412"
+    }
+  },
+  "server_qa": {
+    "task_id": "TWIN-43",
+    "task_revision": 1,
+    "source": "server-pinned-commits",
+    "fresh_checkout": true,
+    "sandbox": {
+      "kind": "container",
+      "container_id": "b6f2ac31c525",
+      "id": "TWIN-43_run_120551_20261104_040551",
+      "image": "qa-sandbox:20261029",
+      "path": "/tmp/qa_sandboxes/TWIN-43_run_120551_20261104_040551",
+      "developer_mounts": [],
+      "container_inspect": {
+        "id": "b6f2ac31c525ba230b900cea55a5ca7d395fc31ecbf83592d108478cf793d5a7",
+        "image": "qa-sandbox:20261029",
+        "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "created": "2026-11-04T04:06:15.2880196Z",
+        "state": "exited",
+        "mounts": [
+          {
+            "Type": "bind",
+            "Source": "/tmp/qa_sandboxes/TWIN-43_run_120551_20261104_040551",
+            "Destination": "/workspace",
+            "Mode": "ro",
+            "RW": false,
+            "Propagation": "rprivate"
+          }
+        ]
+      }
+    },
+    "server_lock": {
+      "path": "/tmp/qa_TWIN-43_sakxbni4/evidence/server_lock.json",
+      "sha256": "85750e2942d5f533ebf15678ca9106463eda31a68c7d89d4870b4a2da98fc9b6"
+    },
+    "checkout_log": {
+      "path": "/tmp/qa_TWIN-43_sakxbni4/evidence/checkout.log",
+      "sha256": "b6d428e46867e20a5917fd6636da7e048313779b161a7fb94f5e9298cddb8e5c"
+    },
+    "runtime_log": {
+      "path": "/tmp/qa_TWIN-43_sakxbni4/evidence/runtime.log",
+      "sha256": "ccd929ddcc5ab7d9968bd7a3bb24e4b5ec2bb1bfc9e66aacf1f40ef648c41077"
+    },
+    "server_verdict": {
+      "path": "/tmp/qa_TWIN-43_sakxbni4/evidence/server_verdict.json",
+      "sha256": "6409d64b51d5b235d69a0f070764b96b210bfaf5f297aeb912f5de745390a963"
+    },
+    "tool_versions": {
+      "git": "git version 2.25.1",
+      "python": "Python 3.8.10"
+    },
+    "build_results": [],
+    "test_results": [
+      {
+        "command": "rm -rf /tmp/qa_twin43 && mkdir -p /tmp/qa_twin43/bin && cp -r ../soc-ap ../test_harness /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && python3 ../test_harness/static_checks/cascade/run_query_cases.py --test-host build/host/soc-ap --cases ../test_harness/test_cases/cascade/query_cases.json && python3 -c \"import pathlib; pathlib.Path(\\\"/tmp/test_serial_baud.cpp\\\").write_text(\\\"#include <cassert>\\n#include <cstdio>\\n#include <cstdlib>\\n#include <fcntl.h>\\n#include <unistd.h>\\n#include \\\\\\\"serial_posix.h\\\\\\\"\\n#include \\\\\\\"query.h\\\\\\\"\\nint main() {\\n  minimc::SerialConfig dflt;\\n  assert(dflt.baud_rate == 921600U);\\n  minimc::QueryOptions qdflt;\\n  assert(qdflt.baud_rate == 921600U);\\n  int mfd = posix_openpt(O_RDWR | O_NOCTTY);\\n  assert(mfd >= 0 && grantpt(mfd) == 0 && unlockpt(mfd) == 0);\\n  const char* pts = ptsname(mfd);\\n  assert(pts != nullptr);\\n  minimc::SerialContext ctx;\\n  minimc::SerialConfig bad{pts, 123456U};\\n  assert(!minimc::serial_open(&bad, &ctx) && !ctx.is_open && ctx.fd == -1);\\n  const uint32_t bauds[] = {921600U, 460800U, 115200U};\\n  for (uint32_t b : bauds) {\\n    minimc::SerialConfig ok{pts, b};\\n    assert(minimc::serial_open(&ok, &ctx) && ctx.is_open && ctx.fd >= 0);\\n    minimc::serial_close(&ctx);\\n    assert(!ctx.is_open && ctx.fd == -1);\\n  }\\n  close(mfd);\\n  printf(\\\\\\\"[PASS] serial_posix baud_to_speed & serial_open positive(921600/460800/115200) and negative(123456) verified\\\\\\\\n\\\\\\\");\\n  return 0;\\n}\\n\\\")\" && g++ -std=c++17 -O2 -Wall -Wextra -Werror -I core/forward/transport -I core/forward/minimc -I core/host core/forward/transport/serial_posix.cpp /tmp/test_serial_baud.cpp -o /tmp/test_serial_baud && /tmp/test_serial_baud && (! ./build/host/soc-ap --port /dev/null --baud 123456 --target mc --cmd version) && echo \"[PASS] parse_baud_rate rejected invalid baud 123456\"",
+        "exit_code": "0",
+        "subpath": "soc-ap",
+        "duration": "12.06s",
+        "output": "=================================================================\n[BUILD] Incrementally building AI-SoC full stack...\n=================================================================\n[BUILD 1/5] runtime (build/runtime)...\n-- The C compiler identification is GNU 9.4.0\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/runtime\n[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/tmp/qa_twin43/soc-ap/runtime/common/service_lifecycle.cpp.o\n[ 16%] Linking CXX static library libaisoc_runtime_common.a\n[ 16%] Built target aisoc_runtime_common\n[ 25%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin43/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 33%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o\n[ 41%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o\n[ 50%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o\n[ 58%] Linking CXX executable test_backoff\n[ 66%] Linking CXX executable test_service_lifecycle\n[ 66%] Built target test_backoff\n[ 66%] Built target test_service_lifecycle\n[ 75%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tmp/qa_twin43/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 83%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin43/soc-ap/runtime/vmware/main.cpp.o\n[ 91%] Linking CXX executable aisoc_supervisor\n[100%] Linking CXX executable test_supervisor_topology\n[100%] Built target aisoc_supervisor\n[100%] Built target test_supervisor_topology\n[BUILD 2/5] forward (build/forward & build/test_forward)...\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/forward\n[  5%] Building CXX object CMakeFiles/forward_service.dir/forward_protocol.cpp.o\n[ 10%] Building CXX object CMakeFiles/forward_service.dir/forward_uart.cpp.o\n[ 15%] Building CXX object CMakeFiles/forward_service.dir/forward_dbus.cpp.o\n[ 20%] Building CXX object CMakeFiles/forward_service.dir/forward_service.cpp.o\n[ 25%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/core/forward/minimc/codec.cpp.o\n[ 30%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/core/forward/minimc/parser.cpp.o\n[ 35%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/core/forward/transport/serial_posix.cpp.o\n[ 40%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o\n[ 45%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o\n[ 50%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o\n[ 55%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o\n[ 60%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o\n[ 65%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o\n[ 70%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o\n[ 75%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o\n[ 80%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o\n[ 85%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds.cpp.o\n[ 90%] Linking CXX static library libforward_service.a\n[ 90%] Built target forward_service\n[ 95%] Building CXX object CMakeFiles/forward_service_daemon.dir/forward_main.cpp.o\n[100%] Linking CXX executable forward_service_daemon\n[100%] Built target forward_service_daemon\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/test_forward\n[  5%] Building CXX object CMakeFiles/test_forward_service.dir/test_forward_service.cpp.o\n[ 10%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/services/forward/forward_protocol.cpp.o\n[ 21%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/services/forward/forward_uart.cpp.o\n[ 21%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/services/forward/forward_dbus.cpp.o\n[ 26%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/services/forward/forward_service.cpp.o\n[ 31%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/core/forward/minimc/codec.cpp.o\n[ 36%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/core/forward/minimc/parser.cpp.o\n[ 42%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/core/forward/transport/serial_posix.cpp.o\n[ 47%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o\n[ 52%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o\n[ 57%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o\n[ 63%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o\n[ 68%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o\n[ 73%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o\n[ 78%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o\n[ 84%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o\n[ 89%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o\n[ 94%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds.cpp.o\n[100%] Linking CXX executable test_forward_service\n[100%] Built target test_forward_service\n[BUILD 3/5] device_manager (build/device_manager)...\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/device_manager\n[  6%] Building CXX object CMakeFiles/device_manager.dir/device_manager_state.cpp.o\n[ 12%] Building CXX object CMakeFiles/device_manager.dir/device_manager_dbus.cpp.o\n[ 25%] Building CXX object CMakeFiles/device_manager.dir/device_manager_service.cpp.o\n[ 25%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o\n[ 31%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o\n[ 43%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o\n[ 43%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o\n[ 50%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o\n[ 56%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o\n[ 62%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o\n[ 68%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o\n[ 75%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o\n[ 81%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin43/soc-ap/middleware/dds/src/aisoc_dds.cpp.o\n[ 87%] Linking CXX static library libdevice_manager.a\n[ 87%] Built target device_manager\n[ 93%] Building CXX object CMakeFiles/device_manager_daemon.dir/device_manager_main.cpp.o\n[100%] Linking CXX executable device_manager_daemon\n[100%] Built target device_manager_daemon\n[BUILD 4/5] ui_gateway (build/ui_gateway)...\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/ui_gateway\n[  8%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_http.cpp.o\n[ 16%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_dbus.cpp.o\n[ 25%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_server.cpp.o\n[ 33%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_service.cpp.o\n[ 50%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o\n[ 50%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_job_ctrl.cpp.o\n[ 58%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o\n[ 66%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o\n[ 75%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin43/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o\n[ 83%] Linking CXX static library libui_gateway.a\n[ 83%] Built target ui_gateway\n[ 91%] Building CXX object CMakeFiles/ui-gateway.dir/ui_gateway_main.cpp.o\n[100%] Linking CXX executable ui-gateway\n[100%] Built target ui-gateway\n[BUILD 5/5] host CLI (build/host)...\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Found Python3: /usr/bin/python3.8 (found version \"3.8.10\") found components: Interpreter\n-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/host\n[ 11%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o\n[ 22%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o\n[ 33%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o\n[ 44%] Linking CXX static library libminimcproto.a\n[ 44%] Built target minimcproto\n[ 55%] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o\n[ 77%] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o\n[ 77%] Building CXX object CMakeFiles/soc-ap.dir/core/host/query.cpp.o\n[ 88%] Linking CXX executable bin/soc-ap\n[ 88%] Built target soc-ap\n[100%] Linking CXX executable bin/minimc-probe\n[100%] Built target minimc-probe\n=================================================================\n[BUILD] All 5 full-stack targets built successfully.\n=================================================================\nTest project /tmp/qa_twin43/soc-ap/build/forward\n    Start 1: test_forward_service\n1/1 Test #1: test_forward_service .............   Passed    0.49 sec\n\n100% tests passed out of 1\n\nTotal Test time (real) =   0.49 sec\n[OK] 黄金用例集静态校验通过: ../test_harness/test_cases/cascade/query_cases.json (含 4 正例, 10 负例)\n===========================================================================\n       执行 AP 宿主程序黑盒 PTY 级联查询测试: build/host/soc-ap\n===========================================================================\n[PASS] CAS-POS-001  | 退出码: 0 (期望 0) | 耗时: 0.062s | AP 直接查询 MC 固件版本 (单跳 GET_VERSION)\n[PASS] CAS-POS-002  | 退出码: 0 (期望 0) | 耗时: 0.061s | AP 经 MC 级联查询 TH 固件版本 (双跳 GET_VERSION 原生透明路由)\n[PASS] CAS-POS-003  | 退出码: 0 (期望 0) | 耗时: 0.061s | AP 向 MC 发送心跳探活与时延测量 (单跳 PING/PONG)\n[PASS] CAS-POS-004  | 退出码: 0 (期望 0) | 耗时: 0.061s | AP 经 MC 级联向 TH 发送心跳探活 (双跳 PING/PONG 原生透明路由)\n[PASS] CAS-NEG-001  | 退出码: 1 (期望 1) | 耗时: 0.304s | 信道持续静默无响应 (Silence / Timeout)\n[PASS] CAS-NEG-002  | 退出码: 1 (期望 1) | 耗时: 0.362s | 信道回显原请求报文 (Echo / Reflection Loop)\n[PASS] CAS-NEG-003  | 退出码: 1 (期望 1) | 耗时: 0.362s | 响应源节点错位 (Target Mismatch: 查 TH 却收到 MC 回包)\n[PASS] CAS-NEG-004  | 退出码: 1 (期望 1) | 耗时: 0.362s | 流水号错位 (Stale / Corrupted Sequence Number)\n[PASS] CAS-NEG-005  | 退出码: 2 (期望 2) | 耗时: 0.062s | 操作码定义冲突 (Command Opcode Conflict: 收到 0x03 魔数或非法应答)\n[PASS] CAS-NEG-006  | 退出码: 2 (期望 2) | 耗时: 0.062s | 载荷长度截断不匹配 (Truncated / Malformed Payload Length)\n[PASS] CAS-NEG-007  | 退出码: 1 (期望 1) | 耗时: 0.362s | 帧尾 CRC-16 损坏 (Corrupted CRC-16)\n[PASS] CAS-NEG-008  | 退出码: 2 (期望 2) | 耗时: 0.061s | 终端从机回发标准拒绝报文 (CMD_NACK with Error Code)\n[PASS] CAS-NEG-009  | 退出码: 0 (期望 0) | 耗时: 0.062s | 信道夹杂 DWIN 屏幕噪声抗扰 (Inter-packet Noise Resilience)\n[PASS] CAS-NEG-010  | 退出码: 4 (期望 4) | 耗时: --s | 命令行非法参数拒绝 (CLI Argument Defense)\n---------------------------------------------------------------------------\n测试汇总: 总用例 14, 通过 14, 失败 0\n===========================================================================\n[PASS] serial_posix baud_to_speed & serial_open positive(921600/460800/115200) and negative(123456) verified\nUsage: ./build/host/soc-ap [--serial-port PATH | --port PATH | --device PATH]\n       ./build/host/soc-ap --target <mc|th> --cmd <version|ping> [--port PATH] [--timeout-ms MS] [--baud 921600] [--seq N] [--json]\n       ./build/host/soc-ap --query-version [--timeout-ms MS]\n       ./build/host/soc-ap --check-config\n       ./build/host/soc-ap --help | --version\n[PASS] parse_baud_rate rejected invalid baud 123456"
+      },
+      {
+        "command": "python3 static_checks/twin/validate_schemas.py --root ..",
+        "exit_code": "0",
+        "subpath": "test_harness",
+        "duration": "0.10s",
+        "output": "========================================================================\nTWIN-03 Schema Draft7Validator Matrix Results\n========================================================================\n[PASS] POS-MAN-VMWARE                   : VALID\n[PASS] POS-MAN-SOC                      : VALID\n[PASS] NEG-MAN-ONLY-4-ACTIVE            : Array missing required element at /services\n[PASS] NEG-MAN-MISSING-SYSTEM-MGR       : Array missing required element at /services\n[PASS] NEG-MAN-ACTIVE-MARKED-DEFERRED   : Value deferred != const first_slice_active at /services/0/slice_status\n[PASS] NEG-MAN-GENERATION-ZERO          : 0 < min 1 at /generation_id\n[PASS] NEG-MAN-BAD-REVISION-TAG         : 'bad_revision' mismatch pattern ^[0-9]{8}_rev[0-9]+$ at /manifest_revision\n[PASS] POS-HTTP-SNAPSHOT-VALID          : VALID\n[PASS] POS-HTTP-SNAPSHOT-FAULT          : VALID\n[PASS] NEG-HTTP-TEMP-TOO-HIGH           : 500.1 > max 500.0 at /tool/temperature_c\n[PASS] NEG-HTTP-TEMP-TOO-LOW            : -40.1 < min -40.0 at /bed/temperature_c\n[PASS] NEG-HTTP-INVALID-SENTINEL        : Expected 1 valid in oneOf, got 0 at /tool/temperature_millic\n[PASS] NEG-HTTP-ADC-OVERFLOW            : 4096 > max 4095 at /bed/raw_adc\n[PASS] NEG-HTTP-EXTRA-PROPERTY          : Property 'extra_field' not allowed at /extra_field\n[PASS] POS-SSE-TEMP-UPDATE              : VALID\n[PASS] NEG-SSE-INVALID-QUALITY-ENUM     : Value INVALID_QUALITY not in ['FRESH', 'STALE', 'FAULT', 'UNKNOWN'] at /bed_q\n------------------------------------------------------------------------\nTotal: 16, Passed: 16, Failed: 0"
+      },
+      {
+        "command": "mkdir -p /tmp/qa_twin43/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin43/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport os,sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\nif os.environ.get(\\x27FORCE_CURL_FAIL\\x27)==\\x271\\x27:\\n sys.stdout.write(\\x27503\\x27) if w else None;sys.exit(0 if w else 22)\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755); pathlib.Path(\\\"/tmp/qa_twin43/custom_twin.conf\\\").write_text(\\\"AISOC_MODE=\\\\\\\"sim\\\\\\\"\\nAISOC_UART_DEVICE=\\\\\\\"/dev/null\\\\\\\"\\nAISOC_UART_BAUD=\\\\\\\"460800\\\\\\\"\\nAISOC_HTTP_BIND=\\\\\\\"0.0.0.0\\\\\\\"\\nAISOC_HTTP_PORT=\\\\\\\"18082\\\\\\\"\\nAISOC_WEB_ROOT=\\\\\\\"browser_hmi/first_release\\\\\\\"\\nAISOC_LOG_DIR=\\\\\\\"/tmp/aisoc_custom_logs\\\\\\\"\\nAISOC_AUTO_BUILD=\\\\\\\"0\\\\\\\"\\n\\\")\" && export PATH=\"/tmp/qa_twin43/bin:$PATH\" && ([ -d /tmp/qa_twin43/soc-ap ] || (cp -r ../soc-ap /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)))) && cd /tmp/qa_twin43/soc-ap && (! bash tools/deploy_twin.sh --config /tmp/nonexistent_twin.conf) && (! bash tools/deploy_twin.sh --mode hardware --uart /dev/nonexistent_ttyUSB99 --port 18080) && (! bash tools/deploy_twin.sh --status --port 18080) && (! bash tools/deploy_twin.sh --mode sim --baud 123456 --port 18080) && (! FORCE_CURL_FAIL=1 bash tools/deploy_twin.sh --mode sim --port 18080) && (! bash tools/deploy_twin.sh --status --port 18080) && [ ! -e /tmp/aisoc_twin_logs/ui_gateway.pid ] && [ ! -e /tmp/aisoc_twin_logs/device_manager.pid ] && [ ! -e /tmp/aisoc_twin_logs/forward.pid ] && [ ! -e /tmp/aisoc_twin_logs/dbus.pid ] && [ ! -e /tmp/aisoc_twin_logs/runtime.env ] && echo \"[PASS] post-launch health-check failure cleaned up all daemons and PID/runtime files\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --status | grep -E \"460800|18082\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --stop && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --baud 921600 --port 18083 && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --status | grep -E \"921600|18083\" && bash tools/deploy_twin.sh --config /tmp/qa_twin43/custom_twin.conf --stop && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && rm -rf /tmp/qa_twin43 /tmp/aisoc_custom_logs",
+        "exit_code": "0",
+        "subpath": "soc-ap",
+        "duration": "53.92s",
+        "output": "=================================================================\nAI-SoC VMware Twin Full-Stack Status (Mode: hardware)\n  UART Device: /dev/ttyUSB0 @ 921600 baud\n  HTTP Bind:   0.0.0.0:18080\n=================================================================\n  [STOPPED] dbus-daemon\n  [STOPPED] forward_service_daemon\n  [STOPPED] device_manager_daemon\n  [STOPPED] ui-gateway\n  [HEALTH ] HTTP Probe http://127.0.0.1:18080/api/v1/state -> FAILED (HTTP 000000)\n=================================================================\n=================================================================\n[BUILD] Incrementally building AI-SoC full stack...\n=================================================================\n[BUILD 1/5] runtime (build/runtime)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/runtime\n[ 16%] Built target aisoc_runtime_common\n[ 50%] Built target test_service_lifecycle\n[ 50%] Built target test_backoff\n[ 75%] Built target aisoc_supervisor\n[100%] Built target test_supervisor_topology\n[BUILD 2/5] forward (build/forward & build/test_forward)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/forward\n[ 90%] Built target forward_service\n[100%] Built target forward_service_daemon\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/test_forward\n[100%] Built target test_forward_service\n[BUILD 3/5] device_manager (build/device_manager)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/device_manager\n[ 87%] Built target device_manager\n[100%] Built target device_manager_daemon\n[BUILD 4/5] ui_gateway (build/ui_gateway)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/ui_gateway\n[ 83%] Built target ui_gateway\n[100%] Built target ui-gateway\n[BUILD 5/5] host CLI (build/host)...\n-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/host\n[ 44%] Built target minimcproto\n[ 66%] Built target minimc-probe\n[100%] Built target soc-ap\n=================================================================\n[BUILD] All 5 full-stack targets built successfully.\n=================================================================\n[STOP] Stopping ui-gateway (PID: 1089)...\n[STOP] Stopping device_manager_daemon (PID: 1087)...\n[STOP] Stopping forward_service_daemon (PID: 1086)...\n[STOP] Stopping dbus-daemon (PID: 1081)...\n=================================================================\nAI-SoC VMware Twin Full-Stack Status (Mode: hardware)\n  UART Device: /dev/ttyUSB0 @ 921600 baud\n  HTTP Bind:   0.0.0.0:18080\n=================================================================\n  [STOPPED] dbus-daemon\n  [STOPPED] forward_service_daemon\n  [STOPPED] device_manager_daemon\n  [STOPPED] ui-gateway\n  [HEALTH ] HTTP Probe http://127.0.0.1:18080/api/v1/state -> FAILED (HTTP 000000)\n=================================================================\n[PASS] post-launch health-check failure cleaned up all daemons and PID/runtime files\n=================================================================\nAI-SoC VMware Twin Full Stack Deployed Successfully!\n  Mode:        sim\n  UART:        /dev/null @ 460800 baud\n  HTTP URL:    http://127.0.0.1:18082/\n  State API:   http://127.0.0.1:18082/api/v1/state\n  Snapshot:    http://127.0.0.1:18082/api/v1/temperature/snapshot\n  Logs & PIDs: /tmp/aisoc_custom_logs\n=================================================================\n  UART Device: /dev/null @ 460800 baud\n  HTTP Bind:   0.0.0.0:18082\n  [HEALTH ] HTTP Probe http://127.0.0.1:18082/api/v1/state -> HTTP 200 OK\n[STOP] Stopping ui-gateway (PID: 1292)...\n[STOP] Stopping device_manager_daemon (PID: 1290)...\n[STOP] Stopping forward_service_daemon (PID: 1289)...\n[STOP] Stopping dbus-daemon (PID: 1284)...\n[STOP] All AI-SoC VMware Twin services stopped and PID files cleaned.\n=================================================================\nAI-SoC VMware Twin Full Stack Deployed Successfully!\n  Mode:        sim\n  UART:        /dev/null @ 921600 baud\n  HTTP URL:    http://127.0.0.1:18083/\n  State API:   http://127.0.0.1:18083/api/v1/state\n  Snapshot:    http://127.0.0.1:18083/api/v1/temperature/snapshot\n  Logs & PIDs: /tmp/aisoc_custom_logs\n=================================================================\n  UART Device: /dev/null @ 921600 baud\n  HTTP Bind:   0.0.0.0:18083\n  [HEALTH ] HTTP Probe http://127.0.0.1:18083/api/v1/state -> HTTP 200 OK\n[STOP] Stopping ui-gateway (PID: 1481)...\n[STOP] Stopping device_manager_daemon (PID: 1479)...\n[STOP] Stopping forward_service_daemon (PID: 1478)...\n[STOP] Stopping dbus-daemon (PID: 1473)...\n[STOP] All AI-SoC VMware Twin services stopped and PID files cleaned.\n=================================================================\n[BUILD] Incrementally building AI-SoC full stack...\n=================================================================\n[BUILD 1/5] runtime (build/runtime)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/runtime\n[ 16%] Built target aisoc_runtime_common\n[ 33%] Built target test_backoff\n[ 50%] Built target test_service_lifecycle\n[ 75%] Built target aisoc_supervisor\n[100%] Built target test_supervisor_topology\n[BUILD 2/5] forward (build/forward & build/test_forward)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/forward\n[ 90%] Built target forward_service\n[100%] Built target forward_service_daemon\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/test_forward\n[100%] Built target test_forward_service\n[BUILD 3/5] device_manager (build/device_manager)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/device_manager\n[ 87%] Built target device_manager\n[100%] Built target device_manager_daemon\n[BUILD 4/5] ui_gateway (build/ui_gateway)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/ui_gateway\n[ 83%] Built target ui_gateway\n[100%] Built target ui-gateway\n[BUILD 5/5] host CLI (build/host)...\n-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/host\n[ 44%] Built target minimcproto\n[ 66%] Built target minimc-probe\n[100%] Built target soc-ap\n=================================================================\n[BUILD] All 5 full-stack targets built successfully.\n=================================================================\n=================================================================\nAI-SoC VMware Twin Full Stack Deployed Successfully!\n  Mode:        sim\n  UART:        /dev/ttyUSB0 @ 921600 baud\n  HTTP URL:    http://127.0.0.1:18080/\n  State API:   http://127.0.0.1:18080/api/v1/state\n  Snapshot:    http://127.0.0.1:18080/api/v1/temperature/snapshot\n  Logs & PIDs: /tmp/aisoc_twin_logs\n=================================================================\n=================================================================\nAI-SoC VMware Twin Full-Stack Status (Mode: sim)\n  UART Device: /dev/ttyUSB0 @ 921600 baud\n  HTTP Bind:   0.0.0.0:18080\n=================================================================\n  [RUNNING] dbus-daemon (PID: 1807)\n  [RUNNING] forward_service_daemon (PID: 1812)\n  [RUNNING] device_manager_daemon (PID: 1813)\n  [RUNNING] ui-gateway (PID: 1815)\n  [HEALTH ] HTTP Probe http://127.0.0.1:18080/api/v1/state -> HTTP 200 OK\n=================================================================\n[STOP] Stopping ui-gateway (PID: 1815)...\n[STOP] Stopping device_manager_daemon (PID: 1813)...\n[STOP] Stopping forward_service_daemon (PID: 1812)...\n[STOP] Stopping dbus-daemon (PID: 1807)...\n[STOP] All AI-SoC VMware Twin services stopped and PID files cleaned.\n=================================================================\n[BUILD] Incrementally building AI-SoC full stack...\n=================================================================\n[BUILD 1/5] runtime (build/runtime)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/runtime\n[ 16%] Built target aisoc_runtime_common\n[ 50%] Built target test_service_lifecycle\n[ 50%] Built target test_backoff\n[ 75%] Built target aisoc_supervisor\n[100%] Built target test_supervisor_topology\n[BUILD 2/5] forward (build/forward & build/test_forward)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/forward\n[ 90%] Built target forward_service\n[100%] Built target forward_service_daemon\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/test_forward\n[100%] Built target test_forward_service\n[BUILD 3/5] device_manager (build/device_manager)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/device_manager\n[ 87%] Built target device_manager\n[100%] Built target device_manager_daemon\n[BUILD 4/5] ui_gateway (build/ui_gateway)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/ui_gateway\n[ 83%] Built target ui_gateway\n[100%] Built target ui-gateway\n[BUILD 5/5] host CLI (build/host)...\n-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin43/soc-ap/build/host\n[ 44%] Built target minimcproto\n[ 66%] Built target minimc-probe\n[100%] Built target soc-ap\n=================================================================\n[BUILD] All 5 full-stack targets built successfully.\n=================================================================\n=================================================================\nAI-SoC VMware Twin Full Stack Deployed Successfully!\n  Mode:        sim\n  UART:        /dev/ttyUSB0 @ 921600 baud\n  HTTP URL:    http://127.0.0.1:18080/\n  State API:   http://127.0.0.1:18080/api/v1/state\n  Snapshot:    http://127.0.0.1:18080/api/v1/temperature/snapshot\n  Logs & PIDs: /tmp/aisoc_twin_logs\n=================================================================\n=================================================================\nAI-SoC VMware Twin Full-Stack Status (Mode: sim)\n  UART Device: /dev/ttyUSB0 @ 921600 baud\n  HTTP Bind:   0.0.0.0:18080\n=================================================================\n  [RUNNING] dbus-daemon (PID: 2140)\n  [RUNNING] forward_service_daemon (PID: 2145)\n  [RUNNING] device_manager_daemon (PID: 2146)\n  [RUNNING] ui-gateway (PID: 2148)\n  [HEALTH ] HTTP Probe http://127.0.0.1:18080/api/v1/state -> HTTP 200 OK\n=================================================================\n[STOP] Stopping ui-gateway (PID: 2148)...\n[STOP] Stopping device_manager_daemon (PID: 2146)...\n[STOP] Stopping forward_service_daemon (PID: 2145)...\n[STOP] Stopping dbus-daemon (PID: 2140)...\n[STOP] All AI-SoC VMware Twin services stopped and PID files cleaned.\n\nERROR: Specified configuration file not found: /tmp/nonexistent_twin.conf\nERROR: Hardware mode requires UART device '/dev/nonexistent_ttyUSB99', but device node does not exist. Aborting without falling back to sim mode.\nERROR: Unsupported baud rate '123456'. Allowed values: 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600\nERROR: Full-stack deployment failed health check on port 18080."
+      }
+    ],
+    "passed": true,
+    "timestamp": "2026-11-04T04:07:24.076265+00:00",
+    "path": "/tmp/qa_TWIN-43_sakxbni4/evidence/server_qa.json",
+    "sha256": "c72a4013e189e742b8d56e4354f58490b81645a084abdac2e312a672afd925e0"
+  },
+  "diffs": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_sandboxes/TWIN-43_run_120551_20261104_040551/project-control",
+      "base_commit": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+      "candidate_commit": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+      "diff": {
+        "path": "/tmp/qa_TWIN-43_sakxbni4/diffs/project-control.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "soc-ap",
+      "source": "/tmp/qa_sandboxes/TWIN-43_run_120551_20261104_040551/soc-ap",
+      "base_commit": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+      "candidate_commit": "217a76e29c0c99897bf1993514b765cd771adb06",
+      "diff": {
+        "path": "/tmp/qa_TWIN-43_sakxbni4/diffs/soc-ap.patch",
+        "sha256": "ff2cae1d54502bfd91875aeca31369d60641429aa4b71cac81d54b59203d3ce4"
+      }
+    },
+    {
+      "repository": "mcu-p3",
+      "source": "/tmp/qa_sandboxes/TWIN-43_run_120551_20261104_040551/mcu-p3",
+      "base_commit": "e051111e68dd61896ed42c0961153b167b8bca41",
+      "candidate_commit": "e051111e68dd61896ed42c0961153b167b8bca41",
+      "diff": {
+        "path": "/tmp/qa_TWIN-43_sakxbni4/diffs/mcu-p3.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "test_harness",
+      "source": "/tmp/qa_sandboxes/TWIN-43_run_120551_20261104_040551/test_harness",
+      "base_commit": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+      "candidate_commit": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+      "diff": {
+        "path": "/tmp/qa_TWIN-43_sakxbni4/diffs/test_harness.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

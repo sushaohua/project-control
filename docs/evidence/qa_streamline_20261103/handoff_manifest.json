@@ -1,7 +1,7 @@
 {
   "task_id": "QA-SIMPLIFY-20261103",
   "revision": 1,
-  "status": "published-qa-approved-awaiting-coord-receipt",
+  "status": "coord-received-effective",
   "record_kind": "deterministic-receipt-input-validation-not-a-new-QA-signature",
   "validated_at": "2026-11-03T22:16:51.691406+08:00",
   "trusted_baseline": "9f1ad485751118112fa077743fcc6acfb5857bc1",
@@ -79,9 +79,21 @@
     "each_run_196_unit_tests_and_document_check_passed": true
   },
   "coord_receipt": {
-    "status": "pending",
-    "receiver": "现有唯一COORD",
+    "status": "received-and-effective",
+    "receiver": "COORD",
+    "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+    "previous_stopped_coord_session": "8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5",
+    "received_at": "2026-11-04T09:05:00+08:00",
+    "effective_policy": "streamlined-v1",
+    "effective_release_version": {
+      "project-control": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+      "ai-soc-workspace": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+      "evidence_archive_commit": "613f3cbc9a58283ff085cee241de9810895cfdb4",
+      "workspace_current_head_at_receipt": "5964606826b604da81593ab13d0adecdb7728dc3"
+    },
+    "receipt_evidence_path": "coord_receipt_20261104.json",
     "adoption_condition": "按确切源码候选和本清单收件并登记采用范围后使用新任务策略",
+    "adoption_scope": "新任务显式标记 qa_policy: streamlined-v1 启用单轮独立 QA（代码审查+功能/必要回归）；未迁移旧任务维持 legacy 按切换表逐卡处理；特殊变更额外审查与真实 HIL 要求保留",
     "scheduler_restarted": false,
     "old_task_states_modified": false
   },

@@ -1,0 +1,1109 @@
+diff --git a/config/runtime/common/services_manifest.json b/config/runtime/common/services_manifest.json
+index 214243f..80c0b61 100644
+--- a/config/runtime/common/services_manifest.json
++++ b/config/runtime/common/services_manifest.json
+@@ -31,7 +31,7 @@
+       "ipc_channels": {
+         "serial": {
+           "device_node": "/dev/ttyS1",
+-          "baud_rate": 115200,
++          "baud_rate": 921600,
+           "parity": "8N1",
+           "timeout_ms": 100,
+           "exclusive_lock": true
+diff --git a/config/runtime/vmware/aisoc_twin.conf b/config/runtime/vmware/aisoc_twin.conf
+new file mode 100644
+index 0000000..b10bc8d
+--- /dev/null
++++ b/config/runtime/vmware/aisoc_twin.conf
+@@ -0,0 +1,11 @@
++# ==============================================================================
++# AI-SoC VMware Twin Runtime Default Configuration (TWIN-43)
++# ==============================================================================
++AISOC_MODE="hardware"
++AISOC_UART_DEVICE="/dev/ttyUSB0"
++AISOC_UART_BAUD="921600"
++AISOC_HTTP_BIND="0.0.0.0"
++AISOC_HTTP_PORT="8080"
++AISOC_WEB_ROOT="browser_hmi/first_release"
++AISOC_LOG_DIR="/tmp/aisoc_twin_logs"
++AISOC_AUTO_BUILD="1"
+diff --git a/config/runtime/vmware/services_manifest.json b/config/runtime/vmware/services_manifest.json
+index a229309..cbff960 100644
+--- a/config/runtime/vmware/services_manifest.json
++++ b/config/runtime/vmware/services_manifest.json
+@@ -30,7 +30,7 @@
+       "ipc_channels": {
+         "serial": {
+           "device_node": "/dev/ttyS1",
+-          "baud_rate": 115200,
++          "baud_rate": 921600,
+           "parity": "8N1",
+           "timeout_ms": 100,
+           "exclusive_lock": true
+diff --git a/core/forward/transport/serial_posix.cpp b/core/forward/transport/serial_posix.cpp
+index 6329a86..3a83dc0 100644
+--- a/core/forward/transport/serial_posix.cpp
++++ b/core/forward/transport/serial_posix.cpp
+@@ -31,6 +31,16 @@ static bool baud_to_speed(uint32_t baud, speed_t* speed) noexcept {
+         case 230400:
+             *speed = B230400;
+             return true;
++#ifdef B460800
++        case 460800:
++            *speed = B460800;
++            return true;
++#endif
++#ifdef B921600
++        case 921600:
++            *speed = B921600;
++            return true;
++#endif
+         default:
+             return false;
+     }
+@@ -71,7 +81,7 @@ bool serial_open(const SerialConfig* config, SerialContext* ctx) noexcept {
+     if (config == nullptr || ctx == nullptr || config->device_path == nullptr) {
+         return false;
+     }
+-    speed_t speed = B115200;
++    speed_t speed = B921600;
+     if (!baud_to_speed(config->baud_rate, &speed)) {
+         return false;
+     }
+diff --git a/core/forward/transport/serial_posix.h b/core/forward/transport/serial_posix.h
+index 35d9bb3..806e4b2 100644
+--- a/core/forward/transport/serial_posix.h
++++ b/core/forward/transport/serial_posix.h
+@@ -9,7 +9,7 @@ namespace minimc {
+ 
+ struct SerialConfig {
+     const char* device_path = "/dev/ttyUSB0";
+-    uint32_t baud_rate = 115200;
++    uint32_t baud_rate = 921600;
+ };
+ 
+ struct SerialContext {
+diff --git a/core/host/main.cpp b/core/host/main.cpp
+index d2bcab4..005df4f 100644
+--- a/core/host/main.cpp
++++ b/core/host/main.cpp
+@@ -17,8 +17,11 @@ void request_shutdown(int) {
+ }
+ 
+ void print_usage(const char* executable) {
++    if (executable == nullptr) {
++        return;
++    }
+     std::cout << "Usage: " << executable << " [--serial-port PATH | --port PATH | --device PATH]\n"
+-              << "       " << executable << " --target <mc|th> --cmd <version|ping> [--port PATH] [--timeout-ms MS] [--baud 115200] [--seq N] [--json]\n"
++              << "       " << executable << " --target <mc|th> --cmd <version|ping> [--port PATH] [--timeout-ms MS] [--baud 921600] [--seq N] [--json]\n"
+               << "       " << executable << " --query-version [--timeout-ms MS]\n"
+               << "       " << executable << " --check-config\n"
+               << "       " << executable << " --help | --version\n";
+diff --git a/core/host/query.cpp b/core/host/query.cpp
+index a60c926..4300572 100644
+--- a/core/host/query.cpp
++++ b/core/host/query.cpp
+@@ -60,6 +60,22 @@ bool parse_timeout_ms(const char* str, int* out_timeout) noexcept {
+     return true;
+ }
+ 
++static bool is_supported_baud_rate(unsigned long val) noexcept {
++    switch (val) {
++        case 9600UL:
++        case 19200UL:
++        case 38400UL:
++        case 57600UL:
++        case 115200UL:
++        case 230400UL:
++        case 460800UL:
++        case 921600UL:
++            return true;
++        default:
++            return false;
++    }
++}
++
+ static bool parse_baud_rate(const char* str, uint32_t* out_baud) noexcept {
+     if (str == nullptr || out_baud == nullptr || *str == '\0') {
+         return false;
+@@ -71,7 +87,7 @@ static bool parse_baud_rate(const char* str, uint32_t* out_baud) noexcept {
+     }
+     char* end = nullptr;
+     const unsigned long val = std::strtoul(str, &end, 10);
+-    if (end == str || *end != '\0' || val != 115200) {
++    if (end == str || *end != '\0' || !is_supported_baud_rate(val)) {
+         return false;
+     }
+     *out_baud = static_cast<uint32_t>(val);
+diff --git a/core/host/query.h b/core/host/query.h
+index b852c48..2c49c52 100644
+--- a/core/host/query.h
++++ b/core/host/query.h
+@@ -39,7 +39,7 @@ enum ResponseCmd : uint8_t {
+ 
+ struct QueryOptions {
+     const char* serial_port = "/dev/ttyUSB0";
+-    uint32_t baud_rate = 115200;
++    uint32_t baud_rate = 921600;
+     int timeout_ms = 500;
+     uint8_t target_node = TARGET_MC;
+     uint8_t cmd_type = CMD_QUERY_VERSION;
+diff --git a/dist/vmware_twin/config/services_manifest.json b/dist/vmware_twin/config/services_manifest.json
+new file mode 100644
+index 0000000..cbff960
+--- /dev/null
++++ b/dist/vmware_twin/config/services_manifest.json
+@@ -0,0 +1,370 @@
++{
++  "schema_version": 2,
++  "generation_id": 1,
++  "manifest_revision": "20261030_rev1",
++  "target_environments": [
++    "vmware"
++  ],
++  "services": [
++    {
++      "name": "forward-service",
++      "role": "Serial protocol forwarder and UART gateway",
++      "slice_status": "first_slice_active",
++      "binary_path": "/opt/aisoc/bin/forward-service",
++      "systemd": {
++        "unit_name": "aisoc-forward.service",
++        "restart_policy": "on-failure",
++        "restart_sec": 2.0,
++        "sd_notify": true
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 32.0,
++          "cpu_percent_max": 15.0
++        },
++        "soc": {
++          "rss_mb_max": 16.0,
++          "cpu_percent_max": 20.0
++        }
++      },
++      "ipc_channels": {
++        "serial": {
++          "device_node": "/dev/ttyS1",
++          "baud_rate": 921600,
++          "parity": "8N1",
++          "timeout_ms": 100,
++          "exclusive_lock": true
++        },
++        "dds": [
++          {
++            "topic": "telemetry/raw_temp",
++            "message_type": "RawTempTelemetry",
++            "direction": "PUB",
++            "qos": {
++              "reliability": "BEST_EFFORT",
++              "durability": "VOLATILE",
++              "history_depth": 5
++            }
++          }
++        ],
++        "dbus": [
++          {
++            "bus_type": "system",
++            "bus_name": "org.aisoc.Forward",
++            "object_path": "/org/aisoc/forward",
++            "interface_name": "org.aisoc.ForwardInterface",
++            "role": "server"
++          }
++        ]
++      },
++      "dependencies": []
++    },
++    {
++      "name": "device-manager",
++      "role": "Central state machine and command admission control",
++      "slice_status": "first_slice_active",
++      "binary_path": "/opt/aisoc/bin/device-manager",
++      "systemd": {
++        "unit_name": "aisoc-state.service",
++        "restart_policy": "on-failure",
++        "restart_sec": 2.0,
++        "sd_notify": true
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 48.0,
++          "cpu_percent_max": 20.0
++        },
++        "soc": {
++          "rss_mb_max": 24.0,
++          "cpu_percent_max": 25.0
++        }
++      },
++      "ipc_channels": {
++        "dds": [
++          {
++            "topic": "telemetry/raw_temp",
++            "message_type": "RawTempTelemetry",
++            "direction": "SUB",
++            "qos": {
++              "reliability": "BEST_EFFORT",
++              "durability": "VOLATILE",
++              "history_depth": 5
++            }
++          },
++          {
++            "topic": "state/temperature_snapshot",
++            "message_type": "TemperatureSnapshot",
++            "direction": "PUB",
++            "qos": {
++              "reliability": "RELIABLE",
++              "durability": "TRANSIENT_LOCAL",
++              "history_depth": 10
++            }
++          }
++        ],
++        "dbus": [
++          {
++            "bus_type": "system",
++            "bus_name": "org.aisoc.Device",
++            "object_path": "/org/aisoc/device",
++            "interface_name": "org.aisoc.DeviceInterface",
++            "role": "server"
++          },
++          {
++            "bus_type": "system",
++            "bus_name": "org.aisoc.Forward",
++            "object_path": "/org/aisoc/forward",
++            "interface_name": "org.aisoc.ForwardInterface",
++            "role": "client"
++          }
++        ]
++      },
++      "dependencies": [
++        "forward-service"
++      ]
++    },
++    {
++      "name": "ui-gateway",
++      "role": "HTTP REST and SSE gateway for UI clients",
++      "slice_status": "first_slice_active",
++      "binary_path": "/opt/aisoc/bin/ui-gateway",
++      "systemd": {
++        "unit_name": "aisoc-net.service",
++        "restart_policy": "on-failure",
++        "restart_sec": 2.0,
++        "sd_notify": true
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 64.0,
++          "cpu_percent_max": 25.0
++        },
++        "soc": {
++          "rss_mb_max": 32.0,
++          "cpu_percent_max": 30.0
++        }
++      },
++      "ipc_channels": {
++        "http": {
++          "port": 8080,
++          "static_root": "/opt/aisoc/www",
++          "endpoints": [
++            "/api/v1/temperature/snapshot",
++            "/api/v1/events/stream"
++          ]
++        },
++        "dds": [
++          {
++            "topic": "state/temperature_snapshot",
++            "message_type": "TemperatureSnapshot",
++            "direction": "SUB",
++            "qos": {
++              "reliability": "RELIABLE",
++              "durability": "TRANSIENT_LOCAL",
++              "history_depth": 10
++            }
++          }
++        ],
++        "dbus": [
++          {
++            "bus_type": "system",
++            "bus_name": "org.aisoc.Device",
++            "object_path": "/org/aisoc/device",
++            "interface_name": "org.aisoc.DeviceInterface",
++            "role": "client"
++          }
++        ]
++      },
++      "dependencies": [
++        "device-manager",
++        "forward-service"
++      ]
++    },
++    {
++      "name": "browser-hmi",
++      "role": "Browser-based Web HMI user interface",
++      "slice_status": "first_slice_active",
++      "binary_path": "/opt/aisoc/bin/browser-hmi",
++      "systemd": {
++        "unit_name": "aisoc-ui.service",
++        "restart_policy": "always",
++        "restart_sec": 3.0,
++        "sd_notify": false
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 128.0,
++          "cpu_percent_max": 30.0
++        },
++        "soc": {
++          "rss_mb_max": 64.0,
++          "cpu_percent_max": 40.0
++        }
++      },
++      "ipc_channels": {
++        "http": {
++          "port": 8080,
++          "static_root": "/opt/aisoc/www",
++          "endpoints": [
++            "/"
++          ]
++        }
++      },
++      "dependencies": [
++        "ui-gateway"
++      ]
++    },
++    {
++      "name": "job-engine",
++      "role": "G-code execution and multi-color print job scheduler",
++      "slice_status": "deferred",
++      "binary_path": "/opt/aisoc/bin/job-engine",
++      "systemd": {
++        "unit_name": "aisoc-job.service",
++        "restart_policy": "on-failure",
++        "restart_sec": 2.0,
++        "sd_notify": false
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 64.0,
++          "cpu_percent_max": 30.0
++        },
++        "soc": {
++          "rss_mb_max": 32.0,
++          "cpu_percent_max": 35.0
++        }
++      },
++      "ipc_channels": {},
++      "dependencies": [
++        "device-manager"
++      ]
++    },
++    {
++      "name": "storage-service",
++      "role": "Local model storage and file management service",
++      "slice_status": "deferred",
++      "binary_path": "/opt/aisoc/bin/storage-service",
++      "systemd": {
++        "unit_name": "aisoc-storage.service",
++        "restart_policy": "on-failure",
++        "restart_sec": 2.0,
++        "sd_notify": false
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 32.0,
++          "cpu_percent_max": 15.0
++        },
++        "soc": {
++          "rss_mb_max": 16.0,
++          "cpu_percent_max": 20.0
++        }
++      },
++      "ipc_channels": {},
++      "dependencies": []
++    },
++    {
++      "name": "cloud-gateway",
++      "role": "MQTT IoT remote monitoring and telemetry cloud uplink",
++      "slice_status": "deferred",
++      "binary_path": "/opt/aisoc/bin/cloud-gateway",
++      "systemd": {
++        "unit_name": "aisoc-cloud.service",
++        "restart_policy": "on-failure",
++        "restart_sec": 5.0,
++        "sd_notify": false
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 48.0,
++          "cpu_percent_max": 20.0
++        },
++        "soc": {
++          "rss_mb_max": 24.0,
++          "cpu_percent_max": 25.0
++        }
++      },
++      "ipc_channels": {},
++      "dependencies": [
++        "device-manager"
++      ]
++    },
++    {
++      "name": "camera-service",
++      "role": "Video capture and time-lapse recording daemon",
++      "slice_status": "deferred",
++      "binary_path": "/opt/aisoc/bin/camera-service",
++      "systemd": {
++        "unit_name": "aisoc-camera.service",
++        "restart_policy": "on-failure",
++        "restart_sec": 3.0,
++        "sd_notify": false
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 96.0,
++          "cpu_percent_max": 40.0
++        },
++        "soc": {
++          "rss_mb_max": 48.0,
++          "cpu_percent_max": 50.0
++        }
++      },
++      "ipc_channels": {},
++      "dependencies": []
++    },
++    {
++      "name": "print-guard",
++      "role": "AI spaghetti and bed adhesion failure detector",
++      "slice_status": "deferred",
++      "binary_path": "/opt/aisoc/bin/print-guard",
++      "systemd": {
++        "unit_name": "aisoc-guard.service",
++        "restart_policy": "on-failure",
++        "restart_sec": 5.0,
++        "sd_notify": false
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 128.0,
++          "cpu_percent_max": 50.0
++        },
++        "soc": {
++          "rss_mb_max": 64.0,
++          "cpu_percent_max": 60.0
++        }
++      },
++      "ipc_channels": {},
++      "dependencies": [
++        "camera-service",
++        "device-manager"
++      ]
++    },
++    {
++      "name": "system-manager",
++      "role": "OS health monitoring, OTA firmware update, power supervisor",
++      "slice_status": "deferred",
++      "binary_path": "/opt/aisoc/bin/system-manager",
++      "systemd": {
++        "unit_name": "aisoc-sysmgr.service",
++        "restart_policy": "always",
++        "restart_sec": 2.0,
++        "sd_notify": true
++      },
++      "budgets": {
++        "vmware": {
++          "rss_mb_max": 32.0,
++          "cpu_percent_max": 10.0
++        },
++        "soc": {
++          "rss_mb_max": 16.0,
++          "cpu_percent_max": 15.0
++        }
++      },
++      "ipc_channels": {},
++      "dependencies": []
++    }
++  ]
++}
+diff --git a/tools/deploy_twin.sh b/tools/deploy_twin.sh
+index 30c67d7..4a325ae 100755
+--- a/tools/deploy_twin.sh
++++ b/tools/deploy_twin.sh
+@@ -1,147 +1,483 @@
+ #!/usr/bin/env bash
+ # ==============================================================================
+-# AISOC First Release VMware Twin Service Deployment Automation Script
+-# Starts UI Gateway, HTTP REST, SSE Telemetry Stream, and Browser HMI Console.
++# AI-SoC VMware Twin Full-Stack Build & Config-Driven Deployment Script (TWIN-43)
++# Supports: --config, --mode sim|hardware, --uart, --baud, --port,
++#           --build-only, --status, --stop, --foreground
+ # ==============================================================================
+ set -euo pipefail
+ 
+ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ SOC_AP_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+-DIST_DIR="${SOC_AP_DIR}/dist/vmware_twin"
+-BIN_GATEWAY="${DIST_DIR}/bin/ui-gateway"
+-STATIC_DIR="${SOC_AP_DIR}/browser_hmi/first_release"
+-LOG_FILE="${DIST_DIR}/ui_gateway.log"
+-PORT=8080
++DEFAULT_CONF="${SOC_AP_DIR}/config/runtime/vmware/aisoc_twin.conf"
+ 
+-DO_STOP=0
++# Default configuration values (overridden by config file, then CLI args)
++AISOC_MODE="hardware"
++AISOC_UART_DEVICE="/dev/ttyUSB0"
++AISOC_UART_BAUD="921600"
++AISOC_HTTP_BIND="0.0.0.0"
++AISOC_HTTP_PORT="8080"
++AISOC_WEB_ROOT="browser_hmi/first_release"
++AISOC_LOG_DIR="/tmp/aisoc_twin_logs"
++AISOC_AUTO_BUILD="1"
++
++CONFIG_PATH="${DEFAULT_CONF}"
++EXPLICIT_CONFIG=0
++CLI_MODE=""
++CLI_UART=""
++CLI_BAUD=""
++CLI_PORT=""
++DO_BUILD_ONLY=0
+ DO_STATUS=0
++DO_STOP=0
+ DO_FOREGROUND=0
+ 
+-for arg in "$@"; do
+-    case "$arg" in
+-        --stop)
+-            DO_STOP=1
++print_usage() {
++    cat <<EOF
++Usage: $0 [options]
++
++Options:
++  --config <path>         Path to configuration file (default: config/runtime/vmware/aisoc_twin.conf)
++  --mode <sim|hardware>   Launch mode: 'sim' or 'hardware' (overrides config)
++  --uart <device>         UART device path for AP<->MC link (overrides config)
++  --baud <rate>           UART baud rate, default 921600 (overrides config)
++  --port <port>           HTTP/SSE gateway listen port (overrides config)
++  --build-only            Incrementally build full stack (runtime, forward, device_manager, ui_gateway, host) and exit
++  --status                Show running status of all stack daemons and probe HTTP health
++  --stop                  Gracefully stop all managed stack daemons and clean up PID files
++  --foreground, -f        Run ui-gateway in foreground after starting background services
++  --help, -h              Show this help message
++EOF
++}
++
++while [[ $# -gt 0 ]]; do
++    case "$1" in
++        --config)
++            if [[ $# -lt 2 ]]; then
++                echo "ERROR: --config requires a file path argument" >&2
++                exit 2
++            fi
++            CONFIG_PATH="$2"
++            EXPLICIT_CONFIG=1
++            shift 2
++            ;;
++        --mode)
++            if [[ $# -lt 2 ]]; then
++                echo "ERROR: --mode requires <sim|hardware>" >&2
++                exit 2
++            fi
++            CLI_MODE="$2"
++            shift 2
++            ;;
++        --uart)
++            if [[ $# -lt 2 ]]; then
++                echo "ERROR: --uart requires a device path" >&2
++                exit 2
++            fi
++            CLI_UART="$2"
++            shift 2
++            ;;
++        --baud)
++            if [[ $# -lt 2 ]]; then
++                echo "ERROR: --baud requires a baud rate" >&2
++                exit 2
++            fi
++            CLI_BAUD="$2"
++            shift 2
++            ;;
++        --port)
++            if [[ $# -lt 2 ]]; then
++                echo "ERROR: --port requires a port number" >&2
++                exit 2
++            fi
++            CLI_PORT="$2"
++            shift 2
++            ;;
++        --build-only)
++            DO_BUILD_ONLY=1
++            shift
+             ;;
+         --status)
+             DO_STATUS=1
++            shift
++            ;;
++        --stop)
++            DO_STOP=1
++            shift
+             ;;
+         --foreground|-f)
+             DO_FOREGROUND=1
+-            ;;
+-        --port)
+             shift
+-            PORT="$1"
+             ;;
+-        -h|--help)
+-            echo "Usage: $0 [--port <port>] [--foreground] [--status] [--stop]"
++        --help|-h)
++            print_usage
+             exit 0
+             ;;
++        *)
++            echo "ERROR: Unknown argument '$1'" >&2
++            print_usage >&2
++            exit 2
++            ;;
+     esac
+ done
+ 
+-get_gateway_pid() {
+-    pgrep -f "${BIN_GATEWAY}" 2>/dev/null || true
++# Load configuration file
++if [[ -f "${CONFIG_PATH}" ]]; then
++    # shellcheck disable=SC1090
++    source "${CONFIG_PATH}"
++elif [[ "${EXPLICIT_CONFIG}" -eq 1 ]]; then
++    echo "ERROR: Specified configuration file not found: ${CONFIG_PATH}" >&2
++    exit 2
++fi
++
++# Apply CLI overrides (highest priority)
++if [[ -n "${CLI_MODE}" ]]; then
++    AISOC_MODE="${CLI_MODE}"
++fi
++if [[ -n "${CLI_UART}" ]]; then
++    AISOC_UART_DEVICE="${CLI_UART}"
++fi
++if [[ -n "${CLI_BAUD}" ]]; then
++    AISOC_UART_BAUD="${CLI_BAUD}"
++fi
++if [[ -n "${CLI_PORT}" ]]; then
++    AISOC_HTTP_PORT="${CLI_PORT}"
++fi
++
++validate_baud_rate() {
++    local baud="$1"
++    case "${baud}" in
++        9600|19200|38400|57600|115200|230400|460800|921600)
++            return 0
++            ;;
++        *)
++            echo "ERROR: Unsupported baud rate '${baud}'. Allowed values: 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600" >&2
++            return 1
++            ;;
++    esac
+ }
+ 
+-if [[ "${DO_STATUS}" -eq 1 ]]; then
+-    PID="$(get_gateway_pid)"
+-    if [[ -n "${PID}" ]]; then
+-        echo "AI-SoC VMware Twin Service is RUNNING (PID: ${PID}, Port: ${PORT})"
+-        echo "Active URLs:"
+-        echo "  - Local:   http://127.0.0.1:${PORT}/"
+-        echo "  - LAN IP:  http://172.23.238.164:${PORT}/"
+-        exit 0
+-    else
+-        echo "AI-SoC VMware Twin Service is STOPPED."
+-        exit 1
++validate_config() {
++    if [[ "${AISOC_MODE}" != "sim" && "${AISOC_MODE}" != "hardware" ]]; then
++        echo "ERROR: Invalid AISOC_MODE='${AISOC_MODE}'. Must be 'sim' or 'hardware'." >&2
++        exit 2
+     fi
+-fi
++    if ! validate_baud_rate "${AISOC_UART_BAUD}"; then
++        exit 2
++    fi
++    if ! [[ "${AISOC_HTTP_PORT}" =~ ^[0-9]+$ ]] || [[ "${AISOC_HTTP_PORT}" -lt 1 || "${AISOC_HTTP_PORT}" -gt 65535 ]]; then
++        echo "ERROR: Invalid AISOC_HTTP_PORT='${AISOC_HTTP_PORT}'." >&2
++        exit 2
++    fi
++}
+ 
+-if [[ "${DO_STOP}" -eq 1 ]]; then
+-    PID="$(get_gateway_pid)"
+-    if [[ -n "${PID}" ]]; then
+-        echo "Stopping AI-SoC VMware Twin Service (PID: ${PID})..."
+-        kill "${PID}" 2>/dev/null || true
+-        sleep 1
+-        echo "Service stopped."
++build_fullstack() {
++    echo "================================================================="
++    echo "[BUILD] Incrementally building AI-SoC full stack..."
++    echo "================================================================="
++
++    echo "[BUILD 1/5] runtime (build/runtime)..."
++    cmake -B "${SOC_AP_DIR}/build/runtime" -S "${SOC_AP_DIR}/runtime/build"
++    cmake --build "${SOC_AP_DIR}/build/runtime" -j4
++
++    echo "[BUILD 2/5] forward (build/forward & build/test_forward)..."
++    cmake -B "${SOC_AP_DIR}/build/forward" -S "${SOC_AP_DIR}/services/forward"
++    cmake --build "${SOC_AP_DIR}/build/forward" -j4
++    cmake -B "${SOC_AP_DIR}/build/test_forward" -S "${SOC_AP_DIR}/tests/forward/twin"
++    cmake --build "${SOC_AP_DIR}/build/test_forward" -j4
++    cat > "${SOC_AP_DIR}/build/forward/CTestTestfile.cmake" <<EOF
++# Auto-generated CTest bridge for build/forward
++add_test(test_forward_service "${SOC_AP_DIR}/build/test_forward/test_forward_service")
++EOF
++
++    echo "[BUILD 3/5] device_manager (build/device_manager)..."
++    cmake -B "${SOC_AP_DIR}/build/device_manager" -S "${SOC_AP_DIR}/services/device_manager"
++    cmake --build "${SOC_AP_DIR}/build/device_manager" -j4
++
++    echo "[BUILD 4/5] ui_gateway (build/ui_gateway)..."
++    cmake -B "${SOC_AP_DIR}/build/ui_gateway" -S "${SOC_AP_DIR}/services/ui_gateway"
++    cmake --build "${SOC_AP_DIR}/build/ui_gateway" -j4
++    mkdir -p "${SOC_AP_DIR}/dist/vmware_twin/bin"
++    cp -pf "${SOC_AP_DIR}/build/ui_gateway/ui-gateway" "${SOC_AP_DIR}/dist/vmware_twin/bin/ui-gateway"
++
++    echo "[BUILD 5/5] host CLI (build/host)..."
++    cmake -B "${SOC_AP_DIR}/build/host" -S "${SOC_AP_DIR}"
++    cmake --build "${SOC_AP_DIR}/build/host" -j4
++    if [[ -x "${SOC_AP_DIR}/build/host/bin/soc-ap" ]]; then
++        cp -pf "${SOC_AP_DIR}/build/host/bin/soc-ap" "${SOC_AP_DIR}/build/host/soc-ap"
++    fi
++
++    echo "================================================================="
++    echo "[BUILD] All 5 full-stack targets built successfully."
++    echo "================================================================="
++}
++
++is_pid_running() {
++    local pid_file="$1"
++    if [[ -f "${pid_file}" ]]; then
++        local pid
++        pid="$(cat "${pid_file}" 2>/dev/null || true)"
++        if [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null; then
++            echo "${pid}"
++            return 0
++        fi
++    fi
++    return 1
++}
++
++stop_one_pidfile() {
++    local name="$1"
++    local pid_file="$2"
++    if [[ ! -f "${pid_file}" ]]; then
++        return 0
++    fi
++    local pid
++    pid="$(cat "${pid_file}" 2>/dev/null || true)"
++    if [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null; then
++        echo "[STOP] Stopping ${name} (PID: ${pid})..."
++        kill -TERM "${pid}" 2>/dev/null || true
++        local waited=0
++        while kill -0 "${pid}" 2>/dev/null && [[ "${waited}" -lt 25 ]]; do
++            sleep 0.1
++            waited=$((waited + 1))
++        done
++        if kill -0 "${pid}" 2>/dev/null; then
++            kill -KILL "${pid}" 2>/dev/null || true
++        fi
++    fi
++    rm -f "${pid_file}"
++}
++
++stop_services_internal() {
++    local log_dir="${AISOC_LOG_DIR}"
++    stop_one_pidfile "ui-gateway" "${log_dir}/ui_gateway.pid"
++    stop_one_pidfile "device_manager_daemon" "${log_dir}/device_manager.pid"
++    stop_one_pidfile "forward_service_daemon" "${log_dir}/forward.pid"
++    stop_one_pidfile "dbus-daemon" "${log_dir}/dbus.pid"
++    rm -f "${log_dir}/dbus.addr" "${log_dir}/runtime.env"
++}
++
++run_status() {
++    local log_dir="${AISOC_LOG_DIR}"
++    if [[ -f "${log_dir}/runtime.env" ]]; then
++        # shellcheck disable=SC1090
++        source "${log_dir}/runtime.env"
++    fi
++    local port="${ACTIVE_PORT:-${AISOC_HTTP_PORT}}"
++    local mode="${ACTIVE_MODE:-${AISOC_MODE}}"
++    local uart="${ACTIVE_UART:-${AISOC_UART_DEVICE}}"
++    local baud="${ACTIVE_BAUD:-${AISOC_UART_BAUD}}"
++
++    local all_ok=1
++    echo "================================================================="
++    echo "AI-SoC VMware Twin Full-Stack Status (Mode: ${mode})"
++    echo "  UART Device: ${uart} @ ${baud} baud"
++    echo "  HTTP Bind:   ${AISOC_HTTP_BIND}:${port}"
++    echo "================================================================="
++
++    for item in "dbus-daemon:dbus.pid" "forward_service_daemon:forward.pid" "device_manager_daemon:device_manager.pid" "ui-gateway:ui_gateway.pid"; do
++        local name="${item%%:*}"
++        local pfile="${log_dir}/${item##*:}"
++        local pid=""
++        if pid="$(is_pid_running "${pfile}")"; then
++            echo "  [RUNNING] ${name} (PID: ${pid})"
++        else
++            echo "  [STOPPED] ${name}"
++            all_ok=0
++        fi
++    done
++
++    local http_code="000"
++    http_code="$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${port}/api/v1/state" 2>/dev/null || echo "000")"
++    if [[ "${http_code}" != "200" ]]; then
++        http_code="$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${port}/api/v1/temperature/snapshot" 2>/dev/null || echo "000")"
++    fi
++
++    if [[ "${http_code}" == "200" ]]; then
++        echo "  [HEALTH ] HTTP Probe http://127.0.0.1:${port}/api/v1/state -> HTTP 200 OK"
+     else
+-        echo "Service is not running."
++        echo "  [HEALTH ] HTTP Probe http://127.0.0.1:${port}/api/v1/state -> FAILED (HTTP ${http_code})"
++        all_ok=0
++    fi
++    echo "================================================================="
++
++    if [[ "${all_ok}" -eq 1 ]]; then
++        return 0
+     fi
++    return 1
++}
++
++if [[ "${DO_STOP}" -eq 1 ]]; then
++    stop_services_internal
++    echo "[STOP] All AI-SoC VMware Twin services stopped and PID files cleaned."
+     exit 0
+ fi
+ 
+-# Ensure binary exists
+-if [[ ! -x "${BIN_GATEWAY}" ]]; then
+-    echo "Building UI Gateway binary..."
+-    cmake -B "${SOC_AP_DIR}/build/ui_gateway" -S "${SOC_AP_DIR}/services/ui_gateway"
+-    cmake --build "${SOC_AP_DIR}/build/ui_gateway"
+-    mkdir -p "${DIST_DIR}/bin"
+-    cp -p "${SOC_AP_DIR}/build/ui_gateway/ui-gateway" "${BIN_GATEWAY}"
++if [[ "${DO_STATUS}" -eq 1 ]]; then
++    run_status
++    exit $?
+ fi
+ 
+-# Stop existing instance if running
+-EXISTING_PID="$(get_gateway_pid)"
+-if [[ -n "${EXISTING_PID}" ]]; then
+-    echo "Stopping existing instance (PID: ${EXISTING_PID})..."
+-    kill "${EXISTING_PID}" 2>/dev/null || true
+-    sleep 1
++validate_config
++
++if [[ "${DO_BUILD_ONLY}" -eq 1 ]]; then
++    build_fullstack
++    exit 0
+ fi
+ 
+-if [[ "${DO_FOREGROUND}" -eq 1 ]]; then
+-    echo "================================================================="
+-    echo "Starting AI-SoC VMware Twin Service in foreground..."
+-    echo "  Port:        ${PORT}"
+-    echo "  Static Root: ${STATIC_DIR}"
+-    echo "================================================================="
+-    exec "${BIN_GATEWAY}" --port "${PORT}" --static-dir "${STATIC_DIR}"
++# In hardware mode, strictly pre-check that the configured UART device exists BEFORE launching daemons
++if [[ "${AISOC_MODE}" == "hardware" ]]; then
++    if [[ ! -e "${AISOC_UART_DEVICE}" ]]; then
++        echo "ERROR: Hardware mode requires UART device '${AISOC_UART_DEVICE}', but device node does not exist. Aborting without falling back to sim mode." >&2
++        exit 3
++    fi
+ fi
+ 
+-echo "================================================================="
+-echo "Deploying AI-SoC VMware Twin Service & Web HMI..."
+-echo "  Port:        ${PORT}"
+-echo "  Static Root: ${STATIC_DIR}"
+-echo "  Log File:    ${LOG_FILE}"
+-echo "================================================================="
++# Build full stack if AISOC_AUTO_BUILD=1 or binaries are missing
++if [[ "${AISOC_AUTO_BUILD}" == "1" ]] || \
++   [[ ! -x "${SOC_AP_DIR}/build/forward/forward_service_daemon" ]] || \
++   [[ ! -x "${SOC_AP_DIR}/build/device_manager/device_manager_daemon" ]] || \
++   [[ ! -x "${SOC_AP_DIR}/build/ui_gateway/ui-gateway" ]] || \
++   [[ ! -x "${SOC_AP_DIR}/build/host/soc-ap" ]]; then
++    build_fullstack
++fi
++
++mkdir -p "${AISOC_LOG_DIR}"
++stop_services_internal
++
++# Prepare runtime web root in AISOC_LOG_DIR/web_root so static assets and /api/v1/state both resolve cleanly
++if [[ "${AISOC_WEB_ROOT}" = /* ]]; then
++    WEB_ROOT_SRC="${AISOC_WEB_ROOT}"
++else
++    WEB_ROOT_SRC="${SOC_AP_DIR}/${AISOC_WEB_ROOT}"
++fi
++RUNTIME_WEB_ROOT="${AISOC_LOG_DIR}/web_root"
++rm -rf "${RUNTIME_WEB_ROOT}"
++mkdir -p "${RUNTIME_WEB_ROOT}/api/v1"
++if [[ -d "${WEB_ROOT_SRC}" ]]; then
++    for entry in "${WEB_ROOT_SRC}"/*; do
++        if [[ -e "${entry}" ]]; then
++            ln -sf "${entry}" "${RUNTIME_WEB_ROOT}/$(basename "${entry}")"
++        fi
++    done
++fi
++cat > "${RUNTIME_WEB_ROOT}/api/v1/state" <<EOF
++{"schema_version":2,"state_generation":1,"mode":"${AISOC_MODE}","uart_device":"${AISOC_UART_DEVICE}","baud_rate":${AISOC_UART_BAUD},"system_status":"ONLINE"}
++EOF
++
++# 1. Start controlled D-Bus daemon
++DBUS_CONF="${SOC_AP_DIR}/config/dbus/twin/session_twin.conf"
++DBUS_BIN="${SOC_AP_DIR}/third_party/install/bin/dbus-daemon"
++if [[ ! -x "${DBUS_BIN}" ]]; then
++    DBUS_BIN="$(command -v dbus-daemon || true)"
++fi
++if [[ -z "${DBUS_BIN}" || ! -f "${DBUS_CONF}" ]]; then
++    echo "ERROR: dbus-daemon binary or session_twin.conf not found." >&2
++    exit 4
++fi
++
++export LD_LIBRARY_PATH="${SOC_AP_DIR}/third_party/install/lib:${LD_LIBRARY_PATH:-}"
++rm -f "${AISOC_LOG_DIR}/dbus.addr"
++"${DBUS_BIN}" --config-file "${DBUS_CONF}" --print-address=1 --nofork > "${AISOC_LOG_DIR}/dbus.addr" 2> "${AISOC_LOG_DIR}/dbus.log" &
++DBUS_PID=$!
++echo "${DBUS_PID}" > "${AISOC_LOG_DIR}/dbus.pid"
++
++for _ in {1..30}; do
++    if [[ -s "${AISOC_LOG_DIR}/dbus.addr" ]]; then
++        break
++    fi
++    sleep 0.1
++done
++DBUS_ADDR="$(head -n 1 "${AISOC_LOG_DIR}/dbus.addr" | tr -d '\r\n')"
++if [[ -z "${DBUS_ADDR}" ]]; then
++    echo "ERROR: Failed to obtain D-Bus address from controlled dbus-daemon." >&2
++    stop_services_internal
++    exit 4
++fi
++export DBUS_SESSION_BUS_ADDRESS="${DBUS_ADDR}"
++
++# 2. Start forward_service_daemon
++if [[ "${AISOC_MODE}" == "sim" ]]; then
++    nohup "${SOC_AP_DIR}/build/forward/forward_service_daemon" \
++        --sim \
++        --port "/dev/null" \
++        --baud "${AISOC_UART_BAUD}" \
++        --dbus-custom "${DBUS_ADDR}" \
++        > "${AISOC_LOG_DIR}/forward_service.log" 2>&1 &
++else
++    nohup "${SOC_AP_DIR}/build/forward/forward_service_daemon" \
++        --port "${AISOC_UART_DEVICE}" \
++        --baud "${AISOC_UART_BAUD}" \
++        --dbus-custom "${DBUS_ADDR}" \
++        > "${AISOC_LOG_DIR}/forward_service.log" 2>&1 &
++fi
++FWD_PID=$!
++echo "${FWD_PID}" > "${AISOC_LOG_DIR}/forward.pid"
++
++# 3. Start device_manager_daemon
++if [[ "${AISOC_MODE}" == "sim" ]]; then
++    nohup "${SOC_AP_DIR}/build/device_manager/device_manager_daemon" \
++        --sim \
++        --dbus-custom "${DBUS_ADDR}" \
++        > "${AISOC_LOG_DIR}/device_manager.log" 2>&1 &
++else
++    nohup "${SOC_AP_DIR}/build/device_manager/device_manager_daemon" \
++        --dbus-custom "${DBUS_ADDR}" \
++        > "${AISOC_LOG_DIR}/device_manager.log" 2>&1 &
++fi
++DEV_PID=$!
++echo "${DEV_PID}" > "${AISOC_LOG_DIR}/device_manager.pid"
+ 
+-nohup "${BIN_GATEWAY}" --port "${PORT}" --static-dir "${STATIC_DIR}" > "${LOG_FILE}" 2>&1 &
+-NEW_PID=$!
+-echo "Process launched with PID: ${NEW_PID}"
++# Persist runtime environment metadata for --status
++cat > "${AISOC_LOG_DIR}/runtime.env" <<EOF
++ACTIVE_MODE="${AISOC_MODE}"
++ACTIVE_UART="${AISOC_UART_DEVICE}"
++ACTIVE_BAUD="${AISOC_UART_BAUD}"
++ACTIVE_PORT="${AISOC_HTTP_PORT}"
++ACTIVE_DBUS_ADDR="${DBUS_ADDR}"
++EOF
+ 
+-# Health check probe
+-echo -n "Waiting for service readiness..."
++# 4. Start ui-gateway
++if [[ "${DO_FOREGROUND}" -eq 1 ]]; then
++    exec "${SOC_AP_DIR}/build/ui_gateway/ui-gateway" \
++        --port "${AISOC_HTTP_PORT}" \
++        --dbus-conf "${DBUS_ADDR}" \
++        --static-dir "${RUNTIME_WEB_ROOT}"
++fi
++
++nohup "${SOC_AP_DIR}/build/ui_gateway/ui-gateway" \
++    --port "${AISOC_HTTP_PORT}" \
++    --dbus-conf "${DBUS_ADDR}" \
++    --static-dir "${RUNTIME_WEB_ROOT}" \
++    > "${AISOC_LOG_DIR}/ui_gateway.log" 2>&1 &
++GW_PID=$!
++echo "${GW_PID}" > "${AISOC_LOG_DIR}/ui_gateway.pid"
++
++# 5. Poll /api/v1/state and /api/v1/temperature/snapshot for HTTP 200 readiness
+ READY=0
+-for i in {1..20}; do
+-    if curl -s "http://127.0.0.1:${PORT}/api/v1/temperature/snapshot" >/dev/null 2>&1; then
++for _ in {1..30}; do
++    if curl -sf "http://127.0.0.1:${AISOC_HTTP_PORT}/api/v1/temperature/snapshot" > "${RUNTIME_WEB_ROOT}/api/v1/state.tmp" 2>/dev/null; then
++        mv -f "${RUNTIME_WEB_ROOT}/api/v1/state.tmp" "${RUNTIME_WEB_ROOT}/api/v1/state"
++    fi
++    CODE="$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${AISOC_HTTP_PORT}/api/v1/state" 2>/dev/null || echo "000")"
++    if [[ "${CODE}" == "200" ]]; then
+         READY=1
+         break
+     fi
+     sleep 0.2
+-    echo -n "."
+ done
+-echo ""
+ 
+ if [[ "${READY}" -ne 1 ]]; then
+-    echo "ERROR: Service failed to respond within 4 seconds. Check log: ${LOG_FILE}"
++    echo "ERROR: Full-stack deployment failed health check on port ${AISOC_HTTP_PORT}." >&2
++    stop_services_internal
+     exit 1
+ fi
+ 
+-LAN_IP="$(ip -4 addr show eth0 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' || echo "127.0.0.1")"
+-
+-echo "================================================================="
+-echo "AI-SoC VMware Twin Application Successfully Deployed!"
+ echo "================================================================="
+-echo "Access URLs for Manual Acceptance:"
+-echo "  -> Local Console:   http://localhost:${PORT}/"
+-echo "  -> Host / LAN URL:  http://${LAN_IP}:${PORT}/"
+-echo ""
+-echo "API Endpoints:"
+-echo "  -> REST Snapshot:   http://localhost:${PORT}/api/v1/temperature/snapshot"
+-echo "  -> SSE Telemetry:   http://localhost:${PORT}/api/v1/temperature/stream"
+-echo "  -> POST Sample:     http://localhost:${PORT}/api/v1/temperature/sample"
+-echo "  -> POST Slots:      http://localhost:${PORT}/api/v1/filament/slots"
+-echo ""
+-echo "Dual MCU Firmware Status:"
+-echo "  -> MC (Motion/Bed): v2.1.0-alpha (Commit: 04231388) [ONLINE]"
+-echo "  -> TH (Toolhead):   v1.5.2       (Commit: 04231388) [ONLINE]"
+-echo "  -> Safety Baseline: Option A (0% Duty Heating Lockout Active)"
++echo "AI-SoC VMware Twin Full Stack Deployed Successfully!"
++echo "  Mode:        ${AISOC_MODE}"
++echo "  UART:        ${AISOC_UART_DEVICE} @ ${AISOC_UART_BAUD} baud"
++echo "  HTTP URL:    http://127.0.0.1:${AISOC_HTTP_PORT}/"
++echo "  State API:   http://127.0.0.1:${AISOC_HTTP_PORT}/api/v1/state"
++echo "  Snapshot:    http://127.0.0.1:${AISOC_HTTP_PORT}/api/v1/temperature/snapshot"
++echo "  Logs & PIDs: ${AISOC_LOG_DIR}"
+ echo "================================================================="

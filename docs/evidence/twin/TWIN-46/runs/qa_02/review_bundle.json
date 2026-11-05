@@ -1,0 +1,404 @@
+{
+  "request": {
+    "repository": "test_harness",
+    "candidate_commit": "91942286e8f686ce044a6aa8fdb11270ff8f5624",
+    "task_revision": 1,
+    "task_id": "TWIN-46",
+    "workspace": "/home/sushaohua/workspace/ai_soc_project",
+    "commands": [
+      {
+        "kind": "test",
+        "subpath": "test_harness",
+        "command": "python3 hil/tools/debug_reconciliation_probe.py --help >/dev/null && python3 hil/tools/debug_reconciliation_probe.py --self-test --matrix-out /tmp/qa_twin46_fixtures/selftest_matrix.md && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json --matrix-out /tmp/qa_twin46_fixtures/cli_ok_matrix.md && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_mismatch.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_crc_err.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_drop.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_bad_grid.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_offline.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_offline.log --th-log /tmp/qa_twin46_fixtures/th_offline.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_bad_offline.json) && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_offline.log --th-log /tmp/qa_twin46_fixtures/th_offline.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_offline.json --matrix-out /tmp/qa_twin46_fixtures/cli_offline_matrix.md && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json --matrix-out /tmp/qa_twin46_fixtures/cli_recovery_matrix.md && test -s /tmp/qa_twin46_fixtures/selftest_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_ok_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_offline_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_recovery_matrix.md && rm -rf /tmp/qa_twin46_fixtures",
+        "id": "run_debug_reconciliation_probe_selftest"
+      },
+      {
+        "kind": "test",
+        "subpath": "soc-ap",
+        "command": "rm -rf /tmp/qa_twin46 && mkdir -p /tmp/qa_twin46/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin46/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755)\" && export PATH=\"/tmp/qa_twin46/bin:$PATH\" && cp -r ../soc-ap ../test_harness /tmp/qa_twin46/ && rm -rf /tmp/qa_twin46/soc-ap/build && ([ -e /tmp/qa_twin46/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin46/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin46/soc-ap/third_party/install)) && cd /tmp/qa_twin46/soc-ap && bash tools/deploy_twin.sh --mode sim --port 18085 && bash tools/deploy_twin.sh --status --port 18085 && bash tools/deploy_twin.sh --stop --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"start-pty\\\", \\\"/tmp/qa_twin46\\\"))\" && bash tools/deploy_twin.sh --mode hardware --uart \"$(cat /tmp/qa_twin46/pty_path)\" --baud 921600 --port 18085 && bash tools/deploy_twin.sh --status --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-online\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_ok.log --th-log /tmp/qa_twin46/th_live_ok.log --matrix-out /tmp/qa_twin46/live_ok_matrix.md && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_mismatch.log --th-log /tmp/qa_twin46/th_live_ok.log) && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_crc_err.log --th-log /tmp/qa_twin46/th_live_ok.log) && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_drop.log --th-log /tmp/qa_twin46/th_live_ok.log) && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-offline\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_ok.log --th-log /tmp/qa_twin46/th_live_ok.log) && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_offline.log --th-log /tmp/qa_twin46/th_live_offline.log --matrix-out /tmp/qa_twin46/live_offline_matrix.md && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-recovery\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_recovery.log --th-log /tmp/qa_twin46/th_live_recovery.log --matrix-out /tmp/qa_twin46/reconciliation_matrix.md && test -s /tmp/qa_twin46/live_ok_matrix.md && test -s /tmp/qa_twin46/live_offline_matrix.md && test -s /tmp/qa_twin46/reconciliation_matrix.md && bash tools/deploy_twin.sh --stop --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"stop-pty\\\", \\\"/tmp/qa_twin46\\\"))\" && rm -rf /tmp/qa_twin46",
+        "id": "verify_fullstack_deploy_and_reconciliation"
+      }
+    ],
+    "targets": [
+      {
+        "name": "project-control",
+        "commit": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+        "ref": "main"
+      },
+      {
+        "name": "soc-ap",
+        "commit": "426d604e9ddcfdb3e95e94ecff4f699ae976fc95",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+        "ref": "main"
+      },
+      {
+        "name": "mcu-p3",
+        "commit": "29d62ef1bb7cf33e334f7e58aae81717cd26c54f",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+        "ref": "feat/soc-debug"
+      },
+      {
+        "name": "test_harness",
+        "commit": "91942286e8f686ce044a6aa8fdb11270ff8f5624",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+        "ref": "main"
+      }
+    ],
+    "contract": {
+      "id": "TWIN-46",
+      "title": "TWIN-46 921600全栈配置化启动与MC/TH Debug↔Web UI双向链路对账集成验证",
+      "revision": 1,
+      "plan_revision": "vmware-soc-twin-20261104",
+      "task_kind": "integration",
+      "development_stage": "vmware-twin",
+      "dispatchable": true,
+      "status": "Review",
+      "blocked": false,
+      "planning_status": "planned",
+      "owner": "2f8ea5d1-b0c3-46a7-a19f-2ca6b8983802",
+      "proposed_owner": "INTEGRATOR",
+      "executor": {
+        "role": "INTEGRATOR",
+        "agent_id": "2f8ea5d1-b0c3-46a7-a19f-2ca6b8983802",
+        "run_id": "author_02"
+      },
+      "qa_policy": "streamlined-v1",
+      "reviewer": [
+        "QA"
+      ],
+      "verifier": null,
+      "integrator": "INTEGRATOR",
+      "feature_id": "FEAT-20261104-001",
+      "confirmation_id": "CONFIRM-DEBUG-BAUD-20261104",
+      "approval_id": "APPR-20261104-001",
+      "accepted_scope": "Software, sim-mode lifecycle, and 921600 PTY virtual-MCU hardware-mode full-stack integration verification of debug_reconciliation_probe.py across the 5 telemetry/control categories (temperature, motion/homing, 5x5 bed-leveling grid, filament/slot, job state), unit-specific offline sentinel (2147483646 mdeg / 32767 ddC) and strict HTTP 503 lock checks, live negative fault injection and live recovery loop against the running ui-gateway, and deploy_twin.sh lifecycle. Cross-compiler ELF build and physical MCU USB/UART HIL are not applicable: qa-sandbox:20261029 provides host GCC/Python only and no physical MCU hardware; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass.",
+      "review_assignments": {
+        "reviewer_sessions": [
+          {
+            "role": "QA",
+            "platform": "codex",
+            "model": "gpt-6-luna",
+            "planned_session_alias": "planned-qa-twin-46",
+            "session": "pending-codex-qa-twin-46",
+            "session_evidence": null,
+            "decision": "PENDING",
+            "reviewed_task_revision": 1,
+            "artifact_version": null,
+            "evidence": null,
+            "report_sha256": null
+          }
+        ],
+        "verifier_session": null,
+        "integrator_session": null
+      },
+      "primary_work_package": "TASK-010",
+      "related_work_packages": [
+        "TASK-002",
+        "TASK-007",
+        "TASK-009"
+      ],
+      "depends_on": [
+        "TWIN-43",
+        "TWIN-44",
+        "TWIN-45"
+      ],
+      "dependency_conditions": [
+        {
+          "task": "TWIN-43",
+          "accepted_version": "project-control=42b031efff970b01ee8cc8e5dd087387cdf9288f; soc-ap=426d604e9ddcfdb3e95e94ecff4f699ae976fc95; mcu-p3=e051111e68dd61896ed42c0961153b167b8bca41; test_harness=ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-43/runs/qa_04/qa_review_report.md",
+          "required": "消费TWIN-43 AP/VMware 921600串口支持与deploy_twin.sh全栈一键编译及配置化启动脚本"
+        },
+        {
+          "task": "TWIN-44",
+          "accepted_version": "project-control=42b031efff970b01ee8cc8e5dd087387cdf9288f; soc-ap=427dd6d82caceebb7b4642e78f1dbfa96ff5fc84; mcu-p3=f34a4b9d3ce03ec02824e1c54dd4dd3052386156; test_harness=ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-44/runs/qa_06/qa_review_report.md",
+          "required": "消费TWIN-44 MC固件USART2 921600与USART1非阻塞[MC-DBG]日志固件产物"
+        },
+        {
+          "task": "TWIN-45",
+          "accepted_version": "project-control=42b031efff970b01ee8cc8e5dd087387cdf9288f; soc-ap=426d604e9ddcfdb3e95e94ecff4f699ae976fc95; mcu-p3=29d62ef1bb7cf33e334f7e58aae81717cd26c54f; test_harness=ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-45/runs/qa_01/qa_review_report.md",
+          "required": "消费TWIN-45 TH固件USART3非阻塞[TH-DBG]日志固件产物"
+        }
+      ],
+      "scope_status": "mapped",
+      "allowed_repositories": [
+        "test_harness",
+        "project-control"
+      ],
+      "write_scope": {
+        "test_harness": [
+          "hil/tools/debug_reconciliation_probe.py",
+          "static_checks/twin/**",
+          "test_cases/twin/**"
+        ],
+        "project-control": [
+          "docs/evidence/twin/TWIN-46/**"
+        ]
+      },
+      "allowed_paths": [
+        "test_harness/hil/tools/debug_reconciliation_probe.py",
+        "test_harness/static_checks/twin/**",
+        "test_harness/test_cases/twin/**",
+        "project-control/docs/evidence/twin/TWIN-46/**"
+      ],
+      "forbidden_paths": [
+        "mcu-p3/**",
+        "boot/**",
+        "soc-ap/**"
+      ],
+      "source_baseline": {
+        "project-control": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+        "soc-ap": "426d604e9ddcfdb3e95e94ecff4f699ae976fc95",
+        "mcu-p3": "29d62ef1bb7cf33e334f7e58aae81717cd26c54f",
+        "test_harness": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414"
+      },
+      "base_commit": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+      "branch": "main",
+      "candidate_commit": "91942286e8f686ce044a6aa8fdb11270ff8f5624",
+      "dispatch_binding": {
+        "source_commit": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+        "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "consumed_artifact_versions": {
+          "arch_breakdown": "a8ac7bed59a95dfa006122e5e975873c463f03d46d3d5cff7a67e423cf2975a9",
+          "merged_summary": "c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec"
+        }
+      },
+      "protocol_input": {
+        "path": "project-control/docs/planning/debug_and_921600_merged_implementation_summary_20261104.md",
+        "sha256": "c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec",
+        "revision": 2
+      },
+      "icd_versions": [
+        {
+          "path": "project-control/docs/architecture/debug_reconciliation_and_921600_arch_breakdown_20261104.md",
+          "version": 13
+        }
+      ],
+      "read_sources": [
+        "project-control/docs/architecture/debug_reconciliation_and_921600_arch_breakdown_20261104.md",
+        "project-control/docs/planning/mc_th_debug_mode_requirement_confirmation_20261103.md",
+        "project-control/docs/planning/vmware_mc_921600_requirement_confirmation_20261103.md",
+        "soc-ap/tools/deploy_twin.sh",
+        "soc-ap/config/runtime/vmware/services_manifest.json"
+      ],
+      "worktree": "test_harness",
+      "lease": {
+        "owner": "2f8ea5d1-b0c3-46a7-a19f-2ca6b8983802",
+        "task_revision": 1,
+        "lease_id": "lease-twin-46-20261104-02",
+        "expires_at": "2026-11-04T16:30:00+08:00"
+      },
+      "resources": [
+        {
+          "resource": "integrator-twin-env",
+          "location": "test_harness",
+          "exclusive": true,
+          "pending": null
+        }
+      ],
+      "budget": {
+        "planned_checkpoint_minutes": 60,
+        "max_evidence_based_corrections": 2,
+        "on_limit": "保存证据交COORD"
+      },
+      "checkpoint": "开工前绑定；对账工具自检与全栈集成验证；独立沙箱与QA审查；收件",
+      "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+      "readiness_pending": [],
+      "deliverables": {
+        "artifacts": [
+          "test_harness/hil/tools/debug_reconciliation_probe.py"
+        ],
+        "record": "docs/evidence/twin/TWIN-46/runs/author_02/result.md"
+      },
+      "rollback": {
+        "steps": [
+          "git -C test_harness checkout -- hil/tools/ static_checks/twin/ test_cases/twin/"
+        ]
+      },
+      "handoff": {
+        "receiver_role": "COORD",
+        "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+        "transport": "docs",
+        "evidence_location": "docs/evidence/twin/TWIN-46",
+        "acknowledgement": "received-author_02-91942286e8f686ce044a6aa8fdb11270ff8f5624"
+      },
+      "verification": {
+        "commands": [
+          {
+            "id": "run_debug_reconciliation_probe_selftest",
+            "cwd": "test_harness",
+            "command": "python3 hil/tools/debug_reconciliation_probe.py --help >/dev/null && python3 hil/tools/debug_reconciliation_probe.py --self-test --matrix-out /tmp/qa_twin46_fixtures/selftest_matrix.md && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json --matrix-out /tmp/qa_twin46_fixtures/cli_ok_matrix.md && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_mismatch.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_crc_err.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_drop.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_bad_grid.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_offline.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_offline.log --th-log /tmp/qa_twin46_fixtures/th_offline.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_bad_offline.json) && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_offline.log --th-log /tmp/qa_twin46_fixtures/th_offline.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_offline.json --matrix-out /tmp/qa_twin46_fixtures/cli_offline_matrix.md && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json --matrix-out /tmp/qa_twin46_fixtures/cli_recovery_matrix.md && test -s /tmp/qa_twin46_fixtures/selftest_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_ok_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_offline_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_recovery_matrix.md && rm -rf /tmp/qa_twin46_fixtures",
+            "expected": "--help、--self-test及--mc-log/--th-log/--ap-snapshot/--matrix-out CLI全路径校验（覆盖温度、归零/运动、二维5x5调平网格、进退丝/料槽、打印作业状态五类正向对账，数值失配/CRC_ERR/drop>0/1x25畸形网格/错误单位离线哨兵或非503状态码非0退出拦截，按单位严格校验OFFLINE哨兵值2147483646 mdeg与32767 ddC及HTTP 503控制锁对账，以及故障后恢复对账）并导出非空reconciliation_matrix.md全部PASS",
+            "availability": "available"
+          },
+          {
+            "id": "verify_fullstack_deploy_and_reconciliation",
+            "cwd": "soc-ap",
+            "command": "rm -rf /tmp/qa_twin46 && mkdir -p /tmp/qa_twin46/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin46/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755)\" && export PATH=\"/tmp/qa_twin46/bin:$PATH\" && cp -r ../soc-ap ../test_harness /tmp/qa_twin46/ && rm -rf /tmp/qa_twin46/soc-ap/build && ([ -e /tmp/qa_twin46/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin46/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin46/soc-ap/third_party/install)) && cd /tmp/qa_twin46/soc-ap && bash tools/deploy_twin.sh --mode sim --port 18085 && bash tools/deploy_twin.sh --status --port 18085 && bash tools/deploy_twin.sh --stop --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"start-pty\\\", \\\"/tmp/qa_twin46\\\"))\" && bash tools/deploy_twin.sh --mode hardware --uart \"$(cat /tmp/qa_twin46/pty_path)\" --baud 921600 --port 18085 && bash tools/deploy_twin.sh --status --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-online\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_ok.log --th-log /tmp/qa_twin46/th_live_ok.log --matrix-out /tmp/qa_twin46/live_ok_matrix.md && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_mismatch.log --th-log /tmp/qa_twin46/th_live_ok.log) && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_crc_err.log --th-log /tmp/qa_twin46/th_live_ok.log) && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_drop.log --th-log /tmp/qa_twin46/th_live_ok.log) && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-offline\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_ok.log --th-log /tmp/qa_twin46/th_live_ok.log) && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_offline.log --th-log /tmp/qa_twin46/th_live_offline.log --matrix-out /tmp/qa_twin46/live_offline_matrix.md && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-recovery\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_recovery.log --th-log /tmp/qa_twin46/th_live_recovery.log --matrix-out /tmp/qa_twin46/reconciliation_matrix.md && test -s /tmp/qa_twin46/live_ok_matrix.md && test -s /tmp/qa_twin46/live_offline_matrix.md && test -s /tmp/qa_twin46/reconciliation_matrix.md && bash tools/deploy_twin.sh --stop --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"stop-pty\\\", \\\"/tmp/qa_twin46\\\"))\" && rm -rf /tmp/qa_twin46",
+            "expected": "容器/tmp可写副本下一键编译并验证deploy_twin.sh sim模式启停后，通过921600 POSIX PTY虚拟MCU连接启动全栈服务进入真实NORMAL/ONLINE态，debug_reconciliation_probe.py --ap-url配合实时生成的[MC-DBG]/[TH-DBG]日志与ui-gateway实时HTTP/SSE响应完成在线五类业务正例对账、在线失配/CRC_ERR/drop>0非0退出拦截、在线OFFLINE故障注入（2147483646 mdeg与32767 ddC哨兵及HTTP 503控制锁）及在线恢复ONLINE后的五类业务对账闭环并生成reconciliation_matrix.md全部PASS，停止后无残留进程",
+            "availability": "available"
+          }
+        ],
+        "positive_cases": [
+          "debug_reconciliation_probe.py同步解析真实[MC-DBG]与[TH-DBG]结构化串口日志流及AP HTTP/SSE状态快照（支持--self-test、--mc-log/--th-log/--ap-snapshot离线对账及--ap-url配合--mc-log/--th-log在线拉取运行中ui-gateway实时快照与SSE流，不伪造日志或回退默认快照），自动生成五类核心业务（温度、归零/移动、二维5x5调平网格、进退丝/料槽、打印作业状态）双向对账报告(--matrix-out)",
+          "全栈一键启动脚本deploy_twin.sh在921600默认配置下完成编译、sim模式启停探活，并通过921600 POSIX PTY连接运行态全栈完成在线五类正向对账、在线故障注入、在线恢复与优雅停止闭环"
+        ],
+        "negative_cases": [
+          "当[MC-DBG]/[TH-DBG]日志中的五类业务状态与AP/UI状态快照不一致、调平网格非严格5x5二维列表（如1x25畸形网格）、或出现未预期的CRC_ERR/TIMEOUT/BAD_FRAME/TX_ERR或drop>0/trunc>0时，debug_reconciliation_probe.py在离线与--ap-url在线模式下均返回非0退出码并定位失配项；恢复一致快照与正常日志流后重新对账返回0",
+          "当处于业务串口断连/离线状态（system_status=OFFLINE）时，debug_reconciliation_probe.py按单位严格校验AP温度哨兵值（2147483646毫摄氏度）与MCU日志/deci-C温度哨兵值（32767十分之一摄氏度）及ui-gateway控制接口严格HTTP 503锁定响应（拒绝错误单位哨兵值及504/200状态码），并在运行态网关恢复ONLINE后在线对账恢复通过"
+        ]
+      },
+      "required_evidence_level": "server-sandbox-and-independent-review",
+      "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+      "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+      "updated": "2026-11-04T14:25:00+08:00"
+    },
+    "run_dir": "/tmp/qa_TWIN-46_n4_g79lu",
+    "timeout_seconds": 1440,
+    "sandbox_command": [
+      "/usr/bin/python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+      "--config",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+      "--task",
+      "TWIN-46",
+      "--revision",
+      "1",
+      "--output-dir",
+      "/tmp/qa_TWIN-46_n4_g79lu/evidence",
+      "--repo-commit",
+      "project-control=42b031efff970b01ee8cc8e5dd087387cdf9288f:main",
+      "--repo-commit",
+      "soc-ap=426d604e9ddcfdb3e95e94ecff4f699ae976fc95:main",
+      "--repo-commit",
+      "mcu-p3=29d62ef1bb7cf33e334f7e58aae81717cd26c54f:feat/soc-debug",
+      "--repo-commit",
+      "test_harness=91942286e8f686ce044a6aa8fdb11270ff8f5624:main",
+      "--cmd",
+      "test:test_harness:python3 hil/tools/debug_reconciliation_probe.py --help >/dev/null && python3 hil/tools/debug_reconciliation_probe.py --self-test --matrix-out /tmp/qa_twin46_fixtures/selftest_matrix.md && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json --matrix-out /tmp/qa_twin46_fixtures/cli_ok_matrix.md && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_mismatch.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_crc_err.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_drop.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_bad_grid.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_offline.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_offline.log --th-log /tmp/qa_twin46_fixtures/th_offline.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_bad_offline.json) && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_offline.log --th-log /tmp/qa_twin46_fixtures/th_offline.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_offline.json --matrix-out /tmp/qa_twin46_fixtures/cli_offline_matrix.md && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json --matrix-out /tmp/qa_twin46_fixtures/cli_recovery_matrix.md && test -s /tmp/qa_twin46_fixtures/selftest_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_ok_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_offline_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_recovery_matrix.md && rm -rf /tmp/qa_twin46_fixtures",
+      "--cmd",
+      "test:soc-ap:rm -rf /tmp/qa_twin46 && mkdir -p /tmp/qa_twin46/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin46/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755)\" && export PATH=\"/tmp/qa_twin46/bin:$PATH\" && cp -r ../soc-ap ../test_harness /tmp/qa_twin46/ && rm -rf /tmp/qa_twin46/soc-ap/build && ([ -e /tmp/qa_twin46/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin46/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin46/soc-ap/third_party/install)) && cd /tmp/qa_twin46/soc-ap && bash tools/deploy_twin.sh --mode sim --port 18085 && bash tools/deploy_twin.sh --status --port 18085 && bash tools/deploy_twin.sh --stop --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"start-pty\\\", \\\"/tmp/qa_twin46\\\"))\" && bash tools/deploy_twin.sh --mode hardware --uart \"$(cat /tmp/qa_twin46/pty_path)\" --baud 921600 --port 18085 && bash tools/deploy_twin.sh --status --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-online\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_ok.log --th-log /tmp/qa_twin46/th_live_ok.log --matrix-out /tmp/qa_twin46/live_ok_matrix.md && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_mismatch.log --th-log /tmp/qa_twin46/th_live_ok.log) && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_crc_err.log --th-log /tmp/qa_twin46/th_live_ok.log) && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_drop.log --th-log /tmp/qa_twin46/th_live_ok.log) && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-offline\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_ok.log --th-log /tmp/qa_twin46/th_live_ok.log) && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_offline.log --th-log /tmp/qa_twin46/th_live_offline.log --matrix-out /tmp/qa_twin46/live_offline_matrix.md && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-recovery\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_recovery.log --th-log /tmp/qa_twin46/th_live_recovery.log --matrix-out /tmp/qa_twin46/reconciliation_matrix.md && test -s /tmp/qa_twin46/live_ok_matrix.md && test -s /tmp/qa_twin46/live_offline_matrix.md && test -s /tmp/qa_twin46/reconciliation_matrix.md && bash tools/deploy_twin.sh --stop --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"stop-pty\\\", \\\"/tmp/qa_twin46\\\"))\" && rm -rf /tmp/qa_twin46"
+    ],
+    "request_ref": {
+      "path": "/tmp/qa_TWIN-46_n4_g79lu/request.json",
+      "sha256": "acfa62ee01509ce713aaf589e50a8b48901b4ab063f80f64b93922d8dfe02134"
+    }
+  },
+  "server_qa": {
+    "task_id": "TWIN-46",
+    "task_revision": 1,
+    "source": "server-pinned-commits",
+    "fresh_checkout": true,
+    "sandbox": {
+      "kind": "container",
+      "container_id": "abdaf5296ea8",
+      "id": "TWIN-46_run_144908_20261104_064908",
+      "image": "qa-sandbox:20261029",
+      "path": "/tmp/qa_sandboxes/TWIN-46_run_144908_20261104_064908",
+      "developer_mounts": [],
+      "container_inspect": {
+        "id": "abdaf5296ea8a68be6d5d72d6df841de95c4510e6fba0292b1710488c6bb180d",
+        "image": "qa-sandbox:20261029",
+        "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "created": "2026-11-04T06:49:33.947026973Z",
+        "state": "exited",
+        "mounts": [
+          {
+            "Type": "bind",
+            "Source": "/tmp/qa_sandboxes/TWIN-46_run_144908_20261104_064908",
+            "Destination": "/workspace",
+            "Mode": "ro",
+            "RW": false,
+            "Propagation": "rprivate"
+          }
+        ]
+      }
+    },
+    "server_lock": {
+      "path": "/tmp/qa_TWIN-46_n4_g79lu/evidence/server_lock.json",
+      "sha256": "148b7fefca222c70fee476614638823cb31ac7b8b5a3e3ea0836c6e9dd355b68"
+    },
+    "checkout_log": {
+      "path": "/tmp/qa_TWIN-46_n4_g79lu/evidence/checkout.log",
+      "sha256": "d8ed87ad485c566062d8adf78823507b809150633bb4826b9a533f7cda180a27"
+    },
+    "runtime_log": {
+      "path": "/tmp/qa_TWIN-46_n4_g79lu/evidence/runtime.log",
+      "sha256": "0087bf4d39cdbbb3f466c5f8904f5367183d82cec4eafc339c3c6a18d24287c0"
+    },
+    "server_verdict": {
+      "path": "/tmp/qa_TWIN-46_n4_g79lu/evidence/server_verdict.json",
+      "sha256": "39a5880d2c672537c3fd13d6411002ad566888e0ee8c3dc12c5d458b35e80558"
+    },
+    "tool_versions": {
+      "git": "git version 2.25.1",
+      "python": "Python 3.8.10"
+    },
+    "build_results": [],
+    "test_results": [
+      {
+        "command": "python3 hil/tools/debug_reconciliation_probe.py --help >/dev/null && python3 hil/tools/debug_reconciliation_probe.py --self-test --matrix-out /tmp/qa_twin46_fixtures/selftest_matrix.md && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json --matrix-out /tmp/qa_twin46_fixtures/cli_ok_matrix.md && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_mismatch.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_crc_err.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_drop.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_bad_grid.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_offline.json) && (! python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_offline.log --th-log /tmp/qa_twin46_fixtures/th_offline.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_bad_offline.json) && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_offline.log --th-log /tmp/qa_twin46_fixtures/th_offline.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_offline.json --matrix-out /tmp/qa_twin46_fixtures/cli_offline_matrix.md && python3 hil/tools/debug_reconciliation_probe.py --mc-log /tmp/qa_twin46_fixtures/mc_ok.log --th-log /tmp/qa_twin46_fixtures/th_ok.log --ap-snapshot /tmp/qa_twin46_fixtures/ap_ok.json --matrix-out /tmp/qa_twin46_fixtures/cli_recovery_matrix.md && test -s /tmp/qa_twin46_fixtures/selftest_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_ok_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_offline_matrix.md && test -s /tmp/qa_twin46_fixtures/cli_recovery_matrix.md && rm -rf /tmp/qa_twin46_fixtures",
+        "exit_code": "0",
+        "subpath": "test_harness",
+        "duration": "0.52s",
+        "output": "[PASS] debug_reconciliation_probe.py self-test suite passed (11 fixtures generated).\n[PASS] Reconciliation succeeded (online-5-category).\n[PASS] Reconciliation succeeded (offline-sentinel).\n[PASS] Reconciliation succeeded (online-5-category).\n\n[RECONCILE FAIL] 1. Temperature Reporting & Setpoint: Temperature/ADC mismatch between MCU logs and AP snapshot\n[RECONCILE FAIL] 2. Homing & Motion Control: Motion coordinates or homed_mask mismatch\n[RECONCILE FAIL] 3. 5x5 Bed Leveling Grid: 5x5 leveling mesh shape or probe z_offset_um mismatch\n[RECONCILE FAIL] 4. Filament Feed/Retract & Slot Select: Filament slot/mask/step_state mismatch\n[RECONCILE FAIL] 5. Print Job State Machine: Job state or progress_permille mismatch\n[RECONCILE FAIL] MC-DBG seq=7 cmd=0x14 status=CRC_ERR err=0x01\n[RECONCILE FAIL] Ring buffer overflow/truncation detected: mc_drop=3, mc_trunc=1, th_drop=0, th_trunc=0\n[RECONCILE FAIL] 3. 5x5 Bed Leveling Grid: 5x5 leveling mesh shape or probe z_offset_um mismatch\n[RECONCILE FAIL] OFFLINE unit-sentinel or HTTP 503 lock mismatch: bed_mc=2147483646, tool_mc=2147483646, mc_bed_ddC=600, lock=503\n[RECONCILE FAIL] OFFLINE unit-sentinel or HTTP 503 lock mismatch: bed_mc=32767, tool_mc=2147483646, mc_bed_ddC=32767, lock=504"
+      },
+      {
+        "command": "rm -rf /tmp/qa_twin46 && mkdir -p /tmp/qa_twin46/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin46/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755)\" && export PATH=\"/tmp/qa_twin46/bin:$PATH\" && cp -r ../soc-ap ../test_harness /tmp/qa_twin46/ && rm -rf /tmp/qa_twin46/soc-ap/build && ([ -e /tmp/qa_twin46/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin46/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin46/soc-ap/third_party/install)) && cd /tmp/qa_twin46/soc-ap && bash tools/deploy_twin.sh --mode sim --port 18085 && bash tools/deploy_twin.sh --status --port 18085 && bash tools/deploy_twin.sh --stop --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"start-pty\\\", \\\"/tmp/qa_twin46\\\"))\" && bash tools/deploy_twin.sh --mode hardware --uart \"$(cat /tmp/qa_twin46/pty_path)\" --baud 921600 --port 18085 && bash tools/deploy_twin.sh --status --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-online\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_ok.log --th-log /tmp/qa_twin46/th_live_ok.log --matrix-out /tmp/qa_twin46/live_ok_matrix.md && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_mismatch.log --th-log /tmp/qa_twin46/th_live_ok.log) && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_crc_err.log --th-log /tmp/qa_twin46/th_live_ok.log) && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_drop.log --th-log /tmp/qa_twin46/th_live_ok.log) && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-offline\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && (! python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_ok.log --th-log /tmp/qa_twin46/th_live_ok.log) && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_offline.log --th-log /tmp/qa_twin46/th_live_offline.log --matrix-out /tmp/qa_twin46/live_offline_matrix.md && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"drive-recovery\\\", \\\"/tmp/qa_twin46\\\", \\\"http://127.0.0.1:18085\\\"))\" && python3 ../test_harness/hil/tools/debug_reconciliation_probe.py --ap-url http://127.0.0.1:18085 --mc-log /tmp/qa_twin46/mc_live_recovery.log --th-log /tmp/qa_twin46/th_live_recovery.log --matrix-out /tmp/qa_twin46/reconciliation_matrix.md && test -s /tmp/qa_twin46/live_ok_matrix.md && test -s /tmp/qa_twin46/live_offline_matrix.md && test -s /tmp/qa_twin46/reconciliation_matrix.md && bash tools/deploy_twin.sh --stop --port 18085 && python3 -c \"import sys; sys.path.insert(0, \\\"../test_harness/hil/tools\\\"); import debug_reconciliation_probe as p; sys.exit(p.live_pty_ctl(\\\"stop-pty\\\", \\\"/tmp/qa_twin46\\\"))\" && rm -rf /tmp/qa_twin46",
+        "exit_code": "0",
+        "subpath": "soc-ap",
+        "duration": "34.22s",
+        "output": "=================================================================\n[BUILD] Incrementally building AI-SoC full stack...\n=================================================================\n[BUILD 1/5] runtime (build/runtime)...\n-- The C compiler identification is GNU 9.4.0\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/runtime\n[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/tmp/qa_twin46/soc-ap/runtime/common/service_lifecycle.cpp.o\n[ 16%] Linking CXX static library libaisoc_runtime_common.a\n[ 16%] Built target aisoc_runtime_common\n[ 25%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o\n[ 33%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin46/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 41%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o\n[ 50%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o\n[ 58%] Linking CXX executable test_backoff\n[ 66%] Linking CXX executable test_service_lifecycle\n[ 66%] Built target test_backoff\n[ 66%] Built target test_service_lifecycle\n[ 75%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tmp/qa_twin46/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 83%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin46/soc-ap/runtime/vmware/main.cpp.o\n[ 91%] Linking CXX executable aisoc_supervisor\n[100%] Linking CXX executable test_supervisor_topology\n[100%] Built target aisoc_supervisor\n[100%] Built target test_supervisor_topology\n[BUILD 2/5] forward (build/forward & build/test_forward)...\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/forward\n[ 15%] Building CXX object CMakeFiles/forward_service.dir/forward_protocol.cpp.o\n[ 15%] Building CXX object CMakeFiles/forward_service.dir/forward_dbus.cpp.o\n[ 15%] Building CXX object CMakeFiles/forward_service.dir/forward_uart.cpp.o\n[ 20%] Building CXX object CMakeFiles/forward_service.dir/forward_service.cpp.o\n[ 25%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/core/forward/minimc/codec.cpp.o\n[ 30%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/core/forward/minimc/parser.cpp.o\n[ 35%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/core/forward/transport/serial_posix.cpp.o\n[ 40%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o\n[ 45%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o\n[ 50%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o\n[ 55%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o\n[ 60%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o\n[ 65%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o\n[ 70%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o\n[ 75%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o\n[ 80%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o\n[ 85%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds.cpp.o\n[ 90%] Linking CXX static library libforward_service.a\n[ 90%] Built target forward_service\n[ 95%] Building CXX object CMakeFiles/forward_service_daemon.dir/forward_main.cpp.o\n[100%] Linking CXX executable forward_service_daemon\n[100%] Built target forward_service_daemon\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/test_forward\n[ 10%] Building CXX object CMakeFiles/test_forward_service.dir/test_forward_service.cpp.o\n[ 10%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/services/forward/forward_protocol.cpp.o\n[ 15%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/services/forward/forward_uart.cpp.o\n[ 21%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/services/forward/forward_dbus.cpp.o\n[ 26%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/services/forward/forward_service.cpp.o\n[ 31%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/core/forward/minimc/codec.cpp.o\n[ 36%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/core/forward/minimc/parser.cpp.o\n[ 42%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/core/forward/transport/serial_posix.cpp.o\n[ 47%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o\n[ 52%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o\n[ 57%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o\n[ 63%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o\n[ 68%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o\n[ 73%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o\n[ 78%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o\n[ 84%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o\n[ 89%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o\n[ 94%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds.cpp.o\n[100%] Linking CXX executable test_forward_service\n[100%] Built target test_forward_service\n[BUILD 3/5] device_manager (build/device_manager)...\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/device_manager\n[  6%] Building CXX object CMakeFiles/device_manager.dir/device_manager_state.cpp.o\n[ 18%] Building CXX object CMakeFiles/device_manager.dir/device_manager_service.cpp.o\n[ 18%] Building CXX object CMakeFiles/device_manager.dir/device_manager_dbus.cpp.o\n[ 25%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o\n[ 31%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o\n[ 37%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o\n[ 43%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o\n[ 50%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o\n[ 56%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o\n[ 62%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o\n[ 68%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o\n[ 75%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o\n[ 81%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin46/soc-ap/middleware/dds/src/aisoc_dds.cpp.o\n[ 87%] Linking CXX static library libdevice_manager.a\n[ 87%] Built target device_manager\n[ 93%] Building CXX object CMakeFiles/device_manager_daemon.dir/device_manager_main.cpp.o\n[100%] Linking CXX executable device_manager_daemon\n[100%] Built target device_manager_daemon\n[BUILD 4/5] ui_gateway (build/ui_gateway)...\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/ui_gateway\n[  8%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_http.cpp.o\n[ 16%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_dbus.cpp.o\n[ 25%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_server.cpp.o\n[ 33%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_service.cpp.o\n[ 50%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_job_ctrl.cpp.o\n[ 50%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o\n[ 58%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o\n[ 75%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o\n[ 75%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin46/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o\n[ 83%] Linking CXX static library libui_gateway.a\n[ 83%] Built target ui_gateway\n[ 91%] Building CXX object CMakeFiles/ui-gateway.dir/ui_gateway_main.cpp.o\n[100%] Linking CXX executable ui-gateway\n[100%] Built target ui-gateway\n[BUILD 5/5] host CLI (build/host)...\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Found Python3: /usr/bin/python3.8 (found version \"3.8.10\") found components: Interpreter\n-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/host\n[ 11%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o\n[ 22%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o\n[ 33%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o\n[ 44%] Linking CXX static library libminimcproto.a\n[ 44%] Built target minimcproto\n[ 55%] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o\n[ 77%] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o\n[ 77%] Building CXX object CMakeFiles/soc-ap.dir/core/host/query.cpp.o\n[ 88%] Linking CXX executable bin/soc-ap\n[ 88%] Built target soc-ap\n[100%] Linking CXX executable bin/minimc-probe\n[100%] Built target minimc-probe\n=================================================================\n[BUILD] All 5 full-stack targets built successfully.\n=================================================================\n=================================================================\nAI-SoC VMware Twin Full Stack Deployed Successfully!\n  Mode:        sim\n  UART:        /dev/ttyUSB0 @ 921600 baud\n  HTTP URL:    http://127.0.0.1:18085/\n  State API:   http://127.0.0.1:18085/api/v1/state\n  Snapshot:    http://127.0.0.1:18085/api/v1/temperature/snapshot\n  Logs & PIDs: /tmp/aisoc_twin_logs\n=================================================================\n=================================================================\nAI-SoC VMware Twin Full-Stack Status (Mode: sim)\n  UART Device: /dev/ttyUSB0 @ 921600 baud\n  HTTP Listen: 0.0.0.0:18085\n=================================================================\n  [RUNNING] dbus-daemon (PID: 862)\n  [RUNNING] forward_service_daemon (PID: 867)\n  [RUNNING] device_manager_daemon (PID: 868)\n  [RUNNING] ui-gateway (PID: 870)\n  [HEALTH ] HTTP Probe http://127.0.0.1:18085/api/v1/state -> HTTP 200 OK\n=================================================================\n[STOP] Stopping ui-gateway (PID: 870)...\n[STOP] Stopping device_manager_daemon (PID: 868)...\n[STOP] Stopping forward_service_daemon (PID: 867)...\n[STOP] Stopping dbus-daemon (PID: 862)...\n[STOP] All AI-SoC VMware Twin services stopped and PID files cleaned.\n=================================================================\n[BUILD] Incrementally building AI-SoC full stack...\n=================================================================\n[BUILD 1/5] runtime (build/runtime)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/runtime\n[ 16%] Built target aisoc_runtime_common\n[ 33%] Built target test_service_lifecycle\n[ 50%] Built target test_backoff\n[ 75%] Built target aisoc_supervisor\n[100%] Built target test_supervisor_topology\n[BUILD 2/5] forward (build/forward & build/test_forward)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/forward\n[ 90%] Built target forward_service\n[100%] Built target forward_service_daemon\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/test_forward\n[100%] Built target test_forward_service\n[BUILD 3/5] device_manager (build/device_manager)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/device_manager\n[ 87%] Built target device_manager\n[100%] Built target device_manager_daemon\n[BUILD 4/5] ui_gateway (build/ui_gateway)...\n-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/ui_gateway\n[ 83%] Built target ui_gateway\n[100%] Built target ui-gateway\n[BUILD 5/5] host CLI (build/host)...\n-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)\n-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin46/soc-ap/build/host\n[ 44%] Built target minimcproto\n[ 66%] Built target minimc-probe\n[100%] Built target soc-ap\n=================================================================\n[BUILD] All 5 full-stack targets built successfully.\n=================================================================\n=================================================================\nAI-SoC VMware Twin Full Stack Deployed Successfully!\n  Mode:        hardware\n  UART:        /dev/pts/0 @ 921600 baud\n  HTTP URL:    http://127.0.0.1:18085/\n  State API:   http://127.0.0.1:18085/api/v1/state\n  Snapshot:    http://127.0.0.1:18085/api/v1/temperature/snapshot\n  Logs & PIDs: /tmp/aisoc_twin_logs\n=================================================================\n=================================================================\nAI-SoC VMware Twin Full-Stack Status (Mode: hardware)\n  UART Device: /dev/pts/0 @ 921600 baud\n  HTTP Listen: 0.0.0.0:18085\n=================================================================\n  [RUNNING] dbus-daemon (PID: 1198)\n  [RUNNING] forward_service_daemon (PID: 1203)\n  [RUNNING] device_manager_daemon (PID: 1204)\n  [RUNNING] ui-gateway (PID: 1206)\n  [HEALTH ] HTTP Probe http://127.0.0.1:18085/api/v1/state -> HTTP 200 OK\n=================================================================\n[PASS] Live AP gateway (http://127.0.0.1:18085) reconciliation succeeded (online-5-category).\n[PASS] Live AP gateway (http://127.0.0.1:18085) reconciliation succeeded (offline-sentinel).\n[PASS] Live AP gateway (http://127.0.0.1:18085) reconciliation succeeded (online-5-category).\n[STOP] Stopping ui-gateway (PID: 1206)...\n[STOP] Stopping device_manager_daemon (PID: 1204)...\n[STOP] Stopping forward_service_daemon (PID: 1203)...\n[STOP] Stopping dbus-daemon (PID: 1198)...\n[STOP] All AI-SoC VMware Twin services stopped and PID files cleaned.\n\n[RECONCILE FAIL] 1. Temperature Reporting & Setpoint: Temperature/ADC mismatch between MCU logs and AP snapshot\n[RECONCILE FAIL] 2. Homing & Motion Control: Motion coordinates or homed_mask mismatch\n[RECONCILE FAIL] 3. 5x5 Bed Leveling Grid: 5x5 leveling mesh shape or probe z_offset_um mismatch\n[RECONCILE FAIL] 4. Filament Feed/Retract & Slot Select: Filament slot/mask/step_state mismatch\n[RECONCILE FAIL] 5. Print Job State Machine: Job state or progress_permille mismatch\n[RECONCILE FAIL] MC-DBG seq=9 cmd=0x14 status=CRC_ERR err=0x01\n[RECONCILE FAIL] Ring buffer overflow/truncation detected: mc_drop=3, mc_trunc=1, th_drop=0, th_trunc=0\n[RECONCILE FAIL] OFFLINE unit-sentinel or HTTP 503 lock mismatch: bed_mc=2147483646, tool_mc=2147483646, mc_bed_ddC=600, lock=503"
+      }
+    ],
+    "passed": true,
+    "timestamp": "2026-11-04T06:50:11.506231+00:00",
+    "path": "/tmp/qa_TWIN-46_n4_g79lu/evidence/server_qa.json",
+    "sha256": "e8d46e446a5bb1167698126bcdf18448c4ab62b9702a4aec0a7beae719803d4f"
+  },
+  "diffs": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_sandboxes/TWIN-46_run_144908_20261104_064908/project-control",
+      "base_commit": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+      "candidate_commit": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+      "diff": {
+        "path": "/tmp/qa_TWIN-46_n4_g79lu/diffs/project-control.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "soc-ap",
+      "source": "/tmp/qa_sandboxes/TWIN-46_run_144908_20261104_064908/soc-ap",
+      "base_commit": "426d604e9ddcfdb3e95e94ecff4f699ae976fc95",
+      "candidate_commit": "426d604e9ddcfdb3e95e94ecff4f699ae976fc95",
+      "diff": {
+        "path": "/tmp/qa_TWIN-46_n4_g79lu/diffs/soc-ap.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "mcu-p3",
+      "source": "/tmp/qa_sandboxes/TWIN-46_run_144908_20261104_064908/mcu-p3",
+      "base_commit": "29d62ef1bb7cf33e334f7e58aae81717cd26c54f",
+      "candidate_commit": "29d62ef1bb7cf33e334f7e58aae81717cd26c54f",
+      "diff": {
+        "path": "/tmp/qa_TWIN-46_n4_g79lu/diffs/mcu-p3.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "test_harness",
+      "source": "/tmp/qa_sandboxes/TWIN-46_run_144908_20261104_064908/test_harness",
+      "base_commit": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+      "candidate_commit": "91942286e8f686ce044a6aa8fdb11270ff8f5624",
+      "diff": {
+        "path": "/tmp/qa_TWIN-46_n4_g79lu/diffs/test_harness.patch",
+        "sha256": "06c5ff7093193161b20fbcedb7b07d6e89f25ad406bbf5e99038a125d5ff7850"
+      }
+    }
+  ]
+}

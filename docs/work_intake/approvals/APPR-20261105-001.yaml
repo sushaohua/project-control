@@ -1,0 +1,37 @@
+schema_version: 1
+approval_id: APPR-20261105-001
+revision: 1
+approved_at: '2026-11-05T10:13:29+08:00'
+approved_by:
+  actor_type: HUMAN
+  actor_id: sushaohua
+  source_channel: coord_interactive_session
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+  verbatim_decision: 启动。
+bound_confirmation:
+  confirmation_id: CONFIRM-SOC-AP-ISSUES-20261105
+  revision: 1
+  path: project-control/docs/architecture/soc_ap_build_and_startup_issues_arch_breakdown_20261105.md
+  sha256: 04be47f7ca02f7a98e4f249e8313309d32c9642a07574c011cb2161014ac5b36
+bound_submission:
+  submission_id: 20261105_soc_ap_build_and_startup_issues
+  revision: 1
+  submission_path: project-control/docs/work_intake/submissions/20261105_soc_ap_build_and_startup_issues.md
+  submission_sha256: 5660ee81542768228ed17c2a0755ff066cec28665edcd6a5974048a23e3803ea
+approval_mode: full_batch_approval
+approved_demands:
+- demand_id: DEM-20261105-001
+  category_id: ISS-20261105-001
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1
+- demand_id: DEM-20261105-002
+  category_id: ISS-20261105-002
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1
+- demand_id: DEM-20261105-003
+  category_id: ISS-20261105-003
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1

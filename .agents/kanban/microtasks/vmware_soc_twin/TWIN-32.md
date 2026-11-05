@@ -54,6 +54,7 @@ depends_on:
 - TWIN-09
 - TWIN-23
 - TWIN-30
+- TWIN-49
 dependency_conditions:
 - task: TWIN-09
   accepted_version: soc-ap=d214ded82447502944a41d2b27194245b0f96b19; project-control=754b188b312ac79e2873ea97075b8a2a74937ecc
@@ -67,6 +68,10 @@ dependency_conditions:
   accepted_version: soc-ap=7bb05218c39d6852cac5e8d86db845dbbedd7064; project-control=f7d18c48774a8787f0dfa1d1cbe9dddea9309a40
   acceptance_evidence: docs/evidence/twin/TWIN-30/runs/run_01/qa_review_report.md
   required: 继承TWIN-30集成基线与选项A安全门禁
+- task: TWIN-49
+  accepted_version: pending
+  acceptance_evidence: docs/evidence/twin/TWIN-49/runs/qa_01/qa_review_report.md
+  required: 继承TWIN-49 ui_gateway去Mock与真实IPC闭环基线
 scope_status: mapped
 allowed_repositories:
 - soc-ap

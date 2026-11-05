@@ -1,0 +1,44 @@
+schema_version: 1
+confirmation_id: CONFIRM-DEBUG-BAUD-20261104
+revision: 2
+demand_ids:
+- DEM-20261104-001
+- DEM-20261104-002
+category_ids:
+- FEAT-20261104-001
+- FEAT-20261104-002
+submission_ref:
+  id: SUB-20261104-001
+  revision: 1
+  submission_path: project-control/docs/work_intake/submissions/SUB-20261104-001.md
+  submission_sha256: 9058016613a4a9ce4ba17c6dbaeb5463f5cd79f015794950efffc32ef91b594f
+canonical_markdown:
+  path: project-control/docs/planning/debug_and_921600_merged_implementation_summary_20261104.md
+  revision: 2
+  sha256: c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec
+source_requirement_confirmations:
+- path: project-control/docs/planning/mc_th_debug_mode_requirement_confirmation_20261103.md
+  sha256: 36ae2a6f8bc6ed13e6e89443fcca62fe882c841f2a65619ad735216d9cbacebe
+- path: project-control/docs/planning/vmware_mc_921600_requirement_confirmation_20261103.md
+  sha256: 3911e18cf6ca949369d9449659c3fa842af57e025cd718de327a7c57b6ee0a37
+prepared_by:
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+arch_technical_breakdown:
+  arch_session: 433026bf-a1ff-4863-8f3e-7a5f43b016ff
+  id: ARCH-BREAKDOWN-DEBUG-921600-20261104
+  revision: 5
+  path: project-control/docs/architecture/debug_reconciliation_and_921600_arch_breakdown_20261104.md
+  sha256: 256a0c4cbde4434b30774881bc48c6f769037eac30e4e15ece27514ac3be56b5
+  decision: APPROVED
+  tasks:
+  - TWIN-43
+  - TWIN-44
+  - TWIN-45
+  - TWIN-46
+qa_policy: streamlined-v1
+status: approved-by-human
+approval_ref:
+  approval_id: APPR-20261104-001
+  revision: 1
+  path: project-control/docs/work_intake/approvals/APPR-20261104-001.yaml
+  sha256: 52aaedc4ebad17c60ad9a2af0e0d93ee73c23c3084b7e6fa68cd81720c10b91e

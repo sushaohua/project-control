@@ -41,6 +41,7 @@ child_tasks:
 - MCQ-0105
 - TWIN-01
 - TWIN-41
+- TWIN-52
 planning_relations: []
 related_tasks:
 - MS-12

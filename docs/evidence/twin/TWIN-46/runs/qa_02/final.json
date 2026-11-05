@@ -1,0 +1,14 @@
+{
+  "task_id": "TWIN-46",
+  "task_revision": 1,
+  "candidate_commit": "91942286e8f686ce044a6aa8fdb11270ff8f5624",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "The pinned bundle hash matches. The recorded host tests cover positive, negative, offline, and recovery paths, but the live PTY integration does not reconcile captured MCU/TH debug streams with the gateway: it synthesizes the log files independently of the PTY responses and gateway state.",
+  "findings": [
+    "In diffs/test_harness.patch, the PTY responder handles only version and temperature requests. write_live_online_logs() and drive_gateway_offline() separately construct [MC-DBG]/[TH-DBG] text from hard-coded values; the probe then compares those generated files with live HTTP responses. The five-category live positive checks and live fault/recovery checks therefore do not establish the contracted debug-to-UI data path from runtime telemetry.",
+    "The recorded negative live cases alter synthesized log files while the gateway remains in its normal online state; this does not demonstrate live fault injection into the PTY/MC/TH-to-gateway path. The recovery check likewise generates a new synthetic log set."
+  ],
+  "accepted_scope": "The frozen evidence records CLI/self-test positive and negative checks, offline sentinel and HTTP 503 checks, simulated deployment lifecycle, and a 921600 POSIX PTY virtual-MCU full-stack run. Cross-compiler ELF builds and physical MCU USB/UART HIL are excluded by the contract; software evidence does not establish physical HIL.",
+  "unexecuted": []
+}

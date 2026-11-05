@@ -1,0 +1,63 @@
+{
+  "task_id": "TWIN-51",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "306ccdd02c6b",
+    "id": "TWIN-51_run_104610_20261105_024610",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-51_run_104610_20261105_024610",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "306ccdd02c6bdd496c43cfd52f5a704129e09b7018685786ec7fe6a7bc3ec12e",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-05T02:46:34.884671298Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-51_run_104610_20261105_024610",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "/tmp/qa_TWIN-51_cyhrpmno/evidence/server_lock.json",
+    "sha256": "e0304cce1e519644583be7c4df76214d507f4eba067293edd3d3e1a57557f6fa"
+  },
+  "checkout_log": {
+    "path": "/tmp/qa_TWIN-51_cyhrpmno/evidence/checkout.log",
+    "sha256": "61680e6ed1ca44a418deb676f444bb5bd5b7e03b49c27927218331d9188ff9fd"
+  },
+  "runtime_log": {
+    "path": "/tmp/qa_TWIN-51_cyhrpmno/evidence/runtime.log",
+    "sha256": "0b7a92cabad9ee14f59544d05c42723976b6578dcc42d09729c988bb42225abf"
+  },
+  "server_verdict": {
+    "path": "/tmp/qa_TWIN-51_cyhrpmno/evidence/server_verdict.json",
+    "sha256": "984c8604455e2a02c89a5c970838e6abcb83b30d3d48985f6d2a37d6405559d6"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "rm -rf /tmp/qa_twin51 && mkdir -p /tmp/qa_twin51 && (! grep -En \"backoff_(state|config)_t[[:space:]]+(st|cfg)[[:space:]]*;\" runtime/build/tests/test_backoff.cpp) && g++ -std=c++17 -O2 -Wall -Wextra -Werror -Wpedantic -Wmaybe-uninitialized -fno-exceptions -fno-rtti -Iruntime/common runtime/build/tests/test_backoff.cpp runtime/common/service_lifecycle.cpp -o /tmp/qa_twin51/test_backoff_strict && /tmp/qa_twin51/test_backoff_strict && cmake -S runtime/build -B /tmp/qa_twin51/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=\"-O2\" && cmake --build /tmp/qa_twin51/build --parallel && ctest --test-dir /tmp/qa_twin51/build --output-on-failure && rm -rf /tmp/qa_twin51",
+      "exit_code": "0",
+      "subpath": "soc-ap",
+      "duration": "0.65s",
+      "output": "Running Bounded Backoff Unit Tests...\nPASS: test_backoff_null_guards\nPASS: test_backoff_progression\nPASS: test_backoff_reset\nALL Bounded Backoff Unit Tests PASSED!\n-- The C compiler identification is GNU 9.4.0\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin51/build\n[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/workspace/soc-ap/runtime/common/service_lifecycle.cpp.o\n[ 16%] Linking CXX static library libaisoc_runtime_common.a\n[ 16%] Built target aisoc_runtime_common\n[ 25%] Building CXX object CMakeFiles/aisoc_supervisor.dir/workspace/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 41%] Building CXX object CMakeFiles/aisoc_supervisor.dir/workspace/soc-ap/runtime/vmware/main.cpp.o\n[ 41%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o\n[ 58%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o\n[ 58%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o\n[ 66%] Building CXX object CMakeFiles/test_supervisor_topology.dir/workspace/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 83%] Linking CXX executable test_backoff\n[ 83%] Linking CXX executable test_service_lifecycle\n[ 83%] Built target test_backoff\n[ 83%] Built target test_service_lifecycle\n[ 91%] Linking CXX executable aisoc_supervisor\n[100%] Linking CXX executable test_supervisor_topology\n[100%] Built target aisoc_supervisor\n[100%] Built target test_supervisor_topology\nTest project /tmp/qa_twin51/build\n    Start 1: test_service_lifecycle\n1/3 Test #1: test_service_lifecycle ...........   Passed    0.00 sec\n    Start 2: test_backoff\n2/3 Test #2: test_backoff .....................   Passed    0.00 sec\n    Start 3: test_supervisor_topology\n3/3 Test #3: test_supervisor_topology .........   Passed    0.04 sec\n\n100% tests passed out of 3\n\nTotal Test time (real) =   0.04 sec"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-05T02:46:38.146623+00:00"
+}

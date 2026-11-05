@@ -1,0 +1,320 @@
+{
+  "repository": "soc-ap",
+  "candidate_commit": "217a76e29c0c99897bf1993514b765cd771adb06",
+  "task_revision": 1,
+  "task_id": "TWIN-43",
+  "workspace": "/home/sushaohua/workspace/ai_soc_project",
+  "commands": [
+    {
+      "kind": "test",
+      "subpath": "soc-ap",
+      "command": "rm -rf /tmp/qa_twin43 && mkdir -p /tmp/qa_twin43/bin && cp -r ../soc-ap ../test_harness /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && python3 ../test_harness/static_checks/cascade/run_query_cases.py --test-host build/host/soc-ap --cases ../test_harness/test_cases/cascade/query_cases.json",
+      "id": "build_and_test_fullstack_921600"
+    },
+    {
+      "kind": "test",
+      "subpath": "test_harness",
+      "command": "python3 static_checks/twin/validate_schemas.py --root ..",
+      "id": "validate_manifest_schema"
+    },
+    {
+      "kind": "test",
+      "subpath": "soc-ap",
+      "command": "mkdir -p /tmp/qa_twin43/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin43/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755)\" && export PATH=\"/tmp/qa_twin43/bin:$PATH\" && ([ -d /tmp/qa_twin43/soc-ap ] || (cp -r ../soc-ap /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)))) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && rm -rf /tmp/qa_twin43",
+      "id": "verify_deploy_twin_sim_lifecycle"
+    }
+  ],
+  "targets": [
+    {
+      "name": "project-control",
+      "commit": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "main"
+    },
+    {
+      "name": "soc-ap",
+      "commit": "217a76e29c0c99897bf1993514b765cd771adb06",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+      "ref": "main"
+    },
+    {
+      "name": "mcu-p3",
+      "commit": "e051111e68dd61896ed42c0961153b167b8bca41",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+      "ref": "feat/soc-debug"
+    },
+    {
+      "name": "test_harness",
+      "commit": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+      "ref": "main"
+    }
+  ],
+  "contract": {
+    "id": "TWIN-43",
+    "title": "TWIN-43 AP/VMware 921600 波特率统一与全栈一键编译及配置化启动脚本",
+    "revision": 1,
+    "plan_revision": "vmware-soc-twin-20261104",
+    "task_kind": "implementation",
+    "development_stage": "vmware-twin",
+    "dispatchable": true,
+    "status": "Review",
+    "blocked": false,
+    "planning_status": "planned",
+    "owner": "6e214c7d-0965-4b36-805c-41c6f83a87bc",
+    "proposed_owner": "ENG-FWD",
+    "executor": {
+      "role": "ENG-FWD",
+      "agent_id": "6e214c7d-0965-4b36-805c-41c6f83a87bc",
+      "run_id": "author_01"
+    },
+    "qa_policy": "streamlined-v1",
+    "reviewer": [
+      "QA"
+    ],
+    "verifier": null,
+    "integrator": "INTEGRATOR",
+    "feature_id": "FEAT-20261104-002",
+    "confirmation_id": "CONFIRM-DEBUG-BAUD-20261104",
+    "approval_id": "APPR-20261104-001",
+    "review_assignments": {
+      "reviewer_sessions": [
+        {
+          "role": "QA",
+          "platform": "codex",
+          "model": "gpt-6-luna",
+          "planned_session_alias": "planned-qa-twin-43",
+          "session": "pending-codex-qa-twin-43",
+          "session_evidence": null,
+          "decision": "PENDING",
+          "reviewed_task_revision": 1,
+          "artifact_version": null,
+          "evidence": null,
+          "report_sha256": null
+        }
+      ],
+      "verifier_session": null,
+      "integrator_session": null
+    },
+    "primary_work_package": "TASK-007",
+    "related_work_packages": [
+      "TASK-004",
+      "TASK-010"
+    ],
+    "depends_on": [
+      "TWIN-04",
+      "TWIN-30"
+    ],
+    "dependency_conditions": [
+      {
+        "task": "TWIN-04",
+        "accepted_version": "soc-ap=8f05b7396bb11fb011b0279c6a38f26a194507be; project-control=6b3556fb52002833ce57bc28ca236630bd8e9073",
+        "acceptance_evidence": "docs/evidence/twin/TWIN-04/runs/run_01/qa_review_report.md",
+        "required": "继承TWIN-04 VMware运行时构建与services_manifest.json配置基线"
+      },
+      {
+        "task": "TWIN-30",
+        "accepted_version": "soc-ap=7bb05218c39d6852cac5e8d86db845dbbedd7064; project-control=f7d18c48774a8787f0dfa1d1cbe9dddea9309a40",
+        "acceptance_evidence": "docs/evidence/twin/TWIN-30/runs/run_01/qa_review_report.md",
+        "required": "继承TWIN-30 VMware全流程闭环与串口通信基线"
+      }
+    ],
+    "scope_status": "mapped",
+    "allowed_repositories": [
+      "soc-ap",
+      "project-control"
+    ],
+    "write_scope": {
+      "soc-ap": [
+        "core/forward/transport/serial_posix.h",
+        "core/forward/transport/serial_posix.cpp",
+        "core/host/main.cpp",
+        "core/host/query.h",
+        "core/host/query.cpp",
+        "config/runtime/vmware/**",
+        "config/runtime/common/**",
+        "dist/vmware_twin/config/services_manifest.json",
+        "tools/deploy_twin.sh"
+      ],
+      "project-control": [
+        "docs/evidence/twin/TWIN-43/**"
+      ]
+    },
+    "allowed_paths": [
+      "soc-ap/core/forward/transport/serial_posix.h",
+      "soc-ap/core/forward/transport/serial_posix.cpp",
+      "soc-ap/core/host/main.cpp",
+      "soc-ap/core/host/query.h",
+      "soc-ap/core/host/query.cpp",
+      "soc-ap/config/runtime/vmware/**",
+      "soc-ap/config/runtime/common/**",
+      "soc-ap/dist/vmware_twin/config/services_manifest.json",
+      "soc-ap/tools/deploy_twin.sh",
+      "project-control/docs/evidence/twin/TWIN-43/**"
+    ],
+    "forbidden_paths": [
+      "mcu-p3/**",
+      "test_harness/**",
+      "boot/**",
+      "soc-ap/contracts/**",
+      "soc-ap/services/**",
+      "soc-ap/tests/**",
+      "soc-ap/browser_hmi/**"
+    ],
+    "source_baseline": {
+      "project-control": "42b031efff970b01ee8cc8e5dd087387cdf9288f",
+      "soc-ap": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+      "mcu-p3": "e051111e68dd61896ed42c0961153b167b8bca41",
+      "test_harness": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414"
+    },
+    "base_commit": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+    "branch": "main",
+    "candidate_commit": "217a76e29c0c99897bf1993514b765cd771adb06",
+    "dispatch_binding": {
+      "source_commit": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+      "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "consumed_artifact_versions": {
+        "arch_breakdown": "a1a6e9d0a35ad504720d63c6276584646cc14c2fea7597985280c350dc1ddc2b",
+        "merged_summary": "c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec"
+      }
+    },
+    "protocol_input": {
+      "path": "project-control/docs/planning/debug_and_921600_merged_implementation_summary_20261104.md",
+      "sha256": "c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec",
+      "revision": 2
+    },
+    "icd_versions": [
+      {
+        "path": "soc-ap/contracts/twin/services_manifest_schema.json",
+        "version": "1.0.0"
+      },
+      {
+        "path": "project-control/docs/architecture/debug_reconciliation_and_921600_arch_breakdown_20261104.md",
+        "version": 6
+      }
+    ],
+    "read_sources": [
+      "project-control/docs/architecture/debug_reconciliation_and_921600_arch_breakdown_20261104.md",
+      "project-control/docs/planning/vmware_mc_921600_requirement_confirmation_20261103.md",
+      "soc-ap/contracts/twin/services_manifest_schema.json",
+      "soc-ap/core/forward/transport/serial_posix.h",
+      "soc-ap/core/forward/transport/serial_posix.cpp",
+      "soc-ap/services/forward/forward_main.cpp",
+      "soc-ap/tools/deploy_twin.sh"
+    ],
+    "worktree": "soc-ap",
+    "lease": {
+      "owner": "6e214c7d-0965-4b36-805c-41c6f83a87bc",
+      "task_revision": 1,
+      "lease_id": "lease-twin-43-20261104-01",
+      "expires_at": "2026-11-04T12:48:00+08:00"
+    },
+    "resources": [
+      {
+        "resource": "forward-build-env",
+        "location": "soc-ap",
+        "exclusive": true,
+        "pending": null
+      }
+    ],
+    "budget": {
+      "planned_checkpoint_minutes": 60,
+      "max_evidence_based_corrections": 2,
+      "on_limit": "保存证据交COORD"
+    },
+    "checkpoint": "开工前绑定；组件自检；独立沙箱与QA审查；收件",
+    "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+    "readiness_pending": [],
+    "deliverables": {
+      "artifacts": [
+        "soc-ap/core/forward/transport/serial_posix.h",
+        "soc-ap/core/forward/transport/serial_posix.cpp",
+        "soc-ap/core/host/query.h",
+        "soc-ap/core/host/query.cpp",
+        "soc-ap/config/runtime/vmware/services_manifest.json",
+        "soc-ap/config/runtime/common/services_manifest.json",
+        "soc-ap/config/runtime/vmware/aisoc_twin.conf",
+        "soc-ap/tools/deploy_twin.sh"
+      ],
+      "record": "docs/evidence/twin/TWIN-43/runs/author_01/result.md"
+    },
+    "rollback": {
+      "steps": [
+        "git -C soc-ap checkout -- core/forward/transport/serial_posix.h core/forward/transport/serial_posix.cpp core/host/ config/runtime/ dist/vmware_twin/config/ tools/deploy_twin.sh"
+      ]
+    },
+    "handoff": {
+      "receiver_role": "COORD",
+      "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+      "transport": "docs",
+      "evidence_location": "docs/evidence/twin/TWIN-43",
+      "acknowledgement": "COORD-RECEIVED-20261104T110200+0800"
+    },
+    "verification": {
+      "commands": [
+        {
+          "id": "build_and_test_fullstack_921600",
+          "cwd": "soc-ap",
+          "command": "rm -rf /tmp/qa_twin43 && mkdir -p /tmp/qa_twin43/bin && cp -r ../soc-ap ../test_harness /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && python3 ../test_harness/static_checks/cascade/run_query_cases.py --test-host build/host/soc-ap --cases ../test_harness/test_cases/cascade/query_cases.json",
+          "expected": "容器/tmp可写副本下全栈目标（runtime, forward, device_manager, ui_gateway, host）编译0错误，forward测试与cascade_query_cases（921600 PTY闭环）全部PASS",
+          "availability": "available"
+        },
+        {
+          "id": "validate_manifest_schema",
+          "cwd": "test_harness",
+          "command": "python3 static_checks/twin/validate_schemas.py --root ..",
+          "expected": "services_manifest.json (921600) Schema校验PASS，退出码0",
+          "availability": "available"
+        },
+        {
+          "id": "verify_deploy_twin_sim_lifecycle",
+          "cwd": "soc-ap",
+          "command": "mkdir -p /tmp/qa_twin43/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin43/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755)\" && export PATH=\"/tmp/qa_twin43/bin:$PATH\" && ([ -d /tmp/qa_twin43/soc-ap ] || (cp -r ../soc-ap /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)))) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && rm -rf /tmp/qa_twin43",
+          "expected": "sim模式下dbus/forward/device_manager/ui-gateway全栈启动成功，--status探活HTTP 200，--stop优雅退出无残留进程",
+          "availability": "available"
+        }
+      ],
+      "positive_cases": [
+        "serial_posix.cpp中baud_to_speed支持921600(B921600)与460800(B460800)，且保留115200等既有波特率支持",
+        "SerialConfig与QueryOptions默认波特率统一为921600，services_manifest.json中ap_mc_uart.baud_rate统一为921600",
+        "deploy_twin.sh无参读取config/runtime/vmware/aisoc_twin.conf，支持--build-only、--mode sim|hardware、--config、--status、--stop，并在hardware模式下向forward_service_daemon传递--port与--baud 921600"
+      ],
+      "negative_cases": [
+        "传入非法波特率（如123456）时baud_to_speed与parse_baud_rate立即返回false并拒绝打开串口",
+        "hardware模式下当指定AISOC_UART_DEVICE不存在时，deploy_twin.sh明确报错并以非0退出码终止，不静默降级为sim模式"
+      ]
+    },
+    "required_evidence_level": "server-sandbox-and-independent-review",
+    "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+    "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+    "updated": "2026-11-04T10:40:00+08:00"
+  },
+  "run_dir": "/tmp/qa_TWIN-43_cd0ufejc",
+  "timeout_seconds": 1740,
+  "sandbox_command": [
+    "/usr/bin/python3",
+    "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+    "--config",
+    "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+    "--task",
+    "TWIN-43",
+    "--revision",
+    "1",
+    "--output-dir",
+    "/tmp/qa_TWIN-43_cd0ufejc/evidence",
+    "--repo-commit",
+    "project-control=42b031efff970b01ee8cc8e5dd087387cdf9288f:main",
+    "--repo-commit",
+    "soc-ap=217a76e29c0c99897bf1993514b765cd771adb06:main",
+    "--repo-commit",
+    "mcu-p3=e051111e68dd61896ed42c0961153b167b8bca41:feat/soc-debug",
+    "--repo-commit",
+    "test_harness=ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414:main",
+    "--cmd",
+    "test:soc-ap:rm -rf /tmp/qa_twin43 && mkdir -p /tmp/qa_twin43/bin && cp -r ../soc-ap ../test_harness /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && python3 ../test_harness/static_checks/cascade/run_query_cases.py --test-host build/host/soc-ap --cases ../test_harness/test_cases/cascade/query_cases.json",
+    "--cmd",
+    "test:test_harness:python3 static_checks/twin/validate_schemas.py --root ..",
+    "--cmd",
+    "test:soc-ap:mkdir -p /tmp/qa_twin43/bin && python3 -c \"import pathlib; p=pathlib.Path(\\\"/tmp/qa_twin43/bin/curl\\\"); p.write_text(\\\"#!/usr/bin/env python3\\nimport sys,urllib.request,urllib.error\\nu=[a for a in sys.argv[1:] if a.startswith(\\x27http\\x27)][-1]\\nw=\\x27-w\\x27 in sys.argv\\ntry:\\n r=urllib.request.urlopen(u,timeout=2);b=r.read();sys.stdout.write(str(r.status)) if w else sys.stdout.buffer.write(b)\\nexcept urllib.error.HTTPError as e:\\n sys.stdout.write(str(e.code)) if w else None;sys.exit(0 if w else 22)\\nexcept Exception:\\n sys.stdout.write(\\x27000\\x27) if w else None;sys.exit(7)\\n\\\"); p.chmod(0o755)\" && export PATH=\"/tmp/qa_twin43/bin:$PATH\" && ([ -d /tmp/qa_twin43/soc-ap ] || (cp -r ../soc-ap /tmp/qa_twin43/ && rm -rf /tmp/qa_twin43/soc-ap/build && ([ -e /tmp/qa_twin43/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin43/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin43/soc-ap/third_party/install)))) && cd /tmp/qa_twin43/soc-ap && bash tools/deploy_twin.sh --mode sim --port 18080 && bash tools/deploy_twin.sh --status --port 18080 && bash tools/deploy_twin.sh --stop --port 18080 && rm -rf /tmp/qa_twin43"
+  ]
+}

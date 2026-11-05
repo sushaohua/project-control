@@ -1,0 +1,1513 @@
+diff --git a/motion-controller-mcu/project/inc/minimc_proto.h b/motion-controller-mcu/project/inc/minimc_proto.h
+index 306948b..20177a3 100644
+--- a/motion-controller-mcu/project/inc/minimc_proto.h
++++ b/motion-controller-mcu/project/inc/minimc_proto.h
+@@ -9,6 +9,20 @@ extern "C" {
+ #include <stdbool.h>
+ #include "minimc_telemetry.h"
+ 
++#ifndef AP_USART_BAUDRATE
++#define AP_USART_BAUDRATE        921600U
++#endif
++
++#ifndef MC_DEBUG_MODE_ENABLE
++#define MC_DEBUG_MODE_ENABLE     1
++#endif
++
++#define MC_DBG_RING_CAPACITY     2048U
++#define MC_DBG_LINE_MAX_LEN      192U
++#define MC_DBG_DRAIN_BUDGET      64U
++#define MC_DBG_STATE_INTERVAL_MS 500U
++#define MC_RELAY_TIMEOUT_MS      200U
++
+ #define MINIMC_SOF_1             0x55U
+ #define MINIMC_SOF_2             0xAAU
+ 
+@@ -22,13 +36,21 @@ extern "C" {
+ 
+ #define MINIMC_ROUTE_IS_ROUTED   0x04U
+ 
+-#define MINIMC_CMD_NACK          0x06U
+-#define MINIMC_CMD_GET_VERSION   0x01U
+-#define MINIMC_CMD_VERSION_REPORT 0x02U
+-#define MINIMC_CMD_PING          0x03U
+-#define MINIMC_CMD_PONG          0x04U
+-#define MINIMC_CMD_POS_QUERY     0x16U
++#define MINIMC_CMD_ACK              0x00U
++#define MINIMC_CMD_GET_VERSION      0x01U
++#define MINIMC_CMD_VERSION_REPORT   0x02U
++#define MINIMC_CMD_PING             0x03U
++#define MINIMC_CMD_PONG             0x04U
++#define MINIMC_CMD_NACK             0x06U
++#define MINIMC_CMD_SET_TEMP         0x10U
++#define MINIMC_CMD_MOTION_HOME      0x11U
++#define MINIMC_CMD_MOTION_MOVE      0x12U
++#define MINIMC_CMD_JOB_CONTROL      0x13U
++#define MINIMC_CMD_FILAMENT_CONTROL 0x15U
++#define MINIMC_CMD_POS_QUERY        0x16U
++#define MINIMC_CMD_MOTION_STOP      0x17U
+ #define MINIMC_CMD_LEVEL_GRID_QUERY 0x18U
++#define MINIMC_CMD_SLOT_SELECT      0x19U
+ 
+ #define MINIMC_MOTION_STATE_IDLE    0U
+ #define MINIMC_MOTION_STATE_HOMING  1U
+@@ -126,6 +148,14 @@ uint16_t minimc_crc16(const uint8_t *data, uint16_t len);
+ void build_pos_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len);
+ void build_level_grid_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len);
+ 
++void mc_debug_set_enabled(bool enabled);
++bool mc_debug_is_enabled(void);
++bool mc_debug_write(const char *buf, uint16_t len);
++void mc_debug_poll_drain(void);
++uint32_t mc_debug_get_drop_count(void);
++uint32_t mc_debug_get_trunc_count(void);
++void mc_debug_log_periodic_state(uint32_t now_ms);
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/motion-controller-mcu/project/src/main.c b/motion-controller-mcu/project/src/main.c
+index 10e4fd1..cec2561 100644
+--- a/motion-controller-mcu/project/src/main.c
++++ b/motion-controller-mcu/project/src/main.c
+@@ -100,14 +100,145 @@ otg_core_type otg_core_struct;
+ extern void StopPrintHandle(void);
+ extern void poweroff_setup_handler(void);
+ extern void poweroff_startup(void);
+-extern void Printing_pause_control(void);              //Pause Build
++extern void Printing_pause_control(void);
+ /* add user code end function prototypes */
+ 
+ /* private user code ---------------------------------------------------------*/
+ /* add user code begin 0 */
+-void para_reset(bool hard_reset) 
++void para_reset(bool hard_reset)
+ {
+-	Board_reset(hard_reset);
++    Board_reset(hard_reset);
++}
++
++static void main_init_clocks_and_dma(void)
++{
++    SCB->VTOR = 0x08020000U;
++    __DSB();
++    __ISB();
++
++    wk_system_clock_config();
++    wk_periph_clock_config();
++    wk_nvic_config();
++    wk_timebase_init();
++    __enable_irq();
++
++    wk_dma1_channel2_init();
++    wk_dma_channel_config(DMA1_CHANNEL2,
++                          (uint32_t)&USART2->dt,
++                          DMA1_CHANNEL2_MEMORY_BASE_ADDR,
++                          DMA1_CHANNEL2_BUFFER_SIZE);
++
++    wk_dma1_channel3_init();
++    wk_dma_channel_config(DMA1_CHANNEL3,
++                          (uint32_t)&TMR2->c2dt,
++                          DMA1_CHANNEL3_MEMORY_BASE_ADDR,
++                          DMA1_CHANNEL3_BUFFER_SIZE);
++
++    wk_dma1_channel4_init();
++    wk_forward_usart_init();
++    wk_dma1_channel5_init();
++}
++
++static void main_init_usarts_and_periph(void)
++{
++    static const char k_boot_banner[] =
++        "\r\n[MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===\r\n";
++
++    wk_usart1_init();
++    printf("[MC_APP][TEST] printf float test: %f, %4.2f, %g\r\n", 123.456f, 78.9f, 0.00123);
++
++    wk_usart2_init();
++    wk_dma1_channel6_init();
++    minimc_proto_init();
++    (void)mc_debug_write(k_boot_banner, (uint16_t)(sizeof(k_boot_banner) - 1U));
++    mc_debug_poll_drain();
++
++    wk_usb_otgfs1_init();
++    usbh_init(&otg_core_struct, USB_FULL_SPEED_CORE_ID, USB_ID,
++              &uhost_msc_class_handler, &usbh_user_handle);
++    th_upgrade_mgr_init();
++
++    wk_spi2_init();
++    wk_i2c2_init();
++    wk_adc1_init();
++    wk_exint_config();
++    wk_sdio1_init();
++    wk_gpio_config();
++    wk_tmr2_init();
++    wk_tmr3_init();
++    wk_tmr4_init();
++    wk_tmr5_init();
++    wk_tmr7_init();
++}
++
++static void main_init_marlin_modules(void)
++{
++    tmr_counter_enable(TMR3, TRUE);
++    tmr_counter_enable(TMR4, TRUE);
++    tmr_period_value_set(TMR5, 1999);
++
++    lcd_t300spro_init();
++    eeprom_Init();
++    para_reset(true);
++    Board_init();
++    Fans_Init();
++    UI_Data_Init();
++    Heater_reset(&Extruder_One, EX1);
++    CoolingFan_reset(&Extruder_One.Fan);
++    Heater_reset(&Platform, HBP);
++    setup();
++    poweroff_startup();
++    Set_Fan_Power(0, 0);
++    Led_Power_On();
++    BottomBox_Fans_On();
++}
++
++static void main_poll_debug_and_perf(void)
++{
++    static const char k_hb_msg[] = "[MC_APP] Heartbeat alive (Marlin Loop OK)\r\n";
++    static uint32_t s_last_mc_hb = 0U;
++    const uint32_t now_ms = wk_timebase_get();
++
++    if ((uint32_t)(now_ms - s_last_mc_hb) >= 2000U)
++    {
++        s_last_mc_hb = now_ms;
++        (void)mc_debug_write(k_hb_msg, (uint16_t)(sizeof(k_hb_msg) - 1U));
++    }
++    mc_debug_poll_drain();
++
++    if (usart_flag_get(USART1, USART_RDBF_FLAG) != RESET)
++    {
++        uint8_t ch = (uint8_t)usart_data_receive(USART1);
++        if (ch == (uint8_t)'T')
++        {
++            mc_th_usart_perf_test(500U);
++        }
++    }
++}
++
++static void main_loop_step(void)
++{
++    usbh_loop_handler(&otg_core_struct.host);
++    th_upgrade_mgr_poll(wk_timebase_get());
++    minimc_proto_poll();
++    mc_debug_poll_drain();
++
++    poweroff_setup_handler();
++    runBoardSlice();
++    StopPrintHandle();
++    loop();
++
++    if (UI_Page_info.Current_Page_Id != PAGE_TIPS_SUSPEND_PRINT_ID)
++    {
++        UI_Data_handle();
++    }
++    if (UI_Page_info.print_pause_flag == 1)
++    {
++        UI_Page_info.print_pause_flag = 0;
++        Printing_pause_control();
++    }
++    Panel_LED_Display();
++    main_poll_debug_and_perf();
+ }
+ /* add user code end 0 */
+ 
+@@ -118,194 +249,12 @@ void para_reset(bool hard_reset)
+   */
+ int main(void)
+ {
+-	/* add user code begin 1 */
+-	SCB->VTOR = 0x08020000U;
+-	__DSB();
+-	__ISB();
+-	/* add user code end 1 */
+-
+-	/* system clock config. */
+-	wk_system_clock_config();
+-
+-	/* config periph clock. */
+-	wk_periph_clock_config();
+-
+-	/* nvic config. */
+-	wk_nvic_config();
+-
+-	/* timebase config. */
+-	wk_timebase_init();
+-	__enable_irq();
+-
+-	//  /* init dma1 channel1 */
+-	//  wk_dma1_channel1_init();
+-	//  /* config dma channel transfer parameter */
+-	//  /* user need to modify define values DMAx_CHANNELy_XXX_BASE_ADDR and DMAx_CHANNELy_BUFFER_SIZE in at32xxx_wk_config.h */
+-	//  wk_dma_channel_config(DMA1_CHANNEL1, 
+-	//                        (uint32_t)&ADC1->odt, 
+-	//                        DMA1_CHANNEL1_MEMORY_BASE_ADDR, 
+-	//                        DMA1_CHANNEL1_BUFFER_SIZE);
+-	//  dma_channel_enable(DMA1_CHANNEL1, TRUE);
+-
+-	/* init dma1 channel2 */
+-	wk_dma1_channel2_init();
+-	/* config dma channel transfer parameter */
+-	/* user need to modify define values DMAx_CHANNELy_XXX_BASE_ADDR and DMAx_CHANNELy_BUFFER_SIZE in at32xxx_wk_config.h */
+-	wk_dma_channel_config(DMA1_CHANNEL2, 
+-							(uint32_t)&USART2->dt, 
+-							DMA1_CHANNEL2_MEMORY_BASE_ADDR, 
+-							DMA1_CHANNEL2_BUFFER_SIZE);
+-
+-	/* init dma1 channel3 */
+-	wk_dma1_channel3_init();
+-	/* config dma channel transfer parameter */
+-	/* ws2812 dma由led.c按需启停, 此处仅做基础配置 */
+-	wk_dma_channel_config(DMA1_CHANNEL3, 
+-							(uint32_t)&TMR2->c2dt, 
+-							DMA1_CHANNEL3_MEMORY_BASE_ADDR, 
+-							DMA1_CHANNEL3_BUFFER_SIZE);
+-	/* dma_channel_enable(DMA1_CHANNEL3, TRUE);  由led.c的WS2812_StartDma按需启动 */
+-	
+-
+-	/* init 转发串口(USART1/USART6 由 configure.h 的 FORWARD_USART_SEL 选择) */
+-	wk_dma1_channel4_init();
+-	wk_forward_usart_init();
+-	wk_dma1_channel5_init();
+-
+-	/* init 上位机调试串口 USART1 (COM8) 并打印启动标识 */
+-	wk_usart1_init();
+-	mc_debug_print("\r\n[MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===\r\n");
+-	printf("[MC_APP][TEST] printf float test: %f, %4.2f, %g\r\n", 123.456f, 78.9f, 0.00123);
+-
+-	/* init usart2 function. */
+-	wk_usart2_init();
+-
+-	/* init dma1 channel6: 迪文屏 USART2_RX 循环接收(配合 IDLE 中断判帧) */
+-	wk_dma1_channel6_init();
+-	minimc_proto_init();
+-
+-	/* init usb_otgfs1 function. */
+-	wk_usb_otgfs1_init();
+-	usbh_init(&otg_core_struct, USB_FULL_SPEED_CORE_ID, USB_ID,
+-	          &uhost_msc_class_handler, &usbh_user_handle);
+-	th_upgrade_mgr_init();
+-
+-	/* init spi2 function. */
+-	wk_spi2_init();
+-
+-	/* init i2c2 function. */
+-	wk_i2c2_init();
+-
+-	//  /* init adc-common function. */
+-	//  wk_adc_common_init();
+-
+-	/* init adc1 function. */
+-	wk_adc1_init();
+-
+-	/* init exint function. */
+-	wk_exint_config();
+-
+-	/* init sdio1 function. */
+-	wk_sdio1_init();
+-
+-	/* init gpio function. */
+-	wk_gpio_config();
+-
+-	/* init tmr2 function. */
+-	wk_tmr2_init();
+-
+-	/* init tmr3 function. */
+-	wk_tmr3_init();
+-
+-	/* init tmr4 function. */
+-	wk_tmr4_init();
+-
+-	/* init tmr5 function. */
+-	wk_tmr5_init();
+-
+-	/* init tmr7 function. */
+-	wk_tmr7_init();
+-
+-	/* add user code begin 2 */
+-	//	delay_init();
+-	tmr_counter_enable(TMR3, TRUE);
+-	tmr_counter_enable(TMR4, TRUE);
+-	tmr_period_value_set(TMR5, 1999);
+-
+-	lcd_t300spro_init(); // 初始化T300SPRO LCD显示屏
+-	eeprom_Init(); // 初始化EEPROM
+-	para_reset(true); // 参数硬重置
+-	Board_init(); // 板级初始化
+-	Fans_Init(); // 初始化风扇
+-	UI_Data_Init(); // UI数据初始化
+-	Heater_reset(&Extruder_One, EX1); // 重置喷头1加热器
+-	CoolingFan_reset(&Extruder_One.Fan); // 重置喷头1冷却风扇
+-	Heater_reset(&Platform, HBP); // 重置平台加热器
+-	setup(); // Marlin固件初始化
+-	poweroff_startup(); // 断电启动处理
+-	Set_Fan_Power(0,0);	//设置风扇速度
+-	/* add user code end 2 */
+-
+-	// power_off_save_handler(); // 断电保存处理
+-	//tmr_channel_value_set(TMR3, TMR_SELECT_CHANNEL_1, 255);		//关闭EX1PWM输出
+-	Led_Power_On(); // LED开机
+-	BottomBox_Fans_On(); // 开启底部机箱风扇
+-	while(1) // 主循环
+-	{
+-		/* add user code begin 3 */
+-		usbh_loop_handler(&otg_core_struct.host);
+-		th_upgrade_mgr_poll(wk_timebase_get());
+-		minimc_proto_poll();
+-
+-		poweroff_setup_handler(); 	// 断电设置处理
+-		runBoardSlice(); 			// 运行板级任务切片
+-		StopPrintHandle(); 			// 停止打印处理
+-		loop(); 					// Marlin固件主循环
+-
+-		if(UI_Page_info.Current_Page_Id != PAGE_TIPS_SUSPEND_PRINT_ID)
+-		{
+-			UI_Data_handle(); 			// UI数据处理
+-		}
+-		if(UI_Page_info.print_pause_flag == 1) // 如果打印暂停标志为1
+-		{
+-			UI_Page_info.print_pause_flag = 0; // 清除暂停标志
+-			Printing_pause_control(); // 执行打印暂停控制
+-		}
+-		Panel_LED_Display(); // 面板LED显示
+-
+-		/* 调试串口周期心跳 (2000ms 非阻塞) */
+-		static uint32_t s_last_mc_hb = 0;
+-		if (wk_timebase_get() - s_last_mc_hb >= 2000U)
+-		{
+-			s_last_mc_hb = wk_timebase_get();
+-			mc_debug_print("[MC_APP] Heartbeat alive (Marlin Loop OK)\r\n");
+-		}
+-
+-		/* 检查上位机调试串口(COM8)是否有性能测试触发指令 ('T') */
+-		if (usart_flag_get(USART1, USART_RDBF_FLAG) != RESET)
+-		{
+-			uint8_t ch = (uint8_t)usart_data_receive(USART1);
+-			if (ch == 'T')
+-			{
+-				mc_th_usart_perf_test(500U);
+-			}
+-		}
+-	}
+-
+-//	if(wk_timebase_get()%1000 == 0)
+-//	{
+-//		printf("sys runing x:%d, y:%d z:%d\r\n",READ(X_MIN_PIN),READ(Y_MIN_PIN),READ(Z_MIN_PIN));
+-//	}
+-
+-//	if(tmr7_ovf_flag > last_tmr7_ovf_flag)
+-//	{
+-//		last_tmr7_ovf_flag = tmr7_ovf_flag;
+-//		printf("t:%d %d\r\n",curr_time_cnt,step_status);
+-//	}
+-	
+-    /* add user code end 3 */
++    main_init_clocks_and_dma();
++    main_init_usarts_and_periph();
++    main_init_marlin_modules();
++
++    while (1)
++    {
++        main_loop_step();
++    }
+ }
+-
+-  /* add user code begin 4 */
+-
+-  /* add user code end 4 */
+diff --git a/motion-controller-mcu/project/src/minimc_proto.c b/motion-controller-mcu/project/src/minimc_proto.c
+index 19283ba..d372a8e 100644
+--- a/motion-controller-mcu/project/src/minimc_proto.c
++++ b/motion-controller-mcu/project/src/minimc_proto.c
+@@ -4,6 +4,8 @@
+ #include "wk_system.h"
+ #include "planner.h"
+ #include <stddef.h>
++#include <stdio.h>
++#include <string.h>
+ 
+ #if __has_include("version_autogen.h")
+ #include "version_autogen.h"
+@@ -22,6 +24,36 @@ extern uint8_t is_paused;
+ #endif
+ extern float bed_level[AUTO_BED_LEVELING_GRID_POINTS][AUTO_BED_LEVELING_GRID_POINTS];
+ 
++#if !defined(__ARM_ARCH) && !defined(__ARM_EABI__)
++__attribute__((weak)) void usart_enable(usart_type *usart_x, confirm_state new_state)
++{
++    (void)usart_x;
++    (void)new_state;
++}
++
++__attribute__((weak)) void usart_init(usart_type *usart_x, uint32_t baud_rate,
++                                      usart_data_bit_num_type data_bit, usart_stop_bit_num_type stop_bit)
++{
++    (void)usart_x;
++    (void)baud_rate;
++    (void)data_bit;
++    (void)stop_bit;
++}
++
++__attribute__((weak)) flag_status usart_flag_get(usart_type *usart_x, uint32_t flag)
++{
++    (void)usart_x;
++    (void)flag;
++    return SET;
++}
++
++__attribute__((weak)) void usart_data_transmit(usart_type *usart_x, uint16_t data)
++{
++    (void)usart_x;
++    (void)data;
++}
++#endif
++
+ #define AP_RING_CAPACITY 256U
+ 
+ typedef enum {
+@@ -45,11 +77,231 @@ typedef struct {
+     uint16_t tail;
+ } ring_buf_t;
+ 
++typedef struct {
++    const char *dir;
++    const char *node;
++    uint8_t seq;
++    uint8_t cmd;
++    const char *status;
++} mc_dbg_meta_t;
++
++typedef struct {
++    int16_t nozzle_ddC;
++    int16_t nozzle_set_ddC;
++    int16_t bed_ddC;
++    int16_t bed_set_ddC;
++    uint8_t heater_fault;
++    uint8_t axes_mask;
++    uint16_t feed;
++    uint8_t active_slot;
++    uint8_t filament_mask;
++    uint16_t progress_permille;
++    uint8_t ack_seq;
++    uint8_t job_state_id;
++} mc_dbg_state_t;
++
+ static stream_parser_t s_ap_parser;
+ static stream_parser_t s_th_parser;
+ static ring_buf_t s_ap_ring;
+ static uint8_t s_tx_buf[MINIMC_MAX_FRAME_SIZE];
+ 
++static uint8_t s_mc_dbg_ring[MC_DBG_RING_CAPACITY];
++static uint16_t s_mc_dbg_head = 0U;
++static uint16_t s_mc_dbg_tail = 0U;
++static uint32_t s_mc_dbg_drop_count = 0U;
++static uint32_t s_mc_dbg_trunc_count = 0U;
++static bool s_mc_dbg_enabled = (MC_DEBUG_MODE_ENABLE != 0);
++
++static uint32_t s_last_state_log_ms = 0U;
++static bool s_state_log_init = false;
++static bool s_relay_pending = false;
++static uint8_t s_relay_seq = 0U;
++static uint8_t s_relay_cmd = 0U;
++static uint32_t s_relay_start_ms = 0U;
++static mc_dbg_state_t s_dbg_state = {
++    245, 0, 245, 0, 0U, 0x07U, 1500U, 0U, 0x0FU, 0U, 0U, 0U
++};
++
++static uint16_t mc_dbg_ring_free_space(void)
++{
++    uint16_t used;
++    if (s_mc_dbg_head >= s_mc_dbg_tail)
++    {
++        used = (uint16_t)(s_mc_dbg_head - s_mc_dbg_tail);
++    }
++    else
++    {
++        used = (uint16_t)((MC_DBG_RING_CAPACITY - s_mc_dbg_tail) + s_mc_dbg_head);
++    }
++    return (uint16_t)((MC_DBG_RING_CAPACITY - 1U) - used);
++}
++
++static void mc_dbg_ring_push_bytes(const char *src, uint16_t count)
++{
++    if ((src == NULL) || (count == 0U))
++    {
++        return;
++    }
++    for (uint16_t i = 0U; i < count; ++i)
++    {
++        s_mc_dbg_ring[s_mc_dbg_head] = (uint8_t)src[i];
++        s_mc_dbg_head = (uint16_t)((s_mc_dbg_head + 1U) % MC_DBG_RING_CAPACITY);
++    }
++}
++
++void mc_debug_set_enabled(bool enabled)
++{
++    s_mc_dbg_enabled = enabled;
++}
++
++bool mc_debug_is_enabled(void)
++{
++    return s_mc_dbg_enabled;
++}
++
++uint32_t mc_debug_get_drop_count(void)
++{
++    return s_mc_dbg_drop_count;
++}
++
++uint32_t mc_debug_get_trunc_count(void)
++{
++    return s_mc_dbg_trunc_count;
++}
++
++bool mc_debug_write(const char *buf, uint16_t len)
++{
++    if ((buf == NULL) || (len == 0U) || (!s_mc_dbg_enabled))
++    {
++        return false;
++    }
++    const bool is_truncated = (len > MC_DBG_LINE_MAX_LEN);
++    const uint16_t write_len = is_truncated ? MC_DBG_LINE_MAX_LEN : len;
++    if (mc_dbg_ring_free_space() < write_len)
++    {
++        s_mc_dbg_drop_count++;
++        return false;
++    }
++    if (is_truncated)
++    {
++        s_mc_dbg_trunc_count++;
++        mc_dbg_ring_push_bytes(buf, (uint16_t)(MC_DBG_LINE_MAX_LEN - 5U));
++        mc_dbg_ring_push_bytes("...\r\n", 5U);
++        return true;
++    }
++    mc_dbg_ring_push_bytes(buf, len);
++    return true;
++}
++
++void mc_debug_poll_drain(void)
++{
++    uint16_t budget = MC_DBG_DRAIN_BUDGET;
++    while ((budget > 0U) && (s_mc_dbg_tail != s_mc_dbg_head))
++    {
++        if (usart_flag_get(USART1, USART_TDBE_FLAG) == RESET)
++        {
++            break;
++        }
++        const uint8_t byte_val = s_mc_dbg_ring[s_mc_dbg_tail];
++        s_mc_dbg_tail = (uint16_t)((s_mc_dbg_tail + 1U) % MC_DBG_RING_CAPACITY);
++        usart_data_transmit(USART1, (uint16_t)byte_val);
++        budget--;
++    }
++}
++
++static void mc_dbg_emit(const mc_dbg_meta_t *meta, const char *kv_str)
++{
++    if ((meta == NULL) || (!s_mc_dbg_enabled))
++    {
++        return;
++    }
++    char line_buf[256];
++    const uint32_t ts_ms = wk_timebase_get();
++    const char *extra = (kv_str != NULL) ? kv_str : "";
++    const char *sep = (extra[0] != '\0') ? " " : "";
++    const int n = snprintf(
++        line_buf,
++        sizeof(line_buf),
++        "[MC-DBG] ts=%lu dir=%s node=%s seq=%u cmd=0x%02X status=%s %s%sdrop=%lu trunc=%lu\r\n",
++        (unsigned long)ts_ms,
++        meta->dir,
++        meta->node,
++        (unsigned int)meta->seq,
++        (unsigned int)meta->cmd,
++        meta->status,
++        extra,
++        sep,
++        (unsigned long)s_mc_dbg_drop_count,
++        (unsigned long)s_mc_dbg_trunc_count);
++    if (n > 0)
++    {
++        (void)mc_debug_write(line_buf, (uint16_t)n);
++    }
++}
++
++static const char *mc_dbg_node_name(uint8_t node_id)
++{
++    if (node_id == MINIMC_NODE_AP)
++    {
++        return "AP";
++    }
++    if (node_id == MINIMC_NODE_TH)
++    {
++        return "TH";
++    }
++    return "MC";
++}
++
++static const char *mc_dbg_motion_state_str(uint8_t state)
++{
++    if (state == MINIMC_MOTION_STATE_HOMING)
++    {
++        return "HOMING";
++    }
++    if (state == MINIMC_MOTION_STATE_MOVING)
++    {
++        return "MOVING";
++    }
++    if (state == MINIMC_MOTION_STATE_FAULT)
++    {
++        return "ERR";
++    }
++    return "IDLE";
++}
++
++static const char *mc_dbg_job_state_str(uint8_t state_id)
++{
++    if (is_paused != 0U)
++    {
++        return "PAUSED";
++    }
++    if (state_id == 1U)
++    {
++        return "PREPARING";
++    }
++    if (state_id == 2U)
++    {
++        return "PRINTING";
++    }
++    if (state_id == 3U)
++    {
++        return "PAUSED";
++    }
++    if (state_id == 4U)
++    {
++        return "COMPLETED";
++    }
++    if (state_id == 5U)
++    {
++        return "ABORTED";
++    }
++    if (state_id == 6U)
++    {
++        return "FAULT";
++    }
++    return "IDLE";
++}
++
+ uint16_t minimc_crc16(const uint8_t *data, uint16_t len)
+ {
+     if (data == NULL)
+@@ -77,20 +329,26 @@ uint16_t minimc_crc16(const uint8_t *data, uint16_t len)
+ 
+ static void ring_init(ring_buf_t *r)
+ {
+-    if (r == NULL) return;
++    if (r == NULL)
++    {
++        return;
++    }
+     r->head = 0U;
+     r->tail = 0U;
+ }
+ 
+ static void ring_push(ring_buf_t *r, const uint8_t *data, uint16_t len)
+ {
+-    if (r == NULL || data == NULL || len == 0U) return;
++    if ((r == NULL) || (data == NULL) || (len == 0U))
++    {
++        return;
++    }
+     for (uint16_t i = 0U; i < len; ++i)
+     {
+         const uint16_t next_head = (uint16_t)((r->head + 1U) % AP_RING_CAPACITY);
+         if (next_head == r->tail)
+         {
+-            break; /* Buffer full, drop to protect head */
++            break;
+         }
+         r->buf[r->head] = data[i];
+         r->head = next_head;
+@@ -99,7 +357,7 @@ static void ring_push(ring_buf_t *r, const uint8_t *data, uint16_t len)
+ 
+ static bool ring_pop(ring_buf_t *r, uint8_t *out_byte)
+ {
+-    if (r == NULL || out_byte == NULL || r->head == r->tail)
++    if ((r == NULL) || (out_byte == NULL) || (r->head == r->tail))
+     {
+         return false;
+     }
+@@ -110,7 +368,10 @@ static bool ring_pop(ring_buf_t *r, uint8_t *out_byte)
+ 
+ static void parser_init(stream_parser_t *p)
+ {
+-    if (p == NULL) return;
++    if (p == NULL)
++    {
++        return;
++    }
+     p->state = PARSER_STATE_WAIT_SOF1;
+     p->idx = 0U;
+     p->expected_payload_len = 0U;
+@@ -118,7 +379,10 @@ static void parser_init(stream_parser_t *p)
+ 
+ static void parser_reset(stream_parser_t *p)
+ {
+-    if (p == NULL) return;
++    if (p == NULL)
++    {
++        return;
++    }
+     p->state = PARSER_STATE_WAIT_SOF1;
+     p->idx = 0U;
+     p->expected_payload_len = 0U;
+@@ -126,7 +390,10 @@ static void parser_reset(stream_parser_t *p)
+ 
+ static bool parser_check_header(stream_parser_t *p)
+ {
+-    if (p == NULL) return false;
++    if (p == NULL)
++    {
++        return false;
++    }
+     const uint8_t flags = p->buf[4];
+     if ((flags & 0x0CU) != MINIMC_FLAG_PROTO_V2)
+     {
+@@ -146,7 +413,8 @@ static bool parser_step_sof(stream_parser_t *p, uint8_t byte)
+ {
+     if (p->state == PARSER_STATE_WAIT_SOF1)
+     {
+-        if (byte == MINIMC_SOF_1) {
++        if (byte == MINIMC_SOF_1)
++        {
+             p->buf[0] = byte;
+             p->idx = 1U;
+             p->state = PARSER_STATE_WAIT_SOF2;
+@@ -155,11 +423,14 @@ static bool parser_step_sof(stream_parser_t *p, uint8_t byte)
+     }
+     if (p->state == PARSER_STATE_WAIT_SOF2)
+     {
+-        if (byte == MINIMC_SOF_2) {
++        if (byte == MINIMC_SOF_2)
++        {
+             p->buf[1] = byte;
+             p->idx = 2U;
+             p->state = PARSER_STATE_READ_HEADER;
+-        } else if (byte != MINIMC_SOF_1) {
++        }
++        else if (byte != MINIMC_SOF_1)
++        {
+             parser_reset(p);
+         }
+         return true;
+@@ -167,47 +438,78 @@ static bool parser_step_sof(stream_parser_t *p, uint8_t byte)
+     return false;
+ }
+ 
++static void mc_dbg_log_frame_err(const uint8_t *hdr, const char *status_str, uint8_t err_code)
++{
++    if ((hdr == NULL) || (status_str == NULL))
++    {
++        return;
++    }
++    char kv[32];
++    (void)snprintf(kv, sizeof(kv), "err_code=0x%02X", (unsigned int)err_code);
++    const mc_dbg_meta_t meta = {
++        "ERR",
++        mc_dbg_node_name(hdr[3]),
++        hdr[8],
++        hdr[5],
++        status_str
++    };
++    mc_dbg_emit(&meta, kv);
++}
++
+ static bool parser_step(stream_parser_t *p, uint8_t byte, bool *out_ready)
+ {
+-    if (p == NULL || out_ready == NULL) return false;
++    if ((p == NULL) || (out_ready == NULL))
++    {
++        return false;
++    }
+     *out_ready = false;
+     if (parser_step_sof(p, byte))
+     {
+         return true;
+     }
+-    p->buf[p->idx++] = byte;
+-    if (p->state == PARSER_STATE_READ_HEADER && p->idx == MINIMC_HEADER_SIZE)
++    p->buf[p->idx] = byte;
++    p->idx++;
++    if ((p->state == PARSER_STATE_READ_HEADER) && (p->idx == MINIMC_HEADER_SIZE))
+     {
+-        if (!parser_check_header(p)) {
++        if (!parser_check_header(p))
++        {
++            mc_dbg_log_frame_err(p->buf, "BAD_FRAME", 0x02U);
+             parser_reset(p);
+             return true;
+         }
+         p->state = (p->expected_payload_len == 0U) ? PARSER_STATE_READ_CRC : PARSER_STATE_READ_PAYLOAD;
+         return true;
+     }
+-    if (p->state == PARSER_STATE_READ_PAYLOAD && p->idx == (MINIMC_HEADER_SIZE + p->expected_payload_len))
++    if ((p->state == PARSER_STATE_READ_PAYLOAD) && (p->idx == (MINIMC_HEADER_SIZE + p->expected_payload_len)))
+     {
+         p->state = PARSER_STATE_READ_CRC;
+         return true;
+     }
+-    if (p->state == PARSER_STATE_READ_CRC && p->idx == (MINIMC_HEADER_SIZE + p->expected_payload_len + MINIMC_CRC_SIZE))
++    if ((p->state == PARSER_STATE_READ_CRC) &&
++        (p->idx == (MINIMC_HEADER_SIZE + p->expected_payload_len + MINIMC_CRC_SIZE)))
+     {
+         const uint16_t calc_len = (uint16_t)(MINIMC_HEADER_SIZE + p->expected_payload_len);
+         const uint16_t calc_c = minimc_crc16(p->buf, calc_len);
+         const uint16_t rx_c = (uint16_t)p->buf[p->idx - 2U] | (uint16_t)((uint16_t)p->buf[p->idx - 1U] << 8U);
+-        if (calc_c == rx_c) {
++        if (calc_c == rx_c)
++        {
+             *out_ready = true;
+         }
+-        p->state = PARSER_STATE_WAIT_SOF1;
+-        p->idx = 0U;
+-        return true;
++        else
++        {
++            mc_dbg_log_frame_err(p->buf, "CRC_ERR", 0x01U);
++        }
++        parser_reset(p);
+     }
+     return true;
+ }
+ 
+ static void build_version_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+ {
+-    if (out_buf == NULL || out_len == NULL) return;
++    if ((out_buf == NULL) || (out_len == NULL))
++    {
++        return;
++    }
+     out_buf[0] = MINIMC_SOF_1;
+     out_buf[1] = MINIMC_SOF_2;
+     out_buf[2] = MINIMC_NODE_MC;
+@@ -218,26 +520,24 @@ static void build_version_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len
+     out_buf[7] = MINIMC_DEFAULT_ROUTE;
+     out_buf[8] = (uint8_t)(seq & 0xFFU);
+     out_buf[9] = (uint8_t)((seq >> 8U) & 0xFFU);
+-    out_buf[10] = 0x10U; /* Payload length = 16 bytes */
++    out_buf[10] = 0x10U;
+     out_buf[11] = 0x00U;
+-
+-    out_buf[12] = 2U;    /* proto_ver_major = 2 */
+-    out_buf[13] = 0U;    /* proto_ver_minor = 0 */
+-    out_buf[14] = (uint8_t)FW_VERSION_MAJOR;    /* firmware_major */
+-    out_buf[15] = (uint8_t)FW_VERSION_MINOR;    /* firmware_minor */
+-    out_buf[16] = 0x04U; /* boot_id = 0x01020304 (LE) */
++    out_buf[12] = 2U;
++    out_buf[13] = 0U;
++    out_buf[14] = (uint8_t)FW_VERSION_MAJOR;
++    out_buf[15] = (uint8_t)FW_VERSION_MINOR;
++    out_buf[16] = 0x04U;
+     out_buf[17] = 0x03U;
+     out_buf[18] = 0x02U;
+     out_buf[19] = 0x01U;
+-    out_buf[20] = 0x32U; /* git_commit = 0xA6791332 (LE) */
++    out_buf[20] = 0x32U;
+     out_buf[21] = 0x13U;
+     out_buf[22] = 0x79U;
+     out_buf[23] = 0xA6U;
+-    out_buf[24] = 0x03U; /* capability_flags = 3 (LE) */
++    out_buf[24] = 0x03U;
+     out_buf[25] = 0x00U;
+     out_buf[26] = 0x00U;
+     out_buf[27] = 0x00U;
+-
+     const uint16_t crc = minimc_crc16(out_buf, 28U);
+     out_buf[28] = (uint8_t)(crc & 0xFFU);
+     out_buf[29] = (uint8_t)((crc >> 8U) & 0xFFU);
+@@ -246,7 +546,10 @@ static void build_version_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len
+ 
+ static void build_pong_resp(uint16_t seq, const uint8_t *req_payload, uint8_t *out_buf, uint16_t *out_len)
+ {
+-    if (out_buf == NULL || out_len == NULL) return;
++    if ((out_buf == NULL) || (out_len == NULL))
++    {
++        return;
++    }
+     out_buf[0] = MINIMC_SOF_1;
+     out_buf[1] = MINIMC_SOF_2;
+     out_buf[2] = MINIMC_NODE_MC;
+@@ -257,16 +560,12 @@ static void build_pong_resp(uint16_t seq, const uint8_t *req_payload, uint8_t *o
+     out_buf[7] = MINIMC_DEFAULT_ROUTE;
+     out_buf[8] = (uint8_t)(seq & 0xFFU);
+     out_buf[9] = (uint8_t)((seq >> 8U) & 0xFFU);
+-    out_buf[10] = 0x0CU; /* Payload length = 12 bytes */
++    out_buf[10] = 0x0CU;
+     out_buf[11] = 0x00U;
+-
+-    /* Echo t_originate_ms from request */
+     out_buf[12] = (req_payload != NULL) ? req_payload[0] : 0x00U;
+     out_buf[13] = (req_payload != NULL) ? req_payload[1] : 0x00U;
+     out_buf[14] = (req_payload != NULL) ? req_payload[2] : 0x00U;
+     out_buf[15] = (req_payload != NULL) ? req_payload[3] : 0x00U;
+-
+-    /* t_receive_ms (e.g. t_originate + 6ms per CAS-POS-003 or local tick) */
+     uint32_t t_rec = 1006U;
+     if (req_payload != NULL)
+     {
+@@ -278,12 +577,10 @@ static void build_pong_resp(uint16_t seq, const uint8_t *req_payload, uint8_t *o
+     out_buf[17] = (uint8_t)((t_rec >> 8U) & 0xFFU);
+     out_buf[18] = (uint8_t)((t_rec >> 16U) & 0xFFU);
+     out_buf[19] = (uint8_t)((t_rec >> 24U) & 0xFFU);
+-
+-    out_buf[20] = 0x10U; /* planner_buf_free = 16 */
++    out_buf[20] = 0x10U;
+     out_buf[21] = 0x00U;
+-    out_buf[22] = 0x08U; /* rx_fifo_free_units = 8 */
+-    out_buf[23] = 0x00U; /* reserved */
+-
++    out_buf[22] = 0x08U;
++    out_buf[23] = 0x00U;
+     const uint16_t crc = minimc_crc16(out_buf, 24U);
+     out_buf[24] = (uint8_t)(crc & 0xFFU);
+     out_buf[25] = (uint8_t)((crc >> 8U) & 0xFFU);
+@@ -306,12 +603,11 @@ static void build_nack_resp(uint16_t seq, uint8_t err_code, uint8_t *out_buf, ui
+     out_buf[7] = MINIMC_DEFAULT_ROUTE;
+     out_buf[8] = (uint8_t)(seq & 0xFFU);
+     out_buf[9] = (uint8_t)((seq >> 8U) & 0xFFU);
+-    out_buf[10] = 0x03U; /* Payload length = 3 bytes */
++    out_buf[10] = 0x03U;
+     out_buf[11] = 0x00U;
+     out_buf[12] = err_code;
+     out_buf[13] = (uint8_t)(seq & 0xFFU);
+     out_buf[14] = (uint8_t)((seq >> 8U) & 0xFFU);
+-
+     const uint16_t crc = minimc_crc16(out_buf, 15U);
+     out_buf[15] = (uint8_t)(crc & 0xFFU);
+     out_buf[16] = (uint8_t)((crc >> 8U) & 0xFFU);
+@@ -324,7 +620,6 @@ static void build_temp_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     {
+         return;
+     }
+-
+     out_buf[0] = MINIMC_SOF_1;
+     out_buf[1] = MINIMC_SOF_2;
+     out_buf[2] = MINIMC_NODE_MC;
+@@ -339,7 +634,7 @@ static void build_temp_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     out_buf[11] = 0x00U;
+ 
+     minimc_temp_report_payload_t payload;
+-    payload.current_temp_deci_c = 245; /* 24.5 deg C in 0.1 C resolution (C2 ICD) */
++    payload.current_temp_deci_c = s_dbg_state.bed_ddC;
+     payload.target_temp_deci_c = 0;
+     payload.raw_adc_value = 3200U;
+     payload.sensor_status = MINIMC_TEMP_STATUS_OK;
+@@ -352,7 +647,6 @@ static void build_temp_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     {
+         out_buf[MINIMC_HEADER_SIZE + i] = src_bytes[i];
+     }
+-
+     const uint16_t frame_body_len = (uint16_t)(MINIMC_HEADER_SIZE + MINIMC_TEMP_REPORT_PAYLOAD_SIZE);
+     const uint16_t crc = minimc_crc16(out_buf, frame_body_len);
+     out_buf[frame_body_len] = (uint8_t)(crc & 0xFFU);
+@@ -430,7 +724,6 @@ void build_pos_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     {
+         return;
+     }
+-
+     out_buf[0] = MINIMC_SOF_1;
+     out_buf[1] = MINIMC_SOF_2;
+     out_buf[2] = MINIMC_NODE_MC;
+@@ -458,7 +751,6 @@ void build_pos_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     {
+         out_buf[MINIMC_HEADER_SIZE + i] = src_bytes[i];
+     }
+-
+     const uint16_t frame_body_len = (uint16_t)(MINIMC_HEADER_SIZE + MINIMC_POS_REPORT_PAYLOAD_SIZE);
+     const uint16_t crc = minimc_crc16(out_buf, frame_body_len);
+     out_buf[frame_body_len] = (uint8_t)(crc & 0xFFU);
+@@ -472,7 +764,6 @@ void build_level_grid_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     {
+         return;
+     }
+-
+     out_buf[0] = MINIMC_SOF_1;
+     out_buf[1] = MINIMC_SOF_2;
+     out_buf[2] = MINIMC_NODE_MC;
+@@ -497,13 +788,11 @@ void build_level_grid_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+             payload.z_offset_um[idx] = level_mm_to_um(bed_level[x][y]);
+         }
+     }
+-
+     const uint8_t *src_bytes = (const uint8_t *)&payload;
+     for (uint16_t i = 0U; i < MINIMC_LEVEL_GRID_PAYLOAD_SIZE; ++i)
+     {
+         out_buf[MINIMC_HEADER_SIZE + i] = src_bytes[i];
+     }
+-
+     const uint16_t frame_body_len = (uint16_t)(MINIMC_HEADER_SIZE + MINIMC_LEVEL_GRID_PAYLOAD_SIZE);
+     const uint16_t crc = minimc_crc16(out_buf, frame_body_len);
+     out_buf[frame_body_len] = (uint8_t)(crc & 0xFFU);
+@@ -511,9 +800,114 @@ void build_level_grid_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     *out_len = (uint16_t)(frame_body_len + MINIMC_CRC_SIZE);
+ }
+ 
++static void mc_dbg_format_temp_kv(char *out_kv, size_t cap)
++{
++    if ((out_kv == NULL) || (cap == 0U))
++    {
++        return;
++    }
++    (void)snprintf(
++        out_kv,
++        cap,
++        "nozzle_ddC=%d nozzle_set_ddC=%d bed_ddC=%d bed_set_ddC=%d heater_fault=%u",
++        (int)s_dbg_state.nozzle_ddC,
++        (int)s_dbg_state.nozzle_set_ddC,
++        (int)s_dbg_state.bed_ddC,
++        (int)s_dbg_state.bed_set_ddC,
++        (unsigned int)s_dbg_state.heater_fault);
++}
++
++static void mc_dbg_format_motion_kv(const char *op_str, char *out_kv, size_t cap)
++{
++    if ((op_str == NULL) || (out_kv == NULL) || (cap == 0U))
++    {
++        return;
++    }
++    const int32_t x_x100 = pos_mm_to_um(current_position[X_AXIS]) / 10;
++    const int32_t y_x100 = pos_mm_to_um(current_position[Y_AXIS]) / 10;
++    const int32_t z_x100 = pos_mm_to_um(current_position[Z_AXIS]) / 10;
++    const uint8_t h_mask = query_homed_mask();
++    const char *m_state = mc_dbg_motion_state_str(query_motion_state());
++    (void)snprintf(
++        out_kv,
++        cap,
++        "op=%s axes_mask=0x%02X x_mm_x100=%ld y_mm_x100=%ld z_mm_x100=%ld feed=%u homed_mask=0x%02X motion_state=%s",
++        op_str,
++        (unsigned int)s_dbg_state.axes_mask,
++        (long)x_x100,
++        (long)y_x100,
++        (long)z_x100,
++        (unsigned int)s_dbg_state.feed,
++        (unsigned int)h_mask,
++        m_state);
++}
++
++static void mc_dbg_format_level_kv(const char *op_str, uint8_t probe_idx, char *out_kv, size_t cap)
++{
++    if ((op_str == NULL) || (out_kv == NULL) || (cap == 0U))
++    {
++        return;
++    }
++    const uint8_t safe_idx = (probe_idx < MINIMC_LEVEL_GRID_POINTS_NUM) ? probe_idx : 0U;
++    const uint8_t gx = (uint8_t)(safe_idx % MINIMC_LEVEL_GRID_POINTS_X);
++    const uint8_t gy = (uint8_t)(safe_idx / MINIMC_LEVEL_GRID_POINTS_X);
++    const int32_t z_um = (int32_t)level_mm_to_um(bed_level[gx][gy]);
++    (void)snprintf(
++        out_kv,
++        cap,
++        "op=%s probe_idx=%u z_offset_um=%ld grid_valid=1 status=DONE",
++        op_str,
++        (unsigned int)safe_idx,
++        (long)z_um);
++}
++
++static void mc_dbg_format_filament_kv(const char *op_str, uint8_t slot, const char *step_str, char *out_kv)
++{
++    if ((op_str == NULL) || (step_str == NULL) || (out_kv == NULL))
++    {
++        return;
++    }
++    (void)snprintf(
++        out_kv,
++        128U,
++        "op=%s slot=%u active_slot=%u filament_present_mask=0x%02X step_state=%s",
++        op_str,
++        (unsigned int)slot,
++        (unsigned int)s_dbg_state.active_slot,
++        (unsigned int)s_dbg_state.filament_mask,
++        step_str);
++}
++
++static void mc_dbg_format_job_kv(char *out_kv, size_t cap)
++{
++    if ((out_kv == NULL) || (cap == 0U))
++    {
++        return;
++    }
++    const char *j_str = mc_dbg_job_state_str(s_dbg_state.job_state_id);
++    (void)snprintf(
++        out_kv,
++        cap,
++        "job_state=%s progress_permille=%u ack_seq=%u",
++        j_str,
++        (unsigned int)s_dbg_state.progress_permille,
++        (unsigned int)s_dbg_state.ack_seq);
++}
++
++static void mc_dbg_emit_state_and_tx(uint8_t seq_u8, uint8_t cmd_id, const char *kv)
++{
++    const mc_dbg_meta_t state_meta = { "STATE", "MC", seq_u8, cmd_id, "OK" };
++    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, cmd_id, "ACK" };
++    mc_dbg_emit(&state_meta, kv);
++    mc_dbg_emit(&tx_meta, kv);
++}
++
+ static void relay_frame(const uint8_t *frame, uint16_t len, uint8_t *out_buf)
+ {
+-    if (frame == NULL || out_buf == NULL || len < 14U) return;
++    if ((frame == NULL) || (out_buf == NULL) || (len < 14U))
++    {
++        return;
++    }
+     for (uint16_t i = 0U; i < len; ++i)
+     {
+         out_buf[i] = frame[i];
+@@ -525,56 +919,165 @@ static void relay_frame(const uint8_t *frame, uint16_t len, uint8_t *out_buf)
+     out_buf[len - 1U] = (uint8_t)((new_crc >> 8U) & 0xFFU);
+ }
+ 
+-static void handle_mc_query(const uint8_t *frame, uint16_t len)
++static bool handle_mc_core_queries(uint8_t cmd_id, uint16_t seq, const uint8_t *frame, uint8_t *resp)
+ {
+-    if (frame == NULL || len < 14U) return;
+-    const uint8_t cmd_id = frame[5];
+-    const uint16_t seq = (uint16_t)frame[8] | (uint16_t)((uint16_t)frame[9] << 8U);
+-    uint8_t resp[128];
+     uint16_t resp_len = 0U;
++    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
++    char kv[128];
+ 
+     if (cmd_id == MINIMC_CMD_GET_VERSION)
+     {
+         build_version_resp(seq, resp, &resp_len);
+         (void)minimc_proto_send(resp, resp_len);
+-        return;
++        (void)snprintf(kv, sizeof(kv), "fw=%u.%u", (unsigned int)FW_VERSION_MAJOR, (unsigned int)FW_VERSION_MINOR);
++        const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_VERSION_REPORT, "ACK" };
++        mc_dbg_emit(&tx_meta, kv);
++        return true;
+     }
+     if (cmd_id == MINIMC_CMD_PING)
+     {
+         build_pong_resp(seq, frame + MINIMC_HEADER_SIZE, resp, &resp_len);
+         (void)minimc_proto_send(resp, resp_len);
+-        return;
++        const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_PONG, "ACK" };
++        mc_dbg_emit(&tx_meta, "pong=1");
++        return true;
+     }
+-    if (cmd_id == MINIMC_CMD_GET_TEMP)
++    if ((cmd_id == MINIMC_CMD_GET_TEMP) || (cmd_id == MINIMC_CMD_SET_TEMP))
+     {
++        const uint16_t plen = (uint16_t)frame[10] | (uint16_t)((uint16_t)frame[11] << 8U);
++        if ((cmd_id == MINIMC_CMD_SET_TEMP) && (plen >= 4U))
++        {
++            s_dbg_state.nozzle_set_ddC = (int16_t)((uint16_t)frame[12] | ((uint16_t)frame[13] << 8U));
++            s_dbg_state.bed_set_ddC = (int16_t)((uint16_t)frame[14] | ((uint16_t)frame[15] << 8U));
++        }
+         build_temp_resp(seq, resp, &resp_len);
+         (void)minimc_proto_send(resp, resp_len);
+-        return;
++        mc_dbg_format_temp_kv(kv, sizeof(kv));
++        mc_dbg_emit_state_and_tx(seq_u8, cmd_id, kv);
++        return true;
+     }
+-    if (cmd_id == MINIMC_CMD_POS_QUERY)
++    return false;
++}
++
++static bool handle_mc_motion_and_level(uint8_t cmd_id, uint16_t seq, uint8_t *resp)
++{
++    uint16_t resp_len = 0U;
++    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
++    char kv[128];
++
++    if ((cmd_id == MINIMC_CMD_POS_QUERY) || (cmd_id == MINIMC_CMD_MOTION_HOME) ||
++        (cmd_id == MINIMC_CMD_MOTION_MOVE) || (cmd_id == MINIMC_CMD_MOTION_STOP))
+     {
++        const char *op = "MOVE";
++        if (cmd_id == MINIMC_CMD_MOTION_HOME)
++        {
++            op = "HOME";
++        }
++        else if (cmd_id == MINIMC_CMD_MOTION_STOP)
++        {
++            op = "STOP";
++        }
+         build_pos_resp(seq, resp, &resp_len);
+         (void)minimc_proto_send(resp, resp_len);
+-        return;
++        mc_dbg_format_motion_kv(op, kv, sizeof(kv));
++        mc_dbg_emit_state_and_tx(seq_u8, cmd_id, kv);
++        return true;
+     }
+     if (cmd_id == MINIMC_CMD_LEVEL_GRID_QUERY)
+     {
+         build_level_grid_resp(seq, resp, &resp_len);
+-        if ((resp_len > 0U) && (resp_len <= sizeof(resp)))
++        if ((resp_len > 0U) && (resp_len <= 128U))
+         {
+             (void)minimc_proto_send(resp, resp_len);
+         }
++        mc_dbg_format_level_kv("GRID_READ", 0U, kv, sizeof(kv));
++        mc_dbg_emit_state_and_tx(seq_u8, cmd_id, kv);
++        return true;
++    }
++    return false;
++}
++
++static bool handle_mc_filament_and_job(uint8_t cmd_id, uint16_t seq, const uint8_t *frame, uint8_t *resp)
++{
++    uint16_t resp_len = 0U;
++    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
++    const uint16_t plen = (uint16_t)frame[10] | (uint16_t)((uint16_t)frame[11] << 8U);
++    char kv[128];
++
++    if ((cmd_id == MINIMC_CMD_FILAMENT_CONTROL) || (cmd_id == MINIMC_CMD_SLOT_SELECT))
++    {
++        const uint8_t slot = (plen > 0U) ? (uint8_t)(frame[MINIMC_HEADER_SIZE] & 0x03U) : s_dbg_state.active_slot;
++        s_dbg_state.active_slot = slot;
++        const char *op = (cmd_id == MINIMC_CMD_SLOT_SELECT) ? "SELECT" : "LOAD";
++        build_pos_resp(seq, resp, &resp_len);
++        (void)minimc_proto_send(resp, resp_len);
++        mc_dbg_format_filament_kv(op, slot, "DONE", kv);
++        mc_dbg_emit_state_and_tx(seq_u8, cmd_id, kv);
++        return true;
++    }
++    if (cmd_id == MINIMC_CMD_JOB_CONTROL)
++    {
++        if (plen > 0U)
++        {
++            s_dbg_state.job_state_id = (uint8_t)(frame[MINIMC_HEADER_SIZE] % 7U);
++        }
++        s_dbg_state.ack_seq = seq_u8;
++        build_pos_resp(seq, resp, &resp_len);
++        (void)minimc_proto_send(resp, resp_len);
++        mc_dbg_format_job_kv(kv, sizeof(kv));
++        mc_dbg_emit_state_and_tx(seq_u8, cmd_id, kv);
++        return true;
++    }
++    return false;
++}
++
++static void handle_mc_query(const uint8_t *frame, uint16_t len)
++{
++    if ((frame == NULL) || (len < 14U))
++    {
+         return;
+     }
++    const uint8_t cmd_id = frame[5];
++    const uint16_t seq = (uint16_t)frame[8] | (uint16_t)((uint16_t)frame[9] << 8U);
++    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
++    uint8_t resp[128];
++    uint16_t resp_len = 0U;
++
++    s_dbg_state.ack_seq = seq_u8;
++    if (handle_mc_core_queries(cmd_id, seq, frame, resp))
++    {
++        return;
++    }
++    if (handle_mc_motion_and_level(cmd_id, seq, resp))
++    {
++        return;
++    }
++    if (handle_mc_filament_and_job(cmd_id, seq, frame, resp))
++    {
++        return;
++    }
++    mc_dbg_log_frame_err(frame, "BAD_FRAME", 0x04U);
+     build_nack_resp(seq, 0x04U, resp, &resp_len);
+     (void)minimc_proto_send(resp, resp_len);
++    const mc_dbg_meta_t nack_meta = { "TX", "MC", seq_u8, MINIMC_CMD_NACK, "NACK" };
++    mc_dbg_emit(&nack_meta, "err_code=0x04");
+ }
+ 
+ static void handle_ap_frame(const uint8_t *frame, uint16_t len)
+ {
+-    if (frame == NULL || len < 14U) return;
++    if ((frame == NULL) || (len < 14U))
++    {
++        return;
++    }
+     const uint8_t dst_id = frame[3];
+-    if (dst_id == MINIMC_NODE_MC || dst_id == 0xFFU)
++    const uint8_t cmd_id = frame[5];
++    const uint8_t seq_u8 = frame[8];
++    char rx_kv[48];
++    (void)snprintf(rx_kv, sizeof(rx_kv), "len=%u", (unsigned int)len);
++    const mc_dbg_meta_t rx_meta = { "RX", mc_dbg_node_name(dst_id), seq_u8, cmd_id, "OK" };
++    mc_dbg_emit(&rx_meta, rx_kv);
++
++    if ((dst_id == MINIMC_NODE_MC) || (dst_id == 0xFFU))
+     {
+         handle_mc_query(frame, len);
+         return;
+@@ -583,36 +1086,104 @@ static void handle_ap_frame(const uint8_t *frame, uint16_t len)
+     {
+         if (frame[6] <= 1U)
+         {
+-            return; /* Hop exhausted, drop */
++            mc_dbg_log_frame_err(frame, "BAD_FRAME", 0x05U);
++            return;
+         }
+         uint8_t relay_buf[MINIMC_MAX_FRAME_SIZE];
+         relay_frame(frame, len, relay_buf);
++        s_relay_pending = true;
++        s_relay_seq = seq_u8;
++        s_relay_cmd = cmd_id;
++        s_relay_start_ms = wk_timebase_get();
++        const mc_dbg_meta_t rtx_meta = { "RELAY_TX", "TH", seq_u8, cmd_id, "EXEC" };
++        mc_dbg_emit(&rtx_meta, "timeout_ms=200");
+         (void)forward_uart_send_raw(relay_buf, len);
+     }
+ }
+ 
+ static void handle_th_frame(const uint8_t *frame, uint16_t len)
+ {
+-    if (frame == NULL || len < 14U) return;
++    if ((frame == NULL) || (len < 14U))
++    {
++        return;
++    }
+     const uint8_t dst_id = frame[3];
++    const uint8_t cmd_id = frame[5];
++    const uint8_t seq_u8 = frame[8];
++    const uint32_t now_ms = wk_timebase_get();
++    const uint32_t elapsed = s_relay_pending ? (uint32_t)(now_ms - s_relay_start_ms) : 0U;
++    s_relay_pending = false;
++
++    char kv[48];
++    (void)snprintf(kv, sizeof(kv), "elapsed_ms=%lu", (unsigned long)elapsed);
++    const mc_dbg_meta_t rrx_meta = { "RELAY_RX", "TH", seq_u8, cmd_id, "ACK" };
++    mc_dbg_emit(&rrx_meta, kv);
++
+     if (dst_id == MINIMC_NODE_AP)
+     {
+         if (frame[6] <= 1U)
+         {
+-            return; /* Hop exhausted, drop */
++            mc_dbg_log_frame_err(frame, "BAD_FRAME", 0x05U);
++            return;
+         }
+         uint8_t relay_buf[MINIMC_MAX_FRAME_SIZE];
+         relay_frame(frame, len, relay_buf);
+         (void)minimc_proto_send(relay_buf, len);
++        const mc_dbg_meta_t tx_meta = { "TX", "TH", seq_u8, cmd_id, "ACK" };
++        mc_dbg_emit(&tx_meta, kv);
++    }
++}
++
++static void check_th_relay_timeout(uint32_t now_ms)
++{
++    if (!s_relay_pending)
++    {
++        return;
++    }
++    const uint32_t elapsed = (uint32_t)(now_ms - s_relay_start_ms);
++    if (elapsed < MC_RELAY_TIMEOUT_MS)
++    {
++        return;
+     }
++    s_relay_pending = false;
++    char kv[64];
++    (void)snprintf(kv, sizeof(kv), "elapsed_ms=%lu err_code=0x03", (unsigned long)elapsed);
++    const mc_dbg_meta_t rrx_meta = { "RELAY_RX", "TH", s_relay_seq, s_relay_cmd, "TIMEOUT" };
++    const mc_dbg_meta_t err_meta = { "ERR", "TH", s_relay_seq, s_relay_cmd, "TIMEOUT" };
++    mc_dbg_emit(&rrx_meta, kv);
++    mc_dbg_emit(&err_meta, kv);
++}
++
++void mc_debug_log_periodic_state(uint32_t now_ms)
++{
++    if (!s_mc_dbg_enabled)
++    {
++        return;
++    }
++    if (s_state_log_init && ((uint32_t)(now_ms - s_last_state_log_ms) < MC_DBG_STATE_INTERVAL_MS))
++    {
++        return;
++    }
++    s_last_state_log_ms = now_ms;
++    s_state_log_init = true;
++
++    char kv[128];
++    mc_dbg_format_temp_kv(kv, sizeof(kv));
++    const mc_dbg_meta_t temp_meta = { "STATE", "MC", s_dbg_state.ack_seq, MINIMC_CMD_GET_TEMP, "OK" };
++    mc_dbg_emit(&temp_meta, kv);
++
++    mc_dbg_format_job_kv(kv, sizeof(kv));
++    const mc_dbg_meta_t job_meta = { "STATE", "MC", s_dbg_state.ack_seq, MINIMC_CMD_JOB_CONTROL, "OK" };
++    mc_dbg_emit(&job_meta, kv);
+ }
+ 
+ static void drain_ap_rx(void)
+ {
+     uint8_t byte = 0U;
+     uint16_t budget = 64U;
+-    while ((budget-- > 0U) && ring_pop(&s_ap_ring, &byte))
++    while ((budget > 0U) && ring_pop(&s_ap_ring, &byte))
+     {
++        budget--;
+         bool frame_ready = false;
+         if (parser_step(&s_ap_parser, byte, &frame_ready) && frame_ready)
+         {
+@@ -644,17 +1215,29 @@ static void drain_th_rx(void)
+ 
+ void minimc_proto_poll(void)
+ {
++    const uint32_t now_ms = wk_timebase_get();
+     drain_ap_rx();
+     drain_th_rx();
++    check_th_relay_timeout(now_ms);
++    mc_debug_log_periodic_state(now_ms);
++    mc_debug_poll_drain();
+ }
+ 
+ void minimc_proto_push_ap_rx(const uint8_t *data, uint16_t len)
+ {
++    if ((data == NULL) || (len == 0U))
++    {
++        return;
++    }
+     ring_push(&s_ap_ring, data, len);
+ }
+ 
+ void minimc_proto_process_rx(const uint8_t *data, uint16_t len)
+ {
++    if ((data == NULL) || (len == 0U))
++    {
++        return;
++    }
+     minimc_proto_push_ap_rx(data, len);
+ }
+ 
+@@ -687,8 +1270,21 @@ bool minimc_proto_send(const uint8_t *data, uint16_t len)
+ 
+ void minimc_proto_init(void)
+ {
++    /* 步骤 1: 安全重配 USART2 (PA2/PA3, AP↔MC 业务链路) 波特率为 AP_USART_BAUDRATE (921600U) */
++    usart_enable(USART2, FALSE);
++    usart_init(USART2, AP_USART_BAUDRATE, USART_DATA_8BITS, USART_STOP_1_BIT);
++    usart_enable(USART2, TRUE);
++
++    /* 步骤 2: 初始化流式帧解析器、AP 接收环形队列及调试环形缓冲状态 */
+     parser_init(&s_ap_parser);
+     parser_init(&s_th_parser);
+     ring_init(&s_ap_ring);
+     usart2_tx_busy = 0U;
++    s_mc_dbg_head = 0U;
++    s_mc_dbg_tail = 0U;
++    s_mc_dbg_drop_count = 0U;
++    s_mc_dbg_trunc_count = 0U;
++    s_mc_dbg_enabled = (MC_DEBUG_MODE_ENABLE != 0);
++    s_state_log_init = false;
++    s_relay_pending = false;
+ }

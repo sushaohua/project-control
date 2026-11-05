@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "receipt_id": "COORD-RECEIPT-QA-SIMPLIFY-20261104",
+  "task_id": "QA-SIMPLIFY-20261103",
+  "received_at": "2026-11-04T09:05:00+08:00",
+  "coord_session": {
+    "active_coord_session_id": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+    "previous_coord_session_id": "8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5",
+    "previous_coord_stopped_confirmed_by": "HUMAN (sushaohua)",
+    "takeover_checkpoint_status": "verified-clean"
+  },
+  "runtime_and_lock_inspection": {
+    "background_tasks_count": 0,
+    "systemd_service_status": "not-installed-inactive (exit 4)",
+    "running_docker_containers": 0,
+    "coord_runner_lock_present": false,
+    "sqlite_in_flight_tasks_count": 0,
+    "sqlite_active_leases_count": 0,
+    "sqlite_active_role_jobs_count": 0,
+    "kanban_active_leases_count": 0,
+    "stale_expired_leases_noted": [
+      "V2-P05C (expired 2026-10-26, preserved untouched)",
+      "TWIN-31 (expired 2026-10-31, preserved untouched)"
+    ],
+    "historical_session_aliases_treated_as_inactive": [
+      "8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5",
+      "ms22-qa-author-session",
+      "ENG-UI (TWIN-39 owner role label)",
+      "INTEGRATOR (TWIN-40 owner role label)"
+    ]
+  },
+  "repository_heads_at_receipt": {
+    "ai-soc-workspace": {
+      "branch": "main",
+      "head": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+      "remote_main": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+      "clean": true
+    },
+    "project-control": {
+      "branch": "main",
+      "head": "5964606826b604da81593ab13d0adecdb7728dc3",
+      "remote_main": "5964606826b604da81593ab13d0adecdb7728dc3",
+      "source_candidate_commit": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+      "evidence_archive_commit": "613f3cbc9a58283ff085cee241de9810895cfdb4",
+      "clean": true
+    },
+    "soc-ap": {
+      "branch": "main",
+      "head": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+      "remote_main": "427dd6d82caceebb7b4642e78f1dbfa96ff5fc84",
+      "clean": true
+    },
+    "mcu-p3": {
+      "branch": "feat/soc-debug",
+      "head": "e051111e68dd61896ed42c0961153b167b8bca41",
+      "remote_feat_soc_debug": "e051111e68dd61896ed42c0961153b167b8bca41",
+      "clean": true
+    },
+    "test_harness": {
+      "branch": "main",
+      "head": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+      "remote_main": "ccf1476a0b98cb55ca9ee7bd49d73ca5d4704414",
+      "clean": true
+    },
+    "boot/bootloadermc": {
+      "branch": "soc_debug",
+      "head": "01bfda29b82f0576cb255d0b4196aeda1edb8d2e",
+      "untracked_local_symlinks_preserved": true
+    },
+    "boot/bootloaderth": {
+      "branch": "soc_debug",
+      "head": "1e4f592feaf400e5d4a1932db5aa86e75e60832b",
+      "untracked_local_symlinks_preserved": true
+    }
+  },
+  "candidate_and_evidence_verification": {
+    "source_candidates": {
+      "project-control": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+      "ai-soc-workspace": "e5b7ec6d80259976b8a38e4164b5596311fed15f"
+    },
+    "archive_files_checked": 114,
+    "archive_files_mismatches": 0,
+    "source_manifest_files_checked": 9,
+    "source_manifest_mismatches": 0,
+    "root_rule_pairs_checked": 9,
+    "root_rule_mismatches": 0,
+    "root_agents_md_sha256": "c9721b28d82ed45e856241323b8be18f4ec9304555c824f9b67c68488eb00504",
+    "independent_qa_primary": {
+      "run": "qa_02",
+      "actual_session": "01a1a1bf-39cd-74a0-a864-16d4f33b6d1c",
+      "role": "QA",
+      "model": "gpt-6-luna",
+      "container_id": "58144a07c319",
+      "unit_tests_passed": 196,
+      "decision": "APPROVED",
+      "report_sha256": "6b0a1568b8819f60cd99f3a20aa72626a9a39d9517905f29239b2b0edc27a297"
+    },
+    "independent_arch_report_review": {
+      "run": "report_review_02",
+      "actual_session": "01a1a1c1-8534-7dc1-9a21-612aa61b85d6",
+      "role": "ARCH",
+      "model": "gpt-6-luna",
+      "container_id": "d5e9523472d7",
+      "unit_tests_passed": 196,
+      "decision": "APPROVED",
+      "report_sha256": "fab8ddea4364814de81dc6f4836423e6abde1e353e804fd09603b1df7cc2f8cc",
+      "bound_primary_report_sha256": "6b0a1568b8819f60cd99f3a20aa72626a9a39d9517905f29239b2b0edc27a297"
+    },
+    "evidence_reused_without_redundant_docker_rerun": true
+  },
+  "effective_policy_registration": {
+    "policy_name": "streamlined-v1",
+    "effective_from": "2026-11-04T09:05:00+08:00",
+    "effective_release_commits": {
+      "project-control": "cec9b34f8284f7b2580a7d219536d32b7b1ee849",
+      "ai-soc-workspace": "e5b7ec6d80259976b8a38e4164b5596311fed15f",
+      "evidence_archive": "613f3cbc9a58283ff085cee241de9810895cfdb4"
+    },
+    "workflow": "作者实现与自检 -> 锁定候选 -> 一轮独立 QA（代码审查 + 功能/必要回归测试） -> COORD 收件",
+    "new_tasks_rule": "新任务显式标记 qa_policy: streamlined-v1",
+    "legacy_tasks_rule": "未迁移旧任务保持 legacy（含报告复核要求），按 qa_streamline_cutover_20261103.md 切换表逐卡处理",
+    "retained_gates": [
+      "QA 自产测试工具/夹具/独立预期仍须非作者独立审查（默认 ARCH）",
+      "跨模块协议、架构契约、升级/硬件安全等特殊变更保留显式追加审查与 Owner 接受",
+      "涉及固件/串口/台架/UI 硬件链路的真实 HIL 实测门禁保留"
+    ]
+  }
+}

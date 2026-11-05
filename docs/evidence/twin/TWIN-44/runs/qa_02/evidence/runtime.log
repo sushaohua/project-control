@@ -1,0 +1,62 @@
+=== Docker Container Inspect: fb1f73d255b6 ===
+{
+  "id": "fb1f73d255b61a2922b24c9a4779329bbd3d4aaee755ce598882ab8707c037b9",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-04T03:51:02.747063186Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-44_run_115039_20261104_035039",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (mcu-p3/motion-controller-mcu) gcc -std=c11 -O2 -Wall -Wextra -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -I project/inc -I project/delay -I project/marlin -I project/marlin/marlin_core -I project/marlin/marlin_module -I libraries/drivers/inc -I libraries/cmsis/cm4/core_support -I libraries/cmsis/cm4/device_support project/src/minimc_proto.c project/src/test_twin44_mc_debug.c -o /tmp/test_twin44 && /tmp/test_twin44 && rm -f /tmp/test_twin44 -> 0
+========================================================================
+TWIN-44 MC USART2 921600 & USART1 Non-Blocking [MC-DBG] Verification
+========================================================================
+[RUN ] test_usart2_921600_reconfig
+[PASS] test_usart2_921600_reconfig
+[RUN ] test_ring_buffer_trunc_and_drop
+[PASS] test_ring_buffer_trunc_and_drop
+[RUN ] test_mc_dbg_all_five_categories_and_dirs
+[PASS] test_mc_dbg_all_five_categories_and_dirs
+[RUN ] test_runtime_temp_fault_and_pause_sync
+[PASS] test_runtime_temp_fault_and_pause_sync
+[RUN ] test_tx_fail_suppresses_false_ack
+[PASS] test_tx_fail_suppresses_false_ack
+[RUN ] test_relay_and_negative_error_cases
+[PASS] test_relay_and_negative_error_cases
+------------------------------------------------------------------------
+All 6 TWIN-44 test suites PASSED!
+========================================================================
+
+In file included from libraries/cmsis/cm4/device_support/at32f435_437.h:428,
+                 from project/inc/at32f435_437_wk_config.h:37,
+                 from project/inc/wk_dma.h:36,
+                 from project/src/minimc_proto.c:2:
+libraries/cmsis/cm4/core_support/core_cm4.h: In function '__NVIC_SetVector':
+libraries/cmsis/cm4/core_support/core_cm4.h:1913:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+ 1913 |   uint32_t *vectors = (uint32_t *)SCB->VTOR;
+      |                       ^
+libraries/cmsis/cm4/core_support/core_cm4.h: In function '__NVIC_GetVector':
+libraries/cmsis/cm4/core_support/core_cm4.h:1929:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+ 1929 |   uint32_t *vectors = (uint32_t *)SCB->VTOR;
+      |                       ^
+In file included from libraries/cmsis/cm4/device_support/at32f435_437.h:428,
+                 from project/marlin/configure.h:4,
+                 from project/marlin/marlin_core/planner.h:28,
+                 from project/src/test_twin44_mc_debug.c:17:
+libraries/cmsis/cm4/core_support/core_cm4.h: In function '__NVIC_SetVector':
+libraries/cmsis/cm4/core_support/core_cm4.h:1913:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+ 1913 |   uint32_t *vectors = (uint32_t *)SCB->VTOR;
+      |                       ^
+libraries/cmsis/cm4/core_support/core_cm4.h: In function '__NVIC_GetVector':
+libraries/cmsis/cm4/core_support/core_cm4.h:1929:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+ 1929 |   uint32_t *vectors = (uint32_t *)SCB->VTOR;
+      |                       ^

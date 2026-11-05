@@ -1,0 +1,18 @@
+{
+  "task_id": "TWIN-44",
+  "task_revision": 1,
+  "candidate_commit": "d2e469559081616f6312ecbabf8d6b69a7e92e3a",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "The pinned bundle hash and candidate identity match the request. Frozen server evidence records a successful run of all six C test suites, but the implementation incorrectly treats any TH frame as the response to the outstanding relay request and reports it as ACK. This violates honest relay status handling.",
+  "findings": [
+    "In minimc_proto.c handle_th_frame, every parsed TH frame clears s_relay_pending before checking destination, sequence, or command, and is logged as RELAY_RX status=ACK. A delayed or unrelated TH frame can therefore cancel a valid request's timeout and be reported as its successful response. The recovery test covers only a matching response and does not exercise mismatched or unsolicited TH frames. Correlate a response with the outstanding request before clearing it or emitting ACK; add negative and recovery coverage.",
+    "The frozen server evidence is internally consistent: the bundle SHA256 matches, the candidate commit matches the requested commit, and the Docker run reports exit code 0 with all six suites passing. The test evidence does not cover the relay-correlation defect identified above.",
+    "No source_report was supplied; there was no report body or report SHA256 to audit."
+  ],
+  "accepted_scope": "Bounded software and C unit-test verification in the Docker QA sandbox for USART2 921600 reconfiguration, the USART1 2048B non-blocking debug ring, honest MiniMC command handling, state logging, send failure handling, and recovery. Physical MCU flashing and hardware HIL are excluded.",
+  "unexecuted": [
+    "Physical MCU board flashing and hardware HIL, excluded by the contract.",
+    "Coverage of mismatched, delayed, or unsolicited TH responses against an outstanding relay request."
+  ]
+}

@@ -1,0 +1,5 @@
+[QA VERDICT] All sandbox tests passed | Evidence bundle saved to: /tmp/qa_TWIN-43_eibefh_c/evidence
+[SERVER QA REF] {
+  "path": "/tmp/qa_TWIN-43_eibefh_c/evidence/server_qa.json",
+  "sha256": "84186550616d89dfead433fa4424b3c34f209996f3b7bae9216b75d86955a54c"
+}

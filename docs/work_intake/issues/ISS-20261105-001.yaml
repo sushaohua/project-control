@@ -1,0 +1,97 @@
+schema_version: 1
+id: ISS-20261105-001
+revision: 2
+kind: issue
+enabled: true
+title: 核实并修复 GCC 15 下 test_backoff.cpp 的未初始化警告导致全栈构建阻断（对应用户“问题 2”，根因待查）。
+objective: '【问题】核实并修复 GCC 15 下 test_backoff.cpp 的未初始化警告导致全栈构建阻断（对应用户“问题 2”，根因待查）。
+
+
+  用户报告：全栈编译停在 `build 1/5 runtime`，`runtime/build/tests/test_backoff.cpp` 的局部变量传入防御性断言时触发
+  `-Werror=maybe-uninitialized`。建议将 `backoff_state_t st;`、`backoff_config_t cfg;`
+  改为显式零初始化。
+
+
+  当前只读观察：`test_backoff_null_guards()` 中上述两个声明仍未初始化，相关 CMake 目标启用了 `-Werror`；助理未在 GCC
+  15 下复现告警。实现的空指针卫语句与编译器诊断分别核实，不把告警直接表述成已发生的运行期未初始化读取。
+
+
+  处理要求：记录实际 GCC 版本、完整编译参数和原始错误；确认后在必要位置采用最小初始化修复，保留空指针防御测试及严格告警策略，不以关闭告警或删除断言通过构建。
+
+
+  验收目标：同一 GCC 15 构建条件下消除该阻断，相关 backoff 测试的防御、递增、上限和重置行为保持正确；记录实际执行范围及结果，不把只通过 runtime
+  目标写成全栈已通过。'
+source_refs:
+  submission_id: 20261105_soc_ap_build_and_startup_issues
+  submission_revision: 1
+  instruction_anchor: instruction_1
+  submission_path: project-control/docs/work_intake/submissions/20261105_soc_ap_build_and_startup_issues.md
+  submission_sha256: 5660ee81542768228ed17c2a0755ff066cec28665edcd6a5974048a23e3803ea
+  instruction_sha256: df4573135d6057d4a55aee0b361eb6c6f71b8b72c77062c2a6c0393190705f43
+  verbatim_instruction: '【问题】核实并修复 GCC 15 下 test_backoff.cpp 的未初始化警告导致全栈构建阻断（对应用户“问题
+    2”，根因待查）。
+
+
+    用户报告：全栈编译停在 `build 1/5 runtime`，`runtime/build/tests/test_backoff.cpp` 的局部变量传入防御性断言时触发
+    `-Werror=maybe-uninitialized`。建议将 `backoff_state_t st;`、`backoff_config_t cfg;`
+    改为显式零初始化。
+
+
+    当前只读观察：`test_backoff_null_guards()` 中上述两个声明仍未初始化，相关 CMake 目标启用了 `-Werror`；助理未在
+    GCC 15 下复现告警。实现的空指针卫语句与编译器诊断分别核实，不把告警直接表述成已发生的运行期未初始化读取。
+
+
+    处理要求：记录实际 GCC 版本、完整编译参数和原始错误；确认后在必要位置采用最小初始化修复，保留空指针防御测试及严格告警策略，不以关闭告警或删除断言通过构建。
+
+
+    验收目标：同一 GCC 15 构建条件下消除该阻断，相关 backoff 测试的防御、递增、上限和重置行为保持正确；记录实际执行范围及结果，不把只通过 runtime
+    目标写成全栈已通过。'
+  common_constraints:
+  - 来源：用户在助理会话中要求确认下列三个可能问题是否存在并修复，随后明确要求放入收件入口，供 COORD 自动取得。三条指令主分类均为“问题 / issue”；编号、分类
+    YAML、正式任务关联由既有收件流程查重生成。
+  - 本单是人工要求的整理稿，不是缺陷已复现、修复完成或 QA 通过的证明。用户提供的根因和修复方法作为调查线索；已修复项核实版本及证据后复用，不重复修改。
+  - 只读观察基线：当前工作区 `soc-ap` 的 `main`，HEAD `7c1f35091850b39f4ba3ff9b242043a62f3e5b74`；管理仓观察
+    HEAD `491158cd4f183a01517c36fb093821db54a8a6dd`。执行前重新锁定服务器准确候选。
+  - 用户报告中的 `/home/sushaohua/tmp/ai_soc_project/` 与当前 `/home/sushaohua/workspace/ai_soc_project/`
+    不同，须核对源码、构建制品及实际加载库的版本，不默认两处相同。
+  - 由唯一 COORD 查重收件、关联正式任务并更新 Board；INTEGRATOR 汇总编译部署问题，DDS 依赖问题交 ENG-DDS，职责或技术冲突由
+    ARCH 补充裁定。COORD 不代改业务源码。
+  - 沿用有效授权及简化 QA，避免无关重构。确认的修复应可从干净服务器检出复现；第三方补丁必须版本化并纳入构建，不能只修改 Git 忽略的安装目录。
+  - 当前只有一台 VMware 和一套物理台架；本单不授权抢占台架、停止现有任务、烧录、运动或加热。构建与进程生命周期验证安排到明确窗口；本单三项软件修复不默认增加整机
+    HIL。
+  - 本次助理仅整理任务并只读核查，未编译、未启动服务、未执行测试，也未修改业务代码。
+  common_constraints_sha256: 6c1893ec847e7ebf5e5c39eb24523717645685ac5dc140b38be596666e783540
+demand_ref:
+  demand_id: DEM-20261105-001
+  confirmation_id: CONFIRM-SOC-AP-ISSUES-20261105
+  confirmation_revision: 1
+  confirmation_path: project-control/docs/architecture/soc_ap_build_and_startup_issues_arch_breakdown_20261105.md
+  confirmation_sha256: 04be47f7ca02f7a98e4f249e8313309d32c9642a07574c011cb2161014ac5b36
+reported_by:
+  actor_type: HUMAN
+  actor_id: human_markdown_author
+  source_channel: markdown_submission
+authorization_refs:
+- path: project-control/docs/work_intake/submissions/20261105_soc_ap_build_and_startup_issues.md
+  revision: 1
+  sha256: 5660ee81542768228ed17c2a0755ff066cec28665edcd6a5974048a23e3803ea
+approval_refs:
+- approval_id: APPR-20261105-001
+  revision: 1
+  path: project-control/docs/work_intake/approvals/APPR-20261105-001.yaml
+  sha256: 4add2037abad6476fd751c36091837d51b1573f30e526cd116cba8115d131484
+  bound_confirmation_revision: 1
+  bound_confirmation_sha256: 04be47f7ca02f7a98e4f249e8313309d32c9642a07574c011cb2161014ac5b36
+  approved_scope: full_batch_approval
+requested_action: execute
+priority_hint: P2
+related_ids:
+  engineering_tasks:
+  - TWIN-51
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: null
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true

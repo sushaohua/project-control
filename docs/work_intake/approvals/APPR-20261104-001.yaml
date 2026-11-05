@@ -1,0 +1,33 @@
+schema_version: 1
+approval_id: APPR-20261104-001
+revision: 1
+approved_at: '2026-11-04T10:01:02+08:00'
+approved_by:
+  actor_type: HUMAN
+  actor_id: sushaohua
+  source_channel: coord_interactive_session
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+  verbatim_decision: 批准 / 确认立即执行
+bound_confirmation:
+  confirmation_id: CONFIRM-DEBUG-BAUD-20261104
+  revision: 2
+  path: project-control/docs/planning/debug_and_921600_merged_implementation_summary_20261104.md
+  sha256: c469fcd058b8607f454d661a69c07bf8a483e5763d9d231a574d71ee14cd69ec
+bound_submission:
+  submission_id: SUB-20261104-001
+  revision: 1
+  submission_path: project-control/docs/work_intake/submissions/SUB-20261104-001.md
+  submission_sha256: 9058016613a4a9ce4ba17c6dbaeb5463f5cd79f015794950efffc32ef91b594f
+approval_mode: full_batch_approval
+approved_demands:
+- demand_id: DEM-20261104-001
+  category_id: FEAT-20261104-001
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1
+- demand_id: DEM-20261104-002
+  category_id: FEAT-20261104-002
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1
+  includes_one_click_build_and_config_launch: true

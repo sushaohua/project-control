@@ -1,0 +1,387 @@
+{
+  "request": {
+    "repository": "soc-ap",
+    "candidate_commit": "68b926e4376185a4979869a4787b90c8623a9164",
+    "task_revision": 1,
+    "task_id": "TWIN-52",
+    "workspace": "/home/sushaohua/workspace/ai_soc_project",
+    "commands": [
+      {
+        "kind": "test",
+        "subpath": "soc-ap",
+        "command": "rm -rf /tmp/qa_twin52 && mkdir -p /tmp/qa_twin52/raw && tar -xzf third_party/archives/Fast-CDR-2.2.5.tar.gz -C /tmp/qa_twin52/raw && test \"$(grep -c \"if (val.storage_.engaged_)\" /tmp/qa_twin52/raw/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp || true)\" -eq 0 && cp -r ../soc-ap /tmp/qa_twin52/soc-ap && ([ -e /tmp/qa_twin52/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin52/soc-ap/third_party && cp -a /usr/local /tmp/qa_twin52/soc-ap/third_party/install)) && cp /tmp/qa_twin52/raw/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp && rm -rf /tmp/qa_twin52/soc-ap/third_party/src/Fast-CDR-2.2.5 && (! bash /tmp/qa_twin52/soc-ap/third_party/build.sh --verify) && mkdir -p /tmp/qa_twin52/soc-ap/third_party/src/foonathan_memory-0.7-3 /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/asio/asio/include /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/tinyxml2 /tmp/qa_twin52/soc-ap/third_party/src/dbus-1.16.2 && touch /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/asio/asio/include/asio.hpp /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/tinyxml2/tinyxml2.cpp && bash /tmp/qa_twin52/soc-ap/third_party/build.sh fastcdr && bash /tmp/qa_twin52/soc-ap/third_party/build.sh --verify && bash /tmp/qa_twin52/soc-ap/third_party/build.sh && test \"$(grep -c \"if (val.storage_.engaged_)\" /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp)\" -eq 2 && cmake -S /tmp/qa_twin52/soc-ap/middleware/dds/tests -B /tmp/qa_twin52/build_opt_test && cmake --build /tmp/qa_twin52/build_opt_test --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_opt_test --output-on-failure && cmake -S /tmp/qa_twin52/soc-ap/tests/dds/twin -B /tmp/qa_twin52/build_dds_twin && cmake --build /tmp/qa_twin52/build_dds_twin --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_dds_twin --output-on-failure && rm -rf /tmp/qa_twin52",
+        "id": "build_and_test_fastcdr_optional_patch_and_dds_startup"
+      }
+    ],
+    "targets": [
+      {
+        "name": "project-control",
+        "commit": "491158cd4f183a01517c36fb093821db54a8a6dd",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+        "ref": "main"
+      },
+      {
+        "name": "soc-ap",
+        "commit": "68b926e4376185a4979869a4787b90c8623a9164",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+        "ref": "main"
+      },
+      {
+        "name": "mcu-p3",
+        "commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+        "ref": "feat/soc-debug"
+      },
+      {
+        "name": "test_harness",
+        "commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+        "ref": "main"
+      }
+    ],
+    "contract": {
+      "id": "TWIN-52",
+      "title": "TWIN-52 Fast-CDR 2.2.5 optional未初始化拷贝崩溃补丁固化与third_party可重现构建",
+      "revision": 1,
+      "plan_revision": "vmware-soc-twin-20261105",
+      "task_kind": "implementation",
+      "development_stage": "vmware-twin",
+      "dispatchable": true,
+      "status": "Review",
+      "blocked": false,
+      "planning_status": "actionable",
+      "owner": "7812a1f6-5006-4971-a954-802f855cf20a",
+      "proposed_owner": "ENG-DDS",
+      "executor": {
+        "role": "ENG-DDS",
+        "agent_id": "7812a1f6-5006-4971-a954-802f855cf20a",
+        "run_id": "author_01"
+      },
+      "qa_policy": "streamlined-v1",
+      "reviewer": [
+        "QA"
+      ],
+      "verifier": null,
+      "integrator": "INTEGRATOR",
+      "issue_id": "ISS-20261105-002",
+      "demand_id": "DEM-20261105-002",
+      "confirmation_id": "CONFIRM-SOC-AP-ISSUES-20261105",
+      "approval_id": "APPR-20261105-001",
+      "accepted_scope": "Software and C++17 sandbox verification of soc-ap/third_party/patches/Fast-CDR-2.2.5-optional-engaged-guard.patch, soc-ap/third_party/build.sh idempotent patch application and verify_install() guard check, soc-ap/middleware/dds/tests/test_fastcdr_optional.cpp (dirty-memory unengaged optional<std::string> copy/move, long-string engaged copy/move, and Fast-DDS participant/publisher startup without SIGSEGV), and test_dds_pubsub CTest suite. Cross-compiler ELF build and physical MCU USB/UART HIL are not applicable in qa-sandbox:20261029: qa-sandbox:20261029 provides host GCC/Python only and no physical MCU hardware; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass.",
+      "review_assignments": {
+        "reviewer_sessions": [
+          {
+            "role": "QA",
+            "platform": "codex",
+            "model": "gpt-6-luna",
+            "planned_session_alias": "planned-qa-twin-52",
+            "session": null,
+            "reviewer_session": null,
+            "commit_sha": null,
+            "session_evidence": null,
+            "decision": null,
+            "reviewed_task_revision": null,
+            "artifact_version": null,
+            "report_path": null,
+            "evidence": null,
+            "report_sha256": null
+          }
+        ],
+        "verifier_session": null,
+        "integrator_session": null
+      },
+      "primary_work_package": "TASK-005",
+      "related_work_packages": [
+        "TASK-004",
+        "TASK-007",
+        "TASK-010"
+      ],
+      "depends_on": [
+        "TWIN-05",
+        "TWIN-49"
+      ],
+      "dependency_conditions": [
+        {
+          "task": "TWIN-05",
+          "accepted_version": "soc-ap=81362a6489704926c89d9b4f93e7a480d610474e; project-control=0c49669a2a89668ef2273197f43a5a852d63be91",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-05/runs/run_01/qa_review_report.md",
+          "required": "继承TWIN-05 Fast-DDS中间件封装与Fast-CDR归档基线"
+        },
+        {
+          "task": "TWIN-49",
+          "accepted_version": "project-control=17e0887da07ceb3b017623b791b6a6999e837c79; soc-ap=333178c66280e785ae1a5c089a6e2a05075cc926; mcu-p3=016e1236af75f6f19282d6b000f4b1b68bd96cc3; test_harness=30c21f74e74179994eb475c38cc4afc2c1427a26",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-49/runs/qa_04/qa_review_report.md",
+          "required": "继承TWIN-49 third_party/build.sh构建入口基线"
+        }
+      ],
+      "scope_status": "mapped",
+      "allowed_repositories": [
+        "soc-ap",
+        "project-control"
+      ],
+      "write_scope": {
+        "soc-ap": [
+          "third_party/patches/Fast-CDR-2.2.5-optional-engaged-guard.patch",
+          "third_party/build.sh",
+          "middleware/dds/tests/CMakeLists.txt",
+          "middleware/dds/tests/test_fastcdr_optional.cpp"
+        ],
+        "project-control": [
+          "docs/evidence/twin/TWIN-52/**"
+        ]
+      },
+      "allowed_paths": [
+        "soc-ap/third_party/patches/Fast-CDR-2.2.5-optional-engaged-guard.patch",
+        "soc-ap/third_party/build.sh",
+        "soc-ap/middleware/dds/tests/CMakeLists.txt",
+        "soc-ap/middleware/dds/tests/test_fastcdr_optional.cpp",
+        "project-control/docs/evidence/twin/TWIN-52/**"
+      ],
+      "forbidden_paths": [
+        "mcu-p3/**",
+        "test_harness/**",
+        "boot/**",
+        "soc-ap/tests/**",
+        "soc-ap/services/**",
+        "soc-ap/tools/**"
+      ],
+      "source_baseline": {
+        "project-control": "491158cd4f183a01517c36fb093821db54a8a6dd",
+        "soc-ap": "75f8a1a670edabb21c8d3dfc79243e06f73099af",
+        "mcu-p3": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+        "test_harness": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60"
+      },
+      "base_commit": "75f8a1a670edabb21c8d3dfc79243e06f73099af",
+      "branch": "main",
+      "candidate_commit": "68b926e4376185a4979869a4787b90c8623a9164",
+      "dispatch_binding": {
+        "source_commit": "75f8a1a670edabb21c8d3dfc79243e06f73099af",
+        "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "consumed_artifact_versions": {
+          "arch_breakdown": "2c3bba7cb6037cb8f89a6231008eafaa8bd4b8fcf90e81a7560742bafb8b200c"
+        }
+      },
+      "protocol_input": {
+        "path": "project-control/docs/architecture/soc_ap_build_and_startup_issues_arch_breakdown_20261105.md",
+        "sha256": "2c3bba7cb6037cb8f89a6231008eafaa8bd4b8fcf90e81a7560742bafb8b200c",
+        "revision": 4
+      },
+      "icd_versions": [
+        {
+          "path": "project-control/docs/architecture/soc_ap_build_and_startup_issues_arch_breakdown_20261105.md",
+          "version": 4
+        }
+      ],
+      "read_sources": [
+        "project-control/.agents/rules/repository_rule_sources.json",
+        "project-control/.agents/rules/repository_rule_boundaries.md",
+        "soc-ap/AGENTS.md",
+        "soc-ap/.agents/rules/shared/SOURCE.json",
+        "project-control/.agents/rules/c_cpp_coding_standard.md",
+        "project-control/.agents/rules/code_documentation_standard.md",
+        "project-control/docs/architecture/soc_ap_build_and_startup_issues_arch_breakdown_20261105.md"
+      ],
+      "worktree": "soc-ap",
+      "lease": {
+        "owner": "7812a1f6-5006-4971-a954-802f855cf20a",
+        "task_revision": 1,
+        "lease_id": "lease-twin-52-20261105-01",
+        "expires_at": "2026-11-05T16:00:00+08:00"
+      },
+      "resources": [
+        {
+          "resource": "dds-build-env",
+          "location": "soc-ap",
+          "exclusive": true,
+          "pending": null
+        }
+      ],
+      "budget": {
+        "planned_checkpoint_minutes": 60,
+        "max_evidence_based_corrections": 2,
+        "on_limit": "保存证据交COORD"
+      },
+      "checkpoint": "开工前绑定；Fast-CDR补丁校验与DDS单测自检；独立沙箱与QA审查；收件",
+      "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+      "readiness_pending": [],
+      "deliverables": {
+        "artifacts": [
+          "soc-ap/third_party/patches/Fast-CDR-2.2.5-optional-engaged-guard.patch",
+          "soc-ap/third_party/build.sh",
+          "soc-ap/middleware/dds/tests/CMakeLists.txt",
+          "soc-ap/middleware/dds/tests/test_fastcdr_optional.cpp"
+        ],
+        "record": "docs/evidence/twin/TWIN-52/runs/author_01/result.md"
+      },
+      "rollback": {
+        "steps": [
+          "git -C soc-ap checkout -- third_party/ middleware/dds/"
+        ]
+      },
+      "handoff": {
+        "receiver_role": "COORD",
+        "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+        "transport": "docs",
+        "evidence_location": "docs/evidence/twin/TWIN-52",
+        "acknowledgement": "received-author_01-68b926e4376185a4979869a4787b90c8623a9164"
+      },
+      "verification": {
+        "commands": [
+          {
+            "id": "build_and_test_fastcdr_optional_patch_and_dds_startup",
+            "cwd": "soc-ap",
+            "command": "rm -rf /tmp/qa_twin52 && mkdir -p /tmp/qa_twin52/raw && tar -xzf third_party/archives/Fast-CDR-2.2.5.tar.gz -C /tmp/qa_twin52/raw && test \"$(grep -c \"if (val.storage_.engaged_)\" /tmp/qa_twin52/raw/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp || true)\" -eq 0 && cp -r ../soc-ap /tmp/qa_twin52/soc-ap && ([ -e /tmp/qa_twin52/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin52/soc-ap/third_party && cp -a /usr/local /tmp/qa_twin52/soc-ap/third_party/install)) && cp /tmp/qa_twin52/raw/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp && rm -rf /tmp/qa_twin52/soc-ap/third_party/src/Fast-CDR-2.2.5 && (! bash /tmp/qa_twin52/soc-ap/third_party/build.sh --verify) && mkdir -p /tmp/qa_twin52/soc-ap/third_party/src/foonathan_memory-0.7-3 /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/asio/asio/include /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/tinyxml2 /tmp/qa_twin52/soc-ap/third_party/src/dbus-1.16.2 && touch /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/asio/asio/include/asio.hpp /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/tinyxml2/tinyxml2.cpp && bash /tmp/qa_twin52/soc-ap/third_party/build.sh fastcdr && bash /tmp/qa_twin52/soc-ap/third_party/build.sh --verify && bash /tmp/qa_twin52/soc-ap/third_party/build.sh && test \"$(grep -c \"if (val.storage_.engaged_)\" /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp)\" -eq 2 && cmake -S /tmp/qa_twin52/soc-ap/middleware/dds/tests -B /tmp/qa_twin52/build_opt_test && cmake --build /tmp/qa_twin52/build_opt_test --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_opt_test --output-on-failure && cmake -S /tmp/qa_twin52/soc-ap/tests/dds/twin -B /tmp/qa_twin52/build_dds_twin && cmake --build /tmp/qa_twin52/build_dds_twin --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_dds_twin --output-on-failure && rm -rf /tmp/qa_twin52",
+            "expected": "先注入未打补丁的原始optional.hpp触发third_party/build.sh --verify负向拒绝放行（[FAIL] missing engaged guard并返回非0），随后执行build.sh fastcdr自动从Fast-CDR-2.2.5.tar.gz干净解压、应用Fast-CDR-2.2.5-optional-engaged-guard.patch、重编并安装两处engaged守卫，再次执行build.sh --verify与build.sh校验100%通过；test_fastcdr_optional与test_dds_pubsub全套CTest 100% PASS且零SIGSEGV",
+            "availability": "available"
+          }
+        ],
+        "positive_cases": [
+          "Fast-CDR-2.2.5.tar.gz干净解压后通过third_party/patches/Fast-CDR-2.2.5-optional-engaged-guard.patch幂等打上两处if (val.storage_.engaged_)守卫",
+          "脏内存上未激活的eprosima::fastcdr::optional<std::string>拷贝/移动构造与Fast-DDS participant/publisher创建100%通过且无SIGSEGV"
+        ],
+        "negative_cases": [
+          "当install/include/fastcdr/xcdr/optional.hpp缺失if (val.storage_.engaged_)守卫时，verify_install拒绝放行并触发重新打补丁构建"
+        ]
+      },
+      "required_evidence_level": "server-sandbox-and-independent-review",
+      "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+      "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+      "updated": "2026-11-05T10:31:00+08:00"
+    },
+    "run_dir": "/tmp/qa_TWIN-52_ji8dy6lb",
+    "timeout_seconds": 1140,
+    "sandbox_command": [
+      "/usr/bin/python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+      "--config",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+      "--task",
+      "TWIN-52",
+      "--revision",
+      "1",
+      "--output-dir",
+      "/tmp/qa_TWIN-52_ji8dy6lb/evidence",
+      "--repo-commit",
+      "project-control=491158cd4f183a01517c36fb093821db54a8a6dd:main",
+      "--repo-commit",
+      "soc-ap=68b926e4376185a4979869a4787b90c8623a9164:main",
+      "--repo-commit",
+      "mcu-p3=016e1236af75f6f19282d6b000f4b1b68bd96cc3:feat/soc-debug",
+      "--repo-commit",
+      "test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60:main",
+      "--cmd",
+      "test:soc-ap:rm -rf /tmp/qa_twin52 && mkdir -p /tmp/qa_twin52/raw && tar -xzf third_party/archives/Fast-CDR-2.2.5.tar.gz -C /tmp/qa_twin52/raw && test \"$(grep -c \"if (val.storage_.engaged_)\" /tmp/qa_twin52/raw/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp || true)\" -eq 0 && cp -r ../soc-ap /tmp/qa_twin52/soc-ap && ([ -e /tmp/qa_twin52/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin52/soc-ap/third_party && cp -a /usr/local /tmp/qa_twin52/soc-ap/third_party/install)) && cp /tmp/qa_twin52/raw/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp && rm -rf /tmp/qa_twin52/soc-ap/third_party/src/Fast-CDR-2.2.5 && (! bash /tmp/qa_twin52/soc-ap/third_party/build.sh --verify) && mkdir -p /tmp/qa_twin52/soc-ap/third_party/src/foonathan_memory-0.7-3 /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/asio/asio/include /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/tinyxml2 /tmp/qa_twin52/soc-ap/third_party/src/dbus-1.16.2 && touch /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/asio/asio/include/asio.hpp /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/tinyxml2/tinyxml2.cpp && bash /tmp/qa_twin52/soc-ap/third_party/build.sh fastcdr && bash /tmp/qa_twin52/soc-ap/third_party/build.sh --verify && bash /tmp/qa_twin52/soc-ap/third_party/build.sh && test \"$(grep -c \"if (val.storage_.engaged_)\" /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp)\" -eq 2 && cmake -S /tmp/qa_twin52/soc-ap/middleware/dds/tests -B /tmp/qa_twin52/build_opt_test && cmake --build /tmp/qa_twin52/build_opt_test --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_opt_test --output-on-failure && cmake -S /tmp/qa_twin52/soc-ap/tests/dds/twin -B /tmp/qa_twin52/build_dds_twin && cmake --build /tmp/qa_twin52/build_dds_twin --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_dds_twin --output-on-failure && rm -rf /tmp/qa_twin52"
+    ],
+    "request_ref": {
+      "path": "/tmp/qa_TWIN-52_ji8dy6lb/request.json",
+      "sha256": "37c9c5efa6f178566fbd104495a454a561898f79510308468489f8017ebe1761"
+    }
+  },
+  "server_qa": {
+    "task_id": "TWIN-52",
+    "task_revision": 1,
+    "source": "server-pinned-commits",
+    "fresh_checkout": true,
+    "sandbox": {
+      "kind": "container",
+      "container_id": "a58547ec2caf",
+      "id": "TWIN-52_run_105321_20261105_025321",
+      "image": "qa-sandbox:20261029",
+      "path": "/tmp/qa_sandboxes/TWIN-52_run_105321_20261105_025321",
+      "developer_mounts": [],
+      "container_inspect": {
+        "id": "a58547ec2caff3849a625ec63e1f10b90a9f644a341b09874c5952d29847ee4a",
+        "image": "qa-sandbox:20261029",
+        "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "created": "2026-11-05T02:53:44.966969847Z",
+        "state": "exited",
+        "mounts": [
+          {
+            "Type": "bind",
+            "Source": "/tmp/qa_sandboxes/TWIN-52_run_105321_20261105_025321",
+            "Destination": "/workspace",
+            "Mode": "ro",
+            "RW": false,
+            "Propagation": "rprivate"
+          }
+        ]
+      }
+    },
+    "server_lock": {
+      "path": "/tmp/qa_TWIN-52_ji8dy6lb/evidence/server_lock.json",
+      "sha256": "ad62f7d5dd2c6e8d98d81511ce8558dbf1595d4d6a45598360ad4ed996f3a0dd"
+    },
+    "checkout_log": {
+      "path": "/tmp/qa_TWIN-52_ji8dy6lb/evidence/checkout.log",
+      "sha256": "894b455615df2a82b1c2dd894e597f99377036ea910aa14f2bb86f76f22dbe87"
+    },
+    "runtime_log": {
+      "path": "/tmp/qa_TWIN-52_ji8dy6lb/evidence/runtime.log",
+      "sha256": "43380bcbfd433692eccfed0d4e33325c0accc7306b6c245941aff52bf94aa3f1"
+    },
+    "server_verdict": {
+      "path": "/tmp/qa_TWIN-52_ji8dy6lb/evidence/server_verdict.json",
+      "sha256": "532c33d93a93feb58e221e68a319aedac766ee2317c36222776d2aeec0905633"
+    },
+    "tool_versions": {
+      "git": "git version 2.25.1",
+      "python": "Python 3.8.10"
+    },
+    "build_results": [],
+    "test_results": [
+      {
+        "command": "rm -rf /tmp/qa_twin52 && mkdir -p /tmp/qa_twin52/raw && tar -xzf third_party/archives/Fast-CDR-2.2.5.tar.gz -C /tmp/qa_twin52/raw && test \"$(grep -c \"if (val.storage_.engaged_)\" /tmp/qa_twin52/raw/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp || true)\" -eq 0 && cp -r ../soc-ap /tmp/qa_twin52/soc-ap && ([ -e /tmp/qa_twin52/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin52/soc-ap/third_party && cp -a /usr/local /tmp/qa_twin52/soc-ap/third_party/install)) && cp /tmp/qa_twin52/raw/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp && rm -rf /tmp/qa_twin52/soc-ap/third_party/src/Fast-CDR-2.2.5 && (! bash /tmp/qa_twin52/soc-ap/third_party/build.sh --verify) && mkdir -p /tmp/qa_twin52/soc-ap/third_party/src/foonathan_memory-0.7-3 /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/asio/asio/include /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/tinyxml2 /tmp/qa_twin52/soc-ap/third_party/src/dbus-1.16.2 && touch /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/asio/asio/include/asio.hpp /tmp/qa_twin52/soc-ap/third_party/src/Fast-DDS-3.6.2/thirdparty/tinyxml2/tinyxml2.cpp && bash /tmp/qa_twin52/soc-ap/third_party/build.sh fastcdr && bash /tmp/qa_twin52/soc-ap/third_party/build.sh --verify && bash /tmp/qa_twin52/soc-ap/third_party/build.sh && test \"$(grep -c \"if (val.storage_.engaged_)\" /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp)\" -eq 2 && cmake -S /tmp/qa_twin52/soc-ap/middleware/dds/tests -B /tmp/qa_twin52/build_opt_test && cmake --build /tmp/qa_twin52/build_opt_test --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_opt_test --output-on-failure && cmake -S /tmp/qa_twin52/soc-ap/tests/dds/twin -B /tmp/qa_twin52/build_dds_twin && cmake --build /tmp/qa_twin52/build_dds_twin --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_dds_twin --output-on-failure && rm -rf /tmp/qa_twin52",
+        "exit_code": "1",
+        "subpath": "soc-ap",
+        "duration": "1.56s",
+        "output": "==================================================\nBuild & Installation Verification:\n==================================================\n  [OK] D-Bus library: /tmp/qa_twin52/soc-ap/third_party/install/lib/libdbus-1.so\n  [OK] D-Bus daemon:  /tmp/qa_twin52/soc-ap/third_party/install/bin/dbus-daemon\n  [OK] Fast CDR:      /tmp/qa_twin52/soc-ap/third_party/install/lib/libfastcdr.so\n  [OK] Fast DDS:      /tmp/qa_twin52/soc-ap/third_party/install/lib/libfastdds.so\n--> Unpacking Fast-CDR-2.2.5...\n--> Applying Fast-CDR optional.hpp engaged guard patch...\npatching file include/fastcdr/xcdr/optional.hpp\n  [OK] Fast-CDR optional.hpp patched and verified (2 engaged guards).\n==================================================\nBuilding Fast-CDR (2.2.5)...\n==================================================\n-- Setting build type to 'Release' as none was specified.\n-- Tests not compiled by default\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring Fast CDR\n-- Version: 2.2.5\n-- Performing Test SUPPORTS_NOTFOUND\n-- Performing Test SUPPORTS_NOTFOUND - Success\n-- Enforced cxx_std_11 CMake feature\n-- Looking for C++ include sys/types.h\n-- Looking for C++ include sys/types.h - found\n-- Looking for C++ include stdint.h\n-- Looking for C++ include stdint.h - found\n-- Looking for C++ include stddef.h\n-- Looking for C++ include stddef.h - found\n-- Check size of long double\n-- Check size of long double - done\n-- Check size of __float128\n-- Check size of __float128 - done\n-- The C compiler identification is GNU 9.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Configuring done (0.4s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin52/soc-ap/third_party/build/Fast-CDR\n[ 10%] Building CXX object src/cpp/CMakeFiles/fastcdr.dir/CdrSizeCalculator.cpp.o\n[ 20%] Building CXX object src/cpp/CMakeFiles/fastcdr.dir/FastCdr.cpp.o\n[ 40%] Building CXX object src/cpp/CMakeFiles/fastcdr.dir/FastBuffer.cpp.o\n[ 40%] Building CXX object src/cpp/CMakeFiles/fastcdr.dir/exceptions/BadParamException.cpp.o\n[ 50%] Building CXX object src/cpp/CMakeFiles/fastcdr.dir/exceptions/BadOptionalAccessException.cpp.o\n[ 60%] Building CXX object src/cpp/CMakeFiles/fastcdr.dir/exceptions/Exception.cpp.o\n[ 70%] Building CXX object src/cpp/CMakeFiles/fastcdr.dir/Cdr.cpp.o\n[ 80%] Building CXX object src/cpp/CMakeFiles/fastcdr.dir/exceptions/LockedExternalAccessException.cpp.o\n[ 90%] Building CXX object src/cpp/CMakeFiles/fastcdr.dir/exceptions/NotEnoughMemoryException.cpp.o\n[100%] Linking CXX shared library libfastcdr.so\n[100%] Built target fastcdr\n-- Install configuration: \"Release\"\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/FastBuffer.h\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/cdr\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/cdr/fixed_size_string.hpp\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/config\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/config/doxygen_modules.h\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/Cdr.h\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/exceptions\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/exceptions/BadParamException.h\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/exceptions/Exception.h\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/exceptions/BadOptionalAccessException.hpp\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/exceptions/LockedExternalAccessException.hpp\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/exceptions/NotEnoughMemoryException.h\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/fastcdr_dll.h\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/FastCdr.h\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/eProsima_auto_link.h\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/CdrEncoding.hpp\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/CdrSizeCalculator.hpp\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/external.hpp\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/MemberId.hpp\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/detail\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/detail/optional.hpp\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/detail\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/detail/container_recursive_inspector.hpp\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/config.h\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/lib/libfastcdr.so.2.2.5\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/lib/libfastcdr.so.2\n-- Up-to-date: /tmp/qa_twin52/soc-ap/third_party/install/lib/libfastcdr.so\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/lib/cmake/fastcdr/fastcdr-shared-targets.cmake\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/lib/cmake/fastcdr/fastcdr-shared-targets-release.cmake\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/lib/cmake/fastcdr/fastcdr-config.cmake\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/lib/cmake/fastcdr/fastcdr-config-version.cmake\n-- Installing: /tmp/qa_twin52/soc-ap/third_party/install/share/fastcdr/LICENSE\n==================================================\nBuild & Installation Verification:\n==================================================\n  [OK] D-Bus library: /tmp/qa_twin52/soc-ap/third_party/install/lib/libdbus-1.so\n  [OK] D-Bus daemon:  /tmp/qa_twin52/soc-ap/third_party/install/bin/dbus-daemon\n  [OK] Fast CDR:      /tmp/qa_twin52/soc-ap/third_party/install/lib/libfastcdr.so\n  [OK] Fast DDS:      /tmp/qa_twin52/soc-ap/third_party/install/lib/libfastdds.so\n\n  [FAIL] Fast CDR optional.hpp missing engaged guard in /tmp/qa_twin52/soc-ap/third_party/install!\n  [FAIL] Fast CDR optional.hpp missing engaged guard in /tmp/qa_twin52/soc-ap/third_party/install!"
+      }
+    ],
+    "passed": false,
+    "timestamp": "2026-11-05T02:53:49.303866+00:00",
+    "path": "/tmp/qa_TWIN-52_ji8dy6lb/evidence/server_qa.json",
+    "sha256": "c60560429d1e5549c3d1df0e8d28b705a25fb5b383cd5f0d836f0d8378ab11d6"
+  },
+  "diffs": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_sandboxes/TWIN-52_run_105321_20261105_025321/project-control",
+      "base_commit": "491158cd4f183a01517c36fb093821db54a8a6dd",
+      "candidate_commit": "491158cd4f183a01517c36fb093821db54a8a6dd",
+      "diff": {
+        "path": "/tmp/qa_TWIN-52_ji8dy6lb/diffs/project-control.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "soc-ap",
+      "source": "/tmp/qa_sandboxes/TWIN-52_run_105321_20261105_025321/soc-ap",
+      "base_commit": "75f8a1a670edabb21c8d3dfc79243e06f73099af",
+      "candidate_commit": "68b926e4376185a4979869a4787b90c8623a9164",
+      "diff": {
+        "path": "/tmp/qa_TWIN-52_ji8dy6lb/diffs/soc-ap.patch",
+        "sha256": "2247b6f8d631e04ef4ffb3aae4234e9dedebae6a5d71576ea3a6d78efab6d26b"
+      }
+    },
+    {
+      "repository": "mcu-p3",
+      "source": "/tmp/qa_sandboxes/TWIN-52_run_105321_20261105_025321/mcu-p3",
+      "base_commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+      "candidate_commit": "016e1236af75f6f19282d6b000f4b1b68bd96cc3",
+      "diff": {
+        "path": "/tmp/qa_TWIN-52_ji8dy6lb/diffs/mcu-p3.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "test_harness",
+      "source": "/tmp/qa_sandboxes/TWIN-52_run_105321_20261105_025321/test_harness",
+      "base_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "candidate_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "diff": {
+        "path": "/tmp/qa_TWIN-52_ji8dy6lb/diffs/test_harness.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

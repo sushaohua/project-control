@@ -1,14 +1,45 @@
 ---
 title: Codex 助理交接：2026-11-03 讨论、执行状态与明日起步
-revision: 1
+revision: 2
 date: 2026-11-03
 timezone: Asia/Shanghai
 observed_at: '2026-11-03T17:58:44+08:00'
 intended_resume_date: 2026-11-04
 status: assistant-handoff-not-execution-authorization
+updated_at: '2026-11-04T09:19:06+08:00'
+updated_by: Codex-assistant
 ---
 
 # Codex 助理交接
+
+## 0. 2026-11-04 助理续接更新（优先读取）
+
+本节更新当前接手入口；下文 §1～8 保留为 11 月 3 日的历史讨论和观察，旧状态不覆盖本节及任务原件。助理仍是用户的助理，不因阅读交接自动成为 COORD、接管现有 Agent 或启动开发、测试、服务。
+
+| 事项 | 最新可核查记录与下一步 |
+| --- | --- |
+| AUTO-03～06 | 当前任务卡均为 Done，保留原候选及签署，不再沿用本文旧的 AUTO-05 InProgress / AUTO-06 Backlog 描述 |
+| QA 简化 | 补丁及独立 QA 已发布；新 COORD 于 2026-11-04 09:05 登记收件生效。以[切换记录](../planning/qa_streamline_cutover_20261103.md)及[收件回执](../evidence/qa_streamline_20261103/coord_receipt_20261104.json)为准，不重复实施、不无故重跑已接受候选的 QA |
+| 两项需求 | 已登记 `DEM-20261104-001/002`、`FEAT-20261104-001/002`；[合并实施概要 rev 1](../planning/debug_and_921600_merged_implementation_summary_20261104.md)及 `CONFIRM-DEBUG-BAUD-20261104` 当前为 `pending-human-approval`，拟建任务代号不代表已开工 |
+| 完整真实环境 QA | 首轮等 Debug、921600 两项功能交付后，由 COORD 核齐前置条件并发起；准备工作可提前进行，具体顺序见下节 |
+| 调度与工作树 | 本轮只读服务查询为 `not-found / inactive`；流程收件不等于常驻服务已部署或启动。管理仓已有 COORD 的未提交收件、概要及 intake 改动，保留其归属，不顺带提交 |
+
+准确发布线索：根仓 `e5b7ec6d80259976b8a38e4164b5596311fed15f`，管理仓源码候选 `cec9b34f8284f7b2580a7d219536d32b7b1ee849`，QA 证据提交 `613f3cbc9a58283ff085cee241de9810895cfdb4`。本轮观察管理仓 HEAD 为 `5964606826b604da81593ab13d0adecdb7728dc3`；最新收件与概要部分仍在本地工作树，不能把本地记录冒充全部已推送。接手时重新核实当前 HEAD、差异和实际会话，不回退到这些历史提交。
+
+新任务显式 `qa_policy: streamlined-v1`：作者实现与自检 → 锁定候选 → 一轮独立 QA（代码审查＋功能/必要回归测试）→ COORD 收件。未迁移旧任务继续 legacy，历史 Done 不改签；QA 自编工具/预期的非作者检查、明确的特殊审查和真实 HIL 保留。
+
+### 完整独立 QA 如何触发
+
+这里的完整 QA 指 [VMware＋真机黑盒验收](../planning/independent_qa_vmware_execution_flow_20261103.md)，与每张工程任务的独立代码/软件 QA 分别记录：
+
+1. 两项功能交付后，由 COORD 核实已接受需求、base/delta 用例与工具、可执行构建合同，以及 VMware 独占窗口、快照、台架和操作者；锁定各仓准确服务器候选，建立本轮 `run_id`。
+2. INTEGRATOR/发布工具分配或预留 `release_series + buildno`；受控执行器独立从服务器取源码，在 Docker 构建 AP/UI、MC、TH 并执行软件检查，封存制品、配置、哈希、烧录计划及回退信息。
+3. **授权人员确认目标与计划并实施烧录**，保存部署/校验记录；核对板卡身份、实际固件和环境健康后，才由受控执行器启动 Chrome、真实硬件正常/异常/恢复测试。
+4. 独立 Codex 会话只读审阅同一候选与实际软件/HIL/UI 证据；COORD 核对范围及结果后收件。失败先保存证据并通知 COORD，继续独立可测项；一轮固定候选，新版在规定检查点另建 run。
+
+**提交或推送代码、写入 Issue 文件、启动定时服务都不等于已触发完整验收。** COORD 发起、人员确认烧录、受控执行器执行、独立 Codex 审阅各有实际记录。现有 Runner 的任务级 Docker/Codex 入口不能冒充原生 buildno/VMware/HIL 一键全流程；此专项自动接入能力仍须按真实任务和运行证据核实。
+
+四项已确认选择继续沿用：现有 VMware 独占窗口/冻结快照；两项功能交付后首轮完整验收；已有 MC/TH 和完整台架；自动生成制品及计划、授权人员确认并烧录、随后自动测试。不重复提问。QA→COORD 的自动发现接收适配尚须核实；接通前由 COORD 主动读取封存发现包、登记并回执，不要求用户逐票搬运技术信息。
 
 ## 1. 明天先做什么
 

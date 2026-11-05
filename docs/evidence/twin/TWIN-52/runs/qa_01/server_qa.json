@@ -1,0 +1,63 @@
+{
+  "task_id": "TWIN-52",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "3104b4a4a12e",
+    "id": "TWIN-52_run_104808_20261105_024808",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-52_run_104808_20261105_024808",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "3104b4a4a12e0b17d3ac1448e50892f1e57afaf250fd9feea3bf08867897ce99",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-05T02:48:33.723424961Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-52_run_104808_20261105_024808",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "/tmp/qa_TWIN-52_v9_dvsoi/evidence/server_lock.json",
+    "sha256": "ad62f7d5dd2c6e8d98d81511ce8558dbf1595d4d6a45598360ad4ed996f3a0dd"
+  },
+  "checkout_log": {
+    "path": "/tmp/qa_TWIN-52_v9_dvsoi/evidence/checkout.log",
+    "sha256": "894b455615df2a82b1c2dd894e597f99377036ea910aa14f2bb86f76f22dbe87"
+  },
+  "runtime_log": {
+    "path": "/tmp/qa_TWIN-52_v9_dvsoi/evidence/runtime.log",
+    "sha256": "2db7b0073d9a560bca77c183b49ff0b65055559e63cdc7ed343b8645f6a58a1a"
+  },
+  "server_verdict": {
+    "path": "/tmp/qa_TWIN-52_v9_dvsoi/evidence/server_verdict.json",
+    "sha256": "dcf2b2cd51f54c2af96d6436e0133ec42824e23cf730b7481167f52c20434fdc"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "rm -rf /tmp/qa_twin52 && mkdir -p /tmp/qa_twin52/src && tar -xzf third_party/archives/Fast-CDR-2.2.5.tar.gz -C /tmp/qa_twin52/src && patch -d /tmp/qa_twin52/src/Fast-CDR-2.2.5 -p1 --forward < third_party/patches/Fast-CDR-2.2.5-optional-engaged-guard.patch && test \"$(grep -c \"if (val.storage_.engaged_)\" /tmp/qa_twin52/src/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp)\" -eq 2 && cp -r ../soc-ap /tmp/qa_twin52/soc-ap && ([ -e /tmp/qa_twin52/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin52/soc-ap/third_party && cp -a /usr/local /tmp/qa_twin52/soc-ap/third_party/install)) && cp /tmp/qa_twin52/src/Fast-CDR-2.2.5/include/fastcdr/xcdr/optional.hpp /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp && bash /tmp/qa_twin52/soc-ap/third_party/build.sh && cmake -S /tmp/qa_twin52/soc-ap/middleware/dds/tests -B /tmp/qa_twin52/build_opt_test && cmake --build /tmp/qa_twin52/build_opt_test --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_opt_test --output-on-failure && cmake -S /tmp/qa_twin52/soc-ap/tests/dds/twin -B /tmp/qa_twin52/build_dds_twin && cmake --build /tmp/qa_twin52/build_dds_twin --parallel && LD_LIBRARY_PATH=\"/tmp/qa_twin52/soc-ap/third_party/install/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin52/build_dds_twin --output-on-failure && rm -rf /tmp/qa_twin52",
+      "exit_code": "0",
+      "subpath": "soc-ap",
+      "duration": "6.46s",
+      "output": "patching file include/fastcdr/xcdr/optional.hpp\n--> Unpacking foonathan_memory-0.7-3...\n--> Unpacking Fast-CDR-2.2.5...\n--> Unpacking Fast-DDS-3.6.2...\n--> Unpacking asio into Fast-DDS thirdparty...\n--> Unpacking tinyxml2 into Fast-DDS thirdparty...\n--> Unpacking dbus-1.16.2...\n--> Applying Fast-CDR optional.hpp engaged guard patch...\npatching file include/fastcdr/xcdr/optional.hpp\n  [OK] Fast-CDR optional.hpp patched and verified (2 engaged guards).\n==================================================\nBuild & Installation Verification:\n==================================================\n  [OK] D-Bus library: /tmp/qa_twin52/soc-ap/third_party/install/lib/libdbus-1.so\n  [OK] D-Bus daemon:  /tmp/qa_twin52/soc-ap/third_party/install/bin/dbus-daemon\n  [OK] Fast CDR:      /tmp/qa_twin52/soc-ap/third_party/install/lib/libfastcdr.so\n  [OK] Fast DDS:      /tmp/qa_twin52/soc-ap/third_party/install/lib/libfastdds.so\n  [OK] Fast CDR optional.hpp engaged guard verified: /tmp/qa_twin52/soc-ap/third_party/install/include/fastcdr/xcdr/optional.hpp\nAll requested third_party components verified in /tmp/qa_twin52/soc-ap/third_party/install.\n-- The C compiler identification is GNU 9.4.0\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin52/build_opt_test\n[ 25%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/test_fastcdr_optional.cpp.o\n[ 25%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o\n[ 37%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o\n[ 50%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o\n[ 62%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds.cpp.o\n[ 87%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o\n[ 87%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o\n[100%] Linking CXX executable test_fastcdr_optional\n[100%] Built target test_fastcdr_optional\nTest project /tmp/qa_twin52/build_opt_test\n    Start 1: test_fastcdr_optional\n1/1 Test #1: test_fastcdr_optional ............   Passed    0.11 sec\n\n100% tests passed out of 1\n\nTotal Test time (real) =   0.11 sec\n-- The C compiler identification is GNU 9.4.0\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin52/build_dds_twin\n[ 50%] Building CXX object CMakeFiles/test_dds_pubsub.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o\n[ 50%] Building CXX object CMakeFiles/test_dds_pubsub.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o\n[ 75%] Building CXX object CMakeFiles/test_dds_pubsub.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o\n[ 75%] Building CXX object CMakeFiles/test_dds_pubsub.dir/test_dds_pubsub.cpp.o\n[ 50%] Building CXX object CMakeFiles/test_dds_pubsub.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o\n[ 75%] Building CXX object CMakeFiles/test_dds_pubsub.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o\n[ 87%] Building CXX object CMakeFiles/test_dds_pubsub.dir/tmp/qa_twin52/soc-ap/middleware/dds/src/aisoc_dds.cpp.o\n[100%] Linking CXX executable test_dds_pubsub\n[100%] Built target test_dds_pubsub\nTest project /tmp/qa_twin52/build_dds_twin\n    Start 1: test_dds_pubsub\n1/1 Test #1: test_dds_pubsub ..................   Passed    1.36 sec\n\n100% tests passed out of 1\n\nTotal Test time (real) =   1.36 sec"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-05T02:48:42.940870+00:00"
+}

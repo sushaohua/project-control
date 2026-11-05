@@ -34,12 +34,12 @@ review_assignments:
     reviewer_session: 01a1a6c4-7035-7213-8292-e56b4df57c47
     commit_sha: 333178c66280e785ae1a5c089a6e2a05075cc926
     session_evidence:
-      path: project-control/docs/evidence/twin/TWIN-49/runs/qa_04/codex_events.jsonl
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-49/runs/qa_04/codex_events.jsonl
       sha256: f8b89f993d4893dac3217a92811e10d713976aaf7fbb039520a22f5a97a2d56b
     decision: APPROVED
     reviewed_task_revision: 1
     artifact_version: project-control=17e0887da07ceb3b017623b791b6a6999e837c79; soc-ap=333178c66280e785ae1a5c089a6e2a05075cc926; mcu-p3=016e1236af75f6f19282d6b000f4b1b68bd96cc3; test_harness=30c21f74e74179994eb475c38cc4afc2c1427a26
-    report_path: docs/evidence/twin/TWIN-49/runs/qa_04/qa_review_report.md
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-49/runs/qa_04/qa_review_report.md
     evidence: docs/evidence/twin/TWIN-49/runs/qa_04/qa_review_report.md
     report_sha256: 5a5a8476fdaa16e3108f688c7685c58c79de459e57d07cec15d8eb62acdbbd5f
   verifier_session: null

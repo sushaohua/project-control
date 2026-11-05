@@ -53,11 +53,16 @@ related_work_packages:
 - TASK-002
 depends_on:
 - TWIN-26
+- TWIN-49
 dependency_conditions:
 - task: TWIN-26
   accepted_version: mcu-p3=04231388c842c1ce3e5b71675d0dc118a65edf2e
   acceptance_evidence: docs/evidence/twin/TWIN-26/runs/run_01/qa_review_report.md
   required: 开工前继承TWIN-26 双MCU升级通道与IAP协议基线
+- task: TWIN-49
+  accepted_version: pending
+  acceptance_evidence: docs/evidence/twin/TWIN-49/runs/qa_01/qa_review_report.md
+  required: 开工前继承TWIN-49 forward_service与921600双节点级联协议基线
 scope_status: mapped
 allowed_repositories:
 - soc-ap

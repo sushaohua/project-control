@@ -36,6 +36,7 @@ child_tasks:
 - CR-08
 - TWIN-04
 - AUTO-01
+- TWIN-51
 planning_relations: []
 related_tasks: []
 development_stages:

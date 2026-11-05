@@ -1,8 +1,13 @@
 ---
 id: QA-SIMPLIFY-20261103
-revision: 1
-status: published-qa-approved-awaiting-coord-receipt
+revision: 2
+status: coord-received-effective
 date: 2026-11-03
+received_at: 2026-11-04T09:05:00+08:00
+coord_receiver_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+effective_policy: streamlined-v1
+effective_source_candidate: cec9b34f8284f7b2580a7d219536d32b7b1ee849
+effective_root_candidate: e5b7ec6d80259976b8a38e4164b5596311fed15f
 qa_policy: legacy
 ---
 
@@ -69,3 +74,18 @@ qa_policy: legacy
 **现有 COORD 的收件入口：**[机器核对交付清单](../evidence/qa_streamline_20261103/handoff_manifest.json)。该清单只核对准确候选、旧执行器、两轮证据、会话差异与报告字节，不新增自签 QA。本助理不代替原 COORD 签署收件、不改任何旧任务 Done、不启动服务。现有 COORD 须按上述确切版本收件并登记采用范围后，才可对新任务使用 `streamlined-v1`；未完成旧票仍按本文迁移表处理。
 
 后续证据/本记录作为独立元数据提交发布；受审源码候选始终为 `cec9b34f8284f7b2580a7d219536d32b7b1ee849`，根仓仍为 `e5b7ec6d80259976b8a38e4164b5596311fed15f`，不因证据归档递归换版或再次修改恢复锁。
+
+## COORD 正式收件与生效版本登记（2026-11-04）
+
+- **接管与收件会话**：`ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6`（原 COORD 会话 `8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5` 经人工确认停机；核查后台任务、Docker 容器、`coord_runner.lock` 及 SQLite `in_flight_tasks`/`leases`/`role_jobs` 均为 0 活跃占用）。
+- **准确候选与归档证据核验**：
+  - 管理仓源码候选：`cec9b34f8284f7b2580a7d219536d32b7b1ee849`（9 份受审源码 SHA256 与当前工作树 100% 一致）
+  - 根仓候选：`e5b7ec6d80259976b8a38e4164b5596311fed15f`（根 `AGENTS.md` 与 9 份规则镜像 SHA256 100% 一致，`workspace.json` 恢复锁匹配）
+  - 独立 QA 与交接证据归档提交：`613f3cbc9a58283ff085cee241de9810895cfdb4`（`handoff_manifest.json` 所列 114 份归档文件 SHA256 逐一校验 0 偏差；当前管理仓 HEAD `5964606826b604da81593ab13d0adecdb7728dc3` 完好保留，不回退）
+  - 独立 Codex 主审（`qa_02`，会话 `01a1a1bf-39cd-74a0-a864-16d4f33b6d1c`，容器 `58144a07c319`，196 项测试通过，结论 `APPROVED`）与非作者 ARCH 报告复核（`report_review_02`，会话 `01a1a1c1-8534-7dc1-9a21-612aa61b85d6`，容器 `d5e9523472d7`，196 项测试通过，结论 `APPROVED`）均已核实并直接复用有效证据，不重复执行整轮 Docker 验收。
+- **新流程正式生效版本与适用边界**：
+  - 生效策略标识：`qa_policy: streamlined-v1`
+  - 生效基准版本：`project-control@cec9b34f8284f7b2580a7d219536d32b7b1ee849` + `ai-soc-workspace@e5b7ec6d80259976b8a38e4164b5596311fed15f`
+  - 标准主链：`作者实现与自检 → 锁定候选 → 一轮独立 QA（代码审查 + 功能/必要回归测试） → COORD 收件`
+  - 存量与特殊门禁：新任务显式写入 `qa_policy: streamlined-v1`；未迁移旧任务维持 `legacy`（含报告复核要求），按上文迁移表逐卡处理；QA 自产测试资产非作者独立审查、跨模块/协议/安全特殊变更追加审查、Owner 接受及真实 HIL 要求全部保留。
+  - 收件回执归档：[coord_receipt_20261104.json](../evidence/qa_streamline_20261103/coord_receipt_20261104.json) 与 [handoff_manifest.json](../evidence/qa_streamline_20261103/handoff_manifest.json)。

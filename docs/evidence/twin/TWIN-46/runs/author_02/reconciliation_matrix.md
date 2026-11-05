@@ -1,0 +1,30 @@
+# TWIN-46 Full-Stack Live Gateway (http://127.0.0.1:18085) & 921600 PTY Bidirectional Reconciliation Matrix (`run_id: author_02`)
+
+## 1. Live 921600 POSIX PTY (`hardware` Mode) <-> `forward_service_daemon` <-> `device_manager_daemon` <-> `ui-gateway` Reconciliation Matrix
+
+| Phase / Scenario | Category | `[MC-DBG]` Evidence (Disk Log) | `[TH-DBG]` Evidence (Disk Log) | Live AP HTTP/SSE Snapshot (`http://127.0.0.1:18085`) | Expected Verdict | Actual Verdict (`rc`) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Phase 1: `drive-online` Live 5-Category Positive** | 1. Temperature Reporting & Setpoint | `bed_ddC=600, bed_set_ddC=600, nozzle_ddC=2100, nozzle_set_ddC=2100, drop=0` | `nozzle_ddC=2100, adc_raw=820, pullup_sel=1, drop=0` | `system_status=NORMAL`, HTTP & SSE `temp_update`: `bed.temperature_millic=60000 (OK)`, `tool.temperature_millic=210000 (OK)` | **PASS (`0`)** | **PASS (`0`)** |
+| **Phase 1: `drive-online` Live 5-Category Positive** | 2. Homing & Motion Control | `axes_mask=0x07, homed_mask=0x07, x_mm_x100=1250, y_mm_x100=2500, z_mm_x100=40, feed=1500, motion_state=IDLE` | `N/A (MC local axis planner)` | `GET /api/v1/jobs/status`: `is_homed=true, pos_x_mm=12.5, pos_y_mm=25.0, pos_z_mm=0.4, motion_state=IDLE` | **PASS (`0`)** | **PASS (`0`)** |
+| **Phase 1: `drive-online` Live 5-Category Positive** | 3. 5x5 Bed Leveling Grid | `op=GRID_READ, probe_idx=7, z_offset_um=0, grid_valid=1, status=DONE` | `N/A (MC Z-probe matrix)` | `GET /api/v1/leveling/mesh`: `status=OK`, 2D `5x5` `grid` (`len(grid)==5`, each row `len==5`, `25` valid float points) | **PASS (`0`)** | **PASS (`0`)** |
+| **Phase 1: `drive-online` Live 5-Category Positive** | 4. Filament Feed/Retract & Slot Select | `op=LOAD, slot=1, active_slot=1, filament_present_mask=0x0F, step_state=DONE` | `op=LOAD, slot=1, active_slot=1, filament_present_mask=0x0F, step_state=DONE` | `POST /api/v1/filament/slots`: HTTP `200` (`status=ok, code=0`), `active_slot=1, mask=0x0F` | **PASS (`0`)** | **PASS (`0`)** |
+| **Phase 1: `drive-online` Live 5-Category Positive** | 5. Print Job State Machine | `job_state=IDLE, progress_permille=0, ack_seq=<live_pty_seq>` | `Cascade thermal ready` | `GET /api/v1/jobs/status`: `job_state=IDLE, progress_permille=0, ack_seq=<live_pty_seq>` (after `start->pause->resume->cancel`) | **PASS (`0`)** | **PASS (`0`)** |
+| **Phase 2: Live Negative Fault Interception** | 5-Category Mismatch (`mc_live_mismatch.log`) | `bed_ddC=999, x_mm_x100=9999, grid_valid=0, active_slot=3, job_state=PAUSED` | `nozzle_ddC=2100, drop=0` | Live `NORMAL` snapshot (`bed=60000 mdeg, x=12.5, grid=5x5, slot=1, state=IDLE`) | **REJECT (`1`)** | **REJECT (`1`)** |
+| **Phase 2: Live Negative Fault Interception** | Frame `CRC_ERR` (`mc_live_crc_err.log`) | `dir=ERR, status=CRC_ERR` | `nozzle_ddC=2100, drop=0` | Live `NORMAL` snapshot | **REJECT (`1`)** | **REJECT (`1`)** |
+| **Phase 2: Live Negative Fault Interception** | Ring Buffer Overflow (`mc_live_drop.log`) | `records=15, drop=3` | `nozzle_ddC=2100, drop=0` | Live `NORMAL` snapshot | **REJECT (`1`)** | **REJECT (`1`)** |
+| **Phase 3: `drive-offline` Live Fault Injection** | OFFLINE Sentinel & HTTP 503 Control Lock (`mc_live_offline.log` + `th_live_offline.log`) | `bed_ddC=32767, nozzle_ddC=32767, drop=0` | `nozzle_ddC=32767, adc_raw=4095, drop=0` | `system_status=OFFLINE` (HTTP & SSE equal), `bed.temperature_millic=2147483646, tool.temperature_millic=2147483646`, `POST /api/v1/jobs/start` -> `503`, `POST /api/v1/motion/home` -> `503` | **PASS (`0`)** | **PASS (`0`)** |
+| **Phase 3: `drive-offline` Cross-State Negative** | Online MCU Log (`mc_live_ok.log`) vs Live `OFFLINE` Gateway | `bed_ddC=600, nozzle_ddC=2100` (non-sentinel) | `nozzle_ddC=2100` (non-sentinel) | Live `OFFLINE` snapshot (`temperature_millic=2147483646, control_lock_http_status=503`) | **REJECT (`1`)** | **REJECT (`1`)** |
+| **Phase 4: `drive-recovery` Live Post-Fault Recovery** | All 5 Categories Restored (`mc_live_recovery.log` + `th_live_recovery.log`) | `bed=600/600 ddC, nozzle=2100/2100 ddC, x=1250, y=2500, z=40, homed=0x07, grid_valid=1, slot=1, state=IDLE, drop=0` | `nozzle=2100 ddC, adc=820, pullup=1, slot=1, drop=0` | `system_status=NORMAL`, `bed=60000 mdeg, tool=210000 mdeg, x=12.5, y=25.0, z=0.4, 5x5 grid OK, slot=1, state=IDLE` | **PASS (`0`)** | **PASS (`0`)** |
+
+## 2. Offline Self-Test (`--self-test`) Unit Sentinel & 2D Grid Matrix
+
+| Self-Test Case | Input Fixtures | Verification Target | Verdict |
+| :--- | :--- | :--- | :--- |
+| Positive 5-Category Baseline | `mc_ok.log` + `th_ok.log` + `ap_ok.json` | All 5 categories (`Temperature`, `Motion`, `5x5 Grid`, `Filament`, `Job State`) | **PASS** |
+| Negative 5-Category Mismatch | `mc_ok.log` + `th_ok.log` + `ap_mismatch.json` | All 5 categories fail (`all(not r.passed for r in res_mis)`) | **PASS (Intercepted)** |
+| Negative Frame Error (`CRC_ERR`) | `mc_crc_err.log` + `th_ok.log` + `ap_ok.json` | `dir=ERR` / `status=CRC_ERR` rejected | **PASS (Intercepted)** |
+| Negative Ring Overflow (`drop=3`) | `mc_drop.log` + `th_ok.log` + `ap_ok.json` | `drop>0` rejected | **PASS (Intercepted)** |
+| Positive Offline Sentinel & HTTP 503 | `mc_offline.log` + `th_offline.log` + `ap_offline.json` | `temperature_millic==2147483646`, `temp_deci_c==32767`, `bed_ddC==32767`, `nozzle_ddC==32767`, `control_lock_http_status==503` | **PASS** |
+| Negative Wrong-Unit Sentinel / HTTP 504 | `mc_offline.log` + `th_offline.log` + `ap_bad_offline.json` (`_millic=32767`, `_deci_c=2147483646`, `status=504` / `200`) | Unit-confused sentinel values and non-`503` HTTP status rejected | **PASS (Intercepted)** |
+| Negative Non-Sentinel MCU Log in Offline Mode | `mc_ok.log` + `th_ok.log` + `ap_offline.json` | Online `600`/`2100 ddC` MCU log rejected when AP is `OFFLINE` | **PASS (Intercepted)** |
+| Negative Malformed `1x25` Leveling Grid | `mc_ok.log` + `th_ok.log` + `ap_bad_grid.json` (`[[0.0]*25]`) | Non-`5x5` 2D grid shape rejected by `check_category_leveling()` | **PASS (Intercepted)** |
