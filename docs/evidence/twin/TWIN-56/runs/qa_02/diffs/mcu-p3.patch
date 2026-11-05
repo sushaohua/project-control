@@ -1,0 +1,902 @@
+diff --git a/color-engine-mcu/io_toggle/src/bsp/usart.c b/color-engine-mcu/io_toggle/src/bsp/usart.c
+index 83571b9..2fce6d1 100644
+--- a/color-engine-mcu/io_toggle/src/bsp/usart.c
++++ b/color-engine-mcu/io_toggle/src/bsp/usart.c
+@@ -59,7 +59,7 @@ typedef struct {
+ typedef struct {
+     const char *dir;
+     const char *node;
+-    uint8_t seq;
++    uint16_t seq;
+     uint8_t cmd;
+     const char *status;
+ } th_dbg_meta_t;
+@@ -73,7 +73,7 @@ typedef struct {
+     uint8_t slot;
+     uint8_t active_slot;
+     uint8_t filament_mask;
+-    uint8_t last_seq;
++    uint16_t last_seq;
+     const char *op_str;
+     const char *step_str;
+ } th_dbg_state_t;
+@@ -288,10 +288,11 @@ static void th_dbg_log_frame_err(const uint8_t *hdr, const char *status_str, uin
+   char kv[32];
+   (void)snprintf(kv, sizeof(kv), "err_code=0x%02X", (unsigned int)err_code);
+   const uint8_t node_id = ((hdr[4] & MINIMC_FLAG_IS_RESPONSE) != 0U) ? hdr[2] : hdr[3];
++  const uint16_t seq = (uint16_t)hdr[8] | (uint16_t)((uint16_t)hdr[9] << 8U);
+   const th_dbg_meta_t meta = {
+       "ERR",
+       th_dbg_node_name(node_id),
+-      hdr[8],
++      seq,
+       hdr[5],
+       status_str
+   };
+@@ -389,12 +390,12 @@ static void th_dbg_handle_valid_rx_frame(const uint8_t *frame, uint16_t len)
+     return;
+   }
+   const uint8_t cmd_id = frame[5];
+-  const uint8_t seq_u8 = frame[8];
+-  s_th_dbg_state.last_seq = seq_u8;
++  const uint16_t seq = (uint16_t)frame[8] | (uint16_t)((uint16_t)frame[9] << 8U);
++  s_th_dbg_state.last_seq = seq;
+ 
+   char rx_kv[96];
+   th_dbg_format_rx_kv(frame, len, rx_kv, sizeof(rx_kv));
+-  const th_dbg_meta_t rx_meta = { "RX", th_dbg_node_name(dst_id), seq_u8, cmd_id, "OK" };
++  const th_dbg_meta_t rx_meta = { "RX", th_dbg_node_name(dst_id), seq, cmd_id, "OK" };
+   th_dbg_emit(&rx_meta, rx_kv);
+ }
+ 
+@@ -483,7 +484,7 @@ static void th_dbg_observe_rx_byte(uint8_t byte)
+   }
+ }
+ 
+-static void th_dbg_log_tx_temp_report(const uint8_t *data, uint8_t seq_u8, uint8_t cmd_id)
++static void th_dbg_log_tx_temp_report(const uint8_t *data, uint16_t seq, uint8_t cmd_id)
+ {
+   char kv[128];
+   s_th_dbg_state.nozzle_ddC = (int16_t)((uint16_t)data[12] | ((uint16_t)data[13] << 8U));
+@@ -493,8 +494,8 @@ static void th_dbg_log_tx_temp_report(const uint8_t *data, uint8_t seq_u8, uint8
+   const bool high_temp_range = ((s_th_dbg_state.adc_raw > 0U) && (s_th_dbg_state.adc_raw < 1000U));
+   s_th_dbg_state.pullup_sel = (data[24] != 0U) ? (uint8_t)(data[24] & 0x01U) : (high_temp_range ? 1U : 0U);
+   th_dbg_format_temp_kv(kv, sizeof(kv));
+-  const th_dbg_meta_t st_meta = { "STATE", "TH", seq_u8, cmd_id, "OK" };
+-  const th_dbg_meta_t tx_meta = { "TX", "TH", seq_u8, cmd_id, "ACK" };
++  const th_dbg_meta_t st_meta = { "STATE", "TH", seq, cmd_id, "OK" };
++  const th_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, "ACK" };
+   th_dbg_emit(&st_meta, kv);
+   th_dbg_emit(&tx_meta, kv);
+ }
+@@ -502,26 +503,26 @@ static void th_dbg_log_tx_temp_report(const uint8_t *data, uint8_t seq_u8, uint8
+ /**
+  * @brief 输出 TH 控制类响应帧（0x14/0x15/0x19/0x1C）的调试日志。
+  */
+-static bool th_dbg_log_tx_control_resp(const uint8_t *data, uint16_t len, uint8_t cmd_id, uint8_t seq_u8)
++static bool th_dbg_log_tx_control_resp(const uint8_t *data, uint16_t len, uint8_t cmd_id, uint16_t seq)
+ {
+   char kv[128];
+   if (((cmd_id == MINIMC_CMD_TEMP_REPORT) || (cmd_id == MINIMC_CMD_TEMP_REPORT_V2)) && (len >= 28U))
+   {
+-    th_dbg_log_tx_temp_report(data, seq_u8, cmd_id);
++    th_dbg_log_tx_temp_report(data, seq, cmd_id);
+     return true;
+   }
+   if ((cmd_id == MINIMC_CMD_SLOT_SELECT) && (len == 18U))
+   {
+     th_dbg_format_filament_kv(kv, sizeof(kv));
+-    const th_dbg_meta_t tx_meta = { "TX", "TH", seq_u8, cmd_id, "ACK" };
++    const th_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, "ACK" };
+     th_dbg_emit(&tx_meta, kv);
+     return true;
+   }
+   if ((cmd_id == MINIMC_CMD_GCODE_EXEC) && (len == 18U))
+   {
+     (void)snprintf(kv, sizeof(kv), "exec_status=%u queue_free=%u", (unsigned int)data[12], (unsigned int)data[13]);
+-    const th_dbg_meta_t st_meta = { "STATE", "TH", seq_u8, cmd_id, "OK" };
+-    const th_dbg_meta_t tx_meta = { "TX", "TH", seq_u8, cmd_id, "ACK" };
++    const th_dbg_meta_t st_meta = { "STATE", "TH", seq, cmd_id, "OK" };
++    const th_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, "ACK" };
+     th_dbg_emit(&st_meta, kv);
+     th_dbg_emit(&tx_meta, kv);
+     return true;
+@@ -540,10 +541,10 @@ static void th_dbg_observe_tx_frame(const uint8_t *data, uint16_t len)
+     return;
+   }
+   const uint8_t cmd_id = data[5];
+-  const uint8_t seq_u8 = data[8];
++  const uint16_t seq = (uint16_t)data[8] | (uint16_t)((uint16_t)data[9] << 8U);
+   const uint16_t plen = (uint16_t)data[10] | (uint16_t)((uint16_t)data[11] << 8U);
+-  s_th_dbg_state.last_seq = seq_u8;
+-  if (th_dbg_log_tx_control_resp(data, len, cmd_id, seq_u8))
++  s_th_dbg_state.last_seq = seq;
++  if (th_dbg_log_tx_control_resp(data, len, cmd_id, seq))
+   {
+     return;
+   }
+@@ -551,13 +552,13 @@ static void th_dbg_observe_tx_frame(const uint8_t *data, uint16_t len)
+   if ((cmd_id == MINIMC_CMD_VERSION_REPORT) && (len >= 16U))
+   {
+     (void)snprintf(kv, sizeof(kv), "fw=%u.%u", (unsigned int)data[14], (unsigned int)data[15]);
+-    const th_dbg_meta_t tx_meta = { "TX", "TH", seq_u8, cmd_id, "ACK" };
++    const th_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, "ACK" };
+     th_dbg_emit(&tx_meta, kv);
+     return;
+   }
+   if (cmd_id == MINIMC_CMD_PONG)
+   {
+-    const th_dbg_meta_t tx_meta = { "TX", "TH", seq_u8, cmd_id, "ACK" };
++    const th_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, "ACK" };
+     th_dbg_emit(&tx_meta, "pong=1");
+     return;
+   }
+@@ -565,14 +566,14 @@ static void th_dbg_observe_tx_frame(const uint8_t *data, uint16_t len)
+   {
+     const uint8_t err_code = (plen >= 1U) ? data[12] : 0x04U;
+     (void)snprintf(kv, sizeof(kv), "err_code=0x%02X", (unsigned int)err_code);
+-    const th_dbg_meta_t err_meta = { "ERR", "TH", seq_u8, cmd_id, "BAD_FRAME" };
+-    const th_dbg_meta_t tx_meta = { "TX", "TH", seq_u8, cmd_id, "NACK" };
++    const th_dbg_meta_t err_meta = { "ERR", "TH", seq, cmd_id, "BAD_FRAME" };
++    const th_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, "NACK" };
+     th_dbg_emit(&err_meta, kv);
+     th_dbg_emit(&tx_meta, kv);
+     return;
+   }
+   (void)snprintf(kv, sizeof(kv), "len=%u", (unsigned int)len);
+-  const th_dbg_meta_t tx_meta = { "TX", "TH", seq_u8, cmd_id, "ACK" };
++  const th_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, "ACK" };
+   th_dbg_emit(&tx_meta, kv);
+ }
+ 
+diff --git a/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c b/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
+index 42155a2..e474f1b 100644
+--- a/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
++++ b/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
+@@ -415,7 +415,7 @@ static void push_usart1_rx_bytes(const uint8_t *bytes, uint16_t len)
+     }
+ }
+ 
+-static void inject_minimc_req(uint8_t seq, uint8_t cmd, const uint8_t *payload, uint16_t plen)
++static void inject_minimc_req(uint16_t seq, uint8_t cmd, const uint8_t *payload, uint16_t plen)
+ {
+     uint8_t frame[MINIMC_MAX_FRAME_SIZE];
+     frame[0] = MINIMC_SOF_1;
+@@ -426,8 +426,8 @@ static void inject_minimc_req(uint8_t seq, uint8_t cmd, const uint8_t *payload,
+     frame[5] = cmd;
+     frame[6] = 3U;
+     frame[7] = MINIMC_ROUTE_IS_ROUTED;
+-    frame[8] = seq;
+-    frame[9] = 0U;
++    frame[8] = (uint8_t)(seq & 0xFFU);
++    frame[9] = (uint8_t)((seq >> 8U) & 0xFFU);
+     frame[10] = (uint8_t)(plen & 0xFFU);
+     frame[11] = (uint8_t)((plen >> 8U) & 0xFFU);
+     if ((payload != NULL) && (plen > 0U))
+@@ -582,33 +582,36 @@ static void test_negative_crc_err_bad_frame_and_recovery(void)
+     minimc_proto_init();
+     clear_capture();
+ 
+-    /* 1. CRC error frame -> dir=ERR status=CRC_ERR */
++    /* 1. CRC error frame (seq=517 / 0x0205) -> dir=ERR status=CRC_ERR */
+     const uint8_t bad_crc_frame[14] = {
+         0x55U, 0xAAU, 0x02U, 0x03U, 0x05U, 0x14U, 0x03U, 0x04U,
+-        10U,   0x00U, 0x00U, 0x00U, 0xDEU, 0xADU
++        0x05U, 0x02U, 0x00U, 0x00U, 0xDEU, 0xADU
+     };
+     push_usart1_rx_bytes(bad_crc_frame, sizeof(bad_crc_frame));
+     minimc_proto_poll();
+     drain_usart3_dma();
+     assert(s_usart1_last_tx_len == 0U);
+-    assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=10 cmd=0x14 status=CRC_ERR err_code=0x01") != NULL);
++    assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=517 cmd=0x14 status=CRC_ERR err_code=0x01") != NULL);
+ 
+-    /* 2. Malformed frame with payload_len=100 (>64) -> dir=ERR status=BAD_FRAME */
++    /* 2. Malformed frame (seq=518 / 0x0206) with payload_len=100 (>64) -> dir=ERR status=BAD_FRAME */
+     const uint8_t bad_len_hdr[12] = {
+         0x55U, 0xAAU, 0x02U, 0x03U, 0x05U, 0x14U, 0x03U, 0x04U,
+-        11U,   0x00U, 100U,  0x00U
++        0x06U, 0x02U, 100U,  0x00U
+     };
+     push_usart1_rx_bytes(bad_len_hdr, sizeof(bad_len_hdr));
+     minimc_proto_poll();
+     drain_usart3_dma();
+-    assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=11 cmd=0x14 status=BAD_FRAME err_code=0x02") != NULL);
++    assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=518 cmd=0x14 status=BAD_FRAME err_code=0x02") != NULL);
+ 
+-    /* 3. Verify USART1 cascade recovery immediately after CRC_ERR / BAD_FRAME */
++    /* 3. Unknown cmd 0xFE (seq=518) -> NACK 0x04, then USART1 cascade recovery (seq=519) */
+     clear_capture();
+-    inject_minimc_req(12U, MINIMC_CMD_GET_TEMP, NULL, 0U);
++    inject_minimc_req(518U, 0xFEU, NULL, 0U);
++    assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=518 cmd=0x06 status=BAD_FRAME err_code=0x04") != NULL);
++    assert(strstr(s_usart3_capture, "dir=TX node=TH seq=518 cmd=0x06 status=NACK err_code=0x04") != NULL);
++    inject_minimc_req(519U, MINIMC_CMD_GET_TEMP, NULL, 0U);
+     assert(s_usart1_last_tx_len == 30U);
+-    assert(strstr(s_usart3_capture, "dir=RX node=TH seq=12 cmd=0x14 status=OK len=14") != NULL);
+-    assert(strstr(s_usart3_capture, "dir=TX node=TH seq=12 cmd=0x14 status=ACK") != NULL);
++    assert(strstr(s_usart3_capture, "dir=RX node=TH seq=519 cmd=0x14 status=OK len=14") != NULL);
++    assert(strstr(s_usart3_capture, "dir=TX node=TH seq=519 cmd=0x14 status=ACK") != NULL);
+     printf("[PASS] test_negative_crc_err_bad_frame_and_recovery\n");
+ }
+ 
+@@ -839,9 +842,11 @@ static void test_twin48_gcode_queue_and_send_quick(void)
+     assert(s_usart1_last_tx[13] == 0U);
+     th_control_poll_once();
+     assert(th_control_get_queue_free() == 1U);
+-    inject_minimc_req(71U, MINIMC_CMD_GCODE_EXEC, gcode_pay, 11U);
++    inject_minimc_req(0x0101U, MINIMC_CMD_GCODE_EXEC, gcode_pay, 11U);
+     assert(s_usart1_last_tx[12] == 0U);
+-    assert(strstr(s_usart3_capture, "dir=TX node=TH seq=71 cmd=0x1C status=ACK exec_status=0") != NULL);
++    assert(strstr(s_usart3_capture, "dir=RX node=TH seq=257 cmd=0x1C status=OK") != NULL);
++    assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=257 cmd=0x1C status=OK exec_status=0") != NULL);
++    assert(strstr(s_usart3_capture, "dir=TX node=TH seq=257 cmd=0x1C status=ACK exec_status=0") != NULL);
+ 
+     clear_capture();
+     send_quick("ok1\n");
+diff --git a/motion-controller-mcu/project/inc/minimc_proto.h b/motion-controller-mcu/project/inc/minimc_proto.h
+index a467d95..b7a4ed0 100644
+--- a/motion-controller-mcu/project/inc/minimc_proto.h
++++ b/motion-controller-mcu/project/inc/minimc_proto.h
+@@ -258,7 +258,7 @@ void mc_debug_log_periodic_state(uint32_t now_ms);
+ void mc_debug_notify_temp_target(int16_t nozzle_set_ddC, int16_t bed_set_ddC);
+ void mc_debug_notify_motion(const char *op, uint8_t axes_mask, uint16_t feed);
+ void mc_debug_notify_filament(const char *op, uint8_t slot, uint8_t present_mask, const char *step_state);
+-void mc_debug_notify_job(uint8_t job_state_id, uint16_t progress_permille, uint8_t ack_seq);
++void mc_debug_notify_job(uint8_t job_state_id, uint16_t progress_permille, uint16_t ack_seq);
+ 
+ #ifdef __cplusplus
+ }
+diff --git a/motion-controller-mcu/project/src/minimc_proto.c b/motion-controller-mcu/project/src/minimc_proto.c
+index 69d0f8f..12cdac8 100644
+--- a/motion-controller-mcu/project/src/minimc_proto.c
++++ b/motion-controller-mcu/project/src/minimc_proto.c
+@@ -119,7 +119,7 @@ typedef struct {
+ typedef struct {
+     const char *dir;
+     const char *node;
+-    uint8_t seq;
++    uint16_t seq;
+     uint8_t cmd;
+     const char *status;
+ } mc_dbg_meta_t;
+@@ -135,7 +135,7 @@ typedef struct {
+     uint8_t active_slot;
+     uint8_t filament_mask;
+     uint16_t progress_permille;
+-    uint8_t ack_seq;
++    uint16_t ack_seq;
+     uint8_t job_state_id;
+ } mc_dbg_state_t;
+ 
+@@ -155,7 +155,7 @@ static uint32_t s_last_state_log_ms = 0U;
+ static bool s_state_log_init = false;
+ static bool s_relay_pending = false;
+ static bool s_relay_from_mc_local = false;
+-static uint8_t s_relay_seq = 0U;
++static uint16_t s_relay_seq = 0U;
+ static uint16_t s_relay_seq16 = 0U;
+ static uint8_t s_relay_cmd = 0U;
+ static uint32_t s_relay_start_ms = 0U;
+@@ -492,10 +492,11 @@ static void mc_dbg_log_frame_err(const uint8_t *hdr, const char *status_str, uin
+     }
+     char kv[32];
+     (void)snprintf(kv, sizeof(kv), "err_code=0x%02X", (unsigned int)err_code);
++    const uint16_t seq = (uint16_t)hdr[8] | (uint16_t)((uint16_t)hdr[9] << 8U);
+     const mc_dbg_meta_t meta = {
+         "ERR",
+         mc_dbg_node_name(hdr[3]),
+-        hdr[8],
++        seq,
+         hdr[5],
+         status_str
+     };
+@@ -956,13 +957,13 @@ static void mc_dbg_format_job_kv(char *out_kv, size_t cap)
+         (unsigned int)s_dbg_state.ack_seq);
+ }
+ 
+-static void mc_dbg_log_tx_err(const char *node_str, uint8_t seq_u8, uint8_t cmd_id)
++static void mc_dbg_log_tx_err(const char *node_str, uint16_t seq, uint8_t cmd_id)
+ {
+     if (node_str == NULL)
+     {
+         return;
+     }
+-    const mc_dbg_meta_t err_meta = { "ERR", node_str, seq_u8, cmd_id, "TX_ERR" };
++    const mc_dbg_meta_t err_meta = { "ERR", node_str, seq, cmd_id, "TX_ERR" };
+     mc_dbg_emit(&err_meta, "err_code=0x06");
+ }
+ 
+@@ -981,17 +982,17 @@ static void mc_dbg_emit_tx_or_err(const mc_dbg_meta_t *tx_meta, const char *kv,
+     mc_dbg_emit(tx_meta, kv);
+ }
+ 
+-static void mc_dbg_emit_state_and_tx(uint8_t seq_u8, uint8_t cmd_id, const char *kv, bool tx_ok)
++static void mc_dbg_emit_state_and_tx(uint16_t seq, uint8_t cmd_id, const char *kv, bool tx_ok)
+ {
+     if (!tx_ok)
+     {
+-        mc_dbg_log_tx_err("MC", seq_u8, cmd_id);
++        mc_dbg_log_tx_err("MC", seq, cmd_id);
+         return;
+     }
+-    s_dbg_state.ack_seq = seq_u8;
++    s_dbg_state.ack_seq = seq;
+     mc_dbg_sync_runtime_state();
+-    const mc_dbg_meta_t state_meta = { "STATE", "MC", seq_u8, cmd_id, "OK" };
+-    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, cmd_id, "ACK" };
++    const mc_dbg_meta_t state_meta = { "STATE", "MC", seq, cmd_id, "OK" };
++    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, cmd_id, "ACK" };
+     mc_dbg_emit(&state_meta, kv);
+     mc_dbg_emit(&tx_meta, kv);
+ }
+@@ -1053,7 +1054,7 @@ void mc_debug_notify_filament(const char *op, uint8_t slot, uint8_t present_mask
+     mc_dbg_emit(&state_meta, kv);
+ }
+ 
+-void mc_debug_notify_job(uint8_t job_state_id, uint16_t progress_permille, uint8_t ack_seq)
++void mc_debug_notify_job(uint8_t job_state_id, uint16_t progress_permille, uint16_t ack_seq)
+ {
+     s_dbg_state.job_state_id = (uint8_t)(job_state_id % 7U);
+     s_dbg_state.progress_permille = progress_permille;
+@@ -1158,14 +1159,13 @@ static void send_mc_nack(const uint8_t *frame, uint16_t seq, uint8_t err_code)
+ {
+     uint8_t resp[32];
+     uint16_t resp_len = 0U;
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+     const char *st_str = (err_code == 0x04U) ? "BAD_CMD" : "BAD_FRAME";
+     char kv[32];
+     mc_dbg_log_frame_err(frame, st_str, err_code);
+     build_nack_resp(seq, err_code, resp, &resp_len);
+     const bool tx_ok = minimc_proto_send(resp, resp_len);
+     (void)snprintf(kv, sizeof(kv), "err_code=0x%02X", (unsigned int)err_code);
+-    const mc_dbg_meta_t nack_meta = { "TX", "MC", seq_u8, MINIMC_CMD_NACK, "NACK" };
++    const mc_dbg_meta_t nack_meta = { "TX", "MC", seq, MINIMC_CMD_NACK, "NACK" };
+     mc_dbg_emit_tx_or_err(&nack_meta, kv, tx_ok);
+ }
+ 
+@@ -1179,11 +1179,10 @@ static void send_pos_query_ack(uint16_t seq, const char *op_str)
+     uint8_t resp[64];
+     uint16_t resp_len = 0U;
+     char kv[160];
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+     build_pos_resp(seq, resp, &resp_len);
+     const bool tx_ok = minimc_proto_send(resp, resp_len);
+     mc_dbg_format_motion_kv(op_str, kv, sizeof(kv));
+-    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_POS_QUERY, "ACK" };
++    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_POS_QUERY, "ACK" };
+     mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+ }
+ 
+@@ -1197,11 +1196,10 @@ static void send_level_grid_ack(uint16_t seq, uint8_t probe_idx)
+     uint8_t resp[128];
+     uint16_t resp_len = 0U;
+     char kv[160];
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+     build_level_grid_resp(seq, resp, &resp_len);
+     const bool tx_ok = ((resp_len > 0U) && (resp_len <= 128U)) ? minimc_proto_send(resp, resp_len) : false;
+     mc_dbg_format_level_kv("GRID_READ", probe_idx, kv, sizeof(kv));
+-    mc_dbg_emit_state_and_tx(seq_u8, MINIMC_CMD_LEVEL_GRID_QUERY, kv, tx_ok);
++    mc_dbg_emit_state_and_tx(seq, MINIMC_CMD_LEVEL_GRID_QUERY, kv, tx_ok);
+ }
+ 
+ /**
+@@ -1213,10 +1211,9 @@ static void send_level_grid_ack(uint16_t seq, uint8_t probe_idx)
+  */
+ static void trigger_mc_to_th_cascade(uint8_t cmd_id, uint16_t seq, const void *payload, uint16_t plen)
+ {
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+     if ((plen > MINIMC_MAX_PAYLOAD_SIZE) || s_relay_pending)
+     {
+-        mc_dbg_log_tx_err("TH", seq_u8, cmd_id);
++        mc_dbg_log_tx_err("TH", seq, cmd_id);
+         return;
+     }
+     uint8_t frame[MINIMC_MAX_FRAME_SIZE];
+@@ -1228,7 +1225,7 @@ static void trigger_mc_to_th_cascade(uint8_t cmd_id, uint16_t seq, const void *p
+     frame[5] = cmd_id;
+     frame[6] = MINIMC_DEFAULT_HOP_LIMIT;
+     frame[7] = MINIMC_DEFAULT_ROUTE;
+-    frame[8] = seq_u8;
++    frame[8] = (uint8_t)(seq & 0xFFU);
+     frame[9] = (uint8_t)((seq >> 8U) & 0xFFU);
+     frame[10] = (uint8_t)(plen & 0xFFU);
+     frame[11] = (uint8_t)((plen >> 8U) & 0xFFU);
+@@ -1246,11 +1243,11 @@ static void trigger_mc_to_th_cascade(uint8_t cmd_id, uint16_t seq, const void *p
+     }
+     s_relay_pending = true;
+     s_relay_from_mc_local = true;
+-    s_relay_seq = seq_u8;
++    s_relay_seq = seq;
+     s_relay_seq16 = seq;
+     s_relay_cmd = cmd_id;
+     s_relay_start_ms = wk_timebase_get();
+-    const mc_dbg_meta_t rtx_meta = { "RELAY_TX", "TH", seq_u8, cmd_id, "EXEC" };
++    const mc_dbg_meta_t rtx_meta = { "RELAY_TX", "TH", seq, cmd_id, "EXEC" };
+     mc_dbg_emit(&rtx_meta, "timeout_ms=200");
+ }
+ 
+@@ -1281,8 +1278,7 @@ static void handle_mc_set_temp(uint16_t seq, const uint8_t *frame, uint16_t plen
+         bed_ddC = req.bed_target_deci_c;
+         Heater_set_target_temperature(&Platform, (int16_t)(bed_ddC / 10));
+     }
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+-    s_dbg_state.ack_seq = seq_u8;
++    s_dbg_state.ack_seq = seq;
+     mc_debug_notify_temp_target(nozzle_ddC, bed_ddC);
+     uint8_t resp[64];
+     uint16_t resp_len = 0U;
+@@ -1290,7 +1286,7 @@ static void handle_mc_set_temp(uint16_t seq, const uint8_t *frame, uint16_t plen
+     build_temp_resp(seq, resp, &resp_len);
+     const bool tx_ok = minimc_proto_send(resp, resp_len);
+     mc_dbg_format_temp_kv(kv, sizeof(kv));
+-    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_TEMP_REPORT, "ACK" };
++    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_TEMP_REPORT, "ACK" };
+     mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+     if (tx_ok && (req.nozzle_target_deci_c >= 0))
+     {
+@@ -1345,7 +1341,7 @@ static void handle_mc_home(uint16_t seq, const uint8_t *frame, uint16_t plen)
+         current_position[Z_AXIS] = 0.0f;
+         axis_known_position[Z_AXIS] = true;
+     }
+-    s_dbg_state.ack_seq = (uint8_t)(seq & 0xFFU);
++    s_dbg_state.ack_seq = seq;
+     mc_debug_notify_motion("HOME", axes_mask, feed);
+     send_pos_query_ack(seq, "HOME");
+ }
+@@ -1391,7 +1387,7 @@ static void handle_mc_move(uint16_t seq, const uint8_t *frame, uint16_t plen)
+         (double)current_position[Z_AXIS],
+         (unsigned int)feed);
+     mc_proto_enqueue_gcode(gcode);
+-    s_dbg_state.ack_seq = (uint8_t)(seq & 0xFFU);
++    s_dbg_state.ack_seq = seq;
+     mc_debug_notify_motion("MOVE", req.axes_mask, feed);
+     send_pos_query_ack(seq, "MOVE");
+ }
+@@ -1477,19 +1473,18 @@ static void handle_mc_job_control(uint16_t seq, const uint8_t *frame, uint16_t p
+     (void)memcpy(&req, frame + MINIMC_HEADER_SIZE, sizeof(req));
+     uint8_t dbg_state = 0U;
+     uint8_t resp_state = 0U;
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+     update_job_state_machine(&req, &dbg_state, &resp_state);
+-    mc_debug_notify_job(dbg_state, s_dbg_state.progress_permille, seq_u8);
++    mc_debug_notify_job(dbg_state, s_dbg_state.progress_permille, seq);
+     minimc_job_resp_t resp_pay;
+     resp_pay.job_state = resp_state;
+-    resp_pay.ack_seq = seq_u8;
++    resp_pay.ack_seq = (uint8_t)(seq & 0xFFU);
+     resp_pay.progress_permille = s_dbg_state.progress_permille;
+     resp_pay.executed_lines = s_job_executed_lines;
+     resp_pay.total_lines = s_job_total_lines;
+     const bool tx_ok = send_mc_ack_frame(MINIMC_CMD_JOB_CONTROL, seq, &resp_pay, sizeof(resp_pay));
+     char kv[128];
+     mc_dbg_format_job_kv(kv, sizeof(kv));
+-    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_JOB_CONTROL, "ACK" };
++    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_JOB_CONTROL, "ACK" };
+     mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+ }
+ 
+@@ -1510,13 +1505,12 @@ static void handle_mc_motion_stop(uint16_t seq, const uint8_t *frame, uint16_t p
+     {
+         is_paused = 0U;
+     }
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+-    s_dbg_state.ack_seq = seq_u8;
++    s_dbg_state.ack_seq = seq;
+     mc_debug_notify_motion("STOP", 0U, 0U);
+     const bool tx_ok = send_mc_ack_frame(MINIMC_CMD_ACK, seq, NULL, 0U);
+     char kv[160];
+     mc_dbg_format_motion_kv("STOP", kv, sizeof(kv));
+-    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_ACK, "ACK" };
++    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_ACK, "ACK" };
+     mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+ }
+ 
+@@ -1572,14 +1566,13 @@ static void handle_mc_filament(uint8_t cmd_id, uint16_t seq, const uint8_t *fram
+         op_str = "UNLOAD";
+     }
+     active_extruder = safe_slot;
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+-    s_dbg_state.ack_seq = seq_u8;
++    s_dbg_state.ack_seq = seq;
+     mc_debug_notify_filament(op_str, safe_slot, s_dbg_state.filament_mask, "DONE");
+     minimc_filament_resp_t resp_pay = { safe_slot, s_dbg_state.filament_mask, 4U, 0U };
+     const bool tx_ok = send_mc_ack_frame(MINIMC_CMD_SLOT_SELECT, seq, &resp_pay, sizeof(resp_pay));
+     char kv[128];
+     mc_dbg_format_filament_kv(op_str, safe_slot, "DONE", kv);
+-    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_SLOT_SELECT, "ACK" };
++    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_SLOT_SELECT, "ACK" };
+     mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+     if (tx_ok)
+     {
+@@ -1590,15 +1583,15 @@ static void handle_mc_filament(uint8_t cmd_id, uint16_t seq, const uint8_t *fram
+ /**
+  * @brief 根据注入的 G-code 文本同步更新 MC 状态与调试事件
+  * @param gcode G-code 零结尾字符串
+- * @param seq_u8 8位序列号
++ * @param seq 16位序列号
+  */
+-static void mc_apply_gcode_side_effects(const char *gcode, uint8_t seq_u8)
++static void mc_apply_gcode_side_effects(const char *gcode, uint16_t seq)
+ {
+     if (gcode == NULL)
+     {
+         return;
+     }
+-    s_dbg_state.ack_seq = seq_u8;
++    s_dbg_state.ack_seq = seq;
+     if (strncmp(gcode, "G28", 3U) == 0)
+     {
+         current_position[X_AXIS] = 0.0f;
+@@ -1640,13 +1633,12 @@ static void handle_mc_gcode_exec(uint16_t seq, const uint8_t *frame, uint16_t pl
+     (void)memcpy(gcode, frame + MINIMC_HEADER_SIZE + 2U, line_len);
+     gcode[line_len] = '\0';
+     mc_proto_enqueue_gcode(gcode);
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+-    mc_apply_gcode_side_effects(gcode, seq_u8);
++    mc_apply_gcode_side_effects(gcode, seq);
+     minimc_gcode_resp_t resp_pay = { 0U, 4U, seq };
+     const bool tx_ok = send_mc_ack_frame(MINIMC_CMD_GCODE_EXEC, seq, &resp_pay, sizeof(resp_pay));
+     char kv[96];
+     (void)snprintf(kv, sizeof(kv), "gcode_len=%u status=OK", (unsigned int)line_len);
+-    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_GCODE_EXEC, "ACK" };
++    const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_GCODE_EXEC, "ACK" };
+     mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+     if (tx_ok)
+     {
+@@ -1657,7 +1649,6 @@ static void handle_mc_gcode_exec(uint16_t seq, const uint8_t *frame, uint16_t pl
+ static bool handle_mc_core_queries(uint8_t cmd_id, uint16_t seq, const uint8_t *frame, uint8_t *resp)
+ {
+     uint16_t resp_len = 0U;
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+     char kv[128];
+ 
+     if (cmd_id == MINIMC_CMD_GET_VERSION)
+@@ -1665,7 +1656,7 @@ static bool handle_mc_core_queries(uint8_t cmd_id, uint16_t seq, const uint8_t *
+         build_version_resp(seq, resp, &resp_len);
+         const bool tx_ok = minimc_proto_send(resp, resp_len);
+         (void)snprintf(kv, sizeof(kv), "fw=%u.%u", (unsigned int)FW_VERSION_MAJOR, (unsigned int)FW_VERSION_MINOR);
+-        const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_VERSION_REPORT, "ACK" };
++        const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_VERSION_REPORT, "ACK" };
+         mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+         return true;
+     }
+@@ -1673,7 +1664,7 @@ static bool handle_mc_core_queries(uint8_t cmd_id, uint16_t seq, const uint8_t *
+     {
+         build_pong_resp(seq, frame + MINIMC_HEADER_SIZE, resp, &resp_len);
+         const bool tx_ok = minimc_proto_send(resp, resp_len);
+-        const mc_dbg_meta_t tx_meta = { "TX", "MC", seq_u8, MINIMC_CMD_PONG, "ACK" };
++        const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_PONG, "ACK" };
+         mc_dbg_emit_tx_or_err(&tx_meta, "pong=1", tx_ok);
+         return true;
+     }
+@@ -1682,7 +1673,7 @@ static bool handle_mc_core_queries(uint8_t cmd_id, uint16_t seq, const uint8_t *
+         build_temp_resp(seq, resp, &resp_len);
+         const bool tx_ok = minimc_proto_send(resp, resp_len);
+         mc_dbg_format_temp_kv(kv, sizeof(kv));
+-        mc_dbg_emit_state_and_tx(seq_u8, cmd_id, kv, tx_ok);
++        mc_dbg_emit_state_and_tx(seq, cmd_id, kv, tx_ok);
+         return true;
+     }
+     return false;
+@@ -1691,7 +1682,6 @@ static bool handle_mc_core_queries(uint8_t cmd_id, uint16_t seq, const uint8_t *
+ static bool handle_mc_motion_and_level(uint8_t cmd_id, uint16_t seq, const uint8_t *frame, uint8_t *resp)
+ {
+     uint16_t resp_len = 0U;
+-    const uint8_t seq_u8 = (uint8_t)(seq & 0xFFU);
+     const uint16_t plen = (uint16_t)frame[10] | (uint16_t)((uint16_t)frame[11] << 8U);
+     char kv[160];
+ 
+@@ -1700,7 +1690,7 @@ static bool handle_mc_motion_and_level(uint8_t cmd_id, uint16_t seq, const uint8
+         build_pos_resp(seq, resp, &resp_len);
+         const bool tx_ok = minimc_proto_send(resp, resp_len);
+         mc_dbg_format_motion_kv("POS_QUERY", kv, sizeof(kv));
+-        mc_dbg_emit_state_and_tx(seq_u8, cmd_id, kv, tx_ok);
++        mc_dbg_emit_state_and_tx(seq, cmd_id, kv, tx_ok);
+         return true;
+     }
+     if (cmd_id == MINIMC_CMD_LEVEL_GRID_QUERY)
+@@ -1800,7 +1790,7 @@ static void handle_mc_query(const uint8_t *frame, uint16_t len)
+ static void handle_th_relay_req(const uint8_t *frame, uint16_t len)
+ {
+     const uint8_t cmd_id = frame[5];
+-    const uint8_t seq_u8 = frame[8];
++    const uint16_t seq = (uint16_t)frame[8] | (uint16_t)((uint16_t)frame[9] << 8U);
+     if (frame[6] <= 1U)
+     {
+         mc_dbg_log_frame_err(frame, "BAD_FRAME", 0x05U);
+@@ -1808,23 +1798,23 @@ static void handle_th_relay_req(const uint8_t *frame, uint16_t len)
+     }
+     if (s_relay_pending)
+     {
+-        mc_dbg_log_tx_err("TH", seq_u8, cmd_id);
++        mc_dbg_log_tx_err("TH", seq, cmd_id);
+         return;
+     }
+     uint8_t relay_buf[MINIMC_MAX_FRAME_SIZE];
+     relay_frame(frame, len, relay_buf);
+     if (!forward_uart_send_raw(relay_buf, len))
+     {
+-        mc_dbg_log_tx_err("TH", seq_u8, cmd_id);
++        mc_dbg_log_tx_err("TH", seq, cmd_id);
+         return;
+     }
+     s_relay_pending = true;
+     s_relay_from_mc_local = false;
+-    s_relay_seq = seq_u8;
+-    s_relay_seq16 = (uint16_t)frame[8] | (uint16_t)((uint16_t)frame[9] << 8U);
++    s_relay_seq = seq;
++    s_relay_seq16 = seq;
+     s_relay_cmd = cmd_id;
+     s_relay_start_ms = wk_timebase_get();
+-    const mc_dbg_meta_t rtx_meta = { "RELAY_TX", "TH", seq_u8, cmd_id, "EXEC" };
++    const mc_dbg_meta_t rtx_meta = { "RELAY_TX", "TH", seq, cmd_id, "EXEC" };
+     mc_dbg_emit(&rtx_meta, "timeout_ms=200");
+ }
+ 
+@@ -1836,10 +1826,10 @@ static void handle_ap_frame(const uint8_t *frame, uint16_t len)
+     }
+     const uint8_t dst_id = frame[3];
+     const uint8_t cmd_id = frame[5];
+-    const uint8_t seq_u8 = frame[8];
++    const uint16_t seq = (uint16_t)frame[8] | (uint16_t)((uint16_t)frame[9] << 8U);
+     char rx_kv[48];
+     (void)snprintf(rx_kv, sizeof(rx_kv), "len=%u", (unsigned int)len);
+-    const mc_dbg_meta_t rx_meta = { "RX", mc_dbg_node_name(dst_id), seq_u8, cmd_id, "OK" };
++    const mc_dbg_meta_t rx_meta = { "RX", mc_dbg_node_name(dst_id), seq, cmd_id, "OK" };
+     mc_dbg_emit(&rx_meta, rx_kv);
+ 
+     if ((dst_id == MINIMC_NODE_MC) || (dst_id == 0xFFU))
+@@ -1925,9 +1915,9 @@ static bool validate_th_relay_resp(const uint8_t *frame, uint8_t *out_err_code)
+ /**
+  * @brief 当收到 TH 返回的 0x15 温度报告或 0x1C G-code 响应时同步 MC 状态
+  * @param frame TH 响应帧指针
+- * @param seq_u8 8位序列号
++ * @param seq 16位序列号
+  */
+-static void sync_th_temp_and_gcode_state(const uint8_t *frame, uint8_t seq_u8)
++static void sync_th_temp_and_gcode_state(const uint8_t *frame, uint16_t seq)
+ {
+     if (frame == NULL)
+     {
+@@ -1942,7 +1932,7 @@ static void sync_th_temp_and_gcode_state(const uint8_t *frame, uint8_t seq_u8)
+         (void)memcpy(&th_temp, frame + MINIMC_HEADER_SIZE, sizeof(th_temp));
+         s_dbg_state.nozzle_ddC = th_temp.current_temp_deci_c;
+         s_dbg_state.nozzle_set_ddC = th_temp.target_temp_deci_c;
+-        s_dbg_state.ack_seq = seq_u8;
++        s_dbg_state.ack_seq = seq;
+         char kv[128];
+         (void)snprintf(
+             kv,
+@@ -1953,7 +1943,7 @@ static void sync_th_temp_and_gcode_state(const uint8_t *frame, uint8_t seq_u8)
+             (int)s_dbg_state.bed_ddC,
+             (int)s_dbg_state.bed_set_ddC,
+             (unsigned int)s_dbg_state.heater_fault);
+-        const mc_dbg_meta_t state_meta = { "STATE", "MC", seq_u8, MINIMC_CMD_SET_TEMP, "OK" };
++        const mc_dbg_meta_t state_meta = { "STATE", "MC", seq, MINIMC_CMD_SET_TEMP, "OK" };
+         mc_dbg_emit(&state_meta, kv);
+         return;
+     }
+@@ -1961,10 +1951,10 @@ static void sync_th_temp_and_gcode_state(const uint8_t *frame, uint8_t seq_u8)
+     {
+         minimc_gcode_resp_t g_resp;
+         (void)memcpy(&g_resp, frame + MINIMC_HEADER_SIZE, sizeof(g_resp));
+-        s_dbg_state.ack_seq = seq_u8;
++        s_dbg_state.ack_seq = seq;
+         char kv[64];
+         (void)snprintf(kv, sizeof(kv), "gcode_status=%u queue_free=%u", (unsigned int)g_resp.status, (unsigned int)g_resp.queue_free);
+-        const mc_dbg_meta_t state_meta = { "STATE", "TH", seq_u8, MINIMC_CMD_GCODE_EXEC, "OK" };
++        const mc_dbg_meta_t state_meta = { "STATE", "TH", seq, MINIMC_CMD_GCODE_EXEC, "OK" };
+         mc_dbg_emit(&state_meta, kv);
+     }
+ }
+@@ -1972,9 +1962,9 @@ static void sync_th_temp_and_gcode_state(const uint8_t *frame, uint8_t seq_u8)
+ /**
+  * @brief 当收到 TH 返回的 0x19 耗材响应帧时同步更新 MC 侧 [MC-DBG] 状态
+  * @param frame TH 响应帧指针
+- * @param seq_u8 8位序列号
++ * @param seq 16位序列号
+  */
+-static void sync_th_filament_resp_state(const uint8_t *frame, uint8_t seq_u8)
++static void sync_th_filament_resp_state(const uint8_t *frame, uint16_t seq)
+ {
+     if (frame == NULL)
+     {
+@@ -2006,7 +1996,7 @@ static void sync_th_filament_resp_state(const uint8_t *frame, uint8_t seq_u8)
+         step_str = "FAULT";
+     }
+     active_extruder = active_slot;
+-    s_dbg_state.ack_seq = seq_u8;
++    s_dbg_state.ack_seq = seq;
+     mc_debug_notify_filament("SELECT", active_slot, present_mask, step_str);
+ }
+ 
+@@ -2016,24 +2006,24 @@ static void handle_th_frame(const uint8_t *frame, uint16_t len)
+     {
+         return;
+     }
++    const uint16_t seq = (uint16_t)frame[8] | (uint16_t)((uint16_t)frame[9] << 8U);
+     uint8_t err_code = 0x07U;
+     if (!validate_th_relay_resp(frame, &err_code))
+     {
+         char err_kv[32];
+         (void)snprintf(err_kv, sizeof(err_kv), "err_code=0x%02X", (unsigned int)err_code);
+-        const mc_dbg_meta_t err_meta = { "ERR", "TH", frame[8], frame[5], "BAD_FRAME" };
++        const mc_dbg_meta_t err_meta = { "ERR", "TH", seq, frame[5], "BAD_FRAME" };
+         mc_dbg_emit(&err_meta, err_kv);
+         return;
+     }
+     const uint8_t cmd_id = frame[5];
+-    const uint8_t seq_u8 = frame[8];
+     const uint32_t elapsed = (uint32_t)(wk_timebase_get() - s_relay_start_ms);
+     const bool was_mc_local = s_relay_from_mc_local;
+     s_relay_pending = false;
+     s_relay_from_mc_local = false;
+ 
+-    sync_th_temp_and_gcode_state(frame, seq_u8);
+-    sync_th_filament_resp_state(frame, seq_u8);
++    sync_th_temp_and_gcode_state(frame, seq);
++    sync_th_filament_resp_state(frame, seq);
+ 
+     char kv[64];
+     const char *st = (cmd_id == MINIMC_CMD_NACK) ? "NACK" : "ACK";
+@@ -2045,7 +2035,7 @@ static void handle_th_frame(const uint8_t *frame, uint16_t len)
+     {
+         (void)snprintf(kv, sizeof(kv), "elapsed_ms=%lu", (unsigned long)elapsed);
+     }
+-    const mc_dbg_meta_t rrx_meta = { "RELAY_RX", "TH", seq_u8, cmd_id, st };
++    const mc_dbg_meta_t rrx_meta = { "RELAY_RX", "TH", seq, cmd_id, st };
+     mc_dbg_emit(&rrx_meta, kv);
+ 
+     if ((!was_mc_local) && (frame[3] == MINIMC_NODE_AP))
+@@ -2053,7 +2043,7 @@ static void handle_th_frame(const uint8_t *frame, uint16_t len)
+         uint8_t relay_buf[MINIMC_MAX_FRAME_SIZE];
+         relay_frame(frame, len, relay_buf);
+         const bool tx_ok = minimc_proto_send(relay_buf, len);
+-        const mc_dbg_meta_t tx_meta = { "TX", "TH", seq_u8, cmd_id, st };
++        const mc_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, st };
+         mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+     }
+ }
+@@ -2124,22 +2114,22 @@ bool minimc_proto_send_th_gcode(const char *line, uint16_t len, uint8_t exec_fla
+         clean_len = 60U;
+     }
+     s_mc_th_seq++;
+-    const uint8_t seq_u8 = (uint8_t)(s_mc_th_seq & 0xFFU);
++    const uint16_t seq = s_mc_th_seq;
+     const uint16_t total_len = (uint16_t)(MINIMC_HEADER_SIZE + 2U + clean_len + MINIMC_CRC_SIZE);
+     uint8_t frame[MINIMC_MAX_FRAME_SIZE];
+     build_th_gcode_frame(line, clean_len, exec_flags, frame);
+     if (!forward_uart_send_raw(frame, total_len))
+     {
+-        mc_dbg_log_tx_err("TH", seq_u8, MINIMC_CMD_GCODE_EXEC);
++        mc_dbg_log_tx_err("TH", seq, MINIMC_CMD_GCODE_EXEC);
+         return false;
+     }
+     s_relay_pending = true;
+     s_relay_from_mc_local = true;
+-    s_relay_seq = seq_u8;
+-    s_relay_seq16 = s_mc_th_seq;
++    s_relay_seq = seq;
++    s_relay_seq16 = seq;
+     s_relay_cmd = MINIMC_CMD_GCODE_EXEC;
+     s_relay_start_ms = wk_timebase_get();
+-    const mc_dbg_meta_t rtx_meta = { "RELAY_TX", "TH", seq_u8, MINIMC_CMD_GCODE_EXEC, "EXEC" };
++    const mc_dbg_meta_t rtx_meta = { "RELAY_TX", "TH", seq, MINIMC_CMD_GCODE_EXEC, "EXEC" };
+     mc_dbg_emit(&rtx_meta, "timeout_ms=200");
+     return true;
+ }
+@@ -2300,7 +2290,7 @@ void minimc_proto_init(void)
+     s_state_log_init = false;
+     s_relay_pending = false;
+     s_relay_from_mc_local = false;
+-    s_mc_th_seq = 0U;
++    s_mc_th_seq = 0x0100U;
+     s_job_executed_lines = 0U;
+     s_job_total_lines = 0U;
+     s_ap_enqueued_count = 0U;
+diff --git a/motion-controller-mcu/project/src/test_twin44_mc_debug.c b/motion-controller-mcu/project/src/test_twin44_mc_debug.c
+index 86a33f0..5ae2288 100644
+--- a/motion-controller-mcu/project/src/test_twin44_mc_debug.c
++++ b/motion-controller-mcu/project/src/test_twin44_mc_debug.c
+@@ -49,7 +49,7 @@ static uint16_t s_last_ap_tx_len = 0U;
+ static uint32_t s_ap_tx_count = 0U;
+ static uint8_t s_last_forward_tx_frame[MINIMC_MAX_FRAME_SIZE];
+ static uint16_t s_last_forward_tx_len = 0U;
+-static uint8_t s_test_seq = 0U;
++static uint16_t s_test_seq = 0U;
+ 
+ void dma_channel_enable(dma_channel_type *dma_channel, confirm_state new_state)
+ {
+@@ -176,8 +176,8 @@ static void send_test_frame(uint8_t dst, uint8_t cmd, const uint8_t *pay, uint16
+     frame[5] = cmd;
+     frame[6] = 4U;
+     frame[7] = 0U;
+-    frame[8] = s_test_seq;
+-    frame[9] = 0U;
++    frame[8] = (uint8_t)(s_test_seq & 0xFFU);
++    frame[9] = (uint8_t)((s_test_seq >> 8U) & 0xFFU);
+     frame[10] = (uint8_t)(plen & 0xFFU);
+     frame[11] = (uint8_t)((plen >> 8U) & 0xFFU);
+     if ((pay != NULL) && (plen > 0U))
+@@ -192,7 +192,7 @@ static void send_test_frame(uint8_t dst, uint8_t cmd, const uint8_t *pay, uint16
+     drain_all_usart1();
+ }
+ 
+-static void inject_th_custom_frame(uint8_t cmd, uint8_t seq, const uint8_t *pay, uint16_t plen)
++static void inject_th_custom_frame(uint8_t cmd, uint16_t seq, const uint8_t *pay, uint16_t plen)
+ {
+     s_mock_th_rx_buf[0] = MINIMC_SOF_1;
+     s_mock_th_rx_buf[1] = MINIMC_SOF_2;
+@@ -202,8 +202,8 @@ static void inject_th_custom_frame(uint8_t cmd, uint8_t seq, const uint8_t *pay,
+     s_mock_th_rx_buf[5] = cmd;
+     s_mock_th_rx_buf[6] = 4U;
+     s_mock_th_rx_buf[7] = 0U;
+-    s_mock_th_rx_buf[8] = seq;
+-    s_mock_th_rx_buf[9] = 0U;
++    s_mock_th_rx_buf[8] = (uint8_t)(seq & 0xFFU);
++    s_mock_th_rx_buf[9] = (uint8_t)((seq >> 8U) & 0xFFU);
+     s_mock_th_rx_buf[10] = (uint8_t)(plen & 0xFFU);
+     s_mock_th_rx_buf[11] = (uint8_t)((plen >> 8U) & 0xFFU);
+     if ((pay != NULL) && (plen > 0U))
+@@ -218,7 +218,7 @@ static void inject_th_custom_frame(uint8_t cmd, uint8_t seq, const uint8_t *pay,
+     drain_all_usart1();
+ }
+ 
+-static void inject_th_response_frame(uint8_t cmd, uint8_t seq)
++static void inject_th_response_frame(uint8_t cmd, uint16_t seq)
+ {
+     inject_th_custom_frame(cmd, seq, NULL, 0U);
+ }
+@@ -482,15 +482,20 @@ static void test_relay_timeout_crc_err_and_recovery(void)
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=32 cmd=0x02 status=ACK elapsed_ms=15") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=TX node=TH seq=32 cmd=0x02 status=ACK elapsed_ms=15") != NULL);
+ 
+-    /* 2. Corrupted CRC frame -> CRC_ERR, followed by valid PING recovery (seq=33) */
+-    uint8_t bad_crc[14] = { 0x55U, 0xAAU, 0x01U, 0x02U, 0x05U, 0x01U, 0x04U, 0x00U, 0x28U, 0x00U, 0x00U, 0x00U, 0xFFU, 0xFFU };
++    /* 2. Corrupted CRC frame (seq=517 / 0x0205) -> CRC_ERR, unknown cmd 0xFE (seq=518) -> NACK, then PING (seq=519) recovery */
++    uint8_t bad_crc[14] = { 0x55U, 0xAAU, 0x01U, 0x02U, 0x05U, 0x01U, 0x04U, 0x00U, 0x05U, 0x02U, 0x00U, 0x00U, 0xFFU, 0xFFU };
+     minimc_proto_push_ap_rx(bad_crc, sizeof(bad_crc));
+     minimc_proto_poll();
+     drain_all_usart1();
+-    assert(strstr(s_usart1_tx_capture, "dir=ERR node=MC seq=40 cmd=0x01 status=CRC_ERR err_code=0x01") != NULL);
++    assert(strstr(s_usart1_tx_capture, "dir=ERR node=MC seq=517 cmd=0x01 status=CRC_ERR err_code=0x01") != NULL);
++    s_test_seq = 517U;
++    const uint8_t unimpl_pay[4] = { 0x01U, 0x02U, 0x03U, 0x04U };
++    send_test_frame(MINIMC_NODE_MC, 0xFEU, unimpl_pay, 4U);
++    assert(strstr(s_usart1_tx_capture, "dir=ERR node=MC seq=518 cmd=0xFE status=BAD_CMD err_code=0x04") != NULL);
++    assert(strstr(s_usart1_tx_capture, "dir=TX node=MC seq=518 cmd=0x06 status=NACK err_code=0x04") != NULL);
+     send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_PING, NULL, 0U);
+     assert(s_last_ap_tx_frame[5] == MINIMC_CMD_PONG);
+-    assert(strstr(s_usart1_tx_capture, "dir=TX node=MC seq=33 cmd=0x04 status=ACK") != NULL);
++    assert(strstr(s_usart1_tx_capture, "dir=TX node=MC seq=519 cmd=0x04 status=ACK") != NULL);
+     printf("[PASS] test_relay_timeout_crc_err_and_recovery\n");
+ }
+ 
+@@ -624,6 +629,13 @@ static void test_twin47_cascade_pending_guard_and_recovery(void)
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_TX node=TH seq=103 cmd=0x1C status=EXEC") != NULL);
+     inject_th_custom_frame(MINIMC_CMD_GCODE_EXEC, 103U, (const uint8_t *)&th_g_resp, sizeof(th_g_resp));
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=103 cmd=0x1C status=ACK") != NULL);
++    /* 6. 验证 AP 请求 16-bit seq > 255 (seq=301) 在 [MC-DBG] 的 seq 与 ack_seq 中不发生 8-bit 截断 */
++    s_test_seq = 300U;
++    const minimc_job_req_t job_hi = { 4U, 0U, 2U };
++    clear_usart1_capture();
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_JOB_CONTROL, (const uint8_t *)&job_hi, sizeof(job_hi));
++    assert(strstr(s_usart1_tx_capture, "dir=STATE node=MC seq=301 cmd=0x13 status=OK") != NULL);
++    assert(strstr(s_usart1_tx_capture, "ack_seq=301") != NULL);
+ }
+ 
+ /**
+@@ -668,8 +680,10 @@ static void test_twin47_job_filament_level_gcode(void)
+     s_last_forward_tx_len = 0U;
+     assert(minimc_proto_send_th_gcode("M104 S205\r\n", 11U, 1U) == true);
+     assert(s_last_forward_tx_len == 25U && memcmp(&s_last_forward_tx_frame[14], "M104 S205", 9U) == 0);
+-    inject_th_custom_frame(MINIMC_CMD_GCODE_EXEC, 1U, (const uint8_t *)&th_g_resp, sizeof(th_g_resp));
+-    assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=1 cmd=0x1C status=ACK") != NULL);
++    assert(s_last_forward_tx_frame[8] == 0x01U && s_last_forward_tx_frame[9] == 0x01U);
++    inject_th_custom_frame(MINIMC_CMD_GCODE_EXEC, 0x0101U, (const uint8_t *)&th_g_resp, sizeof(th_g_resp));
++    assert(strstr(s_usart1_tx_capture, "dir=RELAY_TX node=TH seq=257 cmd=0x1C status=EXEC") != NULL);
++    assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=257 cmd=0x1C status=ACK") != NULL);
+     test_twin47_cascade_pending_guard_and_recovery();
+     printf("[PASS] test_twin47_job_filament_level_gcode\n");
+ }

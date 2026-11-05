@@ -1,0 +1,15 @@
+{
+  "task_id": "TWIN-56",
+  "task_revision": 1,
+  "candidate_commit": "f9bff9c01fb7652aa04fd6a3d93dcbf5cbbc8419",
+  "role": "QA",
+  "decision": "BLOCKED",
+  "summary": "已核对证据索引、验收范围、本轮差异及引用证据哈希。候选源码和现有运行证据支持 16-bit 序号、MC 本地首帧 seq=257、高位错误帧及其恢复；但缺少验收范围要求的“调试环形缓冲满后，恢复输出高位 16-bit seq”证据，因此无法完成接受范围核查。",
+  "findings": [
+    "必要证据缺失：TH 环形缓冲满恢复用例只断言 seq=21，MC 环形缓冲恢复用例只写入通用恢复字符串；两者均未验证排空后恢复输出高位 16-bit seq。这关联验收条款“调试环形缓冲满时非阻塞拒绝写入并累加丢包计数，排空后恢复正常16-bit seq输出”。现有证据不足以确认该组合场景，故 BLOCKED。"
+  ],
+  "accepted_scope": "审阅 TWIN-56 revision 1 候选提交及限定的五个 MCU 文件；核对 MC/TH 高位序号日志、MC 本地级联首帧序号、CRC 错误/未知命令负例与后续合法帧恢复、环形缓冲丢弃与恢复，以及所列 gcc 单测和 debug_reconciliation_probe.py 自检证据。已排除交叉编译 ELF 构建及实体 MCU USB/UART HIL；不将其列为未执行项。证据索引、request.json、server_verdict.json、runtime.log、定向差异和五个源码工件哈希均与所给索引相符；source_report 为空。",
+  "unexecuted": [
+    "补充或提供环形缓冲满、排空后以 seq>255 输出并保持完整的恢复断言及对应执行证据。"
+  ]
+}
