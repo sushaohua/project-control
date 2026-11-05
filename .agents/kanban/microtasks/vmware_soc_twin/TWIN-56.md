@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: In Progress
+status: Review
 blocked: false
 planning_status: active
 owner: 7812a1f6-5006-4971-a954-802f855cf20a
@@ -74,13 +74,13 @@ forbidden_paths:
   - test_harness/**
   - boot/**
 source_baseline:
-  project-control: 4f11c6eab0e028a260a9573f9f63541c6c675658
+  project-control: 2e25f0d25d86a412c4051f6df7dafb5e2bd3d337
   soc-ap: 79932746d225bb115010c5545ef3f7499482e137
   mcu-p3: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
 branch: feat/soc-debug
-candidate_commit: null
+candidate_commit: 75f69aa374f543008c706634088d2b4bd10cf97c
 dispatch_binding:
   source_commit: 016e1236af75f6f19282d6b000f4b1b68bd96cc3
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -147,7 +147,8 @@ verification:
     - MC minimc_proto.c与TH usart.c将[MC-DBG]/[TH-DBG]中的seq、ack_seq、last_seq、s_relay_seq升位为uint16_t，完整提取frame[8] | (frame[9] << 8U)，seq > 255原样输出无模256截断
     - minimc_proto_init()恢复s_mc_th_seq = 0x0100U，使MC本地发起的0x1C级联G-code帧从seq=257(0x0101U)起步，与AP序列号清晰区分
   negative_cases:
-    - 收到CRC错误、未知命令或环形缓冲满时输出[MC-DBG]/[TH-DBG] ERR/NACK日志，其中的16-bit seq同样保持完整无截断且不阻塞恢复
+    - 收到高位16-bit seq(>255)的CRC错误帧或未知命令帧时，输出[MC-DBG]/[TH-DBG] ERR或NACK日志且其中的16-bit seq保持完整无截断，后续合法帧立即恢复
+    - 调试环形缓冲满时非阻塞拒绝写入并累加丢包计数，排空后恢复正常16-bit seq输出
 required_evidence_level: server-sandbox-and-independent-review
 verification_environment: docker-qa-sandbox-and-isolated-codex
 qa_review_policy: project-control/.agents/rules/codex_qa_review.md

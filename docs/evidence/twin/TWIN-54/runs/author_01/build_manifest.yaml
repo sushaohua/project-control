@@ -21,7 +21,7 @@ repositories:
     clean_worktree: true
   mcu-p3:
     branch: feat/soc-debug
-    commit: 75f69aa374f543008c706634088d2b4bd10cf97c
+    commit: f9bff9c01fb7652aa04fd6a3d93dcbf5cbbc8419
     clean_worktree: true
   test_harness:
     branch: main
