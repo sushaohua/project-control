@@ -1,0 +1,16 @@
+=== [Step 8.1] Record Host & VMware Clock Offset (2026-11-05T05:38:22+00:00) ===
+host_utc_ms=1793857102260 vmware_utc_ms=1793857102460 offset_ms=200
+=== [Step 8.2] Launch Non-Blocking Append-Only Dual Debug Capture (COM12 & COM13 @ 115200) (2026-11-05T13:38:22+08:00) ===
+PID=22000 START=2026-11-05T13:38:22.4343599+08:00
+=== [Step 8.3] Cold-Boot Reset Both MCU Boards via probe-rs.exe (2026-11-05T13:38:22+08:00) ===
+[33m WARN[0m [2mprobe_rs::probe::stlink[0m[2m:[0m send_jtag_command 242 failed: SwdDpWait
+[33m WARN[0m [2mprobe_rs::probe::stlink[0m[2m:[0m got SwdDpWait/SwdApWait, retrying.
+[33m WARN[0m [2mprobe_rs::probe::stlink[0m[2m:[0m send_jtag_command 242 failed: SwdDpWait
+[33m WARN[0m [2mprobe_rs::probe::stlink[0m[2m:[0m got SwdDpWait/SwdApWait, retrying.
+[33m WARN[0m [2mprobe_rs::probe::stlink[0m[2m:[0m send_jtag_command 242 failed: SwdDpWait
+[33m WARN[0m [2mprobe_rs::probe::stlink[0m[2m:[0m got SwdDpWait/SwdApWait, retrying.
+[33m WARN[0m [2mprobe_rs::probe::stlink[0m[2m:[0m send_jtag_command 242 failed: SwdDpWait
+[33m WARN[0m [2mprobe_rs::probe::stlink[0m[2m:[0m got SwdDpWait/SwdApWait, retrying.
+=== [Step 8.4] Cold-Boot Log Bytes Captured Prior to AP Startup ===
+-rwxrwxrwx 1 sushaohua sushaohua 3260 Nov  5 13:38 /mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/mc_debug_raw.log
+-rwxrwxrwx 1 sushaohua sushaohua 3521 Nov  5 13:38 /mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/th_debug_raw.log

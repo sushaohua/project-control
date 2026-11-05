@@ -1,0 +1,8 @@
+=== [Step 7.1] Stop VMware Legacy Daemons & Residual hw_sampler.py (2026-11-05T13:36:59+08:00) ===
+[STOP] All AI-SoC VMware Twin services stopped and PID files cleaned.
+=== [Step 7.2] Verify VMware Processes & /dev/ttyUSB0 Free (2026-11-05T13:36:59+08:00) ===
+[OK] All VMware daemons and hw_sampler stopped
+[OK] /dev/ttyUSB0 is free
+=== [Step 7.3] Verify Windows COM12 & COM13 Free (2026-11-05T13:37:00+08:00) ===
+[OK] COM12 opened and closed cleanly
+[OK] COM13 opened and closed cleanly

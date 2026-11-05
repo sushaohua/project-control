@@ -1,0 +1,27 @@
+=== [Step 5.1] Pre-Flash Artifact SHA-256 & Size Check (2026-11-05T13:27:33+08:00) ===
+383220 /mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/fw_mc.bin
+77248 /mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/fw_th.bin
+140 /mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/anchor.bin
+94b495ebe474ac9fcba322156d917f271ef138964e2ca21001ab02eb5a3a0dba  /mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/fw_mc.bin
+9dc9eb8e05eb53a16471541a896210b42f7bae635913f97e950906f0b89fe11d  /mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/fw_th.bin
+7564309c8fe74ba59a7f836cc877ae9308521a3bc96df3afddc7f6b151440cd7  /mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/anchor.bin
+=== [Step 5.2] Device Discovery & Chip UID Verification (2026-11-05T13:27:33+08:00) ===
+================================================================================
+       HIL 物理设备自动发现与指纹对账表 (Device Auto-Discovery)
+================================================================================
+probe-rs 引擎: /mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe
+--------------------------------------------------------------------------------
+目标角色   | 芯片型号           | Flash    | MSP 栈顶       | 探针标识 (Probe ID)               
+--------------------------------------------------------------------------------
+[MC  ] | AT32F435VGT7   | 1024 KB  | 0x20060000   | 0483:3748:75003800120000334C41534E
+       -> 唯一芯片 UID: 053023904C96C0000D819709
+[TH  ] | AT32F423CCT7   | 256 KB   | 0x2000C000   | 0483:3748:                    
+       -> 唯一芯片 UID: 053173C58023C000127C0707
+================================================================================
+=== [Step 5.3] Flash MC (AT32F435VGT7 @ 0x08020000, Bootloader 0x08000000~0x0801FFFF Protected) (2026-11-05T13:27:34+08:00) ===
+     [38;5;10m[1mFinished[0m in 29.69s
+=== [Step 5.4] Flash TH App (AT32F423CCT7 @ 0x08004000, Bootloader 0x08000000~0x08003FFF Protected) (2026-11-05T13:28:04+08:00) ===
+     [38;5;10m[1mFinished[0m in 5.74s
+=== [Step 5.5] Flash TH Anchor (AT32F423CCT7 @ 0x0803F800) (2026-11-05T13:28:10+08:00) ===
+     [38;5;10m[1mFinished[0m in 0.34s
+=== [Step 5.6] Flash Verification Completed (2026-11-05T13:28:10+08:00) ===

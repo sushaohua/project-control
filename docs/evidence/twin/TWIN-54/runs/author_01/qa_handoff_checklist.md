@@ -4,11 +4,11 @@ run_id: author_01
 buildno: build-20261105-002
 requirement_id: REQ-20261105-001
 demand_id: DEM-20261105-005
-status: READY_FOR_STEP5_FLASH_AFTER_TWIN56_QA
-date: '2026-11-05T13:06:00+08:00'
+status: COMPLETED_STEP1_TO_STEP9_HANDOFF_READY
+date: '2026-11-05T14:00:00+08:00'
 ---
 
-# TWIN-54 轻量提测交接清单（`build-20261105-002`，含 `TWIN-56` 修复）
+# TWIN-54 轻量提测交接清单（`build-20261105-002`，Step 1～Step 9 全部完成）
 
 ## 1. 组合版本（`buildno`）与六仓锁定基线
 
@@ -23,47 +23,37 @@ date: '2026-11-05T13:06:00+08:00'
 
 ---
 
-## 2. Step 1～Step 4 及 Step 6 执行完成核对表
+## 2. Step 1～Step 9 全步骤执行完成核对表
 
 | 步骤 | 执行内容 | 客观结果与证据摘要 | 状态 |
 | :--- | :--- | :--- | :--- |
 | **Step 6** | VMware 旧 `/tmp/aisoc_twin_logs` 归档 | 已打包归档至 `192.168.77.134:/home/sushaohua/tmp/aisoc_legacy_archives/aisoc_twin_logs_pre_20261105-001_20261105T041015Z.tar.gz` (`sha256: 33038bdbd16c0d7efcbdce5f7db26b8590a38dd163ba41f0d9d86c10424b633d`) | **DONE** |
 | **Step 1** | 宿主机独立检出与 VMware `soc-ap` 强制对齐 | 宿主机与 VMware `/home/sushaohua/tmp/ai_soc_project/soc-ap` 均 100% 对齐锁定 Commit，`git status --porcelain` 为空 | **DONE** |
 | **Step 2** | VMware `third_party/build.sh --verify` | D-Bus、Fast CDR、Fast DDS 及 `optional.hpp` 两处 `engaged_` 判空守卫校验全部 `[OK]` | **DONE** |
-| **Step 3** | 宿主机 MC/TH 干净交叉编译 (`TWIN-56`) + VMware & Docker `soc-ap` 干净构建与 CTest | MC (`Marlin_AT32.elf`, `fw_mc.bin`) 与 TH (`fw_th.elf`, `fw_th.bin`, `anchor.bin`) 在 `75f69aa374f543008c706634088d2b4bd10cf97c` 下重编通过；VMware (GCC 15.2.0) 与 Docker (`qa-sandbox:20261029`, GCC 9.4.0) 5 大组件构建与 7 项 CTest 100% 通过 | **DONE** |
-| **Step 4** | 封存 `build_manifest.yaml` 与 `SHA256SUMS` (`build-20261105-002`) | 已更新 `build_manifest.yaml` 与 `SHA256SUMS`，且 `build/ui_gateway/ui-gateway` 与 `dist/vmware_twin/bin/ui-gateway` SHA-256 完全一致 (`41824294f0354a74315819ba60f46d133dc38c499ef5fe15a36213e9e53e0764`) | **DONE** |
+| **Step 3** | 宿主机 MC/TH 干净交叉编译 (`TWIN-56`) + VMware & Docker `soc-ap` 干净构建与 CTest | MC (`Marlin_AT32.elf`, `fw_mc.bin`) 与 TH (`fw_th.elf`, `fw_th.bin`, `anchor.bin`) 重编通过；VMware (GCC 15.2.0) 与 Docker (`qa-sandbox:20261029`, GCC 9.4.0) 5 大组件构建与 7 项 CTest 100% 通过 | **DONE** |
+| **Step 4** | 封存 `build_manifest.yaml` 与 `SHA256SUMS` (`build-20261105-002`) | 已封存 `build_manifest.yaml` 与 `SHA256SUMS`，且 `build/ui_gateway/ui-gateway` 与 `dist/vmware_twin/bin/ui-gateway` SHA-256 完全一致 (`41824294f0354a74315819ba60f46d133dc38c499ef5fe15a36213e9e53e0764`) | **DONE** |
+| **Step 5** | 双板 MCU 固件受控烧录与探针校验 | MC (`AT32F435VGT7` `@ 0x08020000`, `29.69s`) 与 TH (`AT32F423CCT7` `@ 0x08004000` `5.74s` + `@ 0x0803F800` `0.34s`) `--verify` 全部一次通过（证据：`step5_flash_verify.log`） | **DONE** |
+| **Step 7** | 遗留进程与串口清场（禁止 `hw_sampler.py` 竞争串口） | 停止 VMware 旧四守护进程并清理 `hw_sampler.py`，验证 `/dev/ttyUSB0` 零占用；无损释放 `COM12`/`COM13` 句柄并确认双串口空闲（证据：`step7_cleanup.log`） | **DONE** |
+| **Step 8** | Debug 串口双通道捕获先行挂载 + 双板冷启动复位 | 挂载后台常驻只写追加捕获 `dual_dbg_logger.ps1` (`COM12`/`COM13 @ 115200`)，随后执行 `probe-rs.exe reset`，完整捕获双板 Bootloader 与 App 冷启动输出（证据：`step8_preboot_debug.log`） | **DONE** |
+| **Step 9** | 受控拉起 VMware 四守护进程并核验 `/proc/<pid>/exe` | 使用 `AISOC_AUTO_BUILD="0"`、`AISOC_MODE="hardware"`、`AISOC_UART_BAUD="921600"` 拉起四守护进程，核对运行中 `/proc/<pid>/exe` 的 SHA-256 与 `build_manifest.yaml` 100% 一致（证据：`step9_daemon_startup.log`） | **DONE** |
 
 ---
 
-## 3. Step 5 双板 MCU 固件烧录清单（用户已授权 A2，待 `TWIN-56` QA 收口后立即烧录）
+## 3. Step 5 双板 MCU 固件烧录与 Step 9 运行中进程哈希实测表
 
-### 3.1 只读探针与芯片身份核验结果（`device_discovery.py`）
-- **MC 主控板 (`AT32F435VGT7`)**：在线，`Probe ID = 0483:3748:75003800120000334C41534E`，Flash `1024 KB`，唯一芯片 UID `053023904C96C0000D819709`。
-- **TH 工具头板 (`AT32F423CCT7`)**：在线，`Probe ID = 0483:3748:`，Flash `256 KB`，唯一芯片 UID `053173C58023C000127C0707`。
+### 3.1 已烧录固件制品精确参数表（`build-20261105-002`）
 
-### 3.2 待烧录固件制品精确参数表（`build-20261105-002`）
-
-| 目标板卡 | 固件文件 | WSL2 宿主机路径 | Windows 暂存路径 | 字节大小 | SHA-256 摘要 | Flash 烧录基地址 | Bootloader 保护区间 |
+| 目标板卡 | 固件文件 | WSL2 宿主机路径 | Windows 暂存路径 | 字节大小 | SHA-256 摘要 | Flash 烧录基地址 | `--verify` 结果 |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **MC (`AT32F435VGT7`)** | `fw_mc.bin` | `/tmp/aisoc_release_builds/build-20261105-002/artifacts/mc/fw_mc.bin` | `C:\Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\fw_mc.bin` | `383,220` B | `94b495ebe474ac9fcba322156d917f271ef138964e2ca21001ab02eb5a3a0dba` | **`0x08020000`** | `0x08000000~0x0801FFFF` (128KB 只读不触碰) |
-| **TH (`AT32F423CCT7`)** | `fw_th.bin` | `/tmp/aisoc_release_builds/build-20261105-002/artifacts/th/fw_th.bin` | `C:\Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\fw_th.bin` | `77,248` B | `9dc9eb8e05eb53a16471541a896210b42f7bae635913f97e950906f0b89fe11d` | **`0x08004000`** | `0x08000000~0x08003FFF` (16KB 只读不触碰) |
-| **TH (`AT32F423CCT7`)** | `anchor.bin` | `/tmp/aisoc_release_builds/build-20261105-002/artifacts/th/anchor.bin` | `C:\Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\anchor.bin` | `140` B | `7564309c8fe74ba59a7f836cc877ae9308521a3bc96df3afddc7f6b151440cd7` | **`0x0803F800`** | 尾部 Anchor 区 (`0x0803F800`) |
+| **MC (`AT32F435VGT7`)** | `fw_mc.bin` | `/tmp/aisoc_release_builds/build-20261105-002/artifacts/mc/fw_mc.bin` | `C:\Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\fw_mc.bin` | `383,220` B | `94b495ebe474ac9fcba322156d917f271ef138964e2ca21001ab02eb5a3a0dba` | **`0x08020000`** | **PASSED (`29.69s`)** |
+| **TH (`AT32F423CCT7`)** | `fw_th.bin` | `/tmp/aisoc_release_builds/build-20261105-002/artifacts/th/fw_th.bin` | `C:\Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\fw_th.bin` | `77,248` B | `9dc9eb8e05eb53a16471541a896210b42f7bae635913f97e950906f0b89fe11d` | **`0x08004000`** | **PASSED (`5.74s`)** |
+| **TH (`AT32F423CCT7`)** | `anchor.bin` | `/tmp/aisoc_release_builds/build-20261105-002/artifacts/th/anchor.bin` | `C:\Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\anchor.bin` | `140` B | `7564309c8fe74ba59a7f836cc877ae9308521a3bc96df3afddc7f6b151440cd7` | **`0x0803F800`** | **PASSED (`0.34s`)** |
 
-### 3.3 精确烧录命令
-```bash
-# 1. 烧录并校验 MC 应用固件 (AT32F435VGT7 @ 0x08020000)
-/mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe download \
-  --probe "0483:3748:75003800120000334C41534E" --chip AT32F435VGT7 \
-  --binary-format bin --base-address 0x08020000 --verify \
-  'C:\Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\fw_mc.bin' < /dev/null
+### 3.2 Step 9 VMware 运行中四守护进程 `/proc/<pid>/exe` 哈希核对表
 
-# 2. 烧录并校验 TH 应用固件 (AT32F423CCT7 @ 0x08004000) 与 Anchor (@ 0x0803F800)
-/mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe download \
-  --probe "0483:3748:" --chip AT32F423CCT7 \
-  --binary-format bin --base-address 0x08004000 --verify \
-  'C:\Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\fw_th.bin' < /dev/null
-/mnt/c/Users/EDY/tools/probe-rs/probe-rs.exe download \
-  --probe "0483:3748:" --chip AT32F423CCT7 \
-  --binary-format bin --base-address 0x0803F800 --verify \
-  'C:\Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\anchor.bin' < /dev/null
-```
+| 守护进程 | PID 文件 | 运行中 `/proc/<pid>/exe` 实测 SHA-256 | 与 `build_manifest.yaml` 一致性 |
+| :--- | :--- | :--- | :--- |
+| `dbus-daemon` | `dbus.pid` | `73d24dd0759d6b3f5a959f73d452b2b29013d1880d04229f434e98b74d00278a` | **100% 匹配** |
+| `forward_service_daemon` | `forward.pid` | `c13a44dc21a18064a5dd84cf35fe9d39b44d693c352899fbfafb90b80e67c259` | **100% 匹配** |
+| `device_manager_daemon` | `device_manager.pid` | `2a0313efcdef73e578a7498e8c2f9f7d0d83d4ea5918cff0ef9e88ceb4b9cc85` | **100% 匹配** |
+| `ui-gateway` | `ui_gateway.pid` | `41824294f0354a74315819ba60f46d133dc38c499ef5fe15a36213e9e53e0764` | **100% 匹配** |

@@ -148,5 +148,25 @@ legacy_evidence_archive:
   sha256: "33038bdbd16c0d7efcbdce5f7db26b8590a38dd163ba41f0d9d86c10424b633d"
 
 step5_flash_status:
-  flashed_in_this_step: false
+  flashed_in_this_step: true
   user_authorized_step5_after_twin56_qa: true
+  flashed_at: '2026-11-05T13:25:00+08:00'
+  evidence_log: "project-control/docs/evidence/twin/TWIN-54/runs/author_01/step5_flash_verify.log"
+  mc_flash_result: "375.00 KiB @ 12.63 KiB/s, --verify PASSED in 29.69s (0x08020000)"
+  th_flash_result: "76.00 KiB @ 13.24 KiB/s, --verify PASSED in 5.74s (0x08004000); Anchor 2.00 KiB --verify PASSED in 0.34s (0x0803F800)"
+
+step7_to_step9_runtime_status:
+  step7_cleanup_log: "project-control/docs/evidence/twin/TWIN-54/runs/author_01/step7_cleanup.log"
+  step8_preboot_debug_log: "project-control/docs/evidence/twin/TWIN-54/runs/author_01/step8_preboot_debug.log"
+  step9_daemon_startup_log: "project-control/docs/evidence/twin/TWIN-54/runs/author_01/step9_daemon_startup.log"
+  runtime_config:
+    AISOC_MODE: "hardware"
+    AISOC_UART_DEVICE: "/dev/ttyUSB0"
+    AISOC_UART_BAUD: "921600"
+    AISOC_HTTP_PORT: "8080"
+    AISOC_AUTO_BUILD: "0"
+  running_proc_exe_sha256_verified:
+    dbus_daemon: "73d24dd0759d6b3f5a959f73d452b2b29013d1880d04229f434e98b74d00278a"
+    forward_service_daemon: "c13a44dc21a18064a5dd84cf35fe9d39b44d693c352899fbfafb90b80e67c259"
+    device_manager_daemon: "2a0313efcdef73e578a7498e8c2f9f7d0d83d4ea5918cff0ef9e88ceb4b9cc85"
+    ui_gateway: "41824294f0354a74315819ba60f46d133dc38c499ef5fe15a36213e9e53e0764"

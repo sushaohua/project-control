@@ -1,0 +1,26 @@
+=== [Step 9.1] Start VMware 4 Daemons with AISOC_AUTO_BUILD=0, AISOC_MODE=hardware, AISOC_UART_BAUD=921600 (2026-11-05T13:38:28+08:00) ===
+=================================================================
+AI-SoC VMware Twin Full Stack Deployed Successfully!
+  Mode:        hardware
+  UART:        /dev/ttyUSB0 @ 921600 baud
+  HTTP URL:    http://127.0.0.1:8080/
+  State API:   http://127.0.0.1:8080/api/v1/state
+  Snapshot:    http://127.0.0.1:8080/api/v1/temperature/snapshot
+  Logs & PIDs: /tmp/aisoc_twin_logs
+=================================================================
+=================================================================
+AI-SoC VMware Twin Full-Stack Status (Mode: hardware)
+  UART Device: /dev/ttyUSB0 @ 921600 baud
+  HTTP Listen: 0.0.0.0:8080
+=================================================================
+  [RUNNING] dbus-daemon (PID: 1670849)
+  [RUNNING] forward_service_daemon (PID: 1670854)
+  [RUNNING] device_manager_daemon (PID: 1670855)
+  [RUNNING] ui-gateway (PID: 1670857)
+  [HEALTH ] HTTP Probe http://127.0.0.1:8080/api/v1/state -> HTTP 200 OK
+=================================================================
+=== [Step 9.2] Verify Running Daemon /proc/<pid>/exe SHA-256 Against Sealed build_manifest.yaml (2026-11-05T13:38:29+08:00) ===
+dbus.pid: pid=1670849 sha256=73d24dd0759d6b3f5a959f73d452b2b29013d1880d04229f434e98b74d00278a exe=/home/sushaohua/tmp/ai_soc_project/soc-ap/third_party/install/bin/dbus-daemon
+forward.pid: pid=1670854 sha256=c13a44dc21a18064a5dd84cf35fe9d39b44d693c352899fbfafb90b80e67c259 exe=/home/sushaohua/tmp/ai_soc_project/soc-ap/build/forward/forward_service_daemon
+device_manager.pid: pid=1670855 sha256=2a0313efcdef73e578a7498e8c2f9f7d0d83d4ea5918cff0ef9e88ceb4b9cc85 exe=/home/sushaohua/tmp/ai_soc_project/soc-ap/build/device_manager/device_manager_daemon
+ui_gateway.pid: pid=1670857 sha256=41824294f0354a74315819ba60f46d133dc38c499ef5fe15a36213e9e53e0764 exe=/home/sushaohua/tmp/ai_soc_project/soc-ap/build/ui_gateway/ui-gateway
