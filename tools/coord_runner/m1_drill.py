@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded M1 manual single-step live drill executor (`P1-01/02/03/15/18` host proof)."""
+"""AUTO-03 M1 受控手动单步真实演练执行器（验证 P1-01/02/03/15/18 宿主机真实闭环）。"""
 
 import hashlib
 import json
@@ -23,6 +23,7 @@ PARENT_APPROVAL_REL = "project-control/docs/work_intake/approvals/APPR-20261103-
 
 
 def _ensure_drill_submission(intake_root: Path) -> Path:
+    """确保演练专用的 Markdown 收件单文件在演练隔离目录内已创建。"""
     sub_dir = intake_root / "submissions"
     sub_dir.mkdir(parents=True, exist_ok=True)
     for folder in ("issues", "features", "requirements", "confirmations", "approvals"):
@@ -44,6 +45,7 @@ def _ensure_drill_submission(intake_root: Path) -> Path:
 
 
 def _ensure_drill_confirmation(intake_root: Path, dem_id: str, parent_info: Tuple[str, str]) -> Tuple[Path, str]:
+    """确保绑定父级人工总批复的演练需求确认单已生成并返回 (路径, SHA256)。"""
     parent_id, parent_sha = parent_info
     conf_path = intake_root / "confirmations" / "CONFIRM-DRILL-20261103-001.md"
     if not conf_path.is_file():
@@ -68,6 +70,7 @@ def _ensure_drill_confirmation_and_approval(
     intake_root: Path,
     feat_record: dict,
 ) -> Tuple[Path, str, Path, str]:
+    """校验父级人工批复文件并生成演练确认单与演练批复 YAML。"""
     parent_appr = workspace_root / PARENT_APPROVAL_REL
     parent_snap = read_with_digest(parent_appr)
     parent_data = ApprovalGuard(workspace_root).load_and_verify_approval(parent_appr, parent_snap.sha256, 1)
@@ -101,6 +104,7 @@ def _ensure_drill_confirmation_and_approval(
 
 
 def _run_drill_coord_calls(adapter: CodexRoleAdapter, digest_inputs: dict, drill_root: Path) -> Tuple[object, object]:
+    """执行两次连续的 COORD 裁决调用，验证首次真实唤醒模型且无变更二次调用短路返回 NOOP。"""
     coord_prompt = (
         "You are COORD in read-only mode evaluating a bounded M1 single-step drill. "
         "Do NOT modify any files. Return structured JSON with decision_id='DEC-AUTO03-DRILL-01', "
@@ -126,6 +130,7 @@ def _run_drill_role_task(
     workspace_root: Path,
     feat_record: dict,
 ) -> Tuple[object, object, Path]:
+    """派发 INTEGRATOR 角色单步演练任务并收集其生成的交付清单产物。"""
     deliv_dir = drill_root / "deliverables"
     deliv_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = deliv_dir / "drill_intake_manifest.json"
@@ -156,6 +161,7 @@ def _run_drill_role_task(
 
 
 def _prepare_drill_intake(ws: Path, intake_root: Path) -> Tuple[object, dict, dict, str]:
+    """初始化演练收件单、执行首次扫描、绑定审批引用并完成二次同步。"""
     _ensure_drill_submission(intake_root)
     intake_mgr = WorkIntakeManager(ws, intake_root)
     scan_res = intake_mgr.scan_and_sync(persist_ledger=True)
@@ -177,7 +183,7 @@ def _prepare_drill_intake(ws: Path, intake_root: Path) -> Tuple[object, dict, di
 
 
 def execute_m1_live_drill(workspace_root: Path, drill_dir: Path, codex_bin: Path) -> Dict[str, object]:
-    """Run end-to-end M1 manual single-step drill inside `drill_dir` using real host Codex CLI."""
+    """在指定演练目录内使用宿主机真实 Codex CLI 执行端到端 M1 手动单步演练并保存摘要。"""
     ws = workspace_root.resolve()
     root = drill_dir.resolve() if drill_dir.is_absolute() else (Path.cwd() / drill_dir).resolve()
     if not str(root).startswith(str((ws / "project-control").resolve()) + "/"):

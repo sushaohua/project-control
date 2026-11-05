@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""File-level SHA256 Compare-And-Swap (CAS) writer with durable write-intent records."""
+"""带持久化写意图记录（WriteIntent）的文件级 SHA256 乐观并发控制（CAS）写入模块。"""
 
 from dataclasses import dataclass
 import datetime
@@ -17,25 +17,25 @@ SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 @dataclass(frozen=True)
 class FileDigestSnapshot:
-    """Immutable byte snapshot and SHA256 digest of a file read from disk."""
+    """从磁盘读取的文件不可变字节快照及其精确 SHA256 摘要。"""
     path: Path
     raw_bytes: bytes
     sha256: str
 
     @property
     def text(self) -> str:
-        """Decode raw bytes as strict UTF-8 text."""
+        """将原始字节流按严格 UTF-8 编码解码为文本。"""
         return self.raw_bytes.decode("utf-8")
 
     def __iter__(self) -> Iterator[object]:
-        """Support `(raw_bytes, sha256) = read_with_digest(path)` unpacking."""
+        """支持 `(raw_bytes, sha256) = read_with_digest(path)` 元组解包。"""
         yield self.raw_bytes
         yield self.sha256
 
 
 @dataclass(frozen=True)
 class WriteIntent:
-    """Pre-write optimistic concurrency intent bound to exact digests."""
+    """绑定精确期望摘要与计划摘要的写前乐观并发控制意图记录。"""
     operation_id: str
     target_path: Path
     expected_sha256: Optional[str]
@@ -45,6 +45,7 @@ class WriteIntent:
 
 
 def _to_bytes(content: Union[str, bytes]) -> bytes:
+    """将字符串（UTF-8）或字节流统一转换为 bytes。"""
     if isinstance(content, bytes):
         return content
     if isinstance(content, str):
@@ -53,12 +54,12 @@ def _to_bytes(content: Union[str, bytes]) -> bytes:
 
 
 def compute_bytes_sha256(data: Union[str, bytes]) -> str:
-    """Compute lowercase 64-hex SHA256 digest for str or bytes."""
+    """计算字符串或字节流的 64 位小写十六进制 SHA256 摘要。"""
     return hashlib.sha256(_to_bytes(data)).hexdigest()
 
 
 def compute_file_sha256(path: Path) -> str:
-    """Compute lowercase 64-hex SHA256 digest from physical file bytes."""
+    """从物理文件字节计算 64 位小写十六进制 SHA256 摘要。"""
     if path is None:
         raise ValueError("path must not be None")
     target = Path(path)
@@ -68,6 +69,7 @@ def compute_file_sha256(path: Path) -> str:
 
 
 def _validate_sha256(digest: Optional[str], field_name: str) -> str:
+    """校验摘要字符串是否为合法的 64 位小写十六进制 SHA256。"""
     if not isinstance(digest, str) or not SHA256_RE.match(digest):
         raise CasConflictError(
             f"Invalid {field_name}: expected 64-char lowercase hex SHA256, got {digest!r}",
@@ -77,7 +79,7 @@ def _validate_sha256(digest: Optional[str], field_name: str) -> str:
 
 
 def read_with_digest(path: Path) -> FileDigestSnapshot:
-    """Read physical bytes from disk and return snapshot with exact SHA256."""
+    """从磁盘读取文件物理字节并返回包含精确 SHA256 的快照结构体。"""
     if path is None:
         raise ValueError("path must not be None")
     target = Path(path).resolve()
@@ -89,7 +91,7 @@ def read_with_digest(path: Path) -> FileDigestSnapshot:
 
 
 def record_write_intent(intent: WriteIntent) -> Optional[Path]:
-    """Validate and optionally persist a write intent before mutating target file."""
+    """在修改目标文件前校验并可选持久化写意图记录（WriteIntent）。"""
     if not intent.operation_id or not isinstance(intent.operation_id, str):
         raise CasConflictError("WriteIntent requires non-empty operation_id", {})
     _validate_sha256(intent.planned_sha256, "planned_sha256")
@@ -119,6 +121,7 @@ def _verify_intent_binding(
     planned_sha256: str,
     intent: Optional[WriteIntent],
 ) -> Optional[str]:
+    """核验写意图与当前 CAS 写请求的目标路径、期望摘要及计划摘要完全一致。"""
     if intent is None:
         return None
     intent_target = Path(intent.target_path).resolve()
@@ -143,6 +146,7 @@ def _verify_intent_binding(
 
 
 def _atomic_replace_bytes(target: Path, raw: bytes) -> None:
+    """通过带 PID 的临时文件写入、fsync 刷盘与 os.replace 原子替换目标文件。"""
     target.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = target.with_name(f".{target.name}.cas_tmp_{os.getpid()}")
     fd = os.open(str(tmp_path), os.O_CREAT | os.O_WRONLY | os.O_TRUNC, 0o644)
@@ -164,7 +168,7 @@ def write_cas(
     expected_sha256: str,
     intent: Optional[WriteIntent] = None,
 ) -> str:
-    """Atomically overwrite `path` only if its current on-disk SHA256 equals `expected_sha256`."""
+    """仅当磁盘文件当前 SHA256 严格等于 expected_sha256 时原子覆写文件，否则抛出 CasConflictError。"""
     if path is None:
         raise ValueError("path must not be None")
     _validate_sha256(expected_sha256, "expected_sha256")
@@ -195,7 +199,7 @@ def create_exclusive(
     content: Union[str, bytes],
     intent: Optional[WriteIntent] = None,
 ) -> str:
-    """Atomically create a brand-new file; fail with CasConflictError if it already exists."""
+    """使用 O_CREAT | O_EXCL 原子创建全新文件；若目标已存在则抛出 CasConflictError。"""
     if path is None:
         raise ValueError("path must not be None")
     target = Path(path).resolve()

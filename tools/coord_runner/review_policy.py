@@ -1,4 +1,4 @@
-"""One versioned review policy for scheduling and recorded delivery gates."""
+"""面向调度运行器与闭环门禁的统一版本化审查策略（legacy 与 streamlined-v1）解析模块。"""
 
 from dataclasses import dataclass
 import re
@@ -9,12 +9,14 @@ STREAMLINED_POLICY = "streamlined-v1"
 
 @dataclass(frozen=True)
 class ReviewPolicy:
+    """单个任务卡的审查策略配置结果（必需审查角色元组、是否要求二次审报告及是否为精简策略）。"""
     roles: tuple
     report_review_required: bool
     streamlined: bool
 
 
 def resolve_review_policy(card: dict, legacy_default: tuple = ()) -> ReviewPolicy:
+    """根据任务卡的 qa_policy 与 reviewer 字段解析出对应的 ReviewPolicy 对象。"""
     version = card.get("qa_policy", "legacy")
     if not isinstance(version, str) or version not in {"legacy", STREAMLINED_POLICY}:
         raise ValueError("Unknown or invalid qa_policy; expected legacy or streamlined-v1")
@@ -33,11 +35,13 @@ def resolve_review_policy(card: dict, legacy_default: tuple = ()) -> ReviewPolic
 
 
 def author_sessions(card: dict) -> set:
+    """提取任务卡中记录的全部作者/执行者会话标识集合（用于防止自审）。"""
     return {card.get("owner"), card.get("author_session"), card.get("session_id"),
             (card.get("executor") or {}).get("agent_id")} - {None, ""}
 
 
 def candidate_repository(card: dict) -> str:
+    """解析任务卡对应的主要候选代码仓库名称。"""
     explicit = card.get("candidate_repository")
     if explicit:
         return explicit
@@ -51,7 +55,7 @@ def candidate_repository(card: dict) -> str:
 
 
 def check_primary_identity(entry: dict, header: dict, card: dict) -> None:
-    """Require the same author separation and exact version for both gate paths."""
+    """在运行期与落盘门禁两条路径上强制校验主审人的非作者隔离性、Codex 平台属性与精确候选 Commit 绑定。"""
     session = entry.get("session") or entry.get("reviewer_session")
     if not session or str(session).startswith(("pending-", "planned-", "subagent-", "alias-")):
         raise ValueError("Actual independent reviewer session is required")

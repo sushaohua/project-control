@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Server candidate verification and isolated sandbox QA runner.
+"""服务端候选版本锁定与隔离沙箱 QA 运行器。
 
-Enforces that QA only runs in an isolated sandbox cloned from the GitLab server,
-strictly rejecting local worktrees, dirty files, and unpushed commits.
+强制保证正式 QA 仅在从 GitLab 服务端全新克隆的隔离沙箱（含只读 Docker 容器）中执行，
+严格拒绝本地开发工作树挂载、未提交脏文件及未推送至服务端的提交哈希。
 """
 
 import argparse
@@ -25,12 +25,14 @@ import yaml
 
 
 class QARunnerError(Exception):
-    """Base exception for QA runner operations."""
+    """QA 运行器操作异常基类。"""
     pass
 
 
 @dataclass
 class RepositoryTarget:
+    """单个待检出仓库的目标版本描述结构体。"""
+
     name: str
     url: str
     commit: str
@@ -39,6 +41,8 @@ class RepositoryTarget:
 
 @dataclass
 class QARunRequest:
+    """一次完整沙箱 QA 执行请求的数据结构。"""
+
     task_id: str
     task_revision: int
     targets: List[RepositoryTarget]
@@ -47,6 +51,8 @@ class QARunRequest:
 
 @dataclass
 class CommandResult:
+    """沙箱内单条构建或测试命令的执行结果记录。"""
+
     command: str
     cwd: str
     returncode: int
@@ -57,6 +63,8 @@ class CommandResult:
 
 @dataclass
 class QARunResult:
+    """单次沙箱 QA 运行的汇总结论、容器溯源与构建/测试明细结果。"""
+
     task_id: str
     task_revision: int
     run_id: str
@@ -75,7 +83,14 @@ class QARunResult:
 
 
 def redact_token(text: str) -> str:
-    """Redact sensitive token strings from text."""
+    """将文本中可能包含的环境变量 GITLAB_TOKEN 敏感令牌脱敏替换。
+
+    Args:
+        text: 原始日志或异常消息字符串。
+
+    Returns:
+        str: 脱敏后的安全字符串。
+    """
     token = os.environ.get("GITLAB_TOKEN")
     if token and token in text:
         return text.replace(token, "[REDACTED_GITLAB_TOKEN]")
@@ -83,19 +98,19 @@ def redact_token(text: str) -> str:
 
 
 def compute_bytes_sha256(data: bytes) -> str:
-    """Compute SHA256 hexadecimal digest for raw bytes."""
+    """计算原始字节流的 64 位小写十六进制 SHA256 摘要。"""
     return hashlib.sha256(data).hexdigest()
 
 
 def compute_file_sha256(file_path: Path) -> str:
-    """Compute SHA256 hexadecimal digest of a file."""
+    """计算指定文件的 SHA256 十六进制摘要。"""
     if not file_path.is_file():
         raise QARunnerError(f"Target file does not exist: {file_path}")
     return compute_bytes_sha256(file_path.read_bytes())
 
 
 def create_evidence_ref(output_path: Path, data: bytes) -> Dict[str, str]:
-    """Write data to output_path and return structured ref dict."""
+    """将字节数据写入目标证据路径并返回包含 path 与 sha256 的引用字典。"""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_bytes(data)
     return {
@@ -105,7 +120,7 @@ def create_evidence_ref(output_path: Path, data: bytes) -> Dict[str, str]:
 
 
 def validate_commit_sha(commit: str) -> None:
-    """Validate that commit is a complete 40-character hexadecimal SHA-1."""
+    """校验提交哈希是否为合法的 40 位小写十六进制 SHA-1 且非全同字符占位符。"""
     if not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise QARunnerError(f"Invalid commit SHA format: {commit}")
     if len(set(commit)) <= 1:
@@ -113,7 +128,7 @@ def validate_commit_sha(commit: str) -> None:
 
 
 def validate_remote_url(url: str) -> str:
-    """Validate remote URL scheme and reject local/insecure schemes."""
+    """校验远端仓库 URL 协议合法性，严禁本地 file 协议或内嵌明文凭据。"""
     if not isinstance(url, str):
         raise QARunnerError("Repository URL must be a string")
     parsed = urllib.parse.urlsplit(url)
@@ -127,9 +142,10 @@ def validate_remote_url(url: str) -> str:
 
 
 class GitLabClient:
-    """GitLab REST API client for remote validation."""
+    """用于远端提交核验与鉴权检查的 GitLab REST API v4 客户端。"""
 
     def __init__(self, base_url: str, token: Optional[str] = None, timeout: int = 30):
+        """初始化 GitLab 客户端并校验基础 URL 与访问令牌。"""
         self.base_url = base_url.rstrip("/")
         parsed = urllib.parse.urlsplit(self.base_url)
         if parsed.scheme not in ("http", "https") or parsed.username or parsed.password:
@@ -140,7 +156,7 @@ class GitLabClient:
         self.timeout = timeout
 
     def request(self, endpoint: str, method: str = "GET", payload: Optional[dict] = None) -> dict:
-        """Execute HTTP request against GitLab v4 API."""
+        """向 GitLab API v4 端点发起带 PRIVATE-TOKEN 的 HTTP 请求并解析 JSON 响应。"""
         url = f"{self.base_url}/api/v4{endpoint}"
         body = json.dumps(payload).encode("utf-8") if payload is not None else None
         req = urllib.request.Request(
@@ -161,11 +177,11 @@ class GitLabClient:
             raise QARunnerError(msg) from err
 
     def check_auth(self) -> dict:
-        """Verify API token authentication and return user info."""
+        """验证当前 API Token 鉴权有效性并返回当前用户信息字典。"""
         return self.request("/user")
 
     def get_commit(self, project_path: str, commit_sha: str) -> dict:
-        """Query commit details from remote GitLab repository."""
+        """查询远端 GitLab 指定项目中的特定 Commit 元数据。"""
         validate_commit_sha(commit_sha)
         encoded = urllib.parse.quote(project_path, safe="")
         endpoint = f"/projects/{encoded}/repository/commits/{commit_sha}"
@@ -173,7 +189,7 @@ class GitLabClient:
 
 
 def check_ssh_connection(host: str, port: int, user: str = "git", timeout: int = 90) -> bool:
-    """Verify SSH remote reachability and key authentication."""
+    """通过非交互式 SSH 批处理模式验证 GitLab SSH 端口连通性与公钥认证。"""
     cmd = [
         "ssh",
         "-n",
@@ -195,7 +211,7 @@ def check_ssh_connection(host: str, port: int, user: str = "git", timeout: int =
 
 
 def verify_server_commit(client: GitLabClient, project_path: str, commit: str) -> dict:
-    """Assert candidate commit exists on server remote; reject unpushed hashes."""
+    """断言候选 Commit 已真实存在于远端 GitLab 服务端，拒绝未推送的本地哈希。"""
     validate_commit_sha(commit)
     try:
         data = client.get_commit(project_path, commit)
@@ -209,7 +225,7 @@ def verify_server_commit(client: GitLabClient, project_path: str, commit: str) -
 
 
 def sanitize_path_component(name: str) -> str:
-    """Sanitize path component to disallow traversal characters."""
+    """清洗单个路径组件名称，拒绝包含路径穿越符（`..`）或非法特殊字符的名称。"""
     if not isinstance(name, str) or not name:
         raise QARunnerError("Path component must be a non-empty string")
     if not re.fullmatch(r"[A-Za-z0-9_\-\.]+", name) or ".." in name:
@@ -218,7 +234,7 @@ def sanitize_path_component(name: str) -> str:
 
 
 def validate_sandbox_path(base_dir: Path, forbidden_roots: Optional[List[Path]] = None) -> Path:
-    """Validate sandbox base directory is safe and outside forbidden roots."""
+    """校验沙箱根目录安全性，确保其不位于任何禁止挂载的开发者工作树内部。"""
     resolved_base = base_dir.resolve()
     if forbidden_roots:
         for root in forbidden_roots:
@@ -229,7 +245,7 @@ def validate_sandbox_path(base_dir: Path, forbidden_roots: Optional[List[Path]] 
 
 
 def create_isolated_sandbox(base_dir: Path, task_id: str, run_id: str) -> Path:
-    """Create isolated directory structure for QA execution."""
+    """为单次 QA 运行创建带 UTC 时间戳与 0700 权限的独立沙箱目录。"""
     safe_task = sanitize_path_component(task_id)
     safe_run = sanitize_path_component(run_id)
     now_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d_%H%M%S")
@@ -240,7 +256,7 @@ def create_isolated_sandbox(base_dir: Path, task_id: str, run_id: str) -> Path:
 
 
 def validate_sandbox_subpath(sandbox_dir: Path, relative_path: str) -> Path:
-    """Ensure subpath resolves strictly within the sandbox boundaries."""
+    """确保相对子路径解析后严格位于当前沙箱根目录边界之内，防止路径逃逸。"""
     if not relative_path:
         return sandbox_dir
     target = (sandbox_dir / relative_path).resolve()
@@ -251,7 +267,7 @@ def validate_sandbox_subpath(sandbox_dir: Path, relative_path: str) -> Path:
 
 
 def verify_clean_worktree(repo_dir: Path) -> None:
-    """Verify that git working tree is clean with zero uncommitted changes."""
+    """核验检出后的 Git 工作树完全干净，不存在任何未提交或未跟踪文件。"""
     cmd = ["git", "-C", str(repo_dir), "status", "--porcelain=v1"]
     res = subprocess.run(cmd, text=True, capture_output=True, timeout=30)
     if res.returncode != 0:
@@ -261,7 +277,7 @@ def verify_clean_worktree(repo_dir: Path) -> None:
 
 
 def run_git_command(args: List[str], cwd: Path, timeout: int = 180) -> subprocess.CompletedProcess:
-    """Execute git command with isolated environment variables."""
+    """在剥离外部 GIT_* 环境变量污染的隔离环境中执行 git 子命令。"""
     env = os.environ.copy()
     for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
         env.pop(key, None)
@@ -271,7 +287,7 @@ def run_git_command(args: List[str], cwd: Path, timeout: int = 180) -> subproces
 
 
 def checkout_remote_repository(sandbox_dir: Path, target: RepositoryTarget, timeout: int = 180) -> str:
-    """Fetch exact commit from remote server directly into sandbox."""
+    """直接从远端服务器拉取指定 Commit 并强制检出到隔离沙箱子目录，随后验证工作区洁净度。"""
     validate_commit_sha(target.commit)
     validate_remote_url(target.url)
     if not target.ref:
@@ -309,12 +325,13 @@ def checkout_remote_repository(sandbox_dir: Path, target: RepositoryTarget, time
     return "\n".join(logs)
 
 
+# 单条沙箱构建或测试命令的默认超时秒数
 DEFAULT_CMD_TIMEOUT = 300
 
 
 def run_command_in_sandbox(sandbox_dir: Path, cmd: str, subpath: str = "",
                            container_id: Optional[str] = None) -> CommandResult:
-    """Execute build or test command inside container or sandbox directory."""
+    """在指定 Docker 容器内或隔离沙箱子目录中执行单条构建/测试命令并记录耗时与退出码。"""
     work_dir = validate_sandbox_subpath(sandbox_dir, subpath)
     start_time = datetime.datetime.now()
     if container_id:
@@ -345,7 +362,7 @@ def run_command_in_sandbox(sandbox_dir: Path, cmd: str, subpath: str = "",
 
 
 def collect_tool_versions() -> Dict[str, str]:
-    """Inspect environment tool versions for provenance records."""
+    """采集当前运行环境的 git 与 python 工具链版本字符串以供证据溯源。"""
     versions = {}
     for tool, cmd in [("git", ["git", "--version"]), ("python", [sys.executable, "--version"])]:
         try:
@@ -357,7 +374,7 @@ def collect_tool_versions() -> Dict[str, str]:
 
 
 def build_server_lock_data(targets: List[RepositoryTarget]) -> dict:
-    """Build structured server lock metadata for verification."""
+    """根据目标仓库列表构建结构化 server_lock.json 数据字典。"""
     repos = []
     for target in targets:
         validate_commit_sha(target.commit)
@@ -373,7 +390,7 @@ def build_server_lock_data(targets: List[RepositoryTarget]) -> dict:
 
 
 def build_server_verdict_data(run_result: QARunResult) -> dict:
-    """Construct structured server verdict JSON content."""
+    """根据沙箱运行结果构建 server_verdict.json 判定字典。"""
     return {
         "task_id": run_result.task_id,
         "task_revision": run_result.task_revision,
@@ -388,7 +405,7 @@ def build_server_verdict_data(run_result: QARunResult) -> dict:
 
 
 def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str]]) -> dict:
-    """Construct canonical server_qa proof dictionary matching delivery_checks."""
+    """构造满足 delivery_checks 门禁要求的标准 server_qa.json 证明字典。"""
     cid = run_result.container_id or run_result.sandbox_id
     img = run_result.container_image or "ubuntu:20.04"
     return {
@@ -419,7 +436,7 @@ def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str
 
 def write_evidence_bundle(output_dir: Path, run_result: QARunResult,
                           lock_data: dict, logs: Dict[str, str]) -> Dict[str, Dict[str, str]]:
-    """Write evidence files to output directory and compute relative refs."""
+    """将锁文件、检出日志、运行日志、判定结果及 server_qa 证明写入输出目录并返回引用映射。"""
     output_dir.mkdir(parents=True, exist_ok=True)
     lock_ref = create_evidence_ref(output_dir / "server_lock.json",
                                    json.dumps(lock_data, indent=2).encode("utf-8"))
@@ -443,7 +460,7 @@ def write_evidence_bundle(output_dir: Path, run_result: QARunResult,
 
 
 def load_yaml_config(config_path: Path) -> dict:
-    """Load configuration YAML file with defensive error handling."""
+    """加载并校验 QA Runner 的 YAML 配置文件。"""
     if not config_path.is_file():
         raise QARunnerError(f"Config file not found: {config_path}")
     try:
@@ -456,7 +473,7 @@ def load_yaml_config(config_path: Path) -> dict:
 
 
 def start_docker_sandbox(name: str, image: str, mount_dir: Path, read_only: bool = True) -> str:
-    """Start isolated docker container with read-only volume mount for QA workspace."""
+    """启动挂载沙箱目录（默认只读 ro）的隔离 Docker 容器并返回 12 位容器 ID。"""
     mode = "ro" if read_only else "rw"
     cmd = [
         "docker", "run", "-d",
@@ -475,12 +492,12 @@ def start_docker_sandbox(name: str, image: str, mount_dir: Path, read_only: bool
 
 
 def stop_docker_sandbox(container_id: str) -> None:
-    """Stop container preserving inspect provenance in exited state."""
+    """停止指定 Docker 沙箱容器（保留其 exited 状态以供 docker inspect 审计）。"""
     subprocess.run(["docker", "stop", "-t", "2", container_id], text=True, capture_output=True, timeout=30)
 
 
 def inspect_docker_sandbox(container_id: str) -> dict:
-    """Inspect docker container to capture provenance evidence."""
+    """执行 docker inspect 提取容器镜像摘要、创建时间、状态与挂载卷列表作为溯源证据。"""
     cmd = ["docker", "inspect", container_id]
     proc = subprocess.run(cmd, text=True, capture_output=True, timeout=15)
     if proc.returncode == 0:
@@ -502,9 +519,10 @@ def inspect_docker_sandbox(container_id: str) -> dict:
 
 
 class QARunner:
-    """Core QA runner orchestrating remote verification and sandbox execution."""
+    """统筹远端提交核验、隔离沙箱检出与只读容器测试执行的 QA 核心运行器。"""
 
     def __init__(self, config: dict, workspace_root: Optional[Path] = None):
+        """初始化 QA 运行器，解析服务端地址、超时参数并校验沙箱根路径隔离性。"""
         self.config = config
         self.workspace_root = workspace_root or Path.cwd()
         server_cfg = config.get("server", {})
@@ -520,13 +538,13 @@ class QARunner:
         self.gitlab = GitLabClient(self.gitlab_url, timeout=self.api_timeout)
 
     def verify_server_prerequisites(self) -> dict:
-        """Validate both GitLab API token and SSH port authentication."""
+        """同时核验 GitLab REST API 令牌认证与 SSH 端口连通性。"""
         user_info = self.gitlab.check_auth()
         ssh_ok = check_ssh_connection(self.ssh_host, self.ssh_port, self.ssh_user, timeout=self.ssh_timeout)
         return {"api_user": user_info.get("username"), "ssh_connected": ssh_ok}
 
     def verify_target_commits(self, targets: List[RepositoryTarget]) -> None:
-        """Verify all target repository commits exist on the server."""
+        """逐一核验请求中所有目标仓库的候选 Commit 均已存在于 GitLab 服务端。"""
         repos_cfg = self.config.get("repositories", {})
         for target in targets:
             cfg = repos_cfg.get(target.name, {})
@@ -535,6 +553,7 @@ class QARunner:
 
     def _run_sandbox_steps(self, sandbox_dir: Path, req: QARunRequest,
                            cid: Optional[str] = None) -> tuple:
+        """在沙箱或容器内顺序执行请求中的全部构建与测试命令并汇总结果。"""
         runtime_logs = []
         build_results, test_results = [], []
         overall_passed = True
@@ -559,19 +578,19 @@ class QARunner:
         return runtime_logs, build_results, test_results, overall_passed
 
     def execute_run(self, req: QARunRequest) -> tuple:
-        """Execute complete isolated QA workflow in read-only container sandbox."""
+        """在只读容器沙箱中执行完整的远端提交校验、全新检出与客观测试流程。"""
         if not req.commands or not any(item.get("kind", "test") == "test" for item in req.commands):
             raise QARunnerError("At least one accepted test command is required; zero checks cannot pass")
         self.verify_target_commits(req.targets)
         run_id = f"run_{datetime.datetime.now().strftime('%H%M%S')}"
         sandbox_dir = create_isolated_sandbox(self.sandbox_base, req.task_id, run_id)
-        # 1. Fetch exact server commits on host before launching container
+        # 1. 在宿主机隔离沙箱目录内拉取服务端精确锁定的 Commit
         git_timeout = int(self.config.get("timeouts", {}).get("git_clone_seconds", 300))
         c_logs = []
         for target in req.targets:
             log = checkout_remote_repository(sandbox_dir, target, timeout=git_timeout)
             c_logs.append(log)
-        # 2. Launch container with read-only workspace snapshot
+        # 2. 启动以只读模式挂载该沙箱快照的 Docker 容器执行构建与测试
         c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
         img = self.config.get("sandbox", {}).get("image", "qa-sandbox:20261029")
         cid = start_docker_sandbox(c_name, img, sandbox_dir, read_only=True)
@@ -592,7 +611,7 @@ class QARunner:
 
 
 def create_cli_parser() -> argparse.ArgumentParser:
-    """Create command-line argument parser."""
+    """构建 QA Runner 命令行参数解析器。"""
     parser = argparse.ArgumentParser(description="Server Candidate QA Sandbox Runner")
     parser.add_argument("--config", default="project-control/config/qa_runner/default_config.yaml",
                         help="Path to runner configuration YAML")
@@ -608,7 +627,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
 
 
 def parse_repo_target(raw: str, default_urls: dict, default_branches: dict = None) -> RepositoryTarget:
-    """Parse a single repo target specification string."""
+    """解析形如 'name=commit[:ref]' 的单条目标仓库命令行规格字符串。"""
     name, sep, rest = raw.partition("=")
     if not sep or not rest:
         raise QARunnerError(f"Target format must be 'name=commit[:ref]', got: {raw}")
@@ -623,7 +642,7 @@ def parse_repo_target(raw: str, default_urls: dict, default_branches: dict = Non
 
 
 def parse_command_spec(raw: str) -> dict:
-    """Parse command spec string in format 'kind:subpath:command'."""
+    """解析形如 'kind:subpath:command' 的构建/测试命令规格字符串。"""
     parts = raw.split(":", 2)
     if len(parts) == 3:
         return {"kind": parts[0], "subpath": parts[1], "command": parts[2]}
@@ -631,7 +650,7 @@ def parse_command_spec(raw: str) -> dict:
 
 
 def main() -> int:
-    """Main CLI entrypoint."""
+    """QA Runner 命令行主入口函数。"""
     parser = create_cli_parser()
     args = parser.parse_args()
     try:

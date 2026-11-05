@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Isolated evidence-gate regression fixtures; none are real QA attestations."""
+"""交付证据门禁隔离回归测试固件（仅供门禁逻辑回归验证，非真实 QA 签署凭据）。"""
 
 import ast
 import copy

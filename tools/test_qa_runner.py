@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comprehensive test suite for QA runner and sandbox isolation."""
+"""QA 运行器与容器沙箱隔离机制综合单元测试套件。"""
 
 import ast
 import json

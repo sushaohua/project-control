@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
+# @file push_to_server.sh
+# @brief 多仓库同步推送与远端 HEAD 一致性校验脚本。
+# @details 优先调用顶层工作区带令牌认证的五仓发布工具；降级模式下按固定分支顺序推送并核对远端 SHA。
 set -euo pipefail
 
-# Use the project-control copy or an exported copy in the workspace root.
+# 优先使用 project-control 仓内副本或导出到工作区根目录的副本定位工作区根路径
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 if [[ $# -gt 0 ]]; then
     workspace_root=$(cd -- "$1" && pwd)
@@ -11,11 +14,12 @@ else
     workspace_root=$(cd -- "$script_dir/../.." && pwd)
 fi
 
-# Prefer the entry repository's token-authenticated, five-repository publisher.
+# 优先调用入口仓库的带 Token 认证多仓库发布器
 if [[ -f "$workspace_root/workspace.json" && -f "$workspace_root/tools/workspace.py" ]]; then
     exec python3 "$workspace_root/tools/workspace.py" --workspace "$workspace_root" publish
 fi
 
+# 降级模式：遍历四个核心子仓库，检查当前分支与工作区洁净度后推送并核对远端引用
 export GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh -o BatchMode=yes -o ConnectTimeout=10}"
 failed=0
 for entry in soc-ap:main project-control:main mcu-p3:feat/soc-debug test_harness:main; do

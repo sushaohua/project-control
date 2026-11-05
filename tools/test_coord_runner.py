@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comprehensive test suite for COORD runner, state machine, leases, and recovery."""
+"""COORD 运行器、状态机、资源租约与异常恢复综合测试套件。"""
 
 import ast
 import hashlib

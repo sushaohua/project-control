@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI module entrypoint supporting `python3 -m tools.coord_runner --once`."""
+"""COORD 运行器命令行模块入口（支持 `python3 -m tools.coord_runner --once` 调用）。"""
 
 import sys
 

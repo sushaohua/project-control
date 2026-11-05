@@ -1,4 +1,4 @@
-"""Deterministic sandbox execution and validation of its objective evidence."""
+"""确定性沙箱测试执行及其客观证据链（容器隔离、仓库锁、命令结果）的严格校验模块。"""
 
 import hashlib
 import json
@@ -10,7 +10,7 @@ from .qa_contract import create_qa_request
 
 
 def read_qa_ref(ref: dict, run_dir: Path) -> tuple:
-    """Verify evidence bytes within the current independent run."""
+    """在当前独立 QA 运行目录边界内读取证据文件并核验其 64 位 SHA256 摘要。"""
     if not isinstance(ref, dict) or not isinstance(ref.get("path"), str) or not ref["path"]:
         raise CoordRunnerError("QA evidence needs a non-empty path")
     expected = ref.get("sha256")
@@ -27,7 +27,7 @@ def read_qa_ref(ref: dict, run_dir: Path) -> tuple:
 
 
 def validate_checks(proof: dict, request: dict) -> None:
-    """Bind executed commands and their objective outcome to the frozen plan."""
+    """将沙箱实际执行的构建/测试命令及其客观退出码与冻结计划及 server_verdict 进行双向绑定校验。"""
     run_dir = Path(request["run_dir"])
     _, raw = read_qa_ref(proof.get("server_verdict"), run_dir)
     verdict = json.loads(raw)
@@ -53,7 +53,7 @@ def validate_checks(proof: dict, request: dict) -> None:
 
 
 def validate_source(proof: dict, request: dict) -> None:
-    """Verify all repository locks, not only a task-name-derived repository."""
+    """核验 server_lock.json 中记录的所有仓库 URL、分支引用与 Commit 哈希均与冻结请求完全一致。"""
     _, raw = read_qa_ref(proof.get("server_lock"), Path(request["run_dir"]))
     repositories = json.loads(raw).get("repositories", [])
     if len(repositories) != len(request["targets"]):
@@ -66,7 +66,7 @@ def validate_source(proof: dict, request: dict) -> None:
 
 
 def validate_server_proof(ref: dict, request: dict) -> dict:
-    """Validate evidence before any model is asked to review it."""
+    """在任何独立模型启动审阅前，先确定性校验 server_qa 证明的容器隔离性、零宿主工作区挂载与日志完整性。"""
     path, data = read_qa_ref(ref, Path(request["run_dir"]))
     proof = json.loads(data)
     if type(proof.get("task_revision")) is not int:
@@ -97,7 +97,7 @@ def validate_server_proof(ref: dict, request: dict) -> dict:
 
 
 def execute_sandbox(request: dict) -> dict:
-    """Run the trusted Python tool directly; the model never schedules tests."""
+    """由受信任的 Python 运行器直接调用沙箱构建与测试命令（严禁由模型代为启动测试）。"""
     run_dir = Path(request["run_dir"])
     try:
         proc = subprocess.run(request["sandbox_command"], text=True, capture_output=True,

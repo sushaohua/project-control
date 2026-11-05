@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""COORD runner package: intake, approval guard, role adapter, CAS, scheduling, and gates."""
+"""COORD 调度运行器核心包：导出收件单接入、审批门禁、角色适配器、CAS 原子写、租约与状态机门禁接口。"""
 
 from .approval_guard import ApprovalCheckResult, ApprovalGuard, ApprovalQuery
 from .cas_writer import (

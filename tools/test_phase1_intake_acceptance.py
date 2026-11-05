@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AUTO-05: Phase 1 M1 & M2 Comprehensive End-to-End Independent Acceptance Test Suite.
+"""AUTO-05：Phase 1 M1 与 M2 端到端独立验收测试套件（覆盖收件安全、防伪审批、多角色分诊、异步编排、五源对账与 AST 门禁）。
 
 Covers all 19 acceptance criteria for M1 & M2:
 - Intake & Security: P1-01, P1-06, P1-16

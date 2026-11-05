@@ -1,4 +1,4 @@
-"""Versioned QA selection and supported package import paths."""
+"""版本化 QA 审阅策略解析（legacy 与 streamlined-v1）及包导入路径单元测试。"""
 
 import ast
 from pathlib import Path

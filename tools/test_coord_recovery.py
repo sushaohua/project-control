@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comprehensive test suite for COORD M2 recovery, external SQLite store, and 5-source reconciliation."""
+"""COORD M2 断点恢复、外部 SQLite 状态存储与五源对账综合测试套件。"""
 
 import ast
 import fcntl

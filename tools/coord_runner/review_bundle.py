@@ -1,4 +1,4 @@
-"""Freeze candidate diffs and sandbox facts for independent read-only audit."""
+"""冻结候选版本 Diff 与隔离沙箱客观事实，供独立只读 Codex 会话执行审计与差异复验。"""
 
 import hashlib
 import json
@@ -18,10 +18,12 @@ from .review_policy import resolve_review_policy
 
 
 def file_ref(path: Path) -> dict:
+    """读取文件并返回包含绝对路径与 64 位 SHA256 摘要的引用字典。"""
     return {"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
 
 
 def git_output(repo: Path, arguments: list) -> str:
+    """在指定 Git 仓库内执行只读 git 命令并返回标准输出，失败时抛出 CoordRunnerError。"""
     process = subprocess.run(["git", "-C", str(repo)] + arguments,
                              text=True, capture_output=True, timeout=30)
     if process.returncode != 0:
@@ -30,6 +32,7 @@ def git_output(repo: Path, arguments: list) -> str:
 
 
 def snapshot_diffs(request: dict, proof: dict) -> list:
+    """从独立沙箱检出目录提取基线到候选 Commit 的精确二进制安全补丁（`.patch`）并固化 SHA256 引用。"""
     root = Path(proof["sandbox"]["path"]).resolve()
     author = Path(request["workspace"])
     if root == author or author in root.parents:
@@ -58,6 +61,7 @@ def snapshot_diffs(request: dict, proof: dict) -> list:
 
 
 def freeze_review_bundle(qa_result: dict) -> dict:
+    """校验沙箱证明后冻结 review_bundle.json，并在每次复用时核对补丁文件与检出树未被篡改。"""
     request = qa_result["request"]
     read_qa_ref(request["request_ref"], Path(request["run_dir"]))
     proof = validate_server_proof(qa_result["server_qa"], request)
@@ -108,6 +112,7 @@ def validate_current_review_inputs(record: object, card: dict, qa_result: dict) 
 
 
 def _validate_request_manifest(request: dict) -> None:
+    """核验内存中 QA 请求字典与磁盘上冻结的 request.json 内容及 SHA256 完全一致。"""
     ref = request.get("request_ref")
     path, raw = read_qa_ref(ref, Path(request.get("run_dir", "")))
     try:
@@ -120,6 +125,7 @@ def _validate_request_manifest(request: dict) -> None:
 
 
 def _validate_declared_run_id(card: dict, request: dict) -> None:
+    """核验任务卡当前声明的 executor.run_id 与冻结 QA 合同中的 run_id 一致。"""
     card_run = ((card.get("executor") or {}).get("run_id"))
     frozen_run = (((request.get("contract") or {}).get("executor") or {}).get("run_id"))
     if card_run is not None and (not frozen_run or card_run != frozen_run):
@@ -127,12 +133,14 @@ def _validate_declared_run_id(card: dict, request: dict) -> None:
 
 
 def _prior_review(previous: dict, role: str) -> dict:
+    """从上一轮 QA 运行记录中逆序查找指定角色的审阅条目。"""
     reviews = previous.get("reviews") or []
     return next((item for item in reversed(reviews)
                  if item.get("role") == role), {})
 
 
 def _copy_prior_report(previous: dict, entry: dict, run_dir: Path) -> dict:
+    """核验上一轮审阅报告 SHA256 并将其复制到本轮 `reverification/` 目录供差异复验读取。"""
     path, digest = entry.get("report_path"), entry.get("report_sha256")
     if not path or not digest:
         raise CoordRunnerError("上一轮 QA 审阅报告引用不完整")
@@ -152,6 +160,7 @@ def _copy_prior_report(previous: dict, entry: dict, run_dir: Path) -> dict:
 
 
 def _candidate_delta(bundle: dict, previous: dict, run_dir: Path) -> dict:
+    """计算上一轮候选 Commit 到本轮候选 Commit 的精确增量补丁并写入 reverification 目录。"""
     request = bundle["request"]
     repo_name = request["repository"]
     current = request["candidate_commit"]
@@ -242,6 +251,7 @@ def build_evidence_index(bundle: dict, artifact_refs: list) -> dict:
 
 
 def validate_audit(result: object, expected: dict) -> dict:
+    """校验 Codex 最终审计 JSON 是否严格符合 Schema、绑定预期候选版本且 APPROVED 时无遗留 unexecuted 项。"""
     report = parse_final_response(result.output_text)
     required = set(audit_schema()["required"])
     if set(report) != required:
@@ -261,7 +271,7 @@ def validate_audit(result: object, expected: dict) -> dict:
 
 
 def candidate_artifact_refs(bundle: dict) -> list:
-    """Bind declared deliverables to files in the independent pinned checkout."""
+    """将任务卡声明的交付物（deliverables.artifacts）绑定到独立沙箱检出树中的真实文件与 SHA256 引用。"""
     if not resolve_review_policy(bundle["request"]["contract"]).streamlined:
         return []
     result = []
@@ -288,6 +298,7 @@ def candidate_artifact_refs(bundle: dict) -> list:
 
 
 def save_audit_report(result: object, context: dict, audit_dir: Path) -> dict:
+    """校验审计结论、封装 YAML Frontmatter 元数据并落盘 review_report.md，返回审查分配登记条目。"""
     report = validate_audit(result, context["expected"])
     if not context["bundle"]["server_qa"]["passed"] and report["decision"] == "APPROVED":
         raise CoordRunnerError(f"Audit cannot approve failing objective checks; raw result: {audit_dir}")

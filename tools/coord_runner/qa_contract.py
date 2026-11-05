@@ -1,4 +1,4 @@
-"""Freeze accepted task commands, repository locks and review inputs."""
+"""冻结任务卡声明的测试命令、仓库提交锁与 QA 审查请求输入契约。"""
 
 import hashlib
 import json
@@ -13,6 +13,7 @@ from .errors import CoordRunnerError
 
 
 def repository_from_card(card: dict) -> str:
+    """从任务卡 write_scope 或 candidate_repository 唯一解析出待验证的候选仓库名称。"""
     names = list((card.get("write_scope") or {}).keys())
     code_names = [name for name in names if name != "project-control"]
     if len(code_names) == 1:
@@ -26,6 +27,7 @@ def repository_from_card(card: dict) -> str:
 
 
 def freeze_commands(card: dict) -> list:
+    """校验并冻结任务卡 verification.commands 中的构建与测试命令（拒绝未就绪或越界路径）。"""
     commands = (card.get("verification") or {}).get("commands") or []
     result = []
     for item in commands:
@@ -47,6 +49,7 @@ def freeze_commands(card: dict) -> list:
 
 
 def freeze_targets(card: dict, candidate: dict, config: dict) -> list:
+    """合并任务基线（source_baseline）与当前候选提交，生成锁定的远端仓库检出列表。"""
     locks = dict(card.get("source_baseline") or {})
     locks[candidate["repository"]] = candidate["candidate_commit"]
     result = []
@@ -61,6 +64,7 @@ def freeze_targets(card: dict, candidate: dict, config: dict) -> list:
 
 
 def create_qa_request(workspace: Path, card: dict, candidate: dict) -> dict:
+    """创建隔离沙箱 QA 运行请求并落盘不可变的 request.json 及其 SHA256 引用。"""
     task_id = card.get("id", "")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", task_id):
         raise CoordRunnerError("Invalid task ID")

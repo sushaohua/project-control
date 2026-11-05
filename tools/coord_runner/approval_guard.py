@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exact-version human approval verification and anti-forgery guard (P1-03, P1-18, P1-19)."""
+"""模块职责：精确版本人工批准单校验器与防伪造守卫（P1-03、P1-18、P1-19）。"""
 
 from dataclasses import dataclass, field
 import datetime
@@ -28,7 +28,7 @@ DEFAULT_MODEL = "gpt-6-luna"
 
 @dataclass(frozen=True)
 class ApprovalQuery:
-    """Structured query checking whether a specific demand/task scope may execute."""
+    """检查特定需求或任务范围是否获准进入实现的查询结构体。"""
     demand_id: str
     approval_path: Optional[Path] = None
     expected_approval_sha256: Optional[str] = None
@@ -43,7 +43,7 @@ class ApprovalQuery:
 
 @dataclass(frozen=True)
 class ApprovalCheckResult:
-    """Deterministic approval evaluation outcome for a demand or task."""
+    """针对需求或任务的确定性批准评估结果结构体。"""
     demand_id: str
     demand_confirmed: bool
     implementation_allowed: bool
@@ -59,14 +59,17 @@ class ApprovalCheckResult:
 
 
 def _is_strict_int(value: object) -> bool:
+    """判断输入值是否为大于等于 1 的严格整型（排除 bool）。"""
     return type(value) is int and value >= 1
 
 
 def _is_non_empty_str(value: object) -> bool:
+    """判断输入值是否为去空白后非空的字符串。"""
     return isinstance(value, str) and bool(value.strip())
 
 
 def _resolve_contained_path(workspace_root: Path, raw_path: str) -> Path:
+    """解析并校验相对路径位于工作区边界内且对应真实文件。"""
     if not _is_non_empty_str(raw_path):
         raise ApprovalValidationError("Path reference is empty", "INVALID_PATH")
     rel = Path(raw_path)
@@ -84,6 +87,7 @@ def _resolve_contained_path(workspace_root: Path, raw_path: str) -> Path:
 
 
 def _read_confirmation_header(conf_path: Path) -> dict:
+    """读取确认单 YAML 或 Markdown YAML 头信息并返回字典。"""
     text = conf_path.read_text(encoding="utf-8")
     if conf_path.suffix in {".yaml", ".yml"}:
         data = yaml.safe_load(text)
@@ -101,6 +105,7 @@ def _read_confirmation_header(conf_path: Path) -> dict:
 
 
 def _reject_forged_record_fields(payload: dict) -> None:
+    """拦截模型或记录自填 `approved` 布尔字段及非法的 `approval_refs` 格式。"""
     if not isinstance(payload, dict):
         return
     if "approved" in payload:
@@ -114,14 +119,16 @@ def _reject_forged_record_fields(payload: dict) -> None:
 
 
 class ApprovalGuard:
-    """Cryptographic and structural guard enforcing exact-version HUMAN approvals."""
+    """执行精确版本人工（HUMAN）批准校验与防伪造核验的守卫类。"""
 
     def __init__(self, workspace_root: Path):
+        """初始化批准守卫并绑定工作区根目录。"""
         if workspace_root is None:
             raise ValueError("workspace_root must not be None")
         self.workspace_root = Path(workspace_root).resolve()
 
     def _validate_approval_schema(self, data: object) -> dict:
+        """校验批准单 YAML 顶层 Schema 版本、修订号、时间戳及批准模式。"""
         if not isinstance(data, dict):
             raise ApprovalValidationError("Approval YAML must be a dictionary", "INVALID_SCHEMA")
         if type(data.get("schema_version")) is not int or data.get("schema_version") != 1:
@@ -146,6 +153,7 @@ class ApprovalGuard:
         return data
 
     def _validate_human_actor(self, approved_by: object) -> None:
+        """校验 `approved_by` 必须来自受信任渠道的真实 HUMAN 角色且包含原文决定。"""
         if not isinstance(approved_by, dict):
             raise ApprovalValidationError("approved_by must be a mapping", "MISSING_HUMAN_SOURCE")
         if approved_by.get("actor_type") != "HUMAN":
@@ -165,6 +173,7 @@ class ApprovalGuard:
             raise ApprovalValidationError("approved_by.verbatim_decision is required", "MISSING_VERBATIM_DECISION")
 
     def _verify_bound_confirmation(self, bound: object) -> dict:
+        """核验批准单绑定的确认单磁盘 SHA-256 与 YAML 头信息一致。"""
         if not isinstance(bound, dict):
             raise ApprovalValidationError("bound_confirmation must be a mapping", "MISSING_CONFIRMATION_BINDING")
         conf_id = bound.get("confirmation_id")
@@ -196,7 +205,7 @@ class ApprovalGuard:
         expected_sha256: Optional[str] = None,
         expected_revision: Optional[int] = None,
     ) -> dict:
-        """Load approval YAML from disk, verify digests, HUMAN provenance, and confirmation hash."""
+        """从磁盘加载批准单 YAML，核验摘要、HUMAN 来源及绑定确认单哈希。"""
         if approval_path is None:
             raise ApprovalValidationError("Missing approval_path", "MISSING_APPROVAL_REF")
         rel_or_abs = Path(approval_path)
@@ -233,6 +242,7 @@ class ApprovalGuard:
         return out
 
     def _check_target_confirmation_match(self, query: ApprovalQuery, verified_conf: dict) -> None:
+        """核验查询请求的目标确认单 ID、修订号及哈希与已验证确认单完全一致。"""
         if query.target_confirmation_id and query.target_confirmation_id != verified_conf["confirmation_id"]:
             raise ApprovalValidationError(
                 f"Confirmation ID mismatch: target={query.target_confirmation_id}, "
@@ -254,6 +264,7 @@ class ApprovalGuard:
             )
 
     def _validate_demand_entry_and_model(self, entry: dict, requested_model: str) -> None:
+        """校验需求条目布尔标记与请求模型是否符合批准单中的模型策略。"""
         if type(entry.get("demand_confirmed")) is not bool:
             raise ApprovalValidationError("demand_confirmed must be strict bool", "INVALID_DEMAND_ENTRY")
         if type(entry.get("implementation_summary_approved")) is not bool:
@@ -280,6 +291,7 @@ class ApprovalGuard:
         approval_data: dict,
         entry: Optional[dict],
     ) -> ApprovalCheckResult:
+        """评估具体需求条目及其子范围在批准单中的放行状态。"""
         vconf = approval_data["_verified_confirmation"]
         base_kwargs = {
             "demand_id": query.demand_id,
@@ -318,7 +330,7 @@ class ApprovalGuard:
         )
 
     def check_demand_release(self, query: ApprovalQuery) -> ApprovalCheckResult:
-        """Evaluate whether `query` has valid exact-version HUMAN approval for implementation."""
+        """评估查询对象是否具备有效的精确版本 HUMAN 实现批准。"""
         if not _is_non_empty_str(query.demand_id):
             raise ApprovalValidationError("ApprovalQuery requires non-empty demand_id", "MISSING_DEMAND_ID")
         _reject_forged_record_fields(query.record_payload)
@@ -339,7 +351,7 @@ class ApprovalGuard:
         return self._evaluate_demand_scope(query, approval_data, matched)
 
     def require_implementation_approval(self, query: ApprovalQuery) -> ApprovalCheckResult:
-        """Assert implementation is approved, raising ApprovalValidationError otherwise."""
+        """断言需求已获准进入实现阶段，否则抛出 `ApprovalValidationError`。"""
         result = self.check_demand_release(query)
         if not result.implementation_allowed:
             raise ApprovalValidationError(
@@ -349,7 +361,7 @@ class ApprovalGuard:
         return result
 
     def check_intake_record(self, record: dict) -> ApprovalCheckResult:
-        """Evaluate an intake category YAML record without trusting enabled=true or prose keywords."""
+        """评估收件分类 YAML 记录的批准状态，绝不盲信 `enabled=true` 或正文关键字。"""
         _reject_forged_record_fields(record)
         demand_ref = record.get("demand_ref") or {}
         demand_id = str(demand_ref.get("demand_id", "")).strip()
@@ -377,7 +389,7 @@ class ApprovalGuard:
         return self.check_demand_release(query)
 
     def evaluate_batch_records(self, records: List[dict]) -> Dict[str, ApprovalCheckResult]:
-        """Evaluate a batch of intake records independently so unapproved items never block approved ones."""
+        """独立评估一批收件记录，确保未批准条目不会阻塞同批已批准条目。"""
         results: Dict[str, ApprovalCheckResult] = {}
         for rec in records:
             rec_id = str(rec.get("id") or (rec.get("demand_ref") or {}).get("demand_id") or "UNKNOWN")

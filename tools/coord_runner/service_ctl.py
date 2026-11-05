@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI and management tool for ai-soc-coord-runner user systemd service."""
+"""ai-soc-coord-runner 用户级 systemd 服务管理与 crontab 隔离核验工具。"""
 
 import argparse
 import getpass
@@ -20,7 +20,7 @@ CmdRunner = Callable[[List[str]], Tuple[int, str]]
 
 
 def default_exec_cmd(cmd: List[str]) -> Tuple[int, str]:
-    """Execute command safely and capture returncode with combined output."""
+    """带 15s 超时保护地执行外部命令并返回 (退出码, 合并后的标准输出字符串)。"""
     try:
         proc = subprocess.run(
             cmd,
@@ -36,14 +36,14 @@ def default_exec_cmd(cmd: List[str]) -> Tuple[int, str]:
 
 
 def run_systemctl(args: List[str], runner: Optional[CmdRunner] = None) -> Tuple[int, str]:
-    """Execute systemctl --user command safely."""
+    """安全调用 `systemctl --user` 子命令并返回执行结果元组。"""
     run_fn = runner or default_exec_cmd
     cmd = ["systemctl", "--user"] + args
     return run_fn(cmd)
 
 
 def check_user_linger(username: Optional[str] = None) -> Dict[str, object]:
-    """Check whether linger is enabled for user via linger file or loginctl."""
+    """通过 `/var/lib/systemd/linger/` 或 `loginctl` 检查当前用户是否已开启 systemd 驻留（linger）。"""
     user = username or os.environ.get("USER") or getpass.getuser()
     linger_file = Path(f"/var/lib/systemd/linger/{user}")
     if linger_file.is_file():
@@ -59,7 +59,7 @@ def install_service(
     dest_dir: Optional[Path] = None,
     runner: Optional[CmdRunner] = None,
 ) -> Dict[str, object]:
-    """Install systemd user unit file and reload daemon."""
+    """将 systemd 用户单元文件安装到目标目录并执行 `daemon-reload`。"""
     src = Path(src_file or DEFAULT_SOURCE_PATH).resolve()
     if not src.is_file():
         return {"success": False, "error": f"Source unit file not found: {src}"}
@@ -80,7 +80,7 @@ def uninstall_service(
     dest_dir: Optional[Path] = None,
     runner: Optional[CmdRunner] = None,
 ) -> Dict[str, object]:
-    """Stop, disable, remove user unit file, and reload daemon."""
+    """停止、禁用并移除用户级 systemd 单元文件，随后重载 systemd 守护进程。"""
     run_systemctl(["stop", SERVICE_NAME], runner)
     run_systemctl(["disable", SERVICE_NAME], runner)
     target_dir = Path(dest_dir or DEFAULT_USER_SYSTEMD_DIR).resolve()
@@ -99,7 +99,7 @@ def uninstall_service(
 
 
 def control_service(action: str, runner: Optional[CmdRunner] = None) -> Dict[str, object]:
-    """Execute start, stop, or restart action for the user service."""
+    """对用户级 systemd 服务执行 start、stop 或 restart 控制动作。"""
     if action not in {"start", "stop", "restart"}:
         return {"success": False, "error": f"Unsupported action: {action}"}
     rc, out = run_systemctl([action, SERVICE_NAME], runner)
@@ -110,7 +110,7 @@ def get_service_status(
     dest_dir: Optional[Path] = None,
     runner: Optional[CmdRunner] = None,
 ) -> Dict[str, object]:
-    """Retrieve service installation and active status."""
+    """查询用户级 systemd 服务的安装状态、活跃状态（is-active）与详细输出。"""
     target_dir = Path(dest_dir or DEFAULT_USER_SYSTEMD_DIR).resolve()
     target_file = target_dir / SERVICE_NAME
     installed = target_file.is_file()
@@ -127,7 +127,7 @@ def get_service_status(
 
 
 def verify_crontab_isolation(runner: Optional[CmdRunner] = None) -> Dict[str, object]:
-    """Verify crontab is untouched and does not contain any coord_runner entry."""
+    """核验用户 crontab 未被污染且不包含任何 coord_runner 定时任务项。"""
     run_fn = runner or default_exec_cmd
     rc, out = run_fn(["crontab", "-l"])
     if rc != 0:
@@ -151,7 +151,7 @@ def verify_crontab_isolation(runner: Optional[CmdRunner] = None) -> Dict[str, ob
 
 
 def create_cli_parser() -> argparse.ArgumentParser:
-    """Build CLI parser for service control actions."""
+    """构建 systemd 服务控制器的命令行参数解析器。"""
     parser = argparse.ArgumentParser(description="Systemd user service controller for COORD runner")
     parser.add_argument(
         "action",
@@ -164,7 +164,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    """Main CLI dispatch entrypoint."""
+    """systemd 服务管理命令行主入口。"""
     parser = create_cli_parser()
     args = parser.parse_args(argv)
     res: Dict[str, object] = {}

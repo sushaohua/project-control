@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""External SQLite WAL state store and single-instance flock manager (Design §7)."""
+"""模块职责：外部 SQLite WAL 状态存储与单实例 `flock` 进程锁管理器（设计方案 §7）。"""
 
 import datetime
 import fcntl
@@ -19,7 +19,7 @@ DEFAULT_COORD_SESSION = "8d4e8b77-42a9-4bd3-bd5a-1b881e8d4bd5"
 
 
 class StateStore:
-    """Authoritative external WAL SQLite storage and process flock manager."""
+    """权威外部 WAL 模式 SQLite 存储与单实例进程锁管理器。"""
 
     def __init__(
         self,
@@ -27,6 +27,7 @@ class StateStore:
         lock_path: Optional[Path] = None,
         coord_session: str = DEFAULT_COORD_SESSION,
     ):
+        """初始化 SQLite 状态库路径、锁文件路径并创建数据表。"""
         self.db_path = Path(db_path or DEFAULT_STATE_DB).resolve()
         self.lock_path = Path(lock_path or DEFAULT_LOCK_FILE).resolve()
         self.coord_session = coord_session
@@ -35,6 +36,7 @@ class StateStore:
         self.init_db()
 
     def _get_connection(self) -> sqlite3.Connection:
+        """创建并配置启用 WAL 模式的 SQLite 数据库连接。"""
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(str(self.db_path), timeout=10.0)
         conn.row_factory = sqlite3.Row
@@ -43,7 +45,7 @@ class StateStore:
         return conn
 
     def init_db(self) -> None:
-        """Initialize tables for coordinate state, tasks, leases, and role jobs."""
+        """初始化协调状态、在途任务、租约及角色作业所需的 SQLite 数据表。"""
         conn = self._get_connection()
         try:
             with conn:
@@ -52,6 +54,7 @@ class StateStore:
             conn.close()
 
     def _create_tables(self, conn: sqlite3.Connection) -> None:
+        """创建 `coord_meta`、`in_flight_tasks` 等核心表并写入初始会话标识。"""
         conn.execute("""
             CREATE TABLE IF NOT EXISTS coord_meta (
                 key TEXT PRIMARY KEY,
@@ -81,6 +84,7 @@ class StateStore:
         )
 
     def _create_job_and_lease_tables(self, conn: sqlite3.Connection) -> None:
+        """创建已完成任务表、资源租约表及后台角色作业表。"""
         conn.execute("""
             CREATE TABLE IF NOT EXISTS completed_tasks (
                 task_id TEXT PRIMARY KEY,
@@ -118,7 +122,7 @@ class StateStore:
         """)
 
     def acquire_process_lock(self) -> bool:
-        """Acquire exclusive flock on coord_runner.lock; fail if already locked."""
+        """获取 `coord_runner.lock` 上的非阻塞排他文件锁，若已被占用则抛出冲突异常。"""
         if self._is_locked:
             return True
         self.lock_path.parent.mkdir(parents=True, exist_ok=True)
@@ -138,7 +142,7 @@ class StateStore:
             ) from err
 
     def release_process_lock(self) -> None:
-        """Release exclusive flock on coord_runner.lock."""
+        """释放 `coord_runner.lock` 上的排他文件锁并关闭文件描述符。"""
         if self._is_locked and self._lock_fd is not None:
             try:
                 fcntl.flock(self._lock_fd, fcntl.LOCK_UN)
@@ -149,7 +153,7 @@ class StateStore:
             self._is_locked = False
 
     def set_meta(self, key: str, value: str) -> None:
-        """Set a single metadata key-value pair."""
+        """写入或更新单个协调器元数据键值对。"""
         conn = self._get_connection()
         try:
             with conn:
@@ -161,7 +165,7 @@ class StateStore:
             conn.close()
 
     def get_meta(self, key: str) -> Optional[str]:
-        """Retrieve a single metadata value by key."""
+        """按键名查询单个协调器元数据值。"""
         conn = self._get_connection()
         try:
             cur = conn.execute("SELECT value FROM coord_meta WHERE key = ?;", (key,))
@@ -171,6 +175,7 @@ class StateStore:
             conn.close()
 
     def _sync_in_flight(self, conn: sqlite3.Connection, tasks: Dict[str, TaskExecutionRecord]) -> None:
+        """将内存中的在途任务字典全量同步写入 `in_flight_tasks` 表。"""
         conn.execute("DELETE FROM in_flight_tasks;")
         for rec in tasks.values():
             conn.execute("""
@@ -186,6 +191,7 @@ class StateStore:
             ))
 
     def _sync_leases(self, conn: sqlite3.Connection, leases: List[Lease]) -> None:
+        """将当前活动租约列表同步写入 `leases` 表。"""
         conn.execute("DELETE FROM leases;")
         for l in leases:
             conn.execute("""
@@ -198,6 +204,7 @@ class StateStore:
             ))
 
     def _sync_completed(self, conn: sqlite3.Connection, completed: List[str]) -> None:
+        """将已完成任务 ID 列表幂等写入 `completed_tasks` 表。"""
         now = time.time()
         for t_id in completed:
             conn.execute(
@@ -206,7 +213,7 @@ class StateStore:
             )
 
     def save_coord_state(self, state: CoordState) -> None:
-        """Atomically persist entire CoordState into authoritative SQLite tables."""
+        """在单个事务中原子持久化完整的 `CoordState` 到 SQLite 权威表。"""
         conn = self._get_connection()
         now = time.time()
         now_str = datetime.datetime.now().astimezone().isoformat()
@@ -228,6 +235,7 @@ class StateStore:
             conn.close()
 
     def _load_in_flight(self, conn: sqlite3.Connection) -> Dict[str, TaskExecutionRecord]:
+        """从 `in_flight_tasks` 表加载全部在途任务记录。"""
         tasks: Dict[str, TaskExecutionRecord] = {}
         cur = conn.execute("SELECT * FROM in_flight_tasks;")
         for row in cur.fetchall():
@@ -247,6 +255,7 @@ class StateStore:
         return tasks
 
     def _load_leases(self, conn: sqlite3.Connection) -> List[Lease]:
+        """从 `leases` 表加载所有处于激活状态的租约记录。"""
         leases: List[Lease] = []
         cur = conn.execute("SELECT * FROM leases WHERE active = 1;")
         for row in cur.fetchall():
@@ -263,7 +272,7 @@ class StateStore:
         return leases
 
     def load_coord_state(self) -> Optional[CoordState]:
-        """Load CoordState from SQLite tables; return None if database is empty."""
+        """从 SQLite 表加载 `CoordState`；若数据库为空则返回 `None`。"""
         conn = self._get_connection()
         try:
             cursor_row = conn.execute("SELECT value FROM coord_meta WHERE key = 'cursor';").fetchone()
@@ -288,7 +297,7 @@ class StateStore:
             conn.close()
 
     def save_role_job(self, job_meta: dict) -> None:
-        """Register or update a role job intent in the SQLite table."""
+        """在 SQLite `role_jobs` 表中注册或替换一条角色作业记录。"""
         conn = self._get_connection()
         now = time.time()
         try:
@@ -310,7 +319,7 @@ class StateStore:
             conn.close()
 
     def update_role_job(self, job_id: str, updates: dict) -> None:
-        """Update specific columns of an existing role job."""
+        """按 `job_id` 更新既有角色作业记录的指定列。"""
         conn = self._get_connection()
         now = time.time()
         clauses = ["updated_at = ?"]
@@ -328,7 +337,7 @@ class StateStore:
             conn.close()
 
     def get_role_job(self, job_id_or_key: str) -> Optional[dict]:
-        """Fetch role job record by either job_id, dispatch_key, or task_id."""
+        """按 `job_id`、`dispatch_key` 或 `task_id` 查询单条角色作业记录。"""
         conn = self._get_connection()
         try:
             cur = conn.execute(
@@ -341,7 +350,7 @@ class StateStore:
             conn.close()
 
     def list_role_jobs(self, status: Optional[str] = None) -> List[dict]:
-        """List role jobs, optionally filtered by status."""
+        """列出角色作业记录，支持按状态过滤。"""
         conn = self._get_connection()
         try:
             if status:
@@ -353,7 +362,7 @@ class StateStore:
             conn.close()
 
     def record_completed_task(self, task_id: str) -> None:
-        """Mark task as completed in authoritative SQLite store."""
+        """在 SQLite 权威库中记录指定任务已完成。"""
         conn = self._get_connection()
         try:
             with conn:
@@ -365,5 +374,5 @@ class StateStore:
             conn.close()
 
     def close(self) -> None:
-        """Close store and release process lock if held."""
+        """关闭状态存储并在持锁时释放进程文件锁。"""
         self.release_process_lock()

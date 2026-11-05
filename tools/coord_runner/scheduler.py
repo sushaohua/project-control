@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dependency-aware task scheduling with legacy queue isolation and Done acceptance checks."""
+"""支持历史队列隔离、前置 Done 验收门禁与排他资源锁检查的任务依赖感知调度器。"""
 
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -16,7 +16,7 @@ LEGACY_TASK_PREFIXES = ("TWIN-", "MS-")
 
 @dataclass
 class ScheduleContext:
-    """Context bundle for task scheduling decisions."""
+    """单次任务调度决策的输入上下文包（队列、任务卡、已完成集、在途集、租约管理器及 Done 对账错误）。"""
     queue: dict
     cards: dict
     completed_tasks: Set[str] = field(default_factory=set)
@@ -26,6 +26,7 @@ class ScheduleContext:
 
 
 def _load_graph_module() -> object:
+    """动态加载顶层 `check_task_graph` 模块以复用 `done_acceptance_errors` 校验函数。"""
     tools_dir = Path(__file__).resolve().parent.parent
     if str(tools_dir) not in sys.path:
         sys.path.insert(0, str(tools_dir))
@@ -34,13 +35,15 @@ def _load_graph_module() -> object:
 
 
 class CoordScheduler:
-    """Schedules tasks based on dependency graph, verified Done gates, and resource locks."""
+    """基于依赖图、已验证 Done 门禁及资源租约可用性筛选下一批可派发任务的调度器。"""
 
     def __init__(self, workspace_root: Optional[Path] = None, isolate_legacy_queue: bool = False):
+        """初始化调度器，绑定工作区根路径与是否强制隔离历史 autorun 队列标志。"""
         self.workspace_root = (workspace_root or Path(".")).resolve()
         self.isolate_legacy_queue = isolate_legacy_queue
 
     def load_queue(self, queue_path: Path) -> dict:
+        """加载并解析队列 YAML 文件；在隔离模式下拒绝加载历史 autorun 队列。"""
         target = Path(queue_path).resolve()
         if self.isolate_legacy_queue and target.name == LEGACY_QUEUE_NAME:
             raise ConfigError(
@@ -54,6 +57,7 @@ class CoordScheduler:
         return data
 
     def get_ordered_tasks(self, queue: dict) -> List[str]:
+        """合并 bootstrap 与 order 队列顺序，并在 work_intake 隔离模式下拦截历史前缀任务重跑。"""
         bootstrap = queue.get("bootstrap", [])
         order = queue.get("order", [])
         combined = list(bootstrap) + [t for t in order if t not in bootstrap]
@@ -71,6 +75,7 @@ class CoordScheduler:
         return combined
 
     def _done_acceptance_errors(self, task_id: str, card: dict, cards: dict) -> List[str]:
+        """调用 `check_task_graph.done_acceptance_errors` 校验指定 Done 任务的准出证据。"""
         graph = _load_graph_module()
         return list(graph.done_acceptance_errors(task_id, card, cards, self.workspace_root))
 
@@ -80,6 +85,7 @@ class CoordScheduler:
         cards: dict,
         completed_tasks: Set[str],
     ) -> bool:
+        """检查目标任务是否未被阻塞，且所有直接前置任务均已完成并通过 Done 证据门禁。"""
         card = cards.get(task_id, {})
         if card.get("blocked", False):
             return False
@@ -95,6 +101,7 @@ class CoordScheduler:
         return True
 
     def check_resource_available(self, card: dict, lease_mgr: Optional[LeaseManager]) -> bool:
+        """检查任务所需的并行实现槽位及排他外设锁当前是否空闲可用。"""
         if lease_mgr is None:
             return True
         task_kind = card.get("task_kind", "implementation")
@@ -110,6 +117,7 @@ class CoordScheduler:
         return True
 
     def select_next_tasks(self, ctx: ScheduleContext) -> List[str]:
+        """遍历有序队列，对已标 Done 的任务执行证据对账，并挑出所有依赖与资源均就绪的待派发任务。"""
         ordered = self.get_ordered_tasks(ctx.queue)
         schedulable = []
         for task_id in ordered:

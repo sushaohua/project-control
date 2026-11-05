@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Human Markdown batch intake parser, unique 3-category YAML generator, and fault isolator."""
+"""人工 Markdown 批量收件解析器、三类唯一 YAML 归档生成器与故障隔离器。"""
 
 from dataclasses import dataclass, field
 import datetime

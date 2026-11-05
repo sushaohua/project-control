@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Acceptance and unit test suite for M3 systemd user service deployment and P1-14 verification."""
+"""M3 systemd 用户态常驻服务部署与 P1-14 验收及单元测试套件。"""
 
 import ast
 import configparser
@@ -9,10 +9,14 @@ import os
 from pathlib import Path
 import shutil
 import signal
+import sys
 import tempfile
 import time
 import unittest
 from typing import Dict, List, Optional, Tuple
+
+if str(Path(__file__).resolve().parents[1]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from tools.coord_runner.errors import ResourceConflictError
 from tools.coord_runner.models import CoordRunnerConfig, CoordState, TaskExecutionRecord, TaskState

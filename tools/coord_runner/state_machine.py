@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""State machine and gate enforcement for COORD delivery tasks."""
+"""COORD 交付任务的有限状态机转换、两次纠偏熔断门禁与防伪闭环验收校验模块。"""
 
 from pathlib import Path
 import hashlib
@@ -21,7 +21,7 @@ HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
 class CoordStateMachine:
-    """Manages task state transitions, remediation limits, and gate checks."""
+    """管理任务生命周期状态转换、最多 2 次证据化返工限制及 QA/Review/Done 门禁校验。"""
 
     ALLOWED_TRANSITIONS = {
         TaskState.BACKLOG: {TaskState.READY, TaskState.BLOCKED},
@@ -37,9 +37,11 @@ class CoordStateMachine:
     }
 
     def __init__(self, max_corrections: int = 2):
+        """初始化状态机，设置基于证据的最大允许返工纠偏次数（默认 2 次）。"""
         self.max_corrections = max_corrections
 
     def check_transition_allowed(self, current: TaskState, target: TaskState) -> None:
+        """检查从 current 到 target 的状态转换是否在允许转换表内，非法时抛出 StateTransitionError。"""
         allowed = self.ALLOWED_TRANSITIONS.get(current, set())
         if target not in allowed:
             raise StateTransitionError(
@@ -47,11 +49,13 @@ class CoordStateMachine:
             )
 
     def transition(self, record: TaskExecutionRecord, target: TaskState) -> None:
+        """执行受控状态转换并更新任务执行记录的 state 字段。"""
         cur_state = TaskState(record.state)
         self.check_transition_allowed(cur_state, target)
         record.state = target.value
 
     def validate_ready(self, card: dict, completed_tasks: Set[str]) -> None:
+        """校验任务进入 Ready 状态前是否具备合法审查策略、未被阻塞且所有前置依赖均已完成。"""
         try:
             resolve_review_policy(card)
         except ValueError as error:
@@ -66,6 +70,7 @@ class CoordStateMachine:
             )
 
     def validate_commit_sha(self, commit: Optional[str]) -> None:
+        """校验候选提交哈希是否为合法的 40 位小写十六进制字符串且非占位符。"""
         if not commit or not isinstance(commit, str) or not HEX40_RE.match(commit):
             raise GateValidationError(f"Candidate commit must be full 40-char hex SHA, got: {commit}")
         if len(set(commit)) <= 1:
@@ -77,6 +82,7 @@ class CoordStateMachine:
         reason: str,
         evidence: dict,
     ) -> None:
+        """处理带强制证据字典的返工回退：递增纠偏计数并回退至 IN_PROGRESS，超限时升级为 ESCALATED。"""
         if not evidence or not isinstance(evidence, dict) or not evidence.get("path") or not evidence.get("sha256"):
             raise GateValidationError("Remediation requires mandatory evidence dict with non-empty path and sha256")
         record.corrections_count += 1
@@ -90,6 +96,7 @@ class CoordStateMachine:
         record.waiting_events.append(f"remediation:{record.corrections_count}:{reason}{ev_tag}")
 
     def _find_or_create_evidence(self, candidates: list, fallback_name: str, raw_bytes: bytes) -> dict:
+        """优先从候选文件列表中定位已有证据并计算 SHA256，若均不存在则写入 `/tmp` 回退证据文件。"""
         for c in candidates:
             if c:
                 p = Path(c)
@@ -104,6 +111,7 @@ class CoordStateMachine:
         return {"path": str(out), "sha256": hashlib.sha256(raw_bytes).hexdigest()}
 
     def _extract_qa_failure_evidence(self, qa_verdict: object) -> dict:
+        """从失败的沙箱 QA 判定对象中提取或生成带 path 与 sha256 的结构化证据引用。"""
         candidates = ["server_qa.json", "runtime.log", "server_verdict.json"]
         if isinstance(qa_verdict, dict):
             ev = qa_verdict.get("evidence")
@@ -118,6 +126,7 @@ class CoordStateMachine:
         return self._find_or_create_evidence(candidates, "qa_failure_verdict.json", raw)
 
     def _extract_review_failure_evidence(self, review_entry: object) -> dict:
+        """从被拒绝的独立审阅条目中提取或生成带 path 与 sha256 的结构化证据引用。"""
         candidates = ["review_report.md", "server_qa.json", "runtime.log"]
         if isinstance(review_entry, dict):
             ev = review_entry.get("evidence")
@@ -132,6 +141,7 @@ class CoordStateMachine:
         return self._find_or_create_evidence(candidates, "review_failure_report.md", raw)
 
     def _validate_server_qa_proof(self, server_qa: object, record: TaskExecutionRecord) -> None:
+        """校验 QA 判定中内嵌的 server_qa 引用是否包含合法容器/虚拟机沙箱类型与当前任务 revision。"""
         if not server_qa or not isinstance(server_qa, dict):
             raise GateValidationError("Missing mandatory server_qa evidence dictionary in QA verdict")
         if not server_qa.get("path") or not server_qa.get("sha256"):
@@ -146,6 +156,7 @@ class CoordStateMachine:
             )
 
     def validate_qa_verdict(self, record: TaskExecutionRecord, qa_verdict: dict) -> bool:
+        """校验沙箱 QA 判定结果：失败或挂载违规时触发证据化返工，Commit 或 server_qa 不匹配时抛出门禁异常。"""
         if not isinstance(qa_verdict, dict):
             ev = self._extract_qa_failure_evidence(qa_verdict)
             self.handle_remediation(record, "QA verdict must be a valid dictionary", ev)
@@ -174,6 +185,7 @@ class CoordStateMachine:
         review_entry: dict,
         author_session: str,
     ) -> bool:
+        """校验独立审阅结果：拒绝非 Codex 平台、计划别名或作者自审；非 APPROVED 时触发证据化返工。"""
         platform = review_entry.get("platform")
         if platform is not None and platform != "codex":
             raise GateValidationError(
@@ -199,6 +211,7 @@ class CoordStateMachine:
         author: Optional[str],
         workspace: Path,
     ) -> None:
+        """在 legacy 审查策略下强制校验 QA 审阅报告已获得独立的非作者、非原 QA 会话二次复核且物理文件 SHA256 匹配。"""
         rep_rev = entry.get("report_review")
         if not rep_rev or not isinstance(rep_rev, dict):
             raise GateValidationError("Fake Done rejected: QA reviewer missing mandatory non-author report_review")
@@ -232,6 +245,7 @@ class CoordStateMachine:
             )
 
     def _validate_primary_review(self, entry: dict, card: dict, workspace: Path) -> None:
+        """委托 `delivery_checks.validate_streamlined_entry` 校验 streamlined-v1 主审条目。"""
         try:
             if __package__.startswith("tools."):
                 from ..delivery_checks import validate_streamlined_entry
@@ -242,6 +256,7 @@ class CoordStateMachine:
             raise GateValidationError(str(error)) from error
 
     def validate_done_acceptance(self, card: dict, workspace: Path) -> None:
+        """在任务标记为 Done 前执行终审门禁：校验必需审查角色齐全、均为真實 Codex 会话 APPROVED 且证据链完整。"""
         try:
             policy = resolve_review_policy(card)
         except ValueError as error:

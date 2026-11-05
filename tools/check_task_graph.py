@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check canonical task structure, schema, readiness, and acceptance without mutating state."""
+"""只读校验权威任务图结构、Schema 完整性、派单就绪度与完成门禁（不修改任何仓库状态）。"""
 
 import argparse
 import fnmatch
@@ -20,6 +20,7 @@ try:
 except ImportError:
     sys.exit("Task checks require PyYAML (python3-yaml); no packages were installed.")
 
+# 任务生命周期合法状态集合与受控目标仓库名称集合
 STATES = {"Backlog", "Ready", "InProgress", "Review", "Verify", "Done"}
 REPOSITORIES = {"project-control", "soc-ap", "mcu-p3", "test_harness"}
 HEX40_RE = re.compile(r"^[0-9a-fA-F]{40}$")
@@ -27,6 +28,17 @@ HEX64_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 
 
 def read_header(path: Path) -> dict:
+    """读取并解析 Markdown 任务卡顶部的 YAML Frontmatter 元数据。
+
+    Args:
+        path: 任务卡 Markdown 文件路径。
+
+    Returns:
+        dict: 解析后的任务头字典（必含非空 id 字段）。
+
+    Raises:
+        ValueError: 当缺少 YAML Frontmatter 分隔符或缺少有效 id 字段时抛出。
+    """
     sections = path.read_text(encoding="utf-8").split("---", 2)
     if len(sections) != 3 or sections[0].strip():
         raise ValueError("missing YAML frontmatter")
@@ -37,6 +49,14 @@ def read_header(path: Path) -> dict:
 
 
 def card_paths(control: Path) -> list:
+    """枚举 project-control 仓库内全部里程碑、微任务、工作包及产品规划卡片路径。
+
+    Args:
+        control: project-control 仓库根目录路径。
+
+    Returns:
+        list: 过滤掉 superseded 目录与 README 后的排序去重 Path 列表。
+    """
     patterns = [
         ".agents/kanban/milestones/*.md",
         ".agents/kanban/microtasks/*/*.md",
@@ -53,9 +73,18 @@ def card_paths(control: Path) -> list:
 
 
 def find_cycles(cards: dict) -> list:
+    """基于深度优先搜索（DFS）检测任务依赖图中的有向环。
+
+    Args:
+        cards: 全量任务卡字典（task_id -> card）。
+
+    Returns:
+        list: 发现的循环依赖链路列表，无环时返回空列表。
+    """
     complete, stack, cycles = set(), [], []
 
     def visit(task_id: str):
+        """递归遍历单个节点的前置依赖并记录回边环路。"""
         if task_id in stack:
             cycles.append(stack[stack.index(task_id):] + [task_id])
             return
@@ -74,6 +103,17 @@ def find_cycles(cards: dict) -> list:
 
 
 def has_ancestor(cards: dict, task_id: str, target: str, visited=None) -> bool:
+    """判断 target 是否为 task_id 在依赖图中的直接或间接前置祖先任务。
+
+    Args:
+        cards: 全量任务卡字典。
+        task_id: 起始任务 ID。
+        target: 目标祖先任务 ID。
+        visited: 已访问节点集合（用于防环）。
+
+    Returns:
+        bool: 若存在从 task_id 到 target 的依赖路径则返回 True。
+    """
     visited = set() if visited is None else visited
     if task_id in visited:
         return False
@@ -85,10 +125,28 @@ def has_ancestor(cards: dict, task_id: str, target: str, visited=None) -> bool:
 
 
 def is_microtask(task_id: str, card: dict) -> bool:
+    """根据任务编号前缀判断是否为可派发的工程微任务。
+
+    Args:
+        task_id: 任务编号字符串。
+        card: 任务卡字典。
+
+    Returns:
+        bool: 匹配微任务前缀时返回 True。
+    """
     return task_id.startswith(("V2-", "MCQ-", "THQ-", "CR-", "TEMP-", "TWIN-", "AUTO-"))
 
 
 def _check_task_fields(task_id: str, card: dict) -> list:
+    """校验微任务卡片必填 Schema 字段、合法状态枚举与可派发标志。
+
+    Args:
+        task_id: 任务编号。
+        card: 任务卡字典。
+
+    Returns:
+        list: 字段缺失或取值非法的问题描述列表。
+    """
     problems = []
     required = [
         "title", "revision", "primary_work_package", "scope_status", "write_scope",
@@ -112,6 +170,16 @@ def _check_task_fields(task_id: str, card: dict) -> list:
 
 
 def _check_parent_and_deps(task_id: str, card: dict, cards: dict) -> list:
+    """校验微任务所属父工作包双向引用关系及 dependency_conditions 与 depends_on 的一致性。
+
+    Args:
+        task_id: 任务编号。
+        card: 当前任务卡字典。
+        cards: 全量任务卡字典。
+
+    Returns:
+        list: 父子关联或依赖条件不匹配的错误列表。
+    """
     problems = []
     parent_id = card.get("primary_work_package")
     parent = cards.get(parent_id, {})
@@ -124,6 +192,16 @@ def _check_parent_and_deps(task_id: str, card: dict, cards: dict) -> list:
 
 
 def _check_write_scope(task_id: str, card: dict, workspace: Path) -> tuple:
+    """校验任务卡的写入范围（write_scope）与白名单路径（allowed_paths）是否合法且一致。
+
+    Args:
+        task_id: 任务编号。
+        card: 任务卡字典。
+        workspace: 工作区根目录路径。
+
+    Returns:
+        tuple: (错误字符串列表, 展平后的带仓库前缀路径集合)。
+    """
     problems, flat_paths = [], set()
     allowed_repos = set(card.get("allowed_repositories", []))
     for repository, paths in card.get("write_scope", {}).items():
@@ -144,6 +222,16 @@ def _check_write_scope(task_id: str, card: dict, workspace: Path) -> tuple:
 
 
 def _check_verification_commands(task_id: str, card: dict, flat_paths: set) -> list:
+    """校验任务卡的验证命令、正反例定义及 C++ 实现任务的编译门禁完整性。
+
+    Args:
+        task_id: 任务编号。
+        card: 任务卡字典。
+        flat_paths: 展平后的允许写入路径集合。
+
+    Returns:
+        list: 验证定义缺失或不合规的错误列表。
+    """
     problems = []
     verification = card.get("verification", {})
     for field in ["commands", "positive_cases", "negative_cases"]:
@@ -161,6 +249,16 @@ def _check_verification_commands(task_id: str, card: dict, flat_paths: set) -> l
 
 
 def _check_shared_inputs(task_id: str, card: dict, workspace: Path) -> list:
+    """校验协议输入文件 SHA256、只读源存在性、审查策略角色匹配及证据根目录规范。
+
+    Args:
+        task_id: 任务编号。
+        card: 任务卡字典。
+        workspace: 工作区根目录路径。
+
+    Returns:
+        list: 共享输入、审查策略或交接路径错误列表。
+    """
     problems = []
     protocol = card.get("protocol_input", {})
     protocol_path = workspace / protocol.get("path", "__missing__")
@@ -190,6 +288,17 @@ def _check_shared_inputs(task_id: str, card: dict, workspace: Path) -> list:
 
 
 def structural_errors(task_id: str, card: dict, cards: dict, workspace: Path) -> list:
+    """汇总单个微任务卡片的全部静态结构与 Schema 错误。
+
+    Args:
+        task_id: 任务编号。
+        card: 当前任务卡字典。
+        cards: 全量任务卡字典。
+        workspace: 工作区根目录路径。
+
+    Returns:
+        list: 带任务 ID 前缀的结构错误列表。
+    """
     problems = _check_task_fields(task_id, card)
     problems.extend(_check_parent_and_deps(task_id, card, cards))
     scope_problems, flat_paths = _check_write_scope(task_id, card, workspace)
@@ -200,6 +309,15 @@ def structural_errors(task_id: str, card: dict, cards: dict, workspace: Path) ->
 
 
 def paths_overlap(p1: str, p2: str) -> bool:
+    """判断两个支持通配符（含 `/**`）的写入路径模式是否存在交集。
+
+    Args:
+        p1: 第一个路径模式字符串。
+        p2: 第二个路径模式字符串。
+
+    Returns:
+        bool: 存在路径重叠时返回 True。
+    """
     if p1 == p2:
         return True
     if p1.endswith("/**"):
@@ -214,6 +332,15 @@ def paths_overlap(p1: str, p2: str) -> bool:
 
 
 def check_path_overlaps(microtasks: dict, cards: dict) -> tuple:
+    """检查所有微任务对之间的写入路径重叠，并确认重叠任务对是否具备显式依赖定序。
+
+    Args:
+        microtasks: 微任务字典。
+        cards: 全量任务卡字典。
+
+    Returns:
+        tuple: (重叠任务对信息列表, 无依赖定序的并发写冲突错误列表)。
+    """
     overlaps, errors = [], []
     for left, left_card in microtasks.items():
         for right, right_card in microtasks.items():
@@ -231,6 +358,15 @@ def check_path_overlaps(microtasks: dict, cards: dict) -> tuple:
 
 
 def _check_lease_readiness(card: dict, author: str) -> list:
+    """校验任务卡租约（lease）字段完整性、归属者一致性及过期时间有效性。
+
+    Args:
+        card: 任务卡字典。
+        author: 预期执行者 Agent ID。
+
+    Returns:
+        list: 租约未就绪或已过期的阻塞原因列表。
+    """
     blockers = []
     lease = card.get("lease") or {}
     if not all(lease.get(f) for f in ["owner", "task_revision", "lease_id", "expires_at"]):
@@ -251,6 +387,14 @@ def _check_lease_readiness(card: dict, author: str) -> list:
 
 
 def _check_dispatch_binding_readiness(card: dict) -> list:
+    """校验派单绑定信息（base_commit、source_commit、workspace_diff_sha256）格式与非空性。
+
+    Args:
+        card: 任务卡字典。
+
+    Returns:
+        list: 派单基线哈希未绑定或格式非法的阻塞项列表。
+    """
     blockers = []
     binding = card.get("dispatch_binding") or {}
     base = str(card.get("base_commit", ""))
@@ -264,6 +408,16 @@ def _check_dispatch_binding_readiness(card: dict) -> list:
 
 
 def _check_dependency_conditions_readiness(card: dict, cards: dict, workspace: Path = None) -> list:
+    """校验所有直接前置任务是否已 Done 且已绑定真实可验的准出版本与证据文件。
+
+    Args:
+        card: 当前任务卡字典。
+        cards: 全量任务卡字典。
+        workspace: 可选工作区根目录路径。
+
+    Returns:
+        list: 前置依赖未满足的阻塞原因列表。
+    """
     blockers = []
     for cond in card.get("dependency_conditions", []):
         pred = cond.get("task")
@@ -284,6 +438,17 @@ def _check_dependency_conditions_readiness(card: dict, cards: dict, workspace: P
 
 
 def readiness_blockers(card: dict, cards: dict, *args, **kw) -> list:
+    """汇总微任务进入 Ready / InProgress 状态前的全部派单就绪阻塞项。
+
+    Args:
+        card: 当前任务卡字典。
+        cards: 全量任务卡字典。
+        *args: 可选位置参数（首个元素为 workspace Path）。
+        **kw: 可选关键字参数（支持 workspace=Path）。
+
+    Returns:
+        list: 阻塞原因字符串列表；为空表示满足就绪条件。
+    """
     workspace = args[0] if len(args) > 0 else kw.get("workspace")
     blockers = []
     if card.get("blocked") is True:
@@ -307,35 +472,27 @@ def readiness_blockers(card: dict, cards: dict, *args, **kw) -> list:
     return blockers
 
 
-def done_acceptance_errors(
-    task_id: str,
-    card: dict,
-    cards: dict,
-    workspace: Optional[Path] = None,
-) -> list:
-    errors = []
-    for pred in card.get("depends_on", []):
-        if cards.get(pred, {}).get("status") != "Done":
-            errors.append(f"{task_id}: marked Done but predecessor {pred} is {cards.get(pred, {}).get('status')}")
+def done_acceptance_errors(task_id: str, card: dict, cards: dict, workspace: Optional[Path] = None) -> list:
+    """校验标记为 Done 的任务是否满足前置完成、独立审查批准、报告哈希与闭环证据要求。"""
+    errors = [
+        f"{task_id}: marked Done but predecessor {p} is {cards.get(p, {}).get('status')}"
+        for p in card.get("depends_on", []) if cards.get(p, {}).get("status") != "Done"
+    ]
     try:
         streamlined = resolve_review_policy(card).streamlined
     except ValueError as error:
         return errors + [task_id + ": " + str(error)]
     if streamlined and workspace is not None:
         return errors + [task_id + ": " + item for item in closure_errors(card, workspace)]
-    author_identities = {
-        card.get("owner"),
-        (card.get("executor") or {}).get("agent_id")
-    } - {None, ""}
+    author_ids = {card.get("owner"), (card.get("executor") or {}).get("agent_id")} - {None, ""}
     assignments = (card.get("review_assignments") or {}).get("reviewer_sessions", [])
     if not assignments:
         errors.append(f"{task_id}: marked Done without review assignments")
     for rev in assignments:
         session = rev.get("session")
-        if session and session in author_identities:
+        if session and session in author_ids:
             errors.append(f"{task_id}: author ({session}) cannot be own independent reviewer")
-        dec = str(rev.get("decision", "")).upper()
-        if dec not in {"APPROVED", "ACCEPTED"}:
+        if str(rev.get("decision", "")).upper() not in {"APPROVED", "ACCEPTED"}:
             errors.append(f"{task_id}: review decision is not accepted (found {rev.get('decision')})")
         if not rev.get("artifact_version"):
             errors.append(f"{task_id}: review artifact_version is missing")
@@ -348,15 +505,22 @@ def done_acceptance_errors(
             ev_file = workspace / ev if (workspace / ev).is_file() else workspace / "project-control" / ev
             actual_sha = hashlib.sha256(ev_file.read_bytes()).hexdigest()
             if actual_sha != rev.get("report_sha256"):
-                errors.append(
-                    f"{task_id}: review report SHA256 mismatch (recorded {rev.get('report_sha256')}, actual {actual_sha})"
-                )
+                errors.append(f"{task_id}: review report SHA256 mismatch (recorded {rev.get('report_sha256')}, actual {actual_sha})")
     if workspace is not None:
         errors.extend(task_id + ": " + item for item in closure_errors(card, workspace))
     return errors
 
 
 def _check_candidate_descriptor(candidate_path: Path, workspace: Path) -> list:
+    """校验候选发布描述符 YAML 的必填字段与各仓库 Git Commit 真实存在性。
+
+    Args:
+        candidate_path: 候选发布描述符 YAML 路径。
+        workspace: 工作区根目录路径。
+
+    Returns:
+        list: 候选描述符校验问题列表。
+    """
     issues = []
     candidate = yaml.safe_load(candidate_path.read_text(encoding="utf-8"))
     if not isinstance(candidate, dict):
@@ -379,6 +543,15 @@ def _check_candidate_descriptor(candidate_path: Path, workspace: Path) -> list:
 
 
 def artifact_check(card: dict, workspace: Path) -> dict:
+    """核对任务卡声明的交付物文件是否存在、非空并计算其 SHA256 摘要。
+
+    Args:
+        card: 任务卡字典。
+        workspace: 工作区根目录路径。
+
+    Returns:
+        dict: 包含 errors、artifact_hashes 与校验范围说明的字典。
+    """
     issues, hashes = [], {}
     for name in card.get("deliverables", {}).get("artifacts", []):
         path = workspace / name
@@ -400,6 +573,14 @@ def artifact_check(card: dict, workspace: Path) -> dict:
 
 
 def _collect_cards(control: Path) -> tuple:
+    """扫描并加载 project-control 下的全部任务卡，检测重复 ID 与解析错误。
+
+    Args:
+        control: project-control 目录路径。
+
+    Returns:
+        tuple: (cards 字典, 相对路径字典, 解析错误列表)。
+    """
     cards, paths, errors = {}, {}, []
     for path in card_paths(control):
         try:
@@ -415,6 +596,14 @@ def _collect_cards(control: Path) -> tuple:
 
 
 def _validate_task_links(cards: dict) -> list:
+    """校验所有任务卡的 depends_on 与 child_tasks 引用的目标任务是否存在。
+
+    Args:
+        cards: 全量任务卡字典。
+
+    Returns:
+        list: 悬空引用错误列表。
+    """
     errors = []
     for tid, card in cards.items():
         for pred in card.get("depends_on", []):
@@ -427,6 +616,14 @@ def _validate_task_links(cards: dict) -> list:
 
 
 def check(workspace: Path) -> tuple:
+    """执行全工作区任务图静态一致性、无环性、写入边界与状态门禁汇总检查。
+
+    Args:
+        workspace: 工作区根目录路径。
+
+    Returns:
+        tuple: (cards 全量任务字典, 结构化检查报告字典)。
+    """
     control = workspace / "project-control"
     cards, paths, errors = _collect_cards(control)
     errors.extend(_validate_task_links(cards))
@@ -452,6 +649,7 @@ def check(workspace: Path) -> tuple:
 
 
 def main():
+    """命令行主函数：支持全图检查、单项就绪度检查、单项完成度检查及交付物哈希核验。"""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workspace", type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument("--report", type=Path)
@@ -470,8 +668,7 @@ def main():
             else:
                 blockers = readiness_blockers(cards[args.check_ready], cards, workspace)
                 report["selected_readiness"] = {"task": args.check_ready, "blockers": blockers}
-                if blockers and not code:
-                    code = 2
+                code = 2 if (blockers and not code) else code
         if args.check_done:
             if args.check_done not in cards:
                 report["errors"].append("unknown task: " + args.check_done)
@@ -479,16 +676,14 @@ def main():
             else:
                 done_errs = done_acceptance_errors(args.check_done, cards[args.check_done], cards, workspace)
                 report["selected_done"] = {"task": args.check_done, "errors": done_errs}
-                if done_errs:
-                    code = 1
+                code = 1 if done_errs else code
         if args.check_artifact:
             if args.check_artifact not in cards:
                 report["errors"].append("unknown task: " + args.check_artifact)
                 code = 1
             else:
                 report["selected_artifacts"] = artifact_check(cards[args.check_artifact], workspace)
-                if report["selected_artifacts"]["errors"]:
-                    code = 1
+                code = 1 if report["selected_artifacts"]["errors"] else code
         report["exit_code"] = code
     except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError) as error:
         report, code = {"errors": [str(error)], "exit_code": 1}, 1

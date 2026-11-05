@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Host CLI role adapter for `/home/sushaohua/.local/bin/codex exec -m gpt-6-luna` (Design §6)."""
+"""宿主机 CLI 角色适配器：封装 `/home/sushaohua/.local/bin/codex exec -m gpt-6-luna` 异步调用与只读/写入边界校验（设计规范 §6）。"""
 
 from dataclasses import dataclass, field
 import datetime

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Data models for COORD runner, state machine, and scheduling."""
+"""COORD 调度运行器、生命周期状态机、资源租约与配置的核心数据模型。"""
 
 from dataclasses import dataclass, field
 from enum import Enum
@@ -10,7 +10,7 @@ from typing import Dict, List, Optional
 
 
 class TaskState(str, Enum):
-    """Task lifecycle states in COORD delivery gate."""
+    """COORD 交付门禁中的任务生命周期状态枚举。"""
     BACKLOG = "Backlog"
     READY = "Ready"
     IN_PROGRESS = "InProgress"
@@ -25,7 +25,7 @@ class TaskState(str, Enum):
 
 @dataclass
 class Lease:
-    """Exclusive or shared resource lease held by an agent/task."""
+    """由 Agent 或任务持有的排他/共享资源租约记录。"""
     lease_id: str
     task_id: str
     resource: str
@@ -35,12 +35,12 @@ class Lease:
     active: bool = True
 
     def is_expired(self, current_time: Optional[float] = None) -> bool:
-        """Check if lease has expired."""
+        """判断当前活跃租约是否已到达或超过过期时间戳（秒）。"""
         now = time.time() if current_time is None else current_time
         return self.active and now >= self.expires_at
 
     def to_dict(self) -> dict:
-        """Serialize lease to dictionary."""
+        """将租约对象序列化为可 JSON 落盘的字典。"""
         return {
             "lease_id": self.lease_id,
             "task_id": self.task_id,
@@ -53,7 +53,7 @@ class Lease:
 
     @classmethod
     def from_dict(cls, data: dict) -> "Lease":
-        """Deserialize lease from dictionary."""
+        """从字典反序列化构造 Lease 实例。"""
         return cls(
             lease_id=data["lease_id"],
             task_id=data["task_id"],
@@ -67,7 +67,7 @@ class Lease:
 
 @dataclass
 class TaskExecutionRecord:
-    """Execution context for an active or recorded task."""
+    """单个在途或已记录任务的运行期执行上下文。"""
     task_id: str
     state: str = TaskState.BACKLOG.value
     session_id: Optional[str] = None
@@ -80,7 +80,7 @@ class TaskExecutionRecord:
     runtime_context: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
-        """Serialize task record to dictionary."""
+        """将任务执行记录序列化为字典。"""
         return {
             "task_id": self.task_id,
             "state": self.state,
@@ -96,7 +96,7 @@ class TaskExecutionRecord:
 
     @classmethod
     def from_dict(cls, data: dict) -> "TaskExecutionRecord":
-        """Deserialize task record from dictionary."""
+        """从字典反序列化构造 TaskExecutionRecord 实例。"""
         return cls(
             task_id=data["task_id"],
             state=data.get("state", TaskState.BACKLOG.value),
@@ -113,7 +113,7 @@ class TaskExecutionRecord:
 
 @dataclass
 class CoordState:
-    """Persistent snapshot of the runner execution context."""
+    """COORD 运行器执行上下文的持久化 Checkpoint 快照模型。"""
     schema_version: int = 1
     cursor: Optional[str] = None
     in_flight_tasks: Dict[str, TaskExecutionRecord] = field(default_factory=dict)
@@ -122,7 +122,7 @@ class CoordState:
     last_updated: str = ""
 
     def to_dict(self) -> dict:
-        """Serialize coordinate state to dictionary."""
+        """将全局运行器状态快照序列化为字典。"""
         return {
             "schema_version": self.schema_version,
             "cursor": self.cursor,
@@ -134,7 +134,7 @@ class CoordState:
 
     @classmethod
     def from_dict(cls, data: dict) -> "CoordState":
-        """Deserialize coordinate state from dictionary."""
+        """从字典反序列化恢复 CoordState 快照实例。"""
         in_flight = {k: TaskExecutionRecord.from_dict(v) for k, v in data.get("in_flight_tasks", {}).items()}
         leases = [Lease.from_dict(item) for item in data.get("leases", [])]
         return cls(
@@ -148,7 +148,7 @@ class CoordState:
 
 
 def resolve_state_db_path(ws_root: Path, explicit: Optional[Path]) -> Path:
-    """Resolve state DB path to shared host location or isolate in test workspace."""
+    """解析 SQLite 状态数据库路径（共享主工作区重定向至用户数据目录，测试临时目录保持本地隔离）。"""
     if explicit is not None:
         return Path(explicit).resolve()
     ws = Path(ws_root).resolve()
@@ -159,7 +159,7 @@ def resolve_state_db_path(ws_root: Path, explicit: Optional[Path]) -> Path:
 
 
 def resolve_lock_path(ws_root: Path, explicit: Optional[Path]) -> Path:
-    """Resolve process lock path to shared host location or isolate in test workspace."""
+    """解析运行器单实例进程锁文件路径（共享主工作区重定向至用户数据目录，测试环境保持本地隔离）。"""
     if explicit is not None:
         return Path(explicit).resolve()
     ws = Path(ws_root).resolve()
@@ -171,7 +171,7 @@ def resolve_lock_path(ws_root: Path, explicit: Optional[Path]) -> Path:
 
 @dataclass
 class CoordRunnerConfig:
-    """Configuration settings for COORD runner."""
+    """COORD 调度运行器的全局配置参数结构体。"""
     workspace_root: Path = field(default_factory=lambda: Path("."))
     queue_file: Path = field(default_factory=lambda: Path("project-control/docs/work_intake/work_intake_queue.yaml"))
     checkpoint_file: Path = field(default_factory=lambda: Path("project-control/tools/coord_runner/coord_state.json"))
@@ -190,6 +190,7 @@ class CoordRunnerConfig:
     lock_file: Optional[Path] = None
 
     def __post_init__(self) -> None:
+        """规范化工作区根路径、队列路径及 Checkpoint 文件路径。"""
         ws = Path(self.workspace_root).resolve()
         self.workspace_root = ws
         if not self.checkpoint_file.is_absolute():
@@ -203,7 +204,7 @@ class CoordRunnerConfig:
 
     @classmethod
     def from_dict(cls, data: dict, base_dir: Optional[Path] = None) -> "CoordRunnerConfig":
-        """Create config from dictionary and optional base directory."""
+        """从配置字典与基准目录构造 CoordRunnerConfig 实例。"""
         base = base_dir or Path(".")
         runner_sec = data.get("runner", {})
         limits_sec = data.get("limits", {})

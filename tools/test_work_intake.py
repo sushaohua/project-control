@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit and integration tests for M1 work_intake, CAS, approval_guard, and role_adapter."""
+"""M1 批量收件（work_intake）、CAS 原子写入、审批守卫（approval_guard）与角色适配器单元及集成测试。"""
 
 import hashlib
 import json

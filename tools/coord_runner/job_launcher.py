@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Asynchronous non-blocking job launcher with PID starttime & atomic exit status (Design §6)."""
+"""带 `/proc/<pid>/stat` 启动时间戳防复用校验与原子退出状态落盘的异步非阻塞作业启动器。"""
 
 import argparse
 import datetime
@@ -19,6 +19,7 @@ else:
         from coord_runner.errors import CoordRunnerError
     except ImportError:
         class CoordRunnerError(Exception):
+            """当独立脚本运行且无法导入包内异常时的回退异常基类。"""
             pass
 
 DEFAULT_CODEX_BIN = Path("/home/sushaohua/.local/bin/codex")
@@ -26,7 +27,7 @@ DEFAULT_MODEL = "gpt-6-luna"
 
 
 def get_proc_starttime(pid: int) -> Optional[str]:
-    """Read field 22 (starttime) from /proc/<pid>/stat to guard against PID reuse."""
+    """从 `/proc/<pid>/stat` 读取第 22 字段（starttime 时钟滴答数），用于防止操作系统 PID 复用误判。"""
     stat_file = Path(f"/proc/{pid}/stat")
     if not stat_file.is_file():
         return None
@@ -42,7 +43,7 @@ def get_proc_starttime(pid: int) -> Optional[str]:
 
 
 def is_proc_alive(pid: int, expected_starttime: Optional[str] = None) -> bool:
-    """Check if process is alive and matches the recorded starttime."""
+    """检查指定 PID 的进程是否存活，且其内核启动时间戳与预期 starttime 完全一致。"""
     if pid <= 0:
         return False
     actual_start = get_proc_starttime(pid)
@@ -54,7 +55,7 @@ def is_proc_alive(pid: int, expected_starttime: Optional[str] = None) -> bool:
 
 
 def write_atomic_json(target_path: Path, payload: dict) -> None:
-    """Write dictionary payload atomically using a PID-tagged temp file and rename."""
+    """使用带 PID 与纳秒时间戳后缀的临时文件加 os.replace 原子写入 JSON 字典。"""
     target = Path(target_path).resolve()
     target.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = target.with_suffix(f".tmp_{os.getpid()}_{time.time_ns()}")
@@ -69,7 +70,7 @@ def write_atomic_json(target_path: Path, payload: dict) -> None:
 
 
 class JobLauncher:
-    """Spawns detached asynchronous role jobs and manages their lifecycle."""
+    """派生与管理脱离父会话（detached）的异步角色作业子进程及其生命周期。"""
 
     def __init__(
         self,
@@ -77,18 +78,20 @@ class JobLauncher:
         codex_bin: Optional[Path] = None,
         default_model: str = DEFAULT_MODEL,
     ):
+        """初始化异步作业启动器，设置工作区根路径、Codex 二进制路径与活动进程跟踪表。"""
         self.workspace_root = Path(workspace_root or ".").resolve()
         self.codex_bin = Path(codex_bin or DEFAULT_CODEX_BIN)
         self.default_model = default_model
         self._active_procs = {}
 
     def _prepare_job_files(self, job_dir: Path, cmd: List[str], prompt: str) -> None:
+        """在作业目录内落盘待执行命令行（cmd.json）与标准输入提示词（prompt.txt）。"""
         job_dir.mkdir(parents=True, exist_ok=True)
         (job_dir / "cmd.json").write_text(json.dumps(cmd, indent=2), encoding="utf-8")
         (job_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
 
     def launch_async(self, job_dir: Path, cmd: List[str], prompt: str) -> int:
-        """Launch detached worker process with start_new_session=True; return worker PID."""
+        """以 `start_new_session=True` 启动独立会话的后台 Worker 进程并立即返回其 PID。"""
         self._prepare_job_files(job_dir, cmd, prompt)
         launcher_script = Path(__file__).resolve()
         worker_cmd = [
@@ -107,7 +110,7 @@ class JobLauncher:
         return proc.pid
 
     def poll_proc(self, pid: int) -> Optional[int]:
-        """Poll tracked Popen object to collect exit code and release resources."""
+        """非阻塞轮询已跟踪的 Popen 子进程以回收僵尸进程并返回退出码。"""
         proc = self._active_procs.get(pid)
         if proc is not None:
             rc = proc.poll()
@@ -117,7 +120,7 @@ class JobLauncher:
         return None
 
     def terminate_job(self, job_dir: Path) -> bool:
-        """Terminate job process recorded in pid.json if currently running."""
+        """若 `pid.json` 中记录的作业进程仍存活且 starttime 匹配，则向其发送 SIGTERM 终止信号。"""
         pid_file = job_dir / "pid.json"
         if not pid_file.is_file():
             return False
@@ -134,6 +137,7 @@ class JobLauncher:
 
 
 def _execute_child_command(cmd: List[str], prompt: str, job_dir: Path) -> int:
+    """在 Worker 进程内部执行目标命令，并将标准输出与标准错误重定向至作业日志文件。"""
     events_path = job_dir / "codex_events.jsonl"
     stderr_path = job_dir / "codex.stderr"
     with events_path.open("w", encoding="utf-8") as out_f, stderr_path.open("w", encoding="utf-8") as err_f:
@@ -149,7 +153,7 @@ def _execute_child_command(cmd: List[str], prompt: str, job_dir: Path) -> int:
 
 
 def run_worker_job(job_dir: Path) -> int:
-    """Worker process main entrypoint: writes pid.json, runs command, drops exit_status.json."""
+    """后台 Worker 进程入口：原子写入 pid.json、执行目标命令并在退出前原子落盘 exit_status.json。"""
     my_pid = os.getpid()
     starttime = get_proc_starttime(my_pid) or ""
     pid_payload = {
@@ -170,6 +174,7 @@ def run_worker_job(job_dir: Path) -> int:
 
 
 def main() -> int:
+    """独立 Worker 命令行入口函数。"""
     parser = argparse.ArgumentParser(description="Detached role job worker")
     parser.add_argument("--run-job", required=True, help="Path to job directory")
     args = parser.parse_args()

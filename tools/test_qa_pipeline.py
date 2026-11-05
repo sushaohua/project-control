@@ -1,4 +1,4 @@
-"""Local orchestration/protocol regression tests; no real Docker, Codex or HIL."""
+"""本地编排与确定性 QA 流水线协议回归测试（纯本地模拟，不启动真实 Docker、Codex 或 HIL）。"""
 
 import hashlib
 import json

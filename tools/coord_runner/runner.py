@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main COORD runner orchestrating queue scheduling, leases, and state machine."""
+"""COORD 主运行器：统筹任务队列调度、资源租约管理、QA 流水线与状态机流转。"""
 
 import argparse
 import hashlib

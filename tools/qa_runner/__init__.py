@@ -1,3 +1,3 @@
-"""QA runner package for server candidate and isolated sandbox verification."""
+"""服务端候选版本锁定与隔离沙箱确定性验证的 QA Runner 软件包。"""
 
 __version__ = "1.0.0"

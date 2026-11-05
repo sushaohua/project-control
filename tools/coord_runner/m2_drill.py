@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded M2 continuous advancement & recovery live drill executor (`P1-05/08/09/10/13/20` host proof)."""
+"""AUTO-04 M2 连续推进与五源恢复受控演练执行器（验证 P1-05/08/09/10/13/20 宿主机证明）。"""
 
 import hashlib
 import json
@@ -20,6 +20,7 @@ from .state_store import StateStore
 
 
 def _setup_drill_state_store(drill_dir: Path) -> StateStore:
+    """初始化演练目录内的 SQLite 状态存储并获取单实例进程文件锁。"""
     db_path = drill_dir / "state.sqlite3"
     lock_path = drill_dir / "coord_runner.lock"
     store = StateStore(db_path, lock_path)
@@ -28,6 +29,7 @@ def _setup_drill_state_store(drill_dir: Path) -> StateStore:
 
 
 def _verify_flock_concurrency_block(drill_dir: Path) -> bool:
+    """验证当首个实例持有 `coord_runner.lock` 时，第二个实例尝试加锁会立即抛出 ResourceConflictError。"""
     second_store = StateStore(drill_dir / "state.sqlite3", drill_dir / "coord_runner.lock")
     try:
         second_store.acquire_process_lock()
@@ -39,6 +41,7 @@ def _verify_flock_concurrency_block(drill_dir: Path) -> bool:
 
 
 def _setup_drill_runner(drill_dir: Path, ws: Path) -> object:
+    """清理并初始化演练专用的队列、作业目录、SQLite 数据库与 CoordRunner 实例。"""
     from .runner import CoordRunner
     import shutil
     db_file = drill_dir / "state.sqlite3"
@@ -64,6 +67,7 @@ def _setup_drill_runner(drill_dir: Path, ws: Path) -> object:
 
 
 def _wire_drill_coordinator(runner: object, drill_dir: Path) -> None:
+    """为演练 Runner 注入长短双任务（DRILL-LONG 与 DRILL-FAST）卡片及受控异步执行桩。"""
     commit = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
     cards = {
         "DRILL-LONG": {"id": "DRILL-LONG", "status": "Ready", "task_kind": "implementation", "depends_on": [], "review_assignments": {"reviewer_sessions": []}},
@@ -95,6 +99,7 @@ def _wire_drill_coordinator(runner: object, drill_dir: Path) -> None:
 
 
 def _launch_drill_job(runner: object, req: object, dkey: str) -> RoleJobHandle:
+    """启动长耗时（1.2s）或短耗时（0.05s）脱离会话的后台子进程以验证非阻塞并发推进。"""
     j_dir = runner.config.jobs_dir / f"job_{req.task_id}"
     j_dir.mkdir(parents=True, exist_ok=True)
     sleep_t = 1.2 if req.task_id == "DRILL-LONG" else 0.05
@@ -105,6 +110,7 @@ def _launch_drill_job(runner: object, req: object, dkey: str) -> RoleJobHandle:
 
 
 def _run_coordinator_dual_task_drill(runner: object, drill_dir: Path) -> dict:
+    """执行三步调度推进，证明 DRILL-FAST 在 DRILL-LONG 仍在运行时率先独立完成闭环。"""
     s1 = runner.step()
     time.sleep(0.15)
     s2 = runner.step()
@@ -128,6 +134,7 @@ def _run_coordinator_dual_task_drill(runner: object, drill_dir: Path) -> dict:
 
 
 def _run_intake_idempotence_drill(runner: object, drill_dir: Path) -> dict:
+    """连续执行两次收件单扫描，验证第二次扫描不产生重复文件且幂等计数准确。"""
     sub_dir = runner.config.intake_root / "submissions"
     sub_dir.mkdir(parents=True, exist_ok=True)
     sub_path = sub_dir / "SUB-DRILL-01.md"
@@ -148,6 +155,7 @@ def _run_intake_idempotence_drill(runner: object, drill_dir: Path) -> dict:
 
 
 def _verify_lease_protection(reconciler: FiveSourceReconciler, drill_dir: Path) -> int:
+    """验证当账面租期已过但底层 OS 进程仍存活时，五源对账器自动延长并保护该活跃租约。"""
     lm = LeaseManager(default_duration=1800.0)
     lease = lm.acquire_lease("DRILL-ACTIVE", "implementation", "owner_drill")
     lease.expires_at = time.time() - 10.0
@@ -165,6 +173,7 @@ def _verify_lease_protection(reconciler: FiveSourceReconciler, drill_dir: Path) 
 
 
 def _verify_cas_conflict(drill_dir: Path, reconciler: FiveSourceReconciler) -> bool:
+    """模拟外部并发修改文件，验证五源对账器的 CAS 写前校验能精确捕获冲突。"""
     f = drill_dir / "cas_test.md"
     f.write_text("initial drill content", encoding="utf-8")
     init_sha = hashlib.sha256(b"initial drill content").hexdigest()
@@ -178,7 +187,7 @@ def _verify_cas_conflict(drill_dir: Path, reconciler: FiveSourceReconciler) -> b
 
 
 def execute_m2_live_drill(workspace_root: Path, drill_dir: Path) -> Dict[str, object]:
-    """Run bounded M2 recovery and async dual-task drill inside `drill_dir`."""
+    """在指定演练目录内执行 M2 五源恢复、双任务异步并发、单实例锁与 CAS 冲突保护全量演练。"""
     ws = workspace_root.resolve()
     root = drill_dir.resolve() if drill_dir.is_absolute() else (Path.cwd() / drill_dir).resolve()
     if not str(root).startswith(str((ws / "project-control").resolve()) + "/"):
