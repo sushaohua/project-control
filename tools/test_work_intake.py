@@ -222,6 +222,37 @@ class WorkIntakeBatchAndIsolationTest(unittest.TestCase):
         reloaded = yaml.safe_load(Path(feat["_path"]).read_text(encoding="utf-8"))
         self.assertEqual(reloaded["related_ids"]["engineering_tasks"], ["AUTO-03", "AUTO-04"])
 
+    def test_link_tasks_with_arch_breakdown_updates_revision_and_digest_ledger(self) -> None:
+        """验证 TaskLinkUpdate 写入 arch_breakdown 时自动递增 revision 并同步更新 .intake_digests.json 账本。"""
+        (self.intake / "submissions/SUB-ARCH-LINK.md").write_text(
+            "1. [issue] 验证 ARCH 方案关联与账本摘要同步\n", encoding="utf-8"
+        )
+        mgr = WorkIntakeManager(self.ws, self.intake)
+        res1 = mgr.scan_and_sync(persist_ledger=True)
+        self.assertEqual(res1.errors, [])
+        iss = next(iter(res1.records.values()))
+        iss_path = Path(iss["_path"])
+        arch_ref = {
+            "path": "project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md",
+            "revision": 1,
+            "sha256": "a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e",
+        }
+        new_sha = mgr.link_tasks_to_category_yaml(TaskLinkUpdate(
+            category_yaml_path=iss_path,
+            task_ids=["AUTO-07"],
+            requested_action="execute",
+            arch_breakdown=arch_ref,
+        ))
+        updated = yaml.safe_load(iss_path.read_text(encoding="utf-8"))
+        self.assertEqual(updated["revision"], 2)
+        self.assertEqual(updated["requested_action"], "execute")
+        self.assertEqual(updated["related_ids"]["engineering_tasks"], ["AUTO-07"])
+        self.assertEqual(updated["related_ids"]["arch_breakdown"], arch_ref)
+        ledger = json.loads((self.intake / ".intake_digests.json").read_text(encoding="utf-8"))
+        self.assertEqual(ledger["categories"][f"{iss['id']}@r2"], new_sha)
+        res2 = mgr.scan_and_sync(persist_ledger=False)
+        self.assertEqual(res2.errors, [])
+
     def test_canonical_workspace_intake_and_disabled_examples(self) -> None:
         mgr = WorkIntakeManager(WORKSPACE_ROOT)
         res = mgr.scan_and_sync(persist_ledger=False)

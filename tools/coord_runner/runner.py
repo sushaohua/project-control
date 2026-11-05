@@ -111,21 +111,29 @@ class CoordRunner:
         self.completed_tasks: Set[str] = set()
         self.cursor: Optional[str] = None
         self._running = False
+        self.last_intake_summary: Optional[dict] = None
         self.agent_executor: Optional[Callable] = None
         self.qa_executor: Optional[Callable] = None
         self.review_executor: Optional[Callable] = None
 
     def restore_from_checkpoint(self) -> bool:
+        """从状态库或检查点文件恢复运行器游标、在途任务与租约，并在恢复检查点执行人工收件扫描。
+
+        返回值：
+        - bool：成功恢复既有检查点状态时返回 True，无历史检查点时返回 False。
+        """
         state = self.state_store.load_coord_state()
         if state is None:
             state = self.checkpoint_mgr.safe_load(self.config.checkpoint_file)
             if state is None:
+                self.scan_work_intake(persist_ledger=True)
                 return False
             self.state_store.save_coord_state(state)
         self.cursor = state.cursor
         self.completed_tasks = set(state.completed_tasks)
         self.in_flight_tasks = dict(state.in_flight_tasks)
         self.lease_mgr.restore_leases(state.leases)
+        self.scan_work_intake(persist_ledger=True)
         return True
 
     def save_checkpoint(self) -> None:
@@ -548,9 +556,22 @@ class CoordRunner:
         self._verify_server_commit(Path(req.workdir or self.config.workspace_root), str(res.candidate_commit))
         return str(res.candidate_commit)
 
-    def scan_work_intake(self, persist_ledger: bool = True) -> dict:
-        """Scan `docs/work_intake/` submissions/categories and return structured M1 intake summary."""
-        res = self.intake_mgr.scan_and_sync(persist_ledger=persist_ledger, active_cards=self.load_cards())
+    def scan_work_intake(
+        self,
+        persist_ledger: bool = True,
+        active_cards: Optional[Dict[str, dict]] = None,
+    ) -> dict:
+        """扫描 `docs/work_intake/` 提交单与三类工作项，更新幂等摘要并返回收件汇总。
+
+        参数：
+        - persist_ledger (bool)：是否将更新后的收件摘要账本写回磁盘，默认 True。
+        - active_cards (Optional[Dict[str, dict]])：可选的已加载看板任务字典，避免同一轮检查点重复加载。
+
+        返回值：
+        - dict：包含 `submissions_count`、`generated_files`、`valid_records`、`idempotent_records_count`、`errors` 与 `notices` 的字典。
+        """
+        cards = active_cards if active_cards is not None else self.load_cards()
+        res = self.intake_mgr.scan_and_sync(persist_ledger=persist_ledger, active_cards=cards)
         idempotent_count = 0
         for rec_id, rec in res.records.items():
             dem_id = (rec.get("demand_ref") or {}).get("demand_id") or rec_id
@@ -558,7 +579,7 @@ class CoordRunner:
             sha = rec.get("_sha256") or rec.get("source_refs", {}).get("submission_sha256", "")
             if sha and self.reconciler.check_intake_idempotence(dem_id, rev, sha):
                 idempotent_count += 1
-        return {
+        summary = {
             "submissions_count": len(res.submissions),
             "generated_files": [str(p) for p in res.generated_paths],
             "valid_records": sorted(res.records.keys()),
@@ -566,6 +587,8 @@ class CoordRunner:
             "errors": [e.__dict__ for e in res.errors],
             "notices": [n.__dict__ for n in res.notices],
         }
+        self.last_intake_summary = summary
+        return summary
 
     def default_qa_executor(
         self,
@@ -687,11 +710,17 @@ class CoordRunner:
             self.state_machine.transition(record, TaskState.CANDIDATE_PUSHED)
 
     def step(self) -> Dict[str, object]:
+        """执行单轮调度检查点：对账租约与在途作业、自动扫描人工收件、推进在途任务并派发就绪任务。
+
+        返回值：
+        - Dict[str, object]：包含游标、派发列表、在途/完成/阻塞/升级列表及 `intake` 收件汇总的字典。
+        """
         self.reconciler.protect_active_leases(self.lease_mgr, self.config.jobs_dir)
         self.lease_mgr.prune_expired_leases()
         self.reconciler.reconcile_active_jobs(self.config.jobs_dir)
         self._check_async_job_completions()
         cards = self.load_cards()
+        intake_summary = self.scan_work_intake(persist_ledger=True, active_cards=cards)
         for task_id in list(self.in_flight_tasks.keys()):
             card = cards.get(task_id, {"id": task_id})
             self._process_task_safely(task_id, card)
@@ -721,6 +750,7 @@ class CoordRunner:
                         if record.state == TaskState.BLOCKED.value},
             "escalated": [key for key, record in self.in_flight_tasks.items()
                           if record.state == TaskState.ESCALATED.value],
+            "intake": intake_summary,
         }
 
     def run_once(self) -> Dict[str, object]:

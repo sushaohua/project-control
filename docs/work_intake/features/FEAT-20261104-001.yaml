@@ -1,6 +1,6 @@
 schema_version: 1
 id: FEAT-20261104-001
-revision: 3
+revision: 4
 kind: feature
 enabled: true
 title: MC/TH Debug：双路调试串口与用户 UI 的双向链路对账。

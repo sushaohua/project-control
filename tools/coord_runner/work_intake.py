@@ -90,12 +90,14 @@ class IntakeScanResult:
 
 @dataclass(frozen=True)
 class TaskLinkUpdate:
-    """Atomic update request linking an approved category YAML to formal task cards."""
+    """封装分类 YAML 与正式看板任务、确认单、批准单及 ARCH 拆解文档的关联更新参数。"""
+
     category_yaml_path: Path
     task_ids: List[str]
     demand_ref_updates: Optional[dict] = None
     approval_refs: Optional[List[dict]] = None
     requested_action: Optional[str] = None
+    arch_breakdown: Optional[dict] = None
 
 
 def _split_optional_frontmatter(raw_text: str) -> Tuple[dict, str]:
@@ -315,9 +317,20 @@ class WorkIntakeManager:
     """Manages `docs/work_intake/` parsing, unique YAML generation, tamper ledger, and task linkage."""
 
     def __init__(self, workspace_root: Path, intake_root: Optional[Path] = None, reconciler: Optional[object] = None):
+        """初始化人工收件管理器，解析工作区与收件目录路径并绑定对账器。
+
+        参数：
+        - workspace_root (Path)：工作区根目录路径。
+        - intake_root (Optional[Path])：可选的收件目录路径（相对路径基于 `workspace_root` 解析）。
+        - reconciler (Optional[object])：可选的五源对账器实例，用于记录与核验幂等摘要。
+        """
         self.workspace_root = Path(workspace_root).resolve()
         default_intake = self.workspace_root / "project-control/docs/work_intake"
-        self.intake_root = Path(intake_root).resolve() if intake_root else default_intake.resolve()
+        if intake_root is None:
+            self.intake_root = default_intake.resolve()
+        else:
+            raw_in = Path(intake_root)
+            self.intake_root = raw_in.resolve() if raw_in.is_absolute() else (self.workspace_root / raw_in).resolve()
         self.ledger_path = self.intake_root / ".intake_digests.json"
         self.reconciler = reconciler
 
@@ -336,13 +349,25 @@ class WorkIntakeManager:
         return {"submissions": {}, "categories": {}, "ingested_instructions": {}}
 
     def _save_ledger(self, ledger: dict) -> None:
-        self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
+        """将收件摘要账本以 CAS 方式写回磁盘；若账本内容未变化或无收件目录且账本为空则幂等短路返回。
+
+        参数：
+        - ledger (dict)：包含 `submissions`、`categories` 与 `ingested_instructions` 的摘要账本字典。
+
+        返回值：
+        - None：无返回值。
+        """
         payload = json.dumps(ledger, indent=2, ensure_ascii=False, sort_keys=True)
         if self.ledger_path.is_file():
             snap = read_with_digest(self.ledger_path)
+            if snap.text == payload:
+                return
             write_cas(self.ledger_path, payload, snap.sha256)
-        else:
-            create_exclusive(self.ledger_path, payload)
+            return
+        if not self.intake_root.is_dir() and not any(ledger.values()):
+            return
+        self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
+        create_exclusive(self.ledger_path, payload)
 
     def _check_and_bind_digest(self, bucket: dict, item_id: str, rev_and_sha: Tuple[int, str]) -> None:
         rev, sha = rev_and_sha
@@ -585,28 +610,19 @@ class WorkIntakeManager:
                 ))
 
     def link_tasks_to_category_yaml(self, update: TaskLinkUpdate) -> str:
-        """CAS-update a category YAML with confirmation/approval refs and linked formal Kanban task IDs."""
+        """以 CAS 方式更新分类 YAML 的关联字段、自动递增 revision 并同步写入 `.intake_digests.json` 账本。
+
+        参数：
+        - update (TaskLinkUpdate)：包含目标分类 YAML 路径、关联任务、确认/批准及 ARCH 拆解引用的更新请求。
+
+        返回值：
+        - str：更新后（或未发生实质变更时）分类 YAML 文件的完整 SHA-256 十六进制摘要。
+        """
         snap = read_with_digest(update.category_yaml_path)
         data = yaml.safe_load(snap.text)
         if not isinstance(data, dict):
             raise IntakeValidationError("Target category YAML is invalid", "CORRUPT_CATEGORY_YAML")
-        if update.demand_ref_updates:
-            data.setdefault("demand_ref", {}).update(update.demand_ref_updates)
-        if update.approval_refs is not None:
-            data["approval_refs"] = list(update.approval_refs)
-        if update.requested_action is not None:
-            if update.requested_action not in VALID_ACTIONS:
-                raise IntakeValidationError(f"Invalid action: {update.requested_action}", "INVALID_REQUESTED_ACTION")
-            data["requested_action"] = update.requested_action
-        rel_ids = data.get("related_ids")
-        if not isinstance(rel_ids, dict):
-            rel_ids = {"legacy_refs": list(rel_ids or [])}
-        existing_tasks = list(rel_ids.get("engineering_tasks") or [])
-        for tid in update.task_ids:
-            if tid not in existing_tasks:
-                existing_tasks.append(tid)
-        rel_ids["engineering_tasks"] = existing_tasks
-        data["related_ids"] = rel_ids
+        _apply_task_link_updates(data, update)
         if yaml.safe_dump(data, allow_unicode=True, sort_keys=False) == snap.text:
             return snap.sha256
         data["revision"] = int(data.get("revision", 1)) + 1
@@ -620,8 +636,38 @@ class WorkIntakeManager:
             summary=f"Link tasks {update.task_ids} to {data.get('id')}",
         )
         written_sha = write_cas(snap.path, new_text, snap.sha256, intent)
-        if self.ledger_path.is_file():
-            ledger = self._load_ledger()
-            ledger["categories"][f"{data['id']}@r{data['revision']}"] = written_sha
-            self._save_ledger(ledger)
+        ledger = self._load_ledger()
+        ledger["categories"][f"{data['id']}@r{data['revision']}"] = written_sha
+        self._save_ledger(ledger)
         return written_sha
+
+
+def _apply_task_link_updates(data: dict, update: TaskLinkUpdate) -> None:
+    """将确认单、批准引用、请求动作、看板任务 ID 及 ARCH 拆解引用合并写入分类 YAML 字典。
+
+    参数：
+    - data (dict)：待原地更新的分类 YAML 字典对象。
+    - update (TaskLinkUpdate)：封装关联字段更新内容的请求对象。
+
+    返回值：
+    - None：原地修改 `data`，若 `requested_action` 非法则抛出 `IntakeValidationError`。
+    """
+    if update.demand_ref_updates:
+        data.setdefault("demand_ref", {}).update(update.demand_ref_updates)
+    if update.approval_refs is not None:
+        data["approval_refs"] = list(update.approval_refs)
+    if update.requested_action is not None:
+        if update.requested_action not in VALID_ACTIONS:
+            raise IntakeValidationError(f"Invalid action: {update.requested_action}", "INVALID_REQUESTED_ACTION")
+        data["requested_action"] = update.requested_action
+    rel_ids = data.get("related_ids")
+    if not isinstance(rel_ids, dict):
+        rel_ids = {"legacy_refs": list(rel_ids or [])}
+    existing_tasks = list(rel_ids.get("engineering_tasks") or [])
+    for tid in update.task_ids:
+        if tid not in existing_tasks:
+            existing_tasks.append(tid)
+    rel_ids["engineering_tasks"] = existing_tasks
+    if update.arch_breakdown is not None:
+        rel_ids["arch_breakdown"] = dict(update.arch_breakdown)
+    data["related_ids"] = rel_ids

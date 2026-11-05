@@ -1175,6 +1175,58 @@ class M1QueueIsolationAndDoneGateTest(unittest.TestCase):
         self.assertIn("FEAT-INTAKE-20261103-001", payload["valid_records"])
         self.assertEqual(payload["errors"], [])
 
+    def test_step_and_restore_checkpoints_auto_scan_intake_idempotently(self):
+        """验证 restore_from_checkpoint 与 step 检查点自动扫描人工收件、生成一次分类 YAML 且连续轮询幂等零空耗。"""
+        with tempfile.TemporaryDirectory(prefix="auto07_intake_step_") as tmp:
+            ws = Path(tmp)
+            intake = ws / "project-control/docs/work_intake"
+            for sub in ("submissions", "issues", "features", "requirements"):
+                (intake / sub).mkdir(parents=True, exist_ok=True)
+            (intake / "submissions/SUB-AUTO07.md").write_text(
+                "1. [issue] 守护进程检查点自动收件接线验证\n", encoding="utf-8"
+            )
+            qfile = ws / "queue.yaml"
+            qfile.write_text("queue_domain: work_intake\norder: []\n", encoding="utf-8")
+            cfile = ws / "coord_state.json"
+            runner = CoordRunner(CoordRunnerConfig(workspace_root=ws, queue_file=qfile, checkpoint_file=cfile))
+            self.assertFalse(runner.restore_from_checkpoint())
+            self.assertIsNotNone(runner.last_intake_summary)
+            self.assertEqual(len(runner.last_intake_summary["generated_files"]), 1)
+            self.assertEqual(runner.last_intake_summary["errors"], [])
+            ledger_mtime_1 = (intake / ".intake_digests.json").stat().st_mtime_ns
+            step1 = runner.step()
+            self.assertEqual(step1["intake"]["generated_files"], [])
+            self.assertEqual(step1["intake"]["idempotent_records_count"], 1)
+            self.assertEqual(step1["dispatched"], [])
+            ledger_mtime_2 = (intake / ".intake_digests.json").stat().st_mtime_ns
+            self.assertEqual(ledger_mtime_1, ledger_mtime_2)
+            step2 = runner.step()
+            self.assertEqual(step2["intake"]["generated_files"], [])
+            self.assertEqual(step2["intake"]["idempotent_records_count"], 1)
+
+    def test_step_isolates_corrupt_submission_without_blocking_valid_intake_or_inflight(self):
+        """验证单份损坏收件文件在 step 检查点被隔离至 errors，不阻断合法提交单收件或在途任务推进。"""
+        with tempfile.TemporaryDirectory(prefix="auto07_corrupt_iso_") as tmp:
+            ws = Path(tmp)
+            intake = ws / "project-control/docs/work_intake"
+            for sub in ("submissions", "issues", "features", "requirements"):
+                (intake / sub).mkdir(parents=True, exist_ok=True)
+            (intake / "submissions/SUB-GOOD.md").write_text("1. [feature] 合法功能需求\n", encoding="utf-8")
+            (intake / "issues/BAD-CORRUPT.yaml").write_text(":::corrupt_yaml: [", encoding="utf-8")
+            qfile = ws / "queue.yaml"
+            qfile.write_text("queue_domain: work_intake\norder: []\n", encoding="utf-8")
+            cfile = ws / "coord_state.json"
+            runner = CoordRunner(CoordRunnerConfig(workspace_root=ws, queue_file=qfile, checkpoint_file=cfile))
+            runner.in_flight_tasks["AUTO-INFLIGHT"] = TaskExecutionRecord(
+                "AUTO-INFLIGHT", state=TaskState.BLOCKED.value, runtime_context={"blocked_reason": "hold"}
+            )
+            step_res = runner.step()
+            self.assertEqual(len(step_res["intake"]["generated_files"]), 1)
+            self.assertEqual(len(step_res["intake"]["valid_records"]), 1)
+            err_codes = {e["code"] for e in step_res["intake"]["errors"]}
+            self.assertIn("CORRUPT_CATEGORY_YAML", err_codes)
+            self.assertIn("AUTO-INFLIGHT", step_res["in_flight"])
+
 
 class MethodologicalInvariantsTest(unittest.TestCase):
     def test_python_functions_scale_and_parameters_limits(self):
