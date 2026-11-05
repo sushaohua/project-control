@@ -6,14 +6,14 @@ plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: In Progress
+status: Review
 blocked: false
 planning_status: active
-owner: ENG-UI
+owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
 proposed_owner: ENG-UI
 executor:
   role: ENG-UI
-  agent_id: null
+  agent_id: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
   run_id: author_01
 qa_policy: streamlined-v1
 reviewer:
@@ -24,8 +24,7 @@ requirement_id: REQ-20261105-002
 demand_id: DEM-20261105-018
 confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
 approval_id: APPR-20261105-004
-accepted_scope: 修复ISS-20261105-006(/api/v1/state动态路由统一与静态假文件清理)、ISS-20261105-007(保存料槽配置与LOAD/210°C解耦)、ISS-20261105-008(模型一键载入与开始打印两阶段解耦)、ISS-20261105-009(G-code上传扩展名/空文件/内容前后端双重400校验)、ISS-20261105-010(混色权重与槽位/动作越界400校验)、ISS-20261105-011(UI侧热床超量程故障展示)、ISS-20261105-013(设备离线时OOBE与4路断料传感器去假绿)、ISS-20261105-017(404响应缓冲区扩容消除截断)，并同步完成Batch
-  AP-3(ui_gateway + browser_hmi共20个文件)中文代码注释全量补齐(ISS-20261105-018)。
+accepted_scope: "Docker QA sandbox (CMake/Ninja/CTest and Python HMI contract tests) verification of ISS-20261105-006 (/api/v1/state dynamic routing and static fake state cleanup), ISS-20261105-007 (saving slot config decoupled from LOAD/210°C), ISS-20261105-008 (two-stage model load vs start print), ISS-20261105-009 (G-code upload extension/empty/content 400 validation), ISS-20261105-010 (color weight sum and slot/action 400 validation), ISS-20261105-011 (UI bed out-of-range fault display), ISS-20261105-013 (offline OOBE and 4 filament sensors non-green state), ISS-20261105-017 (404 response buffer sizing without truncation), and Batch AP-3 Chinese code comments across ui_gateway + browser_hmi (20 files, ISS-20261105-018). Candidate commit 19534a9a4cb393176882fbad046129d55bba51f6 is the consolidated soc-ap commit for the jointly approved batch TWIN-57/58/59 under APPR-20261105-004 (sibling paths in forward/device_manager and core/middleware/runtime belong to TWIN-57 and TWIN-59 in the same approved batch). Physical HIL verification is out of scope for this software sandbox task (covered by TWIN-55); all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
@@ -82,7 +81,12 @@ source_baseline:
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: 79932746d225bb115010c5545ef3f7499482e137
 branch: main
-candidate_commit: null
+candidate_commit: 19534a9a4cb393176882fbad046129d55bba51f6
+dispatch_binding:
+  source_commit: 79932746d225bb115010c5545ef3f7499482e137
+  workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  consumed_artifact_versions:
+    arch_breakdown: 5bcfbaf2ca96d2bba58abab17b3368c243235f778e0bd99a2293a136ee50ee4d
 protocol_input:
   path: project-control/docs/architecture/twin55_issues_005_017_consolidated_remediation_plan_20261105.md
   sha256: 5bcfbaf2ca96d2bba58abab17b3368c243235f778e0bd99a2293a136ee50ee4d
@@ -100,7 +104,7 @@ read_sources:
 - project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md
 worktree: soc-ap
 lease:
-  owner: ENG-UI
+  owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
   task_revision: 1
   lease_id: lease-twin-58-20261105-01
   expires_at: '2026-11-05T22:00:00+08:00'
@@ -136,7 +140,7 @@ handoff:
   acknowledgement: accepted
 verification:
   commands:
-  - id: verify_twin-58
+  - id: build_and_verify_twin-58
     cwd: soc-ap
     command: cmake -S . -B /tmp/build_twin58 -G Ninja && cmake --build /tmp/build_twin58
       && ctest --test-dir /tmp/build_twin58 --output-on-failure && python3 -m unittest

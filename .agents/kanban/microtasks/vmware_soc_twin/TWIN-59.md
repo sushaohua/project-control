@@ -6,14 +6,14 @@ plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: In Progress
+status: Review
 blocked: false
 planning_status: active
-owner: ENG-SOC
+owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
 proposed_owner: ENG-SOC
 executor:
   role: ENG-SOC
-  agent_id: null
+  agent_id: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
   run_id: author_01
 qa_policy: streamlined-v1
 reviewer:
@@ -24,8 +24,7 @@ requirement_id: ISS-20261105-018
 demand_id: DEM-20261105-019
 confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
 approval_id: APPR-20261105-004
-accepted_scope: 依据code_documentation_standard.md与ARCH-BREAKDOWN-CODE-COMMENTS-20261105，对soc-ap仓库Batch
-  AP-1(contracts/twin/job、core、middleware、runtime、third_party/build.sh、tools/twin_build、tools/diag、tools/run_print_dryrun.sh共44个文件)完成全量中文注释补齐(ISS-20261105-018)，保持零逻辑变更与100%单测通过。
+accepted_scope: "Docker QA sandbox (CMake/Ninja/CTest) verification of Batch AP-1 Chinese code comments across soc-ap contracts/twin/job, core, middleware, runtime, third_party/build.sh, tools/twin_build, tools/diag, and tools/run_print_dryrun.sh (44 files, ISS-20261105-018) per code_documentation_standard.md with zero logic regressions and 100% unit test pass. Candidate commit 19534a9a4cb393176882fbad046129d55bba51f6 is the consolidated soc-ap commit for the jointly approved batch TWIN-57/58/59 under APPR-20261105-004 (sibling paths in forward/device_manager and ui_gateway/browser_hmi belong to TWIN-57 and TWIN-58 in the same approved batch). Physical HIL verification is out of scope for this software sandbox task; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
@@ -86,7 +85,12 @@ source_baseline:
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: 79932746d225bb115010c5545ef3f7499482e137
 branch: main
-candidate_commit: null
+candidate_commit: 19534a9a4cb393176882fbad046129d55bba51f6
+dispatch_binding:
+  source_commit: 79932746d225bb115010c5545ef3f7499482e137
+  workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  consumed_artifact_versions:
+    arch_breakdown: 5073d7e45aa8fbd5e8f8422a775df73ddc7970d8061363b715d673feec0ada94
 protocol_input:
   path: project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md
   sha256: 5073d7e45aa8fbd5e8f8422a775df73ddc7970d8061363b715d673feec0ada94
@@ -104,7 +108,7 @@ read_sources:
 - project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md
 worktree: soc-ap
 lease:
-  owner: ENG-SOC
+  owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
   task_revision: 1
   lease_id: lease-twin-59-20261105-01
   expires_at: '2026-11-05T22:00:00+08:00'
@@ -142,7 +146,7 @@ handoff:
   acknowledgement: accepted
 verification:
   commands:
-  - id: verify_twin-59
+  - id: build_and_verify_twin-59
     cwd: soc-ap
     command: cmake -S . -B /tmp/build_twin59 -G Ninja && cmake --build /tmp/build_twin59
       && ctest --test-dir /tmp/build_twin59 --output-on-failure && rm -rf /tmp/build_twin59

@@ -6,14 +6,14 @@ plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: In Progress
+status: Review
 blocked: false
 planning_status: active
-owner: ENG-MC
+owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
 proposed_owner: ENG-MC
 executor:
   role: ENG-MC
-  agent_id: null
+  agent_id: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
   run_id: author_01
 qa_policy: streamlined-v1
 reviewer:
@@ -24,10 +24,7 @@ requirement_id: REQ-20261105-002
 demand_id: DEM-20261105-018
 confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
 approval_id: APPR-20261105-004
-accepted_scope: 在mcu-p3仓库feat/soc-debug分支修复ISS-20261105-010(MC 0x19槽位/动作越界返回NACK 0x03)、ISS-20261105-011/012(MC热床真实ADC
-  g_last_bed_adc_raw透传与5~130°C/ADC超界0x7FFF故障哨兵判定)、ISS-20261105-015(移除thermistor.c裸printf("adc
-  SS_ADC_BUSY")并将MC_DBG_LINE_MAX_LEN扩容至256U、RING_CAPACITY扩容至4096U)、ISS-20261105-016(MC/TH动态boot_id生成与FW_GIT_COMMIT_SHORT绑定)，并同步完成Batch
-  MCU-MC & MCU-TH共24个文件的中文注释补齐(ISS-20261105-018)。
+accepted_scope: "C unit-test verification in Docker QA sandbox (gcc) on mcu-p3 (feat/soc-debug, candidate 191e355a4227268a472bafd6862d4a8c854e0544) of ISS-20261105-010 (MC 0x19 slot/action out-of-range NACK 0x03), ISS-20261105-011/012 (MC bed g_last_bed_adc_raw passthrough and 5~130°C/ADC out-of-range 0x7FFF fault sentinel), ISS-20261105-015 (removal of thermistor.c bare printf(\"adc SS_ADC_BUSY\") and expansion of MC_DBG_LINE_MAX_LEN to 256U / RING_CAPACITY to 4096U), ISS-20261105-016 (MC/TH dynamic boot_id generation and FW_GIT_COMMIT_SHORT binding), and Batch MCU-MC & MCU-TH Chinese code comments across the 26 modified files (ISS-20261105-018). Cross-compiler ELF build and physical MCU HIL are not applicable in qa-sandbox:20261029 (host arm-none-eabi-gcc build is verified in author_01 and physical HIL in TWIN-55); all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
@@ -76,7 +73,12 @@ source_baseline:
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: 891a8bb252814c83992a49b01fbe11ba83b92a1f
 branch: feat/soc-debug
-candidate_commit: null
+candidate_commit: 191e355a4227268a472bafd6862d4a8c854e0544
+dispatch_binding:
+  source_commit: 891a8bb252814c83992a49b01fbe11ba83b92a1f
+  workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  consumed_artifact_versions:
+    arch_breakdown: 5bcfbaf2ca96d2bba58abab17b3368c243235f778e0bd99a2293a136ee50ee4d
 protocol_input:
   path: project-control/docs/architecture/twin55_issues_005_017_consolidated_remediation_plan_20261105.md
   sha256: 5bcfbaf2ca96d2bba58abab17b3368c243235f778e0bd99a2293a136ee50ee4d
@@ -94,7 +96,7 @@ read_sources:
 - project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md
 worktree: mcu-p3
 lease:
-  owner: ENG-MC
+  owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
   task_revision: 1
   lease_id: lease-twin-60-20261105-01
   expires_at: '2026-11-05T22:00:00+08:00'
@@ -112,8 +114,32 @@ execution_contract: project-control/docs/planning/vmware_soc_twin_task_execution
 readiness_pending: []
 deliverables:
   artifacts:
-  - mcu-p3/motion-controller-mcu/**
-  - mcu-p3/color-engine-mcu/io_toggle/**
+  - mcu-p3/color-engine-mcu/io_toggle/Makefile
+  - mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h
+  - mcu-p3/color-engine-mcu/io_toggle/inc/minimc_telemetry.h
+  - mcu-p3/color-engine-mcu/io_toggle/inc/thermistor_adc.h
+  - mcu-p3/color-engine-mcu/io_toggle/inc/usart.h
+  - mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c
+  - mcu-p3/color-engine-mcu/io_toggle/src/app/mycontrol.c
+  - mcu-p3/color-engine-mcu/io_toggle/src/app/stepper.c
+  - mcu-p3/color-engine-mcu/io_toggle/src/app/thermistor_adc.c
+  - mcu-p3/color-engine-mcu/io_toggle/src/bsp/usart.c
+  - mcu-p3/color-engine-mcu/io_toggle/src/user/main.c
+  - mcu-p3/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
+  - mcu-p3/motion-controller-mcu/CMakeLists.txt
+  - mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h
+  - mcu-p3/motion-controller-mcu/project/inc/minimc_telemetry.h
+  - mcu-p3/motion-controller-mcu/project/inc/wk_usart.h
+  - mcu-p3/motion-controller-mcu/project/marlin/configure.h
+  - mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c
+  - mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c
+  - mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
+  - mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c
+  - mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.h
+  - mcu-p3/motion-controller-mcu/project/src/main.c
+  - mcu-p3/motion-controller-mcu/project/src/minimc_proto.c
+  - mcu-p3/motion-controller-mcu/project/src/test_twin44_mc_debug.c
+  - mcu-p3/motion-controller-mcu/project/src/wk_usart.c
   record: docs/evidence/twin/TWIN-60/runs/author_01/result.md
 rollback:
   steps:

@@ -34,6 +34,11 @@ child_tasks:
 - TWIN-34
 - TWIN-38
 - TWIN-39
+- TWIN-57
+- TWIN-58
+- TWIN-59
+- TWIN-60
+- TWIN-61
 planning_relations:
 - TASK-008
 related_tasks: []
