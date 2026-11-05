@@ -1,0 +1,89 @@
+🖨️
+AI-SoC 3D HMI
+Industrial Digital Twin Console v2.0
+Connected
+Hardware Offline
+GEN:
+134
+🔥 喷嘴:
+--.- °C
+🛏️ 热床:
+--.- °C
+🛑
+EMERGENCY STOP
+🔓
+Clear E-Stop
+🌐
+简体中文
+☀️
+Light Mode
+🚀
+Setup Wizard
+⚠️ Hardware link disconnected. Motion and heating locked. Please check physical link and retry.
+🖨️
+Print Jobs
+🕹️
+Motion & Level
+🌡️
+Temperatures & Sensors
+🎨
+Slots & Palette
+📡
+Network & mDNS
+🛡️
+Health Monitor (HMS)
+Dual MCU Sensor & Temperature Live Telemetry
+
+Authoritative telemetry from real microservices. Unlinked hardware items explicitly marked to prevent synthetic data.
+
+Request Sample (POST)
+TH
+Toolhead Nozzle (TH)
+FAULT
+--.-
+°C
+Target Temp:
+0.0 °C
+Heater Duty:
+0%
+Sensor State:
+OK
+Firmware Ver:
+Device Offline
+Raw ADC:
+0
+°C
+Set Nozzle Temp
+0°C Off
+200°C PLA
+240°C ABS
+MC
+Heated Bed (MC)
+FAULT
+--.-
+°C
+Target Temp:
+0.0 °C
+Heater Duty:
+0%
+Sensor State:
+OK
+Firmware Ver:
+Device Offline
+Raw ADC:
+0
+°C
+Set Bed Temp
+0°C Off
+60°C PLA
+80°C PETG
+COL-007
+4-Channel Optical Filament Runout Sensors
+Slot 1:
+Ready (Normal)
+Slot 2:
+Ready (Normal)
+Slot 3:
+Ready (Normal)
+Slot 4:
+Ready (Normal)

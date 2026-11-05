@@ -1,0 +1,41 @@
+{"utc": "2026-11-05T06:29:03.666122+00:00", "monotonic_ns": 699815843000000, "action": "probe_read", "data": {"argv": ["C:\\Users\\EDY\\tools\\probe-rs\\probe-rs.exe", "read", "b32", "0x4001100C", "1", "--chip", "AT32F423CCT7", "--probe", "0483:3748:", "--format", "simple-hex"], "exit_code": 0, "output": "0000202c\n"}}
+{"utc": "2026-11-05T06:29:03.666122+00:00", "monotonic_ns": 699815843000000, "action": "fault_begin", "data": {"role": "TH", "original_ctrl1": 8236}}
+{"utc": "2026-11-05T06:29:03.779315+00:00", "monotonic_ns": 699815968000000, "action": "probe_write", "data": {"argv": ["C:\\Users\\EDY\\tools\\probe-rs\\probe-rs.exe", "write", "b32", "0x4001100C", "0", "--chip", "AT32F423CCT7", "--probe", "0483:3748:"], "exit_code": 0, "output": ""}}
+{"utc": "2026-11-05T06:29:03.898244+00:00", "monotonic_ns": 699816078000000, "action": "probe_read", "data": {"argv": ["C:\\Users\\EDY\\tools\\probe-rs\\probe-rs.exe", "read", "b32", "0x4001100C", "1", "--chip", "AT32F423CCT7", "--probe", "0483:3748:", "--format", "simple-hex"], "exit_code": 0, "output": "00000000\n"}}
+{"utc": "2026-11-05T06:29:04.552511+00:00", "monotonic_ns": 699816734000000, "action": "probe_write", "data": {"argv": ["C:\\Users\\EDY\\tools\\probe-rs\\probe-rs.exe", "write", "b32", "0x4001100C", "8236", "--chip", "AT32F423CCT7", "--probe", "0483:3748:"], "exit_code": 0, "output": ""}}
+{"utc": "2026-11-05T06:29:04.666040+00:00", "monotonic_ns": 699816843000000, "action": "probe_read", "data": {"argv": ["C:\\Users\\EDY\\tools\\probe-rs\\probe-rs.exe", "read", "b32", "0x4001100C", "1", "--chip", "AT32F423CCT7", "--probe", "0483:3748:", "--format", "simple-hex"], "exit_code": 0, "output": "0000202c\n"}}
+{"utc": "2026-11-05T06:29:04.666040+00:00", "monotonic_ns": 699816843000000, "action": "fault_restore", "data": {"role": "TH", "matched": true}}
+Traceback (most recent call last):
+  File "<string>", line 76, in <module>
+  File "<string>", line 58, in main
+  File "<string>", line 38, in http
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\urllib\request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\urllib\request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\urllib\request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\urllib\request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\urllib\request.py", line 1386, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\urllib\request.py", line 1361, in do_open
+    r = h.getresponse()
+        ^^^^^^^^^^^^^^^
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\http\client.py", line 1478, in getresponse
+    response.begin()
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\http\client.py", line 343, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\http\client.py", line 304, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\EDY\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\socket.py", line 720, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。

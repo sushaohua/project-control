@@ -1,0 +1,114 @@
+schema_version: 1
+id: ISS-20261105-010
+revision: 1
+kind: issue
+enabled: true
+title: 料槽API未拒绝非法权重，越界动作进入硬件NACK路径
+objective: '【问题】料槽API未拒绝非法权重，越界动作进入硬件NACK路径
+
+
+  **记录：** `ISS-20261105-010`；用例：BASE-19；建议优先级：P1；建议Owner：ENG-UI（待COORD核定）。
+
+
+  **期望：** BASE-19要求非10000、负数、非数及越界按契约拒绝；纯UI校验不覆盖后端准入。
+
+
+  **观察：** 有NORMAL新快照前提时，total_mixing_weight=9999返回200；两个通道权重为-1/10001、总和仍10000时也200 Filament slots updated。slot_id/active_slot=5及action=-1得到504
+  RPC timeout or NACK，未在API入口报告参数非法。早期503结果保留，不计为参数负例通过。合法SELECT/action=0/目标0恢复得到200。
+
+
+  **复现：** 以本轮浏览器实际POST配置为基准，固定action=0、target_temp_deci_c=0。 → 取得新鲜NORMAL快照后分别修改总和、通道权重、slot_id、action。 → 检查HTTP与双路Debug；以合法SELECT恢复。
+
+
+  **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/mc_debug_qa_window.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/th_debug_qa_window.log`'
+source_refs:
+  submission_id: 20261105_twin55_codex_hil_issues
+  submission_revision: 1
+  instruction_anchor: instruction_6
+  submission_path: project-control/docs/work_intake/submissions/20261105_twin55_codex_hil_issues.md
+  submission_sha256: 1f90ef37d3c16ee4a37b3e612c37bca0ddbe1e36645a14eb73d0fc83586c3ae7
+  instruction_sha256: 9bc601363f580616a1c24a96dc0dd969863095f20aa53879bd243e079f61838d
+  verbatim_instruction: '【问题】料槽API未拒绝非法权重，越界动作进入硬件NACK路径
+
+
+    **记录：** `ISS-20261105-010`；用例：BASE-19；建议优先级：P1；建议Owner：ENG-UI（待COORD核定）。
+
+
+    **期望：** BASE-19要求非10000、负数、非数及越界按契约拒绝；纯UI校验不覆盖后端准入。
+
+
+    **观察：** 有NORMAL新快照前提时，total_mixing_weight=9999返回200；两个通道权重为-1/10001、总和仍10000时也200 Filament slots updated。slot_id/active_slot=5及action=-1得到504
+    RPC timeout or NACK，未在API入口报告参数非法。早期503结果保留，不计为参数负例通过。合法SELECT/action=0/目标0恢复得到200。
+
+
+    **复现：** 以本轮浏览器实际POST配置为基准，固定action=0、target_temp_deci_c=0。 → 取得新鲜NORMAL快照后分别修改总和、通道权重、slot_id、action。 → 检查HTTP与双路Debug；以合法SELECT恢复。
+
+
+    **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/mc_debug_qa_window.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/th_debug_qa_window.log`'
+  common_constraints:
+  - 只登记本轮实际观察；不修改业务仓、不重编译、不擦写Bootloader、不关闭Issue；根因由Owner调查。BASE-24和物理观察留Stage2。
+  - 本单来自用户明确授权的独立Codex QA，不是人工逐项实测签署。现Phase1收件器只接受HUMAN（work_intake.py）；如实保留MODEL，需唯一COORD人工收取/裁决该入口限制，不能伪造身份促通过。尚未扫描、派单或关闭。
+  - 正式验收：BLOCKED；已取得的黑盒不符合见各单；Stage1未完整执行，未批准。
+  common_constraints_sha256: 2843e09970bcadd2f07396dd82e40d5ed2c1fc917843b0096b8a08013f339f1a
+demand_ref:
+  demand_id: DEM-20261105-005
+  confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
+reported_by:
+  actor_type: MODEL
+  actor_id: 01a1aa5a-e261-7e93-bda3-157643aeb234
+  source_channel: independent_codex_qa
+authorization_refs:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/read_sources.json
+  sha256: 1074cd0e9211bc48cafb745b4485f5e50d882e1a27bb94ead697f65a35d3ae55
+  basis: 用户本轮明确要求独立测试和ISS-005起提单；不是工程修复批准
+approval_refs: []
+requested_action: triage
+priority_hint: P1
+related_ids:
+  engineering_tasks:
+  - TWIN-54
+  - TWIN-55
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: ENG-UI
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true
+resolution: open
+source_task:
+  task_id: TWIN-55
+  revision: 1
+  run_id: codex_qa_01
+feature_and_case_ids:
+- BASE-19
+affected_versions:
+  buildno: build-20261105-002
+  soc-ap: 79932746d225bb115010c5545ef3f7499482e137
+  mcu-p3: 891a8bb252814c83992a49b01fbe11ba83b92a1f
+  test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+  project-control_manifest: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
+  project-control_observed: 960f079647a00864fe7913836336b2a2ee3d729a
+preconditions:
+- 本轮锁定部署；实际运行身份及限制见read_sources.json、initial_runtime.log
+- 测试工具未取得非作者独立接受，不声称完整正式HIL批准
+reproduction_steps:
+- 以本轮浏览器实际POST配置为基准，固定action=0、target_temp_deci_c=0。
+- 取得新鲜NORMAL快照后分别修改总和、通道权重、slot_id、action。
+- 检查HTTP与双路Debug；以合法SELECT恢复。
+expected: BASE-19要求非10000、负数、非数及越界按契约拒绝；纯UI校验不覆盖后端准入。
+observed: 有NORMAL新快照前提时，total_mixing_weight=9999返回200；两个通道权重为-1/10001、总和仍10000时也200 Filament slots updated。slot_id/active_slot=5及action=-1得到504
+  RPC timeout or NACK，未在API入口报告参数非法。早期503结果保留，不计为参数负例通过。合法SELECT/action=0/目标0恢复得到200。
+evidence:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl
+  sha256: 913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/mc_debug_qa_window.log
+  sha256: 2b399c24ca8fa65700ce57b8b00d1236291ffe9ee554629b3ac13b29bded9043
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/th_debug_qa_window.log
+  sha256: eb021ca2d98018fde2f6aa96ddd3815f73208b70b3078b89009e4f18f5ecfda7
+impact: 料槽API未拒绝非法权重，越界动作进入硬件NACK路径
+root_cause: null
+verification_runs: []
+closure: null
+duplicate_of_or_disposition: null
+blocker_and_recovery: 保持open，COORD查重/人工收件后安排Owner；修复须准确新候选独立复验，不以本轮自动关闭。

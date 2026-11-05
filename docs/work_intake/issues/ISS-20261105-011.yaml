@@ -1,0 +1,115 @@
+schema_version: 1
+id: ISS-20261105-011
+revision: 1
+kind: issue
+enabled: true
+title: MC热床300.0°C被当作正常新鲜温度
+objective: '【问题】MC热床300.0°C被当作正常新鲜温度
+
+
+  **记录：** `ISS-20261105-011`；用例：BASE-04, BASE-20；建议优先级：P1；建议Owner：ENG-MC（待COORD核定）。
+
+
+  **期望：** BASE-20要求温度有效性真实；OOBE明确标注热床有效范围5~130°C，工程门禁要求无效温度降级。
+
+
+  **观察：** MC Debug持续bed_ddC=3000；转发日志temp_millic=300000；快照bed.temperature_c=300.0、sensor_status=OK、quality=FRESH，组合system_status可为NORMAL，HMI显示300.0°C。仅凭这些证据不能判断真实热敏电阻、接线或算法根因，也不称其已经证实是伪造物理温度。
+
+
+  **复现：** 只做POST /api/v1/temperature/sample，不施加任何非零加热目标。 → 关联MC Debug、转发日志、快照与HMI热床显示。
+
+
+  **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_forward_service.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/mc_debug_qa_window.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt`'
+source_refs:
+  submission_id: 20261105_twin55_codex_hil_issues
+  submission_revision: 1
+  instruction_anchor: instruction_7
+  submission_path: project-control/docs/work_intake/submissions/20261105_twin55_codex_hil_issues.md
+  submission_sha256: 1f90ef37d3c16ee4a37b3e612c37bca0ddbe1e36645a14eb73d0fc83586c3ae7
+  instruction_sha256: 954e9118f7747ff3512ff69e321de99d7befefbb9f4c77a9d6cc1503d67c170c
+  verbatim_instruction: '【问题】MC热床300.0°C被当作正常新鲜温度
+
+
+    **记录：** `ISS-20261105-011`；用例：BASE-04, BASE-20；建议优先级：P1；建议Owner：ENG-MC（待COORD核定）。
+
+
+    **期望：** BASE-20要求温度有效性真实；OOBE明确标注热床有效范围5~130°C，工程门禁要求无效温度降级。
+
+
+    **观察：** MC Debug持续bed_ddC=3000；转发日志temp_millic=300000；快照bed.temperature_c=300.0、sensor_status=OK、quality=FRESH，组合system_status可为NORMAL，HMI显示300.0°C。仅凭这些证据不能判断真实热敏电阻、接线或算法根因，也不称其已经证实是伪造物理温度。
+
+
+    **复现：** 只做POST /api/v1/temperature/sample，不施加任何非零加热目标。 → 关联MC Debug、转发日志、快照与HMI热床显示。
+
+
+    **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_forward_service.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/mc_debug_qa_window.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt`'
+  common_constraints:
+  - 只登记本轮实际观察；不修改业务仓、不重编译、不擦写Bootloader、不关闭Issue；根因由Owner调查。BASE-24和物理观察留Stage2。
+  - 本单来自用户明确授权的独立Codex QA，不是人工逐项实测签署。现Phase1收件器只接受HUMAN（work_intake.py）；如实保留MODEL，需唯一COORD人工收取/裁决该入口限制，不能伪造身份促通过。尚未扫描、派单或关闭。
+  - 正式验收：BLOCKED；已取得的黑盒不符合见各单；Stage1未完整执行，未批准。
+  common_constraints_sha256: 2843e09970bcadd2f07396dd82e40d5ed2c1fc917843b0096b8a08013f339f1a
+demand_ref:
+  demand_id: DEM-20261105-005
+  confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
+reported_by:
+  actor_type: MODEL
+  actor_id: 01a1aa5a-e261-7e93-bda3-157643aeb234
+  source_channel: independent_codex_qa
+authorization_refs:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/read_sources.json
+  sha256: 1074cd0e9211bc48cafb745b4485f5e50d882e1a27bb94ead697f65a35d3ae55
+  basis: 用户本轮明确要求独立测试和ISS-005起提单；不是工程修复批准
+approval_refs: []
+requested_action: triage
+priority_hint: P1
+related_ids:
+  engineering_tasks:
+  - TWIN-54
+  - TWIN-55
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: ENG-MC
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true
+resolution: open
+source_task:
+  task_id: TWIN-55
+  revision: 1
+  run_id: codex_qa_01
+feature_and_case_ids:
+- BASE-04
+- BASE-20
+affected_versions:
+  buildno: build-20261105-002
+  soc-ap: 79932746d225bb115010c5545ef3f7499482e137
+  mcu-p3: 891a8bb252814c83992a49b01fbe11ba83b92a1f
+  test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+  project-control_manifest: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
+  project-control_observed: 960f079647a00864fe7913836336b2a2ee3d729a
+preconditions:
+- 本轮锁定部署；实际运行身份及限制见read_sources.json、initial_runtime.log
+- 测试工具未取得非作者独立接受，不声称完整正式HIL批准
+reproduction_steps:
+- 只做POST /api/v1/temperature/sample，不施加任何非零加热目标。
+- 关联MC Debug、转发日志、快照与HMI热床显示。
+expected: BASE-20要求温度有效性真实；OOBE明确标注热床有效范围5~130°C，工程门禁要求无效温度降级。
+observed: MC Debug持续bed_ddC=3000；转发日志temp_millic=300000；快照bed.temperature_c=300.0、sensor_status=OK、quality=FRESH，组合system_status可为NORMAL，HMI显示300.0°C。仅凭这些证据不能判断真实热敏电阻、接线或算法根因，也不称其已经证实是伪造物理温度。
+evidence:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl
+  sha256: 913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_forward_service.log
+  sha256: 576c2c6d07b183fa21fc2b8d69b5c36312f2d86e40b28daca29da07a643702c4
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/mc_debug_qa_window.log
+  sha256: 2b399c24ca8fa65700ce57b8b00d1236291ffe9ee554629b3ac13b29bded9043
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt
+  sha256: ee70b975477106898e0c12de764917ad48ac1e43da5319b4102ae2d6fac0cfa8
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt
+  sha256: e060f7c8b8ebd2010e50c4637ec7bd621c089ec8784b7e4545980208479853f8
+impact: MC热床300.0°C被当作正常新鲜温度
+root_cause: null
+verification_runs: []
+closure: null
+duplicate_of_or_disposition: null
+blocker_and_recovery: 保持open，COORD查重/人工收件后安排Owner；修复须准确新候选独立复验，不以本轮自动关闭。

@@ -1,0 +1,117 @@
+schema_version: 1
+id: ISS-20261105-008
+revision: 1
+kind: issue
+enabled: true
+title: 模型一键载入直接启动作业
+objective: '【问题】模型一键载入直接启动作业
+
+
+  **记录：** `ISS-20261105-008`；用例：BASE-08, BASE-10；建议优先级：P1；建议Owner：ENG-UI（待COORD核定）。
+
+
+  **期望：** 手册功能3区分模型载入与点击“开始打印”；BASE-08只加载，BASE-10独立开始。
+
+
+  **观察：** 仅点击CalibrationCube.gcode“一键载入”，CDP即记录POST /api/v1/jobs/start {"model":"CalibrationCube.gcode"}，界面进入PRINTING、Layer
+  1/100、1.0%。没有点击开始打印。发现后立即调用cancel，回到IDLE。未把进度或逻辑坐标认定为物理动作。
+
+
+  **复现：** 取得新鲜采样并进入打印工作台。 → 只点击CalibrationCube的一键载入。 → 检查网络请求和作业状态，随后取消。
+
+
+  **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.png`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl`'
+source_refs:
+  submission_id: 20261105_twin55_codex_hil_issues
+  submission_revision: 1
+  instruction_anchor: instruction_4
+  submission_path: project-control/docs/work_intake/submissions/20261105_twin55_codex_hil_issues.md
+  submission_sha256: 1f90ef37d3c16ee4a37b3e612c37bca0ddbe1e36645a14eb73d0fc83586c3ae7
+  instruction_sha256: e91917b71c8b8e2c400e3c1eb7aafc9fe01952fb4842ab3cd8f4e817fb94e0f0
+  verbatim_instruction: '【问题】模型一键载入直接启动作业
+
+
+    **记录：** `ISS-20261105-008`；用例：BASE-08, BASE-10；建议优先级：P1；建议Owner：ENG-UI（待COORD核定）。
+
+
+    **期望：** 手册功能3区分模型载入与点击“开始打印”；BASE-08只加载，BASE-10独立开始。
+
+
+    **观察：** 仅点击CalibrationCube.gcode“一键载入”，CDP即记录POST /api/v1/jobs/start {"model":"CalibrationCube.gcode"}，界面进入PRINTING、Layer
+    1/100、1.0%。没有点击开始打印。发现后立即调用cancel，回到IDLE。未把进度或逻辑坐标认定为物理动作。
+
+
+    **复现：** 取得新鲜采样并进入打印工作台。 → 只点击CalibrationCube的一键载入。 → 检查网络请求和作业状态，随后取消。
+
+
+    **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.png`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl`'
+  common_constraints:
+  - 只登记本轮实际观察；不修改业务仓、不重编译、不擦写Bootloader、不关闭Issue；根因由Owner调查。BASE-24和物理观察留Stage2。
+  - 本单来自用户明确授权的独立Codex QA，不是人工逐项实测签署。现Phase1收件器只接受HUMAN（work_intake.py）；如实保留MODEL，需唯一COORD人工收取/裁决该入口限制，不能伪造身份促通过。尚未扫描、派单或关闭。
+  - 正式验收：BLOCKED；已取得的黑盒不符合见各单；Stage1未完整执行，未批准。
+  common_constraints_sha256: 2843e09970bcadd2f07396dd82e40d5ed2c1fc917843b0096b8a08013f339f1a
+demand_ref:
+  demand_id: DEM-20261105-005
+  confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
+reported_by:
+  actor_type: MODEL
+  actor_id: 01a1aa5a-e261-7e93-bda3-157643aeb234
+  source_channel: independent_codex_qa
+authorization_refs:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/read_sources.json
+  sha256: 1074cd0e9211bc48cafb745b4485f5e50d882e1a27bb94ead697f65a35d3ae55
+  basis: 用户本轮明确要求独立测试和ISS-005起提单；不是工程修复批准
+approval_refs: []
+requested_action: triage
+priority_hint: P1
+related_ids:
+  engineering_tasks:
+  - TWIN-54
+  - TWIN-55
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: ENG-UI
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true
+resolution: open
+source_task:
+  task_id: TWIN-55
+  revision: 1
+  run_id: codex_qa_01
+feature_and_case_ids:
+- BASE-08
+- BASE-10
+affected_versions:
+  buildno: build-20261105-002
+  soc-ap: 79932746d225bb115010c5545ef3f7499482e137
+  mcu-p3: 891a8bb252814c83992a49b01fbe11ba83b92a1f
+  test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+  project-control_manifest: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
+  project-control_observed: 960f079647a00864fe7913836336b2a2ee3d729a
+preconditions:
+- 本轮锁定部署；实际运行身份及限制见read_sources.json、initial_runtime.log
+- 测试工具未取得非作者独立接受，不声称完整正式HIL批准
+reproduction_steps:
+- 取得新鲜采样并进入打印工作台。
+- 只点击CalibrationCube的一键载入。
+- 检查网络请求和作业状态，随后取消。
+expected: 手册功能3区分模型载入与点击“开始打印”；BASE-08只加载，BASE-10独立开始。
+observed: 仅点击CalibrationCube.gcode“一键载入”，CDP即记录POST /api/v1/jobs/start {"model":"CalibrationCube.gcode"}，界面进入PRINTING、Layer
+  1/100、1.0%。没有点击开始打印。发现后立即调用cancel，回到IDLE。未把进度或逻辑坐标认定为物理动作。
+evidence:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt
+  sha256: ee70b975477106898e0c12de764917ad48ac1e43da5319b4102ae2d6fac0cfa8
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.png
+  sha256: 048291cf1cb0b4c89d979dc595db8062f9a85109b14313dbee70ef77a8ad432f
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl
+  sha256: 6f54c7d50c2600728bb892bd6fd60045db7aeb9a7b680fbadf9e0f3cf420b079
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl
+  sha256: 913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1
+impact: 模型一键载入直接启动作业
+root_cause: null
+verification_runs: []
+closure: null
+duplicate_of_or_disposition: null
+blocker_and_recovery: 保持open，COORD查重/人工收件后安排Owner；修复须准确新候选独立复验，不以本轮自动关闭。

@@ -1,0 +1,114 @@
+schema_version: 1
+id: ISS-20261105-014
+revision: 1
+kind: issue
+enabled: true
+title: UART断链超过3秒仍保留ONLINE及旧温度，未按引用方案哨兵降级
+objective: '【问题】UART断链超过3秒仍保留ONLINE及旧温度，未按引用方案哨兵降级
+
+
+  **记录：** `ISS-20261105-014`；用例：BASE-25, DELTA-BAUD；建议优先级：P1；建议Owner：ENG-DM（待COORD核定）。
+
+
+  **期望：** 引用整改方案HIL-06要求断链3秒内OFFLINE/哨兵、控制503；SWD外设故障独立于BASE-24物理拔USB。
+
+
+  **观察：** TH USART1置0并读回后约3.65秒，快照两节点仍ONLINE、旧温度仍数值、质量STALE、system_status=DEGRADED。MC USART2置0并读回后约3.66秒同样未打哨兵。两次控制负例均503，恢复CTRL1逐字匹配。MC故障CPU2秒窗口0.0%，只说明这个窗口；不外推物理拔线。
+
+
+  **复现：** 按uart_fault_windows.py，在NORMAL新采样基线保存CTRL1。 → 仅将指定CTRL1置0并读回，执行一次真实采样请求。 → 3秒等待后取快照与控制负例；finally精确恢复原寄存器并重新采样。
+
+
+  **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH_02.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC_cpu.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/uart_fault_windows.py`'
+source_refs:
+  submission_id: 20261105_twin55_codex_hil_issues
+  submission_revision: 1
+  instruction_anchor: instruction_10
+  submission_path: project-control/docs/work_intake/submissions/20261105_twin55_codex_hil_issues.md
+  submission_sha256: 1f90ef37d3c16ee4a37b3e612c37bca0ddbe1e36645a14eb73d0fc83586c3ae7
+  instruction_sha256: 693af11d9bc25d49e39daf50f9b0952433a3e4f2ac9be03663a51d444d76ec95
+  verbatim_instruction: '【问题】UART断链超过3秒仍保留ONLINE及旧温度，未按引用方案哨兵降级
+
+
+    **记录：** `ISS-20261105-014`；用例：BASE-25, DELTA-BAUD；建议优先级：P1；建议Owner：ENG-DM（待COORD核定）。
+
+
+    **期望：** 引用整改方案HIL-06要求断链3秒内OFFLINE/哨兵、控制503；SWD外设故障独立于BASE-24物理拔USB。
+
+
+    **观察：** TH USART1置0并读回后约3.65秒，快照两节点仍ONLINE、旧温度仍数值、质量STALE、system_status=DEGRADED。MC USART2置0并读回后约3.66秒同样未打哨兵。两次控制负例均503，恢复CTRL1逐字匹配。MC故障CPU2秒窗口0.0%，只说明这个窗口；不外推物理拔线。
+
+
+    **复现：** 按uart_fault_windows.py，在NORMAL新采样基线保存CTRL1。 → 仅将指定CTRL1置0并读回，执行一次真实采样请求。 → 3秒等待后取快照与控制负例；finally精确恢复原寄存器并重新采样。
+
+
+    **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH_02.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC_cpu.log`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/uart_fault_windows.py`'
+  common_constraints:
+  - 只登记本轮实际观察；不修改业务仓、不重编译、不擦写Bootloader、不关闭Issue；根因由Owner调查。BASE-24和物理观察留Stage2。
+  - 本单来自用户明确授权的独立Codex QA，不是人工逐项实测签署。现Phase1收件器只接受HUMAN（work_intake.py）；如实保留MODEL，需唯一COORD人工收取/裁决该入口限制，不能伪造身份促通过。尚未扫描、派单或关闭。
+  - 正式验收：BLOCKED；已取得的黑盒不符合见各单；Stage1未完整执行，未批准。
+  common_constraints_sha256: 2843e09970bcadd2f07396dd82e40d5ed2c1fc917843b0096b8a08013f339f1a
+demand_ref:
+  demand_id: DEM-20261105-005
+  confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
+reported_by:
+  actor_type: MODEL
+  actor_id: 01a1aa5a-e261-7e93-bda3-157643aeb234
+  source_channel: independent_codex_qa
+authorization_refs:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/read_sources.json
+  sha256: 1074cd0e9211bc48cafb745b4485f5e50d882e1a27bb94ead697f65a35d3ae55
+  basis: 用户本轮明确要求独立测试和ISS-005起提单；不是工程修复批准
+approval_refs: []
+requested_action: triage
+priority_hint: P1
+related_ids:
+  engineering_tasks:
+  - TWIN-54
+  - TWIN-55
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: ENG-DM
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true
+resolution: open
+source_task:
+  task_id: TWIN-55
+  revision: 1
+  run_id: codex_qa_01
+feature_and_case_ids:
+- BASE-25
+- DELTA-BAUD
+affected_versions:
+  buildno: build-20261105-002
+  soc-ap: 79932746d225bb115010c5545ef3f7499482e137
+  mcu-p3: 891a8bb252814c83992a49b01fbe11ba83b92a1f
+  test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+  project-control_manifest: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
+  project-control_observed: 960f079647a00864fe7913836336b2a2ee3d729a
+preconditions:
+- 本轮锁定部署；实际运行身份及限制见read_sources.json、initial_runtime.log
+- 测试工具未取得非作者独立接受，不声称完整正式HIL批准
+reproduction_steps:
+- 按uart_fault_windows.py，在NORMAL新采样基线保存CTRL1。
+- 仅将指定CTRL1置0并读回，执行一次真实采样请求。
+- 3秒等待后取快照与控制负例；finally精确恢复原寄存器并重新采样。
+expected: 引用整改方案HIL-06要求断链3秒内OFFLINE/哨兵、控制503；SWD外设故障独立于BASE-24物理拔USB。
+observed: TH USART1置0并读回后约3.65秒，快照两节点仍ONLINE、旧温度仍数值、质量STALE、system_status=DEGRADED。MC USART2置0并读回后约3.66秒同样未打哨兵。两次控制负例均503，恢复CTRL1逐字匹配。MC故障CPU2秒窗口0.0%，只说明这个窗口；不外推物理拔线。
+evidence:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH_02.log
+  sha256: 3e4a820516fcc3eec44e79816ecae222a043be963a8819f51dea3e5fa32bab67
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC.log
+  sha256: 29b7b4e9bbbe9293ba1991cf424789cc65249ca6c54dab793b2f537e5059bf81
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC_cpu.log
+  sha256: 73f3fcc73acee1b83634cb60ec4f58e10ff9377bfa8b868331a2fa51832bda56
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/uart_fault_windows.py
+  sha256: 4d70f6ce4bd777ce1afcbbbb49d210aa47d977650a78c348fe712c4d1a944b24
+impact: UART断链超过3秒仍保留ONLINE及旧温度，未按引用方案哨兵降级
+root_cause: null
+verification_runs: []
+closure: null
+duplicate_of_or_disposition: null
+blocker_and_recovery: 保持open，COORD查重/人工收件后安排Owner；修复须准确新候选独立复验，不以本轮自动关闭。

@@ -1,0 +1,776 @@
+{
+  "schema_version": 1,
+  "task_id": "TWIN-55",
+  "task_revision": 1,
+  "run_id": "codex_qa_01",
+  "session_id": "01a1aa5a-e261-7e93-bda3-157643aeb234",
+  "decision": "BLOCKED",
+  "observed_functional_result": "FAIL",
+  "stage1_complete": false,
+  "formal_approved_scope": [],
+  "versions": {
+    "buildno": "build-20261105-002",
+    "soc-ap": "79932746d225bb115010c5545ef3f7499482e137",
+    "mcu-p3": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+    "test_harness": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+    "project-control_manifest": "f4e45fb5cdd1d7c1fee405d9a720f19e200b126f",
+    "project-control_observed": "960f079647a00864fe7913836336b2a2ee3d729a"
+  },
+  "qa_policy_requested": "streamlined-v1",
+  "test_tools_non_author_review": null,
+  "group_counts": {
+    "FAIL": 9,
+    "BLOCKED": 21
+  },
+  "groups": [
+    {
+      "case_id": "BASE-01",
+      "status": "FAIL",
+      "observed": "干净profile显示向导；通信/传感器健康前提不成立，断料组却显示正常。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-initial.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-02",
+      "status": "BLOCKED",
+      "observed": "两UID匹配，短版本/完整固件及boot epoch映射不足；初始TH无响应，复位后取得真响应。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/MC_uid.log",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/TH_uid.log",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/TH_recovery_reset.log"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-03",
+      "status": "BLOCKED",
+      "observed": "语言/主题点击和刷新已执行；English切换生效但刷新回中文。未取得该持久化断言的冻结接受条件，记录观察。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-english.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-reload-english.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-04",
+      "status": "FAIL",
+      "observed": "离线时四路传感器全绿；真实四路触发属于Stage2。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-05",
+      "status": "BLOCKED",
+      "observed": "实际点击完成、关闭、刷新、重开已采证；前四步健康前提不满足，不算正常完整向导通过。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-05-after-finish.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-05-after-refresh.html"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-06",
+      "status": "FAIL",
+      "observed": "取得顶栏/温度面板和浏览器断网；state静态端点与新采样矛盾。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/runtime_unlisted_static.log",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-offline.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-07",
+      "status": "BLOCKED",
+      "observed": "未执行有真实运动及排险条件的急停/解除；不在未经确认场地启动运动。",
+      "evidence": [],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-08",
+      "status": "FAIL",
+      "observed": "一键载入直接start，已cancel；未交付冻结样例文件及哈希，不签模型内容正确。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-09",
+      "status": "FAIL",
+      "observed": "合法/非法扩展名、非法内容/空文件/合法恢复均实际选择；后端负例亦接受。上传上限仍未冻结。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-10",
+      "status": "BLOCKED",
+      "observed": "仅观察到模型载入隐式启动，不计正常“开始”用例；缺已冻结安全作业及物理执行依据。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-11",
+      "status": "BLOCKED",
+      "observed": "未完成安全真实作业暂停/继续；没有通过进度/ACK替代物理依据。",
+      "evidence": [],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-12",
+      "status": "BLOCKED",
+      "observed": "意外启动后cancel确认为IDLE，保存该局部事实；重复/超时/新作业及实际停止证据不全。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-13",
+      "status": "BLOCKED",
+      "observed": "没有安全冻结短作业及最终执行/物理完成依据，未执行。",
+      "evidence": [],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-14",
+      "status": "BLOCKED",
+      "observed": "空间/限位及测量前提未交接；不执行100mm或其他未经确认的运动。负向API清单亦未冻结。",
+      "evidence": [],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-15",
+      "status": "BLOCKED",
+      "observed": "回零限位/安全空间未确认，真实过程及效果留人工窗口。",
+      "evidence": [],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-16",
+      "status": "BLOCKED",
+      "observed": "未交付探针/25点实际测量的自动判据和安全前提，未触发调平。",
+      "evidence": [],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-17",
+      "status": "FAIL",
+      "observed": "合法保存已执行，隐式LOAD；合法SELECT恢复完成；配置持久化正常范围未完整接受。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-fresh-save.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-18",
+      "status": "BLOCKED",
+      "observed": "single/dual/quad UI预设已观察，实际供料及保存/刷新全链路未完成；保存有副作用。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-single-1.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-dual-50.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-quad-25.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-19",
+      "status": "FAIL",
+      "observed": "UI非法总和提示及合法恢复；API非法总和/通道权重被接受，越界slot/action变504。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-20",
+      "status": "FAIL",
+      "observed": "新采样、双端目标0及Debug/API/UI已核对；MC300°C有效性和TH ADC映射失败。无独立热测/PWM测量。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/SAFETY-target-zero.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-21",
+      "status": "BLOCKED",
+      "observed": "未交接四路自动触发夹具；肉眼/人工逐路动作归Stage2，离线假绿另记FAIL。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-22",
+      "status": "BLOCKED",
+      "observed": "网络面板已读；独立VM客户端mDNS解析/访问超时，未核实多播/网段前提，环境阻塞。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-22-network.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/mdns_independent_client.log"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-23",
+      "status": "BLOCKED",
+      "observed": "健康面板和真实UART故障已观察，24类错误码清单/触发/恢复断言缺冻结输入。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-23-health.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH_02.log",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC.log"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-25",
+      "status": "FAIL",
+      "observed": "执行TH USART1与MC USART2故障、精确恢复；3秒退化不符合。真实物理断连/全部子例未完成。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH_02.log",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC.log"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-26",
+      "status": "BLOCKED",
+      "observed": "首次/完成后刷新/重开已操作；未重启服务（部署会清日志，精确配置和排他迁移未交接）。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-reopen.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-reopen-after-complete.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "BASE-27",
+      "status": "BLOCKED",
+      "observed": "真实Chrome网络断开与恢复有截图/事件；未穷举独立SSE/HTTP/网关服务所有故障层及冻结期限。",
+      "evidence": [
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-offline.txt",
+        "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-restored.txt"
+      ],
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "J-01",
+      "status": "BLOCKED",
+      "observed": "依赖的向导、温度、运动、供料与作业正常路径失败/缺前提，未执行完整旅程。",
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "DELTA-DBG",
+      "status": "BLOCKED",
+      "observed": "已有双路真实日志和MC污染/截断失败；调试开关/慢采集/满缓冲的冻结步骤及工具未交付。",
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "DELTA-BAUD",
+      "status": "BLOCKED",
+      "observed": "VM端921600 8N1已读；双板有seq>255真实往返和UART故障；未执行冻结的290帧突发/速率不匹配/重启全部子例。",
+      "complete": false,
+      "formal_acceptance": false
+    },
+    {
+      "case_id": "DELTA-COMB",
+      "status": "BLOCKED",
+      "observed": "正常联合通信有观察且日志缺陷已提；五类复合联动定义缺失，未执行完整批次。",
+      "complete": false,
+      "formal_acceptance": false
+    }
+  ],
+  "deferred": [
+    {
+      "case_id": "BASE-24",
+      "status": "NOT_EXECUTED",
+      "stage": 2,
+      "reason": "必须真实物理拔业务USB；SWD不能替代。"
+    }
+  ],
+  "raw_http_and_action_events": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+  "independent_case_expansion": "缺全量总方案，未把草案的组表冒充已冻结的全量子例，也不把30组名称计为30项通过。",
+  "executed_or_audited_subcases": [
+    {
+      "case_id": "AUDIT-EXE-4",
+      "status": "PASS",
+      "observed": "四个运行exe SHA与manifest一致。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/initial_runtime.log",
+        "sha256": "99f3134e3fa69e7ab2d026e2e4235af63856498d73daa82e6e22d8a7942cce38"
+      }
+    },
+    {
+      "case_id": "AUDIT-WEB-3",
+      "status": "PASS",
+      "observed": "三主静态资产字节哈希一致；不含额外state文件。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/initial_runtime.log",
+        "sha256": "99f3134e3fa69e7ab2d026e2e4235af63856498d73daa82e6e22d8a7942cce38"
+      }
+    },
+    {
+      "case_id": "AUDIT-UID-2",
+      "status": "PASS",
+      "observed": "实际读出的MC/TH UID与manifest一致。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/MC_uid.log",
+        "sha256": "ef2576cf2146ea8a8d4a13e7bebd05dbf6b8d498bafffca71a5b083eea408d56"
+      }
+    },
+    {
+      "case_id": "AUDIT-FLASH-BYTES",
+      "status": "BLOCKED",
+      "observed": "应用区读回超时，未获得片上匹配证明。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+        "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+      }
+    },
+    {
+      "case_id": "BASE-01-PROFILE",
+      "status": "PASS",
+      "observed": "专用Chrome profile首次进入向导；仅此UI事实。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-initial.txt",
+        "sha256": "251e2d3a37e90d1c4806f42b75ba60d61702edeb540915562e31b9dabba7c28a"
+      }
+    },
+    {
+      "case_id": "BASE-02-IDENTITY",
+      "status": "BLOCKED",
+      "observed": "完整固件映射和动态boot epoch不足。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/read_sources.json",
+        "sha256": "1074cd0e9211bc48cafb745b4485f5e50d882e1a27bb94ead697f65a35d3ae55"
+      }
+    },
+    {
+      "case_id": "BASE-03-LANG",
+      "status": "PASS",
+      "observed": "真实点击切换为英文并恢复中文。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-english.txt",
+        "sha256": "1165fa9f1459fecaebef16893ebeee045bf497a654f99b786593b980094dd5f5"
+      }
+    },
+    {
+      "case_id": "BASE-03-PERSIST",
+      "status": "BLOCKED",
+      "observed": "刷新回中文已观察，持久化冻结需求不足，不虚定预期。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-reload-english.txt",
+        "sha256": "08acf546f5d61595c0c9bd8d9e3de415fbc1181ae668ec121daf657a8a6d510d"
+      }
+    },
+    {
+      "case_id": "BASE-04-OFFLINE-SENSOR",
+      "status": "FAIL",
+      "observed": "温度离线同时四通道在位正常。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt",
+        "sha256": "e060f7c8b8ebd2010e50c4637ec7bd621c089ec8784b7e4545980208479853f8"
+      }
+    },
+    {
+      "case_id": "BASE-05-NAVIGATION",
+      "status": "PASS",
+      "observed": "完成点击关闭向导，刷新维持关闭；仅导航事实，硬件健康前提未通过。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-05-after-refresh.html",
+        "sha256": "87eecb98edd56431d0b8a38c6dc1772f0e8cdcb38e2a678c2c36c75104afe6ec"
+      }
+    },
+    {
+      "case_id": "BASE-08-LOAD",
+      "status": "FAIL",
+      "observed": "只载入模型却发jobs/start并进入PRINTING。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt",
+        "sha256": "ee70b975477106898e0c12de764917ad48ac1e43da5319b4102ae2d6fac0cfa8"
+      }
+    },
+    {
+      "case_id": "BASE-09-VALID",
+      "status": "BLOCKED",
+      "observed": "合法文件有成功提示，但只传metadata，内容解析正确性未证。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl",
+        "sha256": "6f54c7d50c2600728bb892bd6fd60045db7aeb9a7b680fbadf9e0f3cf420b079"
+      }
+    },
+    {
+      "case_id": "BASE-09-INVALID-EXT",
+      "status": "FAIL",
+      "observed": "invalid.txt被宣称上传成功。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl",
+        "sha256": "6f54c7d50c2600728bb892bd6fd60045db7aeb9a7b680fbadf9e0f3cf420b079"
+      }
+    },
+    {
+      "case_id": "BASE-09-INVALID-CONTENT",
+      "status": "FAIL",
+      "observed": "非G-code内容invalid.gcode被宣称成功。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl",
+        "sha256": "6f54c7d50c2600728bb892bd6fd60045db7aeb9a7b680fbadf9e0f3cf420b079"
+      }
+    },
+    {
+      "case_id": "BASE-09-EMPTY",
+      "status": "FAIL",
+      "observed": "0字节empty.gcode被宣称成功。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl",
+        "sha256": "6f54c7d50c2600728bb892bd6fd60045db7aeb9a7b680fbadf9e0f3cf420b079"
+      }
+    },
+    {
+      "case_id": "BASE-09-RECOVERY",
+      "status": "BLOCKED",
+      "observed": "合法重试成功提示已记录；未验证作业内容，不签解析通过。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl",
+        "sha256": "6f54c7d50c2600728bb892bd6fd60045db7aeb9a7b680fbadf9e0f3cf420b079"
+      }
+    },
+    {
+      "case_id": "BASE-12-CANCEL-LOCAL",
+      "status": "PASS",
+      "observed": "意外start后cancel返回ok且jobs/status为IDLE；不是物理停止证明。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+        "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+      }
+    },
+    {
+      "case_id": "BASE-17-SAVE",
+      "status": "FAIL",
+      "observed": "配置保存隐式action=1/LOAD，目标2100。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl",
+        "sha256": "6f54c7d50c2600728bb892bd6fd60045db7aeb9a7b680fbadf9e0f3cf420b079"
+      }
+    },
+    {
+      "case_id": "BASE-18-PRESETS",
+      "status": "PASS",
+      "observed": "single/dual/quad可见权重各合计10000；只覆盖界面预设。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-quad-25.txt",
+        "sha256": "9e8232ff2efc22196704573b565d6d3adc316d9e56adb42ac81f80b2e6a0e578"
+      }
+    },
+    {
+      "case_id": "BASE-19-UI-SUM",
+      "status": "PASS",
+      "observed": "非法总和可见红色提示及保存失败反馈。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-negative-weight.txt",
+        "sha256": "1b7dd8c10126af06811e89a7aa943dfe66399716af86eb7b5b4561acc7ed4f8b"
+      }
+    },
+    {
+      "case_id": "BASE-19-API-SUM",
+      "status": "FAIL",
+      "observed": "total_mixing_weight=9999得到200。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+        "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+      }
+    },
+    {
+      "case_id": "BASE-19-API-WEIGHT",
+      "status": "FAIL",
+      "observed": "mixing_weight=-1/10001得到200。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+        "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+      }
+    },
+    {
+      "case_id": "BASE-19-API-SLOT",
+      "status": "FAIL",
+      "observed": "slot5未报告参数错误而进入硬件NACK/504路径。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+        "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+      }
+    },
+    {
+      "case_id": "BASE-19-API-ACTION",
+      "status": "FAIL",
+      "observed": "action=-1未报告参数错误而504。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+        "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+      }
+    },
+    {
+      "case_id": "BASE-19-API-REC",
+      "status": "PASS",
+      "observed": "合法SELECT目标0得到200并TH step_state=DONE；仅恢复事务事实。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/th_debug_qa_window.log",
+        "sha256": "eb021ca2d98018fde2f6aa96ddd3815f73208b70b3078b89009e4f18f5ecfda7"
+      }
+    },
+    {
+      "case_id": "BASE-20-MC-VALIDITY",
+      "status": "FAIL",
+      "observed": "热床300°C被标FRESH/OK/NORMAL。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+        "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+      }
+    },
+    {
+      "case_id": "BASE-20-TH-ADC",
+      "status": "FAIL",
+      "observed": "TH真实ADC非零，面板0，快照无原始值映射。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/SAFETY-target-zero.txt",
+        "sha256": "bbf9d9c3ca39a523e25c9c879665c205a368550d1f67aea379dd1f2c29d22630"
+      }
+    },
+    {
+      "case_id": "BASE-20-TARGET-ZERO",
+      "status": "PASS",
+      "observed": "两端目标归零API真实返回，Debug nozzle/bed target=0；接口占空比0，不外推电测。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+        "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+      }
+    },
+    {
+      "case_id": "BASE-22-MDNS",
+      "status": "BLOCKED",
+      "observed": "独立VM客户端解析超时，网络前提未核实。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/mdns_independent_client.log",
+        "sha256": "35c88ad9269bdc4becfa4833f8841cef8f715604446ce4ca66ea57e62514fac9"
+      }
+    },
+    {
+      "case_id": "BASE-25-TH-FAULT",
+      "status": "FAIL",
+      "observed": "切断TH USART1，3.65秒后仍ONLINE/旧温度。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH_02.log",
+        "sha256": "3e4a820516fcc3eec44e79816ecae222a043be963a8819f51dea3e5fa32bab67"
+      }
+    },
+    {
+      "case_id": "BASE-25-TH-CONTROL",
+      "status": "PASS",
+      "observed": "故障窗口filament控制503。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH_02.log",
+        "sha256": "3e4a820516fcc3eec44e79816ecae222a043be963a8819f51dea3e5fa32bab67"
+      }
+    },
+    {
+      "case_id": "BASE-25-TH-REG-RESTORE",
+      "status": "PASS",
+      "observed": "finally恢复202c，读回匹配。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH_02.log",
+        "sha256": "3e4a820516fcc3eec44e79816ecae222a043be963a8819f51dea3e5fa32bab67"
+      }
+    },
+    {
+      "case_id": "BASE-25-MC-FAULT",
+      "status": "FAIL",
+      "observed": "切断MC USART2，3.66秒后仍ONLINE/旧温度。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC.log",
+        "sha256": "29b7b4e9bbbe9293ba1991cf424789cc65249ca6c54dab793b2f537e5059bf81"
+      }
+    },
+    {
+      "case_id": "BASE-25-MC-CONTROL",
+      "status": "PASS",
+      "observed": "故障窗口filament控制503。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC.log",
+        "sha256": "29b7b4e9bbbe9293ba1991cf424789cc65249ca6c54dab793b2f537e5059bf81"
+      }
+    },
+    {
+      "case_id": "BASE-25-MC-CPU",
+      "status": "PASS",
+      "observed": "2秒故障窗口单核CPU0.0%，只覆盖所记窗口。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC_cpu.log",
+        "sha256": "73f3fcc73acee1b83634cb60ec4f58e10ff9377bfa8b868331a2fa51832bda56"
+      }
+    },
+    {
+      "case_id": "BASE-25-MC-REG-RESTORE",
+      "status": "PASS",
+      "observed": "故障finally恢复201c读回匹配；末次额外探针读受WinUSB阻塞。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC.log",
+        "sha256": "29b7b4e9bbbe9293ba1991cf424789cc65249ca6c54dab793b2f537e5059bf81"
+      }
+    },
+    {
+      "case_id": "BASE-26-REOPEN",
+      "status": "PASS",
+      "observed": "完成后重开向导入口可用；不代表服务重启范围。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-reopen-after-complete.txt",
+        "sha256": "f8985c62486a54dd3efdda6557c55131fc5add3b757e27c855526d5a2e46f1a5"
+      }
+    },
+    {
+      "case_id": "BASE-27-NETWORK",
+      "status": "BLOCKED",
+      "observed": "已执行真实Chrome网络断开/恢复；全故障分层及冻结时限未完成。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-restored.txt",
+        "sha256": "ce4c943e7183c1d76585bfee16cec72dce09d4baf6b20120a7916639e0ef9c20"
+      }
+    },
+    {
+      "case_id": "GCODE-M114",
+      "status": "PASS",
+      "observed": "只读M114公开API返回200/code0；不代表全G-code动作和物理闭环。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+        "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+      }
+    },
+    {
+      "case_id": "DELTA-DBG-NORMAL",
+      "status": "FAIL",
+      "observed": "MC裸ADC污染和trunc增加。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/debug_capture_provenance.json",
+        "sha256": "0b0a1895bed070037e6a2d54c856d8ff724fec096837e6c7b1a6f939a726f099"
+      }
+    },
+    {
+      "case_id": "DELTA-BAUD-SEQ",
+      "status": "PASS",
+      "observed": "两个Debug节点实际事务seq>255；不是290帧突发。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/debug_capture_provenance.json",
+        "sha256": "0b0a1895bed070037e6a2d54c856d8ff724fec096837e6c7b1a6f939a726f099"
+      }
+    },
+    {
+      "case_id": "DELTA-BAUD-BURST290",
+      "status": "BLOCKED",
+      "observed": "缺冻结向量/速率/成功准则与业务帧采集，未执行。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/read_sources.json",
+        "sha256": "1074cd0e9211bc48cafb745b4485f5e50d882e1a27bb94ead697f65a35d3ae55"
+      }
+    },
+    {
+      "case_id": "DELTA-COMB-FIVE",
+      "status": "BLOCKED",
+      "observed": "五类复合联动逐例定义未交付，未执行。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/read_sources.json",
+        "sha256": "1074cd0e9211bc48cafb745b4485f5e50d882e1a27bb94ead697f65a35d3ae55"
+      }
+    },
+    {
+      "case_id": "API-NEG-UNKNOWN",
+      "status": "FAIL",
+      "observed": "404声明35字节仅接收4字节，curl18。",
+      "formal_acceptance": false,
+      "evidence": {
+        "path": "project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/unknown_api_http_framing.log",
+        "sha256": "93a04a9a8ccf0a5cb5c4aeef0c102451b885a1d79c06abb5784880aaa9f3381a"
+      }
+    }
+  ],
+  "subcase_counts": {
+    "PASS": 19,
+    "BLOCKED": 9,
+    "FAIL": 16
+  },
+  "subcase_counts_note": "局部观察/操作事实及明确缺项，非已冻结全量子例计数；PASS不能提升为规格组或整机批准。"
+}

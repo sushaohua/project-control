@@ -1,0 +1,45 @@
+{
+  "mc": {
+    "source": "/mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/mc_debug_raw.log",
+    "producer": "Windows PowerShell PID 22000，作者交接的只追加采集器；本会话独立记录前缀/增量并审计，未另开COM抢线",
+    "source_total_bytes": 2522787,
+    "qa_window_start_byte": 1606948,
+    "qa_window_end_byte": 2522787,
+    "initial_prefix_unchanged": true,
+    "file_sha256": "af345197a4d846ee6700dc950387d4fe496a42ddd06c5c8cd6161f5bbac0f3f1",
+    "qa_window_sha256": "2b399c24ca8fa65700ce57b8b00d1236291ffe9ee554629b3ac13b29bded9043",
+    "adc_ss_adc_busy_count_in_qa_window": 802,
+    "seq_max_in_qa_window": 349,
+    "drop_values_in_qa_window": [
+      75
+    ],
+    "trunc_values_in_qa_window": [
+      23,
+      25,
+      27,
+      29,
+      31,
+      33,
+      35,
+      37
+    ]
+  },
+  "th": {
+    "source": "/mnt/c/Users/EDY/AppData/Local/Temp/aisoc_build_20261105_001/th_debug_raw.log",
+    "producer": "Windows PowerShell PID 22000，作者交接的只追加采集器；本会话独立记录前缀/增量并审计，未另开COM抢线",
+    "source_total_bytes": 2048572,
+    "qa_window_start_byte": 1196166,
+    "qa_window_end_byte": 2048572,
+    "initial_prefix_unchanged": true,
+    "file_sha256": "85231e1fbf6fe54d764ebbe101af9a9b613503e07297dacbf64d034d8b2b6f54",
+    "qa_window_sha256": "eb021ca2d98018fde2f6aa96ddd3815f73208b70b3078b89009e4f18f5ecfda7",
+    "adc_ss_adc_busy_count_in_qa_window": 0,
+    "seq_max_in_qa_window": 349,
+    "drop_values_in_qa_window": [
+      0
+    ],
+    "trunc_values_in_qa_window": [
+      0
+    ]
+  }
+}

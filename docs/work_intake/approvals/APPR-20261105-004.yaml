@@ -1,0 +1,27 @@
+schema_version: 1
+approval_id: APPR-20261105-004
+revision: 1
+approved_at: '2026-11-05T16:00:59+08:00'
+approved_by:
+  actor_type: HUMAN
+  actor_id: sushaohua
+  source_channel: coord_interactive_session
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+  verbatim_decision: A1=(Recommended) 批准合并修复概要（任务包 1~4 并行实施 + 任务包 5 统一重烧录部署与独立 Codex
+    QA 复验）; A2=(Recommended) 批准防冲突分批推进（PC-1 与 AP-1 立即并行；AP-2/AP-3/MCU 随本次业务修复同步内嵌并顺延收口）
+bound_confirmation:
+  confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
+  revision: 1
+  path: project-control/docs/work_intake/confirmations/CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105.yaml
+  sha256: 748c3fed9840167b08789c9db85c363cb2ec9d5d2bd8d052b7b2b83ff6fa0cae
+approved_demands:
+- demand_id: DEM-20261105-018
+  category_id: REQ-20261105-002
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1
+- demand_id: DEM-20261105-019
+  category_id: ISS-20261105-018
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1

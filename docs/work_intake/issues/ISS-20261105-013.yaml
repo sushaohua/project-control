@@ -1,0 +1,114 @@
+schema_version: 1
+id: ISS-20261105-013
+revision: 1
+kind: issue
+enabled: true
+title: 设备离线时OOBE仍将四路断料传感器标为正常
+objective: '【问题】设备离线时OOBE仍将四路断料传感器标为正常
+
+
+  **记录：** `ISS-20261105-013`；用例：BASE-01, BASE-04, BASE-21；建议优先级：P1；建议Owner：ENG-UI（待COORD核定）。
+
+
+  **期望：** BASE-04要求无效/过期/缺传感器如实降级；不能把离线设备显示成传感器检查正常。
+
+
+  **观察：** 本轮首次进入向导传感器页，MC/TH温度显示未检查/离线且顶栏硬件离线，但4通道断料组显示“正常(料丝在位)”绿色；温度面板四槽均“就绪(正常)”。没有本次四路传感器实际操作或有效新采样支撑。未推断filament_present_mask=0的物理语义。
+
+
+  **复现：** 在本轮已记录OFFLINE状态下，打开干净profile的向导。 → 下一步至传感器检测页，检查四路断料组与离线状态。
+
+
+  **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.png`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-20-panel.txt`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-initial.html`'
+source_refs:
+  submission_id: 20261105_twin55_codex_hil_issues
+  submission_revision: 1
+  instruction_anchor: instruction_9
+  submission_path: project-control/docs/work_intake/submissions/20261105_twin55_codex_hil_issues.md
+  submission_sha256: 1f90ef37d3c16ee4a37b3e612c37bca0ddbe1e36645a14eb73d0fc83586c3ae7
+  instruction_sha256: 196128636d697128735a6ff1513a73d272877b8f959c34067b9a09b90a41de4d
+  verbatim_instruction: '【问题】设备离线时OOBE仍将四路断料传感器标为正常
+
+
+    **记录：** `ISS-20261105-013`；用例：BASE-01, BASE-04, BASE-21；建议优先级：P1；建议Owner：ENG-UI（待COORD核定）。
+
+
+    **期望：** BASE-04要求无效/过期/缺传感器如实降级；不能把离线设备显示成传感器检查正常。
+
+
+    **观察：** 本轮首次进入向导传感器页，MC/TH温度显示未检查/离线且顶栏硬件离线，但4通道断料组显示“正常(料丝在位)”绿色；温度面板四槽均“就绪(正常)”。没有本次四路传感器实际操作或有效新采样支撑。未推断filament_present_mask=0的物理语义。
+
+
+    **复现：** 在本轮已记录OFFLINE状态下，打开干净profile的向导。 → 下一步至传感器检测页，检查四路断料组与离线状态。
+
+
+    **证据：** `project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.png`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-20-panel.txt`、`project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-initial.html`'
+  common_constraints:
+  - 只登记本轮实际观察；不修改业务仓、不重编译、不擦写Bootloader、不关闭Issue；根因由Owner调查。BASE-24和物理观察留Stage2。
+  - 本单来自用户明确授权的独立Codex QA，不是人工逐项实测签署。现Phase1收件器只接受HUMAN（work_intake.py）；如实保留MODEL，需唯一COORD人工收取/裁决该入口限制，不能伪造身份促通过。尚未扫描、派单或关闭。
+  - 正式验收：BLOCKED；已取得的黑盒不符合见各单；Stage1未完整执行，未批准。
+  common_constraints_sha256: 2843e09970bcadd2f07396dd82e40d5ed2c1fc917843b0096b8a08013f339f1a
+demand_ref:
+  demand_id: DEM-20261105-005
+  confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
+reported_by:
+  actor_type: MODEL
+  actor_id: 01a1aa5a-e261-7e93-bda3-157643aeb234
+  source_channel: independent_codex_qa
+authorization_refs:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/read_sources.json
+  sha256: 1074cd0e9211bc48cafb745b4485f5e50d882e1a27bb94ead697f65a35d3ae55
+  basis: 用户本轮明确要求独立测试和ISS-005起提单；不是工程修复批准
+approval_refs: []
+requested_action: triage
+priority_hint: P1
+related_ids:
+  engineering_tasks:
+  - TWIN-54
+  - TWIN-55
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: ENG-UI
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true
+resolution: open
+source_task:
+  task_id: TWIN-55
+  revision: 1
+  run_id: codex_qa_01
+feature_and_case_ids:
+- BASE-01
+- BASE-04
+- BASE-21
+affected_versions:
+  buildno: build-20261105-002
+  soc-ap: 79932746d225bb115010c5545ef3f7499482e137
+  mcu-p3: 891a8bb252814c83992a49b01fbe11ba83b92a1f
+  test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+  project-control_manifest: f4e45fb5cdd1d7c1fee405d9a720f19e200b126f
+  project-control_observed: 960f079647a00864fe7913836336b2a2ee3d729a
+preconditions:
+- 本轮锁定部署；实际运行身份及限制见read_sources.json、initial_runtime.log
+- 测试工具未取得非作者独立接受，不声称完整正式HIL批准
+reproduction_steps:
+- 在本轮已记录OFFLINE状态下，打开干净profile的向导。
+- 下一步至传感器检测页，检查四路断料组与离线状态。
+expected: BASE-04要求无效/过期/缺传感器如实降级；不能把离线设备显示成传感器检查正常。
+observed: 本轮首次进入向导传感器页，MC/TH温度显示未检查/离线且顶栏硬件离线，但4通道断料组显示“正常(料丝在位)”绿色；温度面板四槽均“就绪(正常)”。没有本次四路传感器实际操作或有效新采样支撑。未推断filament_present_mask=0的物理语义。
+evidence:
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt
+  sha256: e060f7c8b8ebd2010e50c4637ec7bd621c089ec8784b7e4545980208479853f8
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.png
+  sha256: 87a11544f1a52117caa676d42ba6418342127c58534d06b751fd866bdbf7df01
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-20-panel.txt
+  sha256: f579d76e8caa5814aeece955d3795b49947692d4d61058ce3866153705695f1d
+- path: project-control/docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-initial.html
+  sha256: 4ade8608e1099b0b4006745304a9e29db1d1eb43dce623b215ec917ac204b9a6
+impact: 设备离线时OOBE仍将四路断料传感器标为正常
+root_cause: null
+verification_runs: []
+closure: null
+duplicate_of_or_disposition: null
+blocker_and_recovery: 保持open，COORD查重/人工收件后安排Owner；修复须准确新候选独立复验，不以本轮自动关闭。

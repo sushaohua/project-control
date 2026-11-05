@@ -1,0 +1,219 @@
+schema_version: 1
+id: REQ-20261105-002
+revision: 2
+kind: requirement
+enabled: true
+title: 对 ISS-20261105-005～017 分类收件，由 ARCH 提交一份合并修复概要供用户确认，再按角色实施和独立验收。
+objective: '【需求】对 ISS-20261105-005～017 分类收件，由 ARCH 提交一份合并修复概要供用户确认，再按角色实施和独立验收。
+
+
+  ### 一、先核实并分类
+
+
+  读取[十三项原始提单](20261105_twin55_codex_hil_issues.md)及其引用的原始证据，按需核对当前候选、相关代码和已接受契约。以下为处置起点，不代替实际
+  ARCH 技术交付或正式 QA 接受；保留观察事实、根因判断和未验证项的区别。
+
+
+  | ISS 编号后缀 | 分类与处理要求 |
+
+  | --- | --- |
+
+  | 005 | 验收准备/工具缺口，由 QA 补齐必要用例、期限、工具及复核输入；核实指定文件名、290 帧等要求的接受依据，不仅因文件名缺失就派业务代码返工。
+  |
+
+  | 006 | 分开静态 state 返回旧状态的功能缺陷，与 PID/启动代次更新的交接缺口；重新启动本身不当作代码缺陷。 |
+
+  | 007 | 核实并修复保存配置隐式发送 LOAD 和默认 210°C 目标的副作用；已有记录不证明实际出料或加热。 |
+
+  | 008 | 核实并修复模型载入直接启动作业，区分载入与用户点击开始。 |
+
+  | 009 | 核实并修复上传只提交名称/大小、未完成内容接收与校验却返回成功的问题。 |
+
+  | 010 | 核实并修复后端参数准入和错误映射；硬件返回 NACK 本身可以是正确保护。 |
+
+  | 011 | 处理超出热床适用范围仍被标为健康的有效性问题；真实温度、传感器或算法根因继续查证，不直接认定数据伪造。 |
+
+  | 012 | 核实 ADC 数据到公开接口/界面的映射缺口及默认 0 的误导；按已接受接口设计处理，不直接归责于固件采样或擅自扩大协议。 |
+
+  | 013 | 核实并修复无有效新采样或设备离线时传感器显示正常的假健康状态。 |
+
+  | 014 | 核实并修复断链后在线状态和温度失效未满足已接受期限的部分；控制返回 503 的有效局部事实保留。 |
+
+  | 015 | 处理裸日志交织破坏结构化日志的问题；截断按具体窗口分析，不将历史 drop 计数认定为本轮新增丢帧，也不外推为压力测试失败。 |
+
+  | 016 | 固定 Boot ID 按协议启动代次缺陷处理；固件短标识/完整制品映射缺失作为交接补齐。版本字符串不同本身不判缺陷，片上读回超时也不直接证明刷错固件。
+  |
+
+  | 017 | 核实并修复 HTTP 错误响应正文截断和 Content-Length 不一致；未知接口返回 404 本身正常。 |
+
+
+  ### 二、由 ARCH 给出合并修复概要
+
+
+  实际委派 ARCH 核实技术事实并交付一份简短概要，列明已确认缺陷、共同根因、最小修改范围、执行角色、接口影响、依赖及定向验收方法。按共同修改路径和实际根因归并角色任务，保留每个
+  ISS 的关联；不把十三个编号机械变成十三轮串行审批。
+
+
+  COORD 负责记录引用、核对输入和安排排程，不在主会话探索业务源码代替 ARCH，也不为通过检查器自行改写技术字段。005 的准备工作可与不依赖它的已明确事项独立推进。
+
+
+  先将该合并概要交用户一次确认。概要通过后，按批准范围委派对应 ENG/INTEGRATOR；需求、接口或物理范围实质变化时说明差异。
+
+
+  ### 三、实施优先级与范围
+
+
+  优先处理 007、008、010、011、013、014，解决误动作、参数准入、假健康和断连降级；其余按实际依赖安排。保持最小修改，不只修改提示、测试预期或日志制造通过。同一修改范围避免多人并发写入，唯一物理台架按排他窗口使用。
+
+
+  ### 四、独立验收与收件
+
+
+  新候选由独立 QA 按修复差异、相关负例、恢复和必要回归验证，沿用准确服务器候选、受控执行及独立审阅分工；真实硬件效果的范围保留真实 HIL。QA 新增用例、预期或工具仍由非作者检查，不默认二次审每份
+  QA 报告。
+
+
+  完整 basecase 中尚未执行的范围继续保留，定向修复回归不替代整轮接受；无关改动不默认重复全部测试。保留各候选/run 的原始证据、已验证局部事实及未完成项，不混拼成整轮通过。
+
+
+  COORD 取得所用策略的必需实际接受后，按范围收件并更新正式任务和 Board。首先返回本单与原需求/ISS 的关联、分类处置进度、ARCH 概要准备状态及必要待决项；不能把文件存在或本单已读当作已批准修复或测试通过。
+
+
+  相关资料：[Stage 1 原始报告](../../evidence/twin/TWIN-55/runs/codex_qa_01/stage1_qa_report.md)、[完整闭环测试收件单](20261105_web_hmi_full_closed_loop_qa.md)、[basecase](../../planning/qa_web_hmi_basecases_20261103.md)。'
+source_refs:
+  submission_id: 20261105_twin55_issues_triage_and_remediation_followup
+  submission_revision: 1
+  instruction_anchor: instruction_1
+  submission_path: project-control/docs/work_intake/submissions/20261105_twin55_issues_triage_and_remediation_followup.md
+  submission_sha256: 338ae2674a8aa5382d777a5f1349e7baf6e31c019692b257b1279b82dcfbddd3
+  instruction_sha256: 1f1038d3d944784fc19d56e9719f11108a93efca9c3fc803e56c7eba3b4f835e
+  verbatim_instruction: '【需求】对 ISS-20261105-005～017 分类收件，由 ARCH 提交一份合并修复概要供用户确认，再按角色实施和独立验收。
+
+
+    ### 一、先核实并分类
+
+
+    读取[十三项原始提单](20261105_twin55_codex_hil_issues.md)及其引用的原始证据，按需核对当前候选、相关代码和已接受契约。以下为处置起点，不代替实际
+    ARCH 技术交付或正式 QA 接受；保留观察事实、根因判断和未验证项的区别。
+
+
+    | ISS 编号后缀 | 分类与处理要求 |
+
+    | --- | --- |
+
+    | 005 | 验收准备/工具缺口，由 QA 补齐必要用例、期限、工具及复核输入；核实指定文件名、290 帧等要求的接受依据，不仅因文件名缺失就派业务代码返工。
+    |
+
+    | 006 | 分开静态 state 返回旧状态的功能缺陷，与 PID/启动代次更新的交接缺口；重新启动本身不当作代码缺陷。 |
+
+    | 007 | 核实并修复保存配置隐式发送 LOAD 和默认 210°C 目标的副作用；已有记录不证明实际出料或加热。 |
+
+    | 008 | 核实并修复模型载入直接启动作业，区分载入与用户点击开始。 |
+
+    | 009 | 核实并修复上传只提交名称/大小、未完成内容接收与校验却返回成功的问题。 |
+
+    | 010 | 核实并修复后端参数准入和错误映射；硬件返回 NACK 本身可以是正确保护。 |
+
+    | 011 | 处理超出热床适用范围仍被标为健康的有效性问题；真实温度、传感器或算法根因继续查证，不直接认定数据伪造。 |
+
+    | 012 | 核实 ADC 数据到公开接口/界面的映射缺口及默认 0 的误导；按已接受接口设计处理，不直接归责于固件采样或擅自扩大协议。 |
+
+    | 013 | 核实并修复无有效新采样或设备离线时传感器显示正常的假健康状态。 |
+
+    | 014 | 核实并修复断链后在线状态和温度失效未满足已接受期限的部分；控制返回 503 的有效局部事实保留。 |
+
+    | 015 | 处理裸日志交织破坏结构化日志的问题；截断按具体窗口分析，不将历史 drop 计数认定为本轮新增丢帧，也不外推为压力测试失败。 |
+
+    | 016 | 固定 Boot ID 按协议启动代次缺陷处理；固件短标识/完整制品映射缺失作为交接补齐。版本字符串不同本身不判缺陷，片上读回超时也不直接证明刷错固件。
+    |
+
+    | 017 | 核实并修复 HTTP 错误响应正文截断和 Content-Length 不一致；未知接口返回 404 本身正常。 |
+
+
+    ### 二、由 ARCH 给出合并修复概要
+
+
+    实际委派 ARCH 核实技术事实并交付一份简短概要，列明已确认缺陷、共同根因、最小修改范围、执行角色、接口影响、依赖及定向验收方法。按共同修改路径和实际根因归并角色任务，保留每个
+    ISS 的关联；不把十三个编号机械变成十三轮串行审批。
+
+
+    COORD 负责记录引用、核对输入和安排排程，不在主会话探索业务源码代替 ARCH，也不为通过检查器自行改写技术字段。005 的准备工作可与不依赖它的已明确事项独立推进。
+
+
+    先将该合并概要交用户一次确认。概要通过后，按批准范围委派对应 ENG/INTEGRATOR；需求、接口或物理范围实质变化时说明差异。
+
+
+    ### 三、实施优先级与范围
+
+
+    优先处理 007、008、010、011、013、014，解决误动作、参数准入、假健康和断连降级；其余按实际依赖安排。保持最小修改，不只修改提示、测试预期或日志制造通过。同一修改范围避免多人并发写入，唯一物理台架按排他窗口使用。
+
+
+    ### 四、独立验收与收件
+
+
+    新候选由独立 QA 按修复差异、相关负例、恢复和必要回归验证，沿用准确服务器候选、受控执行及独立审阅分工；真实硬件效果的范围保留真实 HIL。QA 新增用例、预期或工具仍由非作者检查，不默认二次审每份
+    QA 报告。
+
+
+    完整 basecase 中尚未执行的范围继续保留，定向修复回归不替代整轮接受；无关改动不默认重复全部测试。保留各候选/run 的原始证据、已验证局部事实及未完成项，不混拼成整轮通过。
+
+
+    COORD 取得所用策略的必需实际接受后，按范围收件并更新正式任务和 Board。首先返回本单与原需求/ISS 的关联、分类处置进度、ARCH 概要准备状态及必要待决项；不能把文件存在或本单已读当作已批准修复或测试通过。
+
+
+    相关资料：[Stage 1 原始报告](../../evidence/twin/TWIN-55/runs/codex_qa_01/stage1_qa_report.md)、[完整闭环测试收件单](20261105_web_hmi_full_closed_loop_qa.md)、[basecase](../../planning/qa_web_hmi_basecases_20261103.md)。'
+  common_constraints:
+  - 提交人及日期：sushaohua，2026-11-05；用户要求将助理给出的 COORD 处置指令写入 submissions，由现有唯一 COORD 读取。
+  - 本单是对完整闭环 QA 需求 `REQ-20261105-001` / `DEM-20261105-005` 及 ISS-20261105-005～017
+    的处置补充，先关联原记录；保留原始 QA 来源和证据，不重复生成这十三项缺陷或重复派单。关联任务包括 TWIN-54、TWIN-55，具体承接卡由 COORD
+    查重确定。
+  - 本单先推进分类及一份合并修复概要，交用户一次确认后再按批准范围修复。已接受且范围未变的输入和授权沿用，不逐项重复询问。
+  - 沿用现有环境、排他资源窗口、streamlined-v1、加热输出 0% 及硬件保护要求；烧录和物理动作按现有具体授权执行。
+  - 根仓与 project-control 的合并继续保持“只准备、暂不切换”，不影响运行中的 COORD/QA。本次助理仅新增本单，不修改既有 ISS、正式任务、批准或
+    Board 状态，不启动测试。
+  common_constraints_sha256: 828d7baf3734187c26e07c3f64c084f4b2de3629eecd90621ace0137d53360a8
+demand_ref:
+  demand_id: DEM-20261105-018
+  confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
+  confirmation_revision: 1
+  confirmation_path: project-control/docs/work_intake/confirmations/CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105.yaml
+  confirmation_sha256: 748c3fed9840167b08789c9db85c363cb2ec9d5d2bd8d052b7b2b83ff6fa0cae
+reported_by:
+  actor_type: HUMAN
+  actor_id: human_markdown_author
+  source_channel: markdown_submission
+authorization_refs:
+- path: project-control/docs/work_intake/submissions/20261105_twin55_issues_triage_and_remediation_followup.md
+  revision: 1
+  sha256: 338ae2674a8aa5382d777a5f1349e7baf6e31c019692b257b1279b82dcfbddd3
+approval_refs:
+- approval_id: APPR-20261105-004
+  revision: 1
+  path: project-control/docs/work_intake/approvals/APPR-20261105-004.yaml
+  sha256: 9f76dc72fa3dd663f6e88fb0254035308c3c28e849c35246daa666929e4287bb
+  approved_at: '2026-11-05T16:00:59+08:00'
+  approved_by: sushaohua
+requested_action: triage
+priority_hint: P2
+related_ids:
+  engineering_tasks:
+  - TWIN-54
+  - TWIN-55
+  - TWIN-57
+  - TWIN-58
+  - TWIN-60
+  - TWIN-61
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: INTEGRATOR
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: false
+arch_breakdown:
+  id: ARCH-PLAN-TWIN55-ISS-005-017-20261105
+  revision: 1
+  path: project-control/docs/architecture/twin55_issues_005_017_consolidated_remediation_plan_20261105.md
+  sha256: 5bcfbaf2ca96d2bba58abab17b3368c243235f778e0bd99a2293a136ee50ee4d
+  author_session: ef428595-f4d6-46a7-9d12-07e1fd215641

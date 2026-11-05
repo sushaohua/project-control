@@ -1,0 +1,123 @@
+{
+  "executed": "只调用字段/来源校验；未执行收件扫描或状态变更",
+  "reporter_identity": "MODEL，保持真实；不修改规则促通过",
+  "records": [
+    {
+      "id": "ISS-20261105-005",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-006",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-007",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-008",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-009",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-010",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-011",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-012",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-013",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-014",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-015",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-016",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    },
+    {
+      "id": "ISS-20261105-017",
+      "structural_fields": "PASS",
+      "source_sha256_match": true,
+      "evidence_hashes_match": true,
+      "intake_refs": "BLOCKED",
+      "reason": "reported_by must identify an authentic HUMAN actor",
+      "code": "NON_HUMAN_SUBMITTER"
+    }
+  ]
+}

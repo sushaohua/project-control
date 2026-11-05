@@ -1,0 +1,1246 @@
+{
+  "root": "/home/sushaohua/workspace/ai_soc_project/project-control",
+  "files": [
+    {
+      "path": "docs/evidence/twin/TWIN-54/runs/codex_qa_01/handoff_audit_results.json",
+      "size_bytes": 3251,
+      "sha256": "6101a42f3e3d2300ccb848f0e17aa65e967cb92801a3072f9f6049370e782e5c"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-54/runs/codex_qa_01/qa_review_report.md",
+      "size_bytes": 4118,
+      "sha256": "494c24d88ec9fd25d9f540c631d32ae597145a0d962852c10ae72f1cb7396e94"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-54/runs/codex_qa_01/served_app.js",
+      "size_bytes": 86764,
+      "sha256": "b61b372f286b2dd5c89de33b6dd57e55fc5d6a30f82b96dd077ab292c99cea29"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-54/runs/codex_qa_01/served_index.html",
+      "size_bytes": 66326,
+      "sha256": "bd241a24e9fb64e0fdd16b0f84def5e6fe4397cdc13f721c605e7a3a02c90131"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-54/runs/codex_qa_01/served_styles.css",
+      "size_bytes": 34746,
+      "sha256": "b750052bcd4ca83602d610c647a0e5fb6e11a78de22947455a95ca7efb91c3a1"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-initial.html",
+      "size_bytes": 66721,
+      "sha256": "4ade8608e1099b0b4006745304a9e29db1d1eb43dce623b215ec917ac204b9a6"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-initial.png",
+      "size_bytes": 57734,
+      "sha256": "cd608d1140975e421f7f12a14de0d6b08b57784a06fcec0ca96d342f0a751786"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-initial.txt",
+      "size_bytes": 1734,
+      "sha256": "251e2d3a37e90d1c4806f42b75ba60d61702edeb540915562e31b9dabba7c28a"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-language.html",
+      "size_bytes": 66728,
+      "sha256": "85672645f9baf2cf788ed745b55a7e9c416c64162149e0a6842feac635ca46ce"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-language.png",
+      "size_bytes": 56145,
+      "sha256": "eb18ba2a86662bc6c9e48961099f8074b3625343189a1d5cc956a27ed1323890"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-01-language.txt",
+      "size_bytes": 1543,
+      "sha256": "985de049f604b6a7f393d74671d7060e37d172e5fc3a1979bd4e2647338bcf1b"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-02-selfcheck.html",
+      "size_bytes": 66728,
+      "sha256": "2e9cac65b268ade71c4e16b98d4ddb409a73fc43b3a9abca24d9772990e56432"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-02-selfcheck.png",
+      "size_bytes": 62009,
+      "sha256": "b713dc4b20a0e3a6368c476d183ba86d10491dd85e13b445c3c5564afb704fa3"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-02-selfcheck.txt",
+      "size_bytes": 1747,
+      "sha256": "299c3e7be7f87e68a7d83a78da1e4ecf71c15e3ce99a2e504a022e2b1308dfb3"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-chinese-recovery.html",
+      "size_bytes": 66721,
+      "sha256": "78575c84f4d5bedb738596bc87a5877875651228ce366b60e9a0b4c42a6d7706"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-chinese-recovery.png",
+      "size_bytes": 67976,
+      "sha256": "a5803a6baa573e51cb7eea612e48a40f113144b8ba4a82871611354f0594cdf6"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-chinese-recovery.txt",
+      "size_bytes": 1734,
+      "sha256": "08acf546f5d61595c0c9bd8d9e3de415fbc1181ae668ec121daf657a8a6d510d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-english.html",
+      "size_bytes": 66611,
+      "sha256": "1af633c1dc49e6c5b3552308f8c8b9c388bef698c7592b8f44a8376fa75a7eff"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-english.png",
+      "size_bytes": 67377,
+      "sha256": "4c7953b04fd1750f3194296e507ea02be4a67e24f31834906dc1e12c9114f417"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-english.txt",
+      "size_bytes": 1164,
+      "sha256": "1165fa9f1459fecaebef16893ebeee045bf497a654f99b786593b980094dd5f5"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-reload-english.html",
+      "size_bytes": 66721,
+      "sha256": "78575c84f4d5bedb738596bc87a5877875651228ce366b60e9a0b4c42a6d7706"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-reload-english.png",
+      "size_bytes": 67893,
+      "sha256": "a861dfa165139bea97f6d3debcbac3602b15c2813949ad68bf59457745713e4d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-reload-english.txt",
+      "size_bytes": 1734,
+      "sha256": "08acf546f5d61595c0c9bd8d9e3de415fbc1181ae668ec121daf657a8a6d510d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-reload-theme.html",
+      "size_bytes": 66721,
+      "sha256": "78575c84f4d5bedb738596bc87a5877875651228ce366b60e9a0b4c42a6d7706"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-reload-theme.png",
+      "size_bytes": 68923,
+      "sha256": "5403f3c644aab7d3ee570fac866e968f8a88e14d0f8244a48c61a6fef56870d7"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-reload-theme.txt",
+      "size_bytes": 1734,
+      "sha256": "08acf546f5d61595c0c9bd8d9e3de415fbc1181ae668ec121daf657a8a6d510d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-theme-recovery.html",
+      "size_bytes": 66721,
+      "sha256": "902751a46440f2f77001122a188ec21c287d5d7cbcfa20146708e8a8ce23b46f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-theme-recovery.png",
+      "size_bytes": 95371,
+      "sha256": "4eacdd61873c75788a5c43a447f13ad65714597c005907d0d89aa84b7334f420"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-theme-recovery.txt",
+      "size_bytes": 1244,
+      "sha256": "e8d813aa4a3bcfc57a8f90f6f5bc6e2677b1e1e9d19ef9116992aadc3af2d456"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-theme.html",
+      "size_bytes": 66721,
+      "sha256": "902751a46440f2f77001122a188ec21c287d5d7cbcfa20146708e8a8ce23b46f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-theme.png",
+      "size_bytes": 96903,
+      "sha256": "7ba25717b1bb022841776c3023875ad36f2c153452f97ffa93962a56d160b35b"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-03-theme.txt",
+      "size_bytes": 1244,
+      "sha256": "e8d813aa4a3bcfc57a8f90f6f5bc6e2677b1e1e9d19ef9116992aadc3af2d456"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-close.html",
+      "size_bytes": 66728,
+      "sha256": "90062b01e11999c06dc204d1901e301a514dc05372e271fb596fd1a7c67fa3cd"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-close.png",
+      "size_bytes": 88721,
+      "sha256": "cdded246d6143e87be6c5f8c5d063edd9e582c88aa71c685c6dc0fe7b6a7a2fb"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-close.txt",
+      "size_bytes": 1244,
+      "sha256": "3c3f5549538bcc7948ba7127c1d604a6910c054193b2f8bd5df76bd3cde05bd9"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.html",
+      "size_bytes": 66728,
+      "sha256": "91396c9b38098dc08b490ecc18de0aabce1be8b878dfee53a79a5c151186f455"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.png",
+      "size_bytes": 69139,
+      "sha256": "87a11544f1a52117caa676d42ba6418342127c58534d06b751fd866bdbf7df01"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-04-sensors.txt",
+      "size_bytes": 1813,
+      "sha256": "e060f7c8b8ebd2010e50c4637ec7bd621c089ec8784b7e4545980208479853f8"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-05-after-finish.html",
+      "size_bytes": 66834,
+      "sha256": "bcba4a3f115f8f5c610922b00416a9cda16f9fe995bb76513d7b5efec1b5e779"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-05-after-finish.png",
+      "size_bytes": 82550,
+      "sha256": "95609f1967fe285db9d5a72b844994bb3b34d06e6e5924402626b2d9a537313c"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-05-after-finish.txt",
+      "size_bytes": 1304,
+      "sha256": "6efbd08f0b592485cec36e97728dc8afbf13a979f86124f2db47ea89cf5c05ae"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-05-after-refresh.html",
+      "size_bytes": 66698,
+      "sha256": "87eecb98edd56431d0b8a38c6dc1772f0e8cdcb38e2a678c2c36c75104afe6ec"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-05-after-refresh.png",
+      "size_bytes": 80769,
+      "sha256": "e7c09bb40d7f04848fcaf6103ea6a1a6287489c0c8049fefed8a6aad4268fdc6"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-05-after-refresh.txt",
+      "size_bytes": 1251,
+      "sha256": "ce4c943e7183c1d76585bfee16cec72dce09d4baf6b20120a7916639e0ef9c20"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-cube.html",
+      "size_bytes": 66925,
+      "sha256": "45c4f35897b37b8513946fb06e67203d4d3ab3b3fcf136f643536a1f87e8fdad"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-cube.png",
+      "size_bytes": 80710,
+      "sha256": "7d6e3b8df4e9e3eb1ada76eb7c5d41d31bb4bf91736dfcd7a1c88897d3e08fd0"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-cube.txt",
+      "size_bytes": 1340,
+      "sha256": "2c35e0eb216e3a724e24c1580241a16bf257c8a6e4ff1010aecd30004994b7eb"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-dashboard.html",
+      "size_bytes": 66787,
+      "sha256": "90d83b06983555c0e4ac52e5f5e560590cd66cc299661cc9bc19a509f3bd21f1"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-dashboard.png",
+      "size_bytes": 89882,
+      "sha256": "3b3df940a8ca18ff6b5d5330d9e1aafed3d4d922641298e64246fbbe8134d8be"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-dashboard.txt",
+      "size_bytes": 1244,
+      "sha256": "df5aefcc3a78100edd5e54f90d5f9d692c58054dc0f54f269a199560e636953e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.html",
+      "size_bytes": 66533,
+      "sha256": "434a39c9ab4e3da548fbed0931331d91091ec1e22a8d6f7dd7cd2c3242fe92d6"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.png",
+      "size_bytes": 80074,
+      "sha256": "048291cf1cb0b4c89d979dc595db8062f9a85109b14313dbee70ef77a8ad432f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-08-fresh-cube.txt",
+      "size_bytes": 1246,
+      "sha256": "ee70b975477106898e0c12de764917ad48ac1e43da5319b4102ae2d6fac0cfa8"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-empty.gcode.html",
+      "size_bytes": 66925,
+      "sha256": "45c4f35897b37b8513946fb06e67203d4d3ab3b3fcf136f643536a1f87e8fdad"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-empty.gcode.png",
+      "size_bytes": 80710,
+      "sha256": "7d6e3b8df4e9e3eb1ada76eb7c5d41d31bb4bf91736dfcd7a1c88897d3e08fd0"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-empty.gcode.txt",
+      "size_bytes": 1340,
+      "sha256": "2c35e0eb216e3a724e24c1580241a16bf257c8a6e4ff1010aecd30004994b7eb"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-empty.gcode.html",
+      "size_bytes": 66338,
+      "sha256": "cd1b89d4b9520b84c69503e139db09ddc352f88104be06a7f204845cbdea806a"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-empty.gcode.png",
+      "size_bytes": 86089,
+      "sha256": "fb86e93f5254b5c5f7b2afc1a6be94bc565d3230f43b560a73b6ffa1f431f614"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-empty.gcode.txt",
+      "size_bytes": 1164,
+      "sha256": "6181bc2d4ceb58da347c66f9aba5805c358ed25218b17b73d9eefc535f7e8083"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-invalid.gcode.html",
+      "size_bytes": 66326,
+      "sha256": "f026377b9567450dac8f5640f465c58f3c2cb20f4d2a07031e668fd26801649b"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-invalid.gcode.png",
+      "size_bytes": 86585,
+      "sha256": "9cf37473d49965d4083ded17bc27ef7239fcb9eed0008bc23d3f227cc8a12568"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-invalid.gcode.txt",
+      "size_bytes": 1164,
+      "sha256": "6ae8abac31823744830c9e57aee6008e44d9655523f2dec3671dafa4f89e9b55"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-invalid.txt.html",
+      "size_bytes": 66476,
+      "sha256": "5001aac976b5d7bfc58701c433ba30229d221f12959e8d1e837355f56046f4f4"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-invalid.txt.png",
+      "size_bytes": 96719,
+      "sha256": "6e0ac26ab8fcb8412f3c98f01c9e53e81e0854a11c59a607e58b000d4220d88f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-invalid.txt.txt",
+      "size_bytes": 1260,
+      "sha256": "8592b240a363401539c210f06928531103d6427a9a188612f61af376a28a2e8e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-valid.gcode.html",
+      "size_bytes": 66326,
+      "sha256": "9254df357ab515e0c05bd42f49de010c1c5a8406c47aa5f8ec106917bf987d6d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-valid.gcode.png",
+      "size_bytes": 87296,
+      "sha256": "e26bda87cc118590da2b31e9573a6fb8225dc6ed36a22214fa4b202d45f37ebf"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-fresh-valid.gcode.txt",
+      "size_bytes": 1164,
+      "sha256": "9b1cb95a42872cd62bbd0c68b0445c012be76f1d735f961d572ab1865418dd9e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-invalid.gcode.html",
+      "size_bytes": 66925,
+      "sha256": "45c4f35897b37b8513946fb06e67203d4d3ab3b3fcf136f643536a1f87e8fdad"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-invalid.gcode.png",
+      "size_bytes": 80710,
+      "sha256": "7d6e3b8df4e9e3eb1ada76eb7c5d41d31bb4bf91736dfcd7a1c88897d3e08fd0"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-invalid.gcode.txt",
+      "size_bytes": 1340,
+      "sha256": "2c35e0eb216e3a724e24c1580241a16bf257c8a6e4ff1010aecd30004994b7eb"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-invalid.txt.html",
+      "size_bytes": 66925,
+      "sha256": "45c4f35897b37b8513946fb06e67203d4d3ab3b3fcf136f643536a1f87e8fdad"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-invalid.txt.png",
+      "size_bytes": 80710,
+      "sha256": "7d6e3b8df4e9e3eb1ada76eb7c5d41d31bb4bf91736dfcd7a1c88897d3e08fd0"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-invalid.txt.txt",
+      "size_bytes": 1340,
+      "sha256": "2c35e0eb216e3a724e24c1580241a16bf257c8a6e4ff1010aecd30004994b7eb"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-valid.gcode.html",
+      "size_bytes": 66925,
+      "sha256": "45c4f35897b37b8513946fb06e67203d4d3ab3b3fcf136f643536a1f87e8fdad"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-valid.gcode.png",
+      "size_bytes": 80710,
+      "sha256": "7d6e3b8df4e9e3eb1ada76eb7c5d41d31bb4bf91736dfcd7a1c88897d3e08fd0"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-09-valid.gcode.txt",
+      "size_bytes": 1340,
+      "sha256": "2c35e0eb216e3a724e24c1580241a16bf257c8a6e4ff1010aecd30004994b7eb"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-fresh-save.html",
+      "size_bytes": 66472,
+      "sha256": "a791a7050daac4209e906a7a6711001ac0f92b0ff64df53afb87166427351997"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-fresh-save.png",
+      "size_bytes": 61936,
+      "sha256": "eb3c5c4063a972abe2e5241559b0b0f7d414d3919f0514bc561055a5c96f3d8f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-fresh-save.txt",
+      "size_bytes": 1511,
+      "sha256": "4707178fd0769d7d29c0a779e72038d23792a13e6c9622db3bd11ba06e99d8c5"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-save-valid.html",
+      "size_bytes": 66925,
+      "sha256": "9aadf4a8922dd0a07be76ea0490d9c80f1617033cf635fe74874da0164c0307e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-save-valid.png",
+      "size_bytes": 66321,
+      "sha256": "a44c90d21bb3af9b50c02a7b7bde53ac3c26028651f0624d0b37cb6c080e3fd6"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-save-valid.txt",
+      "size_bytes": 1658,
+      "sha256": "13740970ce5f7c89f8584d8d740cc1d3a8a9143bd6e5632ed6edba9de7e96440"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-slots.html",
+      "size_bytes": 66331,
+      "sha256": "09adc0986a1dc3b821b53bb7e37ee6d1fcc719109cc698273c2c9e56ec2ea60e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-slots.png",
+      "size_bytes": 86605,
+      "sha256": "3c24e955604ed88622148bf301b0f44d4e20a7b4bd0dd4f22399e49d8acd9320"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-17-slots.txt",
+      "size_bytes": 1442,
+      "sha256": "19275ed3bc3df51093cec564196c631e70e2e6c64a4e1fdac3233ee75cef53b9"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-dual-50.html",
+      "size_bytes": 66831,
+      "sha256": "668446f809a0cf67997c4f4cdc03aa2a2928973727c0e948ba415916d33e3df7"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-dual-50.png",
+      "size_bytes": 58259,
+      "sha256": "e1678ea6e80ec7bcba7d1c194e8d9e8b6b43fd01111cbee9d12a7db17d435a84"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-dual-50.txt",
+      "size_bytes": 1531,
+      "sha256": "1b11cbcda83616364e844a82817dcd46848d5b85b426f821ab673b044db93578"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-quad-25.html",
+      "size_bytes": 66833,
+      "sha256": "7b5079a413315bc801dd9e10b2c85fe23de34b3eab1ab08c492cc8e8f2eecc8d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-quad-25.png",
+      "size_bytes": 59282,
+      "sha256": "11966d7ae72df9d0ffa808b76b8908e3192dcc182a5370c4c9985c8391bee3bf"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-quad-25.txt",
+      "size_bytes": 1533,
+      "sha256": "9e8232ff2efc22196704573b565d6d3adc316d9e56adb42ac81f80b2e6a0e578"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-single-1.html",
+      "size_bytes": 66307,
+      "sha256": "2ae421d018e6af7cc7d237b76111c59f219165c156c136c45011f5d95baa60f3"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-single-1.png",
+      "size_bytes": 73874,
+      "sha256": "b81e7ae39dccbed849eddb6402ca6f79ce9e32e96c8208152f23b5b5d93f4e07"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-18-single-1.txt",
+      "size_bytes": 1442,
+      "sha256": "19275ed3bc3df51093cec564196c631e70e2e6c64a4e1fdac3233ee75cef53b9"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-negative-weight.html",
+      "size_bytes": 66831,
+      "sha256": "126b62bb285382d2abac85ef81ba568e9de42082f1d70117ce5ee4c30b75e721"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-negative-weight.png",
+      "size_bytes": 48989,
+      "sha256": "b2b3b6fc9eee4fcf85d93a2f8edef4d5d5c5ae42b0fe19c65c92fa158e10b871"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-negative-weight.txt",
+      "size_bytes": 1525,
+      "sha256": "1b7dd8c10126af06811e89a7aa943dfe66399716af86eb7b5b4561acc7ed4f8b"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-save-negative.html",
+      "size_bytes": 66825,
+      "sha256": "b2696c321b5359669b2a6383cd224b7bfca0d922caa2ec712fe479ae9a0bb0be"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-save-negative.png",
+      "size_bytes": 52674,
+      "sha256": "f20d26a70b495873754803b9d55dcf668f5a075251ddcffde7d84d3aa08bde1e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-save-negative.txt",
+      "size_bytes": 1523,
+      "sha256": "3a88bc5d3b4b11d6ed60a6e50f703c0062ee96f8251190380a2672c51c77850d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-valid-recovery.html",
+      "size_bytes": 66825,
+      "sha256": "6537cd2a78ca849a62f5953a55273d545f96e4cf75739aab612b0750de0ec6f1"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-valid-recovery.png",
+      "size_bytes": 73110,
+      "sha256": "4496c100cc6508507b7941f26f7ad4471c11d00e2759f17eb667aa6ab5a090b9"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-19-valid-recovery.txt",
+      "size_bytes": 1529,
+      "sha256": "08905ab97ab6ae0ba16c7d0893c2c5918b3533739d980b1345d4e0856ca6aaa1"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-20-panel.html",
+      "size_bytes": 66728,
+      "sha256": "d76fbae66f846b3d5e5240944d23b3b6add6f41ca6e1293ed0df664760fca988"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-20-panel.png",
+      "size_bytes": 90986,
+      "sha256": "ebd6a598938469be4b8591349012cdefa498bb8a8424fdcaf31bd27b5c485680"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-20-panel.txt",
+      "size_bytes": 1231,
+      "sha256": "f579d76e8caa5814aeece955d3795b49947692d4d61058ce3866153705695f1d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-20-sample.html",
+      "size_bytes": 66737,
+      "sha256": "0dc147d0d9efb7ba85ffcb0fcfd80da9cbfe1c0b1aa47888d24e3a1b48304ef7"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-20-sample.png",
+      "size_bytes": 55283,
+      "sha256": "b8d8de7da6dc7469c7a0debc3f3fd57363212923be5e2419fede3e085e47c0d2"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-20-sample.txt",
+      "size_bytes": 1225,
+      "sha256": "32aba1fb04c7236e4190177e19d162ab0beb07be75c0f3c51ee488e5f9c7a25f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-22-network.html",
+      "size_bytes": 66787,
+      "sha256": "42cc34176ae713e838bd54b59ccb55db44a359464e17510fac16f32a35c6e340"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-22-network.png",
+      "size_bytes": 77480,
+      "sha256": "4fcf309fe148024516fb85508d3e07327b4e05f082804fe427f966cd484c30b0"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-22-network.txt",
+      "size_bytes": 1068,
+      "sha256": "1237050c650ddd31a3dd77575760c19028f79640f0331e8f12d08670b21f0a51"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-23-health.html",
+      "size_bytes": 66787,
+      "sha256": "d8b5edc705651bb45eedac08238a7a56557f178e593c2c9a422e791e08799932"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-23-health.png",
+      "size_bytes": 84318,
+      "sha256": "7d9b05f0ffec0bee7bbac41dc53d6e52f708fcf89cf5b8fb1ff81e7ea6735517"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-23-health.txt",
+      "size_bytes": 715,
+      "sha256": "e10a8f11fa9eb7dc32d2912caf5a8a92359b2c3867662844bf4a5e8db1dce01d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-25-MC-fault-observation.html",
+      "size_bytes": 66765,
+      "sha256": "1efeb36b497f9ef44f25aa8b1da0120ac6072120329c759a100c0199be68c011"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-25-MC-fault-observation.png",
+      "size_bytes": 66650,
+      "sha256": "94f5dcddccad0a0692757eed5381668eda187d89b6b14f4c271235e5b3b095d6"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-25-MC-fault-observation.txt",
+      "size_bytes": 1252,
+      "sha256": "63262db885c032298a0a6d85351e67d353c5fc27c7e146692113d1d7ccf929be"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-25-TH-fault-observation.html",
+      "size_bytes": 66838,
+      "sha256": "56117efce7c05b011254fc4a96ee264330b11b9dced5fb807c7db8a4fa3dddfd"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-25-TH-fault-observation.png",
+      "size_bytes": 66595,
+      "sha256": "37575c08cf826188f6c360f62951bdf0cd011e489e6542eabbc34a087e3c670d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-25-TH-fault-observation.txt",
+      "size_bytes": 1253,
+      "sha256": "5cbe6463b1a637bba392b66f2088cee3291f6bc60e925c98232d2f3c9aaffabf"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-reopen-after-complete.html",
+      "size_bytes": 66728,
+      "sha256": "611b22f1a0603be4c91be665f04d5caa8af6d2ed2d207705f95de1b17753c11f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-reopen-after-complete.png",
+      "size_bytes": 69867,
+      "sha256": "ed61ae0c4d902d1b9f08ea02f2e564117cd24eb6100ae8839c06fe44f58d5b49"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-reopen-after-complete.txt",
+      "size_bytes": 1741,
+      "sha256": "f8985c62486a54dd3efdda6557c55131fc5add3b757e27c855526d5a2e46f1a5"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-reopen.html",
+      "size_bytes": 66732,
+      "sha256": "57407d7dbe803f91682a1eec0994d90a92c97e30f7daa37a9e4ef85bdafcf851"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-reopen.png",
+      "size_bytes": 69729,
+      "sha256": "e79cc7284bb8377262a37c7497862df5869839ee362a303a2ee8e425413a5f29"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-reopen.txt",
+      "size_bytes": 1741,
+      "sha256": "f8985c62486a54dd3efdda6557c55131fc5add3b757e27c855526d5a2e46f1a5"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-2.html",
+      "size_bytes": 66739,
+      "sha256": "6f1477e47ce71f8b3f6936dc510875039fea7cd59e96464fa747251769c19173"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-2.png",
+      "size_bytes": 71794,
+      "sha256": "72698317b5526368ac0d26c2d2a2c1b228658fa08e4a69e79878973b4b5548ce"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-2.txt",
+      "size_bytes": 1550,
+      "sha256": "7538244d2d4ddfbc61603dfbb4a1adc2001217c3529eb9901ce081f2278ecb2c"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-3.html",
+      "size_bytes": 66739,
+      "sha256": "3e2b05335d38d6cd8d14feac871061445b5951c4f94dcc295cd125158bd1c265"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-3.png",
+      "size_bytes": 74357,
+      "sha256": "c6c38ead65440e4c84a16f5bb6c7ea10a8cd717806326a7469ab56a06c58453f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-3.txt",
+      "size_bytes": 1754,
+      "sha256": "facfc0457143939cde7870fdeeda46d706166eb779e01612029a4635ac2c0bc3"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-4.html",
+      "size_bytes": 66739,
+      "sha256": "cef185bdf0b1772035b8fc990848aa75d4612514078af99af50a4bfe138f6f53"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-4.png",
+      "size_bytes": 80628,
+      "sha256": "3d78f6a60557529124bca172b68258c1e684bbcea0b120a85bc897d3d8bcffd3"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-4.txt",
+      "size_bytes": 1824,
+      "sha256": "236af4d0c6406180415b51fea5c3088335576a7b3582242e378cf69c54f4181e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-5.html",
+      "size_bytes": 66739,
+      "sha256": "d832466293d3c7025d0d89852463166f5033887d5746fd0afff7066622d5221f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-5.png",
+      "size_bytes": 64199,
+      "sha256": "05fac3b04512af0a963f3e5946b4b483d868399387dbbf6bf15bdd8327378703"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-26-step-5.txt",
+      "size_bytes": 1672,
+      "sha256": "caca4451e44a89f052166c06952985050f807ef7ba6c515ec45bf575d810305f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-offline.html",
+      "size_bytes": 66728,
+      "sha256": "e5ccdcd753f0b1e0ba53178b8e7ef9cfce29aca6c5c82dfd857e7445edb68bdd"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-offline.png",
+      "size_bytes": 87527,
+      "sha256": "11aaad851d2816eb1f754a21251b6e2a32d41b628ede2b6493d0ff4381e5773a"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-offline.txt",
+      "size_bytes": 1251,
+      "sha256": "ce4c943e7183c1d76585bfee16cec72dce09d4baf6b20120a7916639e0ef9c20"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-restored.html",
+      "size_bytes": 66698,
+      "sha256": "87eecb98edd56431d0b8a38c6dc1772f0e8cdcb38e2a678c2c36c75104afe6ec"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-restored.png",
+      "size_bytes": 88983,
+      "sha256": "e0509a7591a33a62db6d8141c512d3aff11186b05464eaec9e1c5e39a1c31807"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/BASE-27-browser-restored.txt",
+      "size_bytes": 1251,
+      "sha256": "ce4c943e7183c1d76585bfee16cec72dce09d4baf6b20120a7916639e0ef9c20"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/GCODE-M114-final-result.html",
+      "size_bytes": 66838,
+      "sha256": "9b8f12a5ea0f75f626d31a1658a5ad1951203edfda116e10bb994e3f2ee7bb45"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/GCODE-M114-final-result.png",
+      "size_bytes": 66595,
+      "sha256": "37575c08cf826188f6c360f62951bdf0cd011e489e6542eabbc34a087e3c670d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/GCODE-M114-final-result.txt",
+      "size_bytes": 1253,
+      "sha256": "97666aae67323dacaca2131a91e944757a648c8a803ac8f3493f655b32e63701"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/MC_ctrl1.log",
+      "size_bytes": 19,
+      "sha256": "6984abf91c5825fd5b09d1d8eda0c9cf66a6e354573bf30d50db53f16e2308e7"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/MC_uid.log",
+      "size_bytes": 37,
+      "sha256": "ef2576cf2146ea8a8d4a13e7bebd05dbf6b8d498bafffca71a5b083eea408d56"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/SAFETY-new-page.html",
+      "size_bytes": 66728,
+      "sha256": "db628be3a0fa8f4c3f011b4d51b2b93c4ccd7f86d67a9c240d783aaab38bbf08"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/SAFETY-new-page.png",
+      "size_bytes": 57595,
+      "sha256": "33287540cfc2473bb0bd71c9d6747ba8fa6a6488ccf2b3fd362269c9d8a3f96e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/SAFETY-new-page.txt",
+      "size_bytes": 1741,
+      "sha256": "27d2e7a77b5ded7bc0cbf58c4173d62bc350da7f8349ff8dd97f91601b339727"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/SAFETY-target-zero.html",
+      "size_bytes": 66557,
+      "sha256": "04518b4deaf498fcae2529fc319c2701d95b1fdbfc5b3ae0d0dd8f2444936dec"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/SAFETY-target-zero.png",
+      "size_bytes": 53367,
+      "sha256": "17f16ff3344f5ba54c8bd77fa86bd9963a9779d34adb708ab70cf18cb8f33f5f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/SAFETY-target-zero.txt",
+      "size_bytes": 1291,
+      "sha256": "bbf9d9c3ca39a523e25c9c879665c205a368550d1f67aea379dd1f2c29d22630"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/TH_USART1_restore.log",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/TH_USART1_restored_read.log",
+      "size_bytes": 19,
+      "sha256": "3928d2b380b43d1f76d9599759cae88d9ad9a7e2c51fb7a4d74ac3723fbac69a"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/TH_ctrl1.log",
+      "size_bytes": 19,
+      "sha256": "4d96170b7548e6c70baa948cd25f388261c4e1654facf1ff0f6fc7d41268aef1"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/TH_recovery_reset.log",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/TH_uid.log",
+      "size_bytes": 37,
+      "sha256": "5df8d3a6e6e4b099907d3956515cf479d3e0787ff40bb6efa0d2a6063f45cbdb"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/action_timeline.jsonl",
+      "size_bytes": 222969,
+      "sha256": "913c6c3ccf495f14fa8b4ab2987c7b05636609b796caafcb7bab88e0437526a1"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/api_checks.py",
+      "size_bytes": 2314,
+      "sha256": "79b6f80beeb54d7f67137bf4293c5cfc386ba42bd6b66a0b36844435cd549db6"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/artifact_validation.json",
+      "size_bytes": 733,
+      "sha256": "48496f6844dd86468a3a65c7231797c7f99facacc25a056f1820660b2cfc2eb6"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/audit_driver.py",
+      "size_bytes": 4956,
+      "sha256": "7e409aeb4d1a9d1ac4ba28123cc34ba2c7a8c1950b2a137e0db38ce02856e897"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_cdp_raw.jsonl",
+      "size_bytes": 9301506,
+      "sha256": "6f54c7d50c2600728bb892bd6fd60045db7aeb9a7b680fbadf9e0f3cf420b079"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/browser_driver.py",
+      "size_bytes": 4220,
+      "sha256": "cfee9d43b338ba40284bd9829aafdd0572305ef31aaa2d8c4759bd0ff6af558d"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/clock_binding.log",
+      "size_bytes": 20,
+      "sha256": "9bb2db8b64bd21cfd46a523a96c90c30fdf27fceaf05545bfd920127a3d2cbd8"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/debug_capture_provenance.json",
+      "size_bytes": 1599,
+      "sha256": "0b0a1895bed070037e6a2d54c856d8ff724fec096837e6c7b1a6f939a726f099"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/during_fault_th_mc_debug_raw.log",
+      "size_bytes": 2000643,
+      "sha256": "f1fb02cbc0f6c73a928631d04a9805d2edff53779a885e1f7f688033171044e0"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/during_fault_th_th_debug_raw.log",
+      "size_bytes": 1479614,
+      "sha256": "36b11ec4ab0af16ce5356481badb0493c639d301c455b813170edcb54b510203"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/empty.gcode",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/exit_runtime_status.log",
+      "size_bytes": 2019,
+      "sha256": "9f7fd0808756e3dfd9668bc6b5655d993f8a0a0d1b64876f69c67da8137b955b"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC.log",
+      "size_bytes": 5190,
+      "sha256": "29b7b4e9bbbe9293ba1991cf424789cc65249ca6c54dab793b2f537e5059bf81"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_MC_cpu.log",
+      "size_bytes": 202,
+      "sha256": "73f3fcc73acee1b83634cb60ec4f58e10ff9377bfa8b868331a2fa51832bda56"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH.log",
+      "size_bytes": 4150,
+      "sha256": "b93ab9df30fcac85041d24af2c41cde88185bd1390bc04aa67947851c684dca4"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/fault_TH_02.log",
+      "size_bytes": 5069,
+      "sha256": "3e4a820516fcc3eec44e79816ecae222a043be963a8819f51dea3e5fa32bab67"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_MC_ctrl1.log",
+      "size_bytes": 198,
+      "sha256": "a63194ceebebe4acbf56a4ef3b006f95191ce8e433b27ba25b56ea62c6429cd7"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_MC_ctrl1_retry.log",
+      "size_bytes": 198,
+      "sha256": "a63194ceebebe4acbf56a4ef3b006f95191ce8e433b27ba25b56ea62c6429cd7"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_TH_ctrl1.log",
+      "size_bytes": 19,
+      "sha256": "3928d2b380b43d1f76d9599759cae88d9ad9a7e2c51fb7a4d74ac3723fbac69a"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_device_manager.log",
+      "size_bytes": 20579,
+      "sha256": "0e8058c1f02c3164bdaa2e5b38f14db10719c4da111a6d34118ae86e3f646d47"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_forward_service.log",
+      "size_bytes": 30596,
+      "sha256": "576c2c6d07b183fa21fc2b8d69b5c36312f2d86e40b28daca29da07a643702c4"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_mc_debug_raw.log",
+      "size_bytes": 2231067,
+      "sha256": "3a287d1672a23c9d251296f7a8242a019adc23db01c2f5ec8e47eaed4b20d8c3"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_probe_inventory.log",
+      "size_bytes": 141,
+      "sha256": "394558ac56db7ea297d05b7cb4dca385c0c3ed164a8e10909284b178d3e6cf51"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_probe_processes.log",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_runtime.log",
+      "size_bytes": 3591,
+      "sha256": "44bd8bbf58cdba3af119c70b10bfdde775603515dd5b72a88e10352321b96b85"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_th_debug_raw.log",
+      "size_bytes": 1726156,
+      "sha256": "26d1a948cee64954a825e0ffbd084f81cee769454b3b8a1f6027559e80a011ee"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/final_ui_gateway.log",
+      "size_bytes": 27662,
+      "sha256": "b47361398cbeed4e25212b0e9712633c680bb00c68668f1ec8a7372421218afd"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/fresh_checks.py",
+      "size_bytes": 2230,
+      "sha256": "25d6ba2d084ff872d6b82da1cc0a3222056b9f2eba2d8c248faea8dace1959c8"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/initial_device_manager.log",
+      "size_bytes": 13118,
+      "sha256": "b418bc9cdc2d139430bd92c2a56cf403c075f39dee8825a5a63dbd23d29b3831"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/initial_forward_service.log",
+      "size_bytes": 19919,
+      "sha256": "f35d6b1eac5aa3796510117266b2c232a16b712ef97823820d5ab9c5ae4946bc"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/initial_mc_debug_raw.log",
+      "size_bytes": 1606948,
+      "sha256": "59a07c31947c6b003cf6dc9da79339779aeb37c48c2e8a0a19d636ec3b438118"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/initial_runtime.log",
+      "size_bytes": 3591,
+      "sha256": "99f3134e3fa69e7ab2d026e2e4235af63856498d73daa82e6e22d8a7942cce38"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/initial_th_debug_raw.log",
+      "size_bytes": 1196166,
+      "sha256": "68ea47cdbf9ba8e4516f18a565c63f718466cbcaf17cdd3a2d9cc6a3b270f0c9"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/initial_ui_gateway.log",
+      "size_bytes": 18575,
+      "sha256": "cc8666a16ee13304a95617678a1000de3ec59fedcc6de469ffc74130d01f5bf8"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/intake_validation.json",
+      "size_bytes": 3951,
+      "sha256": "f916bc8c8e9791a2a1985c19e8faffe3d7b92be2018f5b0de5398c6f2b81c0f8"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/invalid.gcode",
+      "size_bytes": 19,
+      "sha256": "c1da3821b9cd7f5f904c016680b2d4fabc5101af6d9c876389f18ada1442db87"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/invalid.txt",
+      "size_bytes": 19,
+      "sha256": "c1da3821b9cd7f5f904c016680b2d4fabc5101af6d9c876389f18ada1442db87"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/mc_debug_qa_window.log",
+      "size_bytes": 915839,
+      "sha256": "2b399c24ca8fa65700ce57b8b00d1236291ffe9ee554629b3ac13b29bded9043"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/mc_debug_raw.log",
+      "size_bytes": 2522787,
+      "sha256": "af345197a4d846ee6700dc950387d4fe496a42ddd06c5c8cd6161f5bbac0f3f1"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/mdns_independent_client.log",
+      "size_bytes": 602,
+      "sha256": "35c88ad9269bdc4becfa4833f8841cef8f715604446ce4ca66ea57e62514fac9"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/post_fault_mc_mc_debug_raw.log",
+      "size_bytes": 2043401,
+      "sha256": "e9bb73e774eea9759b1ae45bb75cae226611a684551d0047d2711ca5ccc6543f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/post_fault_mc_th_debug_raw.log",
+      "size_bytes": 1523328,
+      "sha256": "214de71278ca98e3eb0185b08ec5d10c1868fcfa394d62422b9114d938a869fb"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/post_recovery_mc_debug_raw.log",
+      "size_bytes": 1739414,
+      "sha256": "219e791dec8bb2456726d1b5409331ae1b9520879aa38167006b5dde61c6e85e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/post_recovery_th_debug_raw.log",
+      "size_bytes": 1224758,
+      "sha256": "4f19d5b016a6d19c4156504ee4448c56bbb24ab5810f3c9419908d0ae6cfd6af"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/post_th_reset_mc_debug_raw.log",
+      "size_bytes": 1714322,
+      "sha256": "c754496a2443dbc1ebefa7ea0450bed3006806bc7a3929ce73deb8a5327b7100"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/post_th_reset_th_debug_raw.log",
+      "size_bytes": 1198040,
+      "sha256": "8e01bfbb9790e2f2707f7c25169da02dc331e048973a95cbf9744884f1b04aef"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/pre_fault_th_mc_debug_raw.log",
+      "size_bytes": 1994076,
+      "sha256": "09465cf2d1f2e4ce4d926fc2c3d546299a6690586f2d2456fb723014e3796f34"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/pre_fault_th_th_debug_raw.log",
+      "size_bytes": 1473215,
+      "sha256": "d809721f3030fae88e7ca7ef217b9413380bb2127e37a9fa68844e1d7dce7b03"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/pre_recovery_mc_debug_raw.log",
+      "size_bytes": 1671032,
+      "sha256": "bf79f05758a56ee8eb2c3805499d27ae91fba551c0410d9d5d22034807c81061"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/pre_recovery_th_debug_raw.log",
+      "size_bytes": 1196166,
+      "sha256": "68ea47cdbf9ba8e4516f18a565c63f718466cbcaf17cdd3a2d9cc6a3b270f0c9"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/probes_list.log",
+      "size_bytes": 141,
+      "sha256": "394558ac56db7ea297d05b7cb4dca385c0c3ed164a8e10909284b178d3e6cf51"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/qa_browser_cleanup.log",
+      "size_bytes": 19,
+      "sha256": "d8a4e82a0d88a6882cc7d542499e984373209ebd90e847cc1fcc458195aca8e1"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/qa_python_dependencies.txt",
+      "size_bytes": 24,
+      "sha256": "a2cc5dec145e4037bf412488ef82ba4a0ec391484136d07aec187ec03917fe27"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/qa_tunnel_cleanup.log",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/read_sources.json",
+      "size_bytes": 5290,
+      "sha256": "1074cd0e9211bc48cafb745b4485f5e50d882e1a27bb94ead697f65a35d3ae55"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/readback_timeout_cleanup.log",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/runtime_unlisted_static.log",
+      "size_bytes": 821,
+      "sha256": "99f4b6c9d27b074b7ef81244faa3b6775890a41adbfd871255430f49ef49c0e9"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/sealed_firmware_files.log",
+      "size_bytes": 403,
+      "sha256": "5f890098f47df188059d3165480bcd08f7a1b080307bdf753429ec6b468f326f"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/software_checks.py",
+      "size_bytes": 3544,
+      "sha256": "0791497e7ff29e4b1add160e3b163391c2264d687a47b86b12663e397f324d60"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/stage1_case_results.json",
+      "size_bytes": 30691,
+      "sha256": "b6788ab18914f1ffd302f755a96af799f3e0debf1c294726f47e68c319ac74c5"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/stage1_qa_report.md",
+      "size_bytes": 9617,
+      "sha256": "98ec97781317f96fbb3b0906c8fb2b9b1d198558f7f8c2b9687a818cf38c85ca"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/stage2_manual_checklist.md",
+      "size_bytes": 2164,
+      "sha256": "36166151ce6b05c08e0bcdd49a0a8f69a205272b322873303f006711c3aea5a0"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/th_debug_qa_window.log",
+      "size_bytes": 852406,
+      "sha256": "eb021ca2d98018fde2f6aa96ddd3815f73208b70b3078b89009e4f18f5ecfda7"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/th_debug_raw.log",
+      "size_bytes": 2048572,
+      "sha256": "85231e1fbf6fe54d764ebbe101af9a9b613503e07297dacbf64d034d8b2b6f54"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/uart_fault_windows.py",
+      "size_bytes": 3361,
+      "sha256": "4d70f6ce4bd777ce1afcbbbb49d210aa47d977650a78c348fe712c4d1a944b24"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/unexpected_ui_mc_debug_raw.log",
+      "size_bytes": 1813772,
+      "sha256": "b0735dedaf4b1e1f2aaede9b126fd126a1e344c722ee14036fcc8765362eaff8"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/unexpected_ui_th_debug_raw.log",
+      "size_bytes": 1296434,
+      "sha256": "6929d03212e88bacee356f9a9461bc04fc97b96afe5784b7f7cfd7f7b637cb5e"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/unknown_api_http_framing.log",
+      "size_bytes": 1134,
+      "sha256": "93a04a9a8ccf0a5cb5c4aeef0c102451b885a1d79c06abb5784880aaa9f3381a"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/upload_fixture_create.log",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/valid.gcode",
+      "size_bytes": 5,
+      "sha256": "19ad26370ac2db925cb0ce5769560bca11f513eb0ba8692031bf55a227ad1ca6"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/windows_binding.log",
+      "size_bytes": 483,
+      "sha256": "4a21ddbf4d43ca633ae2a72f7becbb2ffa1a50d379a5596db6b42376ad282e76"
+    },
+    {
+      "path": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/write_reports.py",
+      "size_bytes": 35395,
+      "sha256": "11f15c49db43f9c5771a8839a967adb53f5d121c767a752bdbc052ae1049027f"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-005.yaml",
+      "size_bytes": 6117,
+      "sha256": "4ff58f364c997bec49db9f6b4e3cc2b047d0843b999f2a6e062cb5500a3d02ca"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-006.yaml",
+      "size_bytes": 7185,
+      "sha256": "7b5b310c81bcdbc5a6c91696ba388e09eb187c66f7b54a57931f3eef30f4e4d7"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-007.yaml",
+      "size_bytes": 6951,
+      "sha256": "9478bacdec09c6be466db96a69bc89faaf5542c7d50f84f8f844c093ef2e272a"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-008.yaml",
+      "size_bytes": 6505,
+      "sha256": "6d2016909a0037f307bafd4e9b446dda744bd025d29e4f8db0a305cc7cbaef11"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-009.yaml",
+      "size_bytes": 7364,
+      "sha256": "b540c0a42192ef2158381cd36906f2ac8c0a7e79b7df20145f3b82e8579ad75c"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-010.yaml",
+      "size_bytes": 6687,
+      "sha256": "1b2a361bad1152fe956f75ddfacf8765cbdb7300c6df6d4c6a219353c342f097"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-011.yaml",
+      "size_bytes": 6957,
+      "sha256": "df8ce38f6326f8e2958293fcd0c8af14990543fab5693bd868abef3852e6445a"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-012.yaml",
+      "size_bytes": 6389,
+      "sha256": "0bb858f934cbfbcd461479e35a7660e2722e04fec8aa0bd0688fee79f18e21af"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-013.yaml",
+      "size_bytes": 6675,
+      "sha256": "eb5b02037f1e77fe804af168b034ec1cd164a20c16df4236e49fdb97ef3cc5f4"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-014.yaml",
+      "size_bytes": 6977,
+      "sha256": "ea1cd4082500cddc5ffe8c2e682a69ebeaf51cd96811ba487c1d433d66906efa"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-015.yaml",
+      "size_bytes": 6656,
+      "sha256": "817096a9abe1668f455621bb55f7cd5a5046945b7667ba1d52a27721192f5c70"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-016.yaml",
+      "size_bytes": 7386,
+      "sha256": "0864da8233b5f69191d0828b218c74cd752931854bf161bff10a4e9123460b08"
+    },
+    {
+      "path": "docs/work_intake/issues/ISS-20261105-017.yaml",
+      "size_bytes": 5562,
+      "sha256": "bfb61f59e43b9db20126519bfcfd1d4985d6b546af62f17fb085cde506b599b1"
+    },
+    {
+      "path": "docs/work_intake/submissions/20261105_twin55_codex_hil_issues.md",
+      "size_bytes": 16588,
+      "sha256": "1f90ef37d3c16ee4a37b3e612c37bca0ddbe1e36645a14eb73d0fc83586c3ae7"
+    }
+  ],
+  "excluded_live_session_log": "docs/evidence/twin/TWIN-55/runs/codex_qa_01/codex_session.jsonl"
+}

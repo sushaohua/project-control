@@ -1,0 +1,29 @@
+*   Trying 192.168.77.134:8080...
+* TCP_NODELAY set
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Connected to 192.168.77.134 (192.168.77.134) port 8080 (#0)
+> POST /api/v1/temperature/target HTTP/1.1
+> Host: 192.168.77.134:8080
+> User-Agent: curl/7.68.0
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 34
+> 
+} [34 bytes data]
+* upload completely sent off: 34 out of 34 bytes
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 404 Not Found
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 35
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Methods: GET, POST, OPTIONS
+< Access-Control-Allow-Headers: Content-Type, Accept
+< Connection: keep-alive
+< 
+{ [4 bytes data]
+* transfer closed with 31 bytes remaining to read
+ 55    69   11     4  100    34   4000  34000 --:--:-- --:--:-- --:--:-- 38000
+* Closing connection 0
+curl: (18) transfer closed with 31 bytes remaining to read
+{"er

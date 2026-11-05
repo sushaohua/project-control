@@ -1,0 +1,62 @@
+schema_version: 1
+id: ISS-20261105-018
+revision: 2
+kind: issue
+enabled: true
+title: 按照当前的规则，给所指定范围内的所有代码加上注释，所有的代码包括py c h 等等。
+objective: 【问题】按照当前的规则，给所指定范围内的所有代码加上注释，所有的代码包括py c h 等等。
+source_refs:
+  submission_id: 添加代码的注释
+  submission_revision: 1
+  instruction_anchor: instruction_1
+  submission_path: project-control/docs/work_intake/submissions/添加代码的注释.md
+  submission_sha256: db39632ce6c22bebb1735c1d26d7994ac86a37086b177bd7f2ab2f0ddce50123
+  instruction_sha256: 4ea44d637ec8927f163c55442615e6cf230f23bd814d10d0e5eb79fda7bdf73d
+  verbatim_instruction: 【问题】按照当前的规则，给所指定范围内的所有代码加上注释，所有的代码包括py c h 等等。
+  common_constraints:
+  - 提交人及日期：sushaohua-human
+  - 处理范围与限制：soc-ap和project-control是从第一个commit开始。mcu-p3,是从有了soc-debug这个分支开始，而且只加到这个分支上的。
+  common_constraints_sha256: 57e8fda3a2d89d001521f1fe3d066e7dcf254825c67671f9d74ffab20ee27998
+demand_ref:
+  demand_id: DEM-20261105-019
+  confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
+  confirmation_revision: 1
+  confirmation_path: project-control/docs/work_intake/confirmations/CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105.yaml
+  confirmation_sha256: 748c3fed9840167b08789c9db85c363cb2ec9d5d2bd8d052b7b2b83ff6fa0cae
+reported_by:
+  actor_type: HUMAN
+  actor_id: human_markdown_author
+  source_channel: markdown_submission
+authorization_refs:
+- path: project-control/docs/work_intake/submissions/添加代码的注释.md
+  revision: 1
+  sha256: db39632ce6c22bebb1735c1d26d7994ac86a37086b177bd7f2ab2f0ddce50123
+approval_refs:
+- approval_id: APPR-20261105-004
+  revision: 1
+  path: project-control/docs/work_intake/approvals/APPR-20261105-004.yaml
+  sha256: 9f76dc72fa3dd663f6e88fb0254035308c3c28e849c35246daa666929e4287bb
+  approved_at: '2026-11-05T16:00:59+08:00'
+  approved_by: sushaohua
+requested_action: triage
+priority_hint: P2
+related_ids:
+  engineering_tasks:
+  - TWIN-57
+  - TWIN-58
+  - TWIN-59
+  - TWIN-60
+  - TWIN-61
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: null
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: false
+arch_breakdown:
+  id: ARCH-BREAKDOWN-CODE-COMMENTS-20261105
+  revision: 1
+  path: project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md
+  sha256: 5073d7e45aa8fbd5e8f8422a775df73ddc7970d8061363b715d673feec0ada94
+  author_session: ef428595-f4d6-46a7-9d12-07e1fd215641

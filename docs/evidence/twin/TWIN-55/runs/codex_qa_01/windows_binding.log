@@ -1,0 +1,22 @@
+COM1
+COM12
+COM13
+
+
+Name     : USB-SERIAL CH340 (COM13)
+DeviceID : USB\VID_1A86&PID_7523\6&27C05E2E&0&2
+
+Name     : USB-SERIAL CH340 (COM12)
+DeviceID : USB\VID_1A86&PID_7523\6&27C05E2E&0&3
+
+
+
+
+
+ProcessId    : 22000
+CreationDate : 2026/11/5 13:38:22
+CommandLine  : "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File C:\
+               Users\EDY\AppData\Local\Temp\aisoc_build_20261105_001\dual_dbg_logger.ps1 
+
+
+

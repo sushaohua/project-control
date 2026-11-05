@@ -1,0 +1,91 @@
+{
+  "task_id": "TWIN-54",
+  "run_id": "codex_qa_01",
+  "audit_scope": "handoff-completeness-only",
+  "decision": "REJECTED",
+  "process_exe_checks": [
+    {
+      "process": "dbus_daemon",
+      "pid": 1676003,
+      "actual_sha256": "73d24dd0759d6b3f5a959f73d452b2b29013d1880d04229f434e98b74d00278a",
+      "expected_sha256": "73d24dd0759d6b3f5a959f73d452b2b29013d1880d04229f434e98b74d00278a",
+      "match": true
+    },
+    {
+      "process": "device_manager_daemon",
+      "pid": 1676009,
+      "actual_sha256": "2a0313efcdef73e578a7498e8c2f9f7d0d83d4ea5918cff0ef9e88ceb4b9cc85",
+      "expected_sha256": "2a0313efcdef73e578a7498e8c2f9f7d0d83d4ea5918cff0ef9e88ceb4b9cc85",
+      "match": true
+    },
+    {
+      "process": "forward_service_daemon",
+      "pid": 1676008,
+      "actual_sha256": "c13a44dc21a18064a5dd84cf35fe9d39b44d693c352899fbfafb90b80e67c259",
+      "expected_sha256": "c13a44dc21a18064a5dd84cf35fe9d39b44d693c352899fbfafb90b80e67c259",
+      "match": true
+    },
+    {
+      "process": "ui_gateway",
+      "pid": 1676011,
+      "actual_sha256": "41824294f0354a74315819ba60f46d133dc38c499ef5fe15a36213e9e53e0764",
+      "expected_sha256": "41824294f0354a74315819ba60f46d133dc38c499ef5fe15a36213e9e53e0764",
+      "match": true
+    }
+  ],
+  "web_http_checks": [
+    {
+      "asset": "index.html",
+      "http_path": "/",
+      "actual_sha256": "bd241a24e9fb64e0fdd16b0f84def5e6fe4397cdc13f721c605e7a3a02c90131",
+      "expected_sha256": "bd241a24e9fb64e0fdd16b0f84def5e6fe4397cdc13f721c605e7a3a02c90131",
+      "match": true,
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Content-Length": "66326",
+        "Access-Control-Allow-Origin": "*",
+        "Connection": "close"
+      }
+    },
+    {
+      "asset": "app.js",
+      "http_path": "/app.js",
+      "actual_sha256": "b61b372f286b2dd5c89de33b6dd57e55fc5d6a30f82b96dd077ab292c99cea29",
+      "expected_sha256": "b61b372f286b2dd5c89de33b6dd57e55fc5d6a30f82b96dd077ab292c99cea29",
+      "match": true,
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8",
+        "Content-Length": "86764",
+        "Access-Control-Allow-Origin": "*",
+        "Connection": "close"
+      }
+    },
+    {
+      "asset": "styles.css",
+      "http_path": "/styles.css",
+      "actual_sha256": "b750052bcd4ca83602d610c647a0e5fb6e11a78de22947455a95ca7efb91c3a1",
+      "expected_sha256": "b750052bcd4ca83602d610c647a0e5fb6e11a78de22947455a95ca7efb91c3a1",
+      "match": true,
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Content-Length": "34746",
+        "Access-Control-Allow-Origin": "*",
+        "Connection": "close"
+      }
+    }
+  ],
+  "known_unsealed_static_file": {
+    "path": "/tmp/aisoc_twin_logs/web_root/api/v1/state",
+    "sha256": "006b793bb8b86e440a4c9a7f3735c06038968ee3ac025dfef74d39fa979c14b3"
+  },
+  "auto_build": {
+    "handoff_claim": "0",
+    "exported_proc_environment_observed": false,
+    "qa_build_or_deploy_invoked": false
+  },
+  "source_binding": {
+    "manifest_sha256": "d55bd6db65686491fca18b284ace9a098b43a6194c231e8271cce0305a2746bd",
+    "initial_runtime_sha256": "99f3134e3fa69e7ab2d026e2e4235af63856498d73daa82e6e22d8a7942cce38"
+  },
+  "formal_hil_approved": false
+}

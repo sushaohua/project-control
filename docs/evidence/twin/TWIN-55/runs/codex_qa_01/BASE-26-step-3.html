@@ -1,0 +1,977 @@
+<html lang="zh-CN" data-theme="dark"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI-SoC 智能3D打印交互控制台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="hmi-container">
+        <!-- 顶部主状态与控制栏 -->
+        <header class="hmi-header">
+            <div class="brand-group">
+                <span class="brand-logo" aria-hidden="true">🖨️</span>
+                <div class="brand-text">
+                    <h1 class="brand-title" data-i18n="app_title">AI-SoC 3D HMI</h1>
+                    <span class="brand-subtitle" data-i18n="app_subtitle">工业级数字孪生控制台 v2.0</span>
+                </div>
+            </div>
+
+            <div class="header-status-group">
+                <div class="status-pill" id="conn-pill" title="与本地 UI-Gateway 通信状态">
+                    <span class="status-dot connected" id="status-dot"></span>
+                    <span class="status-text" id="conn-status" data-i18n="status_connecting">已连接</span>
+                </div>
+                <div class="status-pill hw-offline" id="hw-conn-pill" title="底层物理硬件连接状态">
+                    <span class="status-dot offline" id="hw-status-dot"></span>
+                    <span class="status-text" id="hw-conn-status" data-i18n="hw_status_unknown">硬件离线</span>
+                </div>
+                <div class="status-pill gen-pill" title="权威状态机版本世代号">
+                    <span class="pill-label">GEN:</span>
+                    <span class="pill-val" id="state-gen">196</span>
+                </div>
+                <div class="status-pill temp-pill" id="header-th-pill" title="喷嘴实时温度">
+                    <span class="pill-label">🔥 喷嘴:</span>
+                    <span class="pill-val" id="header-th-temp">--.- °C</span>
+                </div>
+                <div class="status-pill temp-pill" id="header-mc-pill" title="热床实时温度">
+                    <span class="pill-label">🛏️ 热床:</span>
+                    <span class="pill-val" id="header-mc-temp">--.- °C</span>
+                </div>
+            </div>
+
+            <div class="header-action-group">
+                <button type="button" class="btn-touch-action btn-danger-estop" id="btn-header-estop" title="紧急急停 (M112)">
+                    <span class="btn-icon">🛑</span>
+                    <span class="btn-label" data-i18n="btn_estop">E-STOP 急停</span>
+                </button>
+                <button type="button" class="btn-touch-action btn-estop-clear" id="btn-header-estop-clear" title="解除急停锁定 (M999)">
+                    <span class="btn-icon">🔓</span>
+                    <span class="btn-label" data-i18n="btn_estop_clear">解除急停</span>
+                </button>
+                <button type="button" class="btn-touch-action" id="btn-lang-toggle" title="切换显示语言">
+                    <span class="btn-icon">🌐</span>
+                    <span class="btn-label" id="lang-label">English</span>
+                </button>
+                <button type="button" class="btn-touch-action" id="btn-theme-toggle" title="切换深浅主题">
+                    <span class="btn-icon" id="theme-icon">☀️</span>
+                    <span class="btn-label" id="theme-label" data-i18n="theme_light">浅色模式</span>
+                </button>
+                <button type="button" class="btn-touch-action btn-oobe-entry" id="btn-open-oobe" title="启动新机检查引导向导">
+                    <span class="btn-icon">🚀</span>
+                    <span class="btn-label" data-i18n="nav_oobe">新机引导</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 物理硬件离线安全横幅 (Fail-Closed UI Offline Warning Banner) -->
+        <div class="hw-offline-banner" id="hw-offline-banner" style="display: flex;" role="alert" data-i18n="hw_offline_banner_msg">⚠️ 硬件连接已断开，运控与加热已锁定，请检查物理连线后重试</div>
+
+        <!-- 主内容区：标签导航栏 -->
+        <nav class="hmi-nav-bar" role="tablist">
+            <button type="button" class="nav-tab active" id="nav-btn-dashboard" data-tab="tab-dashboard" role="tab" aria-selected="true">
+                <span class="tab-icon">🖨️</span>
+                <span class="tab-text" data-i18n="tab_dashboard">打印工作台</span>
+            </button>
+            <button type="button" class="nav-tab" id="nav-btn-motion" data-tab="tab-motion" role="tab" aria-selected="false">
+                <span class="tab-icon">🕹️</span>
+                <span class="tab-text" data-i18n="tab_motion">轴控与调平</span>
+            </button>
+            <button type="button" class="nav-tab" id="nav-btn-sensors" data-tab="tab-sensors" role="tab" aria-selected="false">
+                <span class="tab-icon">🌡️</span>
+                <span class="tab-text" data-i18n="tab_sensors">温度与传感器</span>
+            </button>
+            <button type="button" class="nav-tab" id="nav-btn-slots" data-tab="tab-slots" role="tab" aria-selected="false">
+                <span class="tab-icon">🎨</span>
+                <span class="tab-text" data-i18n="tab_slots">料槽与调色板</span>
+            </button>
+            <button type="button" class="nav-tab" id="nav-btn-network" data-tab="tab-network" role="tab" aria-selected="false">
+                <span class="tab-icon">📡</span>
+                <span class="tab-text" data-i18n="tab_network">局域网与 mDNS</span>
+            </button>
+            <button type="button" class="nav-tab" id="nav-btn-hms" data-tab="tab-hms" role="tab" aria-selected="false">
+                <span class="tab-icon">🛡️</span>
+                <span class="tab-text" data-i18n="tab_hms">健康监控 (HMS)</span>
+            </button>
+        </nav>
+
+        <!-- 警报与横幅通知 -->
+        <div class="hmi-banner" id="hmi-banner" style="display: none;">
+            <span class="banner-icon">⚠️</span>
+            <span class="banner-msg" id="banner-msg">系统网络异常</span>
+        </div>
+
+        <!-- 标签页 1：🖨️ 核心打印工作台 (Dashboard & Jobs) -->
+        <section class="tab-content active" id="tab-dashboard" role="tabpanel">
+            <div class="section-intro">
+                <div class="intro-text">
+                    <h2 class="section-title" data-i18n="dashboard_heading">🖨️ 打印作业控制台 (Dashboard &amp; Jobs)</h2>
+                    <p class="section-desc" data-i18n="dashboard_desc">全流程本地作业加载、流式模拟空跑监视与核心运控调度。</p>
+                </div>
+                <div class="intro-actions">
+                    <span class="status-badge badge-dryrun" title="Option A 安全基线">🛡️ 强电 0% 锁死 · 纯逻辑空跑</span>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- 左侧：实时状态与流式走线仪表盘 -->
+                <div class="card dashboard-status-card">
+                    <div class="card-header">
+                        <h3 class="card-title">实时打印状态与执行监视</h3>
+                        <span class="status-badge" id="job-status-badge">IDLE</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" width="160" height="160">
+                                <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.1)" stroke-width="12" fill="transparent" r="68" cx="80" cy="80"></circle>
+                                <circle class="progress-ring-bar" id="job-progress-circle" stroke="#10b981" stroke-width="12" stroke-linecap="round" fill="transparent" r="68" cx="80" cy="80" stroke-dasharray="427.25" stroke-dashoffset="427.25" style="stroke-dashoffset: 427.25;"></circle>
+                            </svg>
+                            <div class="progress-ring-text">
+                                <span class="progress-value" id="job-progress-percent">0.0%</span>
+                                <span class="progress-label" id="job-layer-info">Layer 0 / 100</span>
+                            </div>
+                        </div>
+
+                        <div class="time-track-grid">
+                            <div class="time-item">
+                                <span class="time-label">已用时间:</span>
+                                <span class="time-val" id="job-elapsed-time">00:00:07</span>
+                            </div>
+                            <div class="time-item">
+                                <span class="time-label">剩余时间:</span>
+                                <span class="time-val" id="job-remaining-time">00:01:33</span>
+                            </div>
+                        </div>
+
+                        <div class="gcode-monitor-box">
+                            <div class="monitor-header">
+                                <span class="monitor-title">当前流式 G-code 指令:</span>
+                                <span class="monitor-model" id="job-model-name">CalibrationCube.gcode</span>
+                            </div>
+                            <div class="monitor-line" id="job-current-line">M524 ; Hardware ACK job cancelled</div>
+                        </div>
+
+                        <div class="gcode-manual-box">
+                            <div class="gcode-input-row">
+                                <input type="text" class="gcode-text-input" id="gcode-manual-input" placeholder="输入 G-code 指令 (如 G28 / M114 / T1)...">
+                                <button type="button" class="btn-touch-action btn-primary" id="btn-send-gcode" data-i18n="btn_send_gcode" disabled="">发送指令</button>
+                            </div>
+                            <div class="gcode-quick-bar">
+                                <button type="button" class="btn-touch-action btn-small btn-quick-gcode" data-gcode="G28" data-i18n="quick_g28" disabled="">G28 归零</button>
+                                <button type="button" class="btn-touch-action btn-small btn-quick-gcode" data-gcode="M114" data-i18n="quick_m114" disabled="">M114 查坐标</button>
+                                <button type="button" class="btn-touch-action btn-small btn-quick-gcode" data-gcode="T0" data-i18n="quick_t0" disabled="">T0 料槽1</button>
+                                <button type="button" class="btn-touch-action btn-small btn-quick-gcode" data-gcode="T1" data-i18n="quick_t1" disabled="">T1 料槽2</button>
+                            </div>
+                        </div>
+
+                        <div class="job-actions-bar">
+                            <button type="button" class="btn-touch-action btn-success" id="btn-job-start" style="display: inline-flex;" disabled="">
+                                <span class="btn-icon">▶</span>
+                                <span class="btn-label">开始打印</span>
+                            </button>
+                            <button type="button" class="btn-touch-action btn-warning" id="btn-job-pause" style="display:none;">
+                                <span class="btn-icon">⏸</span>
+                                <span class="btn-label">暂停</span>
+                            </button>
+                            <button type="button" class="btn-touch-action btn-primary" id="btn-job-resume" style="display:none;" disabled="">
+                                <span class="btn-icon">▶</span>
+                                <span class="btn-label">继续</span>
+                            </button>
+                            <button type="button" class="btn-touch-action btn-danger" id="btn-job-cancel" style="display:none;">
+                                <span class="btn-icon">⏹</span>
+                                <span class="btn-label">取消作业</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：G-code 作业文件中心 -->
+                <div class="card dashboard-files-card">
+                    <div class="card-header">
+                        <h3 class="card-title">📁 G-code 模型与切片文件</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="dropzone" id="gcode-dropzone">
+                            <span class="dropzone-icon">📥</span>
+                            <span class="dropzone-text">拖拽 .gcode 文件到此处，或点击浏览上传</span>
+                            <input type="file" id="gcode-file-input" accept=".gcode" style="display:none;">
+                        </div>
+
+                        <div class="sample-models-section">
+                            <h4 class="sub-title">推荐测试模型 (内置免切片样例):</h4>
+                            <div class="sample-model-item">
+                                <div class="sample-info">
+                                    <span class="sample-name">🚢 3DBenchy.gcode</span>
+                                    <span class="sample-meta">12.4 MB · 350层 · 4色混色</span>
+                                </div>
+                                <button type="button" class="btn-touch-action btn-small" data-load-model="3DBenchy.gcode">一键载入</button>
+                            </div>
+                            <div class="sample-model-item">
+                                <div class="sample-info">
+                                    <span class="sample-name">🧊 CalibrationCube.gcode</span>
+                                    <span class="sample-meta">2.1 MB · 100层 · 尺寸校验</span>
+                                </div>
+                                <button type="button" class="btn-touch-action btn-small" data-load-model="CalibrationCube.gcode">一键载入</button>
+                            </div>
+                            <div class="sample-model-item">
+                                <div class="sample-info">
+                                    <span class="sample-name">🎨 ColorSwatch_4Color.gcode</span>
+                                    <span class="sample-meta">5.8 MB · 180层 · CMYK渐变</span>
+                                </div>
+                                <button type="button" class="btn-touch-action btn-small" data-load-model="ColorSwatch_4Color.gcode">一键载入</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 标签页 2：🕹️ 轴控与 5×5 自动调平网格 -->
+        <section class="tab-content" id="tab-motion" role="tabpanel">
+            <div class="section-intro">
+                <div class="intro-text">
+                    <h2 class="section-title" data-i18n="motion_heading">🕹️ 轴控与 5×5 自动调平</h2>
+                    <p class="section-desc" data-i18n="motion_desc">三轴触控罗盘手动微调、G28 软件回零与 5×5 调平高程偏差热力图。</p>
+                </div>
+                <div class="intro-actions">
+                    <button type="button" class="btn-touch-action btn-primary" id="btn-home-all" disabled="">
+                        <span class="btn-icon">🏠</span>
+                        <span class="btn-label">全部归零 (G28)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="motion-grid">
+                <!-- 左侧：手动轴控罗盘 -->
+                <div class="card motion-jog-card">
+                    <div class="card-header">
+                        <h3 class="card-title">三轴手动步进对焦点</h3>
+                        <div class="step-selector-group" id="step-selector">
+                            <span class="step-label">步长:</span>
+                            <button type="button" class="btn-step" data-step="0.1">0.1</button>
+                            <button type="button" class="btn-step" data-step="1">1</button>
+                            <button type="button" class="btn-step active" data-step="10">10</button>
+                            <button type="button" class="btn-step" data-step="100">100</button>
+                            <span class="step-unit">mm</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="jog-layout">
+                            <!-- XY 罗盘 -->
+                            <div class="compass-pad">
+                                <div class="compass-row">
+                                    <button type="button" class="btn-jog" data-axis="Y" data-dir="1" title="+Y 前进" disabled="">▲ +Y</button>
+                                </div>
+                                <div class="compass-row compass-mid">
+                                    <button type="button" class="btn-jog" data-axis="X" data-dir="-1" title="-X 向左" disabled="">◀ -X</button>
+                                    <button type="button" class="btn-jog btn-jog-home" id="btn-home-xy" title="XY 归零" disabled="">🏠</button>
+                                    <button type="button" class="btn-jog" data-axis="X" data-dir="1" title="+X 向右" disabled="">+X ▶</button>
+                                </div>
+                                <div class="compass-row">
+                                    <button type="button" class="btn-jog" data-axis="Y" data-dir="-1" title="-Y 后退" disabled="">▼ -Y</button>
+                                </div>
+                            </div>
+
+                            <!-- Z 轴升降 -->
+                            <div class="z-pad">
+                                <button type="button" class="btn-jog" data-axis="Z" data-dir="1" title="Z 上升" disabled="">⬆ Z 抬起</button>
+                                <button type="button" class="btn-jog" data-axis="Z" data-dir="0.05" title="+0.05mm 婴儿步" disabled="">+0.05</button>
+                                <button type="button" class="btn-jog" data-axis="Z" data-dir="-0.05" title="-0.05mm 婴儿步" disabled="">-0.05</button>
+                                <button type="button" class="btn-jog" data-axis="Z" data-dir="-1" title="Z 下降" disabled="">⬇ Z 下降</button>
+                            </div>
+                        </div>
+
+                        <!-- 实时坐标仪表 -->
+                        <div class="coord-readout-board">
+                            <div class="coord-item">
+                                <span class="coord-axis">X:</span>
+                                <span class="coord-val" id="coord-val-x">10010.00</span>
+                                <span class="coord-unit">mm</span>
+                            </div>
+                            <div class="coord-item">
+                                <span class="coord-axis">Y:</span>
+                                <span class="coord-val" id="coord-val-y">10.00</span>
+                                <span class="coord-unit">mm</span>
+                            </div>
+                            <div class="coord-item">
+                                <span class="coord-axis">Z:</span>
+                                <span class="coord-val" id="coord-val-z">1.05</span>
+                                <span class="coord-unit">mm</span>
+                            </div>
+                            <div class="coord-item">
+                                <span class="coord-axis">E:</span>
+                                <span class="coord-val" id="coord-val-e">0.00</span>
+                                <span class="coord-unit">mm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：5x5 自动调平高程热力图 -->
+                <div class="card motion-leveling-card">
+                    <div class="card-header">
+                        <h3 class="card-title">5×5 自动调平高程偏差热力图 (mm)</h3>
+                        <button type="button" class="btn-touch-action btn-small" id="btn-trigger-leveling" disabled="">📐 重新测量</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="leveling-grid-container" id="leveling-mesh-grid">
+                            <!-- 25 点网格单元格由 JS 动态生成 -->
+                        </div>
+                        <div class="leveling-legend">
+                            <span class="legend-scale blue">-0.20 mm</span>
+                            <span class="legend-bar"></span>
+                            <span class="legend-scale green">0.00 mm (平整)</span>
+                            <span class="legend-bar"></span>
+                            <span class="legend-scale orange">+0.20 mm</span>
+                        </div>
+                        <div class="leveling-metrics-row">
+                            <div class="metric-item">
+                                <span class="metric-lbl">极值跨度:</span>
+                                <span class="metric-val" id="mesh-variance-val">0.29 mm</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-lbl">平面倾斜:</span>
+                                <span class="metric-val" id="mesh-tilt-val">X-偏高 / Y+偏低</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 标签页 3：4 通道供料系统料槽与混色权重调色板 -->
+        <section class="tab-content" id="tab-slots" role="tabpanel">
+            <div class="section-intro">
+                <div class="intro-text">
+                    <h2 data-i18n="slots_heading">4 通道耗材料槽映射与混色规划</h2>
+                    <p data-i18n="slots_desc">配置 Slot 1~4 耗材类型、颜色及余量。混色权重基准严格遵循 10000 规范 (COL-001 / TWIN-17)。</p>
+                </div>
+                <div class="mixing-presets">
+                    <span class="preset-title" data-i18n="preset_title">快捷混色配比:</span>
+                    <button type="button" class="btn-preset" data-preset="single-1">Slot 1 (100%)</button>
+                    <button type="button" class="btn-preset" data-preset="single-2">Slot 2 (100%)</button>
+                    <button type="button" class="btn-preset" data-preset="dual-50">双色 (50:50)</button>
+                    <button type="button" class="btn-preset" data-preset="quad-25">四色均分 (25%×4)</button>
+                </div>
+            </div>
+
+            <!-- 4 个料槽卡片栅格 -->
+            <div class="slots-grid">
+                <!-- Slot 1 -->
+                <div class="slot-card" id="slot-card-0">
+                    <div class="slot-card-header">
+                        <div class="slot-badge">CH-1</div>
+                        <h3 class="slot-name" data-i18n="slot_1">料槽 1 (Slot 1)</h3>
+                        <span class="slot-loaded-tag" id="slot-loaded-0" data-i18n="tag_loaded">已装载</span>
+                    </div>
+                    <div class="slot-field">
+                        <label class="field-label" data-i18n="lbl_material">材料类型</label>
+                        <select class="field-select" id="slot-mat-0">
+                            <option value="PLA">PLA</option>
+                            <option value="PETG">PETG</option>
+                            <option value="ABS">ABS</option>
+                            <option value="TPU">TPU</option>
+                            <option value="PC">PC</option>
+                            <option value="PA-CF">PA-CF</option>
+                        </select>
+                    </div>
+                    <div class="slot-field">
+                        <label class="field-label" data-i18n="lbl_color">耗材颜色</label>
+                        <div class="color-picker-group">
+                            <span class="color-swatch-box" id="slot-swatch-0" style="background-color: #E53935;"></span>
+                            <input type="color" class="color-native-input" id="slot-color-0" value="#E53935">
+                            <input type="text" class="color-hex-input" id="slot-hex-0" value="#E53935" maxlength="7">
+                        </div>
+                    </div>
+                    <div class="palette-swatches" data-target="0">
+                        <button type="button" class="palette-btn" style="background: #E53935;" data-hex="#E53935" title="Red"></button>
+                        <button type="button" class="palette-btn" style="background: #1E88E5;" data-hex="#1E88E5" title="Blue"></button>
+                        <button type="button" class="palette-btn" style="background: #43A047;" data-hex="#43A047" title="Green"></button>
+                        <button type="button" class="palette-btn" style="background: #FDD835;" data-hex="#FDD835" title="Yellow"></button>
+                        <button type="button" class="palette-btn" style="background: #FB8C00;" data-hex="#FB8C00" title="Orange"></button>
+                        <button type="button" class="palette-btn" style="background: #FFFFFF; border: 1px solid #888;" data-hex="#FFFFFF" title="White"></button>
+                        <button type="button" class="palette-btn" style="background: #212121;" data-hex="#212121" title="Black"></button>
+                    </div>
+                    <div class="slot-field">
+                        <div class="slider-header">
+                            <label class="field-label" data-i18n="lbl_remaining">余量估算</label>
+                            <span class="slider-val" id="slot-rem-val-0">85% (~850g)</span>
+                        </div>
+                        <input type="range" class="field-range" id="slot-rem-0" min="0" max="100" value="85">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="slot-progress-0" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                    <div class="slot-field">
+                        <div class="slider-header">
+                            <label class="field-label" data-i18n="lbl_weight">混色基准权重 (0~10000)</label>
+                            <span class="weight-permille" id="slot-weight-permille-0">100.00%</span>
+                        </div>
+                        <input type="number" class="field-number" id="slot-weight-0" min="0" max="10000" step="100" value="10000">
+                    </div>
+                    <div class="slot-hw-actions">
+                        <button type="button" class="btn-touch-action btn-small btn-slot-act" data-slot-id="1" data-slot-action="0" data-i18n="btn_slot_select" disabled="">选槽</button>
+                        <button type="button" class="btn-touch-action btn-small btn-primary btn-slot-act" data-slot-id="1" data-slot-action="1" data-i18n="btn_slot_load" disabled="">进丝</button>
+                        <button type="button" class="btn-touch-action btn-small btn-slot-act" data-slot-id="1" data-slot-action="2" data-i18n="btn_slot_unload" disabled="">退丝</button>
+                    </div>
+                </div>
+
+                <!-- Slot 2 -->
+                <div class="slot-card" id="slot-card-1">
+                    <div class="slot-card-header">
+                        <div class="slot-badge">CH-2</div>
+                        <h3 class="slot-name" data-i18n="slot_2">料槽 2 (Slot 2)</h3>
+                        <span class="slot-loaded-tag" id="slot-loaded-1" data-i18n="tag_loaded">已装载</span>
+                    </div>
+                    <div class="slot-field">
+                        <label class="field-label" data-i18n="lbl_material">材料类型</label>
+                        <select class="field-select" id="slot-mat-1">
+                            <option value="PLA">PLA</option>
+                            <option value="PETG">PETG</option>
+                            <option value="ABS">ABS</option>
+                            <option value="TPU">TPU</option>
+                            <option value="PC">PC</option>
+                            <option value="PA-CF">PA-CF</option>
+                        </select>
+                    </div>
+                    <div class="slot-field">
+                        <label class="field-label" data-i18n="lbl_color">耗材颜色</label>
+                        <div class="color-picker-group">
+                            <span class="color-swatch-box" id="slot-swatch-1" style="background-color: #1E88E5;"></span>
+                            <input type="color" class="color-native-input" id="slot-color-1" value="#1E88E5">
+                            <input type="text" class="color-hex-input" id="slot-hex-1" value="#1E88E5" maxlength="7">
+                        </div>
+                    </div>
+                    <div class="palette-swatches" data-target="1">
+                        <button type="button" class="palette-btn" style="background: #E53935;" data-hex="#E53935" title="Red"></button>
+                        <button type="button" class="palette-btn" style="background: #1E88E5;" data-hex="#1E88E5" title="Blue"></button>
+                        <button type="button" class="palette-btn" style="background: #43A047;" data-hex="#43A047" title="Green"></button>
+                        <button type="button" class="palette-btn" style="background: #FDD835;" data-hex="#FDD835" title="Yellow"></button>
+                        <button type="button" class="palette-btn" style="background: #FB8C00;" data-hex="#FB8C00" title="Orange"></button>
+                        <button type="button" class="palette-btn" style="background: #FFFFFF; border: 1px solid #888;" data-hex="#FFFFFF" title="White"></button>
+                        <button type="button" class="palette-btn" style="background: #212121;" data-hex="#212121" title="Black"></button>
+                    </div>
+                    <div class="slot-field">
+                        <div class="slider-header">
+                            <label class="field-label" data-i18n="lbl_remaining">余量估算</label>
+                            <span class="slider-val" id="slot-rem-val-1">50% (~500g)</span>
+                        </div>
+                        <input type="range" class="field-range" id="slot-rem-1" min="0" max="100" value="50">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="slot-progress-1" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="slot-field">
+                        <div class="slider-header">
+                            <label class="field-label" data-i18n="lbl_weight">混色基准权重 (0~10000)</label>
+                            <span class="weight-permille" id="slot-weight-permille-1">0.00%</span>
+                        </div>
+                        <input type="number" class="field-number" id="slot-weight-1" min="0" max="10000" step="100" value="0">
+                    </div>
+                    <div class="slot-hw-actions">
+                        <button type="button" class="btn-touch-action btn-small btn-slot-act" data-slot-id="2" data-slot-action="0" data-i18n="btn_slot_select" disabled="">选槽</button>
+                        <button type="button" class="btn-touch-action btn-small btn-primary btn-slot-act" data-slot-id="2" data-slot-action="1" data-i18n="btn_slot_load" disabled="">进丝</button>
+                        <button type="button" class="btn-touch-action btn-small btn-slot-act" data-slot-id="2" data-slot-action="2" data-i18n="btn_slot_unload" disabled="">退丝</button>
+                    </div>
+                </div>
+
+                <!-- Slot 3 -->
+                <div class="slot-card" id="slot-card-2">
+                    <div class="slot-card-header">
+                        <div class="slot-badge">CH-3</div>
+                        <h3 class="slot-name" data-i18n="slot_3">料槽 3 (Slot 3)</h3>
+                        <span class="slot-loaded-tag" id="slot-loaded-2" data-i18n="tag_loaded">已装载</span>
+                    </div>
+                    <div class="slot-field">
+                        <label class="field-label" data-i18n="lbl_material">材料类型</label>
+                        <select class="field-select" id="slot-mat-2">
+                            <option value="PLA">PLA</option>
+                            <option value="PETG">PETG</option>
+                            <option value="ABS">ABS</option>
+                            <option value="TPU">TPU</option>
+                            <option value="PC">PC</option>
+                            <option value="PA-CF">PA-CF</option>
+                        </select>
+                    </div>
+                    <div class="slot-field">
+                        <label class="field-label" data-i18n="lbl_color">耗材颜色</label>
+                        <div class="color-picker-group">
+                            <span class="color-swatch-box" id="slot-swatch-2" style="background-color: #FFFFFF;"></span>
+                            <input type="color" class="color-native-input" id="slot-color-2" value="#FFFFFF">
+                            <input type="text" class="color-hex-input" id="slot-hex-2" value="#FFFFFF" maxlength="7">
+                        </div>
+                    </div>
+                    <div class="palette-swatches" data-target="2">
+                        <button type="button" class="palette-btn" style="background: #E53935;" data-hex="#E53935" title="Red"></button>
+                        <button type="button" class="palette-btn" style="background: #1E88E5;" data-hex="#1E88E5" title="Blue"></button>
+                        <button type="button" class="palette-btn" style="background: #43A047;" data-hex="#43A047" title="Green"></button>
+                        <button type="button" class="palette-btn" style="background: #FDD835;" data-hex="#FDD835" title="Yellow"></button>
+                        <button type="button" class="palette-btn" style="background: #FB8C00;" data-hex="#FB8C00" title="Orange"></button>
+                        <button type="button" class="palette-btn" style="background: #FFFFFF; border: 1px solid #888;" data-hex="#FFFFFF" title="White"></button>
+                        <button type="button" class="palette-btn" style="background: #212121;" data-hex="#212121" title="Black"></button>
+                    </div>
+                    <div class="slot-field">
+                        <div class="slider-header">
+                            <label class="field-label" data-i18n="lbl_remaining">余量估算</label>
+                            <span class="slider-val" id="slot-rem-val-2">70% (~700g)</span>
+                        </div>
+                        <input type="range" class="field-range" id="slot-rem-2" min="0" max="100" value="70">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="slot-progress-2" style="width: 70%;"></div>
+                        </div>
+                    </div>
+                    <div class="slot-field">
+                        <div class="slider-header">
+                            <label class="field-label" data-i18n="lbl_weight">混色基准权重 (0~10000)</label>
+                            <span class="weight-permille" id="slot-weight-permille-2">0.00%</span>
+                        </div>
+                        <input type="number" class="field-number" id="slot-weight-2" min="0" max="10000" step="100" value="0">
+                    </div>
+                    <div class="slot-hw-actions">
+                        <button type="button" class="btn-touch-action btn-small btn-slot-act" data-slot-id="3" data-slot-action="0" data-i18n="btn_slot_select" disabled="">选槽</button>
+                        <button type="button" class="btn-touch-action btn-small btn-primary btn-slot-act" data-slot-id="3" data-slot-action="1" data-i18n="btn_slot_load" disabled="">进丝</button>
+                        <button type="button" class="btn-touch-action btn-small btn-slot-act" data-slot-id="3" data-slot-action="2" data-i18n="btn_slot_unload" disabled="">退丝</button>
+                    </div>
+                </div>
+
+                <!-- Slot 4 -->
+                <div class="slot-card" id="slot-card-3">
+                    <div class="slot-card-header">
+                        <div class="slot-badge">CH-4</div>
+                        <h3 class="slot-name" data-i18n="slot_4">料槽 4 (Slot 4)</h3>
+                        <span class="slot-loaded-tag" id="slot-loaded-3" data-i18n="tag_loaded">已装载</span>
+                    </div>
+                    <div class="slot-field">
+                        <label class="field-label" data-i18n="lbl_material">材料类型</label>
+                        <select class="field-select" id="slot-mat-3">
+                            <option value="PLA">PLA</option>
+                            <option value="PETG">PETG</option>
+                            <option value="ABS">ABS</option>
+                            <option value="TPU">TPU</option>
+                            <option value="PC">PC</option>
+                            <option value="PA-CF">PA-CF</option>
+                        </select>
+                    </div>
+                    <div class="slot-field">
+                        <label class="field-label" data-i18n="lbl_color">耗材颜色</label>
+                        <div class="color-picker-group">
+                            <span class="color-swatch-box" id="slot-swatch-3" style="background-color: #212121;"></span>
+                            <input type="color" class="color-native-input" id="slot-color-3" value="#212121">
+                            <input type="text" class="color-hex-input" id="slot-hex-3" value="#212121" maxlength="7">
+                        </div>
+                    </div>
+                    <div class="palette-swatches" data-target="3">
+                        <button type="button" class="palette-btn" style="background: #E53935;" data-hex="#E53935" title="Red"></button>
+                        <button type="button" class="palette-btn" style="background: #1E88E5;" data-hex="#1E88E5" title="Blue"></button>
+                        <button type="button" class="palette-btn" style="background: #43A047;" data-hex="#43A047" title="Green"></button>
+                        <button type="button" class="palette-btn" style="background: #FDD835;" data-hex="#FDD835" title="Yellow"></button>
+                        <button type="button" class="palette-btn" style="background: #FB8C00;" data-hex="#FB8C00" title="Orange"></button>
+                        <button type="button" class="palette-btn" style="background: #FFFFFF; border: 1px solid #888;" data-hex="#FFFFFF" title="White"></button>
+                        <button type="button" class="palette-btn" style="background: #212121;" data-hex="#212121" title="Black"></button>
+                    </div>
+                    <div class="slot-field">
+                        <div class="slider-header">
+                            <label class="field-label" data-i18n="lbl_remaining">余量估算</label>
+                            <span class="slider-val" id="slot-rem-val-3">30% (~300g)</span>
+                        </div>
+                        <input type="range" class="field-range" id="slot-rem-3" min="0" max="100" value="30">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="slot-progress-3" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    <div class="slot-field">
+                        <div class="slider-header">
+                            <label class="field-label" data-i18n="lbl_weight">混色基准权重 (0~10000)</label>
+                            <span class="weight-permille" id="slot-weight-permille-3">0.00%</span>
+                        </div>
+                        <input type="number" class="field-number" id="slot-weight-3" min="0" max="10000" step="100" value="0">
+                    </div>
+                    <div class="slot-hw-actions">
+                        <button type="button" class="btn-touch-action btn-small btn-slot-act" data-slot-id="4" data-slot-action="0" data-i18n="btn_slot_select" disabled="">选槽</button>
+                        <button type="button" class="btn-touch-action btn-small btn-primary btn-slot-act" data-slot-id="4" data-slot-action="1" data-i18n="btn_slot_load" disabled="">进丝</button>
+                        <button type="button" class="btn-touch-action btn-small btn-slot-act" data-slot-id="4" data-slot-action="2" data-i18n="btn_slot_unload" disabled="">退丝</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 权重总和校验与提交条 -->
+            <div class="weight-validation-panel">
+                <div class="validation-info">
+                    <span class="validation-label" data-i18n="val_total_title">混色权重总和:</span>
+                    <span class="validation-counter" id="total-weight-display">10000 / 10000 (100.00%)</span>
+                    <span class="validation-badge badge-valid" id="weight-status-badge" data-i18n="val_valid">有效 (100.00%)</span>
+                </div>
+                <div class="validation-detail" id="weight-status-msg" data-i18n="val_msg_ok" style="color: var(--text-secondary);">权重总和严格等于 10000，符合 COL-001 混色作业规划。</div>
+                <div class="save-actions">
+                    <button type="button" class="btn-save-action" id="btn-save-slots" data-i18n="btn_save_slots">保存料槽映射配置</button>
+                    <span class="save-feedback" id="slot-save-feedback"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 标签页 2：温度与硬件传感器监控 (严防假数据硬门禁) -->
+        <section class="tab-content" id="tab-sensors" role="tabpanel">
+            <div class="section-intro">
+                <div class="intro-text">
+                    <h2 data-i18n="sensors_heading">双 MCU 传感器与温度状态实时遥测</h2>
+                    <p data-i18n="sensors_desc">严格展示后端真实微服务遥测数据。未接入真实硬件或离线项明确指示，严防伪造温度。</p>
+                </div>
+                <button type="button" class="btn-touch-action" id="btn-request-sample" data-i18n="btn_sample">立即准入采样 (POST)</button>
+            </div>
+
+            <div class="sensors-grid">
+                <!-- TH 工具头卡片 -->
+                <div class="sensor-card" id="card-th">
+                    <div class="sensor-card-header">
+                        <span class="node-badge th-badge">TH</span>
+                        <h3 data-i18n="th_title">工具头喷嘴 (Extruder Nozzle)</h3>
+                        <span class="quality-badge" id="th-quality">FAULT</span>
+                    </div>
+                    <div class="temp-big-display">
+                        <span class="temp-num" id="th-current-temp">--.-</span>
+                        <span class="temp-celsius">°C</span>
+                    </div>
+                    <div class="sensor-props">
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_target_temp">目标设定:</span>
+                            <span class="prop-val" id="th-target-temp">0.0 °C</span>
+                        </div>
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_duty">加热占空比:</span>
+                            <span class="prop-val" id="th-duty">0%</span>
+                        </div>
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_sensor_state">传感器状态:</span>
+                            <span class="prop-val" id="th-sensor-status">OK</span>
+                        </div>
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_firmware_ver">固件版本:</span>
+                            <span class="prop-val" id="th-firmware-version" data-i18n="ver_status_unknown">设备离线</span>
+                        </div>
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_raw_adc">ADC 读数:</span>
+                            <span class="prop-val" id="th-raw-adc">0</span>
+                        </div>
+                    </div>
+                    <div class="temp-control-panel">
+                        <div class="temp-input-row">
+                            <input type="number" class="field-number temp-target-input" id="input-th-target" min="0" max="300" step="5" value="200">
+                            <span class="temp-unit-lbl">°C</span>
+                            <button type="button" class="btn-touch-action btn-primary btn-small" id="btn-set-th-temp" data-i18n="btn_set_th_temp" disabled="">设定喷嘴温度</button>
+                        </div>
+                        <div class="temp-preset-row">
+                            <button type="button" class="btn-preset btn-th-preset" data-temp="0" data-i18n="preset_off" disabled="">0°C 关</button>
+                            <button type="button" class="btn-preset btn-th-preset" data-temp="200" disabled="">200°C PLA</button>
+                            <button type="button" class="btn-preset btn-th-preset" data-temp="240" disabled="">240°C ABS</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MC 热床卡片 -->
+                <div class="sensor-card" id="card-mc">
+                    <div class="sensor-card-header">
+                        <span class="node-badge mc-badge">MC</span>
+                        <h3 data-i18n="mc_title">运动主控热床 (Heated Bed)</h3>
+                        <span class="quality-badge" id="mc-quality">FAULT</span>
+                    </div>
+                    <div class="temp-big-display">
+                        <span class="temp-num" id="mc-current-temp">--.-</span>
+                        <span class="temp-celsius">°C</span>
+                    </div>
+                    <div class="sensor-props">
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_target_temp">目标设定:</span>
+                            <span class="prop-val" id="mc-target-temp">0.0 °C</span>
+                        </div>
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_duty">加热占空比:</span>
+                            <span class="prop-val" id="mc-duty">0%</span>
+                        </div>
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_sensor_state">传感器状态:</span>
+                            <span class="prop-val" id="mc-sensor-status">OK</span>
+                        </div>
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_firmware_ver">固件版本:</span>
+                            <span class="prop-val" id="mc-firmware-version" data-i18n="ver_status_unknown">设备离线</span>
+                        </div>
+                        <div class="prop-item">
+                            <span class="prop-lbl" data-i18n="lbl_raw_adc">ADC 读数:</span>
+                            <span class="prop-val" id="mc-raw-adc">0</span>
+                        </div>
+                    </div>
+                    <div class="temp-control-panel">
+                        <div class="temp-input-row">
+                            <input type="number" class="field-number temp-target-input" id="input-mc-target" min="0" max="120" step="5" value="60">
+                            <span class="temp-unit-lbl">°C</span>
+                            <button type="button" class="btn-touch-action btn-primary btn-small" id="btn-set-mc-temp" data-i18n="btn_set_mc_temp" disabled="">设定热床温度</button>
+                        </div>
+                        <div class="temp-preset-row">
+                            <button type="button" class="btn-preset btn-mc-preset" data-temp="0" data-i18n="preset_off" disabled="">0°C 关</button>
+                            <button type="button" class="btn-preset btn-mc-preset" data-temp="60" disabled="">60°C PLA</button>
+                            <button type="button" class="btn-preset btn-mc-preset" data-temp="80" disabled="">80°C PETG</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 通道断料检测传感器状态 -->
+                <div class="sensor-card full-width-card" id="card-runout">
+                    <div class="sensor-card-header">
+                        <span class="node-badge runout-badge">COL-007</span>
+                        <h3 data-i18n="runout_title">4 通道光电断料检测状态 (Filament Runout Sensors)</h3>
+                    </div>
+                    <div class="runout-grid">
+                        <div class="runout-item" id="runout-box-0">
+                            <span class="runout-channel">Slot 1:</span>
+                            <span class="runout-state-badge state-pass" id="runout-sensor-0" data-i18n="sensor_unknown">就绪 (正常)</span>
+                        </div>
+                        <div class="runout-item" id="runout-box-1">
+                            <span class="runout-channel">Slot 2:</span>
+                            <span class="runout-state-badge state-pass" id="runout-sensor-1" data-i18n="sensor_unknown">就绪 (正常)</span>
+                        </div>
+                        <div class="runout-item" id="runout-box-2">
+                            <span class="runout-channel">Slot 3:</span>
+                            <span class="runout-state-badge state-pass" id="runout-sensor-2" data-i18n="sensor_unknown">就绪 (正常)</span>
+                        </div>
+                        <div class="runout-item" id="runout-box-3">
+                            <span class="runout-channel">Slot 4:</span>
+                            <span class="runout-state-badge state-pass" id="runout-sensor-3" data-i18n="sensor_unknown">就绪 (正常)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 标签页 3：网络与局域网 mDNS 服务发现 -->
+        <section class="tab-content" id="tab-network" role="tabpanel">
+            <div class="section-intro">
+                <div class="intro-text">
+                    <h2 data-i18n="net_heading">局域网设备自发现与 mDNS 广播服务</h2>
+                    <p data-i18n="net_desc">轻量级 C 广播器向 224.0.0.251:5353 组播 _aisoc._tcp.local 服务，实现免 IP 直连。</p>
+                </div>
+            </div>
+
+            <div class="network-cards-grid">
+                <div class="net-card">
+                    <div class="net-card-icon">🌐</div>
+                    <h3 data-i18n="net_mdns_title">mDNS 局域网服务属性</h3>
+                    <div class="net-info-row">
+                        <span class="net-info-lbl" data-i18n="net_lbl_hostname">本地主机名:</span>
+                        <span class="net-info-val" id="mdns-hostname">aisoc-printer.local</span>
+                    </div>
+                    <div class="net-info-row">
+                        <span class="net-info-lbl" data-i18n="net_lbl_service">服务广播标识:</span>
+                        <span class="net-info-val" id="mdns-service">_aisoc._tcp.local</span>
+                    </div>
+                    <div class="net-info-row">
+                        <span class="net-info-lbl" data-i18n="net_lbl_multicast">组播目标:</span>
+                        <span class="net-info-val">224.0.0.251:5353</span>
+                    </div>
+                    <div class="net-info-row">
+                        <span class="net-info-lbl" data-i18n="net_lbl_port">HTTP Web 端口:</span>
+                        <span class="net-info-val" id="mdns-web-port">8080</span>
+                    </div>
+                    <div class="net-info-row">
+                        <span class="net-info-lbl" data-i18n="net_lbl_txt">TXT 元数据:</span>
+                        <span class="net-info-val">version=2.0, model=twin</span>
+                    </div>
+                </div>
+
+                <div class="net-card">
+                    <div class="net-card-icon">💻</div>
+                    <h3 data-i18n="net_access_title">浏览器快速直连指引</h3>
+                    <p data-i18n="net_access_p1">同一局域网下的 PC、手机或平板无需查找 IP，直接访问：</p>
+                    <div class="direct-link-box">
+                        <code class="direct-url" id="direct-url">http://aisoc-printer.local:8080</code>
+                        <button type="button" class="btn-copy-url" id="btn-copy-url" data-i18n="btn_copy">复制链接</button>
+                    </div>
+                    <div class="net-status-tip" data-i18n="net_tip">提示：网关已集成 C11/C++17 纯静态无堆内存分配的 mdns_advertiser 广播守护组件。</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 标签页 4：健康监控 (HMS) 与急停联动 -->
+        <section class="tab-content" id="tab-hms" role="tabpanel">
+            <div class="section-intro">
+                <div class="intro-text">
+                    <h2 data-i18n="hms_heading">全机健康监控系统与急停联动 (HMS)</h2>
+                    <p data-i18n="hms_desc">统一度量 0x1000~0x5000 分层错误码，双级急停与故障保护。</p>
+                </div>
+                <div class="estop-badge-container">
+                    <span class="estop-badge" id="estop-badge" data-i18n="estop_normal">急停状态: 正常</span>
+                </div>
+            </div>
+
+            <div class="hms-table-container">
+                <table class="hms-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="th_hms_code">错误代码</th>
+                            <th data-i18n="th_hms_subsys">子系统</th>
+                            <th data-i18n="th_hms_severity">严重度</th>
+                            <th data-i18n="th_hms_desc">描述与排查指引</th>
+                            <th data-i18n="th_hms_time">时间戳</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hms-table-body">
+                        <tr class="hms-empty-row">
+                            <td colspan="5" data-i18n="hms_empty">当前无活动告警 (系统健康运行)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 新机检查引导向导 (OOBE Modal) -->
+        <div class="modal-backdrop" id="oobe-modal" style="display: flex;" role="dialog" aria-modal="true" aria-labelledby="oobe-title">
+            <div class="modal-dialog">
+                <!-- 向导头部 -->
+                <div class="modal-header">
+                    <div class="modal-title-group">
+                        <span class="modal-icon">🛠️</span>
+                        <h2 class="modal-title" id="oobe-title" data-i18n="oobe_wizard_title">新机检查引导向导 (OOBE)</h2>
+                    </div>
+                    <button type="button" class="btn-close-modal" id="btn-close-oobe" aria-label="关闭向导">×</button>
+                </div>
+
+                <!-- 步骤进度指示条 -->
+                <div class="oobe-steps-bar">
+                    <div class="step-indicator" id="step-node-1" data-step="1">
+                        <div class="step-num">1</div>
+                        <div class="step-label" data-i18n="step_1">欢迎</div>
+                    </div>
+                    <div class="step-indicator" id="step-node-2" data-step="2">
+                        <div class="step-num">2</div>
+                        <div class="step-label" data-i18n="step_2">语言</div>
+                    </div>
+                    <div class="step-indicator active" id="step-node-3" data-step="3">
+                        <div class="step-num">3</div>
+                        <div class="step-label" data-i18n="step_3">通信与固件</div>
+                    </div>
+                    <div class="step-indicator" id="step-node-4" data-step="4">
+                        <div class="step-num">4</div>
+                        <div class="step-label" data-i18n="step_4">传感器检测</div>
+                    </div>
+                    <div class="step-indicator" id="step-node-5" data-step="5">
+                        <div class="step-num">5</div>
+                        <div class="step-label" data-i18n="step_5">就绪完成</div>
+                    </div>
+                </div>
+
+                <!-- 步骤内容容器 -->
+                <div class="oobe-body">
+                    <!-- Step 1: 欢迎 -->
+                    <div class="oobe-step-view" id="oobe-view-1">
+                        <div class="oobe-welcome-hero">
+                            <span class="hero-icon">🎉</span>
+                            <h3 data-i18n="oobe_w1_title">欢迎使用 AI-SoC 全彩多色 3D 打印机！</h3>
+                            <p data-i18n="oobe_w1_p1">本向导将引导您完成初次开机自检，包括语言设定、运动控制器通信握手、工具头串口连通性以及双端传感器健康核验。</p>
+                            <p class="oobe-rule-tip" data-i18n="oobe_w1_rule">核心真实性原则：系统严格遵循真实硬件接入检测规范，任何未连接或脱机组件均如实显示，绝不伪造通过结果。</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: 语言与主题 -->
+                    <div class="oobe-step-view" id="oobe-view-2">
+                        <h3 data-i18n="oobe_w2_title">选择系统界面语言与视觉主题</h3>
+                        <p data-i18n="oobe_w2_desc">您可以在下方选择偏好语言，设置将即时动态生效：</p>
+                        <div class="oobe-lang-selection">
+                            <button type="button" class="btn-lang-choice active" id="btn-choice-zh">
+                                <span class="choice-flag">🇨🇳</span>
+                                <span class="choice-text">简体中文 (zh-CN)</span>
+                            </button>
+                            <button type="button" class="btn-lang-choice" id="btn-choice-en">
+                                <span class="choice-flag">🇺🇸</span>
+                                <span class="choice-text">English (en-US)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: 固件与通信自检 (严格真实性) -->
+                    <div class="oobe-step-view active" id="oobe-view-3">
+                        <h3 data-i18n="oobe_w3_title">双 MCU 固件与通信链路自检</h3>
+                        <p data-i18n="oobe_w3_desc">系统正在尝试与底层微控制器建立 MiniMCProto 握手连接：</p>
+                        <div class="check-items-list">
+                            <div class="check-item-row">
+                                <div class="item-info">
+                                    <span class="item-title" data-i18n="oobe_mc_comm">MC (AT32F435) 运动主控通信链路</span>
+                                    <span class="item-sub" id="oobe-mc-version">固件版本: 设备离线</span>
+                                </div>
+                                <span class="check-result-badge badge-danger" id="oobe-mc-status" data-i18n="status_unready">设备离线</span>
+                            </div>
+                            <div class="check-item-row">
+                                <div class="item-info">
+                                    <span class="item-title" data-i18n="oobe_th_comm">TH (AT32F423) 工具头挤出机通信链路</span>
+                                    <span class="item-sub" id="oobe-th-version">固件版本: 设备离线</span>
+                                </div>
+                                <span class="check-result-badge badge-danger" id="oobe-th-status" data-i18n="status_unready">设备离线</span>
+                            </div>
+                            <div class="check-item-row">
+                                <div class="item-info">
+                                    <span class="item-title" data-i18n="oobe_fwd_state">AP 转发核心与协议同步状态</span>
+                                    <span class="item-sub" id="oobe-fwd-desc">MiniMCProto v2.0 协议帧同步</span>
+                                </div>
+                                <span class="check-result-badge badge-success" id="oobe-fwd-status" data-i18n="status_unready">在线 (帧同步正常)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: 传感器检测 (严格真实性) -->
+                    <div class="oobe-step-view" id="oobe-view-4">
+                        <h3 data-i18n="oobe_w4_title">双端温控与断料传感器有效性检测</h3>
+                        <p data-i18n="oobe_w4_desc">核验喷嘴/热床热敏电阻 ADC 有效性，检测断料光电对射状态：</p>
+                        <div class="check-items-list">
+                            <div class="check-item-row">
+                                <div class="item-info">
+                                    <span class="item-title" data-i18n="oobe_nozzle_temp">工具头喷嘴温度传感器 (TH NTC)</span>
+                                    <span class="item-sub" id="oobe-nozzle-detail">当前读数: --.- °C (有效区间 5~300°C)</span>
+                                </div>
+                                <span class="check-result-badge badge-success" id="oobe-nozzle-status" data-i18n="status_unready">正常 (122.6 °C)</span>
+                            </div>
+                            <div class="check-item-row">
+                                <div class="item-info">
+                                    <span class="item-title" data-i18n="oobe_bed_temp">热床加热板温度传感器 (MC NTC)</span>
+                                    <span class="item-sub" id="oobe-bed-detail">当前读数: --.- °C (有效区间 5~130°C)</span>
+                                </div>
+                                <span class="check-result-badge badge-success" id="oobe-bed-status" data-i18n="status_unready">正常 (300.0 °C)</span>
+                            </div>
+                            <div class="check-item-row">
+                                <div class="item-info">
+                                    <span class="item-title" data-i18n="oobe_runout">4 通道断料检测传感器组 (COL-007)</span>
+                                    <span class="item-sub" id="oobe-runout-detail">Slot 1~4 光电对射开关状态</span>
+                                </div>
+                                <span class="check-result-badge badge-success" id="oobe-runout-status" data-i18n="status_unready">正常 (料丝在位)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: 完成 -->
+                    <div class="oobe-step-view" id="oobe-view-5">
+                        <div class="oobe-welcome-hero">
+                            <span class="hero-icon">🏁</span>
+                            <h3 data-i18n="oobe_w5_title">新机自检向导已完成</h3>
+                            <p data-i18n="oobe_w5_p1">向导已保存您的界面与语言偏好设置。系统状态与传感器将继续在控制台仪表盘中保持实时监测。</p>
+                            <div class="oobe-summary-card">
+                                <div class="sum-row"><span class="sum-lbl" data-i18n="sum_lang">语言偏好:</span><span class="sum-val" id="sum-lang-val">简体中文 (zh-CN)</span></div>
+                                <div class="sum-row"><span class="sum-lbl" data-i18n="sum_theme">视觉主题:</span><span class="sum-val" id="sum-theme-val">深色模式</span></div>
+                                <div class="sum-row"><span class="sum-lbl" data-i18n="sum_slots">料槽配置:</span><span class="sum-val" data-i18n="sum_slots_val">4 通道已映射 (权重和 10000)</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 向导底部动作按钮 -->
+                <div class="modal-footer">
+                    <button type="button" class="btn-touch-action" id="btn-oobe-prev" style="display: inline-flex;" data-i18n="btn_prev">上一步</button>
+                    <button type="button" class="btn-touch-action btn-primary" id="btn-oobe-next" data-i18n="btn_next" style="display: inline-flex;">下一步</button>
+                    <button type="button" class="btn-touch-action btn-success" id="btn-oobe-finish" style="display: none;" data-i18n="btn_finish">进入打印控制台</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- 悬浮通知容器 (Toast Notifications) -->
+        <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+
+
+</body></html>

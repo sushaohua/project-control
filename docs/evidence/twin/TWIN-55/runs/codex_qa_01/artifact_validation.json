@@ -1,0 +1,19 @@
+{
+  "artifact_check": "PASS",
+  "stage1_group_inventory": 30,
+  "subcase_counts": {
+    "PASS": 19,
+    "BLOCKED": 9,
+    "FAIL": 16
+  },
+  "issue_count": 13,
+  "issue_evidence_and_source_hashes": "PASS",
+  "new_python_function_size_parameters_docstrings": "PASS",
+  "formal_hil_acceptance": "NOT_APPROVED",
+  "full_stage1_complete": false,
+  "intake_policy": "BLOCKED: existing HUMAN-only rule, see intake_validation.json",
+  "hash_seal_exclusions": [
+    "codex_session.jsonl为实际执行器持续追加的会话日志，不能在本会话结束前给出稳定最终SHA。保留原始日志，待COORD进程结束后固化。",
+    "evidence_index.json、SHA256SUMS不自引用；seal_check.log为封存后校验结果。"
+  ]
+}

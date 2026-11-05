@@ -1,0 +1,274 @@
+[UI-GW] Service listening on port 8080
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/api/v1/state' (668 bytes, application/octet-stream)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/api/v1/state' (668 bytes, application/octet-stream)
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] GET /api/v1/temperature/stream -> Client fd=5 connected to SSE stream
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/index.html' (66326 bytes, text/html; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/styles.css' (34746 bytes, text/css; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/app.js' (86764 bytes, application/javascript; charset=utf-8)
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] GET /api/v1/temperature/stream -> Client fd=6 connected to SSE stream
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/index.html' (66326 bytes, text/html; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/styles.css' (34746 bytes, text/css; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/app.js' (86764 bytes, application/javascript; charset=utf-8)
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] GET /api/v1/temperature/stream -> Client fd=6 connected to SSE stream
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/index.html' (66326 bytes, text/html; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/styles.css' (34746 bytes, text/css; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/app.js' (86764 bytes, application/javascript; charset=utf-8)
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/stream -> Client fd=6 connected to SSE stream
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/index.html' (66326 bytes, text/html; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/styles.css' (34746 bytes, text/css; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/app.js' (86764 bytes, application/javascript; charset=utf-8)
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] GET /api/v1/temperature/stream -> Client fd=7 connected to SSE stream
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/index.html' (66326 bytes, text/html; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/styles.css' (34746 bytes, text/css; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/app.js' (86764 bytes, application/javascript; charset=utf-8)
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] GET /api/v1/temperature/stream -> Client fd=6 connected to SSE stream
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/index.html' (66326 bytes, text/html; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/styles.css' (34746 bytes, text/css; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/app.js' (86764 bytes, application/javascript; charset=utf-8)
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/stream -> Client fd=6 connected to SSE stream
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/api/v1/state' (668 bytes, application/octet-stream)
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/index.html' (66326 bytes, text/html; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/styles.css' (34746 bytes, text/css; charset=utf-8)
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/app.js' (86764 bytes, application/javascript; charset=utf-8)
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] GET /api/v1/temperature/stream -> Client fd=6 connected to SSE stream
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] POST /api/v1/temperature/sample -> accepted=true
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK
+[UI_GW DEBUG] HTTP 200 Static: '/tmp/aisoc_twin_logs/web_root/api/v1/state' (668 bytes, application/octet-stream)
+[UI_GW DEBUG] GET /api/v1/temperature/snapshot -> 200 OK

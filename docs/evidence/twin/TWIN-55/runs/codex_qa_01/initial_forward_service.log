@@ -1,0 +1,290 @@
+[FORWARD] Service active on /dev/ttyUSB0 at 921600 baud (DDS domain 0)
+[FORWARD DEBUG] TX Version Query: target=MC(1), seq=1 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Version Response: node=1, proto=2.0, fw=2.0, commit=0xA6791332
+[FORWARD DEBUG] TX Version Query: target=TH(2), seq=2 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Version Response: node=2, proto=2.0, fw=2.0, commit=0x6356C05A
+[FORWARD DEBUG] TX Query: target=1, seq=3 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=4 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121900 (121.9 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=5 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=6 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=7 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=8 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122500 (122.5 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=9 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=10 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121000 (121.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=11 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=12 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122300 (122.3 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=14 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=15 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121400 (121.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=16 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=17 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121900 (121.9 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=18 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=19 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=20 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=21 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122300 (122.3 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=22 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=23 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=24 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=25 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=26 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=27 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=28 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=29 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121400 (121.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=30 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=31 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=123300 (123.3 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=34 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=35 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=38 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=39 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121200 (121.2 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=44 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=45 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121400 (121.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=46 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=47 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=48 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=49 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121900 (121.9 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=50 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=51 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=54 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=55 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122500 (122.5 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=60 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=61 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121700 (121.7 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=64 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=65 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121300 (121.3 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=70 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=71 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121500 (121.5 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=75 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=76 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122000 (122.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=77 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=78 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=79 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=80 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=81 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=82 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121900 (121.9 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=83 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=84 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122300 (122.3 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=85 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=86 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121100 (121.1 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=87 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=88 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121100 (121.1 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=89 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=90 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=93 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=94 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121600 (121.6 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=101 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=102 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121500 (121.5 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=103 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=104 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=105 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=106 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121700 (121.7 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=107 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=108 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=112 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=113 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=123200 (123.2 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=116 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=117 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=120 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=121 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=125 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=126 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121200 (121.2 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=127 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=128 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122000 (122.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=129 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=130 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122200 (122.2 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=132 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=133 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=139 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=140 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=121600 (121.6 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=141 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=142 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=143 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=144 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=147 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=148 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122200 (122.2 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=149 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=150 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=151 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=152 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122500 (122.5 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=153 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=154 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=123600 (123.6 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=155 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=156 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122300 (122.3 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=157 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=158 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122700 (122.7 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=165 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=166 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=173 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=174 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=127400 (127.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=181 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=182 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=185 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=186 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=126000 (126.0 C) -> Fast DDS Pub
+[FWD FAULT] target_node=0x03 sequence_id=188 elapsed_ms=5 error_code=-10
+[FORWARD DEBUG] TX Query: target=1, seq=189 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=190 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=191 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=192 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=2, temp_millic=122400 (122.4 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=1, seq=199 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=200 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=201 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=202 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=203 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=204 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=205 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=206 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=207 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=208 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=209 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=2, seq=210 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=211 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=212 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=213 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=214 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=215 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=216 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=217 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=218 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=219 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=220 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
+[FORWARD DEBUG] TX Query: target=1, seq=221 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Response: node=1, temp_millic=300000 (300.0 C) -> Fast DDS Pub
+[FORWARD DEBUG] TX Query: target=2, seq=222 -> /dev/ttyUSB0
+[FORWARD DEBUG] RX Query timeout or error (err=-8)
