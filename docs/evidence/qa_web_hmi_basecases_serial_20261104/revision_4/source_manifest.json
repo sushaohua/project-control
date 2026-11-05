@@ -1,0 +1,49 @@
+{
+  "scope": "非作者独立ARCH对revision3至4文档差异的定向复核；不是软件或HIL验收",
+  "reviewed_sha256": "67a2c1df609ce14773361a83b803ca414f13bf243be87961f97700ef798ff929",
+  "previous_reviewed_sha256": "d02a3b4b870b4edf85341c10e108cc604d32033f6cc9cd691d9774b73d319b6e",
+  "source_head": "17e0887da07ceb3b017623b791b6a6999e837c79",
+  "read_sources": [
+    {
+      "path": "AGENTS.md",
+      "snapshot": "rules/AGENTS.source.md",
+      "sha256": "59781839d7ebbf977f71e4659c31bb6fbb1e4fa6793080c460cff65b7094ada5"
+    },
+    {
+      "path": ".agents/rules/repository_rule_boundaries.md",
+      "snapshot": ".agents/rules/repository_rule_boundaries.md",
+      "sha256": "023c5e092e1e056e049406cb089d17eee7efc3f069feee649ec6fb8f9b8fcdca"
+    },
+    {
+      "path": ".agents/rules/repository_rule_sources.json",
+      "snapshot": ".agents/rules/repository_rule_sources.json",
+      "sha256": "cb56bda30747360eb6057758f181bc9b031662178d1d9fe9eac6d462c89c9e74"
+    },
+    {
+      "path": ".agents/rules/delivery_and_coord_gate.md",
+      "snapshot": ".agents/rules/delivery_and_coord_gate.md",
+      "sha256": "c5575b2467f15caa951ba0ed7b4b8ec6b1acc24ca818253318043c4910e0f054"
+    },
+    {
+      "path": ".agents/rules/codex_qa_review.md",
+      "snapshot": ".agents/rules/codex_qa_review.md",
+      "sha256": "79c8cb6c42bcbdf38ee41150e247f30895089bd53e1d72296ed65db120e68cb4"
+    },
+    {
+      "path": "docs/planning/qa_web_hmi_basecases_20261103.md",
+      "snapshot": "docs/planning/qa_web_hmi_basecases_20261103.md",
+      "sha256": "d02a3b4b870b4edf85341c10e108cc604d32033f6cc9cd691d9774b73d319b6e"
+    },
+    {
+      "path": "docs/planning/end_to_end_physical_link_remediation_plan_20261104.md",
+      "snapshot": "docs/planning/end_to_end_physical_link_remediation_plan_20261104.md",
+      "sha256": "21dd6cc16b9eb7d643662b6fba681e6360f4dcd98cdece55439c6f759c5b22cc"
+    },
+    {
+      "path": "docs/planning/independent_qa_vmware_execution_flow_20261103.md",
+      "snapshot": "docs/planning/independent_qa_vmware_execution_flow_20261103.md",
+      "sha256": "e043a25c169dfdab9de2d241185b9494e186c737cdd424dbf5ff7bf4038f8437"
+    }
+  ],
+  "source_rule_and_plan_hashes_unchanged": true
+}

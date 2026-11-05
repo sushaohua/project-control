@@ -1,0 +1,14 @@
+{
+  "session_id": "01a1a6dc-33a3-7053-875c-a8ef06502d6d",
+  "model": "gpt-6-luna",
+  "decision": "APPROVED",
+  "report": {
+    "role": "ARCH",
+    "decision": "APPROVED",
+    "reviewed_sha256": "67a2c1df609ce14773361a83b803ca414f13bf243be87961f97700ef798ff929",
+    "summary": "revision 4 定向审查通过。新增闭环表区分了请求受理与真实执行、限定了本地与级联日志的适用范围，并要求查询和恢复使用新鲜且可关联的证据；未发现会导致错误操作、错误通过或强求不适用日志的实质问题。",
+    "findings": [],
+    "accepted_scope": "仅批准该 SHA256 对应文档快照中 revision 3→4 差异及新增 [MC-DBG]/[TH-DBG] 闭环表的设计。此结论不代表服务器软件 QA、测试执行、HIL 或任何物理功能通过。",
+    "unexecuted": []
+  }
+}

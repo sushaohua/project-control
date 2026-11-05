@@ -1,0 +1,15 @@
+{
+  "session_id": "01a1a6d4-bd54-7171-bdc6-d996fffb899f",
+  "model": "gpt-6-luna",
+  "decision": "APPROVED",
+  "tokens_used": 183389,
+  "report": {
+    "role": "ARCH",
+    "decision": "APPROVED",
+    "reviewed_sha256": "d02a3b4b870b4edf85341c10e108cc604d32033f6cc9cd691d9774b73d319b6e",
+    "summary": "revision 3 文档快照审查通过。新增串口方法保留全部 27 个 BASE 和 3 个 DELTA，且未发现会导致错误放行或不必要阻断的实质问题。",
+    "findings": [],
+    "accepted_scope": "仅批准该 SHA256 对应快照的 QA 用例规格设计：串口采集与逐例核对方法、BASE/HIL 映射及相关证据要求。此结论不是软件或 HIL 验收，也不代表草案已冻结。",
+    "unexecuted": []
+  }
+}
