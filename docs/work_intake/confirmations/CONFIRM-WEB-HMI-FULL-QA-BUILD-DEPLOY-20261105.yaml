@@ -1,0 +1,28 @@
+schema_version: 1
+confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
+revision: 2
+demand_ids:
+- DEM-20261105-005
+category_ids:
+- REQ-20261105-001
+submission_ref:
+  id: 20261105_web_hmi_full_closed_loop_qa
+  revision: 1
+  submission_path: project-control/docs/work_intake/submissions/20261105_web_hmi_full_closed_loop_qa.md
+  submission_sha256: db143168eb57dfd86f889c0b4987437d2b3e3a41f7bfe8688f721a253b3a98b5
+canonical_markdown:
+  path: project-control/docs/planning/web_hmi_full_qa_build_deploy_confirmation_20261105.md
+  revision: 2
+  sha256: 7e92f1093ea1ba1f27fe4b0159bad926e6b0f44130f55d06ae223c730ddffd89
+prepared_by:
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+  integrator_session: 7812a1f6-5006-4971-a954-802f855cf20a
+user_choices:
+  q1_ap_build_and_manifest: Option-A
+  q2_mcu_flash_verification: Option-A
+  q3_physical_action_window: Option-A
+tasks:
+- TWIN-54
+- TWIN-55
+qa_policy: streamlined-v1
+status: approved-by-human

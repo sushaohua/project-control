@@ -45,6 +45,7 @@ child_tasks:
 - AUTO-04
 - AUTO-05
 - AUTO-06
+- AUTO-07
 - TWIN-30
 - TWIN-35
 - TWIN-40
@@ -52,6 +53,8 @@ child_tasks:
 - TWIN-46
 - TWIN-50
 - TWIN-53
+- TWIN-54
+- TWIN-55
 planning_relations:
 - MS-06
 - MS-08

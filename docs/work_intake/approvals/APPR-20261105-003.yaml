@@ -1,0 +1,27 @@
+schema_version: 1
+approval_id: APPR-20261105-003
+revision: 1
+approved_at: '2026-11-05T11:55:34+08:00'
+approved_by:
+  actor_type: HUMAN
+  actor_id: sushaohua
+  source_channel: coord_interactive_session
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+  verbatim_decision: "A1=方案A; A2=方案A; A3=方案A; A4=批准：按上述 9 步编译部署执行确认单推进 REQ-20261105-001，并同步放行 AUTO-07（具体固件烧录在 Step 5 呈报文件大小、哈希与基地址获批后执行）"
+bound_confirmation:
+  confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
+  revision: 2
+  path: project-control/docs/planning/web_hmi_full_qa_build_deploy_confirmation_20261105.md
+  sha256: 7e92f1093ea1ba1f27fe4b0159bad926e6b0f44130f55d06ae223c730ddffd89
+bound_submission:
+  submission_id: 20261105_web_hmi_full_closed_loop_qa
+  revision: 1
+  submission_path: project-control/docs/work_intake/submissions/20261105_web_hmi_full_closed_loop_qa.md
+  submission_sha256: db143168eb57dfd86f889c0b4987437d2b3e3a41f7bfe8688f721a253b3a98b5
+approval_mode: build_deploy_flow_approval_pending_step5_flash_authorization
+approved_demands:
+- demand_id: DEM-20261105-005
+  category_id: REQ-20261105-001
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1

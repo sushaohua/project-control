@@ -1,0 +1,211 @@
+schema_version: 1
+id: REQ-20261105-001
+revision: 2
+kind: requirement
+enabled: true
+title: 组织完整 Web HMI basecase 与增量真实闭环验收，先确认并固定单 VMware 台架的编译部署流程。
+objective: '【需求】组织完整 Web HMI basecase 与增量真实闭环验收，先确认并固定单 VMware 台架的编译部署流程。
+
+
+  ### 目标与范围
+
+
+  由 COORD 查重并确定已有或新增的正式承接任务，组织同一锁定组合上的完整验收。覆盖 `BASE-01～27` 全部适用断言、跨功能旅程 `J-01`，以及
+  `DELTA-DBG`、`DELTA-BAUD`、`DELTA-COMB` 三组增量；正常、相关负例和恢复分别展开、计数、执行并记录。整改方案的 `HIL-01～06`
+  是映射和重点检查，不能代替完整 basecase。
+
+
+  核实 TWIN-47～50 的准确交付及实际接受范围；TWIN-46/TWIN-50 的软件或 PTY 接受不代表本轮真实 HIL 已通过。不因卡片 Done
+  或标题带 HIL 就省略真实硬件测试，保留历史软件签署。
+
+
+  ### 前置：编译部署执行确认单
+
+
+  INTEGRATOR 先只读核实当前主机、唯一 VMware、Docker、AP/UI、MC、TH 工具链及现有构建部署脚本，提交一套推荐执行顺序。每步明确实际执行位置、执行者、命令及工作目录、准确输入、输出路径和哈希、成功条件、失败停止点与恢复办法。
+
+
+  方案覆盖服务器取件、依赖核验与复用、AP/UI 和双固件构建、组合与制品清单、传递和部署、旧证据归档、停旧和资源释放、启动及健康检查、双 Debug 采集启动时机。核实部署脚本是否隐式重编译、复用旧二进制或清理旧日志，保证最终部署身份与本轮接受的制品一致。
+
+
+  只对确需用户决定且确有可行替代方案的事项提出最多三道选择题，每题给出选项、推荐项、时间/台架占用影响和理由；不把一般技术参数拆成大量提问。用户确认后，将步骤、工具、配置及核验方式固定到现有执行流程；每轮更新候选提交、制品哈希和实际设备映射。流程实质变化时说明差异。
+
+
+  ### 执行与闭环证据
+
+
+  - INTEGRATOR 汇总轻量提测交接：任务/revision、各仓完整提交、组合版本、用例/工具/契约版本、构建部署入口、设备/固件身份、端口映射、排他窗口及证据目录。缺少实际工具或接口时登记缺口，由对应角色补齐，不把计划当成已部署能力。
+
+  - 受控 Runner 从服务器独立取得准确候选，在独立 Docker 中完成适用构建和软件检查；授权台架执行者在唯一 VMware 和真实 MC/TH 上按受控步骤完成浏览器及
+  HIL 采证。独立 Codex 会话只读审阅同一候选及客观证据，不直接连接硬件。先安全预检及正常流程，再执行相关负例和恢复。
+
+  - 涉及固件的用例，以真实业务帧和 `[MC-DBG]`、`[TH-DBG]` 调试口原始日志核对闭环，关联同一目标、命令、请求/响应及新鲜状态；区分受理 ACK、入队与真实执行完成。MC
+  本板处理不强求 TH 日志；TH 级联核对 MC 接收/转发、TH 实收/执行/回复、MC 返回接收以及 AP 的匹配结果。
+
+  - Web/API 结果、调试日志与适用测量/物理效果随同归档并对账。运动、回零、调平、供料和作业完成不能仅凭日志、ACK 或逻辑坐标通过；查询类核对真实来源及样本一致性，纯软件断言不强加无关
+  MCU 操作。
+
+  - 采集先于本轮启动及动作，记录设备与固件绑定、时间源、boot epoch、丢失/截断及关联依据。记录不足时保持相应范围未判定或阻塞，不补造日志，也不直接把采集缺口判作业务失败。
+
+  - 保留 BASE-24 实际拔业务 USB 子例；软件解绑或 SWD 关闭 USART 不能替代。AP↔MC 与 MC↔TH 断连分别归因并验证恢复。调试关闭、慢读和满缓冲子例按预期单独判断，不要求被主动关闭的日志仍完整输出。
+
+
+  ### 缺陷处理与交付
+
+
+  发现缺陷立即保留现场和原始证据，由 COORD 登记、关联和安排修复；仅阻塞依赖该缺陷的用例，其他独立可测项继续。编译/启动缺陷先查重关联 `20261105_soc_ap_build_and_startup_issues.md`，不重复派修。修复形成新候选后按差异复验和必要回归处理，保留既有
+  run，不拼接不同候选冒充整轮通过。
+
+
+  最终提交逐例结果、BASE/DELTA 正负与恢复覆盖统计、准确候选和部署身份、软件与真实 HIL 的分范围结论、缺陷/阻塞及原始证据索引。必测范围缺证据时不能宣布整轮通过；台架或工具暂不可用不构成删项或降为
+  Mock/PTY 的理由。
+
+
+  COORD 首次回执简短列明本单收件编号、承接任务、编译部署确认单负责人、材料缺口及下一检查点；该回执不替代用户对执行流程的确认。
+
+
+  ### 相关资料
+
+
+  - [basecase revision 4](../../planning/qa_web_hmi_basecases_20261103.md)：当前文件 SHA256
+  `67a2c1df609ce14773361a83b803ca414f13bf243be87961f97700ef798ff929`。独立 ARCH 文档定向复核会话
+  `01a1a6dc-33a3-7053-875c-a8ef06502d6d`，结论仅覆盖该文档设计；现有本地原始记录位于 `/tmp/qa_web_hmi_debug_closure_rev4_3sewzinb/`，正式收件时核实、归档和绑定发布版本，不能据此宣称软件或
+  HIL 通过。
+
+  - [端到端物理链路整改方案](../../planning/end_to_end_physical_link_remediation_plan_20261104.md)。
+
+  - [独立 QA 执行流程](../../planning/independent_qa_vmware_execution_flow_20261103.md)。
+
+  - [交付门禁](../../../.agents/rules/delivery_and_coord_gate.md)及[独立 QA 规则](../../../.agents/rules/codex_qa_review.md)。
+
+  - [已有编译与启动问题收件单](20261105_soc_ap_build_and_startup_issues.md)。'
+source_refs:
+  submission_id: 20261105_web_hmi_full_closed_loop_qa
+  submission_revision: 1
+  instruction_anchor: instruction_1
+  submission_path: project-control/docs/work_intake/submissions/20261105_web_hmi_full_closed_loop_qa.md
+  submission_sha256: db143168eb57dfd86f889c0b4987437d2b3e3a41f7bfe8688f721a253b3a98b5
+  instruction_sha256: f8674e88a8762726edb106dabd77577561ec6d185706db2fa935e00889a65624
+  verbatim_instruction: '【需求】组织完整 Web HMI basecase 与增量真实闭环验收，先确认并固定单 VMware 台架的编译部署流程。
+
+
+    ### 目标与范围
+
+
+    由 COORD 查重并确定已有或新增的正式承接任务，组织同一锁定组合上的完整验收。覆盖 `BASE-01～27` 全部适用断言、跨功能旅程 `J-01`，以及
+    `DELTA-DBG`、`DELTA-BAUD`、`DELTA-COMB` 三组增量；正常、相关负例和恢复分别展开、计数、执行并记录。整改方案的 `HIL-01～06`
+    是映射和重点检查，不能代替完整 basecase。
+
+
+    核实 TWIN-47～50 的准确交付及实际接受范围；TWIN-46/TWIN-50 的软件或 PTY 接受不代表本轮真实 HIL 已通过。不因卡片 Done
+    或标题带 HIL 就省略真实硬件测试，保留历史软件签署。
+
+
+    ### 前置：编译部署执行确认单
+
+
+    INTEGRATOR 先只读核实当前主机、唯一 VMware、Docker、AP/UI、MC、TH 工具链及现有构建部署脚本，提交一套推荐执行顺序。每步明确实际执行位置、执行者、命令及工作目录、准确输入、输出路径和哈希、成功条件、失败停止点与恢复办法。
+
+
+    方案覆盖服务器取件、依赖核验与复用、AP/UI 和双固件构建、组合与制品清单、传递和部署、旧证据归档、停旧和资源释放、启动及健康检查、双 Debug 采集启动时机。核实部署脚本是否隐式重编译、复用旧二进制或清理旧日志，保证最终部署身份与本轮接受的制品一致。
+
+
+    只对确需用户决定且确有可行替代方案的事项提出最多三道选择题，每题给出选项、推荐项、时间/台架占用影响和理由；不把一般技术参数拆成大量提问。用户确认后，将步骤、工具、配置及核验方式固定到现有执行流程；每轮更新候选提交、制品哈希和实际设备映射。流程实质变化时说明差异。
+
+
+    ### 执行与闭环证据
+
+
+    - INTEGRATOR 汇总轻量提测交接：任务/revision、各仓完整提交、组合版本、用例/工具/契约版本、构建部署入口、设备/固件身份、端口映射、排他窗口及证据目录。缺少实际工具或接口时登记缺口，由对应角色补齐，不把计划当成已部署能力。
+
+    - 受控 Runner 从服务器独立取得准确候选，在独立 Docker 中完成适用构建和软件检查；授权台架执行者在唯一 VMware 和真实 MC/TH 上按受控步骤完成浏览器及
+    HIL 采证。独立 Codex 会话只读审阅同一候选及客观证据，不直接连接硬件。先安全预检及正常流程，再执行相关负例和恢复。
+
+    - 涉及固件的用例，以真实业务帧和 `[MC-DBG]`、`[TH-DBG]` 调试口原始日志核对闭环，关联同一目标、命令、请求/响应及新鲜状态；区分受理
+    ACK、入队与真实执行完成。MC 本板处理不强求 TH 日志；TH 级联核对 MC 接收/转发、TH 实收/执行/回复、MC 返回接收以及 AP 的匹配结果。
+
+    - Web/API 结果、调试日志与适用测量/物理效果随同归档并对账。运动、回零、调平、供料和作业完成不能仅凭日志、ACK 或逻辑坐标通过；查询类核对真实来源及样本一致性，纯软件断言不强加无关
+    MCU 操作。
+
+    - 采集先于本轮启动及动作，记录设备与固件绑定、时间源、boot epoch、丢失/截断及关联依据。记录不足时保持相应范围未判定或阻塞，不补造日志，也不直接把采集缺口判作业务失败。
+
+    - 保留 BASE-24 实际拔业务 USB 子例；软件解绑或 SWD 关闭 USART 不能替代。AP↔MC 与 MC↔TH 断连分别归因并验证恢复。调试关闭、慢读和满缓冲子例按预期单独判断，不要求被主动关闭的日志仍完整输出。
+
+
+    ### 缺陷处理与交付
+
+
+    发现缺陷立即保留现场和原始证据，由 COORD 登记、关联和安排修复；仅阻塞依赖该缺陷的用例，其他独立可测项继续。编译/启动缺陷先查重关联 `20261105_soc_ap_build_and_startup_issues.md`，不重复派修。修复形成新候选后按差异复验和必要回归处理，保留既有
+    run，不拼接不同候选冒充整轮通过。
+
+
+    最终提交逐例结果、BASE/DELTA 正负与恢复覆盖统计、准确候选和部署身份、软件与真实 HIL 的分范围结论、缺陷/阻塞及原始证据索引。必测范围缺证据时不能宣布整轮通过；台架或工具暂不可用不构成删项或降为
+    Mock/PTY 的理由。
+
+
+    COORD 首次回执简短列明本单收件编号、承接任务、编译部署确认单负责人、材料缺口及下一检查点；该回执不替代用户对执行流程的确认。
+
+
+    ### 相关资料
+
+
+    - [basecase revision 4](../../planning/qa_web_hmi_basecases_20261103.md)：当前文件
+    SHA256 `67a2c1df609ce14773361a83b803ca414f13bf243be87961f97700ef798ff929`。独立 ARCH
+    文档定向复核会话 `01a1a6dc-33a3-7053-875c-a8ef06502d6d`，结论仅覆盖该文档设计；现有本地原始记录位于 `/tmp/qa_web_hmi_debug_closure_rev4_3sewzinb/`，正式收件时核实、归档和绑定发布版本，不能据此宣称软件或
+    HIL 通过。
+
+    - [端到端物理链路整改方案](../../planning/end_to_end_physical_link_remediation_plan_20261104.md)。
+
+    - [独立 QA 执行流程](../../planning/independent_qa_vmware_execution_flow_20261103.md)。
+
+    - [交付门禁](../../../.agents/rules/delivery_and_coord_gate.md)及[独立 QA 规则](../../../.agents/rules/codex_qa_review.md)。
+
+    - [已有编译与启动问题收件单](20261105_soc_ap_build_and_startup_issues.md)。'
+  common_constraints:
+  - 提交人及日期：sushaohua，2026-11-05；由项目助理根据本会话已明确的测试目标和编译部署确认要求整理。用户要求放入 submissions，由唯一
+    COORD 自行读取、查重和关联正式任务。
+  - 只有一台 VMware 虚拟机和一套物理台架。沿用已确认的真实 MC/TH、业务与级联 921600、双 Debug 115200、加热输出 0% 和 Bootloader
+    保护要求，不重复询问环境选择。
+  - 当前先完成编译部署执行确认单：在用户确认该流程前，本单仅推进只读核查、方案和选项准备，不启动本轮编译、部署、烧录或测试，不抢占其他任务的台架。
+  - 用户确认编译部署流程后，在有效授权和排他资源窗口内执行本轮验收。具体制品烧录仍按现有要求提供文件、大小、哈希和操作并取得适用授权；不把流程确认外推为任意烧录、运动或实加热授权。
+  - COORD 只负责收件、调度、资源及状态；INTEGRATOR 准备可执行的编译部署交接，ARCH 仅补齐缺失的技术输入或裁定技术冲突；QA 用例/工具作者、受控执行器及独立
+    Codex 按既有分工执行。
+  - 正式输入从服务器准确版本取得；本地草案及已存在的独立文档复核先按准确哈希收件、归档和落实发布版本，不冒充服务器软件或 HIL 已通过。已有同版本有效接受按适用范围复用，不重复索要已有批准。
+  - 沿用 streamlined-v1。QA 自编用例、独立预期及工具仍须非作者独立检查；不默认二次复核每份 QA 报告，不增加无关重构或审批。
+  - 本收件单只表达用户目标和推进边界，不表示实际候选已冻结、正式任务已建立、设备已连接或测试已经执行。
+  common_constraints_sha256: b233d28315932967960e76b4ea971d4d111fc4f17838f6435a067befe34512dc
+demand_ref:
+  demand_id: DEM-20261105-005
+  confirmation_id: CONFIRM-WEB-HMI-FULL-QA-BUILD-DEPLOY-20261105
+  confirmation_revision: 2
+  confirmation_path: project-control/docs/planning/web_hmi_full_qa_build_deploy_confirmation_20261105.md
+  confirmation_sha256: 7e92f1093ea1ba1f27fe4b0159bad926e6b0f44130f55d06ae223c730ddffd89
+reported_by:
+  actor_type: HUMAN
+  actor_id: human_markdown_author
+  source_channel: markdown_submission
+authorization_refs:
+- path: project-control/docs/work_intake/submissions/20261105_web_hmi_full_closed_loop_qa.md
+  revision: 1
+  sha256: db143168eb57dfd86f889c0b4987437d2b3e3a41f7bfe8688f721a253b3a98b5
+approval_refs:
+- approval_id: APPR-20261105-003
+  revision: 1
+  path: project-control/docs/work_intake/approvals/APPR-20261105-003.yaml
+  sha256: 1448f4684a2a9bf2374b55fe672779fa2b8b22e4f9fd8cee957f9b3f6e2bf9a0
+  bound_confirmation_revision: 2
+  bound_confirmation_sha256: 7e92f1093ea1ba1f27fe4b0159bad926e6b0f44130f55d06ae223c730ddffd89
+  approved_scope: build_deploy_flow_approval_pending_step5_flash_authorization
+requested_action: execute
+priority_hint: P2
+related_ids:
+  engineering_tasks:
+  - TWIN-54
+  - TWIN-55
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: INTEGRATOR
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true

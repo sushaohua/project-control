@@ -1,0 +1,106 @@
+schema_version: 1
+id: ISS-20261105-004
+revision: 2
+kind: issue
+enabled: true
+title: 接通现有 COORD 的人工收件检查，避免只写读取约定却未实际扫描。
+objective: '【问题】接通现有 COORD 的人工收件检查，避免只写读取约定却未实际扫描。
+
+
+  用户期望：手工或由助理将 Markdown 收件单放入 `docs/work_intake/submissions/` 后，由现有唯一 COORD 主动检查、查重并返回回执，不要求用户每一项都另贴提示词。
+
+
+  助理本轮只读核查事实：
+
+  - 已发布的总控清单 §1.1 与收件 README 已约定启动、恢复和调度检查点读取 submissions。
+
+  - 当前主机 `systemctl --user show ai-soc-coord-runner.service` 返回 `LoadState=not-found`、`ActiveState=inactive`、`SubState=dead`；当前进程列表未发现对应
+  Runner/收件守护进程。这只是本机观察，不代表其他主机状态。
+
+  - `tools/coord_runner/runner.py` 已有 `scan_work_intake()`，CLI 的 `--intake-scan` 分支会调用；当前
+  `step()` 没有该调用，`run_daemon()` 只循环调用 `step()`。因此仅启动现有 daemon 也不能据此宣称会扫描提交。
+
+  - 当前主机的 `docs/work_intake/requirements/` 尚未观察到完整闭环测试单对应的分类记录；须由 COORD 核实实际收件状态，不能把文件存在当作已收到。
+
+
+  处理要求：现有 COORD 首先核实本轮实际运行方式（交互会话或 Runner），在自己的受控收件入口读取未收件提交并返回回执。安排 INTEGRATOR 以最小改动接通适用的现有启动/恢复/调度检查点；若需要后台常驻能力，先核对既有授权、当前唯一执行者和恢复状态，再沿用已有单实例机制，不并行启动另一套调度器。未完成运行接通前明确说明实际检查方式和缺口，不继续宣称保存文件即可自动推进。
+
+
+  修复验证目标：新增提交在约定检查点被识别一次，重复检查不重复建需求或派单；单份坏文件不影响其他有效提交；错误与回执可追踪；在途任务及恢复记录保持一致；无变化时不调用模型。收件和分类不得绕过批准、技术前置或台架租约。若后台服务仍未运行，不得把代码通过写成后台已部署。
+
+
+  相关入口：[人工收件说明](../README.md)、[COORD 总控清单](../../planning/coord_autorun_tasklist_20261029.md)、[完整闭环测试提交](20261105_web_hmi_full_closed_loop_qa.md)。本次助理仅只读核查并新增本单，未启动调度、收件扫描、编译、部署或测试。'
+source_refs:
+  submission_id: 20261105_coord_intake_trigger_gap
+  submission_revision: 1
+  instruction_anchor: instruction_1
+  submission_path: project-control/docs/work_intake/submissions/20261105_coord_intake_trigger_gap.md
+  submission_sha256: 4e353ffb5450bd7af66f022ce0b0634baeb0987e9261797afcccae56ec57749a
+  instruction_sha256: 4c52aa0b49ad196362a7443b349b9e3eaee14832b6a6eef12483138de0803e7e
+  verbatim_instruction: '【问题】接通现有 COORD 的人工收件检查，避免只写读取约定却未实际扫描。
+
+
+    用户期望：手工或由助理将 Markdown 收件单放入 `docs/work_intake/submissions/` 后，由现有唯一 COORD 主动检查、查重并返回回执，不要求用户每一项都另贴提示词。
+
+
+    助理本轮只读核查事实：
+
+    - 已发布的总控清单 §1.1 与收件 README 已约定启动、恢复和调度检查点读取 submissions。
+
+    - 当前主机 `systemctl --user show ai-soc-coord-runner.service` 返回 `LoadState=not-found`、`ActiveState=inactive`、`SubState=dead`；当前进程列表未发现对应
+    Runner/收件守护进程。这只是本机观察，不代表其他主机状态。
+
+    - `tools/coord_runner/runner.py` 已有 `scan_work_intake()`，CLI 的 `--intake-scan`
+    分支会调用；当前 `step()` 没有该调用，`run_daemon()` 只循环调用 `step()`。因此仅启动现有 daemon 也不能据此宣称会扫描提交。
+
+    - 当前主机的 `docs/work_intake/requirements/` 尚未观察到完整闭环测试单对应的分类记录；须由 COORD 核实实际收件状态，不能把文件存在当作已收到。
+
+
+    处理要求：现有 COORD 首先核实本轮实际运行方式（交互会话或 Runner），在自己的受控收件入口读取未收件提交并返回回执。安排 INTEGRATOR
+    以最小改动接通适用的现有启动/恢复/调度检查点；若需要后台常驻能力，先核对既有授权、当前唯一执行者和恢复状态，再沿用已有单实例机制，不并行启动另一套调度器。未完成运行接通前明确说明实际检查方式和缺口，不继续宣称保存文件即可自动推进。
+
+
+    修复验证目标：新增提交在约定检查点被识别一次，重复检查不重复建需求或派单；单份坏文件不影响其他有效提交；错误与回执可追踪；在途任务及恢复记录保持一致；无变化时不调用模型。收件和分类不得绕过批准、技术前置或台架租约。若后台服务仍未运行，不得把代码通过写成后台已部署。
+
+
+    相关入口：[人工收件说明](../README.md)、[COORD 总控清单](../../planning/coord_autorun_tasklist_20261029.md)、[完整闭环测试提交](20261105_web_hmi_full_closed_loop_qa.md)。本次助理仅只读核查并新增本单，未启动调度、收件扫描、编译、部署或测试。'
+  common_constraints:
+  - 提交来源：用户在助理会话指出“coord没有自动的去查任务表”；由助理在 2026-11-05 整理该运行衔接缺口，供唯一 COORD 查重收取。
+  - 保留现有 COORD、任务、记录和批准；本单不授权助理启动第二个调度者或抢占现有 VMware/物理台架，也不要求重做收件器和 QA 流程。
+  - 修复按已有技术输入、工程委派和独立 QA 规则推进；需要补充技术边界时由 ARCH 给出，COORD 不代写运行器代码。已有 AUTO-06 的 Done
+    和历史证据保留，当前运行状态单独记录。
+  common_constraints_sha256: 49d7ef7a179b68948897418774c48c2b77a2427abfe4a659740cdff9cec40668
+demand_ref:
+  demand_id: DEM-20261105-004
+  confirmation_id: CONFIRM-COORD-INTAKE-20261105
+  confirmation_revision: 1
+  confirmation_path: project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md
+  confirmation_sha256: a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e
+reported_by:
+  actor_type: HUMAN
+  actor_id: human_markdown_author
+  source_channel: markdown_submission
+authorization_refs:
+- path: project-control/docs/work_intake/submissions/20261105_coord_intake_trigger_gap.md
+  revision: 1
+  sha256: 4e353ffb5450bd7af66f022ce0b0634baeb0987e9261797afcccae56ec57749a
+approval_refs:
+- approval_id: APPR-20261105-002
+  revision: 1
+  path: project-control/docs/work_intake/approvals/APPR-20261105-002.yaml
+  sha256: 37694dd926a9c2ced27b2c691f5b1256516b4cd0b040647f394d8ed7feeed049
+  bound_confirmation_revision: 1
+  bound_confirmation_sha256: a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e
+  approved_scope: full_batch_approval
+requested_action: execute
+priority_hint: P2
+related_ids:
+  engineering_tasks:
+  - AUTO-07
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: INTEGRATOR
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true

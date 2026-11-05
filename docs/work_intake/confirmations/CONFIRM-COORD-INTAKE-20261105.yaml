@@ -1,0 +1,29 @@
+schema_version: 1
+confirmation_id: CONFIRM-COORD-INTAKE-20261105
+revision: 1
+demand_ids:
+- DEM-20261105-004
+category_ids:
+- ISS-20261105-004
+submission_ref:
+  id: 20261105_coord_intake_trigger_gap
+  revision: 1
+  submission_path: project-control/docs/work_intake/submissions/20261105_coord_intake_trigger_gap.md
+  submission_sha256: 4e353ffb5450bd7af66f022ce0b0634baeb0987e9261797afcccae56ec57749a
+canonical_markdown:
+  path: project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md
+  revision: 1
+  sha256: a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e
+prepared_by:
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+arch_technical_breakdown:
+  arch_session: ef428595-f4d6-46a7-9d12-07e1fd215641
+  id: ARCH-BREAKDOWN-COORD-INTAKE-CHECKPOINT-20261105
+  revision: 1
+  path: project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md
+  sha256: a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e
+  decision: APPROVED
+  tasks:
+  - AUTO-07
+qa_policy: streamlined-v1
+status: approved-by-human

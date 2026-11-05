@@ -1,0 +1,27 @@
+schema_version: 1
+approval_id: APPR-20261105-002
+revision: 1
+approved_at: '2026-11-05T11:55:34+08:00'
+approved_by:
+  actor_type: HUMAN
+  actor_id: sushaohua
+  source_channel: coord_interactive_session
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+  verbatim_decision: "批准：按上述 9 步编译部署执行确认单推进 REQ-20261105-001，并同步放行 AUTO-07（INTEGRATOR 接通 CoordRunner 启动/恢复/step 收件检查点与 FEAT-20261104-001/002 r4 账本摘要修复，保留 AUTO-06 历史证据且不并行启动后台服务抢锁）"
+bound_confirmation:
+  confirmation_id: CONFIRM-COORD-INTAKE-20261105
+  revision: 1
+  path: project-control/docs/architecture/coord_intake_checkpoint_wiring_arch_breakdown_20261105.md
+  sha256: a79ebd9d6e77bb39b689366d03c66d7fe84c8b165dddd612369bf8cb88b8bc2e
+bound_submission:
+  submission_id: 20261105_coord_intake_trigger_gap
+  revision: 1
+  submission_path: project-control/docs/work_intake/submissions/20261105_coord_intake_trigger_gap.md
+  submission_sha256: 4e353ffb5450bd7af66f022ce0b0634baeb0987e9261797afcccae56ec57749a
+approval_mode: full_batch_approval
+approved_demands:
+- demand_id: DEM-20261105-004
+  category_id: ISS-20261105-004
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1
