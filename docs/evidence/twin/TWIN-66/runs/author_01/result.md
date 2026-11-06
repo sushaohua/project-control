@@ -4,7 +4,7 @@
 - **执行角色**: `QA / INTEGRATOR` (`07a1f6dc-f47c-45e5-bf00-37ec14e2dfda`)
 - **目标仓库与分支**: `test_harness` (`main`)
 - **基线 Commit**: `f41d93b753cfd4496f8d5c82fe1c032d1a4d4803`
-- **候选 Commit**: `e7f7f574fee7dce8cc78b52772ff32a03b9b345f`
+- **候选 Commit**: `3e3fb659e9bb3e54222ded1169a70fc331681c48` (修复 `qa_01` 审阅阻断项与 8 个 Python 文件中文 `#` 行内注释全覆盖)
 
 ## 1. 规则入口与输入源显式读取登记 (`read_sources`)
 
@@ -19,18 +19,16 @@
 - `project-control/docs/planning/minimc_v2_upgrade_engineering_inputs_20261105.md` (`revision: 1`, `sha256: c79477a0b9bfa2b18d1451b91b2a6188aa4b50f72bc742a8640aa0a696a1610b`)
 - `project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md` (`revision: 1`, `sha256: 87b0b859e3e7e4cf7e8733ac88d90d1e0fd94f3b3e2117abfea9af3b14d4e6a9`)
 
-## 2. 核心交付物清单
+## 2. 核心交付物清单与 `runs/qa_01` 整改记录
 
-1. **跨五端 Rev 2.0.4 命令码对齐、反向数值唯一性与 520B/534B 容量静态门禁 (`static_checks/minimcproto/check_opcode_alignment.py`)**：
-   - 覆盖 `soc-ap`、`mcu-p3(MC)`、`mcu-p3(TH)`、`boot/bootloadermc`、`boot/bootloaderth` 五端真实头文件。
-   - 强制校验 `0x1D (CMD_SYSTEM_CONTROL)`、`0x20 (CMD_OTA_START)`、`0x21 (CMD_OTA_DATA)`、`0x22 (CMD_OTA_FINISH)`、`0x23 (CMD_OTA_STATUS)`、`0x15 (CMD_TEMP_REPORT)`、`0x17 (CMD_EMERGENCY_STOP)`、`0x19 (CMD_FILAMENT_CONTROL)` 跨端一致，禁用 `0x05 (ESTOP_ACK)` 及 `0x15 (FILAMENT_CONTROL)` 漂移。
-   - 内置反向数值唯一性断言与 4 类负例自检（`0x05` 复辟、`0x15` 错配、`0x1D` 数值碰撞、`< 520B` 载荷上限）。
-2. **`G01 ~ G25` 黄金字节向量集与编解码校验 (`static_checks/minimcproto/golden_vectors.json`, `reference_vectors.py`, `run_codec_cases.py`)**：
-   - 固化 `G01 ~ G25`（含 `G16a` 144B `0x20 CMD_OTA_START` + 128B `ATSG` Trailer、`G16b~G16e` `64B/512B/37B/1016B` `0x21 CMD_OTA_DATA`、`G16f` `0x22`、`G16g~G16h` `0x23`、`G09~G15` 畸形帧负例、`G17~G25` `0x06 CMD_NACK` 标准错误码）及 `V01 ~ V04` 遥测/急停向量。
-3. **五类软件验证矩阵执行器 (`static_checks/minimcproto/run_ota_software_suite.py`)**：
-   - 自动执行并输出 `S01 ~ S04`（静态与编译期门禁）、`D01 ~ D08`（编解码黄金向量）、`C01 ~ C09`（跨五端 C 主机单测与契约联动）、`M01 ~ M08`（双 MCU 级联升级、断电保护与 `95%/100%` 阶段隔离）、`N01 ~ N10`（坏 Trailer/错 `board_id`/超限零擦除拒绝、并发锁、中途断流恢复）共 39 项门禁。
-4. **OTA 打包/部署工具与 `SEQ-06` 端到端验收测试 (`hil/tools/hil_deploy_via_minimc_ota.py`, `hil/tests/test_mcu_firmware_upgrade.py`, `hil/twin_capture/twin_capture_analyzer.py`, `hil/tools/debug_reconciliation_probe.py`)**：
-   - 实现 128B `ATSG` Trailer 打包/校验器、先 `TH (0x03)` 后 `MC (0x02)` 四阶段受控升级客户端，以及 `HIL-CASE-60 ~ HIL-CASE-63` 自检套件。
+1. **8 个 Python 文件 100% 中文 `"""..."""` docstring 与函数体内部中文 `#` 行内注释 (`S04` 强制门禁)**：
+   - 对 `run_ota_software_suite.py`、`check_opcode_alignment.py`、`reference_vectors.py`、`run_codec_cases.py`、`hil_deploy_via_minimc_ota.py`、`test_mcu_firmware_upgrade.py`、`twin_capture_analyzer.py`、`debug_reconciliation_probe.py` 全部 135 个函数的函数体内部逐一补充了针对具体业务逻辑的中文 `#` 行内注释，并在 `S04` 门禁中强制校验每个函数体至少含 1 条中文 `#` 行内注释、函数行数 `<= 50` 行、参数 `<= 4` 个。
+2. **彻底消除 `run_ota_software_suite.py` 中全部硬编码 `True`，实现 100% 真实编译运行与故障注入断言**：
+   - **`C05 ~ C08` 真实构建运行**：在隔离临时目录 (`/tmp/twin66_c_suite_*`) 中通过 CMake + `dbus-run-session` 真实编译并运行 `soc-ap` 的 `test_forward_protocol` (`services/forward`)、`test_firmware_updater` (`services/device_manager`) 与 `test_ui_gateway_routes` (`services/ui_gateway`)，并校验其实际测试输出行。
+   - **`M04` 真实分块 CRC 错误重传**：在发送 `offset=0` 的 `0x21 CMD_OTA_DATA` 时翻转首块 `chunk_crc16`，断言目标返回 `NACK(0x12)` 且 `next_offset == 0`，随后客户端自动重传 (`trace.chunk_retries == 1`) 并跑完完整四阶段升级。
+   - **`M05 / M06` 真实断电复位驻留 Boot 与重传恢复**：分别在 `Chunk 0` (`M05`) 和 `Chunk 1` (`M06`) 写入后调用 `simulate_power_cycle_reset(NODE_TH)` 模拟断电重启，断言 `0x08004000 == 0xFFFFFFFF`、`anchor_valid == False` 且重启后驻留 Bootloader (`in_boot == True`)，随后直接从 Boot 态发起恢复升级 (`run_single_node_four_stage_upgrade`) 并断言 `rec.passed == True` 且恢复到新 App (`in_boot == False`, `anchor_valid == True`)。
+   - **`N04` 双板超限镜像零擦除拦截**：同时验证 `TH` (`241,665B > 236KB`) 与 `MC` (`917,505B > 896KB`) 超限请求均返回 `NACK(0x14)` 且 `erase_count == 0`。
+   - **`N08 ~ N10` 真实状态机负例拦截**：`N08` 注入 `job_busy=True`、`heater_target_deci_c=2000` 及 `writer_locked=True` 三种并发忙态，断言 `0x1D`/`0x20` 均返回 `NACK(0x05)` 且 `erase_count == 0`；`N09` 注入伪造旧版 `0x05` 请求与非预期应答并断言均被拒绝；`N10` 注入 `0x22` 落盘后新 App 未能启动故障，断言进度严格停留在 `("VERIFYING", 95)` 且绝不误报 `100%`。
 
 ## 3. 自检命令与客观输出
 
@@ -39,11 +37,15 @@
 cd test_harness && python3 static_checks/minimcproto/check_opcode_alignment.py \
   && python3 static_checks/minimcproto/run_codec_cases.py \
   && python3 static_checks/minimcproto/run_ota_software_suite.py \
-  && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test
+  && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test \
+  && python3 hil/tools/hil_deploy_via_minimc_ota.py --self-test \
+  && python3 hil/tools/debug_reconciliation_probe.py --self-test
 ```
 
 结果摘要（`Exit Code: 0`）：
 - `check_opcode_alignment.py`: `[PASS] MiniMCProto v2.0 (Rev 2.0.4) 5-endpoint opcode alignment, reverse uniqueness, >=520B payload capacity, and negative self-tests verified.`
 - `run_codec_cases.py`: `[SUMMARY] Golden & Reference Codec Suite: 42 passed, 0 failed.`
-- `run_ota_software_suite.py`: `[SUMMARY] OTA Software Suite: 39 passed, 0 failed.` (`S01~S04`, `D01~D08`, `C01~C09`, `M01~M08`, `N01~N10` 全部通过)
+- `run_ota_software_suite.py`: `[SUMMARY] OTA Software Suite: 39 passed, 0 failed.` (`S01~S04`, `D01~D08`, `C01~C09`, `M01~M08`, `N01~N10` 全部真实执行通过)
 - `test_mcu_firmware_upgrade.py --self-test`: `[SUMMARY] SEQ-06 Upgrade Suite: 4/4 passed.` (`HIL-CASE-60 ~ HIL-CASE-63` 全部通过)
+- `hil_deploy_via_minimc_ota.py --self-test`: `[PASS] hil_deploy_via_minimc_ota.py self-test passed: TH(1.1->2.1) then MC(1.2->2.3).`
+- `debug_reconciliation_probe.py --self-test`: `[PASS] debug_reconciliation_probe.py self-test suite passed (11 fixtures generated).`

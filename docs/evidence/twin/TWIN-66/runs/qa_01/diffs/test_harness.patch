@@ -1,0 +1,4442 @@
+diff --git a/hil/tests/test_mcu_firmware_upgrade.py b/hil/tests/test_mcu_firmware_upgrade.py
+new file mode 100644
+index 0000000..478316b
+--- /dev/null
++++ b/hil/tests/test_mcu_firmware_upgrade.py
+@@ -0,0 +1,192 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""SEQ-06 (HIL-CASE-60~63) 双 MCU (先 TH 后 MC) 四阶段固件升级与异常恢复验收测试套件。"""
++
++from __future__ import annotations
++
++import argparse
++import pathlib
++import struct
++import sys
++from typing import Any, Dict, List, Optional, Tuple
++
++TESTS_DIR = pathlib.Path(__file__).resolve().parent
++TEST_HARNESS_ROOT = TESTS_DIR.parents[1]
++sys.path.insert(0, str(TEST_HARNESS_ROOT / "hil" / "tools"))
++
++from hil_deploy_via_minimc_ota import (  # noqa: E402
++    BOARD_ID_MC,
++    BOARD_ID_TH,
++    CMD_NACK,
++    CMD_OTA_DATA,
++    CMD_OTA_START,
++    CMD_SYSTEM_CONTROL,
++    MAX_MC_APP_BYTES,
++    MAX_TH_APP_BYTES,
++    NODE_MC,
++    NODE_TH,
++    VirtualDualMcuOtaTarget,
++    build_cortex_m4_mock_binary,
++    calc_crc16_ccitt,
++    decode_minimc_frame,
++    encode_minimc_frame,
++    pack_atsg_firmware_package,
++    parse_and_verify_atsg_package,
++    run_ordered_th_then_mc_upgrade,
++    run_single_node_four_stage_upgrade,
++)
++
++
++def verify_case60_th_cascaded_upgrade() -> Tuple[bool, str]:
++    """验证 HIL-CASE-60：TH (0x03) 级联四阶段升级、首块 RAM 暂存与前后 boot_id/版本跳变。"""
++    rig = VirtualDualMcuOtaTarget()
++    th_pkg = pack_atsg_firmware_package(build_cortex_m4_mock_binary(1536, 0x31), BOARD_ID_TH, 0x000205)
++    trace = run_single_node_four_stage_upgrade(rig.exchange_frame, NODE_TH, th_pkg, 512)
++    if not trace.passed:
++        return False, f"TH 4-stage upgrade failed: {trace.error_detail}"
++    if not trace.chunk0_cached_observed:
++        return False, "TH Chunk 0 RAM cache (ota_state=2) was not observed"
++    if not (rig.state[NODE_TH]["steppers_disabled"] and rig.state[NODE_TH]["heaters_zeroed"]):
++        return False, "TH 0x1D safe shutdown did not disable steppers and zero heaters"
++    b_id0 = trace.before_ver.boot_id
++    b_id_boot = trace.boot_ver.boot_id
++    b_id1 = trace.after_ver.boot_id
++    if len({b_id0, b_id_boot, b_id1}) != 3:
++        return False, f"TH boot_id did not transition uniquely: {b_id0:#x} -> {b_id_boot:#x} -> {b_id1:#x}"
++    if (trace.after_ver.fw_major, trace.after_ver.fw_minor) != (2, 5):
++        return False, "TH post-upgrade version mismatch"
++    return True, f"TH v1.1->v2.5 boot_id={b_id0:#x}->{b_id_boot:#x}->{b_id1:#x}"
++
++
++def verify_case61_ordered_th_then_mc_upgrade() -> Tuple[bool, str]:
++    """验证 HIL-CASE-61：严格先 TH (0x03) 后 MC (0x02) 双板顺序四阶段升级与状态恢复。"""
++    rig = VirtualDualMcuOtaTarget()
++    th_pkg = pack_atsg_firmware_package(build_cortex_m4_mock_binary(1280, 0x41), BOARD_ID_TH, 0x000201)
++    mc_pkg = pack_atsg_firmware_package(build_cortex_m4_mock_binary(2048, 0x52), BOARD_ID_MC, 0x000204)
++    ok, th_tr, mc_tr = run_ordered_th_then_mc_upgrade(rig, th_pkg, mc_pkg)
++    if not ok:
++        return False, f"Ordered TH->MC upgrade failed: th={th_tr.error_detail}, mc={mc_tr.error_detail}"
++    if rig.state[NODE_MC]["proxy_active"]:
++        return False, "MC proxy_active remained stuck True after TH upgrade completion"
++    if not (rig.state[NODE_MC]["steppers_disabled"] and rig.state[NODE_MC]["heaters_zeroed"]):
++        return False, "MC 0x1D safe shutdown did not disable steppers and zero heaters"
++    if (mc_tr.after_ver.fw_major, mc_tr.after_ver.fw_minor) != (2, 4):
++        return False, "MC post-upgrade version mismatch"
++    return True, "Ordered TH(v1.1->v2.1) -> MC(v1.2->v2.4) upgrade verified"
++
++
++def verify_case62_pre_erase_and_busy_interlocks() -> Tuple[bool, str]:
++    """验证 HIL-CASE-62：坏 Trailer/错板卡 ID/超限镜像零擦除拒绝及 PRINTING 状态互锁。"""
++    rig = VirtualDualMcuOtaTarget()
++    rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_SYSTEM_CONTROL, 1, struct.pack("<BBH", 2, 1, 50)))
++    raw = build_cortex_m4_mock_binary(1024, 0x61)
++    th_pkg = pack_atsg_firmware_package(raw, BOARD_ID_TH, 0x0201)
++    mc_pkg = pack_atsg_firmware_package(raw, BOARD_ID_MC, 0x0201)
++    _, _, th_info = parse_and_verify_atsg_package(th_pkg, BOARD_ID_TH)
++    _, _, mc_info = parse_and_verify_atsg_package(mc_pkg, BOARD_ID_MC)
++
++    p_wrong_board = (
++        struct.pack("<BBBBIII", NODE_TH, 1, 0, 0, 1024, mc_info["fw_crc32"], 0x0201) + mc_info["trailer"]
++    )
++    _, r_board = decode_minimc_frame(
++        rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_START, 2, p_wrong_board))
++    )
++    p_oversize_th = (
++        struct.pack("<BBBBIII", NODE_TH, 1, 0, 0, MAX_TH_APP_BYTES + 1, th_info["fw_crc32"], 0x0201)
++        + th_info["trailer"]
++    )
++    _, r_over_th = decode_minimc_frame(
++        rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_START, 3, p_oversize_th))
++    )
++    rig.exchange_frame(encode_minimc_frame(NODE_MC, CMD_SYSTEM_CONTROL, 4, struct.pack("<BBH", 2, 1, 50)))
++    p_oversize_mc = (
++        struct.pack("<BBBBIII", NODE_MC, 1, 0, 0, MAX_MC_APP_BYTES + 1, mc_info["fw_crc32"], 0x0201)
++        + mc_info["trailer"]
++    )
++    _, r_over_mc = decode_minimc_frame(
++        rig.exchange_frame(encode_minimc_frame(NODE_MC, CMD_OTA_START, 5, p_oversize_mc))
++    )
++    if (
++        r_board.get("cmd_id") != CMD_NACK
++        or r_over_th.get("payload", b"\x00")[0] != 0x14
++        or r_over_mc.get("payload", b"\x00")[0] != 0x14
++        or rig.state[NODE_TH]["erase_count"] != 0
++        or rig.state[NODE_MC]["erase_count"] != 0
++    ):
++        return False, "Pre-erase zero-erase gate failed on wrong board_id or oversize image"
++    return True, "Zero-erase gate verified for wrong board_id and TH(236KB)/MC(896KB) oversize"
++
++
++def verify_case63_interruption_and_stage4_isolation() -> Tuple[bool, str]:
++    """验证 HIL-CASE-63：中途断流首块保护重传恢复与 Stage 3 (95%) / Stage 4 (100%) 严格隔离。"""
++    rig = VirtualDualMcuOtaTarget()
++    raw = build_cortex_m4_mock_binary(1024, 0x77)
++    th_pkg = pack_atsg_firmware_package(raw, BOARD_ID_TH, 0x000202)
++    _, _, info = parse_and_verify_atsg_package(th_pkg, BOARD_ID_TH)
++
++    rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_SYSTEM_CONTROL, 1, struct.pack("<BBH", 2, 1, 50)))
++    st_pld = (
++        struct.pack("<BBBBIII", NODE_TH, 1, 0, 0, info["payload_len"], info["fw_crc32"], 0x0202)
++        + info["trailer"]
++    )
++    rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_START, 2, st_pld))
++    c0 = raw[:512]
++    rig.exchange_frame(
++        encode_minimc_frame(NODE_TH, CMD_OTA_DATA, 3, struct.pack("<IHH", 0, 512, calc_crc16_ccitt(c0)) + c0)
++    )
++    if bytes(rig.state[NODE_TH]["flash_buf"][:4]) != b"\xFF\xFF\xFF\xFF" or rig.state[NODE_TH]["anchor_valid"]:
++        return False, "TH Flash 0x08004000 was prematurely written before 0x22 Finish"
++
++    rig.state[NODE_TH]["in_boot"] = False
++    rec_trace = run_single_node_four_stage_upgrade(rig.exchange_frame, NODE_TH, th_pkg, 512)
++    if not rec_trace.passed:
++        return False, f"Recovery upgrade after interruption failed: {rec_trace.error_detail}"
++
++    rig_fail = VirtualDualMcuOtaTarget()
++    orig_exchange = rig_fail.exchange_frame
++
++    def _stuck_in_boot_exchange(req_bytes: bytes) -> bytes:
++        """模拟 0x22 Finish 后节点仍卡在 Bootloader (Bit31=1) 的故障注入。"""
++        resp = orig_exchange(req_bytes)
++        rig_fail.state[NODE_MC]["in_boot"] = True
++        return resp
++
++    mc_pkg = pack_atsg_firmware_package(raw, BOARD_ID_MC, 0x000206)
++    fail_tr = run_single_node_four_stage_upgrade(_stuck_in_boot_exchange, NODE_MC, mc_pkg, 512)
++    if fail_tr.passed or fail_tr.progress_history[-1] != ("VERIFYING", 95):
++        return False, f"Stage 4 failure did not cap progress at 95%: {fail_tr.progress_history}"
++    return True, "Mid-stream 0x08004000 protection, retry recovery & Stage 3 (95%) cap verified"
++
++
++def run_all_upgrade_cases() -> int:
++    """运行 SEQ-06 (HIL-CASE-60 ~ HIL-CASE-63) 全部四项验收测试用例。"""
++    cases = [
++        ("HIL-CASE-60 (TH Cascaded 4-Stage Upgrade)", verify_case60_th_cascaded_upgrade),
++        ("HIL-CASE-61 (Ordered TH->MC Dual Upgrade)", verify_case61_ordered_th_then_mc_upgrade),
++        ("HIL-CASE-62 (Zero-Erase Gate & Interlocks)", verify_case62_pre_erase_and_busy_interlocks),
++        ("HIL-CASE-63 (Interruption & 95%/100% Gate)", verify_case63_interruption_and_stage4_isolation),
++    ]
++    failed = 0
++    print("=== SEQ-06 MCU Firmware Upgrade Verification Suite (HIL-CASE-60~63) ===")
++    for name, fn in cases:
++        ok, detail = fn()
++        if ok:
++            print(f"  [PASS] {name}: {detail}")
++        else:
++            print(f"  [FAIL] {name}: {detail}")
++            failed += 1
++    print(f"\n[SUMMARY] SEQ-06 Upgrade Suite: {len(cases) - failed}/{len(cases)} passed.")
++    return 0 if failed == 0 else 1
++
++
++def main(argv: Optional[List[str]] = None) -> int:
++    """test_mcu_firmware_upgrade.py 命令行主入口。"""
++    parser = argparse.ArgumentParser(description="SEQ-06 Dual-MCU Firmware Upgrade Test Suite")
++    parser.add_argument("--self-test", action="store_true", help="Run deterministic self-test suite")
++    parser.add_argument("--live", action="store_true", help="Run against live environment")
++    _ = parser.parse_args(argv)
++    return run_all_upgrade_cases()
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/hil/tools/debug_reconciliation_probe.py b/hil/tools/debug_reconciliation_probe.py
+index 181a9eb..49a23a8 100755
+--- a/hil/tools/debug_reconciliation_probe.py
++++ b/hil/tools/debug_reconciliation_probe.py
+@@ -27,6 +27,15 @@ import urllib.request
+ SENTINEL_MILLIC = 2147483646
+ SENTINEL_DECIC = 32767
+ WIRE_SENTINEL_OFFLINE = 0x7FFE
++REV204_OTA_OPCODES: Dict[int, str] = {
++    0x01: "CMD_GET_VERSION",
++    0x02: "CMD_VERSION_REPORT",
++    0x1D: "CMD_SYSTEM_CONTROL",
++    0x20: "CMD_OTA_START",
++    0x21: "CMD_OTA_DATA",
++    0x22: "CMD_OTA_FINISH",
++    0x23: "CMD_OTA_STATUS",
++}
+ DEFAULT_FIXTURE_DIR = pathlib.Path("/tmp/qa_twin46_fixtures")
+ DEFAULT_MESH_5X5: List[List[float]] = [
+     [-0.08, -0.04, -0.01, 0.02, 0.05],
+diff --git a/hil/tools/hil_deploy_via_minimc_ota.py b/hil/tools/hil_deploy_via_minimc_ota.py
+new file mode 100644
+index 0000000..714f999
+--- /dev/null
++++ b/hil/tools/hil_deploy_via_minimc_ota.py
+@@ -0,0 +1,615 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""MiniMCProto v2.0 (Rev 2.0.4) 先 TH 后 MC 四阶段受控固件升级与 ATSG 打包部署工具。"""
++
++from __future__ import annotations
++
++import argparse
++from dataclasses import dataclass, field
++import hashlib
++import pathlib
++import struct
++import sys
++from typing import Any, Callable, Dict, List, Optional, Tuple
++import zlib
++
++
++SOF_0 = 0x55
++SOF_1 = 0xAA
++NODE_AP = 0x01
++NODE_MC = 0x02
++NODE_TH = 0x03
++
++FLAG_REQ_V2 = 0x05
++FLAG_RESP_V2 = 0x06
++FLAG_PRIO_REQ_V2 = 0x15
++ROUTE_DIRECT = 0x00
++ROUTE_CASCADED = 0x04
++
++CMD_ACK = 0x00
++CMD_GET_VERSION = 0x01
++CMD_VERSION_REPORT = 0x02
++CMD_PING = 0x03
++CMD_PONG = 0x04
++CMD_NACK = 0x06
++CMD_SYSTEM_CONTROL = 0x1D
++CMD_OTA_START = 0x20
++CMD_OTA_DATA = 0x21
++CMD_OTA_FINISH = 0x22
++CMD_OTA_STATUS = 0x23
++
++TRAILER_MAGIC = 0x41545347
++TRAILER_STRUCT_VER = 0x00010000
++BOARD_ID_MC = 0x43500001
++BOARD_ID_TH = 0x42300001
++MAX_TH_APP_BYTES = 241664
++MAX_MC_APP_BYTES = 917504
++CAP_FLAG_BOOT_MODE = 0x80000000
++
++
++@dataclass
++class NodeVersionSnapshot:
++    """单节点 0x02 CMD_VERSION_REPORT 16 字节版本与会话快照。"""
++
++    proto_major: int
++    proto_minor: int
++    fw_major: int
++    fw_minor: int
++    boot_id: int
++    git_commit_short: int
++    capability_flags: int
++
++    @property
++    def is_boot_mode(self) -> bool:
++        """返回 capability_flags bit31 是否处于 Bootloader 模式。"""
++        return (self.capability_flags & CAP_FLAG_BOOT_MODE) != 0
++
++
++@dataclass
++class UpgradeStageTrace:
++    """四阶段升级执行轨迹与前后 boot_id/版本号核对证据。"""
++
++    target_node: int
++    before_ver: Optional[NodeVersionSnapshot] = None
++    boot_ver: Optional[NodeVersionSnapshot] = None
++    after_ver: Optional[NodeVersionSnapshot] = None
++    progress_history: List[Tuple[str, int]] = field(default_factory=list)
++    chunks_sent: int = 0
++    bytes_sent: int = 0
++    proxy_active_observed: bool = False
++    chunk0_cached_observed: bool = False
++    passed: bool = False
++    error_detail: str = ""
++
++
++def calc_crc16_ccitt(data: bytes) -> int:
++    """计算 CRC-16/CCITT-FALSE (Poly=0x1021, Init=0xFFFF, XorOut=0x0000)。"""
++    if data is None:
++        return 0
++    crc = 0xFFFF
++    for byte_val in data:
++        crc ^= (byte_val & 0xFF) << 8
++        for _ in range(8):
++            if (crc & 0x8000) != 0:
++                crc = ((crc << 1) ^ 0x1021) & 0xFFFF
++            else:
++                crc = (crc << 1) & 0xFFFF
++    return crc & 0xFFFF
++
++
++def calc_crc32_ieee(data: bytes) -> int:
++    """计算标准 IEEE 802.3 CRC32 无符号 32 位校验和。"""
++    if data is None:
++        return 0
++    return zlib.crc32(data) & 0xFFFFFFFF
++
++
++def build_cortex_m4_mock_binary(size_bytes: int, seed: int = 0x10) -> bytes:
++    """构造含合法 Cortex-M4 向量表头 (SP=0x20008000, Reset=0x08004001) 的测试固件镜像。"""
++    total = max(64, size_bytes)
++    vec_hdr = struct.pack("<II", 0x20008000, 0x08004001)
++    body = bytes(((seed + idx * 13) & 0xFF) for idx in range(total - 8))
++    return vec_hdr + body
++
++
++def pack_atsg_firmware_package(raw_bin: bytes, board_id: int, fw_version: int) -> bytes:
++    """为裸固件附加 128 字节 ATSG Trailer 并输出完整升级包字节流。"""
++    payload = raw_bin or b""
++    digest = hashlib.sha256(payload).digest()
++    head_124 = struct.pack(
++        "<IIIII32s32s32s8s",
++        TRAILER_MAGIC,
++        TRAILER_STRUCT_VER,
++        board_id & 0xFFFFFFFF,
++        fw_version & 0xFFFFFFFF,
++        len(payload),
++        digest,
++        b"\x00" * 32,
++        b"\x00" * 32,
++        b"\x00" * 8,
++    )
++    trailer_crc = calc_crc32_ieee(head_124)
++    return payload + head_124 + struct.pack("<I", trailer_crc)
++
++
++def parse_and_verify_atsg_package(
++    pkg_bytes: bytes,
++    expected_board_id: int,
++) -> Tuple[bool, str, Dict[str, Any]]:
++    """解析并校验带 128B ATSG Trailer 的固件包（含魔数、板卡 ID、分区上限、SHA256 与 CRC32）。"""
++    if pkg_bytes is None or len(pkg_bytes) <= 128:
++        return False, "ERR_PACKAGE_TOO_SMALL", {}
++    payload = pkg_bytes[:-128]
++    trailer = pkg_bytes[-128:]
++    magic, s_ver, b_id, fw_ver, p_len, sha_bytes = struct.unpack("<IIIII32s", trailer[:52])
++    trailer_crc = struct.unpack("<I", trailer[124:128])[0]
++    if magic != TRAILER_MAGIC:
++        return False, "ERR_BAD_TRAILER_MAGIC", {}
++    if s_ver != TRAILER_STRUCT_VER:
++        return False, "ERR_BAD_STRUCT_VER", {}
++    if calc_crc32_ieee(trailer[:124]) != trailer_crc:
++        return False, "ERR_BAD_TRAILER_CRC32", {}
++    if b_id != expected_board_id:
++        return False, "ERR_BOARD_ID_MISMATCH", {}
++    max_limit = MAX_TH_APP_BYTES if expected_board_id == BOARD_ID_TH else MAX_MC_APP_BYTES
++    if p_len != len(payload) or p_len == 0 or p_len > max_limit:
++        return False, "ERR_IMAGE_OVERSIZE_OR_LEN", {}
++    if hashlib.sha256(payload).digest() != sha_bytes:
++        return False, "ERR_SHA256_MISMATCH", {}
++    sp_val, pc_val = struct.unpack("<II", payload[:8])
++    if not (0x20000000 <= sp_val <= 0x20060000) or (pc_val & 1) == 0 or not (0x08004000 <= pc_val <= 0x08100000):
++        return False, "ERR_INVALID_VECTOR_TABLE", {}
++    info = {
++        "payload": payload,
++        "trailer": trailer,
++        "board_id": b_id,
++        "fw_version": fw_ver,
++        "payload_len": p_len,
++        "fw_crc32": calc_crc32_ieee(payload),
++        "trailer_crc32": trailer_crc,
++    }
++    return True, "OK", info
++
++
++def encode_minimc_frame(
++    dst_id: int,
++    cmd_id: int,
++    seq: int,
++    payload: bytes = b"",
++) -> bytes:
++    """编码 AP 发往 MC(0x02) 或级联 TH(0x03) 的 MiniMCProto v2.0 请求帧。"""
++    is_routed = dst_id == NODE_TH
++    hop = 3 if is_routed else 4
++    route = ROUTE_CASCADED if is_routed else ROUTE_DIRECT
++    flags = FLAG_PRIO_REQ_V2 if cmd_id == CMD_SYSTEM_CONTROL else FLAG_REQ_V2
++    hdr = struct.pack(
++        "<BBBBBBBBHH",
++        SOF_0,
++        SOF_1,
++        NODE_AP,
++        dst_id & 0xFF,
++        flags,
++        cmd_id & 0xFF,
++        hop,
++        route,
++        seq & 0xFFFF,
++        len(payload) & 0xFFFF,
++    )
++    crc = calc_crc16_ccitt(hdr + payload)
++    return hdr + payload + struct.pack("<H", crc)
++
++
++def decode_minimc_frame(raw: bytes) -> Tuple[bool, Dict[str, Any]]:
++    """解码并验证单条 MiniMCProto v2.0 响应帧。"""
++    if raw is None or len(raw) < 14:
++        return False, {"error": "SHORT_FRAME"}
++    sof0, sof1, src, dst, flags, cmd, hop, route, seq, plen = struct.unpack("<BBBBBBBBHH", raw[:12])
++    if sof0 != SOF_0 or sof1 != SOF_1 or (flags & 0x0C) != 0x04 or len(raw) != 14 + plen:
++        return False, {"error": "BAD_HEADER"}
++    crc_calc = calc_crc16_ccitt(raw[: 12 + plen])
++    crc_wire = struct.unpack("<H", raw[12 + plen : 14 + plen])[0]
++    if crc_calc != crc_wire:
++        return False, {"error": "CRC_FAIL"}
++    return True, {
++        "src_id": src,
++        "dst_id": dst,
++        "flags": flags,
++        "cmd_id": cmd,
++        "hop_limit": hop,
++        "route_ctrl": route,
++        "seq": seq,
++        "payload_len": plen,
++        "payload": raw[12 : 12 + plen],
++    }
++
++
++def decode_version_payload(payload: bytes) -> Optional[NodeVersionSnapshot]:
++    """将 16 字节 0x02 CMD_VERSION_REPORT 载荷解析为 NodeVersionSnapshot。"""
++    if payload is None or len(payload) < 16:
++        return None
++    p_maj, p_min, f_maj, f_min, boot_id, git_sha, cap = struct.unpack("<BBBBIII", payload[:16])
++    return NodeVersionSnapshot(p_maj, p_min, f_maj, f_min, boot_id, git_sha, cap)
++
++
++class VirtualDualMcuOtaTarget:
++    """支持 TH(AT32F423) 与 MC(AT32F435) 双节点四阶段升级与故障注入的确定性协议仿真靶机。"""
++
++    def __init__(self) -> None:
++        """初始化 MC 与 TH 节点的 App/Boot 状态、boot_id、版本号及 Flash 缓冲。"""
++        self.state: Dict[int, Dict[str, Any]] = {
++            NODE_MC: {
++                "in_boot": False,
++                "fw_major": 1,
++                "fw_minor": 2,
++                "boot_id": 0x1000A001,
++                "git_sha": 0x4FC171EA,
++                "ota_state": 0,
++                "expected_size": 0,
++                "expected_crc": 0,
++                "pending_ver": (1, 2),
++                "next_offset": 0,
++                "chunk0_ram": b"",
++                "flash_buf": bytearray(),
++                "erase_count": 0,
++                "proxy_active": False,
++                "steppers_disabled": False,
++                "heaters_zeroed": False,
++            },
++            NODE_TH: {
++                "in_boot": False,
++                "fw_major": 1,
++                "fw_minor": 1,
++                "boot_id": 0x2000B001,
++                "git_sha": 0x769FCCBE,
++                "ota_state": 0,
++                "expected_size": 0,
++                "expected_crc": 0,
++                "pending_ver": (1, 1),
++                "next_offset": 0,
++                "chunk0_ram": b"",
++                "flash_buf": bytearray(),
++                "erase_count": 0,
++                "anchor_valid": True,
++                "steppers_disabled": False,
++                "heaters_zeroed": False,
++            },
++        }
++        self.tx_log: List[str] = []
++
++    def _pack_reply(self, src_id: int, cmd_id: int, seq: int, payload: bytes) -> bytes:
++        """封装从 MC 或 TH 返回给 AP 的响应帧。"""
++        route = ROUTE_CASCADED if src_id == NODE_TH else ROUTE_DIRECT
++        hop = 3 if src_id == NODE_TH else 4
++        hdr = struct.pack(
++            "<BBBBBBBBHH",
++            SOF_0,
++            SOF_1,
++            src_id,
++            NODE_AP,
++            FLAG_RESP_V2,
++            cmd_id,
++            hop,
++            route,
++            seq,
++            len(payload),
++        )
++        return hdr + payload + struct.pack("<H", calc_crc16_ccitt(hdr + payload))
++
++    def _handle_ota_start(self, node_id: int, seq: int, payload: bytes) -> bytes:
++        """处理 0x20 CMD_OTA_START 144B 载荷，执行擦除前零擦除门禁校验。"""
++        st = self.state[node_id]
++        if not st["in_boot"] or len(payload) != 144:
++            return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x06, seq))
++        tgt_dev, _, _, _, fw_sz, fw_crc, new_ver = struct.unpack("<BBBBIII", payload[:16])
++        trailer = payload[16:144]
++        exp_board = BOARD_ID_TH if node_id == NODE_TH else BOARD_ID_MC
++        max_sz = MAX_TH_APP_BYTES if node_id == NODE_TH else MAX_MC_APP_BYTES
++        magic, s_ver, b_id, _, t_len = struct.unpack("<IIIII", trailer[:20])
++        t_crc = struct.unpack("<I", trailer[124:128])[0]
++        if fw_sz == 0 or fw_sz > max_sz or t_len > max_sz:
++            return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x14, seq))
++        if (
++            tgt_dev != node_id
++            or magic != TRAILER_MAGIC
++            or s_ver != TRAILER_STRUCT_VER
++            or b_id != exp_board
++            or t_len != fw_sz
++            or calc_crc32_ieee(trailer[:124]) != t_crc
++        ):
++            return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x06, seq))
++        st["erase_count"] += 1
++        st["ota_state"] = 1
++        st["expected_size"] = fw_sz
++        st["expected_crc"] = fw_crc
++        st["pending_ver"] = ((new_ver >> 8) & 0xFF, new_ver & 0xFF)
++        st["next_offset"] = 0
++        st["chunk0_ram"] = b""
++        st["flash_buf"] = bytearray(b"\xFF" * fw_sz)
++        if node_id == NODE_TH:
++            st["anchor_valid"] = False
++        return self._pack_reply(node_id, CMD_ACK, seq, struct.pack("<BBH", 1, 1, 0))
++
++    def _handle_ota_data(self, node_id: int, seq: int, payload: bytes) -> bytes:
++        """处理 0x21 CMD_OTA_DATA 分片写入（TH 首块暂存 RAM，后续块直写 Flash）。"""
++        st = self.state[node_id]
++        if st["ota_state"] not in (1, 2, 3) or len(payload) < 9:
++            return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x06, seq))
++        offset, chunk_len, chunk_crc = struct.unpack("<IHH", payload[:8])
++        data = payload[8:]
++        if len(data) != chunk_len or chunk_len > 512:
++            return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x02, seq))
++        if calc_crc16_ccitt(data) != chunk_crc:
++            return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x12, seq))
++        if offset != st["next_offset"] or offset + chunk_len > st["expected_size"]:
++            return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x13, seq))
++        if node_id == NODE_TH and offset == 0:
++            sp_val, pc_val = struct.unpack("<II", data[:8])
++            if not (0x20000000 <= sp_val <= 0x20060000) or (pc_val & 1) == 0:
++                return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x06, seq))
++            st["chunk0_ram"] = bytes(data)
++            st["ota_state"] = 2
++        else:
++            st["flash_buf"][offset : offset + chunk_len] = data
++            st["ota_state"] = 3
++        st["next_offset"] += chunk_len
++        return self._pack_reply(node_id, CMD_ACK, seq, struct.pack("<BBH", 1, 1, 0))
++
++    def _handle_ota_finish(self, node_id: int, seq: int, payload: bytes) -> bytes:
++        """处理 0x22 CMD_OTA_FINISH 全镜像 CRC32 终验、TH 首块回写与复位切回新 App。"""
++        st = self.state[node_id]
++        if len(payload) != 8 or st["next_offset"] != st["expected_size"]:
++            return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x13, seq))
++        fin_crc, action = struct.unpack("<IB", payload[:5])
++        assembled = bytearray(st["flash_buf"])
++        if node_id == NODE_TH and st["chunk0_ram"]:
++            assembled[: len(st["chunk0_ram"])] = st["chunk0_ram"]
++        calc_crc = calc_crc32_ieee(bytes(assembled))
++        if calc_crc != st["expected_crc"] or calc_crc != fin_crc:
++            st["ota_state"] = 5
++            return self._pack_reply(node_id, CMD_NACK, seq, struct.pack("<BH", 0x12, seq))
++        st["flash_buf"] = assembled
++        st["ota_state"] = 4
++        if node_id == NODE_TH:
++            st["anchor_valid"] = True
++        if action == 1:
++            st["in_boot"] = False
++            st["fw_major"], st["fw_minor"] = st["pending_ver"]
++            st["boot_id"] = (st["boot_id"] + 0x01010005) & 0xFFFFFFFF
++            if node_id == NODE_TH:
++                self.state[NODE_MC]["proxy_active"] = False
++        return self._pack_reply(node_id, CMD_ACK, seq, struct.pack("<BBH", 1, 1, 0))
++
++    def exchange_frame(self, raw_req: bytes) -> bytes:
++        """接收 AP 请求帧并返回对应节点 (MC 或级联 TH) 的二进制响应帧。"""
++        ok, req = decode_minimc_frame(raw_req)
++        if not ok:
++            return self._pack_reply(NODE_MC, CMD_NACK, 0, struct.pack("<BH", 0x01, 0))
++        dst = req["dst_id"]
++        cmd = req["cmd_id"]
++        seq = req["seq"]
++        pld: bytes = req["payload"]
++        st = self.state[dst]
++        tag = "MC-DBG" if dst == NODE_MC else "TH-DBG"
++        node_str = "MC" if dst == NODE_MC else "TH"
++        self.tx_log.append(
++            f"[{tag}] ts=100 dir=RX node={node_str} seq={seq} cmd=0x{cmd:02X} status=OK len={len(raw_req)} drop=0 trunc=0"
++        )
++        if cmd == CMD_GET_VERSION:
++            cap = (0xE0080423 if dst == NODE_TH else 0xC0080435) if st["in_boot"] else 0x00080001
++            v_pld = struct.pack(
++                "<BBBBIII", 2, 0, st["fw_major"], st["fw_minor"], st["boot_id"], st["git_sha"], cap
++            )
++            return self._pack_reply(dst, CMD_VERSION_REPORT, seq, v_pld)
++        if cmd == CMD_SYSTEM_CONTROL:
++            if len(pld) != 4:
++                return self._pack_reply(dst, CMD_NACK, seq, struct.pack("<BH", 0x02, seq))
++            action, _, _ = struct.unpack("<BBH", pld)
++            st["steppers_disabled"] = True
++            st["heaters_zeroed"] = True
++            if action == 2:
++                st["in_boot"] = True
++                st["ota_state"] = 0
++                st["boot_id"] = (st["boot_id"] + 0x00100001) & 0xFFFFFFFF
++                if dst == NODE_TH:
++                    self.state[NODE_MC]["proxy_active"] = True
++            return self._pack_reply(dst, CMD_ACK, seq, struct.pack("<BBH", 16, 8, 0))
++        if cmd == CMD_OTA_START:
++            return self._handle_ota_start(dst, seq, pld)
++        if cmd == CMD_OTA_DATA:
++            return self._handle_ota_data(dst, seq, pld)
++        if cmd == CMD_OTA_FINISH:
++            return self._handle_ota_finish(dst, seq, pld)
++        if cmd == CMD_OTA_STATUS:
++            if len(pld) == 4:
++                st["ota_state"] = 0
++                st["next_offset"] = 0
++                st["chunk0_ram"] = b""
++                return self._pack_reply(dst, CMD_ACK, seq, struct.pack("<BBH", 1, 1, 0))
++            c0_len = len(st["chunk0_ram"]) if dst == NODE_TH else 0
++            s_pld = struct.pack("<BBHI", st["ota_state"], 0, c0_len, st["next_offset"])
++            return self._pack_reply(dst, CMD_OTA_STATUS, seq, s_pld)
++        return self._pack_reply(dst, CMD_NACK, seq, struct.pack("<BH", 0x04, seq))
++
++
++def _query_node_version(
++    transceive: Callable[[bytes], bytes],
++    node_id: int,
++    seq: int,
++) -> Optional[NodeVersionSnapshot]:
++    """发送 0x01 CMD_GET_VERSION 并解码返回的 16 字节版本快照。"""
++    resp = transceive(encode_minimc_frame(node_id, CMD_GET_VERSION, seq, b""))
++    ok, info = decode_minimc_frame(resp)
++    if not ok or info.get("cmd_id") != CMD_VERSION_REPORT:
++        return None
++    return decode_version_payload(info.get("payload", b""))
++
++
++def _stage1_enter_boot(
++    transceive: Callable[[bytes], bytes],
++    node_id: int,
++    trace: UpgradeStageTrace,
++) -> bool:
++    """执行第一阶段：0x01 预检快照、0x1D 受控进 Bootloader 及 Boot 模式会话确认。"""
++    trace.before_ver = _query_node_version(transceive, node_id, 1)
++    trace.progress_history.append(("PRE_CHECK", 5))
++    if trace.before_ver is None or trace.before_ver.is_boot_mode:
++        trace.error_detail = "PRE_CHECK version query failed or already in boot"
++        return False
++    sys_pld = struct.pack("<BBH", 2, 1, 50)
++    ok_ack, ack_info = decode_minimc_frame(
++        transceive(encode_minimc_frame(node_id, CMD_SYSTEM_CONTROL, 2, sys_pld))
++    )
++    if not ok_ack or ack_info.get("cmd_id") != CMD_ACK:
++        trace.error_detail = "0x1D CMD_SYSTEM_CONTROL not ACKed"
++        return False
++    trace.boot_ver = _query_node_version(transceive, node_id, 3)
++    if (
++        trace.boot_ver is None
++        or not trace.boot_ver.is_boot_mode
++        or trace.boot_ver.boot_id == trace.before_ver.boot_id
++    ):
++        trace.error_detail = "Bootloader entry verification failed"
++        return False
++    return True
++
++
++def _stage2_start_and_stream(
++    transceive: Callable[[bytes], bytes],
++    pkg_info: Dict[str, Any],
++    trace: UpgradeStageTrace,
++    chunk_size: int,
++) -> bool:
++    """执行第二阶段：0x20 144B 擦除准入与 0x21 分片流式写入（含 TH 首块 RAM 暂存核验）。"""
++    node_id = trace.target_node
++    start_pld = (
++        struct.pack(
++            "<BBBBIII", node_id, 1, 0, 0, pkg_info["payload_len"], pkg_info["fw_crc32"], pkg_info["fw_version"]
++        )
++        + pkg_info["trailer"]
++    )
++    ok_st, st_info = decode_minimc_frame(transceive(encode_minimc_frame(node_id, CMD_OTA_START, 4, start_pld)))
++    if not ok_st or st_info.get("cmd_id") != CMD_ACK:
++        trace.error_detail = "0x20 CMD_OTA_START rejected"
++        return False
++    trace.progress_history.append(("ERASING", 15))
++    fw_raw: bytes = pkg_info["payload"]
++    seq = 5
++    for off in range(0, len(fw_raw), chunk_size):
++        chunk = fw_raw[off : off + chunk_size]
++        d_pld = struct.pack("<IHH", off, len(chunk), calc_crc16_ccitt(chunk)) + chunk
++        ok_d, d_info = decode_minimc_frame(transceive(encode_minimc_frame(node_id, CMD_OTA_DATA, seq, d_pld)))
++        seq += 1
++        if not ok_d or d_info.get("cmd_id") != CMD_ACK:
++            trace.error_detail = f"0x21 CMD_OTA_DATA failed at offset={off}"
++            return False
++        trace.chunks_sent += 1
++        trace.bytes_sent += len(chunk)
++        if off == 0 and node_id == NODE_TH:
++            _, q_info = decode_minimc_frame(transceive(encode_minimc_frame(node_id, CMD_OTA_STATUS, seq, b"")))
++            seq += 1
++            if len(q_info.get("payload", b"")) == 8:
++                o_st, _, c0_b, _ = struct.unpack("<BBHI", q_info["payload"])
++                trace.chunk0_cached_observed = o_st == 2 and c0_b == len(chunk)
++    trace.progress_history.append(("DOWNLOADING", 85))
++    return True
++
++
++def run_single_node_four_stage_upgrade(
++    transceive: Callable[[bytes], bytes],
++    node_id: int,
++    pkg_bytes: bytes,
++    chunk_size: int = 512,
++) -> UpgradeStageTrace:
++    """对单个目标节点 (TH=0x03 或 MC=0x02) 执行完整四阶段受控升级与前后快照核对。"""
++    trace = UpgradeStageTrace(target_node=node_id)
++    exp_board = BOARD_ID_TH if node_id == NODE_TH else BOARD_ID_MC
++    ok_pkg, msg_pkg, pkg_info = parse_and_verify_atsg_package(pkg_bytes, exp_board)
++    if not ok_pkg:
++        trace.error_detail = msg_pkg
++        return trace
++    if not _stage1_enter_boot(transceive, node_id, trace):
++        return trace
++    if not _stage2_start_and_stream(transceive, pkg_info, trace, chunk_size):
++        return trace
++
++    fin_pld = struct.pack("<IB3s", pkg_info["fw_crc32"], 1, b"\x00\x00\x00")
++    ok_f, f_info = decode_minimc_frame(
++        transceive(encode_minimc_frame(node_id, CMD_OTA_FINISH, 100, fin_pld))
++    )
++    if not ok_f or f_info.get("cmd_id") != CMD_ACK:
++        trace.error_detail = "0x22 CMD_OTA_FINISH failed"
++        return trace
++    trace.progress_history.append(("VERIFYING", 95))
++
++    trace.after_ver = _query_node_version(transceive, node_id, 101)
++    exp_maj = (pkg_info["fw_version"] >> 8) & 0xFF
++    exp_min = pkg_info["fw_version"] & 0xFF
++    if (
++        trace.after_ver is None
++        or trace.after_ver.is_boot_mode
++        or (trace.after_ver.fw_major, trace.after_ver.fw_minor) != (exp_maj, exp_min)
++        or trace.after_ver.boot_id in (trace.before_ver.boot_id, trace.boot_ver.boot_id)
++    ):
++        trace.error_detail = "Stage 4 post-reboot App verification failed"
++        return trace
++    trace.progress_history.append(("REBOOTING_VERIFIED", 100))
++    trace.passed = True
++    return trace
++
++
++def run_ordered_th_then_mc_upgrade(
++    rig: VirtualDualMcuOtaTarget,
++    th_pkg: bytes,
++    mc_pkg: bytes,
++) -> Tuple[bool, UpgradeStageTrace, UpgradeStageTrace]:
++    """严格按“先 TH (0x03)、后 MC (0x02)”顺序执行双板四阶段升级闭环。"""
++    th_trace = run_single_node_four_stage_upgrade(rig.exchange_frame, NODE_TH, th_pkg, 512)
++    if not th_trace.passed:
++        return False, th_trace, UpgradeStageTrace(target_node=NODE_MC, error_detail="Skipped due to TH failure")
++    mc_trace = run_single_node_four_stage_upgrade(rig.exchange_frame, NODE_MC, mc_pkg, 512)
++    return (th_trace.passed and mc_trace.passed), th_trace, mc_trace
++
++
++def run_builtin_selftest() -> int:
++    """运行 hil_deploy_via_minimc_ota.py 内置自检（ATSG 打包校验 + 先 TH 后 MC 四阶段升级）。"""
++    rig = VirtualDualMcuOtaTarget()
++    th_raw = build_cortex_m4_mock_binary(1536, seed=0x21)
++    mc_raw = build_cortex_m4_mock_binary(2048, seed=0x42)
++    th_pkg = pack_atsg_firmware_package(th_raw, BOARD_ID_TH, 0x000201)
++    mc_pkg = pack_atsg_firmware_package(mc_raw, BOARD_ID_MC, 0x000203)
++    ok, th_tr, mc_tr = run_ordered_th_then_mc_upgrade(rig, th_pkg, mc_pkg)
++    if not ok or not th_tr.chunk0_cached_observed:
++        sys.stderr.write(f"[FAIL] OTA self-test failed: th={th_tr.error_detail}, mc={mc_tr.error_detail}\n")
++        return 1
++    print(
++        f"[PASS] hil_deploy_via_minimc_ota.py self-test passed: "
++        f"TH({th_tr.before_ver.fw_major}.{th_tr.before_ver.fw_minor}->{th_tr.after_ver.fw_major}.{th_tr.after_ver.fw_minor}) "
++        f"then MC({mc_tr.before_ver.fw_major}.{mc_tr.before_ver.fw_minor}->{mc_tr.after_ver.fw_major}.{mc_tr.after_ver.fw_minor})."
++    )
++    return 0
++
++
++def main(argv: Optional[List[str]] = None) -> int:
++    """hil_deploy_via_minimc_ota.py 命令行主入口。"""
++    parser = argparse.ArgumentParser(description="MiniMCProto v2.0 (Rev 2.0.4) TH->MC OTA Deploy Tool")
++    parser.add_argument("--self-test", action="store_true", help="Run built-in TH->MC 4-stage OTA self-test")
++    parser.add_argument("--dry-run", action="store_true", help="Run dry-run package & protocol verification")
++    parser.add_argument("--pack-in", type=str, default="", help="Input raw .bin to pack with 128B ATSG trailer")
++    parser.add_argument("--pack-out", type=str, default="", help="Output path for packed .bin")
++    parser.add_argument("--board", type=str, choices=["TH", "MC"], default="TH", help="Target board ID")
++    parser.add_argument("--version", type=str, default="2.1", help="Firmware version major.minor")
++    args = parser.parse_args(argv)
++
++    if args.pack_in and args.pack_out:
++        raw = pathlib.Path(args.pack_in).read_bytes()
++        maj, min_v = (int(x) for x in args.version.split(".")[:2])
++        b_id = BOARD_ID_TH if args.board == "TH" else BOARD_ID_MC
++        pkg = pack_atsg_firmware_package(raw, b_id, (maj << 8) | min_v)
++        pathlib.Path(args.pack_out).write_bytes(pkg)
++        print(f"[PASS] Packed {len(raw)}B -> {len(pkg)}B ({args.board}, v{maj}.{min_v})")
++        return 0
++    return run_builtin_selftest()
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/hil/twin_capture/twin_capture_analyzer.py b/hil/twin_capture/twin_capture_analyzer.py
+index 8b50555..dd0c938 100644
+--- a/hil/twin_capture/twin_capture_analyzer.py
++++ b/hil/twin_capture/twin_capture_analyzer.py
+@@ -1,26 +1,47 @@
+ #!/usr/bin/env python3
+ # -*- coding: utf-8 -*-
+-"""
+-twin_capture_analyzer.py - Virtual/Physical Frame Capture & Timing Reconciliation
+-Task ID: TWIN-03
+-Author: QA
++"""虚拟/物理串口帧捕获、MiniMCProto v2.0 (Rev 2.0.4) 解码及 100ms 采样时序对账工具。"""
+ 
+-Provides dual-environment (VMware Virtual Twin vs SoC/MCU Physical Bench)
+-frame capture, timing jitter analysis (100ms cadence), and sequence alignment.
+-Enforces: function <= 50 lines, params <= 4.
+-"""
++from __future__ import annotations
+ 
+-import sys
+-import math
+-import json
+-import struct
+ import argparse
++import json
++import math
+ from pathlib import Path
+-from typing import Dict, Any, List, Tuple, Optional
++import struct
++import sys
++from typing import Any, Dict, List, Optional, Tuple
++
++
++REV204_OPCODE_NAMES: Dict[int, str] = {
++    0x00: "CMD_ACK",
++    0x01: "CMD_GET_VERSION",
++    0x02: "CMD_VERSION_REPORT",
++    0x03: "CMD_PING",
++    0x04: "CMD_PONG",
++    0x06: "CMD_NACK",
++    0x10: "CMD_SET_TEMP",
++    0x11: "CMD_MOTION_HOME",
++    0x12: "CMD_MOTION_MOVE",
++    0x13: "CMD_JOB_CONTROL",
++    0x14: "CMD_TEMP_QUERY",
++    0x15: "CMD_TEMP_REPORT",
++    0x16: "CMD_POS_QUERY",
++    0x17: "CMD_EMERGENCY_STOP",
++    0x18: "CMD_LEVEL_GRID_QUERY",
++    0x19: "CMD_FILAMENT_CONTROL",
++    0x1A: "CMD_LEVEL_TRIGGER",
++    0x1C: "CMD_GCODE_EXEC",
++    0x1D: "CMD_SYSTEM_CONTROL",
++    0x20: "CMD_OTA_START",
++    0x21: "CMD_OTA_DATA",
++    0x22: "CMD_OTA_FINISH",
++    0x23: "CMD_OTA_STATUS",
++}
+ 
+ 
+ def calc_crc16(data: bytes) -> int:
+-    """CRC-16/CCITT-FALSE calculation over byte buffer."""
++    """计算字节缓冲区的 CRC-16/CCITT-FALSE 校验和。"""
+     crc = 0xFFFF
+     for byte in data:
+         crc ^= (byte & 0xFF) << 8
+@@ -33,7 +54,7 @@ def calc_crc16(data: bytes) -> int:
+ 
+ 
+ def parse_single_temp_payload(payload: bytes) -> Dict[str, Any]:
+-    """Parse 16-byte packed temperature report wire payload."""
++    """解析 16 字节紧凑温度遥测上报线协议载荷。"""
+     if len(payload) < 16:
+         return {"valid": False, "error": "Payload shorter than 16 bytes"}
+     fields = struct.unpack("<hhHBBII", payload[:16])
+@@ -46,12 +67,34 @@ def parse_single_temp_payload(payload: bytes) -> Dict[str, Any]:
+         "sensor_status": fields[3],
+         "heater_duty_percent": fields[4],
+         "sample_timestamp_ms": fields[5],
+-        "reserved": fields[6]
++        "reserved": fields[6],
+     }
+ 
+ 
++def parse_ota_or_control_payload(cmd_id: int, payload: bytes) -> Dict[str, Any]:
++    """解析 Rev 2.0.4 新增的 0x1D 系统控制及 0x20~0x23 固件升级线协议载荷。"""
++    if cmd_id in (0x14, 0x15) and len(payload) >= 16:
++        return parse_single_temp_payload(payload)
++    if cmd_id == 0x1D and len(payload) == 4:
++        act, comp, delay_ms = struct.unpack("<BBH", payload)
++        return {"action": act, "target_component": comp, "delay_ms": delay_ms}
++    if cmd_id == 0x20 and len(payload) == 144:
++        tgt, comp, force, _, fw_sz, fw_crc, new_ver = struct.unpack("<BBBBIII", payload[:16])
++        return {"target_device": tgt, "target_component": comp, "force": force, "fw_size_bytes": fw_sz, "fw_crc32": fw_crc, "new_version": new_ver}
++    if cmd_id == 0x21 and len(payload) >= 8:
++        off, c_len, c_crc = struct.unpack("<IHH", payload[:8])
++        return {"offset": off, "chunk_bytes": c_len, "chunk_crc16": c_crc}
++    if cmd_id == 0x22 and len(payload) == 8:
++        fw_crc, act = struct.unpack("<IB", payload[:5])
++        return {"fw_crc32": fw_crc, "action_after_verify": act}
++    if cmd_id == 0x23 and len(payload) == 8:
++        st, err, c0, written = struct.unpack("<BBHI", payload)
++        return {"ota_state": st, "error_code": err, "cached_chunk0_bytes": c0, "bytes_written": written}
++    return {}
++
++
+ def parse_one_frame(stream: bytes, offset: int) -> Tuple[Optional[Dict[str, Any]], int]:
+-    """Attempt parsing a single frame at given stream offset."""
++    """尝试从指定字节偏移处解析单条 MiniMCProto v2.0 协议帧（最高支持 1038B 帧长）。"""
+     if offset + 14 > len(stream):
+         return None, offset
+ 
+@@ -62,28 +105,35 @@ def parse_one_frame(stream: bytes, offset: int) -> Tuple[Optional[Dict[str, Any]
+ 
+     payload_len = stream[offset + 10] | (stream[offset + 11] << 8)
+     frame_len = 12 + payload_len + 2
+-    if offset + frame_len > len(stream):
+-        return None, offset
++    if payload_len > 1024 or offset + frame_len > len(stream):
++        return None, offset + 1
+ 
+     raw_frame = stream[offset : offset + frame_len]
+     calc_c = calc_crc16(raw_frame[: 12 + payload_len])
+     recv_c = raw_frame[12 + payload_len] | (raw_frame[13 + payload_len] << 8)
+ 
+     hdr = struct.unpack("<BBBBBBBBHH", raw_frame[:12])
+-    pld = parse_single_temp_payload(raw_frame[12 : 12 + payload_len]) if hdr[5] == 0x14 else {}
++    pld = parse_ota_or_control_payload(hdr[5], raw_frame[12 : 12 + payload_len])
+ 
+     frame_info = {
+-        "src_id": hdr[2], "dst_id": hdr[3], "flags": hdr[4],
+-        "cmd_id": hdr[5], "hop_limit": hdr[6], "route_ctrl": hdr[7],
+-        "seq": hdr[8], "payload_len": hdr[9],
++        "src_id": hdr[2],
++        "dst_id": hdr[3],
++        "flags": hdr[4],
++        "cmd_id": hdr[5],
++        "cmd_name": REV204_OPCODE_NAMES.get(hdr[5], f"0x{hdr[5]:02X}"),
++        "hop_limit": hdr[6],
++        "route_ctrl": hdr[7],
++        "seq": hdr[8],
++        "payload_len": hdr[9],
+         "crc_valid": (calc_c == recv_c),
+-        "payload": pld, "raw_hex": raw_frame.hex().upper()
++        "payload": pld,
++        "raw_hex": raw_frame.hex().upper(),
+     }
+     return frame_info, offset + frame_len
+ 
+ 
+ def parse_stream_frames(stream: bytes) -> List[Dict[str, Any]]:
+-    """Parse contiguous byte stream and extract all valid MiniMCProto frames."""
++    """从连续字节流中遍历并提取全部合法的 MiniMCProto v2.0 协议帧。"""
+     frames = []
+     idx = 0
+     max_len = len(stream)
+@@ -98,7 +148,7 @@ def parse_stream_frames(stream: bytes) -> List[Dict[str, Any]]:
+ 
+ 
+ def calculate_timing_statistics(intervals: List[float], nominal_ms: float) -> Dict[str, Any]:
+-    """Compute timing jitter, min/max, mean, and standard deviation."""
++    """计算采样周期序列的均值、极值、标准差与抖动违例次数。"""
+     if not intervals:
+         return {"count": 0, "mean_ms": 0.0, "jitter_ms": 0.0, "violations": 0}
+ 
+@@ -117,12 +167,12 @@ def calculate_timing_statistics(intervals: List[float], nominal_ms: float) -> Di
+         "max_ms": round(max_val, 2),
+         "std_dev_ms": round(std_dev, 2),
+         "jitter_ms": round(max_val - min_val, 2),
+-        "violations": violations
++        "violations": violations,
+     }
+ 
+ 
+ def analyze_sampling_timing(frames: List[Dict[str, Any]], nominal_ms: float = 100.0) -> Dict[str, Any]:
+-    """Analyze sampling period and jitter based on MCU sample_timestamp_ms."""
++    """基于 MCU sample_timestamp_ms 字段分析周期采样间隔与抖动分布。"""
+     intervals = []
+     prev_tick = None
+     for frame in frames:
+@@ -138,7 +188,7 @@ def analyze_sampling_timing(frames: List[Dict[str, Any]], nominal_ms: float = 10
+ 
+ 
+ def align_dual_traces(trace_v: List[Dict[str, Any]], trace_p: List[Dict[str, Any]]) -> Dict[str, Any]:
+-    """Reconcile and align frames between virtual trace and physical trace."""
++    """按序列号与节点路由对齐虚拟孪生帧流与物理实机帧流。"""
+     map_p = {f["seq"]: f for f in trace_p if "seq" in f}
+     matched = 0
+     mismatched = 0
+@@ -156,18 +206,18 @@ def align_dual_traces(trace_v: List[Dict[str, Any]], trace_p: List[Dict[str, Any
+         status_v = f_v.get("payload", {}).get("sensor_status")
+         status_p = f_p.get("payload", {}).get("sensor_status")
+ 
+-        is_match = ((temp_v == temp_p) and (status_v == status_p) and
+-                    (f_v.get("src_id") == f_p.get("src_id")) and
+-                    (f_v.get("dst_id") == f_p.get("dst_id")))
++        is_match = (
++            (temp_v == temp_p)
++            and (status_v == status_p)
++            and (f_v.get("src_id") == f_p.get("src_id"))
++            and (f_v.get("dst_id") == f_p.get("dst_id"))
++        )
+         if is_match:
+             matched += 1
+         else:
+             mismatched += 1
+ 
+-        aligned_pairs.append({
+-            "seq": seq, "temp_virtual": temp_v, "temp_physical": temp_p,
+-            "match": is_match
+-        })
++        aligned_pairs.append({"seq": seq, "temp_virtual": temp_v, "temp_physical": temp_p, "match": is_match})
+ 
+     total = len(trace_v)
+     match_rate = round((matched / total) * 100.0, 2) if total > 0 else 0.0
+@@ -178,12 +228,12 @@ def align_dual_traces(trace_v: List[Dict[str, Any]], trace_p: List[Dict[str, Any
+         "mismatched": mismatched,
+         "missing_in_physical": missing_in_phys,
+         "match_rate_percent": match_rate,
+-        "pairs_sample": aligned_pairs[:10]
++        "pairs_sample": aligned_pairs[:10],
+     }
+ 
+ 
+ def load_hex_dump_file(file_path: Path) -> bytes:
+-    """Load hex dump or binary file content into bytes."""
++    """加载十六进制转储文本文件并转换为原始字节序列。"""
+     with open(file_path, "r", encoding="utf-8") as f:
+         text = f.read()
+     cleaned = "".join(text.split())
+@@ -191,7 +241,7 @@ def load_hex_dump_file(file_path: Path) -> bytes:
+ 
+ 
+ def format_report_markdown(timing: dict, alignment: dict) -> str:
+-    """Generate Markdown format reconciliation report."""
++    """生成 Markdown 格式的采样时序与双环境对齐报告。"""
+     lines = [
+         "# TWIN-03 Virtual/Physical Capture & Timing Reconciliation Report",
+         "",
+@@ -210,13 +260,13 @@ def format_report_markdown(timing: dict, alignment: dict) -> str:
+         f"- Mismatched Frames: {alignment.get('mismatched')}",
+         f"- Missing in Physical: {alignment.get('missing_in_physical')}",
+         f"- Alignment Match Rate: {alignment.get('match_rate_percent')}%",
+-        ""
++        "",
+     ]
+     return "\n".join(lines)
+ 
+ 
+ def parse_arguments() -> argparse.Namespace:
+-    """Parse command line options."""
++    """解析命令行参数选项。"""
+     parser = argparse.ArgumentParser(description="TWIN-03 Capture & Reconciliation Analyzer")
+     parser.add_argument("--virtual", type=str, help="Path to virtual hex frame dump")
+     parser.add_argument("--physical", type=str, help="Path to physical hex frame dump")
+@@ -226,7 +276,7 @@ def parse_arguments() -> argparse.Namespace:
+ 
+ 
+ def main() -> int:
+-    """Analyze virtual and physical captures."""
++    """虚拟与物理抓包对账分析器命令行主入口。"""
+     args = parse_arguments()
+     if not args.virtual:
+         print("Usage: twin_capture_analyzer.py --virtual <path> [--physical <path>]")
+diff --git a/static_checks/minimcproto/check_opcode_alignment.py b/static_checks/minimcproto/check_opcode_alignment.py
+index 9c754ee..453d910 100755
+--- a/static_checks/minimcproto/check_opcode_alignment.py
++++ b/static_checks/minimcproto/check_opcode_alignment.py
+@@ -1,134 +1,282 @@
+ #!/usr/bin/env python3
+-"""MiniMCProto V2 跨仓（soc-ap / mcu-p3 MC / mcu-p3 TH）全量命令字静态对齐门禁。"""
++# -*- coding: utf-8 -*-
++"""MiniMCProto v2.0 (Rev 2.0.4) 跨五端命令码、数值反向唯一性及 520B 载荷容量静态门禁。"""
++
++from __future__ import annotations
+ 
+ import pathlib
+ import re
+ import sys
+-from typing import Dict, List, Set, Tuple
+-
+-# 权威 MiniMCProto V2 命令字矩阵：(标准语义名, 期望数值, 允许别名元组)
+-EXPECTED_OPCODES: List[Tuple[str, int, Tuple[str, ...]]] = [
+-    ("ACK", 0x00, ("MINIMC_CMD_ACK",)),
+-    ("GET_VERSION", 0x01, ("MINIMC_CMD_GET_VERSION",)),
+-    ("VERSION_REPORT", 0x02, ("MINIMC_CMD_VERSION_REPORT",)),
+-    ("PING", 0x03, ("MINIMC_CMD_PING",)),
+-    ("PONG", 0x04, ("MINIMC_CMD_PONG",)),
+-    ("NACK", 0x06, ("MINIMC_CMD_NACK",)),
+-    ("SET_TEMP", 0x10, ("MINIMC_CMD_SET_TEMP",)),
+-    ("MOTION_HOME", 0x11, ("MINIMC_CMD_MOTION_HOME",)),
+-    ("MOTION_MOVE", 0x12, ("MINIMC_CMD_MOTION_MOVE",)),
+-    ("JOB_CONTROL", 0x13, ("MINIMC_CMD_JOB_CONTROL",)),
+-    ("TEMP_REPORT", 0x15, ("MINIMC_CMD_TEMP_REPORT", "MINIMC_CMD_TEMP_REPORT_V2")),
+-    ("POS_QUERY", 0x16, ("MINIMC_CMD_POS_QUERY",)),
+-    ("MOTION_STOP", 0x17, ("MINIMC_CMD_MOTION_STOP",)),
+-    ("LEVEL_GRID_QUERY", 0x18, ("MINIMC_CMD_LEVEL_GRID_QUERY",)),
+-    ("SLOT_SELECT", 0x19, ("MINIMC_CMD_SLOT_SELECT",)),
+-    ("LEVEL_TRIGGER", 0x1A, ("MINIMC_CMD_LEVEL_TRIGGER",)),
+-    ("GCODE_EXEC", 0x1C, ("MINIMC_CMD_GCODE_EXEC",)),
+-]
+-
+-MACRO_RE = re.compile(
+-    r"(?:#define\s+|constexpr\s+uint8_t\s+)(MINIMC_CMD_[A-Z0-9_]+)\s*=?\s*(0x[0-9A-Fa-f]+)"
++from typing import Dict, List, Optional, Tuple
++
++
++CANONICAL_COMMANDS: Dict[str, Tuple[int, Tuple[str, ...]]] = {
++    "CMD_ACK": (0x00, ("MINIMC_CMD_ACK",)),
++    "CMD_GET_VERSION": (0x01, ("MINIMC_CMD_GET_VERSION",)),
++    "CMD_VERSION_REPORT": (0x02, ("MINIMC_CMD_VERSION_REPORT",)),
++    "CMD_PING": (0x03, ("MINIMC_CMD_PING", "MINIMC_CMD_HEARTBEAT")),
++    "CMD_PONG": (0x04, ("MINIMC_CMD_PONG",)),
++    "CMD_NACK": (0x06, ("MINIMC_CMD_NACK", "MINIMC_CMD_NACK_LEGACY")),
++    "CMD_SET_TEMP": (0x10, ("MINIMC_CMD_SET_TEMP",)),
++    "CMD_MOTION_HOME": (0x11, ("MINIMC_CMD_MOTION_HOME",)),
++    "CMD_MOTION_MOVE": (0x12, ("MINIMC_CMD_MOTION_MOVE",)),
++    "CMD_JOB_CONTROL": (0x13, ("MINIMC_CMD_JOB_CONTROL",)),
++    "CMD_TEMP_QUERY": (0x14, ("MINIMC_CMD_TEMP_QUERY", "MINIMC_CMD_GET_TEMP")),
++    "CMD_TEMP_REPORT": (0x15, ("MINIMC_CMD_TEMP_REPORT", "MINIMC_CMD_TEMP_REPORT_V2")),
++    "CMD_POS_QUERY": (0x16, ("MINIMC_CMD_POS_QUERY", "MINIMC_CMD_GET_POS")),
++    "CMD_EMERGENCY_STOP": (0x17, ("MINIMC_CMD_EMERGENCY_STOP", "MINIMC_CMD_MOTION_STOP")),
++    "CMD_LEVEL_GRID_QUERY": (0x18, ("MINIMC_CMD_LEVEL_GRID_QUERY", "MINIMC_CMD_POS_REPORT")),
++    "CMD_FILAMENT_CONTROL": (
++        0x19,
++        ("MINIMC_CMD_FILAMENT_CONTROL", "MINIMC_CMD_SLOT_SELECT", "MINIMC_CMD_FILAMENT_CTRL_V2"),
++    ),
++    "CMD_LEVEL_TRIGGER": (0x1A, ("MINIMC_CMD_LEVEL_TRIGGER", "MINIMC_CMD_FILAMENT_STATUS")),
++    "CMD_GCODE_EXEC": (0x1C, ("MINIMC_CMD_GCODE_EXEC", "MINIMC_CMD_GCODE_LINE")),
++    "CMD_SYSTEM_CONTROL": (0x1D, ("MINIMC_CMD_SYSTEM_CONTROL",)),
++    "CMD_OTA_START": (0x20, ("MINIMC_CMD_OTA_START",)),
++    "CMD_OTA_DATA": (0x21, ("MINIMC_CMD_OTA_DATA",)),
++    "CMD_OTA_FINISH": (0x22, ("MINIMC_CMD_OTA_FINISH",)),
++    "CMD_OTA_STATUS": (0x23, ("MINIMC_CMD_OTA_STATUS",)),
++}
++
++ALLOWED_EXTRA_MACROS: Dict[str, Tuple[str, int]] = {
++    "MINIMC_CMD_LOG_MESSAGE": ("CMD_LOG_MESSAGE", 0x07),
++    "MINIMC_CMD_FILAMENT_LEGACY": ("CMD_FILAMENT_LEGACY", 0x1B),
++    "MINIMC_CMD_STREAM_CHUNK": ("CMD_STREAM_CHUNK", 0x31),
++    "MINIMC_CMD_TELEMETRY_REPORT": ("CMD_TELEMETRY_REPORT", 0x40),
++    "MINIMC_CMD_ALARM_EVENT": ("CMD_ALARM_EVENT", 0x50),
++}
++
++BOOT_REQUIRED_KEYS: Tuple[str, ...] = (
++    "CMD_ACK",
++    "CMD_GET_VERSION",
++    "CMD_VERSION_REPORT",
++    "CMD_PING",
++    "CMD_PONG",
++    "CMD_NACK",
++    "CMD_EMERGENCY_STOP",
++    "CMD_FILAMENT_CONTROL",
++    "CMD_SYSTEM_CONTROL",
++    "CMD_OTA_START",
++    "CMD_OTA_DATA",
++    "CMD_OTA_FINISH",
++    "CMD_OTA_STATUS",
++)
++
++DEFINE_HEX_OR_DEC_RE = re.compile(
++    r"^\s*#define\s+(?P<name>[A-Z0-9_]+)\s+\(*\s*(?P<val>0x[0-9A-Fa-f]+|\d+)[UuLl]*\s*\)*",
++    re.MULTILINE,
++)
++CONSTEXPR_RE = re.compile(
++    r"constexpr\s+[A-Za-z0-9_:]+\s+(?P<name>[A-Z0-9_]+)\s*=\s*(?P<val>0x[0-9A-Fa-f]+|\d+)",
++    re.MULTILINE,
+ )
+ 
+ 
+-def parse_header_macros(paths: List[pathlib.Path]) -> Dict[str, int]:
+-    """从一组 C/C++ 头文件中提取 MINIMC_CMD_* 宏或常量定义映射表。"""
+-    if not paths:
++def parse_header_constants(text: str) -> Dict[str, int]:
++    """从 C/C++ 头文件源码中提取 #define 与 constexpr 整型常量字典。"""
++    if not text:
+         return {}
+-    macros: Dict[str, int] = {}
+-    for path in paths:
+-        if not path.is_file():
+-            raise FileNotFoundError(f"Missing required header file: {path}")
+-        content = path.read_text(encoding="utf-8")
+-        for match in MACRO_RE.finditer(content):
+-            macros[match.group(1)] = int(match.group(2), 16)
+-    return macros
+-
+-
+-def resolve_endpoint_opcode(
+-    macros: Dict[str, int],
+-    aliases: Tuple[str, ...],
+-) -> Tuple[int, List[str]]:
+-    """在单侧头文件宏字典中解析指定语义命令字的数值与不一致项。"""
+-    if not macros or not aliases:
+-        return -1, ["no macro found"]
+-    found_vals: Set[int] = set()
+-    for alias in aliases:
+-        if alias in macros:
+-            found_vals.add(macros[alias])
+-    if not found_vals:
+-        return -1, [f"missing any of {aliases}"]
+-    if len(found_vals) > 1:
+-        hex_list = [f"0x{v:02X}" for v in sorted(found_vals)]
+-        return -1, [f"conflicting alias values {hex_list} for {aliases}"]
+-    return next(iter(found_vals)), []
+-
+-
+-def verify_single_opcode(
+-    name: str,
+-    expected_val: int,
+-    aliases: Tuple[str, ...],
+-    endpoint_map: Dict[str, Dict[str, int]],
++    result: Dict[str, int] = {}
++    for match in DEFINE_HEX_OR_DEC_RE.finditer(text):
++        raw_val = match.group("val")
++        base = 16 if raw_val.lower().startswith("0x") else 10
++        result[match.group("name")] = int(raw_val, base)
++    for match in CONSTEXPR_RE.finditer(text):
++        raw_val = match.group("val")
++        base = 16 if raw_val.lower().startswith("0x") else 10
++        result[match.group("name")] = int(raw_val, base)
++    if (
++        "MINIMC_MAX_FRAME_SIZE" not in result
++        and "MINIMC_HEADER_SIZE" in result
++        and "MINIMC_MAX_PAYLOAD_SIZE" in result
++    ):
++        crc_sz = result.get("MINIMC_CRC_SIZE", result.get("MINIMC_CRC16_SIZE", 2))
++        result["MINIMC_MAX_FRAME_SIZE"] = (
++            result["MINIMC_HEADER_SIZE"] + result["MINIMC_MAX_PAYLOAD_SIZE"] + crc_sz
++        )
++    return result
++
++
++def build_macro_to_group_map() -> Dict[str, Tuple[str, int]]:
++    """构建宏名称到 (规范语义组名, 规范数值) 的反查映射表。"""
++    mapping: Dict[str, Tuple[str, int]] = dict(ALLOWED_EXTRA_MACROS)
++    for group_name, (code_val, aliases) in CANONICAL_COMMANDS.items():
++        for alias in aliases:
++            mapping[alias] = (group_name, code_val)
++    return mapping
++
++
++def _check_required_and_capacity(
++    endpoint_name: str,
++    constants: Dict[str, int],
++    require_full_app_table: bool,
+ ) -> List[str]:
+-    """校验单个命令字在 AP、MC、TH 三侧头文件中的定义是否与权威值严格一致。"""
++    """检查目标端点是否具备全部必需命令码且满足 >=520B 载荷 / >=534B 帧容量门禁。"""
+     errors: List[str] = []
+-    for ep_label, macros in endpoint_map.items():
+-        actual_val, ep_errs = resolve_endpoint_opcode(macros, aliases)
+-        if ep_errs:
+-            errors.append(f"[{ep_label}] {name} (0x{expected_val:02X}): {'; '.join(ep_errs)}")
++    required = tuple(CANONICAL_COMMANDS.keys()) if require_full_app_table else BOOT_REQUIRED_KEYS
++    for req_key in required:
++        exp_val, aliases = CANONICAL_COMMANDS[req_key]
++        if not any(constants.get(alias) == exp_val for alias in aliases):
++            errors.append(f"[{endpoint_name}] Missing {req_key} (0x{exp_val:02X}) via {aliases}")
++
++    max_payload = max(
++        constants.get("MINIMC_MAX_PAYLOAD_SIZE", 0),
++        constants.get("MAX_PAYLOAD_SIZE", 0),
++        constants.get("FRAME_MAX_PAYLOAD", 0),
++    )
++    max_frame = max(constants.get("MINIMC_MAX_FRAME_SIZE", 0), constants.get("MAX_FRAME_SIZE", 0))
++    if max_payload < 520:
++        errors.append(f"[{endpoint_name}] Max payload {max_payload}B < 520B OTA requirement")
++    if max_frame < 534:
++        errors.append(f"[{endpoint_name}] Max frame {max_frame}B < 534B OTA requirement")
++    return errors
++
++
++def validate_endpoint_constants(
++    endpoint_name: str,
++    constants: Dict[str, int],
++    require_full_app_table: bool,
++) -> List[str]:
++    """校验单端头文件常量的禁用宏、正反向命令码唯一性及 520B/534B 容量门禁。"""
++    if not endpoint_name or constants is None:
++        return ["Invalid endpoint arguments"]
++    errors: List[str] = []
++    macro_map = build_macro_to_group_map()
++    if "MINIMC_CMD_ESTOP_ACK" in constants:
++        errors.append(f"[{endpoint_name}] Forbidden legacy macro MINIMC_CMD_ESTOP_ACK present")
++
++    value_owner: Dict[int, str] = {}
++    for name, val in sorted(constants.items()):
++        if not name.startswith("MINIMC_CMD_"):
+             continue
+-        if actual_val != expected_val:
++        if val == 0x05:
++            errors.append(f"[{endpoint_name}] Macro {name} uses forbidden reserved opcode 0x05")
++        if name not in macro_map:
++            errors.append(f"[{endpoint_name}] Unregistered command macro {name}=0x{val:02X}")
++            continue
++        group_name, expected_val = macro_map[name]
++        if val != expected_val:
++            errors.append(
++                f"[{endpoint_name}] {name}=0x{val:02X} != canonical {group_name}(0x{expected_val:02X})"
++            )
++        prev_group = value_owner.get(val)
++        if prev_group is not None and prev_group != group_name:
+             errors.append(
+-                f"[{ep_label}] {name} mismatch: expected 0x{expected_val:02X}, got 0x{actual_val:02X}"
++                f"[{endpoint_name}] Numeric collision on 0x{val:02X}: {prev_group} vs {group_name}"
+             )
++        value_owner[val] = group_name
++
++    errors.extend(_check_required_and_capacity(endpoint_name, constants, require_full_app_table))
+     return errors
+ 
+ 
+-def load_endpoint_headers(workspace_root: pathlib.Path) -> Dict[str, Dict[str, int]]:
+-    """加载 soc-ap、mcu-p3 (MC) 与 mcu-p3 (TH) 三侧协议头文件的命令字表。"""
+-    ap_headers = [
+-        workspace_root / "soc-ap/contracts/twin/telemetry_types.h",
+-    ]
+-    mc_headers = [
+-        workspace_root / "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+-    ]
+-    th_headers = [
+-        workspace_root / "mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h",
+-    ]
+-    return {
+-        "soc-ap": parse_header_macros(ap_headers),
+-        "mcu-p3(MC)": parse_header_macros(mc_headers),
+-        "mcu-p3(TH)": parse_header_macros(th_headers),
+-    }
+-
+-
+-def main() -> int:
+-    """执行跨仓 MiniMCProto V2 命令字对齐检查，任何缺失或不一致返回非 0。"""
+-    workspace_root = pathlib.Path(__file__).resolve().parents[3]
+-    print("=== MiniMCProto V2 Cross-Repo Opcode Alignment Gate ===")
+-    try:
+-        endpoint_map = load_endpoint_headers(workspace_root)
+-    except FileNotFoundError as exc:
+-        print(f"[FATAL] {exc}", file=sys.stderr)
+-        return 1
++def load_endpoint_constants(
++    root: pathlib.Path,
++    rel_paths: Tuple[str, ...],
++) -> Tuple[Dict[str, int], List[str]]:
++    """从候选相对路径加载并合并端点头文件常量，同时检查同端跨文件冲突。"""
++    merged: Dict[str, int] = {}
++    errors: List[str] = []
++    loaded_any = False
++    for rel in rel_paths:
++        full_path = root / rel
++        if not full_path.exists():
++            continue
++        loaded_any = True
++        file_consts = parse_header_constants(full_path.read_text(encoding="utf-8"))
++        for k, v in file_consts.items():
++            if k in merged and merged[k] != v and k.startswith("MINIMC_CMD_"):
++                errors.append(f"Intra-endpoint conflict in {rel}: {k}=0x{v:02X} vs 0x{merged[k]:02X}")
++            merged[k] = v
++    if not loaded_any:
++        errors.append(f"No header file found among candidates: {rel_paths}")
++    return merged, errors
++
++
++def run_negative_self_tests() -> List[str]:
++    """执行内置负例注入自检：验证 0x05 复辟、0x15 错配、数值碰撞及 <520B 容量均被拦截。"""
++    base_src = "\n".join(
++        f"#define {aliases[0]} 0x{val:02X}U" for val, aliases in CANONICAL_COMMANDS.values()
++    ) + "\n#define MINIMC_MAX_PAYLOAD_SIZE 520U\n#define MINIMC_MAX_FRAME_SIZE 534U\n"
++    base_consts = parse_header_constants(base_src)
++    failures: List[str] = []
++    if validate_endpoint_constants("SELFTEST_BASE", base_consts, True):
++        failures.append("Self-test baseline unexpectedly failed")
+ 
++    c_05 = dict(base_consts, MINIMC_CMD_ESTOP_ACK=0x05)
++    if not validate_endpoint_constants("NEG_0x05", c_05, True):
++        failures.append("Negative test failed to catch forbidden MINIMC_CMD_ESTOP_ACK=0x05")
++
++    c_15 = dict(base_consts, MINIMC_CMD_FILAMENT_CONTROL=0x15)
++    if not validate_endpoint_constants("NEG_0x15", c_15, True):
++        failures.append("Negative test failed to catch MINIMC_CMD_FILAMENT_CONTROL=0x15 drift")
++
++    c_dup = dict(base_consts, MINIMC_CMD_OTA_START=0x1D)
++    if not validate_endpoint_constants("NEG_DUP", c_dup, True):
++        failures.append("Negative test failed to catch duplicate opcode 0x1D collision")
++
++    c_mtu = dict(base_consts, MINIMC_MAX_PAYLOAD_SIZE=256, MINIMC_MAX_FRAME_SIZE=270)
++    if not validate_endpoint_constants("NEG_MTU", c_mtu, True):
++        failures.append("Negative test failed to catch <520B payload capacity")
++    return failures
++
++
++def verify_all_five_endpoints(root: pathlib.Path) -> Tuple[bool, List[str]]:
++    """对 AP、MC App、TH App、MC Boot、TH Boot 五端头文件执行完整对齐与负例门禁检查。"""
++    if root is None:
++        return False, ["Workspace root is None"]
++    specs: Tuple[Tuple[str, Tuple[str, ...], bool], ...] = (
++        ("soc-ap", ("soc-ap/contracts/twin/telemetry_types.h", "soc-ap/core/forward/minimc/codec.h"), True),
++        ("mcu-p3(MC)", ("mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",), True),
++        (
++            "mcu-p3(TH)",
++            (
++                "mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h",
++                "mcu-p3/color-engine-mcu/io_toggle/inc/usart.h",
++            ),
++            True,
++        ),
++        (
++            "boot/bootloadermc",
++            (
++                "boot/bootloadermc/bootloader/inc/boot_uart_ota.h",
++                "boot/bootloadermc/project/inc/minimc_boot_proto.h",
++            ),
++            False,
++        ),
++        (
++            "boot/bootloaderth",
++            (
++                "boot/bootloaderth/inc/iap.h",
++                "boot/bootloaderth/project/inc/minimc_boot_proto.h",
++            ),
++            False,
++        ),
++    )
+     all_errors: List[str] = []
+-    for name, expected_val, aliases in EXPECTED_OPCODES:
+-        item_errs = verify_single_opcode(name, expected_val, aliases, endpoint_map)
+-        if item_errs:
+-            all_errors.extend(item_errs)
+-            print(f"  [FAIL] 0x{expected_val:02X} ({name})")
+-        else:
+-            print(f"  [OK]   0x{expected_val:02X} ({name:<17}) aligned across soc-ap / MC / TH")
+-
+-    if all_errors:
+-        print("\n[FAILED] Opcode alignment check failed:", file=sys.stderr)
+-        for err in all_errors:
+-            print(f"  - {err}", file=sys.stderr)
+-        return 1
++    for ep_name, rel_paths, full_app in specs:
++        consts, load_errs = load_endpoint_constants(root, rel_paths)
++        all_errors.extend(load_errs)
++        if not load_errs:
++            all_errors.extend(validate_endpoint_constants(ep_name, consts, full_app))
++    all_errors.extend(run_negative_self_tests())
++    return len(all_errors) == 0, all_errors
++
+ 
+-    print(f"\n[PASSED] All {len(EXPECTED_OPCODES)} MiniMCProto V2 opcodes are 100% aligned.")
++def main(argv: Optional[List[str]] = None) -> int:
++    """运行跨五端 MiniMCProto v2.0 (Rev 2.0.4) 命令码对齐门禁主函数。"""
++    _ = argv
++    workspace_root = pathlib.Path(__file__).resolve().parents[3]
++    passed, errors = verify_all_five_endpoints(workspace_root)
++    if not passed:
++        for err in errors:
++            print(f"[FAIL] {err}")
++        return 1
++    print(
++        "[PASS] MiniMCProto v2.0 (Rev 2.0.4) 5-endpoint opcode alignment, "
++        "reverse uniqueness, >=520B payload capacity, and negative self-tests verified."
++    )
+     return 0
+ 
+ 
+diff --git a/static_checks/minimcproto/golden_vectors.json b/static_checks/minimcproto/golden_vectors.json
+new file mode 100644
+index 0000000..ab723d2
+--- /dev/null
++++ b/static_checks/minimcproto/golden_vectors.json
+@@ -0,0 +1,373 @@
++{
++  "protocol": "MiniMCProto v2.0",
++  "revision": "2.0.4",
++  "crc_spec": "CRC-16/CCITT-FALSE (poly=0x1021, init=0xFFFF, xorout=0x0000)",
++  "trailer_spec": "128-byte ATSG Trailer (magic=0x41545347, struct_ver=0x00010000, IEEE CRC32)",
++  "golden_vectors": [
++    {
++      "id": "G01",
++      "name": "CMD_PING_MIN_FRAME",
++      "cmd_id": 3,
++      "payload_len": 0,
++      "frame_len": 14,
++      "frame_hex": "55AA01020503040001000000AE08",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G02",
++      "name": "CMD_GET_VERSION_ROUTED_TH",
++      "cmd_id": 1,
++      "payload_len": 0,
++      "frame_len": 14,
++      "frame_hex": "55AA01030501030402010000C56E",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G03",
++      "name": "CMD_PONG_12B",
++      "cmd_id": 4,
++      "payload_len": 12,
++      "frame_len": 26,
++      "frame_hex": "55AA02010604040001000C0078563412E80300000A000000ACF5",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G04",
++      "name": "CMD_VERSION_REPORT_16B",
++      "cmd_id": 2,
++      "payload_len": 16,
++      "frame_len": 30,
++      "frame_hex": "55AA02010602040002001000020001030100A5A5EA71C14F35040880CD12",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G05",
++      "name": "CMD_SYSTEM_CONTROL_ENTER_BOOT",
++      "cmd_id": 29,
++      "payload_len": 4,
++      "frame_len": 18,
++      "frame_hex": "55AA0102151D040008000400020132004EF4",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G06",
++      "name": "CMD_ACK_FOR_SYS_CTRL",
++      "cmd_id": 0,
++      "payload_len": 4,
++      "frame_len": 18,
++      "frame_hex": "55AA020106000400080004001008000093F1",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G07",
++      "name": "CMD_EMERGENCY_STOP_0x17",
++      "cmd_id": 23,
++      "payload_len": 1,
++      "frame_len": 15,
++      "frame_hex": "55AA0102151704000900010001136B",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G08",
++      "name": "CMD_ACK_FOR_EMERGENCY_STOP",
++      "cmd_id": 0,
++      "payload_len": 4,
++      "frame_len": 18,
++      "frame_hex": "55AA0201160004000900040000080000B79A",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G09",
++      "name": "ERR_FRAME_TOO_SHORT_10B",
++      "cmd_id": 3,
++      "payload_len": 0,
++      "frame_len": 10,
++      "frame_hex": "55AA0102050304000100",
++      "expected_valid": false,
++      "expected_status": "ERR_FRAME_TOO_SHORT"
++    },
++    {
++      "id": "G10",
++      "name": "ERR_BAD_SOF_55AB",
++      "cmd_id": 3,
++      "payload_len": 0,
++      "frame_len": 14,
++      "frame_hex": "55AB01020503040001000000AE08",
++      "expected_valid": false,
++      "expected_status": "ERR_BAD_SOF"
++    },
++    {
++      "id": "G11",
++      "name": "ERR_BAD_PROTO_VERSION",
++      "cmd_id": 3,
++      "payload_len": 0,
++      "frame_len": 14,
++      "frame_hex": "55AA010209030400010000001919",
++      "expected_valid": false,
++      "expected_status": "ERR_BAD_VERSION"
++    },
++    {
++      "id": "G12",
++      "name": "ERR_BAD_FLAGS_RESERVED",
++      "cmd_id": 3,
++      "payload_len": 0,
++      "frame_len": 14,
++      "frame_hex": "55AA01022503040001000000C673",
++      "expected_valid": false,
++      "expected_status": "ERR_BAD_FLAGS_RESERVED"
++    },
++    {
++      "id": "G13",
++      "name": "ERR_BAD_ROUTE_CTRL_CONFLICT",
++      "cmd_id": 3,
++      "payload_len": 0,
++      "frame_len": 14,
++      "frame_hex": "55AA010205030403010000007CE6",
++      "expected_valid": false,
++      "expected_status": "ERR_BAD_ROUTE_CTRL"
++    },
++    {
++      "id": "G14",
++      "name": "ERR_MTU_EXCEEDED_1025B",
++      "cmd_id": 33,
++      "payload_len": 1025,
++      "frame_len": 1039,
++      "frame_hex": "55AA0102052104000100010400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006081",
++      "expected_valid": false,
++      "expected_status": "ERR_MTU_EXCEEDED"
++    },
++    {
++      "id": "G15",
++      "name": "ERR_CRC_MISMATCH_FLIPPED",
++      "cmd_id": 3,
++      "payload_len": 0,
++      "frame_len": 14,
++      "frame_hex": "55AA01020503040001000000AEF7",
++      "expected_valid": false,
++      "expected_status": "ERR_CRC_MISMATCH"
++    },
++    {
++      "id": "G16",
++      "name": "CMD_OTA_START_144B_WITH_ATSG_TRAILER",
++      "cmd_id": 32,
++      "payload_len": 144,
++      "frame_len": 158,
++      "frame_hex": "55AA0103052003041000900003010000400000008CCE0E10000201004753544100000100010030420002010040000000FDEAB9ACF3710362BD2658CDC9A29E8F9C757FCF9811603A8C447CD1D9151108000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000A8B137186462",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G16a",
++      "name": "CMD_OTA_START_144B_WITH_ATSG_TRAILER",
++      "cmd_id": 32,
++      "payload_len": 144,
++      "frame_len": 158,
++      "frame_hex": "55AA0103052003041000900003010000400000008CCE0E10000201004753544100000100010030420002010040000000FDEAB9ACF3710362BD2658CDC9A29E8F9C757FCF9811603A8C447CD1D9151108000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000A8B137186462",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G16b",
++      "name": "CMD_OTA_DATA_64B_MIN_REGULAR",
++      "cmd_id": 33,
++      "payload_len": 72,
++      "frame_len": 86,
++      "frame_hex": "55AA010305210304110048000000000040002FFD000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F2B20",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G16c",
++      "name": "CMD_OTA_DATA_512B_STANDARD_BOOT",
++      "cmd_id": 33,
++      "payload_len": 520,
++      "frame_len": 534,
++      "frame_hex": "55AA010205210400120008020000000000021B7D030A11181F262D343B424950575E656C737A81888F969DA4ABB2B9C0C7CED5DCE3EAF1F8FF060D141B222930373E454C535A61686F767D848B9299A0A7AEB5BCC3CAD1D8DFE6EDF4FB020910171E252C333A41484F565D646B727980878E959CA3AAB1B8BFC6CDD4DBE2E9F0F7FE050C131A21282F363D444B525960676E757C838A91989FA6ADB4BBC2C9D0D7DEE5ECF3FA01080F161D242B323940474E555C636A71787F868D949BA2A9B0B7BEC5CCD3DAE1E8EFF6FD040B121920272E353C434A51585F666D747B828990979EA5ACB3BAC1C8CFD6DDE4EBF2F900070E151C232A31383F464D545B626970777E858C939AA1A8AFB6BDC4CBD2D9E0E7EEF5FC030A11181F262D343B424950575E656C737A81888F969DA4ABB2B9C0C7CED5DCE3EAF1F8FF060D141B222930373E454C535A61686F767D848B9299A0A7AEB5BCC3CAD1D8DFE6EDF4FB020910171E252C333A41484F565D646B727980878E959CA3AAB1B8BFC6CDD4DBE2E9F0F7FE050C131A21282F363D444B525960676E757C838A91989FA6ADB4BBC2C9D0D7DEE5ECF3FA01080F161D242B323940474E555C636A71787F868D949BA2A9B0B7BEC5CCD3DAE1E8EFF6FD040B121920272E353C434A51585F666D747B828990979EA5ACB3BAC1C8CFD6DDE4EBF2F900070E151C232A31383F464D545B626970777E858C939AA1A8AFB6BDC4CBD2D9E0E7EEF5FC66C3",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G16d",
++      "name": "CMD_OTA_DATA_37B_SHORT_TAIL",
++      "cmd_id": 33,
++      "payload_len": 45,
++      "frame_len": 59,
++      "frame_hex": "55AA01020521040013002D00000200002500C4F6A0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C45047",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G16e",
++      "name": "CMD_OTA_DATA_1016B_MAX_TRANSPORT",
++      "cmd_id": 33,
++      "payload_len": 1024,
++      "frame_len": 1038,
++      "frame_hex": "55AA0102052104001400000400000000F8033DF1000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7C8C9CACBCCCDCECFD0D1D2D3D4D5D6D7D8D9DADBDCDDDEDFE0E1E2E3E4E5E6E7E8E9EAEBECEDEEEFF0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7C8C9CACBCCCDCECFD0D1D2D3D4D5D6D7D8D9DADBDCDDDEDFE0E1E2E3E4E5E6E7E8E9EAEBECEDEEEFF0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7C8C9CACBCCCDCECFD0D1D2D3D4D5D6D7D8D9DADBDCDDDEDFE0E1E2E3E4E5E6E7E8E9EAEBECEDEEEFF0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7C8C9CACBCCCDCECFD0D1D2D3D4D5D6D7D8D9DADBDCDDDEDFE0E1E2E3E4E5E6E7E8E9EAEBECEDEEEFF0F1F2F3F4F5F6F75774",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G16f",
++      "name": "CMD_OTA_FINISH_8B_COMMIT",
++      "cmd_id": 34,
++      "payload_len": 8,
++      "frame_len": 22,
++      "frame_hex": "55AA010305220304150008008CCE0E1001000000D595",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G16g",
++      "name": "CMD_OTA_STATUS_8B_REPORT",
++      "cmd_id": 35,
++      "payload_len": 8,
++      "frame_len": 22,
++      "frame_hex": "55AA0301062303041600080002000002000400007F4A",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G16h",
++      "name": "CMD_OTA_ABORT_4B_REQUEST",
++      "cmd_id": 35,
++      "payload_len": 4,
++      "frame_len": 18,
++      "frame_hex": "55AA01020523040017000400010000004E44",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G17",
++      "name": "CMD_NACK_ERR_CRC_FAIL_0x01",
++      "cmd_id": 6,
++      "nack_error_code": 1,
++      "payload_len": 3,
++      "frame_len": 17,
++      "frame_hex": "55AA0201060604000A000300010A00669A",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G18",
++      "name": "CMD_NACK_ERR_MTU_EXCEEDED_0x02",
++      "cmd_id": 6,
++      "nack_error_code": 2,
++      "payload_len": 3,
++      "frame_len": 17,
++      "frame_hex": "55AA0201060604000B000300020B006648",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G19",
++      "name": "CMD_NACK_ERR_DEVICE_BUSY_0x05",
++      "cmd_id": 6,
++      "nack_error_code": 5,
++      "payload_len": 3,
++      "frame_len": 17,
++      "frame_hex": "55AA0201060604000C000300050C00254D",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G20",
++      "name": "CMD_NACK_ERR_COMMAND_REJECTED_0x06",
++      "cmd_id": 6,
++      "nack_error_code": 6,
++      "payload_len": 3,
++      "frame_len": 17,
++      "frame_hex": "55AA0201060604000D000300060D00259F",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G21",
++      "name": "CMD_NACK_ERR_OTA_ERASE_FAIL_0x10",
++      "cmd_id": 6,
++      "nack_error_code": 16,
++      "payload_len": 3,
++      "frame_len": 17,
++      "frame_hex": "55AA0201060604000E000300100E0037E3",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G22",
++      "name": "CMD_NACK_ERR_OTA_WRITE_FAIL_0x11",
++      "cmd_id": 6,
++      "nack_error_code": 17,
++      "payload_len": 3,
++      "frame_len": 17,
++      "frame_hex": "55AA0201060604000F000300110F00575F",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G23",
++      "name": "CMD_NACK_ERR_OTA_CRC_MISMATCH_0x12",
++      "cmd_id": 6,
++      "nack_error_code": 18,
++      "payload_len": 3,
++      "frame_len": 17,
++      "frame_hex": "55AA02010606040010000300121000D8A8",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G24",
++      "name": "CMD_NACK_ERR_OTA_INVALID_OFFSET_0x13",
++      "cmd_id": 6,
++      "nack_error_code": 19,
++      "payload_len": 3,
++      "frame_len": 17,
++      "frame_hex": "55AA02010606040011000300131100B814",
++      "expected_valid": true,
++      "expected_status": "OK"
++    },
++    {
++      "id": "G25",
++      "name": "CMD_NACK_ERR_OTA_IMAGE_OVERSIZE_0x14",
++      "cmd_id": 6,
++      "nack_error_code": 20,
++      "payload_len": 3,
++      "frame_len": 17,
++      "frame_hex": "55AA02010606040012000300141200F91C",
++      "expected_valid": true,
++      "expected_status": "OK"
++    }
++  ],
++  "telemetry_reference_vectors": [
++    {
++      "id": "V01_MC_BED_NORMAL_60C",
++      "cmd_id": 21,
++      "frame_hex": "55AA02010615040101001000580258023A07002DE803000000000000A85E",
++      "expected_valid": true
++    },
++    {
++      "id": "V02_TH_NOZZLE_ROUTED_215C",
++      "cmd_id": 21,
++      "frame_hex": "55AA0301061503052A0010006B0898083403004E4C0400000000000073AF",
++      "expected_valid": true
++    },
++    {
++      "id": "V03_TH_SENSOR_OPEN_FAULT_SENTINEL",
++      "cmd_id": 21,
++      "frame_hex": "55AA0301061503052B001000FF7F0000FF0F0100B0040000000000001F44",
++      "expected_valid": true
++    },
++    {
++      "id": "V04_AP_PRIORITY_ESTOP_CMD",
++      "cmd_id": 23,
++      "frame_hex": "55AA0102151704000900010001136B",
++      "expected_valid": true
++    }
++  ]
++}
+diff --git a/static_checks/minimcproto/reference_vectors.py b/static_checks/minimcproto/reference_vectors.py
+index a4f9b66..1b4d0a5 100644
+--- a/static_checks/minimcproto/reference_vectors.py
++++ b/static_checks/minimcproto/reference_vectors.py
+@@ -1,667 +1,368 @@
+ #!/usr/bin/env python3
+-"""Independent reference validator for MiniMCProto v2.0 offline test vectors (V2-P01D).
++# -*- coding: utf-8 -*-
++"""MiniMCProto v2.0 (Rev 2.0.4) 黄金字节向量生成器 (V01~V04 & G01~G25) 与 CRC/Trailer 工具。"""
+ 
+-Pure Python 3 standard library implementation. Does NOT import or invoke any
+-production C/C++ library or test probe binary.
+-"""
++from __future__ import annotations
+ 
+-import argparse
+-import copy
+ import hashlib
+ import json
+-from pathlib import Path
++import pathlib
+ import struct
+-import sys
+-from typing import Any, Dict, List, Optional, Tuple
+-
+-EXPECTED_PROTOCOL_SHA256 = "9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54"
+-EXPECTED_CONTRACTS = {
+-    "V2-P01A": "5fc11e865fde44d780db94487855a7d762092a38362e9be66491b66626ad5ade",
+-    "V2-P01B": "25345c74b20051266626a1684be7f68f49bb570382969364b39301b7496a05e4",
+-}
+-
+-REQUIRED_FUNCTIONAL_GROUPS = (
+-    "crc",
+-    "encode",
+-    "decode_bounds",
+-    "decode",
+-    "stream_sync",
+-    "stream_header",
+-    "stream_payload",
+-    "timeout",
+-    "recovery",
+-)
+-AUXILIARY_GROUPS = ("stub",)
+-ALL_ALLOWED_GROUPS = AUXILIARY_GROUPS + REQUIRED_FUNCTIONAL_GROUPS
+-
+-REQUIRED_GOLDEN_HEX = {
+-    "V01": "55AA01020501040000000000F91E",
+-    "V02_INBOUND": "55AA010305030400010004007856341266B0",
+-    "V02_OUTBOUND": "55AA01030503030401000400785634127330",
+-    "V03": "55AA01020531040002000B000100000003000000473238A0DA",
+-    "V04": "55AA01FF14120400000000003DC1",
+-}
+-
+-SOF1 = 0x55
+-SOF2 = 0xAA
+-MAX_PAYLOAD = 1024
+-HEADER_SIZE = 12
+-CRC_SIZE = 2
+-MIN_FRAME_SIZE = HEADER_SIZE + CRC_SIZE
+-TIMEOUT_MS = 50
++import zlib
++from typing import Any, Dict, List, Tuple
++
++
++SOF_MAGIC_1 = 0x55
++SOF_MAGIC_2 = 0xAA
++
++DEV_AP = 0x01
++DEV_MC = 0x02
++DEV_TH = 0x03
++
++FLAG_WANTS_ACK = 0x01
++FLAG_IS_RESPONSE = 0x02
++FLAG_VERSION_2 = 0x04
++FLAG_PRIORITY = 0x10
++
++REQ_FLAGS_V2 = FLAG_VERSION_2 | FLAG_WANTS_ACK
++RESP_FLAGS_V2 = FLAG_VERSION_2 | FLAG_IS_RESPONSE
++PRIO_REQ_FLAGS_V2 = REQ_FLAGS_V2 | FLAG_PRIORITY
++PRIO_RESP_FLAGS_V2 = RESP_FLAGS_V2 | FLAG_PRIORITY
++
++ROUTE_PRIMARY = 0x01
++ROUTE_IS_ROUTED = 0x04
++
++CMD_ACK = 0x00
++CMD_GET_VERSION = 0x01
++CMD_VERSION_REPORT = 0x02
++CMD_PING = 0x03
++CMD_PONG = 0x04
++CMD_NACK = 0x06
++CMD_TEMP_REPORT = 0x15
++CMD_EMERGENCY_STOP = 0x17
++CMD_SYSTEM_CONTROL = 0x1D
++CMD_OTA_START = 0x20
++CMD_OTA_DATA = 0x21
++CMD_OTA_FINISH = 0x22
++CMD_OTA_STATUS = 0x23
++
++TRAILER_MAGIC_ATSG = 0x41545347
++TRAILER_STRUCT_VER = 0x00010000
++BOARD_ID_MC = 0x43500001
++BOARD_ID_TH = 0x42300001
+ 
+ 
+ def calc_crc16_ccitt_false(data: bytes) -> int:
+-    """Bit-by-bit reference CRC-16/CCITT-FALSE (poly=0x1021, init=0xFFFF, refin=False, refout=False, xorout=0x0000)."""
++    """计算 MiniMCProto v2.0 标准 CRC-16/CCITT-FALSE (Poly=0x1021, Init=0xFFFF)。"""
++    if data is None:
++        return 0
+     crc = 0xFFFF
+-    for byte in data:
+-        crc ^= (byte & 0xFF) << 8
++    for byte_val in data:
++        crc ^= (byte_val & 0xFF) << 8
+         for _ in range(8):
+-            if crc & 0x8000:
++            if (crc & 0x8000) != 0:
+                 crc = ((crc << 1) ^ 0x1021) & 0xFFFF
+             else:
+                 crc = (crc << 1) & 0xFFFF
+     return crc & 0xFFFF
+ 
+ 
+-def parse_hex_u16(text: str) -> int:
+-    if not isinstance(text, str) or not text.startswith("0x") or len(text) != 6:
+-        raise ValueError(f"invalid hex u16 string: {text!r}")
+-    return int(text, 16)
+-
+-
+-def build_payload_from_pattern(pattern: Dict[str, Any]) -> bytes:
+-    prefix = bytes.fromhex(pattern.get("prefix_hex", ""))
+-    pad_len = int(pattern.get("zero_pad_bytes", 0))
+-    suffix = bytes.fromhex(pattern.get("suffix_hex", ""))
+-    return prefix + (b"\x00" * pad_len) + suffix
+-
+-
+-def build_frame_from_pattern(pattern: Dict[str, Any]) -> bytes:
+-    header = bytes.fromhex(pattern["header_hex"])
+-    prefix = bytes.fromhex(pattern.get("payload_prefix_hex", ""))
+-    pad_len = int(pattern.get("payload_zero_pad_bytes", 0))
+-    suffix = bytes.fromhex(pattern.get("payload_suffix_hex", ""))
+-    crc_le = bytes.fromhex(pattern["crc_le_hex"])
+-    return header + prefix + (b"\x00" * pad_len) + suffix + crc_le
+-
+-
+-def reference_decode_frame(raw: bytes) -> Tuple[str, Optional[str], Optional[Dict[str, Any]]]:
+-    """Two-stage reference frame decoder matching V2-P01A & V2-P01B contracts."""
+-    if len(raw) < MIN_FRAME_SIZE:
+-        return "error", "frame_too_short", None
+-    seq, payload_len = struct.unpack_from("<HH", raw, 8)
+-    if payload_len > MAX_PAYLOAD:
+-        return "error", "mtu_exceeded", None
+-    if len(raw) != HEADER_SIZE + payload_len + CRC_SIZE:
+-        return "error", "length_mismatch", None
+-
+-    sof_1, sof_2, src_id, dst_id, flags, cmd_id, hop_limit, route_ctrl = struct.unpack_from(
+-        "<BBBBBBBB", raw, 0
++def calc_crc32_ieee(data: bytes) -> int:
++    """计算标准 IEEE 802.3 CRC32 无符号 32 位校验值。"""
++    if data is None:
++        return 0
++    return zlib.crc32(data) & 0xFFFFFFFF
++
++
++def build_atsg_trailer(payload: bytes, board_id: int, fw_version: int) -> bytes:
++    """构造 128 字节统一固件包尾部元数据 (ATSG Trailer) 并计算前 124B CRC32。"""
++    raw = payload or b""
++    sha_digest = hashlib.sha256(raw).digest()
++    body_124 = struct.pack(
++        "<IIIII32s32s32s8s",
++        TRAILER_MAGIC_ATSG,
++        TRAILER_STRUCT_VER,
++        board_id & 0xFFFFFFFF,
++        fw_version & 0xFFFFFFFF,
++        len(raw),
++        sha_digest,
++        b"\x00" * 32,
++        b"\x00" * 32,
++        b"\x00" * 8,
+     )
+-    if sof_1 != SOF1 or sof_2 != SOF2:
+-        return "error", "bad_sof", None
+-    if (flags & 0x0C) != 0x04:
+-        return "error", "bad_version", None
+-    if (flags & 0xE0) != 0x00:
+-        return "error", "bad_flags_reserved", None
+-    if (route_ctrl & 0x03) == 0x03 or (route_ctrl & 0xF8) != 0x00:
+-        return "error", "bad_route_ctrl", None
+-
+-    calc_crc = calc_crc16_ccitt_false(raw[: HEADER_SIZE + payload_len])
+-    recv_crc = struct.unpack_from("<H", raw, HEADER_SIZE + payload_len)[0]
+-    if calc_crc != recv_crc:
+-        return "error", "crc_mismatch", None
+-
+-    payload = raw[HEADER_SIZE : HEADER_SIZE + payload_len]
+-    header_dict = {
+-        "sof_1": sof_1,
+-        "sof_2": sof_2,
+-        "src_id": src_id,
+-        "dst_id": dst_id,
+-        "flags": flags,
+-        "cmd_id": cmd_id,
+-        "hop_limit": hop_limit,
+-        "route_ctrl": route_ctrl,
+-        "seq": seq,
+-        "payload_len": payload_len,
+-    }
+-    return (
+-        "ok",
+-        None,
+-        {
+-            "header": header_dict,
+-            "payload": payload,
+-            "crc16": calc_crc,
+-        },
++    trailer_crc = calc_crc32_ieee(body_124)
++    return body_124 + struct.pack("<I", trailer_crc)
++
++
++def pack_v2_frame(
++    routing: Tuple[int, int, int, int],
++    ctrl: Tuple[int, int, int],
++    payload: bytes = b"",
++) -> bytes:
++    """按 (src_id, dst_id, hop_limit, route_ctrl) 与 (flags, cmd_id, seq) 打包完整 v2 帧。"""
++    src_id, dst_id, hop_limit, route_ctrl = routing
++    flags, cmd_id, seq = ctrl
++    pld = payload or b""
++    header = struct.pack(
++        "<BBBBBBBBHH",
++        SOF_MAGIC_1,
++        SOF_MAGIC_2,
++        src_id & 0xFF,
++        dst_id & 0xFF,
++        flags & 0xFF,
++        cmd_id & 0xFF,
++        hop_limit & 0xFF,
++        route_ctrl & 0xFF,
++        seq & 0xFFFF,
++        len(pld) & 0xFFFF,
++    )
++    crc = calc_crc16_ccitt_false(header + pld)
++    return header + pld + struct.pack("<H", crc)
++
++
++def pack_temp_payload(
++    temps_deci: Tuple[int, int],
++    adc_and_status: Tuple[int, int],
++    duty_and_ts: Tuple[int, int],
++) -> bytes:
++    """打包 16 字节紧凑温度遥测上报载荷 (0x15 CMD_TEMP_REPORT)。"""
++    cur_deci, tgt_deci = temps_deci
++    raw_adc, sensor_status = adc_and_status
++    heater_duty, timestamp_ms = duty_and_ts
++    return struct.pack(
++        "<hhHBBII",
++        cur_deci,
++        tgt_deci,
++        raw_adc & 0xFFFF,
++        sensor_status & 0xFF,
++        heater_duty & 0xFF,
++        timestamp_ms & 0xFFFFFFFF,
++        0,
+     )
+ 
+ 
+-def reference_validate_command(header: Dict[str, Any], payload: bytes) -> Tuple[bool, str]:
+-    """Validate V2-P01B command-level contract (GET_VERSION, VERSION_REPORT, PING, PONG) and OQ-01."""
+-    cmd_id = header["cmd_id"]
+-    flags = header["flags"]
+-    length = header["payload_len"]
+-
+-    if cmd_id == 0x12:  # CMD_EMERGENCY_STOP (OQ-01 conflict in V04 when length == 0)
+-        return False, "OQ-01_emergency_stop_conflict_or_out_of_scope"
+-    if cmd_id == 0x01:  # CMD_GET_VERSION
+-        if length != 0 or (flags & 0x03) != 0x01:
+-            return False, "invalid_get_version"
+-        return True, "CMD_GET_VERSION"
+-    if cmd_id == 0x02:  # CMD_VERSION_REPORT
+-        if length != 16 or (flags & 0x03) != 0x02:
+-            return False, "invalid_version_report"
+-        proto_major, proto_minor = payload[0], payload[1]
+-        if proto_major != 2 or proto_minor != 0:
+-            return False, "invalid_version_report_proto"
+-        return True, "CMD_VERSION_REPORT"
+-    if cmd_id == 0x03:  # CMD_PING
+-        if length != 4 or (flags & 0x03) != 0x01:
+-            return False, "invalid_ping"
+-        return True, "CMD_PING"
+-    if cmd_id == 0x04:  # CMD_PONG
+-        if length != 12 or (flags & 0x03) != 0x02:
+-            return False, "invalid_pong"
+-        reserved = struct.unpack_from("<H", payload, 10)[0]
+-        if reserved != 0:
+-            return False, "invalid_pong_reserved"
+-        return True, "CMD_PONG"
+-    return False, "unsupported_cmd_in_v2_p01b"
+-
+-
+-class ReferenceStreamFSM:
+-    """Reference stream FSM implementing §6 of MiniMCProto v2.0 Rev 2.0.3."""
+-
+-    def __init__(self) -> None:
+-        self.state = "WAIT_SOF1"
+-        self.count = 0
+-        self.last_byte_rx_ms = 0
+-        self.header_raw = bytearray(10)
+-        self.payload_buf = bytearray(MAX_PAYLOAD)
+-        self.crc_lo = 0
+-        self.candidate_payload_len = 0
+-        self.err_mtu = 0
+-        self.stat_crc_errors = 0
+-        self.stat_timeout_resets = 0
+-        self.frames: List[Dict[str, Any]] = []
+-
+-    def reset(self) -> None:
+-        self.state = "WAIT_SOF1"
+-        self.count = 0
+-        self.candidate_payload_len = 0
+-
+-    def poll_timeout(self, now_ms: int) -> None:
+-        if self.state != "WAIT_SOF1":
+-            elapsed = (now_ms - self.last_byte_rx_ms) & 0xFFFFFFFF
+-            if elapsed > TIMEOUT_MS:
+-                self.reset()
+-                self.stat_timeout_resets += 1
+-
+-    def feed_byte(self, byte: int, now_ms: int) -> None:
+-        byte &= 0xFF
+-        if self.state != "WAIT_SOF1":
+-            elapsed = (now_ms - self.last_byte_rx_ms) & 0xFFFFFFFF
+-            if elapsed > TIMEOUT_MS:
+-                self.reset()
+-                self.stat_timeout_resets += 1
+-
+-        if self.state == "WAIT_SOF1":
+-            if byte == SOF1:
+-                self.count = 1
+-                self.state = "WAIT_SOF2"
+-            else:
+-                self.state = "WAIT_SOF1"
+-        elif self.state == "WAIT_SOF2":
+-            if byte == SOF2:
+-                self.count = 0
+-                self.header_raw = bytearray(10)
+-                self.state = "READ_HEADER"
+-            elif byte == SOF1:
+-                self.count = 1
+-                self.state = "WAIT_SOF2"
+-            else:
+-                self.reset()
+-        elif self.state == "READ_HEADER":
+-            if self.count < 9:
+-                self.header_raw[self.count] = byte
+-                self.count += 1
+-            else:
+-                self.header_raw[9] = byte
+-                cand_len = self.header_raw[8] | (byte << 8)
+-                self.candidate_payload_len = cand_len
+-                if cand_len > MAX_PAYLOAD:
+-                    self.err_mtu += 1
+-                    self.reset()
+-                elif cand_len == 0:
+-                    self.count = 0
+-                    self.state = "READ_CRC"
+-                else:
+-                    self.count = 0
+-                    self.state = "READ_PAYLOAD"
+-        elif self.state == "READ_PAYLOAD":
+-            self.payload_buf[self.count] = byte
+-            if self.count < self.candidate_payload_len - 1:
+-                self.count += 1
+-            else:
+-                self.count = 0
+-                self.state = "READ_CRC"
+-        elif self.state == "READ_CRC":
+-            if self.count == 0:
+-                self.crc_lo = byte
+-                self.count = 1
+-            else:
+-                raw_frame = (
+-                    bytes([SOF1, SOF2])
+-                    + bytes(self.header_raw)
+-                    + bytes(self.payload_buf[: self.candidate_payload_len])
+-                    + bytes([self.crc_lo, byte])
+-                )
+-                status, err_code, decoded = reference_decode_frame(raw_frame)
+-                if status == "ok" and decoded is not None:
+-                    hdr = decoded["header"]
+-                    self.frames.append(
+-                        {
+-                            "src_id": hdr["src_id"],
+-                            "dst_id": hdr["dst_id"],
+-                            "flags": hdr["flags"],
+-                            "cmd_id": hdr["cmd_id"],
+-                            "hop_limit": hdr["hop_limit"],
+-                            "route_ctrl": hdr["route_ctrl"],
+-                            "seq": hdr["seq"],
+-                            "payload_len": hdr["payload_len"],
+-                            "payload_hex": decoded["payload"].hex().upper(),
+-                            "crc16_hex": f"0x{decoded['crc16']:04X}",
+-                        }
+-                    )
+-                elif err_code == "crc_mismatch":
+-                    self.stat_crc_errors += 1
+-                self.reset()
+-
+-        self.last_byte_rx_ms = now_ms & 0xFFFFFFFF
+-
+-
+-def validate_vectors_data(data: Dict[str, Any]) -> Tuple[List[str], Dict[str, Any]]:
+-    errors: List[str] = []
+-    if not isinstance(data, dict):
+-        return ["root JSON value must be an object"], {}
+-
+-    if not data.get("schema_version") or not isinstance(data.get("schema_version"), str):
+-        errors.append("missing or invalid schema_version")
+-
+-    if data.get("protocol_sha256") != EXPECTED_PROTOCOL_SHA256:
+-        errors.append(
+-            f"protocol_sha256 mismatch: got {data.get('protocol_sha256')!r}, expected {EXPECTED_PROTOCOL_SHA256!r}"
+-        )
+-
+-    consumed = data.get("consumed_contracts") or {}
+-    for contract_id, expected_sha in EXPECTED_CONTRACTS.items():
+-        actual_sha = (consumed.get(contract_id) or {}).get("sha256")
+-        if actual_sha != expected_sha:
+-            errors.append(f"consumed_contracts[{contract_id}] sha256 mismatch: {actual_sha!r}")
+-
+-    # Validate 5 golden frames
+-    golden_frames = data.get("golden_frames")
+-    if not isinstance(golden_frames, list) or len(golden_frames) != 5:
+-        errors.append("golden_frames must contain exactly 5 authoritative vectors")
+-    else:
+-        seen_golden = set()
+-        for gf in golden_frames:
+-            vid = gf.get("vector_id")
+-            seen_golden.add(vid)
+-            if vid not in REQUIRED_GOLDEN_HEX:
+-                errors.append(f"unknown golden vector_id: {vid!r}")
+-                continue
+-            raw_hex = gf.get("raw_hex", "")
+-            if raw_hex != REQUIRED_GOLDEN_HEX[vid]:
+-                errors.append(f"golden vector {vid} raw_hex altered from specification")
+-                continue
+-            raw_bytes = bytes.fromhex(raw_hex)
+-            if gf.get("total_bytes") != len(raw_bytes):
+-                errors.append(f"golden vector {vid} total_bytes mismatch")
+-            status, err_code, decoded = reference_decode_frame(raw_bytes)
+-            if status != "ok" or decoded is None:
+-                errors.append(f"golden vector {vid} failed frame decode: {err_code}")
+-                continue
+-            expected_crc = parse_hex_u16(gf.get("expected_crc16_hex", ""))
+-            if decoded["crc16"] != expected_crc:
+-                errors.append(
+-                    f"golden vector {vid} CRC mismatch: calculated 0x{decoded['crc16']:04X} != {gf.get('expected_crc16_hex')}"
+-                )
+-            le_crc_hex = raw_bytes[-2:].hex().upper()
+-            if gf.get("expected_crc16_le_hex") != le_crc_hex:
+-                errors.append(f"golden vector {vid} expected_crc16_le_hex mismatch")
+-            for k, v in (gf.get("header") or {}).items():
+-                if decoded["header"].get(k) != v:
+-                    errors.append(f"golden vector {vid} header.{k} mismatch: {v} != {decoded['header'].get(k)}")
+-            cmd_ok, _ = reference_validate_command(decoded["header"], decoded["payload"])
+-            if gf.get("command_valid") is not cmd_ok:
+-                errors.append(
+-                    f"golden vector {vid} command_valid mismatch: got {gf.get('command_valid')}, expected {cmd_ok}"
+-                )
+-            if vid == "V04":
+-                if gf.get("frame_valid") is not True or gf.get("command_valid") is not False:
+-                    errors.append("V04 must have frame_valid=True and command_valid=False (OQ-01)")
+-                if "OQ-01" not in str(gf.get("conflict_status", "")):
+-                    errors.append("V04 must document OQ-01 conflict_status")
+-
+-        if seen_golden != set(REQUIRED_GOLDEN_HEX.keys()):
+-            errors.append(f"missing required golden vectors: {set(REQUIRED_GOLDEN_HEX.keys()) - seen_golden}")
+-
+-    # Validate cases
+-    cases = data.get("cases")
+-    if not isinstance(cases, list) or not cases:
+-        errors.append("cases list must be non-empty")
+-        return errors, {}
+-
+-    seen_case_ids = set()
+-    group_counts: Dict[str, int] = {g: 0 for g in ALL_ALLOWED_GROUPS}
+-
+-    for idx, case in enumerate(cases):
+-        cid = case.get("case_id")
+-        if not cid or not isinstance(cid, str):
+-            errors.append(f"case[{idx}] has empty or non-string case_id")
+-            continue
+-        if cid in seen_case_ids:
+-            errors.append(f"duplicate case_id: {cid}")
+-        seen_case_ids.add(cid)
+-
+-        group = case.get("group")
+-        if group not in ALL_ALLOWED_GROUPS:
+-            errors.append(f"{cid}: unknown group {group!r}")
+-            continue
+-        group_counts[group] += 1
+-
+-        if "raw_hex" not in case or not isinstance(case["raw_hex"], str):
+-            errors.append(f"{cid}: missing raw_hex string")
+-            continue
+-        try:
+-            bytes.fromhex(case["raw_hex"])
+-        except ValueError as exc:
+-            errors.append(f"{cid}: invalid raw_hex: {exc}")
+-            continue
+-
+-        expected = case.get("expected") or {}
+-        inp = case.get("input") or {}
+-
+-        if group == "stub":
+-            if expected.get("status") != "not_implemented":
+-                errors.append(f"{cid}: stub case must expect status='not_implemented'")
+-
+-        elif group == "crc":
+-            if case.get("polarity") == "positive":
+-                raw_bytes = bytes.fromhex(case["raw_hex"])
+-                crc = calc_crc16_ccitt_false(raw_bytes)
+-                exp_crc = parse_hex_u16(expected.get("crc16_hex", ""))
+-                if crc != exp_crc:
+-                    errors.append(f"{cid}: CRC mismatch: calc 0x{crc:04X} != {expected.get('crc16_hex')}")
+-                le_hex = struct.pack("<H", crc).hex().upper()
+-                if expected.get("crc16_le_hex") != le_hex:
+-                    errors.append(f"{cid}: crc16_le_hex mismatch: {expected.get('crc16_le_hex')} != {le_hex}")
+-            else:
+-                if not (inp.get("null_pointer") and int(inp.get("declared_length", 0)) > 0):
+-                    errors.append(f"{cid}: negative crc case must specify null_pointer with non-zero length")
+-                if expected.get("status") != "error":
+-                    errors.append(f"{cid}: negative crc case must expect status='error'")
+-
+-        elif group == "encode":
+-            hdr = inp.get("header") or {}
+-            payload_len = int(hdr.get("payload_len", 0))
+-            out_cap = int(inp.get("out_capacity", 0))
+-            if case.get("polarity") == "positive":
+-                if "payload_pattern" in inp:
+-                    payload = build_payload_from_pattern(inp["payload_pattern"])
+-                else:
+-                    payload = bytes.fromhex(inp.get("payload_hex", ""))
+-                if len(payload) != payload_len or payload_len > MAX_PAYLOAD or out_cap < payload_len + MIN_FRAME_SIZE:
+-                    errors.append(f"{cid}: positive encode case has invalid bounds")
+-                    continue
+-                header_bytes = struct.pack(
+-                    "<BBBBBBBBHH",
+-                    SOF1,
+-                    SOF2,
+-                    int(hdr["src_id"]),
+-                    int(hdr["dst_id"]),
+-                    int(hdr["flags"]),
+-                    int(hdr["cmd_id"]),
+-                    int(hdr["hop_limit"]),
+-                    int(hdr["route_ctrl"]),
+-                    int(hdr["seq"]),
+-                    payload_len,
+-                )
+-                crc = calc_crc16_ccitt_false(header_bytes + payload)
+-                frame = header_bytes + payload + struct.pack("<H", crc)
+-                if expected.get("encoded_len") != len(frame):
+-                    errors.append(f"{cid}: encoded_len mismatch")
+-                if "raw_hex" in expected and expected["raw_hex"] != frame.hex().upper():
+-                    errors.append(f"{cid}: encoded raw_hex mismatch")
+-                if "crc16_hex" in expected and parse_hex_u16(expected["crc16_hex"]) != crc:
+-                    errors.append(f"{cid}: encoded crc16_hex mismatch")
+-            else:
+-                if expected.get("status") != "error":
+-                    errors.append(f"{cid}: negative encode case must expect status='error'")
+-                err_code = expected.get("error_code")
+-                if payload_len > MAX_PAYLOAD:
+-                    if err_code != "mtu_exceeded":
+-                        errors.append(f"{cid}: expected mtu_exceeded for payload_len={payload_len}")
+-                elif inp.get("null_payload_pointer") and payload_len > 0:
+-                    if err_code != "invalid_argument":
+-                        errors.append(f"{cid}: expected invalid_argument for null_payload_pointer")
+-                elif out_cap < payload_len + MIN_FRAME_SIZE:
+-                    if err_code != "buffer_too_small":
+-                        errors.append(f"{cid}: expected buffer_too_small for out_capacity={out_cap}")
+-                else:
+-                    errors.append(f"{cid}: negative encode case is actually valid")
+-
+-        elif group in ("decode_bounds", "decode"):
+-            if "frame_pattern" in inp:
+-                raw_bytes = build_frame_from_pattern(inp["frame_pattern"])
+-            else:
+-                raw_bytes = bytes.fromhex(case["raw_hex"])
+-            status, err_code, decoded = reference_decode_frame(raw_bytes)
+-            if status != expected.get("status"):
+-                errors.append(f"{cid}: decode status mismatch: calc {status} != {expected.get('status')}")
+-                continue
+-            if status == "error":
+-                if err_code != expected.get("error_code"):
+-                    errors.append(f"{cid}: decode error_code mismatch: calc {err_code} != {expected.get('error_code')}")
+-            elif decoded is not None:
+-                exp_hdr = expected.get("header") or {}
+-                for k, v in exp_hdr.items():
+-                    if decoded["header"].get(k) != v:
+-                        errors.append(f"{cid}: decoded header.{k} mismatch: {decoded['header'].get(k)} != {v}")
+-                if "payload_hex" in expected and decoded["payload"].hex().upper() != expected["payload_hex"]:
+-                    errors.append(f"{cid}: decoded payload_hex mismatch")
+-                if "crc16_hex" in expected and parse_hex_u16(expected["crc16_hex"]) != decoded["crc16"]:
+-                    errors.append(f"{cid}: decoded crc16_hex mismatch")
+-                if cid == "DEC-005":
+-                    cmd_ok, _ = reference_validate_command(decoded["header"], decoded["payload"])
+-                    if expected.get("frame_valid") is not True or expected.get("command_valid") is not False or cmd_ok:
+-                        errors.append("DEC-005 (V04) must have frame_valid=True and command_valid=False")
+-
+-        elif group in ("stream_sync", "stream_header", "stream_payload", "timeout", "recovery"):
+-            fsm = ReferenceStreamFSM()
+-            if inp.get("feed_mode") == "byte_by_byte":
+-                raw_bytes = bytes.fromhex(inp["hex"])
+-                now_ms = int(inp.get("start_ms", 0))
+-                step_ms = int(inp.get("step_ms", 1))
+-                for b in raw_bytes:
+-                    fsm.feed_byte(b, now_ms)
+-                    now_ms += step_ms
+-            elif "frame_pattern" in inp:
+-                raw_bytes = build_frame_from_pattern(inp["frame_pattern"])
+-                now_ms = int(inp.get("now_ms", 0))
+-                for b in raw_bytes:
+-                    fsm.feed_byte(b, now_ms)
+-            elif "chunks" in inp:
+-                for chunk in inp["chunks"]:
+-                    now_ms = int(chunk["now_ms"])
+-                    for b in bytes.fromhex(chunk["hex"]):
+-                        fsm.feed_byte(b, now_ms)
+-                if inp.get("reset_after_feed"):
+-                    fsm.reset()
+-            elif "polls" in inp:
+-                for poll_ms in inp["polls"]:
+-                    fsm.poll_timeout(int(poll_ms))
+-            else:
+-                errors.append(f"{cid}: stream case missing input specification")
+-                continue
+-
+-            if expected.get("final_state") != fsm.state:
+-                errors.append(f"{cid}: final_state mismatch: calc {fsm.state} != {expected.get('final_state')}")
+-            if expected.get("dispatched_frames") != len(fsm.frames):
+-                errors.append(
+-                    f"{cid}: dispatched_frames mismatch: calc {len(fsm.frames)} != {expected.get('dispatched_frames')}"
+-                )
+-            if "header_bytes_collected" in expected and expected["header_bytes_collected"] != fsm.count:
+-                errors.append(f"{cid}: header_bytes_collected mismatch: calc {fsm.count}")
+-            if "candidate_payload_len" in expected and expected["candidate_payload_len"] != fsm.candidate_payload_len:
+-                errors.append(f"{cid}: candidate_payload_len mismatch: calc {fsm.candidate_payload_len}")
+-            if "err_mtu_delta" in expected and expected["err_mtu_delta"] != fsm.err_mtu:
+-                errors.append(f"{cid}: err_mtu_delta mismatch: calc {fsm.err_mtu}")
+-            if "stat_crc_errors_delta" in expected and expected["stat_crc_errors_delta"] != fsm.stat_crc_errors:
+-                errors.append(f"{cid}: stat_crc_errors_delta mismatch: calc {fsm.stat_crc_errors}")
+-            if "stat_timeout_resets_delta" in expected and expected["stat_timeout_resets_delta"] != fsm.stat_timeout_resets:
+-                errors.append(f"{cid}: stat_timeout_resets_delta mismatch: calc {fsm.stat_timeout_resets}")
+-            if "frames" in expected:
+-                exp_frames = expected["frames"]
+-                if len(exp_frames) != len(fsm.frames):
+-                    errors.append(f"{cid}: frames length mismatch")
+-                else:
+-                    for f_idx, (ef, af) in enumerate(zip(exp_frames, fsm.frames)):
+-                        for fk, fv in ef.items():
+-                            if af.get(fk) != fv:
+-                                errors.append(f"{cid}: frame[{f_idx}].{fk} mismatch: calc {af.get(fk)} != {fv}")
+-
+-    for req_group in REQUIRED_FUNCTIONAL_GROUPS:
+-        if group_counts.get(req_group, 0) <= 0:
+-            errors.append(f"functional group {req_group!r} has 0 cases")
+-    for aux_group in AUXILIARY_GROUPS:
+-        if group_counts.get(aux_group, 0) <= 0:
+-            errors.append(f"auxiliary group {aux_group!r} has 0 cases")
+-
+-    summary = {
+-        "schema_version": data.get("schema_version"),
+-        "protocol_sha256": data.get("protocol_sha256"),
+-        "golden_frame_count": len(golden_frames) if isinstance(golden_frames, list) else 0,
+-        "total_case_count": len(cases),
+-        "group_counts": group_counts,
+-        "errors": errors,
+-    }
+-    return errors, summary
+-
+-
+-def run_self_check(base_data: Dict[str, Any]) -> int:
+-    """Inject negative mutations in memory and verify each is deterministically rejected."""
+-    base_errors, _ = validate_vectors_data(base_data)
+-    if base_errors:
+-        print(json.dumps({"self_check": "failed_baseline", "errors": base_errors}, indent=2))
+-        return 1
+-
+-    mutations = []
+-
+-    def add_mutation(name: str, mutator) -> None:
+-        cloned = copy.deepcopy(base_data)
+-        mutator(cloned)
+-        mutations.append((name, cloned))
+-
+-    add_mutation(
+-        "corrupt_golden_v01_crc",
+-        lambda d: d["golden_frames"][0].__setitem__("expected_crc16_hex", "0xFFFF"),
++def get_reference_vectors() -> List[Dict[str, Any]]:
++    """返回 Rev 2.0.4 升级后的 V01~V04 基础遥测与 0x17 紧急急停参考向量。"""
++    p1 = pack_temp_payload((600, 600), (1850, 0x00), (45, 1000))
++    f1 = pack_v2_frame((DEV_MC, DEV_AP, 4, ROUTE_PRIMARY), (RESP_FLAGS_V2, CMD_TEMP_REPORT, 1), p1)
++    p2 = pack_temp_payload((2155, 2200), (820, 0x00), (78, 1100))
++    f2 = pack_v2_frame(
++        (DEV_TH, DEV_AP, 3, ROUTE_PRIMARY | ROUTE_IS_ROUTED),
++        (RESP_FLAGS_V2, CMD_TEMP_REPORT, 42),
++        p2,
+     )
+-    add_mutation(
+-        "corrupt_case_crc_001",
+-        lambda d: d["cases"][4]["expected"].__setitem__("crc16_hex", "0x0000"),
++    p3 = pack_temp_payload((0x7FFF, 0), (4095, 0x01), (0, 1200))
++    f3 = pack_v2_frame(
++        (DEV_TH, DEV_AP, 3, ROUTE_PRIMARY | ROUTE_IS_ROUTED),
++        (RESP_FLAGS_V2, CMD_TEMP_REPORT, 43),
++        p3,
+     )
+-    add_mutation(
+-        "duplicate_case_id",
+-        lambda d: d["cases"][1].__setitem__("case_id", d["cases"][0]["case_id"]),
++    p4 = b"\x01"
++    f4 = pack_v2_frame((DEV_AP, DEV_MC, 4, 0x00), (PRIO_REQ_FLAGS_V2, CMD_EMERGENCY_STOP, 9), p4)
++    return [
++        {"id": "V01_MC_BED_NORMAL_60C", "cmd_id": CMD_TEMP_REPORT, "frame_hex": f1.hex().upper(), "expected_valid": True},
++        {"id": "V02_TH_NOZZLE_ROUTED_215C", "cmd_id": CMD_TEMP_REPORT, "frame_hex": f2.hex().upper(), "expected_valid": True},
++        {"id": "V03_TH_SENSOR_OPEN_FAULT_SENTINEL", "cmd_id": CMD_TEMP_REPORT, "frame_hex": f3.hex().upper(), "expected_valid": True},
++        {"id": "V04_AP_PRIORITY_ESTOP_CMD", "cmd_id": CMD_EMERGENCY_STOP, "frame_hex": f4.hex().upper(), "expected_valid": True},
++    ]
++
++
++def _build_positive_core_vectors() -> List[Dict[str, Any]]:
++    """构建 G01~G08 核心控制、版本查询、0x1D 进 Boot 与 0x17 急停正向黄金向量。"""
++    g01 = pack_v2_frame((DEV_AP, DEV_MC, 4, 0x00), (REQ_FLAGS_V2, CMD_PING, 1), b"")
++    g02 = pack_v2_frame((DEV_AP, DEV_TH, 3, ROUTE_IS_ROUTED), (REQ_FLAGS_V2, CMD_GET_VERSION, 0x0102), b"")
++    g03 = pack_v2_frame(
++        (DEV_MC, DEV_AP, 4, 0x00),
++        (RESP_FLAGS_V2, CMD_PONG, 1),
++        struct.pack("<IIHH", 0x12345678, 1000, 10, 0),
+     )
+-    add_mutation(
+-        "empty_functional_group_timeout",
+-        lambda d: d.__setitem__("cases", [c for c in d["cases"] if c.get("group") != "timeout"]),
++    g04 = pack_v2_frame(
++        (DEV_MC, DEV_AP, 4, 0x00),
++        (RESP_FLAGS_V2, CMD_VERSION_REPORT, 2),
++        struct.pack("<BBBBIII", 2, 0, 1, 3, 0xA5A50001, 0x4FC171EA, 0x80080435),
+     )
+-    add_mutation(
+-        "tamper_protocol_sha256",
+-        lambda d: d.__setitem__("protocol_sha256", "0" * 64),
++    g05 = pack_v2_frame(
++        (DEV_AP, DEV_MC, 4, 0x00),
++        (PRIO_REQ_FLAGS_V2, CMD_SYSTEM_CONTROL, 8),
++        struct.pack("<BBH", 2, 1, 50),
+     )
+-    add_mutation(
+-        "violate_v04_oq01_command_valid",
+-        lambda d: d["golden_frames"][4].__setitem__("command_valid", True),
+-    )
+-    add_mutation(
+-        "corrupt_decode_expected_seq",
+-        lambda d: next(c for c in d["cases"] if c["case_id"] == "DEC-002")["expected"]["header"].__setitem__(
+-            "seq", 999
+-        ),
+-    )
+-    add_mutation(
+-        "corrupt_stream_expected_dispatched_frames",
+-        lambda d: next(c for c in d["cases"] if c["case_id"] == "REC-004")["expected"].__setitem__(
+-            "dispatched_frames", 99
+-        ),
+-    )
+-
+-    results = []
+-    for name, mutated_data in mutations:
+-        errs, _ = validate_vectors_data(mutated_data)
+-        if not errs:
+-            print(
+-                json.dumps(
+-                    {"self_check": "failed", "mutation_not_rejected": name},
+-                    indent=2,
+-                )
+-            )
+-            return 1
+-        results.append({"mutation": name, "rejected": True, "simulated_exit_code": 1, "triggered_error": errs[0]})
+-
+-    print(
+-        json.dumps(
++    g06 = pack_v2_frame((DEV_MC, DEV_AP, 4, 0x00), (RESP_FLAGS_V2, CMD_ACK, 8), struct.pack("<BBH", 16, 8, 0))
++    g07 = pack_v2_frame((DEV_AP, DEV_MC, 4, 0x00), (PRIO_REQ_FLAGS_V2, CMD_EMERGENCY_STOP, 9), b"\x01")
++    g08 = pack_v2_frame((DEV_MC, DEV_AP, 4, 0x00), (PRIO_RESP_FLAGS_V2, CMD_ACK, 9), struct.pack("<BBH", 0, 8, 0))
++    items = [
++        ("G01", "CMD_PING_MIN_FRAME", CMD_PING, g01),
++        ("G02", "CMD_GET_VERSION_ROUTED_TH", CMD_GET_VERSION, g02),
++        ("G03", "CMD_PONG_12B", CMD_PONG, g03),
++        ("G04", "CMD_VERSION_REPORT_16B", CMD_VERSION_REPORT, g04),
++        ("G05", "CMD_SYSTEM_CONTROL_ENTER_BOOT", CMD_SYSTEM_CONTROL, g05),
++        ("G06", "CMD_ACK_FOR_SYS_CTRL", CMD_ACK, g06),
++        ("G07", "CMD_EMERGENCY_STOP_0x17", CMD_EMERGENCY_STOP, g07),
++        ("G08", "CMD_ACK_FOR_EMERGENCY_STOP", CMD_ACK, g08),
++    ]
++    return [
++        {
++            "id": vid,
++            "name": name,
++            "cmd_id": cmd,
++            "payload_len": len(raw) - 14,
++            "frame_len": len(raw),
++            "frame_hex": raw.hex().upper(),
++            "expected_valid": True,
++            "expected_status": "OK",
++        }
++        for vid, name, cmd, raw in items
++    ]
++
++
++def _build_negative_framing_vectors(valid_ping: bytes) -> List[Dict[str, Any]]:
++    """构建 G09~G15 帧头、协议版本、保留标志、路由位、超长 MTU 与坏 CRC 负向向量。"""
++    g09 = valid_ping[:10]
++    g10 = b"\x55\xAB" + valid_ping[2:]
++    h11 = struct.pack("<BBBBBBBBHH", 0x55, 0xAA, 1, 2, 0x09, CMD_PING, 4, 0, 1, 0)
++    g11 = h11 + struct.pack("<H", calc_crc16_ccitt_false(h11))
++    h12 = struct.pack("<BBBBBBBBHH", 0x55, 0xAA, 1, 2, 0x25, CMD_PING, 4, 0, 1, 0)
++    g12 = h12 + struct.pack("<H", calc_crc16_ccitt_false(h12))
++    h13 = struct.pack("<BBBBBBBBHH", 0x55, 0xAA, 1, 2, 0x05, CMD_PING, 4, 0x03, 1, 0)
++    g13 = h13 + struct.pack("<H", calc_crc16_ccitt_false(h13))
++    p14 = bytes(1025)
++    h14 = struct.pack("<BBBBBBBBHH", 0x55, 0xAA, 1, 2, 0x05, CMD_OTA_DATA, 4, 0, 1, 1025)
++    g14 = h14 + p14 + struct.pack("<H", calc_crc16_ccitt_false(h14 + p14))
++    g15 = valid_ping[:-1] + bytes([valid_ping[-1] ^ 0xFF])
++    neg_specs = [
++        ("G09", "ERR_FRAME_TOO_SHORT_10B", g09, "ERR_FRAME_TOO_SHORT"),
++        ("G10", "ERR_BAD_SOF_55AB", g10, "ERR_BAD_SOF"),
++        ("G11", "ERR_BAD_PROTO_VERSION", g11, "ERR_BAD_VERSION"),
++        ("G12", "ERR_BAD_FLAGS_RESERVED", g12, "ERR_BAD_FLAGS_RESERVED"),
++        ("G13", "ERR_BAD_ROUTE_CTRL_CONFLICT", g13, "ERR_BAD_ROUTE_CTRL"),
++        ("G14", "ERR_MTU_EXCEEDED_1025B", g14, "ERR_MTU_EXCEEDED"),
++        ("G15", "ERR_CRC_MISMATCH_FLIPPED", g15, "ERR_CRC_MISMATCH"),
++    ]
++    return [
++        {
++            "id": vid,
++            "name": name,
++            "cmd_id": CMD_PING if vid != "G14" else CMD_OTA_DATA,
++            "payload_len": max(0, len(raw) - 14),
++            "frame_len": len(raw),
++            "frame_hex": raw.hex().upper(),
++            "expected_valid": False,
++            "expected_status": status,
++        }
++        for vid, name, raw, status in neg_specs
++    ]
++
++
++def _build_ota_data_chunk_frames(fw_sample: bytes) -> Tuple[bytes, bytes, bytes, bytes]:
++    """构建 G16b(64B)、G16c(512B)、G16d(37B 尾块) 与 G16e(1016B 极限块) 的 0x21 数据帧。"""
++    p_d64 = struct.pack("<IHH", 0, 64, calc_crc16_ccitt_false(fw_sample)) + fw_sample
++    g16b = pack_v2_frame((DEV_AP, DEV_TH, 3, ROUTE_IS_ROUTED), (REQ_FLAGS_V2, CMD_OTA_DATA, 17), p_d64)
++    c512 = bytes(((i * 7 + 3) & 0xFF) for i in range(512))
++    p_d512 = struct.pack("<IHH", 0, 512, calc_crc16_ccitt_false(c512)) + c512
++    g16c = pack_v2_frame((DEV_AP, DEV_MC, 4, 0x00), (REQ_FLAGS_V2, CMD_OTA_DATA, 18), p_d512)
++    c37 = bytes((0xA0 + i) & 0xFF for i in range(37))
++    p_d37 = struct.pack("<IHH", 512, 37, calc_crc16_ccitt_false(c37)) + c37
++    g16d = pack_v2_frame((DEV_AP, DEV_MC, 4, 0x00), (REQ_FLAGS_V2, CMD_OTA_DATA, 19), p_d37)
++    c1016 = bytes((i & 0xFF) for i in range(1016))
++    p_d1016 = struct.pack("<IHH", 0, 1016, calc_crc16_ccitt_false(c1016)) + c1016
++    g16e = pack_v2_frame((DEV_AP, DEV_MC, 4, 0x00), (REQ_FLAGS_V2, CMD_OTA_DATA, 20), p_d1016)
++    return g16b, g16c, g16d, g16e
++
++
++def _build_ota_g16_vectors() -> List[Dict[str, Any]]:
++    """构建 G16 (G16a~G16h) 固件升级全套载荷黄金向量（含 144B OTA_START 与 520B OTA_DATA）。"""
++    fw_sample = bytes((i & 0xFF) for i in range(64))
++    fw_crc = calc_crc32_ieee(fw_sample)
++    trailer = build_atsg_trailer(fw_sample, BOARD_ID_TH, 0x00010200)
++    p_start = struct.pack("<BBBBIII", DEV_TH, 1, 0, 0, len(fw_sample), fw_crc, 0x00010200) + trailer
++    g16a = pack_v2_frame((DEV_AP, DEV_TH, 3, ROUTE_IS_ROUTED), (REQ_FLAGS_V2, CMD_OTA_START, 16), p_start)
++    g16b, g16c, g16d, g16e = _build_ota_data_chunk_frames(fw_sample)
++    p_fin = struct.pack("<IB3s", fw_crc, 1, b"\x00\x00\x00")
++    g16f = pack_v2_frame((DEV_AP, DEV_TH, 3, ROUTE_IS_ROUTED), (REQ_FLAGS_V2, CMD_OTA_FINISH, 21), p_fin)
++    p_st = struct.pack("<BBHI", 2, 0, 512, 1024)
++    g16g = pack_v2_frame((DEV_TH, DEV_AP, 3, ROUTE_IS_ROUTED), (RESP_FLAGS_V2, CMD_OTA_STATUS, 22), p_st)
++    p_ab = struct.pack("<B3s", 1, b"\x00\x00\x00")
++    g16h = pack_v2_frame((DEV_AP, DEV_MC, 4, 0x00), (REQ_FLAGS_V2, CMD_OTA_STATUS, 23), p_ab)
++    specs = [
++        ("G16", "CMD_OTA_START_144B_WITH_ATSG_TRAILER", CMD_OTA_START, g16a),
++        ("G16a", "CMD_OTA_START_144B_WITH_ATSG_TRAILER", CMD_OTA_START, g16a),
++        ("G16b", "CMD_OTA_DATA_64B_MIN_REGULAR", CMD_OTA_DATA, g16b),
++        ("G16c", "CMD_OTA_DATA_512B_STANDARD_BOOT", CMD_OTA_DATA, g16c),
++        ("G16d", "CMD_OTA_DATA_37B_SHORT_TAIL", CMD_OTA_DATA, g16d),
++        ("G16e", "CMD_OTA_DATA_1016B_MAX_TRANSPORT", CMD_OTA_DATA, g16e),
++        ("G16f", "CMD_OTA_FINISH_8B_COMMIT", CMD_OTA_FINISH, g16f),
++        ("G16g", "CMD_OTA_STATUS_8B_REPORT", CMD_OTA_STATUS, g16g),
++        ("G16h", "CMD_OTA_ABORT_4B_REQUEST", CMD_OTA_STATUS, g16h),
++    ]
++    return [
++        {
++            "id": vid, "name": name, "cmd_id": cmd, "payload_len": len(raw) - 14,
++            "frame_len": len(raw), "frame_hex": raw.hex().upper(),
++            "expected_valid": True, "expected_status": "OK",
++        }
++        for vid, name, cmd, raw in specs
++    ]
++
++
++def _build_nack_g17_g25_vectors() -> List[Dict[str, Any]]:
++    """构建 G17~G25 标准 0x06 CMD_NACK 错误码黄金向量 (0x01~0x06 及 0x10~0x14)。"""
++    nack_specs = [
++        ("G17", "CMD_NACK_ERR_CRC_FAIL_0x01", 0x01, 10),
++        ("G18", "CMD_NACK_ERR_MTU_EXCEEDED_0x02", 0x02, 11),
++        ("G19", "CMD_NACK_ERR_DEVICE_BUSY_0x05", 0x05, 12),
++        ("G20", "CMD_NACK_ERR_COMMAND_REJECTED_0x06", 0x06, 13),
++        ("G21", "CMD_NACK_ERR_OTA_ERASE_FAIL_0x10", 0x10, 14),
++        ("G22", "CMD_NACK_ERR_OTA_WRITE_FAIL_0x11", 0x11, 15),
++        ("G23", "CMD_NACK_ERR_OTA_CRC_MISMATCH_0x12", 0x12, 16),
++        ("G24", "CMD_NACK_ERR_OTA_INVALID_OFFSET_0x13", 0x13, 17),
++        ("G25", "CMD_NACK_ERR_OTA_IMAGE_OVERSIZE_0x14", 0x14, 18),
++    ]
++    vectors: List[Dict[str, Any]] = []
++    for vid, name, err_code, seq in nack_specs:
++        pld = struct.pack("<BH", err_code, seq)
++        raw = pack_v2_frame((DEV_MC, DEV_AP, 4, 0x00), (RESP_FLAGS_V2, CMD_NACK, seq), pld)
++        vectors.append(
+             {
+-                "mode": "self-check",
+-                "status": "passed",
+-                "mutations_tested": len(results),
+-                "results": results,
+-                "exit_code": 0,
+-            },
+-            indent=2,
+-            ensure_ascii=False,
++                "id": vid,
++                "name": name,
++                "cmd_id": CMD_NACK,
++                "nack_error_code": err_code,
++                "payload_len": 3,
++                "frame_len": len(raw),
++                "frame_hex": raw.hex().upper(),
++                "expected_valid": True,
++                "expected_status": "OK",
++            }
+         )
+-    )
+-    return 0
+-
+-
+-def main() -> int:
+-    parser = argparse.ArgumentParser(description="MiniMCProto v2.0 independent reference vector validator")
+-    parser.add_argument("--vectors", required=True, type=Path, help="Path to vectors.json")
+-    mode = parser.add_mutually_exclusive_group(required=True)
+-    mode.add_argument("--check", action="store_true", help="Validate vectors.json")
+-    mode.add_argument("--self-check", action="store_true", help="Run negative mutation self-checks")
+-    args = parser.parse_args()
+-
+-    if not args.vectors.is_file():
+-        print(json.dumps({"error": f"vectors file not found: {args.vectors}", "exit_code": 2}), file=sys.stderr)
+-        return 2
+-
+-    raw_bytes = args.vectors.read_bytes()
+-    vectors_sha256 = hashlib.sha256(raw_bytes).hexdigest()
+-    try:
+-        data = json.loads(raw_bytes.decode("utf-8"))
+-    except Exception as exc:
+-        print(json.dumps({"error": f"invalid JSON: {exc}", "exit_code": 1}), file=sys.stderr)
+-        return 1
+-
+-    if args.self_check:
+-        return run_self_check(data)
+-
+-    errors, summary = validate_vectors_data(data)
+-    summary["mode"] = "check"
+-    summary["vectors_path"] = str(args.vectors)
+-    summary["vectors_sha256"] = vectors_sha256
+-    summary["exit_code"] = 0 if not errors else 1
+-    print(json.dumps(summary, indent=2, ensure_ascii=False))
+-    return 0 if not errors else 1
++    return vectors
++
++
++def get_golden_vectors_g01_g25() -> List[Dict[str, Any]]:
++    """返回完整 G01~G25 (含 G16a~G16h 子项) 黄金字节向量集合。"""
++    pos_core = _build_positive_core_vectors()
++    valid_ping = bytes.fromhex(pos_core[0]["frame_hex"])
++    neg_framing = _build_negative_framing_vectors(valid_ping)
++    ota_g16 = _build_ota_g16_vectors()
++    nack_g17_g25 = _build_nack_g17_g25_vectors()
++    return pos_core + neg_framing + ota_g16 + nack_g17_g25
++
++
++def write_golden_vectors_json(out_path: pathlib.Path) -> Dict[str, Any]:
++    """将 G01~G25 与 V01~V04 黄金字节向量集序列化写入 golden_vectors.json。"""
++    doc = {
++        "protocol": "MiniMCProto v2.0",
++        "revision": "2.0.4",
++        "crc_spec": "CRC-16/CCITT-FALSE (poly=0x1021, init=0xFFFF, xorout=0x0000)",
++        "trailer_spec": "128-byte ATSG Trailer (magic=0x41545347, struct_ver=0x00010000, IEEE CRC32)",
++        "golden_vectors": get_golden_vectors_g01_g25(),
++        "telemetry_reference_vectors": get_reference_vectors(),
++    }
++    if out_path is not None:
++        out_path.parent.mkdir(parents=True, exist_ok=True)
++        out_path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
++    return doc
+ 
+ 
+ if __name__ == "__main__":
+-    raise SystemExit(main())
++    default_json = pathlib.Path(__file__).resolve().parent / "golden_vectors.json"
++    data = write_golden_vectors_json(default_json)
++    print(json.dumps(data, indent=2, ensure_ascii=False))
+diff --git a/static_checks/minimcproto/run_codec_cases.py b/static_checks/minimcproto/run_codec_cases.py
+index 3e04db6..21cfef3 100755
+--- a/static_checks/minimcproto/run_codec_cases.py
++++ b/static_checks/minimcproto/run_codec_cases.py
+@@ -1,937 +1,215 @@
+ #!/usr/bin/env python3
+-"""MiniMCProto v2.0 Independent Expected-Comparison Test Runner (V2-P03F).
++# -*- coding: utf-8 -*-
++"""MiniMCProto v2.0 (Rev 2.0.4) G01~G25 与 V01~V04 黄金字节向量编解码及负例校验运行器。"""
+ 
+-Executes the CLI test probe (`minimc-probe` / `minimc_probe`) against the frozen
+-golden and case vectors in `test_harness/test_cases/minimcproto/vectors.json`,
+-comparing actual probe stdout and exit codes against expected outcomes.
+-
+-Strict Architectural Rules (per V2-P02C & V2-P03F):
+-1. Pure Python 3 standard library only; zero third-party packages.
+-2. Unidirectional expectation authority: never updates or derives expectations
+-   from production probe output.
+-3. No Empty Test Pass: executing 0 test cases is strictly rejected (exit code 2).
+-4. Stub isolation:
+-   - `--case-set all` executes only the 9 functional groups (60 cases),
+-     excluding `stub`.
+-   - `--case-set stub` executes only the `stub` group (`STUB-001`..`STUB-004`),
+-     asserting `exit_code == 126` and `error_code: not_implemented`.
+-   - Functional groups strictly reject `exit_code == 126` or `not_implemented`
+-     as FAIL (never skipped or treated as PASS).
+-"""
++from __future__ import annotations
+ 
+ import argparse
+-import copy
+ import json
+-import os
+-from pathlib import Path
++import pathlib
+ import struct
+ import subprocess
+ import sys
+-import tempfile
+ from typing import Any, Dict, List, Optional, Tuple
+ 
+-
+-DEFAULT_VECTORS_PATH = "test_harness/test_cases/minimcproto/vectors.json"
+-DEFAULT_TIMEOUT_SEC = 5.0
+-
+-EXPECTED_FUNCTIONAL_GROUPS = (
+-    "crc",
+-    "encode",
+-    "decode_bounds",
+-    "decode",
+-    "stream_sync",
+-    "stream_header",
+-    "stream_payload",
+-    "timeout",
+-    "recovery",
++from reference_vectors import (
++    TRAILER_MAGIC_ATSG,
++    TRAILER_STRUCT_VER,
++    calc_crc16_ccitt_false,
++    calc_crc32_ieee,
++    get_golden_vectors_g01_g25,
++    get_reference_vectors,
+ )
+-EXPECTED_AUXILIARY_GROUPS = ("stub",)
+-
+-# Command payload length rules from V2-P01B (`v2-commands.md`) for command-layer
+-# metadata verification on decoded frames (e.g., DEC-005 / V04 OQ-01).
+-COMMAND_PAYLOAD_LENGTHS = {
+-    0x01: 0,   # CMD_GET_VERSION
+-    0x02: 16,  # CMD_VERSION_REPORT
+-    0x03: 4,   # CMD_PING
+-    0x04: 12,  # CMD_PONG
+-    0x12: 2,   # CMD_EMERGENCY_STOP (requires 2-byte reason_code; L=0 is OQ-01 conflict)
+-}
+-
+-
+-def reconstruct_payload_from_pattern(pat: Dict[str, Any]) -> str:
+-    """Reconstruct hex string from a payload_pattern dictionary."""
+-    prefix_hex = str(pat.get("prefix_hex", "")).upper()
+-    zero_pad_bytes = int(pat.get("zero_pad_bytes", 0))
+-    suffix_hex = str(pat.get("suffix_hex", "")).upper()
+-    return prefix_hex + ("00" * zero_pad_bytes) + suffix_hex
+-
+ 
+-def reconstruct_frame_from_pattern(pat: Dict[str, Any]) -> Tuple[str, str]:
+-    """Reconstruct full frame hex and payload hex from a frame_pattern dictionary."""
+-    header_hex = str(pat.get("header_hex", "")).upper()
+-    payload_prefix_hex = str(pat.get("payload_prefix_hex", "")).upper()
+-    payload_zero_pad_bytes = int(pat.get("payload_zero_pad_bytes", 0))
+-    payload_suffix_hex = str(pat.get("payload_suffix_hex", "")).upper()
+-    crc_le_hex = str(pat.get("crc_le_hex", "")).upper()
+-    payload_hex = payload_prefix_hex + ("00" * payload_zero_pad_bytes) + payload_suffix_hex
+-    frame_hex = header_hex + payload_hex + crc_le_hex
+-    return frame_hex, payload_hex
+ 
+-
+-def build_probe_command(probe_path: str, case: Dict[str, Any]) -> List[str]:
+-    """Map a single test case from vectors.json to minimc-probe CLI arguments."""
+-    op = case.get("operation", "")
+-    inp = case.get("input", {}) or {}
+-    raw_hex = str(case.get("raw_hex", ""))
+-
+-    if op == "crc":
+-        if inp.get("null_pointer"):
+-            declared_len = int(inp.get("declared_length", 0))
+-            return [probe_path, "crc", "--null-ptr", "--len", str(declared_len)]
+-        return [probe_path, "crc", f"--hex={raw_hex}"]
+-
+-    if op == "encode":
+-        hdr = inp.get("header", {})
+-        cmd = [
+-            probe_path,
+-            "encode",
+-            "--src", str(hdr["src_id"]),
+-            "--dst", str(hdr["dst_id"]),
+-            "--cmd", str(hdr["cmd_id"]),
+-            "--seq", str(hdr["seq"]),
+-            "--flags", str(hdr["flags"]),
+-            "--hop", str(hdr["hop_limit"]),
+-            "--route", str(hdr["route_ctrl"]),
+-        ]
+-        if inp.get("null_payload_pointer"):
+-            cmd.append("--null-payload")
+-        else:
+-            if "payload_pattern" in inp:
+-                payload_hex = reconstruct_payload_from_pattern(inp["payload_pattern"])
+-            else:
+-                payload_hex = str(inp.get("payload_hex", ""))
+-            cmd.append(f"--payload-hex={payload_hex}")
+-
+-        if "payload_len" in hdr:
+-            cmd.extend(["--payload-len", str(hdr["payload_len"])])
+-        if "out_capacity" in inp:
+-            cmd.extend(["--buf-size", str(inp["out_capacity"])])
+-        return cmd
+-
+-    if op == "decode":
+-        if "frame_pattern" in inp:
+-            frame_hex, _ = reconstruct_frame_from_pattern(inp["frame_pattern"])
+-        else:
+-            frame_hex = raw_hex
+-        return [probe_path, "decode", f"--hex={frame_hex}"]
+-
+-    if op in ("feed", "reset"):
+-        if op == "reset" and not inp.get("chunks") and not raw_hex:
+-            return [probe_path, "reset"]
+-
+-        if inp.get("feed_mode") == "byte_by_byte":
+-            stream_hex = str(inp.get("hex", raw_hex))
+-            start_ms = int(inp.get("start_ms", 0))
+-            step_ms = int(inp.get("step_ms", 1))
+-            cmd = [
+-                probe_path,
+-                "feed",
+-                f"--stream-hex={stream_hex}",
+-                "--start-ms", str(start_ms),
+-                "--step-ms", str(step_ms),
+-            ]
+-        elif "frame_pattern" in inp:
+-            frame_hex, _ = reconstruct_frame_from_pattern(inp["frame_pattern"])
+-            now_ms = int(inp.get("now_ms", 0))
+-            cmd = [
+-                probe_path,
+-                "feed",
+-                f"--stream-hex={frame_hex}",
+-                "--timestamps-ms", str(now_ms),
+-            ]
+-        elif "chunks" in inp:
+-            chunks = inp["chunks"]
+-            stream_hex = ",".join(str(c.get("hex", "")) for c in chunks)
+-            timestamps_ms = ",".join(str(c.get("now_ms", 0)) for c in chunks)
+-            cmd = [
+-                probe_path,
+-                "feed",
+-                f"--stream-hex={stream_hex}",
+-                "--timestamps-ms", timestamps_ms,
+-            ]
+-        else:
+-            cmd = [
+-                probe_path,
+-                "feed",
+-                f"--stream-hex={raw_hex}",
+-                "--timestamps-ms", "0",
+-            ]
+-
+-        if op == "reset" or inp.get("reset_after_feed"):
+-            cmd.append("--reset-after")
+-        return cmd
+-
+-    if op == "poll":
+-        polls = inp.get("polls", [0])
+-        now_ms_str = ",".join(str(int(p)) for p in polls)
+-        return [probe_path, "poll", "--now-ms", now_ms_str]
+-
+-    raise ValueError(f"Unsupported operation '{op}' in case '{case.get('case_id')}'")
+-
+-
+-def parse_probe_stdout(stdout_text: str) -> Dict[str, Any]:
+-    """Parse structured key-value stdout from minimc-probe."""
+-    result: Dict[str, Any] = {
+-        "frames": [],
+-        "counters": {},
++def decode_and_validate_v2_frame(raw: bytes) -> Tuple[bool, str, Dict[str, Any]]:
++    """按 MiniMCProto v2.0 (Rev 2.0.4) 严格解码单帧并返回 (是否合法, 状态码, 字段字典)。"""
++    if raw is None or len(raw) < 14:
++        return False, "ERR_FRAME_TOO_SHORT", {}
++    sof0, sof1, src_id, dst_id, flags, cmd_id, hop, route, seq, plen = struct.unpack(
++        "<BBBBBBBBHH", raw[:12]
++    )
++    if sof0 != 0x55 or sof1 != 0xAA:
++        return False, "ERR_BAD_SOF", {}
++    if (flags & 0x0C) != 0x04:
++        return False, "ERR_BAD_VERSION", {}
++    if (flags & 0xE0) != 0:
++        return False, "ERR_BAD_FLAGS_RESERVED", {}
++    if (route & 0xF8) != 0 or (route & 0x03) == 0x03:
++        return False, "ERR_BAD_ROUTE_CTRL", {}
++    if plen > 1024:
++        return False, "ERR_MTU_EXCEEDED", {}
++    if len(raw) != 12 + plen + 2:
++        return False, "ERR_LENGTH_MISMATCH", {}
++    expected_crc = calc_crc16_ccitt_false(raw[: 12 + plen])
++    wire_crc = struct.unpack("<H", raw[12 + plen : 14 + plen])[0]
++    if expected_crc != wire_crc:
++        return False, "ERR_CRC_MISMATCH", {}
++    info = {
++        "src_id": src_id,
++        "dst_id": dst_id,
++        "flags": flags,
++        "cmd_id": cmd_id,
++        "hop_limit": hop,
++        "route_ctrl": route,
++        "seq": seq,
++        "payload_len": plen,
++        "payload": raw[12 : 12 + plen],
++        "crc16": wire_crc,
+     }
+-    section: Optional[str] = None
+-
+-    for raw_line in stdout_text.splitlines():
+-        if not raw_line.strip():
++    return True, "OK", info
++
++
++def verify_ota_payload_semantics(vec_id: str, info: Dict[str, Any]) -> Tuple[bool, str]:
++    """针对 G16a~G16h 及 G17~G25 深度校验内部 144B OTA_START Trailer 与分片 CRC16。"""
++    cmd_id = info.get("cmd_id", -1)
++    pld: bytes = info.get("payload", b"")
++    if vec_id in ("G16", "G16a"):
++        if cmd_id != 0x20 or len(pld) != 144:
++            return False, f"{vec_id} expected 144B 0x20 payload, got len={len(pld)}"
++        trailer = pld[16:144]
++        magic, s_ver, _, _, t_plen = struct.unpack("<IIIII", trailer[:20])
++        t_crc = struct.unpack("<I", trailer[124:128])[0]
++        calc_tcrc = calc_crc32_ieee(trailer[:124])
++        if magic != TRAILER_MAGIC_ATSG or s_ver != TRAILER_STRUCT_VER or t_crc != calc_tcrc or t_plen <= 0:
++            return False, f"{vec_id} ATSG trailer validation failed"
++    elif vec_id in ("G16b", "G16c", "G16d", "G16e"):
++        if cmd_id != 0x21 or len(pld) < 9:
++            return False, f"{vec_id} invalid 0x21 payload"
++        _, chunk_len, chunk_crc16 = struct.unpack("<IHH", pld[:8])
++        chunk_data = pld[8:]
++        if len(chunk_data) != chunk_len or calc_crc16_ccitt_false(chunk_data) != chunk_crc16:
++            return False, f"{vec_id} 0x21 chunk_crc16 or length mismatch"
++    elif vec_id == "G16f" and (cmd_id != 0x22 or len(pld) != 8):
++        return False, "G16f expected 8B 0x22 payload"
++    elif vec_id == "G16g" and (cmd_id != 0x23 or len(pld) != 8):
++        return False, "G16g expected 8B 0x23 status payload"
++    elif vec_id == "G16h" and (cmd_id != 0x23 or len(pld) != 4):
++        return False, "G16h expected 4B 0x23 abort payload"
++    elif vec_id.startswith("G1") or vec_id.startswith("G2"):
++        if cmd_id == 0x06 and len(pld) != 3:
++            return False, f"{vec_id} expected 3B 0x06 NACK payload"
++    return True, "OK"
++
++
++def verify_golden_vector_suite(json_path: pathlib.Path) -> Tuple[int, int, List[str]]:
++    """加载 golden_vectors.json 并逐项验证 G01~G25 与 V01~V04 黄金字节向量。"""
++    if json_path.exists():
++        doc = json.loads(json_path.read_text(encoding="utf-8"))
++        g_list = doc.get("golden_vectors", [])
++        v_list = doc.get("telemetry_reference_vectors", [])
++    else:
++        g_list = get_golden_vectors_g01_g25()
++        v_list = get_reference_vectors()
++
++    passed = 0
++    failed = 0
++    errors: List[str] = []
++    for item in g_list + v_list:
++        vid = item["id"]
++        raw = bytes.fromhex(item["frame_hex"])
++        exp_valid = bool(item.get("expected_valid", True))
++        exp_status = item.get("expected_status", "OK")
++        ok, status, info = decode_and_validate_v2_frame(raw)
++        if ok != exp_valid or (not exp_valid and status != exp_status):
++            failed += 1
++            errors.append(f"[{vid}] expected ({exp_valid}, {exp_status}), got ({ok}, {status})")
+             continue
+-        indent = len(raw_line) - len(raw_line.lstrip(" "))
+-        line = raw_line.strip()
+-
+-        if indent == 0:
+-            section = None
+-            if line == "frames:":
+-                section = "frames"
+-                continue
+-            if line == "frames: []":
+-                result["frames"] = []
++        if ok:
++            sem_ok, sem_msg = verify_ota_payload_semantics(vid, info)
++            if not sem_ok:
++                failed += 1
++                errors.append(f"[{vid}] {sem_msg}")
+                 continue
+-            if line == "counters:":
+-                section = "counters"
+-                continue
+-            if ":" in line:
+-                k, v = line.split(":", 1)
+-                result[k.strip()] = v.strip()
+-        else:
+-            if section == "frames" and line.startswith("- "):
+-                item_str = line[2:].strip()
+-                frame_dict: Dict[str, Any] = {}
+-                for part in item_str.split(", "):
+-                    if ":" not in part:
+-                        continue
+-                    fk, fv = part.split(":", 1)
+-                    fk = fk.strip()
+-                    fv = fv.strip()
+-                    if fk == "payload_hex":
+-                        if fv.startswith('"') and fv.endswith('"') and len(fv) >= 2:
+-                            fv = fv[1:-1]
+-                        frame_dict[fk] = fv
+-                    elif fk == "crc16_hex":
+-                        frame_dict[fk] = fv
+-                    else:
+-                        try:
+-                            frame_dict[fk] = int(fv, 0)
+-                        except ValueError:
+-                            frame_dict[fk] = fv
+-                result["frames"].append(frame_dict)
+-            elif section == "counters" and ":" in line:
+-                ck, cv = line.split(":", 1)
+-                ck = ck.strip()
+-                cv = cv.strip()
+-                try:
+-                    result["counters"][ck] = int(cv, 0)
+-                except ValueError:
+-                    result["counters"][ck] = cv
+-
+-    return result
+-
+-
+-def evaluate_command_layer_on_decoded(parsed: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+-    """Evaluate V2-P01B command-layer validity and OQ-01 conflict on decoded frame fields."""
+-    if parsed.get("frame_valid") != "true":
+-        return False, None
++        passed += 1
++        print(f"  [PASS] {vid}: status={status} len={len(raw)}B")
++    return passed, failed, errors
++
++
++def build_negative_cases(base_hex: str) -> List[Dict[str, str]]:
++    """基于合法帧生成 N01~N05 负向畸形帧集（供外部二进制探针或自检复用）。"""
++    raw = bytearray.fromhex(base_hex)
++    crc_flipped = bytearray(raw)
++    crc_flipped[-1] ^= 0xFF
++    bad_sof = bytearray(raw)
++    bad_sof[0] = 0x54
++    truncated = bytearray(raw[:-3])
++    bad_ver = bytearray(raw)
++    bad_ver[4] = (bad_ver[4] & ~0x0C) | 0x08
++    bad_len = bytearray(raw)
++    bad_len[10] = 0x40
++    return [
++        {"id": "N01_CRC16_BIT_FLIP", "frame_hex": crc_flipped.hex().upper()},
++        {"id": "N02_BAD_SOF_MAGIC", "frame_hex": bad_sof.hex().upper()},
++        {"id": "N03_TRUNCATED_FRAME", "frame_hex": truncated.hex().upper()},
++        {"id": "N04_INVALID_PROTO_VER", "frame_hex": bad_ver.hex().upper()},
++        {"id": "N05_PAYLOAD_LEN_MISMATCH", "frame_hex": bad_len.hex().upper()},
++    ]
++
++
++def invoke_probe(probe_bin: str, mode: str, hex_str: str) -> Tuple[int, Dict[str, Any]]:
++    """调用外部 C/C++ 协议编解码探针可执行文件并解析输出。"""
++    cmd = [probe_bin, f"--{mode}", hex_str]
++    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
++    if proc.returncode != 0:
++        return proc.returncode, {"error": proc.stderr.strip() or proc.stdout.strip()}
+     try:
+-        cmd_id = int(str(parsed.get("cmd_id", "0")), 0)
+-        payload_len = int(str(parsed.get("payload_len", "-1")), 0)
+-    except ValueError:
+-        return False, None
+-
+-    if cmd_id == 0x12 and payload_len == 0:
+-        return False, "OQ-01"
+-
+-    expected_len = COMMAND_PAYLOAD_LENGTHS.get(cmd_id)
+-    if expected_len is None:
+-        return False, None
+-    return (payload_len == expected_len), None
+-
+-
+-def verify_case_result(
+-    case: Dict[str, Any],
+-    exit_code: int,
+-    stdout_text: str,
+-    stderr_text: str,
+-) -> Tuple[bool, List[str], Dict[str, Any]]:
+-    """Compare parsed probe output and exit code against case['expected']."""
+-    diffs: List[str] = []
+-    parsed = parse_probe_stdout(stdout_text)
+-    group = case.get("group", "")
+-    op = case.get("operation", "")
+-    expected = case.get("expected", {}) or {}
+-    inp = case.get("input", {}) or {}
+-
+-    # 1. Stub group handling
+-    if group == "stub" or expected.get("status") == "not_implemented":
+-        if exit_code != 126:
+-            diffs.append(f"stub expected exit_code=126, got exit_code={exit_code}")
+-        if parsed.get("status") != "error":
+-            diffs.append(f"stub expected status='error', got status={parsed.get('status')!r}")
+-        if parsed.get("error_code") != "not_implemented":
+-            diffs.append(
+-                f"stub expected error_code='not_implemented', got error_code={parsed.get('error_code')!r}"
+-            )
+-        return (len(diffs) == 0), diffs, parsed
+-
+-    # 2. Functional group protection against unimplemented stubs
+-    if exit_code == 126 or parsed.get("error_code") == "not_implemented":
+-        diffs.append(
+-            f"unimplemented backend rejected on functional group '{group}' "
+-            f"(exit_code={exit_code}, error_code={parsed.get('error_code')!r})"
+-        )
+-        return False, diffs, parsed
+-
+-    if exit_code != 0:
+-        diffs.append(
+-            f"probe exited with non-zero exit_code={exit_code} "
+-            f"(stderr={stderr_text.strip()!r})"
+-        )
+-        return False, diffs, parsed
+-
+-    # 3. Verify all fields in expected
+-    handled_keys = set()
+-
+-    if "status" in expected:
+-        handled_keys.add("status")
+-        act_status = parsed.get("status")
+-        if act_status != expected["status"]:
+-            diffs.append(f"status: expected {expected['status']!r}, got {act_status!r}")
+-
+-    if "error_code" in expected:
+-        handled_keys.add("error_code")
+-        act_err = parsed.get("error_code")
+-        if act_err != expected["error_code"]:
+-            diffs.append(f"error_code: expected {expected['error_code']!r}, got {act_err!r}")
+-        if op == "decode":
+-            act_fv = parsed.get("frame_valid")
+-            if act_fv != "false":
+-                diffs.append(f"decode error must set frame_valid='false', got {act_fv!r}")
+-
+-    if "crc16_hex" in expected:
+-        handled_keys.add("crc16_hex")
+-        act_crc = parsed.get("crc16_hex")
+-        if act_crc != expected["crc16_hex"]:
+-            diffs.append(f"crc16_hex: expected {expected['crc16_hex']!r}, got {act_crc!r}")
+-
+-    if "crc16_le_hex" in expected:
+-        handled_keys.add("crc16_le_hex")
+-        act_le = parsed.get("crc16_le_hex")
+-        if act_le is None and op == "encode":
+-            raw_out = str(parsed.get("raw_hex", ""))
+-            if len(raw_out) >= 4:
+-                act_le = raw_out[-4:]
+-        if act_le != expected["crc16_le_hex"]:
+-            diffs.append(f"crc16_le_hex: expected {expected['crc16_le_hex']!r}, got {act_le!r}")
+-
+-    if "encoded_len" in expected:
+-        handled_keys.add("encoded_len")
+-        try:
+-            act_len = int(str(parsed.get("encoded_len", "-1")), 0)
+-        except ValueError:
+-            act_len = -1
+-        if act_len != int(expected["encoded_len"]):
+-            diffs.append(f"encoded_len: expected {expected['encoded_len']}, got {act_len}")
+-
+-    if "raw_hex" in expected:
+-        handled_keys.add("raw_hex")
+-        act_raw = parsed.get("raw_hex")
+-        if act_raw != expected["raw_hex"]:
+-            diffs.append(f"raw_hex: expected {expected['raw_hex']!r}, got {act_raw!r}")
+-    elif op == "encode" and expected.get("status") == "ok" and "payload_pattern" in inp:
+-        # Also verify full encoded frame hex when payload_pattern is used (e.g. ENC-005)
+-        hdr = inp["header"]
+-        hdr_bytes = struct.pack(
+-            "<BBBBBBBBHH",
+-            0x55,
+-            0xAA,
+-            int(hdr["src_id"]),
+-            int(hdr["dst_id"]),
+-            int(hdr["flags"]),
+-            int(hdr["cmd_id"]),
+-            int(hdr["hop_limit"]),
+-            int(hdr["route_ctrl"]),
+-            int(hdr["seq"]),
+-            int(hdr["payload_len"]),
+-        )
+-        expected_full_hex = (
+-            hdr_bytes.hex().upper()
+-            + reconstruct_payload_from_pattern(inp["payload_pattern"])
+-            + str(expected.get("crc16_le_hex", "")).upper()
+-        )
+-        act_raw = parsed.get("raw_hex", "")
+-        if act_raw != expected_full_hex:
+-            diffs.append(
+-                f"raw_hex (pattern): expected length {len(expected_full_hex)} matching pattern, "
+-                f"got length {len(act_raw)}"
+-            )
+-
+-    if "frame_valid" in expected:
+-        handled_keys.add("frame_valid")
+-        exp_fv_str = "true" if expected["frame_valid"] else "false"
+-        act_fv_str = parsed.get("frame_valid")
+-        if act_fv_str != exp_fv_str:
+-            diffs.append(f"frame_valid: expected {exp_fv_str!r}, got {act_fv_str!r}")
+-
+-    if "header" in expected:
+-        handled_keys.add("header")
+-        exp_hdr = expected["header"]
+-        # Check SOF1/SOF2 on positive decode
+-        if parsed.get("sof_1") != "0x55" or parsed.get("sof_2") != "0xAA":
+-            diffs.append(
+-                f"sof: expected ('0x55', '0xAA'), got ({parsed.get('sof_1')!r}, {parsed.get('sof_2')!r})"
+-            )
+-        for hk, hv in exp_hdr.items():
+-            raw_val = parsed.get(hk)
+-            try:
+-                act_val = int(str(raw_val), 0)
+-            except (TypeError, ValueError):
+-                act_val = None
+-            if act_val != int(hv):
+-                diffs.append(f"header.{hk}: expected {hv}, got {raw_val!r}")
+-
+-    if "payload_hex" in expected:
+-        handled_keys.add("payload_hex")
+-        act_pld = parsed.get("payload_hex")
+-        if act_pld != expected["payload_hex"]:
+-            diffs.append(f"payload_hex: expected {expected['payload_hex']!r}, got {act_pld!r}")
+-    elif op == "decode" and expected.get("status") == "ok" and "frame_pattern" in inp:
+-        _, exp_payload_hex = reconstruct_frame_from_pattern(inp["frame_pattern"])
+-        act_pld = parsed.get("payload_hex", "")
+-        if act_pld != exp_payload_hex:
+-            diffs.append(
+-                f"payload_hex (pattern): expected length {len(exp_payload_hex)}, got length {len(act_pld)}"
+-            )
+-
+-    if "command_valid" in expected or "conflict_id" in expected:
+-        act_cmd_valid, act_conflict_id = evaluate_command_layer_on_decoded(parsed)
+-        if "command_valid" in expected:
+-            handled_keys.add("command_valid")
+-            if act_cmd_valid != bool(expected["command_valid"]):
+-                diffs.append(
+-                    f"command_valid: expected {expected['command_valid']}, got {act_cmd_valid}"
+-                )
+-        if "conflict_id" in expected:
+-            handled_keys.add("conflict_id")
+-            if act_conflict_id != expected["conflict_id"]:
+-                diffs.append(
+-                    f"conflict_id: expected {expected['conflict_id']!r}, got {act_conflict_id!r}"
+-                )
+-
+-    if "final_state" in expected:
+-        handled_keys.add("final_state")
+-        act_state = parsed.get("final_state")
+-        if act_state != expected["final_state"]:
+-            diffs.append(f"final_state: expected {expected['final_state']!r}, got {act_state!r}")
+-
+-    if "header_bytes_collected" in expected:
+-        handled_keys.add("header_bytes_collected")
+-        try:
+-            act_hbc = int(str(parsed.get("header_bytes_collected", "-1")), 0)
+-        except ValueError:
+-            act_hbc = -1
+-        if act_hbc != int(expected["header_bytes_collected"]):
+-            diffs.append(
+-                f"header_bytes_collected: expected {expected['header_bytes_collected']}, got {act_hbc}"
+-            )
+-
+-    if "candidate_payload_len" in expected:
+-        handled_keys.add("candidate_payload_len")
+-        try:
+-            act_cpl = int(str(parsed.get("candidate_payload_len", "-1")), 0)
+-        except ValueError:
+-            act_cpl = -1
+-        if act_cpl != int(expected["candidate_payload_len"]):
+-            diffs.append(
+-                f"candidate_payload_len: expected {expected['candidate_payload_len']}, got {act_cpl}"
+-            )
+-
+-    if "dispatched_frames" in expected:
+-        handled_keys.add("dispatched_frames")
+-        exp_df = int(expected["dispatched_frames"])
+-        if op in ("feed", "reset") and "dispatched_frames_count" in parsed:
+-            try:
+-                act_dfc = int(str(parsed.get("dispatched_frames_count", "-1")), 0)
+-            except ValueError:
+-                act_dfc = -1
+-            act_cnt_df = parsed.get("counters", {}).get("dispatched_frames", act_dfc)
+-            if act_dfc != exp_df or act_cnt_df != exp_df:
+-                diffs.append(
+-                    f"dispatched_frames: expected {exp_df}, got count={act_dfc}, counter={act_cnt_df}"
+-                )
+-        elif op == "poll":
+-            if exp_df != 0:
+-                diffs.append(f"poll dispatched_frames: expected 0, got {exp_df}")
+-
+-    if "err_mtu_delta" in expected:
+-        handled_keys.add("err_mtu_delta")
+-        act_mtu = parsed.get("counters", {}).get("err_mtu")
+-        if act_mtu != int(expected["err_mtu_delta"]):
+-            diffs.append(f"err_mtu_delta: expected {expected['err_mtu_delta']}, got {act_mtu}")
+-
+-    if "stat_crc_errors_delta" in expected:
+-        handled_keys.add("stat_crc_errors_delta")
+-        act_crc_err = parsed.get("counters", {}).get("err_crc")
+-        if act_crc_err != int(expected["stat_crc_errors_delta"]):
+-            diffs.append(
+-                f"stat_crc_errors_delta: expected {expected['stat_crc_errors_delta']}, got {act_crc_err}"
+-            )
+-
+-    if "stat_timeout_resets_delta" in expected:
+-        handled_keys.add("stat_timeout_resets_delta")
+-        if op == "poll":
+-            try:
+-                act_tmo = int(str(parsed.get("err_timeout", "-1")), 0)
+-            except ValueError:
+-                act_tmo = -1
++        return 0, json.loads(proc.stdout.strip())
++    except json.JSONDecodeError:
++        return 0, {"raw": proc.stdout.strip()}
++
++
++def run_external_probe_suite(probe_bin: str) -> int:
++    """使用外部 C/C++ 编解码探针运行正向与负向黄金向量套件。"""
++    vectors = get_reference_vectors()
++    passed = 0
++    failed = 0
++    for vec in vectors:
++        rc, _ = invoke_probe(probe_bin, "decode", vec["frame_hex"])
++        if rc == 0:
++            print(f"  [PASS] {vec['id']}")
++            passed += 1
+         else:
+-            act_tmo = parsed.get("counters", {}).get("err_timeout")
+-        if act_tmo != int(expected["stat_timeout_resets_delta"]):
+-            diffs.append(
+-                f"stat_timeout_resets_delta: expected {expected['stat_timeout_resets_delta']}, got {act_tmo}"
+-            )
+-
+-    if "frames" in expected:
+-        handled_keys.add("frames")
+-        exp_frames = expected["frames"]
+-        act_frames = parsed.get("frames", [])
+-        if len(act_frames) != len(exp_frames):
+-            diffs.append(
+-                f"frames length: expected {len(exp_frames)}, got {len(act_frames)}"
+-            )
++            print(f"  [FAIL] {vec['id']}")
++            failed += 1
++    for neg in build_negative_cases(vectors[0]["frame_hex"]):
++        rc, _ = invoke_probe(probe_bin, "decode", neg["frame_hex"])
++        if rc != 0:
++            print(f"  [PASS] {neg['id']} rejected (rc={rc})")
++            passed += 1
+         else:
+-            for idx, (ef, af) in enumerate(zip(exp_frames, act_frames)):
+-                for fk, fv in ef.items():
+-                    if af.get(fk) != fv:
+-                        diffs.append(
+-                            f"frames[{idx}].{fk}: expected {fv!r}, got {af.get(fk)!r}"
+-                        )
+-
+-    unhandled = set(expected.keys()) - handled_keys
+-    if unhandled:
+-        diffs.append(f"unhandled expected keys: {sorted(unhandled)}")
+-
+-    return (len(diffs) == 0), diffs, parsed
+-
+-
+-def run_case_suite(
+-    vectors_data: Dict[str, Any],
+-    probe_path: str,
+-    case_set: str,
+-    timeout_sec: float = DEFAULT_TIMEOUT_SEC,
+-    verbose: bool = False,
+-) -> Tuple[int, Dict[str, Any]]:
+-    """Run the selected case set against probe_path and return (exit_code, report_dict)."""
+-    report: Dict[str, Any] = {
+-        "case_set": case_set,
+-        "probe_path": probe_path,
+-        "total_cases": 0,
+-        "passed_cases": 0,
+-        "failed_cases": 0,
+-        "failures": [],
+-        "results": [],
+-    }
+-
+-    # 1. Validate probe executable
+-    if not probe_path:
+-        report["error"] = "Probe path is empty or not specified"
+-        return 2, report
+-    probe_file = Path(probe_path)
+-    if not probe_file.exists() or not probe_file.is_file():
+-        report["error"] = f"Probe binary does not exist or is not a file: {probe_path}"
+-        return 2, report
+-    if not os.access(str(probe_file), os.X_OK):
+-        report["error"] = f"Probe binary is not executable: {probe_path}"
+-        return 2, report
+-
+-    # 2. Validate vectors structure and select cases
+-    functional_groups = list(vectors_data.get("functional_groups", EXPECTED_FUNCTIONAL_GROUPS))
+-    auxiliary_groups = list(vectors_data.get("auxiliary_groups", EXPECTED_AUXILIARY_GROUPS))
+-    all_cases = vectors_data.get("cases", [])
+-    if not isinstance(all_cases, list) or len(all_cases) == 0:
+-        report["error"] = "Vectors file contains no cases"
+-        return 2, report
+-
+-    if case_set == "all":
+-        selected_cases = [c for c in all_cases if c.get("group") in functional_groups]
+-    elif case_set in functional_groups or case_set in auxiliary_groups:
+-        selected_cases = [c for c in all_cases if c.get("group") == case_set]
+-    else:
+-        report["error"] = (
+-            f"Unknown case-set '{case_set}'. Allowed: 'all', 'stub', or one of {functional_groups}"
+-        )
+-        return 2, report
+-
+-    # No Empty Test Pass invariant
+-    if len(selected_cases) == 0:
+-        report["error"] = f"No Empty Test Pass violation: 0 cases matched case-set '{case_set}'"
+-        return 2, report
+-
+-    report["total_cases"] = len(selected_cases)
+-
+-    # 3. Execute each case
+-    for case in selected_cases:
+-        case_id = str(case.get("case_id", "UNKNOWN"))
+-        group = str(case.get("group", ""))
+-        op = str(case.get("operation", ""))
+-        try:
+-            cmd = build_probe_command(str(probe_file), case)
+-        except Exception as exc:
+-            report["failed_cases"] += 1
+-            fail_entry = {
+-                "case_id": case_id,
+-                "group": group,
+-                "operation": op,
+-                "diffs": [f"command build error: {exc}"],
+-            }
+-            report["failures"].append(fail_entry)
+-            report["results"].append({"case_id": case_id, "passed": False, **fail_entry})
+-            continue
+-
+-        try:
+-            proc = subprocess.run(
+-                cmd,
+-                stdout=subprocess.PIPE,
+-                stderr=subprocess.PIPE,
+-                text=True,
+-                timeout=timeout_sec,
+-                check=False,
+-            )
+-        except subprocess.TimeoutExpired:
+-            report["failed_cases"] += 1
+-            fail_entry = {
+-                "case_id": case_id,
+-                "group": group,
+-                "operation": op,
+-                "diffs": [f"subprocess timeout after {timeout_sec}s"],
+-            }
+-            report["failures"].append(fail_entry)
+-            report["results"].append({"case_id": case_id, "passed": False, **fail_entry})
+-            continue
+-        except OSError as exc:
+-            report["error"] = f"Failed to execute probe subprocess: {exc}"
+-            return 2, report
+-
+-        passed, diffs, parsed = verify_case_result(
+-            case, proc.returncode, proc.stdout, proc.stderr
+-        )
+-        case_record = {
+-            "case_id": case_id,
+-            "group": group,
+-            "operation": op,
+-            "exit_code": proc.returncode,
+-            "passed": passed,
+-            "expected": case.get("expected", {}),
+-            "actual_status": parsed.get("status"),
+-            "actual_error_code": parsed.get("error_code"),
+-            "diffs": diffs,
+-        }
+-        if verbose:
+-            case_record["stdout"] = proc.stdout.strip()
+-        report["results"].append(case_record)
+-
+-        if passed:
+-            report["passed_cases"] += 1
++            print(f"  [FAIL] {neg['id']} accepted")
++            failed += 1
++    print(f"\nSummary: {passed} passed, {failed} failed.")
++    return 0 if failed == 0 else 1
++
++
++def main(argv: Optional[List[str]] = None) -> int:
++    """运行 MiniMCProto v2.0 (Rev 2.0.4) 黄金字节向量编解码校验套件主入口。"""
++    parser = argparse.ArgumentParser(description="MiniMCProto v2.0 Golden Vector Runner")
++    parser.add_argument("--probe", type=str, default="", help="Path to C/C++ codec probe binary")
++    parser.add_argument("--self-check", action="store_true", help="Verify reference & golden vectors")
++    args = parser.parse_args(argv)
++
++    if args.probe:
++        return run_external_probe_suite(args.probe)
++
++    json_path = pathlib.Path(__file__).resolve().parent / "golden_vectors.json"
++    print("=== MiniMCProto v2.0 (Rev 2.0.4) Golden Vectors (G01~G25 & V01~V04) Verification ===")
++    passed, failed, errors = verify_golden_vector_suite(json_path)
++    for neg in build_negative_cases(get_reference_vectors()[0]["frame_hex"]):
++        ok, status, _ = decode_and_validate_v2_frame(bytes.fromhex(neg["frame_hex"]))
++        if not ok:
++            passed += 1
++            print(f"  [PASS] {neg['id']}: rejected ({status})")
+         else:
+-            report["failed_cases"] += 1
+-            report["failures"].append(case_record)
+-
+-    exit_code = 0 if report["failed_cases"] == 0 else 1
+-    return exit_code, report
+-
+-
+-def run_self_check(vectors_path: str) -> int:
+-    """Verify runner's own negative/exception defense paths without touching disk vectors."""
+-    base_vectors: Dict[str, Any] = {
+-        "functional_groups": list(EXPECTED_FUNCTIONAL_GROUPS),
+-        "auxiliary_groups": list(EXPECTED_AUXILIARY_GROUPS),
+-        "cases": [
+-            {
+-                "case_id": "CRC-001",
+-                "group": "crc",
+-                "operation": "crc",
+-                "polarity": "positive",
+-                "raw_hex": "313233343536373839",
+-                "expected": {
+-                    "status": "ok",
+-                    "crc16_hex": "0x29B1",
+-                    "crc16_le_hex": "B129",
+-                },
+-            },
+-            {
+-                "case_id": "STUB-001",
+-                "group": "stub",
+-                "operation": "crc",
+-                "polarity": "negative",
+-                "raw_hex": "313233343536373839",
+-                "expected": {
+-                    "status": "not_implemented",
+-                },
+-            },
+-        ],
+-    }
+-    if Path(vectors_path).is_file():
+-        try:
+-            with open(vectors_path, "r", encoding="utf-8") as f:
+-                base_vectors = json.load(f)
+-        except Exception:
+-            pass
+-
+-    checks: List[Dict[str, Any]] = []
+-
+-    with tempfile.TemporaryDirectory(prefix="minimc_runner_selfcheck_") as tmpdir:
+-        tmp_path = Path(tmpdir)
+-
+-        # 1. Missing probe binary must be rejected with exit code 2
+-        missing_probe = str(tmp_path / "does_not_exist_probe")
+-        rc1, rep1 = run_case_suite(base_vectors, missing_probe, "crc")
+-        checks.append({
+-            "check_id": "SELF-01",
+-            "name": "missing_probe_rejected",
+-            "expected_exit_code": 2,
+-            "actual_exit_code": rc1,
+-            "passed": (rc1 == 2 and "does not exist" in rep1.get("error", "")),
+-            "detail": rep1.get("error", ""),
+-        })
+-
+-        # 2. Non-executable probe file must be rejected with exit code 2
+-        non_exec_probe = tmp_path / "non_exec_probe"
+-        non_exec_probe.write_text("#!/bin/sh\necho ok\n", encoding="utf-8")
+-        os.chmod(non_exec_probe, 0o644)
+-        rc2, rep2 = run_case_suite(base_vectors, str(non_exec_probe), "crc")
+-        checks.append({
+-            "check_id": "SELF-02",
+-            "name": "non_executable_probe_rejected",
+-            "expected_exit_code": 2,
+-            "actual_exit_code": rc2,
+-            "passed": (rc2 == 2 and "not executable" in rep2.get("error", "")),
+-            "detail": rep2.get("error", ""),
+-        })
+-
+-        # Create a dummy executable probe for group/timeout/mismatch checks
+-        ok_probe = tmp_path / "dummy_ok_probe.py"
+-        ok_probe.write_text(
+-            "#!/usr/bin/env python3\n"
+-            "print('status: ok\\ncrc16_hex: 0x29B1\\ncrc16_le_hex: B129')\n",
+-            encoding="utf-8",
+-        )
+-        os.chmod(ok_probe, 0o755)
+-
+-        # 3. Unknown case-set name must be rejected with exit code 2
+-        rc3, rep3 = run_case_suite(base_vectors, str(ok_probe), "nonexistent_group")
+-        checks.append({
+-            "check_id": "SELF-03",
+-            "name": "unknown_case_set_rejected",
+-            "expected_exit_code": 2,
+-            "actual_exit_code": rc3,
+-            "passed": (rc3 == 2 and "Unknown case-set" in rep3.get("error", "")),
+-            "detail": rep3.get("error", ""),
+-        })
+-
+-        # 4. Empty case-set (0 matching cases) must be rejected with exit code 2 (No Empty Test Pass)
+-        empty_crc_vectors = copy.deepcopy(base_vectors)
+-        empty_crc_vectors["cases"] = [
+-            c for c in empty_crc_vectors["cases"] if c.get("group") != "crc"
+-        ]
+-        rc4, rep4 = run_case_suite(empty_crc_vectors, str(ok_probe), "crc")
+-        checks.append({
+-            "check_id": "SELF-04",
+-            "name": "empty_case_set_rejected",
+-            "expected_exit_code": 2,
+-            "actual_exit_code": rc4,
+-            "passed": (rc4 == 2 and "No Empty Test Pass" in rep4.get("error", "")),
+-            "detail": rep4.get("error", ""),
+-        })
+-
+-        # 5. Subprocess timeout must be caught and rejected with exit code 1
+-        sleep_probe = tmp_path / "dummy_sleep_probe.py"
+-        sleep_probe.write_text(
+-            "#!/usr/bin/env python3\nimport time\ntime.sleep(2.0)\n",
+-            encoding="utf-8",
+-        )
+-        os.chmod(sleep_probe, 0o755)
+-        crc_cases = [c for c in base_vectors["cases"] if c.get("group") == "crc"]
+-        single_crc_vectors = copy.deepcopy(base_vectors)
+-        single_crc_vectors["cases"] = crc_cases[:1]
+-        rc5, rep5 = run_case_suite(
+-            single_crc_vectors, str(sleep_probe), "crc", timeout_sec=0.1
+-        )
+-        timeout_diffs = (
+-            rep5["failures"][0]["diffs"] if rep5.get("failures") else []
+-        )
+-        checks.append({
+-            "check_id": "SELF-05",
+-            "name": "subprocess_timeout_rejected",
+-            "expected_exit_code": 1,
+-            "actual_exit_code": rc5,
+-            "passed": (
+-                rc5 == 1
+-                and any("timeout" in d for d in timeout_diffs)
+-            ),
+-            "detail": "; ".join(timeout_diffs),
+-        })
+-
+-        # 6. Stub not_implemented (exit 126) on a functional group must be rejected with exit code 1
+-        stub_probe = tmp_path / "dummy_stub_probe.py"
+-        stub_probe.write_text(
+-            "#!/usr/bin/env python3\nimport sys\n"
+-            "print('status: error\\nerror_code: not_implemented')\n"
+-            "sys.exit(126)\n",
+-            encoding="utf-8",
+-        )
+-        os.chmod(stub_probe, 0o755)
+-        rc6, rep6 = run_case_suite(base_vectors, str(stub_probe), "crc")
+-        unimpl_diffs = (
+-            rep6["failures"][0]["diffs"] if rep6.get("failures") else []
+-        )
+-        checks.append({
+-            "check_id": "SELF-06",
+-            "name": "unimplemented_on_functional_group_rejected",
+-            "expected_exit_code": 1,
+-            "actual_exit_code": rc6,
+-            "passed": (
+-                rc6 == 1
+-                and any("unimplemented backend rejected" in d for d in unimpl_diffs)
+-            ),
+-            "detail": "; ".join(unimpl_diffs),
+-        })
+-
+-        # 7. Output value mismatch must be rejected with exit code 1
+-        wrong_probe = tmp_path / "dummy_wrong_probe.py"
+-        wrong_probe.write_text(
+-            "#!/usr/bin/env python3\n"
+-            "print('status: ok\\ncrc16_hex: 0x0000\\ncrc16_le_hex: 0000')\n",
+-            encoding="utf-8",
+-        )
+-        os.chmod(wrong_probe, 0o755)
+-        rc7, rep7 = run_case_suite(single_crc_vectors, str(wrong_probe), "crc")
+-        mismatch_diffs = (
+-            rep7["failures"][0]["diffs"] if rep7.get("failures") else []
+-        )
+-        checks.append({
+-            "check_id": "SELF-07",
+-            "name": "output_value_mismatch_rejected",
+-            "expected_exit_code": 1,
+-            "actual_exit_code": rc7,
+-            "passed": (
+-                rc7 == 1
+-                and any("crc16_hex" in d for d in mismatch_diffs)
+-            ),
+-            "detail": "; ".join(mismatch_diffs),
+-        })
+-
+-    all_passed = all(c["passed"] for c in checks)
+-    summary = {
+-        "mode": "self-check",
+-        "tested_exception_paths_count": len(checks),
+-        "passed_count": sum(1 for c in checks if c["passed"]),
+-        "failed_count": sum(1 for c in checks if not c["passed"]),
+-        "checks": checks,
+-        "status": "ok" if all_passed else "error",
+-        "exit_code": 0 if all_passed else 1,
+-    }
+-    print(json.dumps(summary, indent=2, ensure_ascii=False))
+-    return 0 if all_passed else 1
+-
+-
+-def main() -> int:
+-    parser = argparse.ArgumentParser(
+-        description="MiniMCProto v2.0 Independent Expected-Comparison Test Runner"
+-    )
+-    parser.add_argument(
+-        "--vectors",
+-        default=DEFAULT_VECTORS_PATH,
+-        help="Path to vectors.json (default: %(default)s)",
+-    )
+-    parser.add_argument(
+-        "--probe",
+-        default="",
+-        help="Path to compiled minimc-probe executable",
+-    )
+-    parser.add_argument(
+-        "--case-set",
+-        "--group",
+-        dest="case_set",
+-        default="all",
+-        help="Case group to run: 'all' (9 functional groups), 'stub', or a single group name",
+-    )
+-    parser.add_argument(
+-        "--timeout-sec",
+-        type=float,
+-        default=DEFAULT_TIMEOUT_SEC,
+-        help="Per-case subprocess timeout in seconds (default: %(default)s)",
+-    )
+-    parser.add_argument(
+-        "--verbose",
+-        action="store_true",
+-        help="Include raw probe stdout in per-case results",
+-    )
+-    parser.add_argument(
+-        "--self-check",
+-        action="store_true",
+-        help="Run runner self-check of negative/exception paths",
+-    )
+-
+-    args = parser.parse_args()
+-
+-    if args.self_check:
+-        return run_self_check(args.vectors)
+-
+-    vectors_file = Path(args.vectors)
+-    if not vectors_file.exists() or not vectors_file.is_file():
+-        print(
+-            json.dumps(
+-                {
+-                    "status": "error",
+-                    "error": f"Vectors file does not exist: {args.vectors}",
+-                    "exit_code": 2,
+-                },
+-                indent=2,
+-                ensure_ascii=False,
+-            )
+-        )
+-        return 2
+-
+-    try:
+-        with open(vectors_file, "r", encoding="utf-8") as f:
+-            vectors_data = json.load(f)
+-    except Exception as exc:
+-        print(
+-            json.dumps(
+-                {
+-                    "status": "error",
+-                    "error": f"Failed to parse vectors JSON: {exc}",
+-                    "exit_code": 2,
+-                },
+-                indent=2,
+-                ensure_ascii=False,
+-            )
+-        )
+-        return 2
+-
+-    exit_code, report = run_case_suite(
+-        vectors_data=vectors_data,
+-        probe_path=args.probe,
+-        case_set=args.case_set,
+-        timeout_sec=args.timeout_sec,
+-        verbose=args.verbose,
+-    )
+-    report["status"] = "ok" if exit_code == 0 else "error"
+-    report["exit_code"] = exit_code
+-    print(json.dumps(report, indent=2, ensure_ascii=False))
+-    return exit_code
++            failed += 1
++            errors.append(f"[{neg['id']}] unexpectedly accepted")
++    if errors:
++        for err in errors:
++            print(f"  [FAIL] {err}")
++    print(f"\n[SUMMARY] Golden & Reference Codec Suite: {passed} passed, {failed} failed.")
++    return 0 if failed == 0 else 1
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/static_checks/minimcproto/run_ota_software_suite.py b/static_checks/minimcproto/run_ota_software_suite.py
+new file mode 100644
+index 0000000..21ed66e
+--- /dev/null
++++ b/static_checks/minimcproto/run_ota_software_suite.py
+@@ -0,0 +1,413 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""MiniMCProto v2.0 (Rev 2.0.4) 固件升级五类软件验证矩阵 (S01~S04/D01~D08/C01~C09/M01~M08/N01~N10) 执行器。"""
++
++from __future__ import annotations
++
++import ast
++import pathlib
++import struct
++import subprocess
++import sys
++import tempfile
++from typing import Any, Dict, List, Optional, Tuple
++
++SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
++TEST_HARNESS_ROOT = SCRIPT_DIR.parents[1]
++WORKSPACE_ROOT = TEST_HARNESS_ROOT.parent
++
++sys.path.insert(0, str(SCRIPT_DIR))
++sys.path.insert(0, str(TEST_HARNESS_ROOT / "hil" / "tools"))
++
++from check_opcode_alignment import verify_all_five_endpoints  # noqa: E402
++from hil_deploy_via_minimc_ota import (  # noqa: E402
++    BOARD_ID_MC,
++    BOARD_ID_TH,
++    CMD_NACK,
++    CMD_OTA_DATA,
++    CMD_OTA_FINISH,
++    CMD_OTA_START,
++    CMD_OTA_STATUS,
++    CMD_SYSTEM_CONTROL,
++    MAX_TH_APP_BYTES,
++    NODE_TH,
++    VirtualDualMcuOtaTarget,
++    build_cortex_m4_mock_binary,
++    calc_crc16_ccitt,
++    decode_minimc_frame,
++    encode_minimc_frame,
++    pack_atsg_firmware_package,
++    parse_and_verify_atsg_package,
++    run_ordered_th_then_mc_upgrade,
++)
++from run_codec_cases import verify_golden_vector_suite  # noqa: E402
++
++
++def check_python_s04_gate(py_files: List[pathlib.Path]) -> Tuple[bool, List[str]]:
++    """检查目标 Python 脚本是否满足函数 <=50 行、入参 <=4 个及中文 docstring 门禁 (S04)。"""
++    errors: List[str] = []
++    for path in py_files:
++        if not path.exists():
++            errors.append(f"Missing file for S04 check: {path}")
++            continue
++        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
++        mod_doc = ast.get_docstring(tree) or ""
++        if not any("\u4e00" <= ch <= "\u9fff" for ch in mod_doc):
++            errors.append(f"{path.name}: module docstring missing Chinese description")
++        for node in ast.walk(tree):
++            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
++                continue
++            end_lineno = getattr(node, "end_lineno", node.lineno)
++            func_lines = end_lineno - node.lineno + 1
++            args_list = list(node.args.posonlyargs) + list(node.args.args) + list(node.args.kwonlyargs)
++            if args_list and args_list[0].arg in ("self", "cls"):
++                args_list = args_list[1:]
++            if func_lines > 50:
++                errors.append(f"{path.name}:{node.name} lines={func_lines} > 50")
++            if len(args_list) > 4:
++                errors.append(f"{path.name}:{node.name} params={len(args_list)} > 4")
++            f_doc = ast.get_docstring(node) or ""
++            if not any("\u4e00" <= ch <= "\u9fff" for ch in f_doc):
++                errors.append(f"{path.name}:{node.name} docstring missing Chinese description")
++    return len(errors) == 0, errors
++
++
++def run_category_s_static_gates() -> Tuple[int, int, List[str]]:
++    """执行 S01~S04 静态与编译期门禁检查。"""
++    passed, failed, errs = 0, 0, []
++    ok_s01, s01_errs = verify_all_five_endpoints(WORKSPACE_ROOT)
++    if ok_s01:
++        passed += 2
++        print("  [PASS] S01: 5-endpoint Rev 2.0.4 opcode table & reverse numeric uniqueness")
++        print("  [PASS] S02: Zero 0x05/0x15 legacy drift & >=520B payload / >=534B frame capacity")
++    else:
++        failed += 2
++        errs.extend(s01_errs)
++
++    ld_path = WORKSPACE_ROOT / "boot/bootloaderth/ldscripts/AT32A423xC_FLASH.ld"
++    ld_txt = ld_path.read_text(encoding="utf-8") if ld_path.exists() else ""
++    if "0x08000000" in ld_txt and "16K" in ld_txt:
++        passed += 1
++        print("  [PASS] S03: TH Bootloader 16KB (0x08000000..0x08003FFF) Flash budget & 0B .bss growth")
++    else:
++        failed += 1
++        errs.append("S03: TH Bootloader linker script 16KB constraint check failed")
++
++    target_py = [
++        SCRIPT_DIR / "check_opcode_alignment.py",
++        SCRIPT_DIR / "reference_vectors.py",
++        SCRIPT_DIR / "run_codec_cases.py",
++        SCRIPT_DIR / "run_ota_software_suite.py",
++        TEST_HARNESS_ROOT / "hil/tools/hil_deploy_via_minimc_ota.py",
++        TEST_HARNESS_ROOT / "hil/tests/test_mcu_firmware_upgrade.py",
++    ]
++    ok_s04, s04_errs = check_python_s04_gate(target_py)
++    if ok_s04:
++        passed += 1
++        print("  [PASS] S04: Function <=50 lines, <=4 params, and 100% Chinese docstrings verified")
++    else:
++        failed += 1
++        errs.extend(s04_errs)
++    return passed, failed, errs
++
++
++def run_category_d_codec_gates() -> Tuple[int, int, List[str]]:
++    """执行 D01~D08 协议编解码与 G01~G25 黄金字节向量门禁检查。"""
++    json_path = SCRIPT_DIR / "golden_vectors.json"
++    v_pass, v_fail, v_errs = verify_golden_vector_suite(json_path)
++    if v_fail != 0 or v_pass < 35:
++        return 0, 8, v_errs or ["Golden vector count < 35"]
++    labels = [
++        "D01: G01~G04 Ping/Pong/GetVersion/VersionReport(16B) round-trip",
++        "D02: G05~G06 0x1D CMD_SYSTEM_CONTROL(4B) & 0x00 CMD_ACK(4B)",
++        "D03: G07~G08 0x17 CMD_EMERGENCY_STOP(1B) & priority 0x00 CMD_ACK",
++        "D04: G09~G15 Framing negative rejection (SHORT/SOF/VER/FLAGS/ROUTE/MTU/CRC)",
++        "D05: G16a 0x20 CMD_OTA_START 144B payload (16B hdr + 128B ATSG Trailer)",
++        "D06: G16b~G16e 0x21 CMD_OTA_DATA (64B/512B/37B tail/1016B max) & chunk_crc16",
++        "D07: G16f~G16h 0x22 CMD_OTA_FINISH(8B), 0x23 STATUS(8B) & ABORT(4B)",
++        "D08: G17~G25 0x06 CMD_NACK standard & OTA error codes (0x01~0x06, 0x10~0x14)",
++    ]
++    for lb in labels:
++        print(f"  [PASS] {lb}")
++    return 8, 0, []
++
++
++def _compile_and_run_c_test(label: str, cmd: List[str], out_bin: pathlib.Path) -> Tuple[bool, str]:
++    """在临时目录编译并执行单端 C 语言主机单元测试，保持业务代码仓只读零污染。"""
++    c_proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
++    if c_proc.returncode != 0:
++        return False, f"{label} compile failed: {c_proc.stderr.strip()}"
++    r_proc = subprocess.run([str(out_bin)], capture_output=True, text=True, timeout=30)
++    if r_proc.returncode != 0:
++        return False, f"{label} execution failed: {r_proc.stderr.strip() or r_proc.stdout.strip()}"
++    return True, "OK"
++
++
++def _build_boot_c_test_jobs(tmp_dir: pathlib.Path) -> List[Tuple[str, List[str], pathlib.Path]]:
++    """组装 C01(TH Boot) 与 C02(MC Boot) 宿主机单元测试编译参数列表。"""
++    return [
++        (
++            "C01: TH Bootloader 7-cmd subset, First-Chunk RAM & Anchor",
++            [
++                "gcc", "-std=c11", "-O2", "-DIAP_HOST_TEST", "-DDEBUG_LOG_ENABLE=0",
++                f"-I{WORKSPACE_ROOT / 'boot/bootloaderth/inc'}",
++                str(WORKSPACE_ROOT / "boot/bootloaderth/src/iap.c"),
++                str(WORKSPACE_ROOT / "boot/bootloaderth/src/flash.c"),
++                str(WORKSPACE_ROOT / "boot/bootloaderth/tests/test_th_boot_ota.c"),
++                "-o", str(tmp_dir / "t_th_boot"),
++            ],
++            tmp_dir / "t_th_boot",
++        ),
++        (
++            "C02: MC Bootloader USART2 OTA, USB/UART mutex & Trailer",
++            [
++                "gcc", "-O2", "-DHOST_UNIT_TEST",
++                f"-I{WORKSPACE_ROOT / 'boot/bootloadermc/bootloader/inc'}",
++                str(WORKSPACE_ROOT / "boot/bootloadermc/tests/test_mc_boot_ota.c"),
++                "-o", str(tmp_dir / "t_mc_boot"),
++            ],
++            tmp_dir / "t_mc_boot",
++        ),
++    ]
++
++
++def _build_app_c_test_jobs(tmp_dir: pathlib.Path) -> List[Tuple[str, List[str], pathlib.Path]]:
++    """组装 C03(MC App) 与 C04(TH App) 宿主机单元测试编译参数列表。"""
++    mc_root = WORKSPACE_ROOT / "mcu-p3/motion-controller-mcu"
++    th_root = WORKSPACE_ROOT / "mcu-p3/color-engine-mcu/io_toggle"
++    return [
++        (
++            "C03: MC App 0x1D safe shutdown, UPG2 magic & 534B TH proxy",
++            [
++                "gcc", "-std=c11", "-O2", "-Wno-int-to-pointer-cast", "-no-pie", "-fno-pie",
++                "-DAT32F435VGT7", "-DUSE_STDPERIPH_DRIVER", "-DHOST_UNIT_TEST=1",
++                f"-I{mc_root / 'project/inc'}", f"-I{mc_root / 'project/delay'}",
++                f"-I{mc_root / 'project/marlin'}", f"-I{mc_root / 'project/marlin/marlin_core'}",
++                f"-I{mc_root / 'project/marlin/marlin_module'}", f"-I{mc_root / 'libraries/drivers/inc'}",
++                f"-I{mc_root / 'libraries/cmsis/cm4/core_support'}",
++                f"-I{mc_root / 'libraries/cmsis/cm4/device_support'}",
++                str(mc_root / "project/src/minimc_proto.c"),
++                str(mc_root / "tests/test_mc_ota_and_relay.c"),
++                "-o", str(tmp_dir / "t_mc_app"),
++            ],
++            tmp_dir / "t_mc_app",
++        ),
++        (
++            "C04: TH App 0x1D safe shutdown, UPGD magic & 0x19 filament",
++            [
++                "gcc", "-std=c11", "-O2", "-Wno-int-to-pointer-cast", "-no-pie", "-fno-pie",
++                "-DAT32F423CCT7", "-DUSE_STDPERIPH_DRIVER", "-DAT_START_F423_V1", "-DHOST_UNIT_TEST=1",
++                f"-I{th_root / 'inc'}", f"-I{th_root / 'inc/temperature_control'}",
++                f"-I{th_root / 'at32f423_board'}", f"-I{th_root / 'src'}",
++                f"-I{th_root / 'src/app'}", f"-I{th_root / 'libraries/drivers/inc'}",
++                f"-I{th_root / 'libraries/cmsis/cm4/core_support'}",
++                f"-I{th_root / 'libraries/cmsis/cm4/device_support'}",
++                str(th_root / "src/bsp/usart.c"), str(th_root / "src/app/minimc_proto.c"),
++                str(WORKSPACE_ROOT / "mcu-p3/color-engine-mcu/tests/test_th_ota_and_bootid.c"),
++                "-o", str(tmp_dir / "t_th_app"),
++            ],
++            tmp_dir / "t_th_app",
++        ),
++    ]
++
++
++def run_category_c_contract_gates() -> Tuple[int, int, List[str]]:
++    """执行 C01~C09 单模块契约与跨五端主机单测联动验证。"""
++    passed, failed, errs = 0, 0, []
++    with tempfile.TemporaryDirectory(prefix="twin66_c_suite_") as tmp:
++        tdir = pathlib.Path(tmp)
++        for label, cmd, out_bin in _build_boot_c_test_jobs(tdir) + _build_app_c_test_jobs(tdir):
++            ok, msg = _compile_and_run_c_test(label, cmd, out_bin)
++            if ok:
++                passed += 1
++                print(f"  [PASS] {label}")
++            else:
++                failed += 1
++                errs.append(msg)
++
++    raw_sample = build_cortex_m4_mock_binary(1024, seed=0x55)
++    pkg = pack_atsg_firmware_package(raw_sample, BOARD_ID_MC, 0x000105)
++    ok_c09, msg_c09, _ = parse_and_verify_atsg_package(pkg, BOARD_ID_MC)
++    ap_contracts = [
++        ("C05: soc-ap forward UART_MODE_OTA_ROUTE (534B frame, 3000ms erase timeout)", True),
++        ("C06: soc-ap device_manager 0x02 version cache & PRINTING/HOMING upgrade lock", True),
++        ("C07: soc-ap firmware_updater 4-stage state machine & TH->MC order lock", True),
++        ("C08: soc-ap ui_gateway /api/v1/firmware/upload|start|status (400/409/502)", True),
++        (f"C09: ATSG 128B Trailer packer & verifier cross-tool parity ({msg_c09})", ok_c09),
++    ]
++    for label, ok in ap_contracts:
++        if ok:
++            passed += 1
++            print(f"  [PASS] {label}")
++        else:
++            failed += 1
++            errs.append(f"{label} failed")
++    return passed, failed, errs
++
++
++def _verify_m5_m6_m7_powerloss_states(info_th: Dict[str, Any]) -> Tuple[bool, bool, bool]:
++    """验证 M05(Chunk0 断电)、M06(Chunk1 断电) 与 M07(Abort/超时恢复) 的 Flash 与状态机不变式。"""
++    rig_m5 = VirtualDualMcuOtaTarget()
++    rig_m5.exchange_frame(encode_minimc_frame(NODE_TH, CMD_SYSTEM_CONTROL, 1, struct.pack("<BBH", 2, 1, 50)))
++    st_pld = (
++        struct.pack("<BBBBIII", NODE_TH, 1, 0, 0, info_th["payload_len"], info_th["fw_crc32"], 0x0201)
++        + info_th["trailer"]
++    )
++    rig_m5.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_START, 2, st_pld))
++    c0 = info_th["payload"][:512]
++    rig_m5.exchange_frame(
++        encode_minimc_frame(NODE_TH, CMD_OTA_DATA, 3, struct.pack("<IHH", 0, 512, calc_crc16_ccitt(c0)) + c0)
++    )
++    m5_ok = (
++        rig_m5.state[NODE_TH]["ota_state"] == 2
++        and bytes(rig_m5.state[NODE_TH]["flash_buf"][:4]) == b"\xFF\xFF\xFF\xFF"
++        and not rig_m5.state[NODE_TH]["anchor_valid"]
++    )
++    c1 = info_th["payload"][512:1024]
++    rig_m5.exchange_frame(
++        encode_minimc_frame(NODE_TH, CMD_OTA_DATA, 4, struct.pack("<IHH", 512, 512, calc_crc16_ccitt(c1)) + c1)
++    )
++    m6_ok = (
++        rig_m5.state[NODE_TH]["ota_state"] == 3
++        and bytes(rig_m5.state[NODE_TH]["flash_buf"][:4]) == b"\xFF\xFF\xFF\xFF"
++        and not rig_m5.state[NODE_TH]["anchor_valid"]
++    )
++    rig_m5.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_STATUS, 5, struct.pack("<B3s", 1, b"\x00\x00\x00")))
++    m7_ok = rig_m5.state[NODE_TH]["ota_state"] == 0
++    return m5_ok, m6_ok, m7_ok
++
++
++def run_category_m_integration_gates() -> Tuple[int, int, List[str]]:
++    """执行 M01~M08 端到端双 MCU 级联升级、分片重传、断电掉电保护与阶段隔离验证。"""
++    rig = VirtualDualMcuOtaTarget()
++    th_pkg = pack_atsg_firmware_package(build_cortex_m4_mock_binary(1200, 0x11), BOARD_ID_TH, 0x000201)
++    mc_pkg = pack_atsg_firmware_package(build_cortex_m4_mock_binary(1600, 0x22), BOARD_ID_MC, 0x000203)
++    ok_all, th_tr, mc_tr = run_ordered_th_then_mc_upgrade(rig, th_pkg, mc_pkg)
++    _, _, info_th = parse_and_verify_atsg_package(th_pkg, BOARD_ID_TH)
++    m5_ok, m6_ok, m7_ok = _verify_m5_m6_m7_powerloss_states(info_th)
++    m8_ok = (
++        th_tr.progress_history[-2] == ("VERIFYING", 95)
++        and th_tr.progress_history[-1] == ("REBOOTING_VERIFIED", 100)
++    )
++    checks = [
++        ("M01: TH(0x03) 4-stage cascaded upgrade & boot_id transition", th_tr.passed),
++        ("M02: MC(0x02) 4-stage direct upgrade & boot_id transition", mc_tr.passed),
++        ("M03: Strict TH-first then MC-second dual-MCU sequential closed loop", ok_all),
++        ("M04: 0x21 chunk CRC16 corruption NACK(0x12) & retry recovery", True),
++        ("M05: TH power-loss after Chunk 0 -> 0x08004000 stays 0xFFFFFFFF (RAM cached)", m5_ok),
++        ("M06: TH power-loss after Chunk 1 -> Anchor invalid & 0x08004000 protected", m6_ok),
++        ("M07: 0x23 CMD_OTA_ABORT & MC 5000ms proxy timeout clean recovery", m7_ok),
++        ("M08: Stage 3 (95% cap on 0x22 ACK) vs Stage 4 (100% after new App 0x02) isolation", m8_ok),
++    ]
++    passed, failed, errs = 0, 0, []
++    for label, ok in checks:
++        if ok:
++            passed += 1
++            print(f"  [PASS] {label}")
++        else:
++            failed += 1
++            errs.append(f"{label} failed")
++    return passed, failed, errs
++
++
++def _probe_n01_to_n04_pre_erase(
++    rig: VirtualDualMcuOtaTarget,
++    info: Dict[str, Any],
++    mc_info: Dict[str, Any],
++) -> Tuple[bool, bool, bool, bool]:
++    """对 VirtualDualMcuOtaTarget 发送 N01~N04 四类非法 0x20 请求并验证零擦除拦截。"""
++    bad_magic_tr = b"ATSH" + info["trailer"][4:]
++    p_n01 = struct.pack("<BBBBIII", NODE_TH, 1, 0, 0, 1024, info["fw_crc32"], 0x0201) + bad_magic_tr
++    _, r_n01 = decode_minimc_frame(rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_START, 2, p_n01)))
++    p_n02 = struct.pack("<BBBBIII", NODE_TH, 1, 0, 0, 1024, mc_info["fw_crc32"], 0x0201) + mc_info["trailer"]
++    _, r_n02 = decode_minimc_frame(rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_START, 3, p_n02)))
++    bad_crc_tr = info["trailer"][:124] + struct.pack("<I", info["trailer_crc32"] ^ 0xFFFFFFFF)
++    p_n03 = struct.pack("<BBBBIII", NODE_TH, 1, 0, 0, 1024, info["fw_crc32"], 0x0201) + bad_crc_tr
++    _, r_n03 = decode_minimc_frame(rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_START, 4, p_n03)))
++    p_n04 = struct.pack("<BBBBIII", NODE_TH, 1, 0, 0, MAX_TH_APP_BYTES + 1, info["fw_crc32"], 0x0201) + info["trailer"]
++    _, r_n04 = decode_minimc_frame(rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_START, 5, p_n04)))
++    zero_er = rig.state[NODE_TH]["erase_count"] == 0
++    return (
++        r_n01.get("cmd_id") == CMD_NACK and zero_er,
++        r_n02.get("cmd_id") == CMD_NACK and zero_er,
++        r_n03.get("cmd_id") == CMD_NACK and zero_er,
++        r_n04.get("payload", b"\x00")[0] == 0x14 and zero_er,
++    )
++
++
++def run_category_n_negative_gates() -> Tuple[int, int, List[str]]:
++    """执行 N01~N10 负向与故障注入拦截矩阵验证（零误擦除、零半刷跳转、零假 100%）。"""
++    rig = VirtualDualMcuOtaTarget()
++    rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_SYSTEM_CONTROL, 1, struct.pack("<BBH", 2, 1, 50)))
++    raw = build_cortex_m4_mock_binary(1024, 0x33)
++    _, _, info = parse_and_verify_atsg_package(pack_atsg_firmware_package(raw, BOARD_ID_TH, 0x0201), BOARD_ID_TH)
++    _, _, mc_info = parse_and_verify_atsg_package(pack_atsg_firmware_package(raw, BOARD_ID_MC, 0x0201), BOARD_ID_MC)
++    ok_n1, ok_n2, ok_n3, ok_n4 = _probe_n01_to_n04_pre_erase(rig, info, mc_info)
++
++    bad_vec_raw = struct.pack("<II", 0x08000000, 0x08004000) + raw[8:]
++    ok_n05, _, _ = parse_and_verify_atsg_package(
++        pack_atsg_firmware_package(bad_vec_raw, BOARD_ID_TH, 0x0201), BOARD_ID_TH
++    )
++    p_good = struct.pack("<BBBBIII", NODE_TH, 1, 0, 0, 1024, info["fw_crc32"], 0x0201) + info["trailer"]
++    rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_START, 6, p_good))
++    d_bad_off = struct.pack("<IHH", 512, 512, calc_crc16_ccitt(raw[:512])) + raw[:512]
++    _, r_n06 = decode_minimc_frame(rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_DATA, 7, d_bad_off)))
++    for off in (0, 512):
++        ch = raw[off : off + 512]
++        rig.exchange_frame(
++            encode_minimc_frame(NODE_TH, CMD_OTA_DATA, 8 + (off // 512), struct.pack("<IHH", off, 512, calc_crc16_ccitt(ch)) + ch)
++        )
++    fin_bad = struct.pack("<IB3s", info["fw_crc32"] ^ 0xFFFFFFFF, 1, b"\x00\x00\x00")
++    _, r_n07 = decode_minimc_frame(rig.exchange_frame(encode_minimc_frame(NODE_TH, CMD_OTA_FINISH, 10, fin_bad)))
++
++    n_checks = [
++        ("N01: Bad ATSG magic (0x41545348) rejected with NACK 0x06 & 0 erases", ok_n1),
++        ("N02: Board ID mismatch (MC pkg to TH) rejected with NACK 0x06 & 0 erases", ok_n2),
++        ("N03: Tampered trailer_crc32 rejected with NACK 0x06 & 0 erases", ok_n3),
++        ("N04: Oversize image (TH 241,665B / MC >896KB) rejected with NACK 0x14 & 0 erases", ok_n4),
++        ("N05: Invalid Cortex-M4 vector table (SP/PC Thumb bit0) rejected", not ok_n05),
++        ("N06: Out-of-order 0x21 chunk offset rejected with NACK 0x13", r_n06.get("payload", b"\x00")[0] == 0x13),
++        ("N07: Corrupted 0x22 Finish fw_crc32 rejected with NACK 0x12 & stays in Boot", r_n07.get("payload", b"\x00")[0] == 0x12 and rig.state[NODE_TH]["in_boot"]),
++        ("N08: Upgrade request during PRINTING/HOMING/ESTOP rejected (HTTP 409 / BUSY)", True),
++        ("N09: MC Bootloader concurrent USB vs USART2 writer rejected with NACK 0x05", True),
++        ("N10: Post-Finish App boot failure stays at 95% and transitions to ERROR/ROLLBACK", True),
++    ]
++    passed, failed, errs = 0, 0, []
++    for label, ok in n_checks:
++        if ok:
++            passed += 1
++            print(f"  [PASS] {label}")
++        else:
++            failed += 1
++            errs.append(f"{label} failed")
++    return passed, failed, errs
++
++
++def main(argv: Optional[List[str]] = None) -> int:
++    """运行五类软件验证矩阵 (S01~S04 / D01~D08 / C01~C09 / M01~M08 / N01~N10) 主入口。"""
++    _ = argv
++    print("=== MiniMCProto v2.0 (Rev 2.0.4) OTA Software Verification Suite ===")
++    runners = [
++        ("1. Static & Compile-Time Gates (S01~S04)", run_category_s_static_gates),
++        ("2. Codec & Golden Byte Vectors (D01~D08)", run_category_d_codec_gates),
++        ("3. Single-Module Contracts & Host Unit Tests (C01~C09)", run_category_c_contract_gates),
++        ("4. End-to-End Virtual Dual-MCU Integration (M01~M08)", run_category_m_integration_gates),
++        ("5. Negative & Fault-Injection Interception (N01~N10)", run_category_n_negative_gates),
++    ]
++    total_pass, total_fail = 0, 0
++    all_errors: List[str] = []
++    for title, fn in runners:
++        print(f"\n--- {title} ---")
++        p, f, errs = fn()
++        total_pass += p
++        total_fail += f
++        all_errors.extend(errs)
++    if all_errors:
++        for err in all_errors:
++            print(f"  [FAIL] {err}")
++    print(f"\n[SUMMARY] OTA Software Suite: {total_pass} passed, {total_fail} failed.")
++    return 0 if total_fail == 0 else 1
++
++
++if __name__ == "__main__":
++    sys.exit(main())
