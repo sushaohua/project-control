@@ -1,12 +1,12 @@
 ---
 id: TWIN-67
 title: TWIN-67 真实物理HIL全链路升级验收、MC U盘完整回归与升级部署说明书非实现者实操验证
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: InProgress
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -14,7 +14,7 @@ proposed_owner: INTEGRATOR
 executor:
   role: INTEGRATOR
   agent_id: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  run_id: author_01
+  run_id: author_02
 qa_policy: streamlined-v1
 reviewer:
 - QA
@@ -33,12 +33,26 @@ review_assignments:
   - role: QA
     platform: codex
     model: gpt-6-luna
-    planned_session_alias: planned-qa-twin-67
+    planned_session_alias: planned-qa-twin-67-02
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-67/runs/qa_01/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-67/runs/qa_02/qa_review_report.md
   verifier_session: null
   integrator_session: null
+historical_reviews:
+- run_id: qa_01
+  task_revision: 1
+  candidate_commit: fb04c1bc049a86123628ee068822d35012f5c04e
+  role: QA
+  session: 01a1b00f-f9ab-7f62-82fb-bc5c1712626b
+  decision: REJECTED
+  report: docs/evidence/twin/TWIN-67/runs/qa_01/qa_review_report.md
+  findings:
+  - 阻断：差异新增或修改了接受写入范围之外的路径，包括 .agents/kanban/microtasks/vmware_soc_twin/TWIN-67.md、docs/evidence/twin/TWIN-51/**、docs/work_intake/**。
+  - 阻断：U01~U08 完整物理回归证据未记录有效 U 盘固件包的写入/升级结果与 U03/U04 行为。
+  - 阻断：N05 TH 错板及超限包拒绝后缺少 0x23 状态或擦除计数证明零擦除。
+  - 阻断：H06 非实现者独立实操属性缺少独立核实。
+  - 建议：hil_deployment_receipt.json post_upgrade_telemetry 字段含义需修正或澄清。
 primary_work_package: TASK-009
 related_work_packages:
 - TASK-007
@@ -74,11 +88,11 @@ source_baseline:
   test_harness: cf81195eca55bcd772ef2daa2fd4aa41634c1492
   boot/bootloadermc: faa2ed00dc9b6c8567dd44e875028f65073aab62
   boot/bootloaderth: 64b7100d3b0260ad1c24b627986475dcd45ad383
-base_commit: 5e8def0aed1a66e4583b5d3e5aed89b86f5a13db
+base_commit: 5bdd86b245e317c3761358cb7dffc424a569bbfb
 branch: main
-candidate_commit: fb04c1bc049a86123628ee068822d35012f5c04e
+candidate_commit: null
 dispatch_binding:
-  source_commit: 5e8def0aed1a66e4583b5d3e5aed89b86f5a13db
+  source_commit: 5bdd86b245e317c3761358cb7dffc424a569bbfb
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   consumed_artifact_versions:
     master_upgrade_architecture: b2b6d047500180c9f4d67d72c94794cbe5080caa52901ba262aa089bc1543223
@@ -106,8 +120,8 @@ read_sources:
 worktree: project-control
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
-  lease_id: lease-twin-67-20261106-01
+  task_revision: 2
+  lease_id: lease-twin-67-20261106-02
   expires_at: '2026-11-07T22:00:00+08:00'
 resources:
 - resource: project-control-worktree

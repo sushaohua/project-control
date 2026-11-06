@@ -1,0 +1,21 @@
+{
+  "task_id": "TWIN-67",
+  "task_revision": 1,
+  "candidate_commit": "fb04c1bc049a86123628ee068822d35012f5c04e",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "已核对 bundle、请求、服务端 verdict、运行日志、定向差异及全部声明 artifact 的 SHA256，均与索引一致。差异包含验收写入范围外的文件，已违反接受条款；另有范围内 HIL 条款缺少可核验的完整证据。未启动 Docker、构建或测试，也未修改文件。",
+  "findings": [
+    "阻断：差异新增或修改了接受写入范围之外的路径，包括 .agents/kanban/microtasks/vmware_soc_twin/TWIN-67.md、docs/evidence/twin/TWIN-51/**、docs/work_intake/**。接受范围仅允许升级部署说明书及 docs/evidence/twin/TWIN-67/**，因此候选不符合写入范围条款。",
+    "阻断：U01~U08 的完整物理回归证据无法核实。stepB5_mc_udisk_regression.log 展示了已有 FW_MC.CUR 的识别、应用侧盘枚举及部分串口活动，但未记录有效 U 盘固件包的写入/升级结果，也未覆盖并记录 U03、U04 等对应验收行为；汇总报告的 PASS 不足以替代这些原始证据。",
+    "阻断：N05 的 TH 错板包及超限包拒绝日志记录了 NACK，但未提供之后的 TH OTA 状态或擦除/写入计数来证明零擦除。MC 的 bytes_written=0 记录不能证明 TH 条件也满足零擦除验收。",
+    "阻断：H06 要求非实现者独立按说明书实操。说明书和结果报告将执行者标为 INTEGRATOR，且说明书作者也是该角色；现有材料没有可独立核实的操作者身份或其非实现者属性，故 H06 条款尚无法确认。",
+    "非阻断建议：hil_deployment_receipt.json 中 post_upgrade_telemetry 字段为 nozzle_ddC=32767、heater_fault=114 等值，与报告所称正常遥测不一致；原始调试日志另有正常读数，但建议修正回执或说明该字段含义，避免证据互相矛盾。"
+  ],
+  "accepted_scope": "审阅 TWIN-67 revision 1 锁定候选：范围内文档与 TWIN-67 证据，核对 D4-A、H01~H06、U01~U08、N05/N07/N08 及要求的 Docker 检查证据。其他仓库均无差异；本次评审不执行硬件验证、Docker、构建或测试。验收写入范围以外的变更不属于接受范围。",
+  "unexecuted": [
+    "U01~U08 完整物理 U 盘回归：有效包升级/写入及缺少原始记录的验收步骤尚未提供可核验证据。",
+    "N05 TH 错板及超限拒绝后的零擦除确认：缺少 TH 状态或写入计数证据。",
+    "H06 非实现者独立实操：缺少可核实的操作者身份及非实现者属性证据。"
+  ]
+}
