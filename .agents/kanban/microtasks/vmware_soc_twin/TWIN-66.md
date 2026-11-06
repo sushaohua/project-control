@@ -1,7 +1,7 @@
 ---
 id: TWIN-66
 title: TWIN-66 5端契约静态门禁、G01~G25黄金向量、Docker软件OTA集成测试套件与自动化部署工具
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
@@ -34,14 +34,14 @@ review_assignments:
     planned_session_alias: planned-qa-twin-66
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-66/runs/qa_01/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-66/runs/qa_02/qa_review_report.md
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-66
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-66/runs/qa_01/arch_review_report.md
+    evidence: docs/evidence/twin/TWIN-66/runs/qa_02/arch_review_report.md
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -110,7 +110,7 @@ forbidden_paths:
 - boot/**
 - test_harness/.agents/rules/**
 source_baseline:
-  project-control: 5952dcbb48657b03f9e9857b82c1b5371f5d55a8
+  project-control: d817294ac45357e718acb0b2908088492110b4f1
   soc-ap: 7184edfc796923e2f2c6e3e57ef3a9f791164b51
   mcu-p3: 3f1cfa66c6d27422cf038936b29aca7e45edb511
   test_harness: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
@@ -118,7 +118,7 @@ source_baseline:
   boot/bootloaderth: 64b7100d3b0260ad1c24b627986475dcd45ad383
 base_commit: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
 branch: main
-candidate_commit: e7f7f574fee7dce8cc78b52772ff32a03b9b345f
+candidate_commit: 3e3fb659e9bb3e54222ded1169a70fc331681c48
 dispatch_binding:
   source_commit: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -148,7 +148,7 @@ read_sources:
 worktree: test_harness
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
+  task_revision: 2
   lease_id: lease-twin-66-20261106-01
   expires_at: '2026-11-07T22:00:00+08:00'
 resources:
