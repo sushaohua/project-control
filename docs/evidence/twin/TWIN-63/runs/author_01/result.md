@@ -4,7 +4,7 @@
 - **Role**: `ENG_BOOT_MC` (`eng-vertical`)
 - **Repository / Branch**: `boot/bootloadermc` / `soc_debug`
 - **Base Commit**: `4fc171ea61912561949b9a0cfc1da8975e4c39ba`
-- **Candidate Commit**: `77a3651d551e88978654f5bd14688ce2f71876d6`
+- **Candidate Commit**: `faa2ed00dc9b6c8567dd44e875028f65073aab62`
 
 ## 1. Rule Entry & Read Sources Registration
 - `boot/bootloadermc/.repo-rules/AGENTS.md`
