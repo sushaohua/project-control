@@ -1,0 +1,25 @@
+diff --git a/static_checks/minimcproto/run_ota_software_suite.py b/static_checks/minimcproto/run_ota_software_suite.py
+index cc94171..6e8a2f1 100644
+--- a/static_checks/minimcproto/run_ota_software_suite.py
++++ b/static_checks/minimcproto/run_ota_software_suite.py
+@@ -254,8 +254,9 @@ def _prepare_writable_soc_ap(tmp_dir: pathlib.Path) -> pathlib.Path:
+ 
+ def _run_soc_ap_cmake_test(tmp_dir: pathlib.Path, svc_rel: str, target_bin: str) -> Tuple[bool, str]:
+     """在临时构建目录中通过 CMake 编译并运行 soc-ap 指定服务的单元测试可执行文件。"""
+-    # 使用独立构建目录 tmp_dir/<target_bin> 编译并直接执行真实 C++ 单测二进制
+-    svc_dir = _prepare_writable_soc_ap(tmp_dir) / svc_rel
++    # 使用独立构建目录 tmp_dir/<target_bin> 编译并在 soc_root 工作目录下直接执行单测二进制
++    soc_root = _prepare_writable_soc_ap(tmp_dir)
++    svc_dir = soc_root / svc_rel
+     bdir = tmp_dir / f"build_{target_bin}"
+     cfg = subprocess.run(["cmake", "-S", str(svc_dir), "-B", str(bdir)], capture_output=True, text=True, timeout=60)
+     if cfg.returncode != 0:
+@@ -265,7 +266,7 @@ def _run_soc_ap_cmake_test(tmp_dir: pathlib.Path, svc_rel: str, target_bin: str)
+     )
+     if bld.returncode != 0:
+         return False, f"CMake build failed for {target_bin}: {bld.stderr.strip()}"
+-    exe = subprocess.run([str(bdir / target_bin)], capture_output=True, text=True, timeout=60)
++    exe = subprocess.run([str(bdir / target_bin)], cwd=str(soc_root), capture_output=True, text=True, timeout=60)
+     if exe.returncode != 0:
+         return False, f"{target_bin} failed (rc={exe.returncode}): {exe.stderr.strip() or exe.stdout.strip()}"
+     return True, exe.stdout

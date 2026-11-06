@@ -1,0 +1,454 @@
+{
+  "request": {
+    "repository": "test_harness",
+    "candidate_commit": "cf81195eca55bcd772ef2daa2fd4aa41634c1492",
+    "task_revision": 5,
+    "task_id": "TWIN-66",
+    "workspace": "/home/sushaohua/workspace/ai_soc_project",
+    "commands": [
+      {
+        "kind": "test",
+        "subpath": "test_harness",
+        "command": "python3 static_checks/minimcproto/check_opcode_alignment.py && python3 static_checks/minimcproto/run_codec_cases.py && python3 static_checks/minimcproto/run_ota_software_suite.py && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test",
+        "id": "verify_twin-66"
+      }
+    ],
+    "targets": [
+      {
+        "name": "project-control",
+        "commit": "ae168003454eb18acbf5d867c15c52042cc87f4c",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+        "ref": "main"
+      },
+      {
+        "name": "soc-ap",
+        "commit": "7184edfc796923e2f2c6e3e57ef3a9f791164b51",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+        "ref": "main"
+      },
+      {
+        "name": "mcu-p3",
+        "commit": "3f1cfa66c6d27422cf038936b29aca7e45edb511",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+        "ref": "feat/soc-debug"
+      },
+      {
+        "name": "test_harness",
+        "commit": "cf81195eca55bcd772ef2daa2fd4aa41634c1492",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+        "ref": "main"
+      },
+      {
+        "name": "boot/bootloadermc",
+        "commit": "faa2ed00dc9b6c8567dd44e875028f65073aab62",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git",
+        "ref": "soc_debug"
+      },
+      {
+        "name": "boot/bootloaderth",
+        "commit": "64b7100d3b0260ad1c24b627986475dcd45ad383",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git",
+        "ref": "soc_debug"
+      }
+    ],
+    "contract": {
+      "id": "TWIN-66",
+      "title": "TWIN-66 5端契约静态门禁、G01~G25黄金向量、Docker软件OTA集成测试套件与自动化部署工具",
+      "revision": 5,
+      "plan_revision": "vmware-soc-twin-20261106",
+      "task_kind": "implementation",
+      "development_stage": "vmware-twin",
+      "dispatchable": true,
+      "status": "Review",
+      "blocked": false,
+      "planning_status": "active",
+      "owner": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+      "proposed_owner": "QA",
+      "executor": {
+        "role": "QA",
+        "agent_id": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+        "run_id": "author_01"
+      },
+      "qa_policy": "streamlined-v1",
+      "reviewer": [
+        "QA",
+        "ARCH"
+      ],
+      "verifier": null,
+      "integrator": "INTEGRATOR",
+      "requirement_id": "REQ-20261105-003",
+      "demand_id": "DEM-20261105-006",
+      "confirmation_id": "CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106",
+      "approval_id": "APPR-20261106-001",
+      "accepted_scope": "Docker QA sandbox (python3) verification and independent non-author review (QA + ARCH) of 5-endpoint check_opcode_alignment.py (with reverse numeric uniqueness check), G01~G25 golden byte vectors, run_ota_software_suite.py (S01~S04, D01~D08, C01~C09, M01~M08, N01~N10), hil_deploy_via_minimc_ota.py, test_mcu_firmware_upgrade.py (--self-test), and Chinese code documentation check. Physical HIL hardware execution (covered by TWIN-67) is out of scope for qa-sandbox:20261029; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass.",
+      "review_assignments": {
+        "reviewer_sessions": [
+          {
+            "role": "QA",
+            "platform": "codex",
+            "model": "gpt-6-luna",
+            "planned_session_alias": "planned-qa-twin-66",
+            "session": null,
+            "decision": "PENDING",
+            "evidence": "docs/evidence/twin/TWIN-66/runs/qa_05/qa_review_report.md"
+          },
+          {
+            "role": "ARCH",
+            "platform": "codex",
+            "model": "gpt-6-luna",
+            "planned_session_alias": "planned-arch-twin-66",
+            "session": null,
+            "decision": "PENDING",
+            "evidence": "docs/evidence/twin/TWIN-66/runs/qa_05/arch_review_report.md"
+          }
+        ],
+        "verifier_session": null,
+        "integrator_session": null
+      },
+      "primary_work_package": "TASK-009",
+      "related_work_packages": [
+        "TASK-007",
+        "TASK-012"
+      ],
+      "depends_on": [
+        "TWIN-61",
+        "TWIN-62",
+        "TWIN-63",
+        "TWIN-64",
+        "TWIN-65"
+      ],
+      "dependency_conditions": [
+        {
+          "task": "TWIN-61",
+          "accepted_version": "project-control=c1d2c461aa65e6497c295843a2735d0d02ee2e2d; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=f41d93b753cfd4496f8d5c82fe1c032d1a4d4803",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-61/runs/qa_07/qa_review_report.md",
+          "required": "继承TWIN-61 test_harness基线"
+        },
+        {
+          "task": "TWIN-62",
+          "accepted_version": "project-control=45c5cdf791ae3d88b76949525ec1b46d25832083; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1; boot/bootloadermc=4fc171ea61912561949b9a0cfc1da8975e4c39ba; boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-62/runs/qa_04/qa_review_report.md",
+          "required": "TH Boot v2.0就绪"
+        },
+        {
+          "task": "TWIN-63",
+          "accepted_version": "project-control=2a86f91735f6865626b0794b726d90e1f2247d68; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1; boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62; boot/bootloaderth=769fccbe52464ad7ceb856c5e89cb0d25abbbf87",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-63/runs/qa_03/qa_review_report.md",
+          "required": "MC Boot v2.0就绪"
+        },
+        {
+          "task": "TWIN-64",
+          "accepted_version": "project-control=6d8b9dc8a59366c9e0d0c8126240b1caf69ab321; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=3f1cfa66c6d27422cf038936b29aca7e45edb511; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1; boot/bootloadermc=4fc171ea61912561949b9a0cfc1da8975e4c39ba; boot/bootloaderth=769fccbe52464ad7ceb856c5e89cb0d25abbbf87",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-64/runs/qa_04/qa_review_report.md",
+          "required": "MC/TH App v2.0就绪"
+        },
+        {
+          "task": "TWIN-65",
+          "accepted_version": "project-control=bc4c58b9b8230feb75ba956953978fcd5786af4d; soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1; boot/bootloadermc=4fc171ea61912561949b9a0cfc1da8975e4c39ba; boot/bootloaderth=769fccbe52464ad7ceb856c5e89cb0d25abbbf87",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-65/runs/qa_04/qa_review_report.md",
+          "required": "SoC AP OTA服务就绪"
+        }
+      ],
+      "scope_status": "mapped",
+      "allowed_repositories": [
+        "test_harness",
+        "project-control"
+      ],
+      "write_scope": {
+        "test_harness": [
+          "static_checks/minimcproto/**",
+          "hil/tools/hil_deploy_via_minimc_ota.py",
+          "hil/twin_capture/twin_capture_analyzer.py",
+          "hil/tools/debug_reconciliation_probe.py",
+          "hil/tests/test_mcu_firmware_upgrade.py"
+        ],
+        "project-control": [
+          "docs/evidence/twin/TWIN-66/**"
+        ]
+      },
+      "allowed_paths": [
+        "test_harness/static_checks/minimcproto/**",
+        "test_harness/hil/tools/hil_deploy_via_minimc_ota.py",
+        "test_harness/hil/twin_capture/twin_capture_analyzer.py",
+        "test_harness/hil/tools/debug_reconciliation_probe.py",
+        "test_harness/hil/tests/test_mcu_firmware_upgrade.py",
+        "project-control/docs/evidence/twin/TWIN-66/**"
+      ],
+      "forbidden_paths": [
+        "soc-ap/**",
+        "mcu-p3/**",
+        "boot/**",
+        "test_harness/.agents/rules/**"
+      ],
+      "source_baseline": {
+        "project-control": "ae168003454eb18acbf5d867c15c52042cc87f4c",
+        "soc-ap": "7184edfc796923e2f2c6e3e57ef3a9f791164b51",
+        "mcu-p3": "3f1cfa66c6d27422cf038936b29aca7e45edb511",
+        "test_harness": "f41d93b753cfd4496f8d5c82fe1c032d1a4d4803",
+        "boot/bootloadermc": "faa2ed00dc9b6c8567dd44e875028f65073aab62",
+        "boot/bootloaderth": "64b7100d3b0260ad1c24b627986475dcd45ad383"
+      },
+      "base_commit": "f41d93b753cfd4496f8d5c82fe1c032d1a4d4803",
+      "branch": "main",
+      "candidate_commit": "cf81195eca55bcd772ef2daa2fd4aa41634c1492",
+      "dispatch_binding": {
+        "source_commit": "f41d93b753cfd4496f8d5c82fe1c032d1a4d4803",
+        "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "consumed_artifact_versions": {
+          "master_upgrade_architecture": "b2b6d047500180c9f4d67d72c94794cbe5080caa52901ba262aa089bc1543223",
+          "protocol_v2_0_4": "ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c"
+        }
+      },
+      "protocol_input": {
+        "path": "project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md",
+        "sha256": "ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c",
+        "revision": "Rev 2.0.4"
+      },
+      "icd_versions": [
+        {
+          "path": "project-control/docs/architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md",
+          "version": 2
+        },
+        {
+          "path": "project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md",
+          "version": "Rev 2.0.4"
+        }
+      ],
+      "read_sources": [
+        "project-control/.agents/rules/repository_rule_sources.json",
+        "project-control/.agents/rules/repository_rule_boundaries.md",
+        "project-control/.agents/rules/bootloader_role_boundaries.md",
+        "project-control/.agents/rules/c_cpp_coding_standard.md",
+        "project-control/.agents/rules/code_documentation_standard.md",
+        "project-control/docs/architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md",
+        "project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md",
+        "project-control/docs/planning/minimc_v2_upgrade_engineering_inputs_20261105.md",
+        "project-control/docs/planning/minimc_v2_upgrade_qa_planning_input_20261105.md",
+        "project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md"
+      ],
+      "worktree": "test_harness",
+      "lease": {
+        "owner": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+        "task_revision": 5,
+        "lease_id": "lease-twin-66-20261106-01",
+        "expires_at": "2026-11-07T22:00:00+08:00"
+      },
+      "resources": [
+        {
+          "resource": "test_harness-worktree",
+          "location": "test_harness",
+          "exclusive": false,
+          "pending": null
+        }
+      ],
+      "budget": {
+        "planned_checkpoint_minutes": 60,
+        "max_evidence_based_corrections": 2,
+        "on_limit": "保存证据交COORD"
+      },
+      "checkpoint": "开工前绑定；自检单测与注释规范检查；独立沙箱与QA审查；收件",
+      "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+      "readiness_pending": [],
+      "deliverables": {
+        "artifacts": [
+          "test_harness/static_checks/minimcproto/**",
+          "test_harness/hil/tools/hil_deploy_via_minimc_ota.py",
+          "test_harness/hil/tests/test_mcu_firmware_upgrade.py"
+        ],
+        "record": "docs/evidence/twin/TWIN-66/runs/author_01/result.md"
+      },
+      "rollback": {
+        "steps": [
+          "git -C test_harness checkout -- ."
+        ]
+      },
+      "handoff": {
+        "receiver_role": "COORD",
+        "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+        "transport": "docs",
+        "evidence_location": "docs/evidence/twin/TWIN-66",
+        "acknowledgement": "accepted"
+      },
+      "verification": {
+        "commands": [
+          {
+            "id": "verify_twin-66",
+            "cwd": "test_harness",
+            "command": "python3 static_checks/minimcproto/check_opcode_alignment.py && python3 static_checks/minimcproto/run_codec_cases.py && python3 static_checks/minimcproto/run_ota_software_suite.py && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test",
+            "expected": "5端命令与520B容量静态门禁、G01~G25黄金向量及Docker软件OTA全链路集成测试100%通过",
+            "availability": "available"
+          }
+        ],
+        "positive_cases": [
+          "升级5端check_opcode_alignment.py含反向数值唯一性断言，固化G01~G25固定字节黄金向量，通过S01~S04/D01~D08/C01~C09/M01~M08/N01~N10软件集成测试并交付hil_deploy_via_minimc_ota.py"
+        ],
+        "negative_cases": [
+          "注入冲突宏数值、伪0x05 ACK、241665B超限包、错board_id、内块CRC损坏与断电中断场景100%按契约拦截或恢复"
+        ]
+      },
+      "required_evidence_level": "server-sandbox-and-independent-review",
+      "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+      "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+      "updated": "2026-11-06T09:55:00+08:00"
+    },
+    "run_dir": "/tmp/qa_TWIN-66_bo5iw0uk",
+    "timeout_seconds": 1500,
+    "sandbox_command": [
+      "/usr/bin/python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+      "--config",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+      "--task",
+      "TWIN-66",
+      "--revision",
+      "5",
+      "--output-dir",
+      "/tmp/qa_TWIN-66_bo5iw0uk/evidence",
+      "--repo-commit",
+      "project-control=ae168003454eb18acbf5d867c15c52042cc87f4c:main",
+      "--repo-commit",
+      "soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51:main",
+      "--repo-commit",
+      "mcu-p3=3f1cfa66c6d27422cf038936b29aca7e45edb511:feat/soc-debug",
+      "--repo-commit",
+      "test_harness=cf81195eca55bcd772ef2daa2fd4aa41634c1492:main",
+      "--repo-commit",
+      "boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62:soc_debug",
+      "--repo-commit",
+      "boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383:soc_debug",
+      "--cmd",
+      "test:test_harness:python3 static_checks/minimcproto/check_opcode_alignment.py && python3 static_checks/minimcproto/run_codec_cases.py && python3 static_checks/minimcproto/run_ota_software_suite.py && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test"
+    ],
+    "request_ref": {
+      "path": "/tmp/qa_TWIN-66_bo5iw0uk/request.json",
+      "sha256": "428a872eea028a9e411a2b8f4e0773ce2d971a3fd021d1d0f43a475acfa4fb39"
+    }
+  },
+  "server_qa": {
+    "task_id": "TWIN-66",
+    "task_revision": 5,
+    "source": "server-pinned-commits",
+    "fresh_checkout": true,
+    "sandbox": {
+      "kind": "container",
+      "container_id": "9c6f14e0e050",
+      "id": "TWIN-66_run_143417_20261106_063417",
+      "image": "qa-sandbox:20261029",
+      "path": "/tmp/qa_sandboxes/TWIN-66_run_143417_20261106_063417",
+      "developer_mounts": [],
+      "container_inspect": {
+        "id": "9c6f14e0e0503a48a66e1e6433ad17ff99dd30c464d1adbaff3de6e6816b2f43",
+        "image": "qa-sandbox:20261029",
+        "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "created": "2026-11-06T06:34:48.911366903Z",
+        "state": "exited",
+        "mounts": [
+          {
+            "Type": "bind",
+            "Source": "/tmp/qa_sandboxes/TWIN-66_run_143417_20261106_063417",
+            "Destination": "/workspace",
+            "Mode": "ro",
+            "RW": false,
+            "Propagation": "rprivate"
+          }
+        ]
+      }
+    },
+    "server_lock": {
+      "path": "/tmp/qa_TWIN-66_bo5iw0uk/evidence/server_lock.json",
+      "sha256": "362ace7b573c66094f866a821762ca531b0384cae816b0614375fcda135781bc"
+    },
+    "checkout_log": {
+      "path": "/tmp/qa_TWIN-66_bo5iw0uk/evidence/checkout.log",
+      "sha256": "b619b2b4ab32b41e8895eec4ed4c84d9968112847e94f0f40282f420142c3bfe"
+    },
+    "runtime_log": {
+      "path": "/tmp/qa_TWIN-66_bo5iw0uk/evidence/runtime.log",
+      "sha256": "c3ef2e1d3fafe42207248362cf9f2f58a087a9b139e219eaba66492d2a56dad3"
+    },
+    "server_verdict": {
+      "path": "/tmp/qa_TWIN-66_bo5iw0uk/evidence/server_verdict.json",
+      "sha256": "082e3b8e64af4ee7540bf37f10b0457b616d6f91d2cc695aac3b2233a182e518"
+    },
+    "tool_versions": {
+      "git": "git version 2.25.1",
+      "python": "Python 3.8.10"
+    },
+    "build_results": [],
+    "test_results": [
+      {
+        "command": "python3 static_checks/minimcproto/check_opcode_alignment.py && python3 static_checks/minimcproto/run_codec_cases.py && python3 static_checks/minimcproto/run_ota_software_suite.py && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test",
+        "exit_code": "0",
+        "subpath": "test_harness",
+        "duration": "9.93s",
+        "output": "[PASS] MiniMCProto v2.0 (Rev 2.0.4) 5-endpoint opcode alignment, reverse uniqueness, >=520B payload capacity, and negative self-tests verified.\n=== MiniMCProto v2.0 (Rev 2.0.4) Golden Vectors (G01~G25 & V01~V04) Verification ===\n  [PASS] G01: status=OK len=14B\n  [PASS] G02: status=OK len=14B\n  [PASS] G03: status=OK len=26B\n  [PASS] G04: status=OK len=30B\n  [PASS] G05: status=OK len=18B\n  [PASS] G06: status=OK len=18B\n  [PASS] G07: status=OK len=15B\n  [PASS] G08: status=OK len=18B\n  [PASS] G09: status=ERR_FRAME_TOO_SHORT len=10B\n  [PASS] G10: status=ERR_BAD_SOF len=14B\n  [PASS] G11: status=ERR_BAD_VERSION len=14B\n  [PASS] G12: status=ERR_BAD_FLAGS_RESERVED len=14B\n  [PASS] G13: status=ERR_BAD_ROUTE_CTRL len=14B\n  [PASS] G14: status=ERR_MTU_EXCEEDED len=1039B\n  [PASS] G15: status=ERR_CRC_MISMATCH len=14B\n  [PASS] G16: status=OK len=158B\n  [PASS] G16a: status=OK len=158B\n  [PASS] G16b: status=OK len=86B\n  [PASS] G16c: status=OK len=534B\n  [PASS] G16d: status=OK len=59B\n  [PASS] G16e: status=OK len=1038B\n  [PASS] G16f: status=OK len=22B\n  [PASS] G16g: status=OK len=22B\n  [PASS] G16h: status=OK len=18B\n  [PASS] G17: status=OK len=17B\n  [PASS] G18: status=OK len=17B\n  [PASS] G19: status=OK len=17B\n  [PASS] G20: status=OK len=17B\n  [PASS] G21: status=OK len=17B\n  [PASS] G22: status=OK len=17B\n  [PASS] G23: status=OK len=17B\n  [PASS] G24: status=OK len=17B\n  [PASS] G25: status=OK len=17B\n  [PASS] V01_MC_BED_NORMAL_60C: status=OK len=30B\n  [PASS] V02_TH_NOZZLE_ROUTED_215C: status=OK len=30B\n  [PASS] V03_TH_SENSOR_OPEN_FAULT_SENTINEL: status=OK len=30B\n  [PASS] V04_AP_PRIORITY_ESTOP_CMD: status=OK len=15B\n  [PASS] N01_CRC16_BIT_FLIP: rejected (ERR_CRC_MISMATCH)\n  [PASS] N02_BAD_SOF_MAGIC: rejected (ERR_BAD_SOF)\n  [PASS] N03_TRUNCATED_FRAME: rejected (ERR_LENGTH_MISMATCH)\n  [PASS] N04_INVALID_PROTO_VER: rejected (ERR_BAD_VERSION)\n  [PASS] N05_PAYLOAD_LEN_MISMATCH: rejected (ERR_LENGTH_MISMATCH)\n\n[SUMMARY] Golden & Reference Codec Suite: 42 passed, 0 failed.\n=== MiniMCProto v2.0 (Rev 2.0.4) OTA Software Verification Suite ===\n\n--- 1. Static & Compile-Time Gates (S01~S04) ---\n  [PASS] S01: 5-endpoint Rev 2.0.4 opcode table & reverse numeric uniqueness\n  [PASS] S02: Zero 0x05/0x15 legacy drift & >=520B payload / >=534B frame capacity\n  [PASS] S03: TH Bootloader 16KB (0x08000000..0x08003FFF) Flash budget & 0B .bss growth\n  [PASS] S04: Function <=50 lines, <=4 params, Chinese docstrings & inline '#' comments verified\n\n--- 2. Codec & Golden Byte Vectors (D01~D08) ---\n  [PASS] G01: status=OK len=14B\n  [PASS] G02: status=OK len=14B\n  [PASS] G03: status=OK len=26B\n  [PASS] G04: status=OK len=30B\n  [PASS] G05: status=OK len=18B\n  [PASS] G06: status=OK len=18B\n  [PASS] G07: status=OK len=15B\n  [PASS] G08: status=OK len=18B\n  [PASS] G09: status=ERR_FRAME_TOO_SHORT len=10B\n  [PASS] G10: status=ERR_BAD_SOF len=14B\n  [PASS] G11: status=ERR_BAD_VERSION len=14B\n  [PASS] G12: status=ERR_BAD_FLAGS_RESERVED len=14B\n  [PASS] G13: status=ERR_BAD_ROUTE_CTRL len=14B\n  [PASS] G14: status=ERR_MTU_EXCEEDED len=1039B\n  [PASS] G15: status=ERR_CRC_MISMATCH len=14B\n  [PASS] G16: status=OK len=158B\n  [PASS] G16a: status=OK len=158B\n  [PASS] G16b: status=OK len=86B\n  [PASS] G16c: status=OK len=534B\n  [PASS] G16d: status=OK len=59B\n  [PASS] G16e: status=OK len=1038B\n  [PASS] G16f: status=OK len=22B\n  [PASS] G16g: status=OK len=22B\n  [PASS] G16h: status=OK len=18B\n  [PASS] G17: status=OK len=17B\n  [PASS] G18: status=OK len=17B\n  [PASS] G19: status=OK len=17B\n  [PASS] G20: status=OK len=17B\n  [PASS] G21: status=OK len=17B\n  [PASS] G22: status=OK len=17B\n  [PASS] G23: status=OK len=17B\n  [PASS] G24: status=OK len=17B\n  [PASS] G25: status=OK len=17B\n  [PASS] V01_MC_BED_NORMAL_60C: status=OK len=30B\n  [PASS] V02_TH_NOZZLE_ROUTED_215C: status=OK len=30B\n  [PASS] V03_TH_SENSOR_OPEN_FAULT_SENTINEL: status=OK len=30B\n  [PASS] V04_AP_PRIORITY_ESTOP_CMD: status=OK len=15B\n  [PASS] D01: G01~G04 Ping/Pong/GetVersion/VersionReport(16B) round-trip\n  [PASS] D02: G05~G06 0x1D CMD_SYSTEM_CONTROL(4B) & 0x00 CMD_ACK(4B)\n  [PASS] D03: G07~G08 0x17 CMD_EMERGENCY_STOP(1B) & priority 0x00 CMD_ACK\n  [PASS] D04: G09~G15 Framing negative rejection (SHORT/SOF/VER/FLAGS/ROUTE/MTU/CRC)\n  [PASS] D05: G16a 0x20 CMD_OTA_START 144B payload (16B hdr + 128B ATSG Trailer)\n  [PASS] D06: G16b~G16e 0x21 CMD_OTA_DATA (64B/512B/37B tail/1016B max) & chunk_crc16\n  [PASS] D07: G16f~G16h 0x22 CMD_OTA_FINISH(8B), 0x23 STATUS(8B) & ABORT(4B)\n  [PASS] D08: G17~G25 0x06 CMD_NACK standard & OTA error codes (0x01~0x06, 0x10~0x14)\n\n--- 3. Single-Module Contracts & Host Unit Tests (C01~C09) ---\n  [PASS] C01: TH Bootloader 7-cmd subset, First-Chunk RAM & Anchor\n  [PASS] C02: MC Bootloader USART2 OTA, USB/UART mutex & Trailer\n  [PASS] C03: MC App 0x1D safe shutdown, UPG2 magic & 534B TH proxy\n  [PASS] C04: TH App 0x1D safe shutdown, UPGD magic & 0x19 filament\n  [PASS] C05: soc-ap forward UART_MODE_OTA_ROUTE (534B frame, 3000ms erase timeout)\n  [PASS] C06: soc-ap device_manager 0x02 version cache & PRINTING/HOMING upgrade lock\n  [PASS] C07: soc-ap firmware_updater 4-stage state machine & TH->MC order lock\n  [PASS] C08: soc-ap ui_gateway /api/v1/firmware/upload|start|status (400/409/502)\n  [PASS] C09: ATSG 128B Trailer packer & verifier cross-tool parity (OK)\n\n--- 4. End-to-End Virtual Dual-MCU Integration (M01~M08) ---\n  [PASS] M01: TH(0x03) 4-stage cascaded upgrade & boot_id transition\n  [PASS] M02: MC(0x02) 4-stage direct upgrade & boot_id transition\n  [PASS] M03: Strict TH-first then MC-second dual-MCU sequential closed loop\n  [PASS] M04: 0x21 chunk CRC16 corruption NACK(0x12) & retry recovery\n  [PASS] M05: TH power-loss after Chunk 0 -> stays in Boot & full retry recovery\n  [PASS] M06: TH power-loss after Chunk 1 -> Anchor/Chunk0 protected & retry recovery\n  [PASS] M07: 0x23 CMD_OTA_ABORT & MC 5000ms proxy timeout clean recovery\n  [PASS] M08: Stage 3 (95% cap on 0x22 ACK) vs Stage 4 (100% after new App 0x02) isolation\n\n--- 5. Negative & Fault-Injection Interception (N01~N10) ---\n  [PASS] N01: Bad ATSG magic (0x41545348) rejected with NACK 0x06 & 0 erases\n  [PASS] N02: Board ID mismatch (MC pkg to TH) rejected with NACK 0x06 & 0 erases\n  [PASS] N03: Tampered trailer_crc32 rejected with NACK 0x06 & 0 erases\n  [PASS] N04: Oversize image (TH 241,665B & MC 917,505B) rejected with NACK 0x14 & 0 erases\n  [PASS] N05: Invalid Cortex-M4 vector table (SP/PC Thumb bit0) rejected\n  [PASS] N06: Out-of-order 0x21 chunk offset rejected with NACK 0x13\n  [PASS] N07: Corrupted 0x22 Finish fw_crc32 rejected with NACK 0x12 & stays in Boot\n  [PASS] N08: Upgrade request during PRINTING/HEATING/WRITER_LOCK rejected (NACK 0x05)\n  [PASS] N09: Forged legacy 0x05 opcode & unexpected response intercepted & rejected\n  [PASS] N10: Post-Finish App boot failure stays at 95% and transitions to ERROR/ROLLBACK\n\n[SUMMARY] OTA Software Suite: 39 passed, 0 failed.\n=== SEQ-06 MCU Firmware Upgrade Verification Suite (HIL-CASE-60~63) ===\n  [PASS] HIL-CASE-60 (TH Cascaded 4-Stage Upgrade): TH v1.1->v2.5 boot_id=0x2000b001->0x2010b002->0x2111b007\n  [PASS] HIL-CASE-61 (Ordered TH->MC Dual Upgrade): Ordered TH(v1.1->v2.1) -> MC(v1.2->v2.4) upgrade verified\n  [PASS] HIL-CASE-62 (Zero-Erase Gate & Interlocks): Zero-erase gate verified for wrong board_id and TH(236KB)/MC(896KB) oversize\n  [PASS] HIL-CASE-63 (Interruption & 95%/100% Gate): Mid-stream 0x08004000 protection, power-cycle retry recovery & Stage 3 (95%) cap verified\n\n[SUMMARY] SEQ-06 Upgrade Suite: 4/4 passed."
+      }
+    ],
+    "passed": true,
+    "timestamp": "2026-11-06T06:35:01.719671+00:00",
+    "path": "/tmp/qa_TWIN-66_bo5iw0uk/evidence/server_qa.json",
+    "sha256": "4819bb723f64ee97d13eff79530b943881e89d9d9ac74a12feeac5e8fc6b2517"
+  },
+  "diffs": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_sandboxes/TWIN-66_run_143417_20261106_063417/project-control",
+      "base_commit": "ae168003454eb18acbf5d867c15c52042cc87f4c",
+      "candidate_commit": "ae168003454eb18acbf5d867c15c52042cc87f4c",
+      "diff": {
+        "path": "/tmp/qa_TWIN-66_bo5iw0uk/diffs/project-control.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "soc-ap",
+      "source": "/tmp/qa_sandboxes/TWIN-66_run_143417_20261106_063417/soc-ap",
+      "base_commit": "7184edfc796923e2f2c6e3e57ef3a9f791164b51",
+      "candidate_commit": "7184edfc796923e2f2c6e3e57ef3a9f791164b51",
+      "diff": {
+        "path": "/tmp/qa_TWIN-66_bo5iw0uk/diffs/soc-ap.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "mcu-p3",
+      "source": "/tmp/qa_sandboxes/TWIN-66_run_143417_20261106_063417/mcu-p3",
+      "base_commit": "3f1cfa66c6d27422cf038936b29aca7e45edb511",
+      "candidate_commit": "3f1cfa66c6d27422cf038936b29aca7e45edb511",
+      "diff": {
+        "path": "/tmp/qa_TWIN-66_bo5iw0uk/diffs/mcu-p3.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "test_harness",
+      "source": "/tmp/qa_sandboxes/TWIN-66_run_143417_20261106_063417/test_harness",
+      "base_commit": "f41d93b753cfd4496f8d5c82fe1c032d1a4d4803",
+      "candidate_commit": "cf81195eca55bcd772ef2daa2fd4aa41634c1492",
+      "diff": {
+        "path": "/tmp/qa_TWIN-66_bo5iw0uk/diffs/test_harness.patch",
+        "sha256": "c82b5f933221168d115326d457d2235683c94c60dbaf947e65f1389e51c790d8"
+      }
+    },
+    {
+      "repository": "boot/bootloadermc",
+      "source": "/tmp/qa_sandboxes/TWIN-66_run_143417_20261106_063417/boot/bootloadermc",
+      "base_commit": "faa2ed00dc9b6c8567dd44e875028f65073aab62",
+      "candidate_commit": "faa2ed00dc9b6c8567dd44e875028f65073aab62",
+      "diff": {
+        "path": "/tmp/qa_TWIN-66_bo5iw0uk/diffs/boot/bootloadermc.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "boot/bootloaderth",
+      "source": "/tmp/qa_sandboxes/TWIN-66_run_143417_20261106_063417/boot/bootloaderth",
+      "base_commit": "64b7100d3b0260ad1c24b627986475dcd45ad383",
+      "candidate_commit": "64b7100d3b0260ad1c24b627986475dcd45ad383",
+      "diff": {
+        "path": "/tmp/qa_TWIN-66_bo5iw0uk/diffs/boot/bootloaderth.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -32,16 +32,34 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-66
-    session: null
-    decision: PENDING
+    session: 01a1af91-6016-7892-a4a6-58fd0e5b12c3
+    reviewer_session: 01a1af91-6016-7892-a4a6-58fd0e5b12c3
+    decision: APPROVED
+    commit_sha: cf81195eca55bcd772ef2daa2fd4aa41634c1492
+    reviewed_task_revision: 5
+    artifact_version: project-control=ae168003454eb18acbf5d867c15c52042cc87f4c; soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51; mcu-p3=3f1cfa66c6d27422cf038936b29aca7e45edb511; test_harness=cf81195eca55bcd772ef2daa2fd4aa41634c1492; boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62; boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-66/runs/qa_05/qa_review_report.md
     evidence: docs/evidence/twin/TWIN-66/runs/qa_05/qa_review_report.md
+    report_sha256: ffd2d773eb8077cf4813a48bf497f97b7a36a8cf21aa208a62d1f89b4206b772
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-66/runs/qa_05/codex_events.jsonl
+      sha256: 252ab3cdfb82368d046fcfd96f4070d57716a146fd6fd5e84c0636998b89ae1c
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-66
-    session: null
-    decision: PENDING
+    session: 01a1af92-9089-7f22-9df8-c462b8604009
+    reviewer_session: 01a1af92-9089-7f22-9df8-c462b8604009
+    decision: APPROVED
+    commit_sha: cf81195eca55bcd772ef2daa2fd4aa41634c1492
+    reviewed_task_revision: 5
+    artifact_version: project-control=ae168003454eb18acbf5d867c15c52042cc87f4c; soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51; mcu-p3=3f1cfa66c6d27422cf038936b29aca7e45edb511; test_harness=cf81195eca55bcd772ef2daa2fd4aa41634c1492; boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62; boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-66/runs/qa_05/arch_review_report.md
     evidence: docs/evidence/twin/TWIN-66/runs/qa_05/arch_review_report.md
+    report_sha256: b5d70d62cb39e33074195b3899f1f9c0e123c2ff44fb09e4a2402faf1aceacec
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-66/runs/qa_05/codex_events_arch.jsonl
+      sha256: 04c28864451ff2d743ef218de26052a972dcf2550ef83357fd6c09263cd75246
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
