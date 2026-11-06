@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -25,10 +25,7 @@ requirement_id: REQ-20261105-003
 demand_id: DEM-20261105-006
 confirmation_id: CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106
 approval_id: APPR-20261106-001
-accepted_scope: Docker QA sandbox verification and independent non-author review (QA
-  + ARCH) of 5-endpoint check_opcode_alignment.py (with reverse numeric uniqueness
-  check), G01~G25 golden byte vectors, run_ota_software_suite.py (S01~S04, D01~D08,
-  C01~C09, M01~M08, N01~N10), and hil_deploy_via_minimc_ota.py.
+accepted_scope: "Docker QA sandbox (python3) verification and independent non-author review (QA + ARCH) of 5-endpoint check_opcode_alignment.py (with reverse numeric uniqueness check), G01~G25 golden byte vectors, run_ota_software_suite.py (S01~S04, D01~D08, C01~C09, M01~M08, N01~N10), hil_deploy_via_minimc_ota.py, test_mcu_firmware_upgrade.py (--self-test), and Chinese code documentation check. Physical HIL hardware execution (covered by TWIN-67) is out of scope for qa-sandbox:20261029; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
@@ -60,24 +57,32 @@ depends_on:
 dependency_conditions:
 - task: TWIN-61
   accepted_version: project-control=c1d2c461aa65e6497c295843a2735d0d02ee2e2d; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd;
-    mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1
-  acceptance_evidence: docs/evidence/twin/TWIN-61/runs/qa_03/qa_review_report.md
+    mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
+  acceptance_evidence: docs/evidence/twin/TWIN-61/runs/qa_07/qa_review_report.md
   required: 继承TWIN-61 test_harness基线
 - task: TWIN-62
-  accepted_version: pending
-  acceptance_evidence: docs/evidence/twin/TWIN-62/runs/qa_01/qa_review_report.md
+  accepted_version: project-control=45c5cdf791ae3d88b76949525ec1b46d25832083; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd;
+    mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1;
+    boot/bootloadermc=4fc171ea61912561949b9a0cfc1da8975e4c39ba; boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383
+  acceptance_evidence: docs/evidence/twin/TWIN-62/runs/qa_04/qa_review_report.md
   required: TH Boot v2.0就绪
 - task: TWIN-63
-  accepted_version: pending
-  acceptance_evidence: docs/evidence/twin/TWIN-63/runs/qa_01/qa_review_report.md
+  accepted_version: project-control=2a86f91735f6865626b0794b726d90e1f2247d68; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd;
+    mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1;
+    boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62; boot/bootloaderth=769fccbe52464ad7ceb856c5e89cb0d25abbbf87
+  acceptance_evidence: docs/evidence/twin/TWIN-63/runs/qa_03/qa_review_report.md
   required: MC Boot v2.0就绪
 - task: TWIN-64
-  accepted_version: pending
-  acceptance_evidence: docs/evidence/twin/TWIN-64/runs/qa_01/qa_review_report.md
+  accepted_version: project-control=6d8b9dc8a59366c9e0d0c8126240b1caf69ab321; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd;
+    mcu-p3=3f1cfa66c6d27422cf038936b29aca7e45edb511; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1;
+    boot/bootloadermc=4fc171ea61912561949b9a0cfc1da8975e4c39ba; boot/bootloaderth=769fccbe52464ad7ceb856c5e89cb0d25abbbf87
+  acceptance_evidence: docs/evidence/twin/TWIN-64/runs/qa_04/qa_review_report.md
   required: MC/TH App v2.0就绪
 - task: TWIN-65
-  accepted_version: pending
-  acceptance_evidence: docs/evidence/twin/TWIN-65/runs/qa_01/qa_review_report.md
+  accepted_version: project-control=bc4c58b9b8230feb75ba956953978fcd5786af4d; soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51;
+    mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1;
+    boot/bootloadermc=4fc171ea61912561949b9a0cfc1da8975e4c39ba; boot/bootloaderth=769fccbe52464ad7ceb856c5e89cb0d25abbbf87
+  acceptance_evidence: docs/evidence/twin/TWIN-65/runs/qa_04/qa_review_report.md
   required: SoC AP OTA服务就绪
 scope_status: mapped
 allowed_repositories:
@@ -105,17 +110,17 @@ forbidden_paths:
 - boot/**
 - test_harness/.agents/rules/**
 source_baseline:
-  project-control: c1d2c461aa65e6497c295843a2735d0d02ee2e2d
-  soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
-  mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
-  test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
-  boot/bootloadermc: 4fc171ea61912561949b9a0cfc1da8975e4c39ba
-  boot/bootloaderth: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
-base_commit: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
+  project-control: 297dac582583d089f4734758fbd32b10dabf2573
+  soc-ap: 7184edfc796923e2f2c6e3e57ef3a9f791164b51
+  mcu-p3: 3f1cfa66c6d27422cf038936b29aca7e45edb511
+  test_harness: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
+  boot/bootloadermc: faa2ed00dc9b6c8567dd44e875028f65073aab62
+  boot/bootloaderth: 64b7100d3b0260ad1c24b627986475dcd45ad383
+base_commit: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
 branch: main
 candidate_commit: null
 dispatch_binding:
-  source_commit: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
+  source_commit: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   consumed_artifact_versions:
     master_upgrade_architecture: b2b6d047500180c9f4d67d72c94794cbe5080caa52901ba262aa089bc1543223
