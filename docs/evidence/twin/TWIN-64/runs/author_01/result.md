@@ -4,7 +4,7 @@
 - **执行角色**: `ENG-MC / ENG-TH` (`07a1f6dc-f47c-45e5-bf00-37ec14e2dfda`)
 - **目标仓库与分支**: `mcu-p3` (`feat/soc-debug`)
 - **基线 Commit**: `57674d8b07d6c75a4d20b3fcd52c23df964aa7a7`
-- **候选 Commit**: `5c8aa04366231cbf8115ecf1c00db1ce43ecd664`
+- **候选 Commit**: `5016d5c074452bb8c1648460a18cfd097e74807f`
 
 ## 1. 规则入口与输入源显式读取登记 (`read_sources`)
 

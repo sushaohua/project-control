@@ -1,0 +1,15 @@
+{
+  "task_id": "TWIN-64",
+  "task_revision": 1,
+  "candidate_commit": "5c8aa04366231cbf8115ecf1c00db1ce43ecd664",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "Bundle、索引及引用的证据哈希均匹配，锁定候选上的宿主机测试与回归日志显示通过。但源码存在违反已接受协议和安全条款的问题，故拒绝。source_report 为空。此结论不代表硬件验证通过。",
+  "findings": [
+    "阻断：MC 与 TH 的 0x1D 处理只将加热目标设为零并调用 quickStop，没有禁用步进驱动。quickStop 清除运动队列，不等于电机去能；这不满足接受范围中的安全停机/步进禁用要求。证据：MC handle_mc_sys_ctrl 与 TH handle_th_sys_ctrl，以及 TH stepper.c 中 quickStop 的实现。",
+    "阻断：TH 头文件仍将 MINIMC_CMD_FILAMENT_CONTROL 定义为 0x15，与 TEMP_REPORT 冲突；Rev 2.0.4 要求该供料控制别名使用 0x19。新增的 MINIMC_CMD_FILAMENT_CTRL_V2 为 0x19 并未修正旧公开宏，因而命令表未完全对齐。",
+    "阻断：MC 和 TH 的 0x1D 处理均只拒绝短于 4 字节的载荷（plen < sizeof），对大于 4 字节的载荷仍执行命令；接受协议规定该命令载荷固定为 4 字节。"
+  ],
+  "accepted_scope": "审查 TWIN-64 Rev 1 接受的 mcu-p3 与 project-control 证据范围，包括 Rev 2.0.4 协议对齐、520B 载荷与 534B 路由、0x1D 安全控制及拒绝路径、TH boot_id 与升级管理器迁移、236K linker 限制、禁止业务串口私有帧，以及 TWIN-44/45/60 回归和 S04 门禁。硬件 HIL 与 arm-none-eabi ELF/bin 构建按任务契约排除。",
+  "unexecuted": []
+}

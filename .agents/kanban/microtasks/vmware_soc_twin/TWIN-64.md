@@ -1,7 +1,7 @@
 ---
 id: TWIN-64
 title: TWIN-64 MC/TH App 520B载荷扩容、0x1D受控进Boot、MC维护透明路由与th_upgrade_mgr同构迁移
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
@@ -33,7 +33,7 @@ review_assignments:
     planned_session_alias: planned-qa-twin-64
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-64/runs/qa_01/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-64/runs/qa_02/qa_review_report.md
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -96,7 +96,7 @@ source_baseline:
   boot/bootloaderth: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
 base_commit: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
 branch: feat/soc-debug
-candidate_commit: 5c8aa04366231cbf8115ecf1c00db1ce43ecd664
+candidate_commit: 5016d5c074452bb8c1648460a18cfd097e74807f
 dispatch_binding:
   source_commit: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -126,7 +126,7 @@ read_sources:
 worktree: mcu-p3
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
+  task_revision: 2
   lease_id: lease-twin-64-20261106-01
   expires_at: '2026-11-07T22:00:00+08:00'
 resources:

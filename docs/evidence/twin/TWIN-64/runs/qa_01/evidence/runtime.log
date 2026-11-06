@@ -1,0 +1,82 @@
+=== Docker Container Inspect: 5c6659e8d46c ===
+{
+  "id": "5c6659e8d46c1022d3a6ed9079e391a066dee77dbedf4374a746b0497393edac",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-06T03:45:26.359217203Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-64_run_114453_20261106_034453",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (mcu-p3) rm -rf /tmp/qa_twin64 && cp -r . /tmp/qa_twin64 && cd /tmp/qa_twin64/motion-controller-mcu/tests && sh run_tests.sh && cd /tmp/qa_twin64/color-engine-mcu/tests && sh run_tests.sh && rm -rf /tmp/qa_twin64 -> 0
+=== [1/3] Run TWIN-44/47/60 MC regression suite (test_twin44_mc_debug.c) ===
+========================================================================
+TWIN-44 & TWIN-47 MC USART2 921600, Control Cmds & 0x1C Verification
+========================================================================
+[RUN ] test_usart2_921600_reconfig
+[PASS] test_usart2_921600_reconfig
+[RUN ] test_ring_buffer_trunc_drop_and_recovery
+[PASS] test_ring_buffer_trunc_drop_and_recovery
+[RUN ] test_honest_minimc_v2_queries_and_nack
+[PASS] test_honest_minimc_v2_queries_and_nack
+[RUN ] test_non_intrusive_notify_and_fault_sync
+[PASS] test_non_intrusive_notify_and_fault_sync
+[RUN ] test_tx_fail_suppresses_ack_and_recovers
+[PASS] test_tx_fail_suppresses_ack_and_recovers
+[RUN ] test_relay_timeout_crc_err_and_recovery
+[PASS] test_relay_timeout_crc_err_and_recovery
+[RUN ] test_th_relay_correlation_and_nack
+[PASS] test_th_relay_correlation_and_nack
+[RUN ] test_twin47_temp_home_move_stop
+[PASS] test_twin47_temp_home_move_stop
+[RUN ] test_twin47_job_filament_level_gcode
+[PASS] test_twin47_job_filament_level_gcode
+[RUN ] test_twin60_adc_range_filament_nack_and_boot_id
+[PASS] test_twin60_adc_range_filament_nack_and_boot_id
+------------------------------------------------------------------------
+All 10 TWIN-44/TWIN-47/TWIN-60 test suites PASSED!
+========================================================================
+=== [2/3] Run TWIN-64 MC OTA, 0x1D magic (0x2005FFF0), 534B proxy & th_upgrade_mgr suite ===
+[PASS] test_mc_ota_and_relay: all TWIN-64 MC App OTA & 534B relay tests passed!
+=== [3/3] Verify MC zero M997/5AA5 residue & S04 function/comment gates ===
+[PASS] MC S04 function length (<=50), params (<=4) and Chinese comments verified!
+=== [1/3] Run TWIN-45/48/60 TH regression suite (test_twin45_th_debug.c) ===
+========================================================================
+TWIN-45 / TWIN-48 TH USART1 921600 Cascade & Control Suite
+========================================================================
+[RUN ] test_usart1_921600_and_usart3_115200_init
+[PASS] test_usart1_921600_and_usart3_115200_init
+[RUN ] test_cascade_rx_and_tx_logging
+[PASS] test_cascade_rx_and_tx_logging
+[RUN ] test_periodic_state_and_dynamic_sync
+[PASS] test_periodic_state_and_dynamic_sync
+[RUN ] test_negative_crc_err_bad_frame_and_recovery
+[PASS] test_negative_crc_err_bad_frame_and_recovery
+[RUN ] test_negative_usart1_send_raw_fail_and_recovery
+[PASS] test_negative_usart1_send_raw_fail_and_recovery
+[RUN ] test_negative_usart3_trunc_and_recovery
+[PASS] test_negative_usart3_trunc_and_recovery
+[RUN ] test_negative_usart3_ring_full_drop_and_recovery
+[PASS] test_negative_usart3_ring_full_drop_and_recovery
+[RUN ] test_twin48_set_temp_and_no_false_safety_lock
+[PASS] test_twin48_set_temp_and_no_false_safety_lock
+[RUN ] test_twin48_filament_and_stop
+[PASS] test_twin48_filament_and_stop
+[RUN ] test_twin48_gcode_queue_and_send_quick
+[PASS] test_twin48_gcode_queue_and_send_quick
+------------------------------------------------------------------------
+All 10 TWIN-45 / TWIN-48 test suites PASSED!
+========================================================================
+=== [2/3] Run TWIN-64 TH OTA 0x1D magic (0x20008000 UPGD), 534B & boot_id suite ===
+[PASS] test_th_ota_and_bootid: all TWIN-64 TH App 0x1D, UPGD & boot_id tests passed!
+=== [3/3] Verify TH AT32F423xC_FLASH.ld (LENGTH = 236K), zero M997 send_quick & S04 gates ===
+[PASS] TH AT32F423xC_FLASH.ld (236K), zero M997 residue and S04 function/comment gates verified!
+
