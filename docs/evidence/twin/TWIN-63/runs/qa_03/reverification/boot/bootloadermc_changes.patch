@@ -1,0 +1,631 @@
+diff --git a/bootloader/src/usbh_user.c b/bootloader/src/usbh_user.c
+index bc6ebfe..5b70185 100644
+--- a/bootloader/src/usbh_user.c
++++ b/bootloader/src/usbh_user.c
+@@ -4,6 +4,7 @@
+   * @brief    USB Host IAP User Implementation for AT32F435VGT7
+   **************************************************************************
+   */
++#ifndef HOST_UNIT_TEST
+ #include "usbh_user.h"
+ #include "usb_conf.h"
+ #include "usb_core.h"
+@@ -11,6 +12,7 @@
+ #include "at32f435_437_flash.h"
+ #include "at32f435_437_crc.h"
+ #include "at32f435_437_clock.h"
++#endif
+ #include "firmware_trailer.h"
+ #include "boot_uart_ota.h"
+ #include <string.h>
+@@ -133,7 +135,8 @@ static uint8_t find_upgrade_bin(const char *path)
+     {
+       continue;
+     }
+-    if (strcasecmp(fno.fname, UPGRADE_BIN_NAME) == 0)
++    if (strcasecmp(fno.fname, UPGRADE_BIN_NAME) == 0 ||
++        strcasecmp(fno.fname, "firmwaremc.bin") == 0)
+     {
+       s_upgrade_bin.base_addr = FLASH_APP_ADDR;
+       s_upgrade_bin.filesize = fno.fsize;
+@@ -154,7 +157,11 @@ static uint8_t find_upgrade_bin(const char *path)
+ static uint32_t calculate_flash_crc(uint32_t base_addr, uint32_t filesize)
+ {
+   uint32_t words = (filesize + 3U) / 4U;
++#ifdef HOST_UNIT_TEST
++  const uint32_t *p_flash = (const uint32_t *)host_mock_flash_ptr(base_addr);
++#else
+   const uint32_t *p_flash = (const uint32_t *)base_addr;
++#endif
+   uint32_t crc_val = 0;
+ 
+   crm_periph_clock_enable(CRM_CRC_PERIPH_CLOCK, TRUE);
+@@ -217,7 +224,8 @@ static int flash_erase_sectors(uint32_t base_addr, uint32_t filesize)
+ {
+   uint32_t sector_count = (filesize + FLASH_SECTOR_SIZE - 1U) / FLASH_SECTOR_SIZE;
+ 
+-  printf("Erasing %lu sectors (2KB each) from 0x%08lX...\r\n", sector_count, base_addr);
++  printf("Erasing %lu sectors (2KB each) from 0x%08lX...\r\n",
++         (unsigned long)sector_count, (unsigned long)base_addr);
+   flash_unlock();
+ 
+   for (uint32_t i = 0; i < sector_count; i++)
+@@ -227,7 +235,7 @@ static int flash_erase_sectors(uint32_t base_addr, uint32_t filesize)
+     if (status != FLASH_OPERATE_DONE)
+     {
+       flash_lock();
+-      printf("Erase failed at 0x%08lX: %d\r\n", erase_addr, status);
++      printf("Erase failed at 0x%08lX: %d\r\n", (unsigned long)erase_addr, (int)status);
+       return -1;
+     }
+   }
+@@ -246,7 +254,7 @@ static int flash_write_image(FIL *pfile, uint32_t base_addr, uint32_t filesize)
+   uint32_t curr_addr = base_addr;
+   uint32_t remaining = filesize;
+ 
+-  printf("Writing image to Flash (%lu B)...\r\n", filesize);
++  printf("Writing image to Flash (%lu B)...\r\n", (unsigned long)filesize);
+   f_lseek(pfile, 0);
+   flash_unlock();
+ 
+@@ -272,7 +280,7 @@ static int flash_write_image(FIL *pfile, uint32_t base_addr, uint32_t filesize)
+       if (status != FLASH_OPERATE_DONE)
+       {
+         flash_lock();
+-        printf("Program failed at 0x%08lX: %d\r\n", curr_addr + (i * 4U), status);
++        printf("Program failed at 0x%08lX: %d\r\n", (unsigned long)(curr_addr + (i * 4U)), (int)status);
+         return -1;
+       }
+     }
+@@ -294,7 +302,7 @@ static int verify_firmware_trailer(FIL *pfile, uint32_t filesize, uint32_t *p_pa
+   if (pfile == NULL || p_payload_len == NULL || filesize <= TRAILER_SIZE_BYTES)
+   {
+     printf("[PRE-VERIFY] Reject: File too small (%lu B, min > %u B)\r\n",
+-           filesize, TRAILER_SIZE_BYTES);
++           (unsigned long)filesize, (unsigned int)TRAILER_SIZE_BYTES);
+     return -1;
+   }
+ 
+@@ -317,13 +325,13 @@ static int verify_firmware_trailer(FIL *pfile, uint32_t filesize, uint32_t *p_pa
+   if (trailer.payload_len != (filesize - TRAILER_SIZE_BYTES))
+   {
+     printf("[PRE-VERIFY] Reject: Payload length mismatch (%lu != %lu)\r\n",
+-           trailer.payload_len, (filesize - TRAILER_SIZE_BYTES));
++           (unsigned long)trailer.payload_len, (unsigned long)(filesize - TRAILER_SIZE_BYTES));
+     return -3;
+   }
+ 
+   *p_payload_len = trailer.payload_len;
+   printf("[PRE-VERIFY] PASS: MC Firmware verified. Payload: %lu B, Ver: 0x%08lX\r\n",
+-         trailer.payload_len, trailer.fw_version);
++         (unsigned long)trailer.payload_len, (unsigned long)trailer.fw_version);
+   return 0;
+ }
+ 
+@@ -353,7 +361,8 @@ static int write_bin_to_flash(void)
+   if (base_addr < FLASH_APP_ADDR || (base_addr + payload_len) > FLASH_END_ADDR)
+   {
+     f_close(&s_file);
+-    printf("Invalid firmware memory range: 0x%08lX + 0x%08lX\r\n", base_addr, payload_len);
++    printf("Invalid firmware memory range: 0x%08lX + 0x%08lX\r\n",
++           (unsigned long)base_addr, (unsigned long)payload_len);
+     return -1;
+   }
+ 
+@@ -371,11 +380,12 @@ static int write_bin_to_flash(void)
+ 
+   if (crc_flash != crc_file)
+   {
+-    printf("CRC Check Mismatch! Flash: 0x%08lX, File: 0x%08lX\r\n", crc_flash, crc_file);
++    printf("CRC Check Mismatch! Flash: 0x%08lX, File: 0x%08lX\r\n",
++           (unsigned long)crc_flash, (unsigned long)crc_file);
+     return -1;
+   }
+ 
+-  printf("CRC32 Check OK: 0x%08lX\r\n", crc_flash);
++  printf("CRC32 Check OK: 0x%08lX\r\n", (unsigned long)crc_flash);
+   return 0;
+ }
+ 
+@@ -418,15 +428,30 @@ static void list_udisk_root_files(void)
+     }
+     else
+     {
+-      printf("  [FILE] %-24s  %lu Bytes\r\n", fno.fname, (uint32_t)fno.fsize);
++      printf("  [FILE] %-24s  %lu Bytes\r\n", fno.fname, (unsigned long)fno.fsize);
+       count++;
+     }
+   }
+   f_closedir(&dir);
+-  printf("Total: %lu file(s) in root\r\n", count);
++  printf("Total: %lu file(s) in root\r\n", (unsigned long)count);
+   printf("===================================\r\n");
+ }
+ 
++/**
++ * @brief  提取去除扩展名后的文件名主体
++ */
++static void extract_base_filename(const char *p_old_name, char *p_base, size_t max_len)
++{
++  const char *p_dot = strrchr(p_old_name, '.');
++  size_t name_len = (p_dot != NULL) ? (size_t)(p_dot - p_old_name) : strlen(p_old_name);
++  if (name_len >= max_len)
++  {
++    name_len = max_len - 1U;
++  }
++  memcpy(p_base, p_old_name, name_len);
++  p_base[name_len] = '\0';
++}
++
+ /**
+  * @brief  固件重命名（先删除可能存在的旧文件，后原子改名，避免FR_EXIST错误）
+  * @param  p_old_name: 原文件名（如 "firmwaremc.bin"）
+@@ -437,7 +462,6 @@ static void rename_firmware_file(const char *p_old_name, const char *p_new_ext,
+   char old_path[96];
+   char new_path[96];
+   char base_name[64];
+-  const char *p_dot = NULL;
+   FILINFO fno;
+   FRESULT res;
+ 
+@@ -445,32 +469,11 @@ static void rename_firmware_file(const char *p_old_name, const char *p_new_ext,
+   {
+     return;
+   }
+-
+-  /* 提取文件名主体，去除旧扩展名 */
+-  p_dot = strrchr(p_old_name, '.');
+-  if (p_dot != NULL)
+-  {
+-    size_t name_len = (size_t)(p_dot - p_old_name);
+-    if (name_len >= sizeof(base_name))
+-    {
+-      name_len = sizeof(base_name) - 1U;
+-    }
+-    strncpy(base_name, p_old_name, name_len);
+-    base_name[name_len] = '\0';
+-  }
+-  else
+-  {
+-    strncpy(base_name, p_old_name, sizeof(base_name) - 1U);
+-    base_name[sizeof(base_name) - 1U] = '\0';
+-  }
+-
++  extract_base_filename(p_old_name, base_name, sizeof(base_name));
+   snprintf(old_path, sizeof(old_path), "0:/%s", p_old_name);
+   snprintf(new_path, sizeof(new_path), "0:/%s.%s", base_name, p_new_ext);
+ 
+-  /* 1. 若目标文件已存在则先删除，确保 f_rename 不因 FR_EXIST 报错 */
+   f_unlink(new_path);
+-
+-  /* 2. 执行原子重命名 */
+   res = f_rename(old_path, new_path);
+   if (res != FR_OK)
+   {
+@@ -478,35 +481,26 @@ static void rename_firmware_file(const char *p_old_name, const char *p_new_ext,
+     return;
+   }
+ 
+-  /* 3. 强制卸载以刷出 FatFs 脏扇区缓存，并硬件延时 50ms 等待排空 */
+   f_mount(NULL, "0:/", 0);
+   delay_ms(50);
+-
+-  /* 4. 重新挂载文件系统以进行物理 FS Check */
+-  res = f_mount(&s_fs, "0:/", 1);
+-  if (res != FR_OK)
++  if (f_mount(&s_fs, "0:/", 1) != FR_OK)
+   {
+-    printf("[BOOT] Remount failed during FS check (err=%d)\r\n", (int)res);
++    printf("[BOOT] Remount failed during FS check\r\n");
+     return;
+   }
+-
+-  /* 5. Check 1: 验证源文件已彻底消失 */
+   if (f_stat(old_path, &fno) != FR_NO_FILE)
+   {
+     printf("[BOOT] FS Check FAILED: Old file %s still exists!\r\n", old_path);
+     return;
+   }
+-
+-  /* 6. Check 2: 验证新文件存在且字节大小严格匹配 (若传入有效 expected_size) */
+   if (f_stat(new_path, &fno) != FR_OK || (expected_size > 0U && fno.fsize != (FSIZE_t)expected_size))
+   {
+     printf("[BOOT] FS Check FAILED: %s stat mismatch (size=%lu, expect=%lu)\r\n",
+-           new_path, (uint32_t)fno.fsize, expected_size);
++           new_path, (unsigned long)fno.fsize, (unsigned long)expected_size);
+     return;
+   }
+-
+   printf("[BOOT] FS Check PASSED: %s -> %s verified (Size=%lu B).\r\n",
+-         old_path, new_path, (uint32_t)fno.fsize);
++         old_path, new_path, (unsigned long)fno.fsize);
+ }
+ 
+ static void handle_state_list_root(void)
+@@ -531,7 +525,9 @@ static void handle_state_readlist(void)
+       return;
+     }
+     printf("Found: %s, Size: %lu bytes, Target: 0x%08lX\r\n",
+-           s_upgrade_bin.bin_name, s_upgrade_bin.filesize, s_upgrade_bin.base_addr);
++           s_upgrade_bin.bin_name,
++           (unsigned long)s_upgrade_bin.filesize,
++           (unsigned long)s_upgrade_bin.base_addr);
+     g_upgrade_in_progress = 1;
+     s_appstate = USER_WRITE;
+     return;
+diff --git a/tests/run_tests.sh b/tests/run_tests.sh
+index 32e5493..4862cf0 100755
+--- a/tests/run_tests.sh
++++ b/tests/run_tests.sh
+@@ -63,7 +63,7 @@ import re, sys
+ from pathlib import Path
+ 
+ files = [
+-    Path("bootloader/src/boot_uart_ota.c"),
++    Path("bootloader/src/boot_uart_ota.c"), Path("bootloader/src/usbh_user.c"),
+     Path("bootloader/src/main.c"),
+     Path("bootloader/src/bsp_uart.c"),
+     Path("tests/test_mc_boot_ota.c"),
+diff --git a/tests/test_mc_boot_ota.c b/tests/test_mc_boot_ota.c
+index dfb157a..0e3f177 100644
+--- a/tests/test_mc_boot_ota.c
++++ b/tests/test_mc_boot_ota.c
+@@ -1,7 +1,7 @@
+ /**
+   **************************************************************************
+   * @file     test_mc_boot_ota.c
+-  * @brief    MC Bootloader (AT32F435) USART2 MiniMCProto v2.0 (Rev 2.0.4) 单元测试套件
++  * @brief    MC Bootloader (AT32F435) USART2 MiniMCProto v2.0 与 USB Host 状态机单元测试套件
+   **************************************************************************
+   */
+ #include <stdio.h>
+@@ -9,19 +9,54 @@
+ #include <stdint.h>
+ #include <string.h>
+ 
+-/* 模拟 usbh_user.h 所需最小声明以隔离 USB Host 依赖 */
++/* 模拟 usbh_user.h / FatFs / AT32 Flash & CRC 所需类型声明以支持宿主直接编译 usbh_user.c */
+ #define __USBH_USER_H
+ #define FLASH_APP_ADDR            (0x08020000U)
+-volatile uint8_t g_udisk_connected = 0U;
+-volatile uint8_t g_upgrade_in_progress = 0U;
+-volatile uint8_t g_upgrade_status = 0U;
++#define UPGRADE_BIN_NAME          "fw_mc.bin"
++#define CRM_CRC_PERIPH_CLOCK      (1U)
++#define TRUE                      (1)
++#define FALSE                     (0)
++#define FA_READ                   (0x01U)
++#define AM_DIR                    (0x10U)
++
++typedef int confirm_state;
++typedef enum { USB_OK = 0 } usb_sts_type;
++typedef enum { FLASH_OPERATE_DONE = 0, FLASH_PROGRAM_ERROR = 1 } flash_status_type;
++typedef enum { FR_OK = 0, FR_DISK_ERR = 1, FR_NO_FILE = 4 } FRESULT;
++typedef unsigned int UINT;
++typedef uint32_t FSIZE_t;
++typedef struct { uint32_t dummy; } FATFS;
++typedef struct { uint32_t offset; uint32_t size; } FIL;
++typedef struct { uint32_t idx; } DIR;
++typedef struct { FSIZE_t fsize; uint8_t fattrib; char fname[64]; } FILINFO;
++typedef struct { uint32_t dummy; } otg_core_type;
++typedef struct {
++  usb_sts_type (*usbh_user_init)(void);
++  usb_sts_type (*usbh_user_reset)(void);
++  usb_sts_type (*usbh_user_attached)(void);
++  usb_sts_type (*usbh_user_disconnect)(void);
++  usb_sts_type (*usbh_user_speed)(uint8_t speed);
++  usb_sts_type (*usbh_user_mfc_string)(void *string);
++  usb_sts_type (*usbh_user_product_string)(void *string);
++  usb_sts_type (*usbh_user_serial_string)(void *string);
++  usb_sts_type (*usbh_user_enumeration_done)(void);
++  usb_sts_type (*user_application)(void);
++  usb_sts_type (*usbh_user_active_vbus)(void *uhost, confirm_state state);
++  usb_sts_type (*usbh_user_not_support)(void);
++} usbh_user_handler_type;
++
++otg_core_type otg_core_struct;
++extern volatile uint8_t g_udisk_connected;
++extern volatile uint8_t g_upgrade_in_progress;
++extern volatile uint8_t g_upgrade_status;
+ uint8_t is_app_valid(uint32_t address);
+ void jump_to_app(uint32_t address);
+ 
+ #include "boot_uart_ota.h"
+ 
+-/* Host 模拟 Flash (32KB 测试窗口映射 0x08020000 起) 与串口/复位状态 */
++/* Host 模拟 Flash (32KB 测试窗口映射 0x08020000 起) 与串口/复位/U盘文件状态 */
+ #define SIM_FLASH_SIZE            (32U * 1024U)
++#define SIM_UDISK_MAX_SIZE        (4096U)
+ static uint8_t s_sim_flash[SIM_FLASH_SIZE];
+ static uint32_t s_erase_count = 0U;
+ static uint32_t s_sim_magic = 0U;
+@@ -31,6 +66,11 @@ static uint32_t s_jump_count = 0U;
+ static uint32_t s_last_jump_addr = 0U;
+ static uint8_t s_last_tx[MINIMC_MAX_FRAME_SIZE];
+ static uint16_t s_last_tx_len = 0U;
++static uint32_t s_hw_crc_acc = 0xFFFFFFFFUL;
++static char s_udisk_fname[64];
++static uint8_t s_udisk_data[SIM_UDISK_MAX_SIZE];
++static uint32_t s_udisk_fsize = 0U;
++static uint8_t s_udisk_has_file = 0U;
+ 
+ /**
+   * @brief  断言辅助函数：条件为假时打印错误并退出
+@@ -141,6 +181,14 @@ void host_mock_jump_to_app(uint32_t addr)
+   s_last_jump_addr = addr;
+ }
+ 
++/**
++  * @brief  供 usbh_user.c 调用的跳转入口包装
++  */
++void jump_to_app(uint32_t address)
++{
++  host_mock_jump_to_app(address);
++}
++
+ /**
+   * @brief  校验模拟 Flash 首地址处的 MSP 与 Reset_Handler 向量合法性
+   */
+@@ -162,7 +210,129 @@ uint8_t is_app_valid(uint32_t address)
+   return 1U;
+ }
+ 
++/**
++  * @brief  模拟延时与外设时钟/CRC/Flash 接口桩函数
++  */
++static void delay_ms(uint32_t ms) { s_sim_systick += ms; }
++static void crm_periph_clock_enable(uint32_t periph, confirm_state st) { (void)periph; (void)st; }
++static void crc_data_reset(void) { s_hw_crc_acc = 0xFFFFFFFFUL; }
++static uint32_t crc_one_word_calculate(uint32_t val)
++{
++  s_hw_crc_acc ^= val;
++  for (uint8_t b = 0U; b < 32U; b++)
++  {
++    s_hw_crc_acc = (s_hw_crc_acc & 0x80000000UL) ? ((s_hw_crc_acc << 1U) ^ 0x04C11DB7UL) : (s_hw_crc_acc << 1U);
++  }
++  return s_hw_crc_acc;
++}
++static void flash_unlock(void) {}
++static void flash_lock(void) {}
++static flash_status_type flash_sector_erase(uint32_t addr)
++{
++  return (host_mock_flash_erase_sector(addr) == 0) ? FLASH_OPERATE_DONE : FLASH_PROGRAM_ERROR;
++}
++static flash_status_type flash_word_program(uint32_t addr, uint32_t data)
++{
++  return (host_mock_flash_write_bytes(addr, (const uint8_t *)&data, 4U) == 0) ? FLASH_OPERATE_DONE : FLASH_PROGRAM_ERROR;
++}
++
++/**
++  * @brief  模拟 FatFs 挂载与目录遍历接口
++  */
++static FRESULT f_mount(FATFS *fs, const char *path, uint8_t opt) { (void)fs; (void)path; (void)opt; return FR_OK; }
++static FRESULT f_opendir(DIR *dp, const char *path) { (void)path; dp->idx = 0U; return FR_OK; }
++static FRESULT f_closedir(DIR *dp) { (void)dp; return FR_OK; }
++static FRESULT f_readdir(DIR *dp, FILINFO *fno)
++{
++  if (s_udisk_has_file && dp->idx == 0U)
++  {
++    dp->idx = 1U;
++    fno->fsize = s_udisk_fsize;
++    fno->fattrib = 0U;
++    strncpy(fno->fname, s_udisk_fname, sizeof(fno->fname) - 1U);
++    fno->fname[sizeof(fno->fname) - 1U] = '\0';
++  }
++  else
++  {
++    fno->fname[0] = '\0';
++  }
++  return FR_OK;
++}
++
++/**
++  * @brief  模拟 FatFs 文件打开、定位、读取与关闭接口
++  */
++static FRESULT f_open(FIL *fp, const char *path, uint8_t mode)
++{
++  (void)mode;
++  const char *base = (strncmp(path, "0:/", 3) == 0) ? (path + 3) : path;
++  if (!s_udisk_has_file || strcasecmp(base, s_udisk_fname) != 0)
++  {
++    return FR_NO_FILE;
++  }
++  fp->offset = 0U;
++  fp->size = s_udisk_fsize;
++  return FR_OK;
++}
++static FRESULT f_lseek(FIL *fp, FSIZE_t ofs)
++{
++  if (ofs > fp->size) { return FR_DISK_ERR; }
++  fp->offset = ofs;
++  return FR_OK;
++}
++static FRESULT f_read(FIL *fp, void *buff, UINT btr, UINT *br)
++{
++  uint32_t avail = (fp->offset < fp->size) ? (fp->size - fp->offset) : 0U;
++  uint32_t n = (btr < avail) ? btr : avail;
++  if (n > 0U)
++  {
++    memcpy(buff, &s_udisk_data[fp->offset], n);
++    fp->offset += n;
++  }
++  *br = (UINT)n;
++  return FR_OK;
++}
++static FRESULT f_close(FIL *fp) { (void)fp; return FR_OK; }
++
++/**
++  * @brief  模拟 FatFs 文件删除、重命名与状态查询接口
++  */
++static FRESULT f_unlink(const char *path)
++{
++  const char *base = (strncmp(path, "0:/", 3) == 0) ? (path + 3) : path;
++  if (s_udisk_has_file && strcasecmp(base, s_udisk_fname) == 0)
++  {
++    s_udisk_has_file = 0U;
++  }
++  return FR_OK;
++}
++static FRESULT f_rename(const char *old_p, const char *new_p)
++{
++  const char *old_b = (strncmp(old_p, "0:/", 3) == 0) ? (old_p + 3) : old_p;
++  const char *new_b = (strncmp(new_p, "0:/", 3) == 0) ? (new_p + 3) : new_p;
++  if (!s_udisk_has_file || strcasecmp(old_b, s_udisk_fname) != 0)
++  {
++    return FR_NO_FILE;
++  }
++  strncpy(s_udisk_fname, new_b, sizeof(s_udisk_fname) - 1U);
++  s_udisk_fname[sizeof(s_udisk_fname) - 1U] = '\0';
++  return FR_OK;
++}
++static FRESULT f_stat(const char *path, FILINFO *fno)
++{
++  const char *base = (strncmp(path, "0:/", 3) == 0) ? (path + 3) : path;
++  if (!s_udisk_has_file || strcasecmp(base, s_udisk_fname) != 0)
++  {
++    return FR_NO_FILE;
++  }
++  fno->fsize = s_udisk_fsize;
++  fno->fattrib = 0U;
++  memcpy(fno->fname, s_udisk_fname, sizeof(fno->fname));
++  return FR_OK;
++}
++
+ #include "../bootloader/src/boot_uart_ota.c"
++#include "../bootloader/src/usbh_user.c"
+ 
+ /**
+   * @brief  构造并向 USART2 接收状态机注入一帧 MiniMCProto v2.0 报文
+@@ -269,6 +439,25 @@ static void build_mc_image_and_trailer(uint8_t *p_img,
+   *p_crc = boot_crc32_ieee(p_img, len);
+ }
+ 
++/**
++  * @brief  在模拟 U 盘中装载指定文件名、镜像净荷与 128B Trailer
++  */
++static void mount_sim_udisk_package(const char *fname,
++                                    const uint8_t *p_img,
++                                    uint32_t img_len,
++                                    const fw_trailer_t *p_tr)
++{
++  strncpy(s_udisk_fname, fname, sizeof(s_udisk_fname) - 1U);
++  s_udisk_fname[sizeof(s_udisk_fname) - 1U] = '\0';
++  memcpy(s_udisk_data, p_img, img_len);
++  memcpy(&s_udisk_data[img_len], p_tr, sizeof(*p_tr));
++  s_udisk_fsize = img_len + (uint32_t)sizeof(*p_tr);
++  s_udisk_has_file = 1U;
++  s_appstate = USER_INIT;
++  g_upgrade_status = 0U;
++  g_upgrade_in_progress = 0U;
++}
++
+ /**
+   * @brief  测试 UPG2 驻留魔数、0x01/0x02、0x03/0x04、0x1D 及 DST=0x03 严格静默丢弃
+   */
+@@ -408,6 +597,96 @@ static void test_full_ota_flow_and_crc_verification(void)
+   require_true(memcmp(s_sim_flash, img, sizeof(img)) == 0, "Flash image matches 100%");
+ }
+ 
++/**
++  * @brief  直接驱动 usbh_user_handle.user_application() 验证 USB Host U 盘升级成功与坏 trailer_crc32 零擦除拒绝
++  */
++static void test_usb_host_udisk_upgrade_and_bad_trailer_zero_erase(void)
++{
++  uint8_t img[1024];
++  fw_trailer_t tr;
++  uint32_t crc = 0U;
++  build_mc_image_and_trailer(img, sizeof(img), &tr, &crc);
++
++  /* 1. 坏 trailer_crc32 的 firmwaremc.bin：擦除前预验签失败 -> s_erase_count == 0，重命名为 firmwaremc.err */
++  fw_trailer_t bad_tr = tr;
++  bad_tr.trailer_crc32 ^= 0x55AA55AAUL;
++  memset(s_sim_flash, 0xAA, sizeof(s_sim_flash));
++  boot_uart_ota_init();
++  s_erase_count = 0U;
++  s_jump_count = 0U;
++  mount_sim_udisk_package("firmwaremc.bin", img, sizeof(img), &bad_tr);
++
++  usbh_user_handle.user_application(); /* USER_INIT -> USER_READLIST */
++  usbh_user_handle.user_application(); /* USER_READLIST -> USER_WRITE */
++  usbh_user_handle.user_application(); /* USER_WRITE -> USER_IDEL */
++  usbh_user_handle.user_application(); /* USER_IDEL */
++  require_true(s_erase_count == 0U && s_jump_count == 0U, "USB bad trailer_crc32 must abort before erase");
++  require_true(strcmp(s_udisk_fname, "firmwaremc.err") == 0, "bad USB package renamed to firmwaremc.err");
++  require_true(boot_ota_get_active_writer() == BOOT_WRITER_NONE, "USB writer released after failure");
++
++  /* 2. 合法 firmwaremc.bin：擦写成功 -> 重命名为 firmwaremc.cur -> 释放锁并 jump_to_app(0x08020000) */
++  mount_sim_udisk_package("firmwaremc.bin", img, sizeof(img), &tr);
++  usbh_user_handle.user_application(); /* USER_INIT -> USER_READLIST */
++  usbh_user_handle.user_application(); /* USER_READLIST -> USER_WRITE */
++  usbh_user_handle.user_application(); /* USER_WRITE -> USER_IDEL */
++  usbh_user_handle.user_application(); /* USER_IDEL -> jump_to_app */
++  require_true(s_erase_count == 1U && s_jump_count == 1U && s_last_jump_addr == FLASH_APP_ADDR, "USB upgrade success & jump");
++  require_true(strcmp(s_udisk_fname, "firmwaremc.cur") == 0, "valid USB package renamed to firmwaremc.cur");
++  require_true(memcmp(s_sim_flash, img, sizeof(img)) == 0, "USB Flash image matches 100%");
++}
++
++/**
++  * @brief  验证 USB Host 状态机与 USART2 状态机双向并发竞争互斥拒绝及释放后恢复升级
++  */
++static void test_usb_and_uart2_contention_and_recovery(void)
++{
++  uint8_t img[1024];
++  fw_trailer_t tr;
++  uint32_t crc = 0U;
++  build_mc_image_and_trailer(img, sizeof(img), &tr, &crc);
++  memset(s_sim_flash, 0xAA, sizeof(s_sim_flash));
++  boot_uart_ota_init();
++  s_erase_count = 0U;
++  s_jump_count = 0U;
++  minimc_payload_ota_start_t req;
++  memset(&req, 0, sizeof(req));
++  req.target_device = MINIMC_NODE_MC;
++  req.target_component = 1U;
++  req.fw_size_bytes = sizeof(img);
++  req.fw_crc32 = crc;
++  req.trailer = tr;
++  /* 场景 A：UART2 先通过 0x20 持有锁 -> USB 状态机在 USER_READLIST 被互斥拒绝转入 USER_IDEL -> UART2 完成升级 */
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 30U, &req);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK, "UART2 acquires writer first");
++  mount_sim_udisk_package("firmwaremc.bin", img, sizeof(img), &tr);
++  usbh_user_handle.user_application();
++  usbh_user_handle.user_application();
++  require_true(s_appstate == USER_IDEL && g_upgrade_in_progress == 0U, "USB deferred while UART2 active");
++  send_ota_data_chunk(31U, 0U, &img[0]);
++  send_ota_data_chunk(32U, 512U, &img[512]);
++  minimc_payload_ota_finish_t fin_req = {crc, 1U, {0U, 0U, 0U}};
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_FINISH, 33U, &fin_req);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_jump_count == 1U, "UART2 finishes OTA after deferring USB");
++  /* 场景 B：USB 在 USER_READLIST 先持有锁 -> UART2 0x20 收到 NACK 0x05 -> USB 完成释放后 UART2 重试成功 */
++  boot_uart_ota_init();
++  s_erase_count = 0U;
++  s_jump_count = 0U;
++  mount_sim_udisk_package("firmwaremc.bin", img, sizeof(img), &tr);
++  usbh_user_handle.user_application();
++  usbh_user_handle.user_application();
++  require_true(g_upgrade_in_progress == 1U && boot_ota_get_active_writer() == BOOT_WRITER_USB, "USB holds writer");
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 34U, &req);
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_DEVICE_BUSY && s_erase_count == 0U, "UART2 NACK 0x05");
++  usbh_user_handle.user_application();
++  usbh_user_handle.user_application();
++  require_true(boot_ota_get_active_writer() == BOOT_WRITER_NONE && g_upgrade_in_progress == 0U, "USB releases writer");
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 35U, &req);
++  send_ota_data_chunk(36U, 0U, &img[0]);
++  send_ota_data_chunk(37U, 512U, &img[512]);
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_FINISH, 38U, &fin_req);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_jump_count == 2U, "UART2 completes recovery upgrade");
++}
++
+ /**
+   * @brief  测试主入口
+   */
+@@ -416,6 +695,8 @@ int main(void)
+   test_magic_info_heartbeat_and_dst_filter();
+   test_single_writer_mutex_and_zero_erase_admission();
+   test_full_ota_flow_and_crc_verification();
+-  printf("[PASS] test_mc_boot_ota: all MC Bootloader MiniMCProto v2.0 tests passed!\n");
++  test_usb_host_udisk_upgrade_and_bad_trailer_zero_erase();
++  test_usb_and_uart2_contention_and_recovery();
++  printf("[PASS] test_mc_boot_ota: all MC Bootloader MiniMCProto v2.0 & USB Host tests passed!\n");
+   return 0;
+ }

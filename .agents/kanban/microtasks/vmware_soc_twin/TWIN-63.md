@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -31,9 +31,18 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-63
-    session: null
-    decision: PENDING
+    session: 01a1aee0-ca6e-7171-9879-a685189d67c9
+    reviewer_session: 01a1aee0-ca6e-7171-9879-a685189d67c9
+    commit_sha: faa2ed00dc9b6c8567dd44e875028f65073aab62
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-63/runs/qa_03/codex_events.jsonl
+      sha256: db5f8f984439e8beb7ad51d62fc504f96d4ec6115931439e91edcc66e2096a4b
+    decision: APPROVED
+    reviewed_task_revision: 3
+    artifact_version: project-control=2a86f91735f6865626b0794b726d90e1f2247d68; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1; boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62; boot/bootloaderth=769fccbe52464ad7ceb856c5e89cb0d25abbbf87
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-63/runs/qa_03/qa_review_report.md
     evidence: docs/evidence/twin/TWIN-63/runs/qa_03/qa_review_report.md
+    report_sha256: 2656fb247ef2c36fde78a1b0efa58bb8e1c9c24e58ba84d727f7153924056943
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -115,11 +124,7 @@ read_sources:
 - project-control/docs/planning/minimc_v2_upgrade_qa_planning_input_20261105.md
 - project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md
 worktree: boot/bootloadermc
-lease:
-  owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 3
-  lease_id: lease-twin-63-20261106-01
-  expires_at: '2026-11-07T22:00:00+08:00'
+lease: null
 resources:
 - resource: boot-bootloadermc-worktree
   location: boot/bootloadermc

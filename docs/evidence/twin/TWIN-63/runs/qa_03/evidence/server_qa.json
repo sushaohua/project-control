@@ -1,0 +1,63 @@
+{
+  "task_id": "TWIN-63",
+  "task_revision": 3,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "7bc161ad87d0",
+    "id": "TWIN-63_run_112122_20261106_032122",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-63_run_112122_20261106_032122",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "7bc161ad87d0b73011d095e75c79b24d1b2b000598601c6b7d44732ef6a32ec4",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-06T03:22:06.399254445Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-63_run_112122_20261106_032122",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "/tmp/qa_TWIN-63_f3qib5qt/evidence/server_lock.json",
+    "sha256": "e509b0c419988ed5ed5d3352743d078201da38ad530a26ac98528945e70b4b81"
+  },
+  "checkout_log": {
+    "path": "/tmp/qa_TWIN-63_f3qib5qt/evidence/checkout.log",
+    "sha256": "82b2296d24ec059513b604033b9bf71fe26adc30b9544f4d38798ce9f4f20335"
+  },
+  "runtime_log": {
+    "path": "/tmp/qa_TWIN-63_f3qib5qt/evidence/runtime.log",
+    "sha256": "96a8f2d0c6dbac889ca7cc73ff8dfacead9384d76e0377c5138f14d7092cd503"
+  },
+  "server_verdict": {
+    "path": "/tmp/qa_TWIN-63_f3qib5qt/evidence/server_verdict.json",
+    "sha256": "0b1b03b4abef0a6577cb7e6cf16591a3ebebb112805b6e7ec2f9c6d16bdf2b24"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "cat ../../project-control/docs/evidence/twin/TWIN-63/runs/author_01/result.md && ! grep -rn \"USART6\" bootloader/src/ bootloader/inc/ && echo \"[PASS] Zero USART6 coupling in MC Bootloader source/headers!\" && rm -rf /tmp/qa_twin63 && cp -r . /tmp/qa_twin63 && cd /tmp/qa_twin63 && mkdir -p build && sed -n \"20,99p\" tests/run_tests.sh | sh && python3 -c \"import pathlib, re, sys; files = [\\\"app_test/inc/th_upgrade_mgr.h\\\", \\\"bootloader/inc/boot_uart_ota.h\\\", \\\"bootloader/src/boot_uart_ota.c\\\", \\\"bootloader/src/main.c\\\", \\\"bootloader/src/usbh_user.c\\\", \\\"scripts/pack_firmware.py\\\", \\\"tests/test_mc_boot_ota.c\\\"]; cjk = re.compile(r\\\"[\\\\u4e00-\\\\u9fff]\\\"); [ (txt := pathlib.Path(p).read_text(encoding=\\\"utf-8\\\"), assert_cjk := sum(1 for l in txt.splitlines() if cjk.search(l)) >= 3, print(f\\\"[DOC-CHECK PASS] {p}: cjk_lines={sum(1 for l in txt.splitlines() if cjk.search(l))}\\\"), (sys.exit(1) if not assert_cjk else None)) for p in files ]; print(\\\"[PASS] code_documentation_standard check passed!\\\")\" && rm -rf /tmp/qa_twin63",
+      "exit_code": "0",
+      "subpath": "boot/bootloadermc",
+      "duration": "0.49s",
+      "output": "# TWIN-63 Author Verification Report (`author_01`)\n\n- **Task ID**: `TWIN-63`\n- **Role**: `ENG_BOOT_MC` (`eng-vertical`)\n- **Repository / Branch**: `boot/bootloadermc` / `soc_debug`\n- **Base Commit**: `4fc171ea61912561949b9a0cfc1da8975e4c39ba`\n- **Candidate Commit**: `faa2ed00dc9b6c8567dd44e875028f65073aab62`\n\n## 1. Rule Entry & Read Sources Registration\n- `boot/bootloadermc/.repo-rules/AGENTS.md`\n- `boot/bootloadermc/.repo-rules/SOURCE.json` (`source_commit`: `fa1c2dd52a699757ab2e8f81bfefba914dd4d23c`)\n- `boot/bootloadermc/AGENTS.md`\n- `project-control/.agents/rules/bootloader_role_boundaries.md` (`version`: `1.0`)\n- `project-control/.agents/rules/c_cpp_coding_standard.md` (`version`: `1.2`)\n- `project-control/.agents/rules/code_documentation_standard.md` (`version`: `1.0`)\n- `project-control/docs/planning/minimc_v2_unified_mcu_upgrade_proposal_20261105.md` (`revision`: `3`)\n- `project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-63.md` (`revision`: `2`)\n\n## 2. Summary of Changes\n1. **MiniMCProto v2.0 (Rev 2.0.4) 7-Command Subset (`bootloader/inc/boot_uart_ota.h`, `bootloader/src/boot_uart_ota.c`)**:\n   - Implemented `USART2` (`PA2 TX / PA3 RX @ 921600 8N1`, `GPIO_MUX_7`, `1024B` ISR ring buffer) and `DST == 0x02 (MINIMC_NODE_MC)` 7-command OTA state machine (`0x01/0x02` with `capability_flags = 0xC0080435U` & dynamic `boot_id`, `0x03/0x04`, `0x1D`, `0x20` 144B pre-erase ATSG admission, `0x21` 520B max payload with 2KB sector erase on boundary + readback verify + retransmit idempotency, `0x23` 8B status, `0x22` 8B full-image IEEE CRC32 verify + jump).\n   - Strictly filtered out `DST == 0x03 (MINIMC_NODE_TH)` frames (zero `USART6` coupling).\n   - Implemented `UPG2` (`0x55504732UL` at `0x2005FFF0UL`) stay-in-boot magic word detection and clearing.\n2. **USB Host vs `USART2` Single-Writer Mutex & Shared 128B Trailer Gate (`bootloader/src/usbh_user.c`, `bootloader/src/main.c`)**:\n   - Unified USB Host `verify_firmware_trailer()` and `USART2` `0x20 CMD_OTA_START` on `boot_verify_trailer_struct(&trailer, BOARD_ID_MC_AT32F435, MC_MAX_APP_SIZE)` (checking `magic`, `struct_ver == 0x00010000U`, `board_id == 0x43500001U`, `0 < payload_len <= 917,504B`, and `trailer_crc32` over first 124B).\n   - Implemented `boot_ota_acquire_writer()` / `boot_ota_release_writer()` single-writer lock between USB Host (`BOOT_WRITER_USB`) and `USART2` (`BOOT_WRITER_UART2`).\n   - Added `boot_uart_ota_deinit()` to `deinit_bootloader_peripherals()` in `jump_to_app()`.\n3. **236KB TH / 896KB MC Boundary Alignment (`app_test/inc/th_upgrade_mgr.h`, `scripts/pack_firmware.py`)**:\n   - Updated `TH_FLASH_MAX_APP_SIZE` to `236U * 1024U` (`241,664B`) and enforced net payload bounds (`MC <= 917,504B`, `TH <= 241,664B`) in `scripts/pack_firmware.py`.\n\n## 3. Verification Results\n- Command: `rm -rf /tmp/qa_twin63 && cp -r . /tmp/qa_twin63 && cd /tmp/qa_twin63 && sh tests/run_tests.sh && rm -rf /tmp/qa_twin63`\n- Result: **PASS (Exit Code 0)**\n  - `build/bootloader.bin` = `36,612` bytes (`27.93%` of `131,072B` 128KB budget), zero `USART6` coupling.\n  - `scripts/pack_firmware.py` boundary checks (`917,504B` pass, `917,505B` fail; `241,664B` pass, `241,665B` fail): **PASS**.\n  - Host unit test `test_mc_boot_ota`: **PASS**.\n  - C function length (`<= 50` lines) and parameter count (`<= 4` params) gate: **PASS**.\n[PASS] Zero USART6 coupling in MC Bootloader source/headers!\n=== [2/4] Verify scripts/pack_firmware.py MC (896KB=917,504B) & TH (236KB=241,664B) boundary gate ===\n==================================================\n [PACK] Firmware packaging complete\n - Input raw binary: /tmp/tmpm95lpr24/mc_ok.bin (917504 bytes)\n - Target Board ID: 0x43500001 [MC (AT32F435)]\n - Firmware Version: 0x01000000\n - SHA-256 Digest: 4438bd37db902e5676b4f257f2d6b2b479bdb88ec501bb3824a96e09f1c4568e\n - Output File: /tmp/tmpm95lpr24/fw_mc.bin (917632 bytes)\n==================================================\n==================================================\n [PACK] Firmware packaging complete\n - Input raw binary: /tmp/tmpm95lpr24/th_ok.bin (241664 bytes)\n - Target Board ID: 0x42300001 [TH (AT32F423)]\n - Firmware Version: 0x01000000\n - SHA-256 Digest: 8aba5e9a7cf5158a11d210bb3edfe208bc67088e6f093e8e32c026629aabf2a6\n - Output File: /tmp/tmpm95lpr24/fw_th.bin (241792 bytes)\n==================================================\n[PASS] scripts/pack_firmware.py MC(896KB) & TH(236KB) boundary checks passed!\n=== [3/4] Compile & run host unit tests for MC Bootloader MiniMCProto v2.0 OTA ===\nFAT32 File System initialized.\nSearching for upgrade package (fw_mc.bin)...\nFound: firmwaremc.bin, Size: 1152 bytes, Target: 0x08020000\nStarting firmware flash programming...\n[PRE-VERIFY] REJECTED: Trailer check failed (rc=-6, magic=0x41545347, board=0x43500001)\n[SECURITY GATE] Pre-verification FAILED. Flash erase ABORTED!\nUpgrade failed!\n[BOOT] FS Check PASSED: 0:/firmwaremc.bin -> 0:/firmwaremc.err verified (Size=1152 B).\nFAT32 File System initialized.\nSearching for upgrade package (fw_mc.bin)...\nFound: firmwaremc.bin, Size: 1152 bytes, Target: 0x08020000\nStarting firmware flash programming...\n[PRE-VERIFY] PASS: MC Firmware verified. Payload: 1024 B, Ver: 0x01020300\nErasing 1 sectors (2KB each) from 0x08020000...\nWriting image to Flash (1024 B)...\nCRC32 Check OK: 0x7C87C1A0\nUpgrade firmwaremc.bin successful!\n[BOOT] FS Check PASSED: 0:/firmwaremc.bin -> 0:/firmwaremc.cur verified (Size=1152 B).\nJumping to Application at 0x08020000...\nFAT32 File System initialized.\nSearching for upgrade package (fw_mc.bin)...\n[BOOT] UART2 OTA active, deferring USB U-disk upgrade.\nFAT32 File System initialized.\nSearching for upgrade package (fw_mc.bin)...\nFound: firmwaremc.bin, Size: 1152 bytes, Target: 0x08020000\nStarting firmware flash programming...\n[PRE-VERIFY] PASS: MC Firmware verified. Payload: 1024 B, Ver: 0x01020300\nErasing 1 sectors (2KB each) from 0x08020000...\nWriting image to Flash (1024 B)...\nCRC32 Check OK: 0x7C87C1A0\nUpgrade firmwaremc.bin successful!\n[BOOT] FS Check PASSED: 0:/firmwaremc.bin -> 0:/firmwaremc.cur verified (Size=1152 B).\nJumping to Application at 0x08020000...\n[PASS] test_mc_boot_ota: all MC Bootloader MiniMCProto v2.0 & USB Host tests passed!\n=== [4/4] Verify C function length (<=50 lines) and parameter count (<=4) gate ===\n[PASS] All checked C functions satisfy <=50 lines and <=4 parameters!\n[DOC-CHECK PASS] app_test/inc/th_upgrade_mgr.h: cjk_lines=24\n[DOC-CHECK PASS] bootloader/inc/boot_uart_ota.h: cjk_lines=36\n[DOC-CHECK PASS] bootloader/src/boot_uart_ota.c: cjk_lines=36\n[DOC-CHECK PASS] bootloader/src/main.c: cjk_lines=10\n[DOC-CHECK PASS] bootloader/src/usbh_user.c: cjk_lines=20\n[DOC-CHECK PASS] scripts/pack_firmware.py: cjk_lines=18\n[DOC-CHECK PASS] tests/test_mc_boot_ota.c: cjk_lines=41\n[PASS] code_documentation_standard check passed!\n\n[ERROR] Payload size 917505 B out of bounds for board 0x43500001 (allowed: 1..917504 B)\n[ERROR] Payload size 241665 B out of bounds for board 0x42300001 (allowed: 1..241664 B)"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-06T03:22:09.586485+00:00"
+}

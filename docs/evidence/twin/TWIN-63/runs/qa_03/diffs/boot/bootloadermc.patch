@@ -1,0 +1,2709 @@
+diff --git a/Makefile b/Makefile
+new file mode 100644
+index 0000000..1a553d3
+--- /dev/null
++++ b/Makefile
+@@ -0,0 +1,97 @@
++# Makefile for AT32F435VGT7 MC Bootloader (TWIN-63)
++CC      := arm-none-eabi-gcc
++OBJCOPY := arm-none-eabi-objcopy
++SIZE    := arm-none-eabi-size
++
++BUILD_DIR := build
++TARGET    := $(BUILD_DIR)/bootloader
++
++CPU_FLAGS := -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
++CFLAGS    := $(CPU_FLAGS) -Os -g3 -Wall -Wextra -Werror \
++             -Wno-unused-parameter \
++             -fdata-sections -ffunction-sections \
++             -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER \
++             -DBOOT_UART_OTA_STANDALONE_OBJECT=1
++
++INCLUDES := -I$(BUILD_DIR) \
++            -Ibootloader/inc \
++            -Ilibraries/cmsis/cm4/core_support \
++            -Ilibraries/cmsis/cm4/device_support \
++            -Ilibraries/drivers/inc \
++            -Ilibraries/middlewares/usb_drivers/inc \
++            -Ilibraries/middlewares/usbh_class/usbh_msc \
++            -Ilibraries/middlewares/3rd_party/fatfs/source
++
++LDFLAGS := $(CPU_FLAGS) \
++           -Tcmake/linker/at32f435_bootloader.ld \
++           -Wl,--gc-sections \
++           -Wl,-Map=$(TARGET).map,--cref \
++           --specs=nano.specs --specs=nosys.specs
++
++C_SRCS := \
++    libraries/cmsis/cm4/device_support/system_at32f435_437.c \
++    libraries/drivers/src/at32f435_437_crm.c \
++    libraries/drivers/src/at32f435_437_gpio.c \
++    libraries/drivers/src/at32f435_437_misc.c \
++    libraries/drivers/src/at32f435_437_pwc.c \
++    libraries/drivers/src/at32f435_437_flash.c \
++    libraries/drivers/src/at32f435_437_usart.c \
++    libraries/drivers/src/at32f435_437_crc.c \
++    libraries/drivers/src/at32f435_437_i2c.c \
++    libraries/drivers/src/at32f435_437_usb.c \
++    libraries/middlewares/usb_drivers/src/usb_core.c \
++    libraries/middlewares/usb_drivers/src/usbh_core.c \
++    libraries/middlewares/usb_drivers/src/usbh_ctrl.c \
++    libraries/middlewares/usb_drivers/src/usbh_int.c \
++    libraries/middlewares/usbh_class/usbh_msc/usbh_msc_class.c \
++    libraries/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.c \
++    libraries/middlewares/3rd_party/fatfs/source/ff.c \
++    libraries/middlewares/3rd_party/fatfs/source/ffsystem.c \
++    bootloader/src/main.c \
++    bootloader/src/at32f435_437_clock.c \
++    bootloader/src/at32f435_437_int.c \
++    bootloader/src/bsp_uart.c \
++    bootloader/src/boot_uart_ota.c \
++    bootloader/src/usbh_msc_diskio.c \
++    bootloader/src/usbh_user.c \
++    bootloader/src/bsp_eeprom.c
++
++ASM_SRCS := libraries/cmsis/cm4/device_support/startup/gcc/startup_at32f435_437.s
++
++OBJS := $(patsubst %.c,$(BUILD_DIR)/%.o,$(C_SRCS)) \
++        $(patsubst %.s,$(BUILD_DIR)/%.o,$(ASM_SRCS))
++
++.PHONY: all clean headers
++
++all: $(TARGET).elf $(TARGET).bin $(TARGET).hex
++	$(SIZE) --format=berkeley $(TARGET).elf
++
++headers:
++	@mkdir -p $(BUILD_DIR)
++	@echo "#ifndef BOOTLOADER_TIMESTAMP_H" > $(BUILD_DIR)/bootloader_timestamp.h
++	@echo "#define BOOTLOADER_TIMESTAMP_H" >> $(BUILD_DIR)/bootloader_timestamp.h
++	@echo "#endif" >> $(BUILD_DIR)/bootloader_timestamp.h
++	@echo "#ifndef BOOTLOADER_BUILD_INFO_H" > $(BUILD_DIR)/bootloader_build_info.h
++	@echo "#define BOOTLOADER_BUILD_INFO_H" >> $(BUILD_DIR)/bootloader_build_info.h
++	@echo "#define BOOTLOADER_BUILD_NUMBER (1UL)" >> $(BUILD_DIR)/bootloader_build_info.h
++	@echo "#endif" >> $(BUILD_DIR)/bootloader_build_info.h
++
++$(BUILD_DIR)/%.o: %.c | headers
++	@mkdir -p $(dir $@)
++	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
++
++$(BUILD_DIR)/%.o: %.s | headers
++	@mkdir -p $(dir $@)
++	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
++
++$(TARGET).elf: $(OBJS)
++	$(CC) $(OBJS) $(LDFLAGS) -o $@
++
++$(TARGET).bin: $(TARGET).elf
++	$(OBJCOPY) -O binary -S $< $@
++
++$(TARGET).hex: $(TARGET).elf
++	$(OBJCOPY) -O ihex $< $@
++
++clean:
++	rm -rf $(BUILD_DIR)
+diff --git a/app_test/inc/th_upgrade_mgr.h b/app_test/inc/th_upgrade_mgr.h
+index 1a9191a..b48049b 100644
+--- a/app_test/inc/th_upgrade_mgr.h
++++ b/app_test/inc/th_upgrade_mgr.h
+@@ -18,7 +18,7 @@ extern "C" {
+ #define TRAILER_MAGIC_ATSG              (0x41545347U)  /* "ATSG" */
+ #define BOARD_ID_TH_AT32F423            (0x42300001U)  /* Toolhead 硬件 ID */
+ #define TRAILER_SIZE_BYTES              (128U)
+-#define TH_FLASH_MAX_APP_SIZE           (240U * 1024U) /* 240 KB */
++#define TH_FLASH_MAX_APP_SIZE           (236U * 1024U) /* 236 KB (预留 0x0803F000 4KB Stage-A Anchor) */
+ #define TH_CHUNK_SIZE                   (512U)         /* 单分块固定 512 字节 */
+ 
+ /* 协议命令字 */
+@@ -39,7 +39,7 @@ typedef struct {
+   uint32_t struct_ver;        /* 0x04: 协议版本 0x00010000 */
+   uint32_t board_id;          /* 0x08: 硬件识别码 0x42300001 (TH) */
+   uint32_t fw_version;        /* 0x0C: 固件版本号 */
+-  uint32_t payload_len;       /* 0x10: 净代码有效字节数 (<= 240KB) */
++  uint32_t payload_len;       /* 0x10: 净代码有效字节数 (<= 236KB) */
+   uint8_t  sha256[32];        /* 0x14: SHA-256 哈希 */
+   uint8_t  sig_r[32];         /* 0x34: 签名 R (未启用填0) */
+   uint8_t  sig_s[32];         /* 0x54: 签名 S (未启用填0) */
+diff --git a/bootloader/inc/boot_uart_ota.h b/bootloader/inc/boot_uart_ota.h
+new file mode 100644
+index 0000000..3d47fbe
+--- /dev/null
++++ b/bootloader/inc/boot_uart_ota.h
+@@ -0,0 +1,342 @@
++/**
++  **************************************************************************
++  * @file     boot_uart_ota.h
++  * @brief    MC Bootloader (AT32F435) USART2 MiniMCProto v2.0 (Rev 2.0.4) OTA 与单写者仲裁头文件
++  **************************************************************************
++  */
++#ifndef __BOOT_UART_OTA_H
++#define __BOOT_UART_OTA_H
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#include <stdint.h>
++#include <stdbool.h>
++#include <stddef.h>
++#include "firmware_trailer.h"
++
++/* ================= MiniMCProto v2.0 (Rev 2.0.4) 帧头、节点与能力常量 ================= */
++#define MINIMC_SOF_0                    (0x55U)
++#define MINIMC_SOF_1                    (0xAAU)
++#define MINIMC_HEADER_SIZE              (12U)
++#define MINIMC_CRC_SIZE                 (2U)
++#define MINIMC_FRAME_OVERHEAD           (14U)
++#define MINIMC_MAX_PAYLOAD_SIZE         (520U)
++#define MINIMC_MAX_FRAME_SIZE           (534U)
++#define MINIMC_DEFAULT_HOP_LIMIT        (4U)
++
++#define MINIMC_NODE_AP                  (0x01U)
++#define MINIMC_NODE_MC                  (0x02U)
++#define MINIMC_NODE_TH                  (0x03U)
++#define MINIMC_NODE_BROADCAST           (0xFFU)
++
++#define MINIMC_FLAG_WANTS_ACK           (0x01U)
++#define MINIMC_FLAG_IS_RESPONSE         (0x02U)
++#define MINIMC_FLAG_VERSION_V2          (0x04U)
++#define MINIMC_FLAG_PRIORITY            (0x10U)
++#define MINIMC_ROUTE_IS_ROUTED          (0x04U)
++
++/* ================= MiniMCProto v2.0 (Rev 2.0.4) 统一命令字定义 ================= */
++#define MINIMC_CMD_ACK                  (0x00U)
++#define MINIMC_CMD_GET_VERSION          (0x01U)
++#define MINIMC_CMD_VERSION_REPORT       (0x02U)
++#define MINIMC_CMD_PING                 (0x03U)
++#define MINIMC_CMD_PONG                 (0x04U)
++#define MINIMC_CMD_NACK                 (0x06U)
++#define MINIMC_CMD_SET_TEMP             (0x10U)
++#define MINIMC_CMD_MOTION_HOME          (0x11U)
++#define MINIMC_CMD_MOTION_MOVE          (0x12U)
++#define MINIMC_CMD_JOB_CONTROL          (0x13U)
++#define MINIMC_CMD_TEMP_QUERY           (0x14U)
++#define MINIMC_CMD_GET_TEMP             (0x14U)
++#define MINIMC_CMD_TEMP_REPORT          (0x15U)
++#define MINIMC_CMD_TEMP_REPORT_V2       (0x15U)
++#define MINIMC_CMD_POS_QUERY            (0x16U)
++#define MINIMC_CMD_GET_POS              (0x16U)
++#define MINIMC_CMD_EMERGENCY_STOP       (0x17U)
++#define MINIMC_CMD_MOTION_STOP          (0x17U)
++#define MINIMC_CMD_POS_REPORT           (0x18U)
++#define MINIMC_CMD_LEVEL_GRID_QUERY     (0x18U)
++#define MINIMC_CMD_SLOT_SELECT          (0x19U)
++#define MINIMC_CMD_FILAMENT_CONTROL     (0x19U)
++#define MINIMC_CMD_FILAMENT_STATUS      (0x1AU)
++#define MINIMC_CMD_LEVEL_TRIGGER        (0x1AU)
++#define MINIMC_CMD_FILAMENT_LEGACY      (0x1BU)
++#define MINIMC_CMD_GCODE_LINE           (0x1CU)
++#define MINIMC_CMD_GCODE_EXEC           (0x1CU)
++#define MINIMC_CMD_SYSTEM_CONTROL       (0x1DU)
++#define MINIMC_CMD_OTA_START            (0x20U)
++#define MINIMC_CMD_OTA_DATA             (0x21U)
++#define MINIMC_CMD_OTA_FINISH           (0x22U)
++#define MINIMC_CMD_OTA_STATUS           (0x23U)
++
++/* ================= MiniMCProto v2.0 (Rev 2.0.4) 标准错误码定义 ================= */
++#define MINIMC_ERR_CRC_FAIL             (0x01U)
++#define MINIMC_ERR_MTU_EXCEEDED         (0x02U)
++#define MINIMC_ERR_SEQ_OUT_OF_WINDOW    (0x03U)
++#define MINIMC_ERR_UNKNOWN_CMD          (0x04U)
++#define MINIMC_ERR_DEVICE_BUSY          (0x05U)
++#define MINIMC_ERR_COMMAND_REJECTED     (0x06U)
++#define MINIMC_ERR_OTA_ERASE_FAIL       (0x10U)
++#define MINIMC_ERR_OTA_WRITE_FAIL       (0x11U)
++#define MINIMC_ERR_OTA_CRC_MISMATCH     (0x12U)
++#define MINIMC_ERR_OTA_INVALID_OFFSET   (0x13U)
++#define MINIMC_ERR_OTA_IMAGE_OVERSIZE   (0x14U)
++
++/* ================= MC Bootloader 硬件与分区常量 ================= */
++#define MC_MAX_APP_SIZE                 (896U * 1024U)  /* 917,504 Bytes */
++#define MC_FLASH_SECTOR_SIZE            (2048U)         /* 2KB 扇区 */
++#define MC_BOOT_CAPABILITY_FLAGS        (0xC0080435UL)  /* Bit31=Boot, Bit30=ATSG, Bit19=520B, 0x0435 */
++#define MC_FW_GIT_COMMIT_SHORT          (0x4FC171EAUL)
++#define BOOT_MC_UPGRADE_MAGIC_ADDR      (0x2005FFF0UL)  /* SRAM 顶部保留魔数地址 */
++#define BOOT_MC_UPGRADE_MAGIC_VAL       (0x55504732UL)  /* "UPG2" 驻留魔数 */
++#define BOOT_UART2_BAUDRATE             (921600U)
++#define BOOT_UART2_RX_RING_SIZE         (1024U)
++#define CHUNK_MAX_SIZE                  (512U)
++
++/**
++  * @brief  单写者互斥锁持有方枚举 (USB U盘 vs USART2 串口升级)
++  */
++typedef enum
++{
++  BOOT_WRITER_NONE  = 0U,
++  BOOT_WRITER_USB   = 1U,
++  BOOT_WRITER_UART2 = 2U
++} boot_writer_t;
++
++/**
++  * @brief  MC 串口 OTA 状态枚举 (对齐 0x23 CMD_OTA_STATUS.ota_state)
++  */
++typedef enum
++{
++  MC_OTA_STATE_IDLE               = 0U,
++  MC_OTA_STATE_ERASED_READY       = 1U,
++  MC_OTA_STATE_FLASH_WRITING      = 3U,
++  MC_OTA_STATE_VERIFIED_COMMITTED = 4U,
++  MC_OTA_STATE_ERROR              = 5U
++} mc_ota_state_t;
++
++#pragma pack(push, 1)
++
++/**
++  * @brief  MiniMCProto v2.0 12 字节帧头结构体
++  */
++typedef struct
++{
++  uint8_t  sof0;
++  uint8_t  sof1;
++  uint8_t  src_id;
++  uint8_t  dst_id;
++  uint8_t  flags;
++  uint8_t  cmd_id;
++  uint8_t  hop_limit;
++  uint8_t  route_ctrl;
++  uint16_t seq_id;
++  uint16_t payload_len;
++} minimc_frame_hdr_t;
++
++/**
++  * @brief  0x00 CMD_ACK 4 字节标准应答载荷
++  */
++typedef struct
++{
++  uint8_t  planner_buf_free;
++  uint8_t  rx_fifo_free_units;
++  uint16_t reserved;
++} minimc_payload_ack_t;
++
++/**
++  * @brief  0x06 CMD_NACK 3 字节否定应答载荷
++  */
++typedef struct
++{
++  uint8_t  error_code;
++  uint16_t expected_seq;
++} minimc_payload_nack_t;
++
++/**
++  * @brief  0x02 CMD_VERSION_REPORT 16 字节载荷
++  */
++typedef struct
++{
++  uint8_t  proto_major;
++  uint8_t  proto_minor;
++  uint8_t  fw_major;
++  uint8_t  fw_minor;
++  uint32_t boot_id;
++  uint32_t git_commit_short;
++  uint32_t capability_flags;
++} minimc_payload_version_report_t;
++
++/**
++  * @brief  0x04 CMD_PONG 12 字节载荷
++  */
++typedef struct
++{
++  uint32_t echo_token;
++  uint32_t uptime_ms;
++  uint16_t rx_ok_count;
++  uint16_t rx_crc_err_count;
++} minimc_payload_pong_t;
++
++/**
++  * @brief  0x1D CMD_SYSTEM_CONTROL 4 字节载荷 (action: 1=Reboot, 2=JumpToBootloader)
++  */
++typedef struct
++{
++  uint8_t  action;
++  uint8_t  target_component;
++  uint16_t delay_ms;
++} minimc_payload_sys_ctrl_t;
++
++/**
++  * @brief  0x20 CMD_OTA_START 144 字节原子准入载荷 (16B 标准头 + 128B ATSG Trailer)
++  */
++typedef struct
++{
++  uint8_t      target_device;
++  uint8_t      target_component;
++  uint8_t      force_flag;
++  uint8_t      reserved;
++  uint32_t     fw_size_bytes;
++  uint32_t     fw_crc32;
++  uint32_t     new_version_raw;
++  fw_trailer_t trailer;
++} minimc_payload_ota_start_t;
++
++/**
++  * @brief  0x21 CMD_OTA_DATA 8 字节数据块头部
++  */
++typedef struct
++{
++  uint32_t offset;
++  uint16_t chunk_bytes;
++  uint16_t chunk_crc16;
++} minimc_payload_ota_data_hdr_t;
++
++/**
++  * @brief  0x22 CMD_OTA_FINISH 8 字节终验载荷
++  */
++typedef struct
++{
++  uint32_t fw_crc32;
++  uint8_t  action_after_verify;
++  uint8_t  reserved[3];
++} minimc_payload_ota_finish_t;
++
++/**
++  * @brief  0x23 CMD_OTA_STATUS 8 字节状态报告载荷
++  */
++typedef struct
++{
++  uint8_t  ota_state;
++  uint8_t  error_code;
++  uint16_t cached_chunk0_bytes;
++  uint32_t bytes_written;
++} minimc_payload_ota_status_t;
++
++#pragma pack(pop)
++
++#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
++_Static_assert(sizeof(minimc_frame_hdr_t) == 12U, "minimc_frame_hdr_t must be 12 bytes");
++_Static_assert(sizeof(minimc_payload_ota_start_t) == 144U, "minimc_payload_ota_start_t must be 144 bytes");
++_Static_assert(sizeof(minimc_payload_ota_data_hdr_t) == 8U, "minimc_payload_ota_data_hdr_t must be 8 bytes");
++_Static_assert(sizeof(minimc_payload_ota_finish_t) == 8U, "minimc_payload_ota_finish_t must be 8 bytes");
++_Static_assert(sizeof(minimc_payload_ota_status_t) == 8U, "minimc_payload_ota_status_t must be 8 bytes");
++_Static_assert(sizeof(fw_trailer_t) == 128U, "fw_trailer_t must be 128 bytes");
++#endif
++
++/**
++  * @brief  MC Bootloader 串口 OTA 上下文结构体
++  */
++typedef struct
++{
++  mc_ota_state_t state;
++  uint8_t        last_error;
++  uint16_t       rx_ok_count;
++  uint16_t       rx_crc_err_count;
++  uint32_t       expected_size;
++  uint32_t       expected_crc32;
++  uint32_t       next_offset;
++  uint32_t       erased_end_addr;
++  uint32_t       boot_id;
++  uint8_t        stay_in_boot;
++  uint8_t        pending_jump;
++  uint8_t        pending_reboot;
++} mc_ota_ctx_t;
++
++/**
++  * @brief  计算标准 IEEE 802.3 CRC32
++  */
++uint32_t boot_crc32_ieee(const uint8_t *p_data, uint32_t length);
++
++/**
++  * @brief  计算 CRC16-CCITT (Poly=0x1021, Init=0xFFFF)
++  */
++uint16_t boot_crc16_ccitt(const uint8_t *p_data, uint32_t length);
++
++/**
++  * @brief  校验 128 字节 ATSG Trailer 结构体合法性 (含 struct_ver、board_id、尺寸与 trailer_crc32)
++  * @retval 0 合法，负数表示非法
++  */
++int boot_verify_trailer_struct(const fw_trailer_t *p_trailer,
++                               uint32_t expected_board_id,
++                               uint32_t max_payload_len);
++
++/**
++  * @brief  尝试获取单写者互斥锁 (USB Host vs USART2)
++  * @retval 1 获取成功，0 已被另一通道占用
++  */
++uint8_t boot_ota_acquire_writer(boot_writer_t writer);
++
++/**
++  * @brief  释放单写者互斥锁
++  */
++void boot_ota_release_writer(boot_writer_t writer);
++
++/**
++  * @brief  查询当前持有单写者互斥锁的通道
++  */
++boot_writer_t boot_ota_get_active_writer(void);
++
++/**
++  * @brief  初始化 USART2 (PA2/PA3 @ 921600 8N1) 及 OTA 引擎，并检测 UPG2 驻留魔数
++  */
++void boot_uart_ota_init(void);
++
++/**
++  * @brief  排空并复位关闭 USART2 外设 (跳转 App 前调用)
++  */
++void boot_uart_ota_deinit(void);
++
++/**
++  * @brief  USART2 接收中断单字节推入环形队列
++  */
++void boot_uart_ota_rx_byte_isr(uint8_t byte);
++
++/**
++  * @brief  主循环轮询解析 USART2 MiniMCProto v2.0 升级帧
++  */
++void boot_uart_ota_poll(void);
++
++/**
++  * @brief  查询是否应驻留 Bootloader (收到 UPG2 魔数、0x1D 或 0x20 升级会话)
++  */
++uint8_t boot_uart_ota_should_stay_in_boot(void);
++
++/**
++  * @brief  获取当前上电周期动态生成的 boot_id
++  */
++uint32_t boot_uart_ota_get_boot_id(void);
++
++/**
++  * @brief  获取当前串口 OTA 上下文只读指针 (供单元测试与诊断使用)
++  */
++const mc_ota_ctx_t *boot_uart_ota_get_ctx(void);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* __BOOT_UART_OTA_H */
+diff --git a/bootloader/src/boot_uart_ota.c b/bootloader/src/boot_uart_ota.c
+new file mode 100644
+index 0000000..61bf8fc
+--- /dev/null
++++ b/bootloader/src/boot_uart_ota.c
+@@ -0,0 +1,828 @@
++/**
++  **************************************************************************
++  * @file     boot_uart_ota.c
++  * @brief    MC Bootloader (AT32F435) USART2 MiniMCProto v2.0 (Rev 2.0.4) OTA 与单写者仲裁实现
++  **************************************************************************
++  */
++#ifndef BOOT_UART_OTA_C_INCLUDED
++#define BOOT_UART_OTA_C_INCLUDED
++
++#include "boot_uart_ota.h"
++#include "usbh_user.h"
++#include <string.h>
++#include <stdio.h>
++
++#ifndef HOST_UNIT_TEST
++#include "at32f435_437.h"
++#include "at32f435_437_clock.h"
++#include "at32f435_437_flash.h"
++#include "at32f435_437_usart.h"
++#include "at32f435_437_gpio.h"
++#include "at32f435_437_crm.h"
++#include "at32f435_437_misc.h"
++#else
++/* Host 单元测试模拟桩声明 */
++extern uint32_t host_mock_get_systick_ms(void);
++extern int host_mock_flash_erase_sector(uint32_t sector_addr);
++extern int host_mock_flash_write_bytes(uint32_t addr, const uint8_t *p_data, uint32_t len);
++extern const uint8_t *host_mock_flash_ptr(uint32_t addr);
++extern void host_mock_uart2_send_bytes(const uint8_t *p_data, uint16_t len);
++extern uint32_t host_mock_read_magic(void);
++extern void host_mock_write_magic(uint32_t val);
++extern void host_mock_system_reset(void);
++extern void host_mock_jump_to_app(uint32_t addr);
++#endif
++
++#define UART2_TX_TIMEOUT_LOOPS          (200000U)
++
++/* 单写者互斥锁与串口环形队列静态存储 */
++static volatile boot_writer_t s_active_writer = BOOT_WRITER_NONE;
++static volatile uint8_t s_rx_ring[BOOT_UART2_RX_RING_SIZE];
++static volatile uint16_t s_rx_head = 0U;
++static volatile uint16_t s_rx_tail = 0U;
++
++/* 帧解析与发送静态缓冲 */
++static uint8_t s_frame_buf[MINIMC_MAX_FRAME_SIZE];
++static uint16_t s_frame_idx = 0U;
++static uint16_t s_expected_frame_len = 0U;
++static uint8_t s_tx_buf[MINIMC_MAX_FRAME_SIZE];
++static uint32_t s_boot_salt = 0U;
++static mc_ota_ctx_t s_ota;
++
++/**
++  * @brief  计算标准 IEEE 802.3 CRC32 (Poly=0xEDB88320, Init=0xFFFFFFFF)
++  */
++uint32_t boot_crc32_ieee(const uint8_t *p_data, uint32_t length)
++{
++  if (p_data == NULL && length > 0U)
++  {
++    return 0U;
++  }
++
++  uint32_t crc = 0xFFFFFFFFUL;
++  for (uint32_t i = 0U; i < length; i++)
++  {
++    crc ^= (uint32_t)p_data[i];
++    for (uint8_t bit = 0U; bit < 8U; bit++)
++    {
++      if ((crc & 1UL) != 0UL)
++      {
++        crc = (crc >> 1U) ^ 0xEDB88320UL;
++      }
++      else
++      {
++        crc >>= 1U;
++      }
++    }
++  }
++  return ~crc;
++}
++
++/**
++  * @brief  计算 CRC16-CCITT (Poly=0x1021, Init=0xFFFF)
++  */
++uint16_t boot_crc16_ccitt(const uint8_t *p_data, uint32_t length)
++{
++  if (p_data == NULL && length > 0U)
++  {
++    return 0U;
++  }
++
++  uint16_t crc = 0xFFFFU;
++  for (uint32_t i = 0U; i < length; i++)
++  {
++    crc ^= (uint16_t)((uint16_t)p_data[i] << 8U);
++    for (uint8_t bit = 0U; bit < 8U; bit++)
++    {
++      if ((crc & 0x8000U) != 0U)
++      {
++        crc = (uint16_t)((crc << 1U) ^ 0x1021U);
++      }
++      else
++      {
++        crc = (uint16_t)(crc << 1U);
++      }
++    }
++  }
++  return crc;
++}
++
++/**
++  * @brief  校验 128 字节 ATSG Trailer 结构体合法性 (魔数、版本、Board ID、净荷上限与自身 CRC32)
++  */
++int boot_verify_trailer_struct(const fw_trailer_t *p_trailer,
++                               uint32_t expected_board_id,
++                               uint32_t max_payload_len)
++{
++  if (p_trailer == NULL)
++  {
++    return -1;
++  }
++  if (p_trailer->magic != TRAILER_MAGIC_ATSG)
++  {
++    return -2;
++  }
++  if (p_trailer->struct_ver != TRAILER_STRUCT_VER_V1)
++  {
++    return -3;
++  }
++  if (p_trailer->board_id != expected_board_id)
++  {
++    return -4;
++  }
++  if (p_trailer->payload_len == 0U || p_trailer->payload_len > max_payload_len)
++  {
++    return -5;
++  }
++
++  uint32_t calc_crc = boot_crc32_ieee((const uint8_t *)p_trailer, TRAILER_HEADER_CRC_SIZE);
++  if (calc_crc != p_trailer->trailer_crc32)
++  {
++    return -6;
++  }
++  return 0;
++}
++
++/**
++  * @brief  尝试获取单写者互斥锁 (USB U盘升级 vs USART2 串口升级)
++  */
++uint8_t boot_ota_acquire_writer(boot_writer_t writer)
++{
++  if (writer == BOOT_WRITER_NONE)
++  {
++    return 0U;
++  }
++  if (s_active_writer == BOOT_WRITER_NONE || s_active_writer == writer)
++  {
++    s_active_writer = writer;
++    return 1U;
++  }
++  return 0U;
++}
++
++/**
++  * @brief  释放单写者互斥锁
++  */
++void boot_ota_release_writer(boot_writer_t writer)
++{
++  if (s_active_writer == writer)
++  {
++    s_active_writer = BOOT_WRITER_NONE;
++  }
++}
++
++/**
++  * @brief  查询当前持有单写者互斥锁的通道
++  */
++boot_writer_t boot_ota_get_active_writer(void)
++{
++  return s_active_writer;
++}
++
++/**
++  * @brief  生成动态非零 boot_id (基于 UID 寄存器与上电盐值)
++  */
++static uint32_t derive_dynamic_boot_id(void)
++{
++  s_boot_salt += 0x9E3779B9UL;
++#ifndef HOST_UNIT_TEST
++  uint32_t uid0 = *(volatile uint32_t *)0x1FFFF7E8UL;
++  uint32_t uid1 = *(volatile uint32_t *)0x1FFFF7ECUL;
++  uint32_t uid2 = *(volatile uint32_t *)0x1FFFF7F0UL;
++  uint32_t rst = CRM->ctrlsts;
++  uint32_t id = uid0 ^ ((uid1 << 7U) | (uid1 >> 25U)) ^ uid2 ^ rst ^ s_boot_salt;
++#else
++  uint32_t id = 0x4350A55AUL ^ s_boot_salt;
++#endif
++  if (id == 0UL)
++  {
++    id = 0x43500001UL;
++  }
++  return id;
++}
++
++/**
++  * @brief  通过 USART2 发送指定长度字节流 (带超时保护)
++  */
++static void uart2_send_raw(const uint8_t *p_buf, uint16_t len)
++{
++  if (p_buf == NULL || len == 0U)
++  {
++    return;
++  }
++#ifndef HOST_UNIT_TEST
++  for (uint16_t i = 0U; i < len; i++)
++  {
++    uint32_t timeout = UART2_TX_TIMEOUT_LOOPS;
++    while (usart_flag_get(USART2, USART_TDBE_FLAG) == RESET && timeout > 0U)
++    {
++      timeout--;
++    }
++    usart_data_transmit(USART2, (uint16_t)p_buf[i]);
++  }
++  uint32_t tdc_timeout = UART2_TX_TIMEOUT_LOOPS;
++  while (usart_flag_get(USART2, USART_TDC_FLAG) == RESET && tdc_timeout > 0U)
++  {
++    tdc_timeout--;
++  }
++#else
++  host_mock_uart2_send_bytes(p_buf, len);
++#endif
++}
++
++/**
++  * @brief  组装并通过 USART2 发送一帧 MiniMCProto v2.0 响应 (MC -> AP)
++  */
++static void send_minimc_response(const minimc_frame_hdr_t *p_req,
++                                 uint8_t rsp_cmd,
++                                 const uint8_t *p_payload,
++                                 uint16_t payload_len)
++{
++  if (p_req == NULL || payload_len > MINIMC_MAX_PAYLOAD_SIZE)
++  {
++    return;
++  }
++
++  minimc_frame_hdr_t hdr;
++  hdr.sof0 = MINIMC_SOF_0;
++  hdr.sof1 = MINIMC_SOF_1;
++  hdr.src_id = MINIMC_NODE_MC;
++  hdr.dst_id = p_req->src_id;
++  hdr.flags = (uint8_t)(MINIMC_FLAG_VERSION_V2 | MINIMC_FLAG_IS_RESPONSE);
++  hdr.cmd_id = rsp_cmd;
++  hdr.hop_limit = MINIMC_DEFAULT_HOP_LIMIT;
++  hdr.route_ctrl = 0U;
++  hdr.seq_id = p_req->seq_id;
++  hdr.payload_len = payload_len;
++
++  memcpy(s_tx_buf, &hdr, MINIMC_HEADER_SIZE);
++  if (payload_len > 0U && p_payload != NULL)
++  {
++    memcpy(&s_tx_buf[MINIMC_HEADER_SIZE], p_payload, payload_len);
++  }
++
++  uint16_t crc_pos = (uint16_t)(MINIMC_HEADER_SIZE + payload_len);
++  uint16_t crc = boot_crc16_ccitt(s_tx_buf, crc_pos);
++  s_tx_buf[crc_pos] = (uint8_t)(crc & 0xFFU);
++  s_tx_buf[crc_pos + 1U] = (uint8_t)((crc >> 8U) & 0xFFU);
++
++  uart2_send_raw(s_tx_buf, (uint16_t)(crc_pos + MINIMC_CRC_SIZE));
++}
++
++/**
++  * @brief  发送标准 4 字节 0x00 CMD_ACK 应答帧
++  */
++static void send_ack(const minimc_frame_hdr_t *p_req)
++{
++  minimc_payload_ack_t ack;
++  ack.planner_buf_free = 16U;
++  ack.rx_fifo_free_units = 2U;
++  ack.reserved = 0U;
++  send_minimc_response(p_req, MINIMC_CMD_ACK, (const uint8_t *)&ack, sizeof(ack));
++}
++
++/**
++  * @brief  发送标准 3 字节 0x06 CMD_NACK 错误应答帧
++  */
++static void send_nack(const minimc_frame_hdr_t *p_req, uint8_t err_code)
++{
++  s_ota.last_error = err_code;
++  minimc_payload_nack_t nack;
++  nack.error_code = err_code;
++  nack.expected_seq = p_req->seq_id;
++  send_minimc_response(p_req, MINIMC_CMD_NACK, (const uint8_t *)&nack, sizeof(nack));
++}
++
++/**
++  * @brief  处理 0x01 CMD_GET_VERSION 请求并回复 16B 0x02 CMD_VERSION_REPORT
++  */
++static void handle_cmd_get_version(const minimc_frame_hdr_t *p_req)
++{
++  if (p_req->payload_len != 0U)
++  {
++    send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  s_ota.stay_in_boot = 1U;
++  minimc_payload_version_report_t rep;
++  rep.proto_major = 2U;
++  rep.proto_minor = 0U;
++  rep.fw_major = 1U;
++  rep.fw_minor = 0U;
++  rep.boot_id = s_ota.boot_id;
++  rep.git_commit_short = MC_FW_GIT_COMMIT_SHORT;
++  rep.capability_flags = MC_BOOT_CAPABILITY_FLAGS;
++  send_minimc_response(p_req, MINIMC_CMD_VERSION_REPORT, (const uint8_t *)&rep, sizeof(rep));
++}
++
++/**
++  * @brief  处理 0x03 CMD_PING 请求并回复 12B 0x04 CMD_PONG
++  */
++static void handle_cmd_ping(const minimc_frame_hdr_t *p_req, const uint8_t *p_payload)
++{
++  if (p_req->payload_len != 4U || p_payload == NULL)
++  {
++    send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  minimc_payload_pong_t pong;
++  memcpy(&pong.echo_token, p_payload, 4U);
++#ifndef HOST_UNIT_TEST
++  pong.uptime_ms = get_systick_ms();
++#else
++  pong.uptime_ms = host_mock_get_systick_ms();
++#endif
++  pong.rx_ok_count = s_ota.rx_ok_count;
++  pong.rx_crc_err_count = s_ota.rx_crc_err_count;
++  send_minimc_response(p_req, MINIMC_CMD_PONG, (const uint8_t *)&pong, sizeof(pong));
++}
++
++/**
++  * @brief  处理 0x1D CMD_SYSTEM_CONTROL (action: 1=Reboot, 2=JumpToBootloader)
++  */
++static void handle_cmd_system_control(const minimc_frame_hdr_t *p_req,
++                                      const uint8_t *p_payload)
++{
++  if (p_payload == NULL || p_req->payload_len != sizeof(minimc_payload_sys_ctrl_t))
++  {
++    send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++
++  minimc_payload_sys_ctrl_t ctrl;
++  memcpy(&ctrl, p_payload, sizeof(ctrl));
++  if (ctrl.action == 2U)
++  {
++    s_ota.stay_in_boot = 1U;
++    send_ack(p_req);
++  }
++  else if (ctrl.action == 1U)
++  {
++    send_ack(p_req);
++    s_ota.pending_reboot = 1U;
++  }
++  else
++  {
++    send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++  }
++}
++
++/**
++  * @brief  处理 0x20 CMD_OTA_START (144B 擦除前 ATSG 准入校验与单写者加锁)
++  */
++static void handle_cmd_ota_start(const minimc_frame_hdr_t *p_req,
++                                 const uint8_t *p_payload)
++{
++  if (g_upgrade_in_progress != 0U || boot_ota_acquire_writer(BOOT_WRITER_UART2) == 0U)
++  {
++    send_nack(p_req, MINIMC_ERR_DEVICE_BUSY);
++    return;
++  }
++
++  if (p_payload == NULL || p_req->payload_len != sizeof(minimc_payload_ota_start_t))
++  {
++    boot_ota_release_writer(BOOT_WRITER_UART2);
++    send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++
++  minimc_payload_ota_start_t req;
++  memcpy(&req, p_payload, sizeof(req));
++  if (req.fw_size_bytes > MC_MAX_APP_SIZE || req.trailer.payload_len > MC_MAX_APP_SIZE)
++  {
++    boot_ota_release_writer(BOOT_WRITER_UART2);
++    send_nack(p_req, MINIMC_ERR_OTA_IMAGE_OVERSIZE);
++    return;
++  }
++  if (req.target_device != MINIMC_NODE_MC ||
++      req.fw_size_bytes == 0U ||
++      req.fw_size_bytes != req.trailer.payload_len ||
++      boot_verify_trailer_struct(&req.trailer, BOARD_ID_MC_AT32F435, MC_MAX_APP_SIZE) != 0)
++  {
++    boot_ota_release_writer(BOOT_WRITER_UART2);
++    send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++
++  s_ota.stay_in_boot = 1U;
++  s_ota.state = MC_OTA_STATE_ERASED_READY;
++  s_ota.last_error = 0U;
++  s_ota.expected_size = req.fw_size_bytes;
++  s_ota.expected_crc32 = req.fw_crc32;
++  s_ota.next_offset = 0U;
++  s_ota.erased_end_addr = FLASH_APP_ADDR;
++  send_ack(p_req);
++}
++
++/**
++  * @brief  按需擦除 2KB 扇区并向 MC App 分区写入与回读校验数据块
++  */
++static int write_mc_app_flash_chunk(uint32_t offset,
++                                    const uint8_t *p_data,
++                                    uint32_t data_len)
++{
++  uint32_t target_addr = FLASH_APP_ADDR + offset;
++  uint32_t end_addr = target_addr + data_len;
++
++#ifndef HOST_UNIT_TEST
++  flash_unlock();
++  while (s_ota.erased_end_addr < end_addr)
++  {
++    if (flash_sector_erase(s_ota.erased_end_addr) != FLASH_OPERATE_DONE)
++    {
++      flash_lock();
++      return -1;
++    }
++    s_ota.erased_end_addr += MC_FLASH_SECTOR_SIZE;
++  }
++  for (uint32_t i = 0U; i < data_len; i++)
++  {
++    if (flash_byte_program(target_addr + i, p_data[i]) != FLASH_OPERATE_DONE ||
++        *(volatile uint8_t *)(target_addr + i) != p_data[i])
++    {
++      flash_lock();
++      return -2;
++    }
++  }
++  flash_lock();
++  return 0;
++#else
++  while (s_ota.erased_end_addr < end_addr)
++  {
++    if (host_mock_flash_erase_sector(s_ota.erased_end_addr) != 0)
++    {
++      return -1;
++    }
++    s_ota.erased_end_addr += MC_FLASH_SECTOR_SIZE;
++  }
++  return host_mock_flash_write_bytes(target_addr, p_data, data_len);
++#endif
++}
++
++/**
++  * @brief  校验 0x21 CMD_OTA_DATA 的块长度、偏移边界与内层 CRC16
++  */
++static uint8_t validate_ota_data_bounds(const minimc_frame_hdr_t *p_req,
++                                        const uint8_t *p_payload,
++                                        minimc_payload_ota_data_hdr_t *p_dh)
++{
++  if (s_ota.state != MC_OTA_STATE_ERASED_READY && s_ota.state != MC_OTA_STATE_FLASH_WRITING)
++  {
++    return MINIMC_ERR_COMMAND_REJECTED;
++  }
++  if (p_payload == NULL || p_req->payload_len <= sizeof(minimc_payload_ota_data_hdr_t))
++  {
++    return MINIMC_ERR_COMMAND_REJECTED;
++  }
++  memcpy(p_dh, p_payload, sizeof(*p_dh));
++  uint16_t data_len = (uint16_t)(p_req->payload_len - sizeof(*p_dh));
++  if (p_dh->chunk_bytes == 0U || p_dh->chunk_bytes > CHUNK_MAX_SIZE || p_dh->chunk_bytes != data_len)
++  {
++    return MINIMC_ERR_MTU_EXCEEDED;
++  }
++  if (p_dh->offset > s_ota.expected_size || (uint32_t)data_len > (s_ota.expected_size - p_dh->offset))
++  {
++    return MINIMC_ERR_OTA_INVALID_OFFSET;
++  }
++  const uint8_t *p_data = &p_payload[sizeof(*p_dh)];
++  if (boot_crc16_ccitt(p_data, data_len) != p_dh->chunk_crc16)
++  {
++    return MINIMC_ERR_CRC_FAIL;
++  }
++  return 0U;
++}
++
++/**
++  * @brief  处理 0x21 CMD_OTA_DATA (支持重传幂等与按扇区擦写回读校验)
++  */
++static void handle_cmd_ota_data(const minimc_frame_hdr_t *p_req,
++                                const uint8_t *p_payload)
++{
++  minimc_payload_ota_data_hdr_t dh;
++  uint8_t err = validate_ota_data_bounds(p_req, p_payload, &dh);
++  if (err != 0U)
++  {
++    send_nack(p_req, err);
++    return;
++  }
++
++  /* 重传幂等：已写入块重传直接回复 ACK */
++  if (dh.offset < s_ota.next_offset && (dh.offset + dh.chunk_bytes) <= s_ota.next_offset)
++  {
++    send_ack(p_req);
++    return;
++  }
++  if (dh.offset != s_ota.next_offset)
++  {
++    send_nack(p_req, MINIMC_ERR_OTA_INVALID_OFFSET);
++    return;
++  }
++
++  const uint8_t *p_data = &p_payload[sizeof(dh)];
++  int wrc = write_mc_app_flash_chunk(dh.offset, p_data, dh.chunk_bytes);
++  if (wrc != 0)
++  {
++    s_ota.state = MC_OTA_STATE_ERROR;
++    send_nack(p_req, (wrc == -1) ? MINIMC_ERR_OTA_ERASE_FAIL : MINIMC_ERR_OTA_WRITE_FAIL);
++    return;
++  }
++
++  s_ota.state = MC_OTA_STATE_FLASH_WRITING;
++  s_ota.next_offset += dh.chunk_bytes;
++  send_ack(p_req);
++}
++
++/**
++  * @brief  处理 0x23 CMD_OTA_STATUS 请求并回复 8B 进度状态
++  */
++static void handle_cmd_ota_status(const minimc_frame_hdr_t *p_req)
++{
++  if (p_req->payload_len != 0U)
++  {
++    send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  minimc_payload_ota_status_t rsp;
++  rsp.ota_state = (uint8_t)s_ota.state;
++  rsp.error_code = s_ota.last_error;
++  rsp.cached_chunk0_bytes = 0U;
++  rsp.bytes_written = s_ota.next_offset;
++  send_minimc_response(p_req, MINIMC_CMD_OTA_STATUS, (const uint8_t *)&rsp, sizeof(rsp));
++}
++
++/**
++  * @brief  处理 0x22 CMD_OTA_FINISH (全镜像 IEEE CRC32 校验与安全跳转准备)
++  */
++static void handle_cmd_ota_finish(const minimc_frame_hdr_t *p_req,
++                                  const uint8_t *p_payload)
++{
++  if (p_payload == NULL || p_req->payload_len != sizeof(minimc_payload_ota_finish_t))
++  {
++    send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  minimc_payload_ota_finish_t fin;
++  memcpy(&fin, p_payload, sizeof(fin));
++
++  if (s_ota.state == MC_OTA_STATE_VERIFIED_COMMITTED && fin.fw_crc32 == s_ota.expected_crc32)
++  {
++    send_ack(p_req);
++    return;
++  }
++  if (s_ota.next_offset != s_ota.expected_size || s_ota.expected_size == 0U)
++  {
++    send_nack(p_req, MINIMC_ERR_OTA_INVALID_OFFSET);
++    return;
++  }
++
++#ifndef HOST_UNIT_TEST
++  const uint8_t *p_flash = (const uint8_t *)FLASH_APP_ADDR;
++#else
++  const uint8_t *p_flash = host_mock_flash_ptr(FLASH_APP_ADDR);
++#endif
++  uint32_t calc_crc = boot_crc32_ieee(p_flash, s_ota.expected_size);
++  if (calc_crc != s_ota.expected_crc32 || calc_crc != fin.fw_crc32 || is_app_valid(FLASH_APP_ADDR) == 0U)
++  {
++    s_ota.state = MC_OTA_STATE_ERROR;
++    send_nack(p_req, MINIMC_ERR_OTA_CRC_MISMATCH);
++    return;
++  }
++
++  s_ota.state = MC_OTA_STATE_VERIFIED_COMMITTED;
++  boot_ota_release_writer(BOOT_WRITER_UART2);
++  send_ack(p_req);
++  if (fin.action_after_verify == 1U)
++  {
++    s_ota.pending_jump = 1U;
++  }
++}
++
++/**
++  * @brief  分发一帧已通过外层 CRC16 校验的 MiniMCProto v2.0 报文
++  */
++static void dispatch_valid_frame(const minimc_frame_hdr_t *p_hdr, const uint8_t *p_payload)
++{
++  /* 严格节点过滤：仅处理发往 MC(0x02) 的 V2 请求帧，绝不响应或转发 DST=0x03(TH) */
++  if (p_hdr->dst_id != MINIMC_NODE_MC)
++  {
++    return;
++  }
++  if ((p_hdr->flags & 0x0CU) != MINIMC_FLAG_VERSION_V2 ||
++      (p_hdr->flags & MINIMC_FLAG_IS_RESPONSE) != 0U)
++  {
++    return;
++  }
++
++  s_ota.rx_ok_count++;
++  switch (p_hdr->cmd_id)
++  {
++    case MINIMC_CMD_GET_VERSION:    handle_cmd_get_version(p_hdr); break;
++    case MINIMC_CMD_PING:           handle_cmd_ping(p_hdr, p_payload); break;
++    case MINIMC_CMD_SYSTEM_CONTROL: handle_cmd_system_control(p_hdr, p_payload); break;
++    case MINIMC_CMD_OTA_START:      handle_cmd_ota_start(p_hdr, p_payload); break;
++    case MINIMC_CMD_OTA_DATA:       handle_cmd_ota_data(p_hdr, p_payload); break;
++    case MINIMC_CMD_OTA_FINISH:     handle_cmd_ota_finish(p_hdr, p_payload); break;
++    case MINIMC_CMD_OTA_STATUS:     handle_cmd_ota_status(p_hdr); break;
++    default:                        send_nack(p_hdr, MINIMC_ERR_UNKNOWN_CMD); break;
++  }
++}
++
++/**
++  * @brief  逐字节喂入 MiniMCProto v2.0 帧同步状态机
++  */
++static void feed_frame_byte(uint8_t byte)
++{
++  if (s_frame_idx == 0U)
++  {
++    if (byte == MINIMC_SOF_0) { s_frame_buf[s_frame_idx++] = byte; }
++    return;
++  }
++  if (s_frame_idx == 1U)
++  {
++    if (byte == MINIMC_SOF_1) { s_frame_buf[s_frame_idx++] = byte; }
++    else { s_frame_idx = (byte == MINIMC_SOF_0) ? 1U : 0U; s_frame_buf[0] = byte; }
++    return;
++  }
++
++  s_frame_buf[s_frame_idx++] = byte;
++  if (s_frame_idx == MINIMC_HEADER_SIZE)
++  {
++    uint16_t payload_len = (uint16_t)s_frame_buf[10] | ((uint16_t)s_frame_buf[11] << 8U);
++    if (payload_len > MINIMC_MAX_PAYLOAD_SIZE) { s_frame_idx = 0U; return; }
++    s_expected_frame_len = (uint16_t)(MINIMC_FRAME_OVERHEAD + payload_len);
++  }
++  else if (s_frame_idx > MINIMC_HEADER_SIZE && s_frame_idx >= s_expected_frame_len)
++  {
++    uint16_t total_len = s_expected_frame_len;
++    s_frame_idx = 0U;
++    s_expected_frame_len = 0U;
++    uint16_t rx_crc = (uint16_t)s_frame_buf[total_len - 2U] |
++                      ((uint16_t)s_frame_buf[total_len - 1U] << 8U);
++    if (boot_crc16_ccitt(s_frame_buf, (uint32_t)(total_len - 2U)) != rx_crc)
++    {
++      s_ota.rx_crc_err_count++;
++      return;
++    }
++    minimc_frame_hdr_t hdr;
++    memcpy(&hdr, s_frame_buf, MINIMC_HEADER_SIZE);
++    dispatch_valid_frame(&hdr, &s_frame_buf[MINIMC_HEADER_SIZE]);
++  }
++}
++
++/**
++  * @brief  初始化 USART2 (PA2/PA3 @ 921600 8N1) 及 OTA 上下文并检测 UPG2 驻留魔数
++  */
++void boot_uart_ota_init(void)
++{
++  memset(&s_ota, 0, sizeof(s_ota));
++  s_active_writer = BOOT_WRITER_NONE;
++  s_rx_head = 0U;
++  s_rx_tail = 0U;
++  s_frame_idx = 0U;
++  s_expected_frame_len = 0U;
++  s_ota.boot_id = derive_dynamic_boot_id();
++
++#ifndef HOST_UNIT_TEST
++  volatile uint32_t *p_magic = (volatile uint32_t *)BOOT_MC_UPGRADE_MAGIC_ADDR;
++  if (*p_magic == BOOT_MC_UPGRADE_MAGIC_VAL)
++  {
++    *p_magic = 0UL;
++    s_ota.stay_in_boot = 1U;
++    printf("[BOOT] UPG2 magic detected at 0x2005FFF0, staying in Bootloader.\r\n");
++  }
++
++  gpio_init_type gpio_cfg;
++  crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);
++  crm_periph_clock_enable(CRM_USART2_PERIPH_CLOCK, TRUE);
++
++  gpio_default_para_init(&gpio_cfg);
++  gpio_cfg.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
++  gpio_cfg.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
++  gpio_cfg.gpio_mode = GPIO_MODE_MUX;
++  gpio_cfg.gpio_pins = GPIO_PINS_2;
++  gpio_cfg.gpio_pull = GPIO_PULL_NONE;
++  gpio_init(GPIOA, &gpio_cfg);
++  gpio_cfg.gpio_pins = GPIO_PINS_3;
++  gpio_cfg.gpio_pull = GPIO_PULL_UP;
++  gpio_init(GPIOA, &gpio_cfg);
++  gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE2, GPIO_MUX_7);
++  gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE3, GPIO_MUX_7);
++
++  usart_init(USART2, BOOT_UART2_BAUDRATE, USART_DATA_8BITS, USART_STOP_1_BIT);
++  usart_transmitter_enable(USART2, TRUE);
++  usart_receiver_enable(USART2, TRUE);
++  usart_interrupt_enable(USART2, USART_RDBF_INT, TRUE);
++  nvic_irq_enable(USART2_IRQn, 1, 0);
++  usart_enable(USART2, TRUE);
++#else
++  if (host_mock_read_magic() == BOOT_MC_UPGRADE_MAGIC_VAL)
++  {
++    host_mock_write_magic(0UL);
++    s_ota.stay_in_boot = 1U;
++  }
++#endif
++}
++
++/**
++  * @brief  排空并复位关闭 USART2 外设 (跳转 App 前调用)
++  */
++void boot_uart_ota_deinit(void)
++{
++#ifndef HOST_UNIT_TEST
++  uint32_t timeout = UART2_TX_TIMEOUT_LOOPS;
++  while (usart_flag_get(USART2, USART_TDC_FLAG) == RESET && timeout > 0U)
++  {
++    timeout--;
++  }
++  nvic_irq_disable(USART2_IRQn);
++  usart_enable(USART2, FALSE);
++  crm_periph_reset(CRM_USART2_PERIPH_RESET, TRUE);
++  crm_periph_reset(CRM_USART2_PERIPH_RESET, FALSE);
++  crm_periph_clock_enable(CRM_USART2_PERIPH_CLOCK, FALSE);
++#endif
++}
++
++/**
++  * @brief  USART2 接收中断单字节推入环形队列
++  */
++void boot_uart_ota_rx_byte_isr(uint8_t byte)
++{
++  uint16_t next = (uint16_t)((s_rx_head + 1U) & (BOOT_UART2_RX_RING_SIZE - 1U));
++  if (next != s_rx_tail)
++  {
++    s_rx_ring[s_rx_head] = byte;
++    s_rx_head = next;
++  }
++}
++
++#ifndef HOST_UNIT_TEST
++/**
++  * @brief  USART2 硬件中断服务函数
++  */
++void USART2_IRQHandler(void)
++{
++  if (usart_flag_get(USART2, USART_RDBF_FLAG) != RESET)
++  {
++    uint8_t byte = (uint8_t)usart_data_receive(USART2);
++    boot_uart_ota_rx_byte_isr(byte);
++  }
++}
++#endif
++
++/**
++  * @brief  主循环轮询解析 USART2 环形队列并触发挂起的跳转或复位
++  */
++void boot_uart_ota_poll(void)
++{
++  while (s_rx_tail != s_rx_head)
++  {
++    uint8_t byte = s_rx_ring[s_rx_tail];
++    s_rx_tail = (uint16_t)((s_rx_tail + 1U) & (BOOT_UART2_RX_RING_SIZE - 1U));
++    feed_frame_byte(byte);
++  }
++
++  if (s_ota.pending_reboot != 0U)
++  {
++    s_ota.pending_reboot = 0U;
++#ifndef HOST_UNIT_TEST
++    NVIC_SystemReset();
++#else
++    host_mock_system_reset();
++#endif
++  }
++  if (s_ota.pending_jump != 0U)
++  {
++    s_ota.pending_jump = 0U;
++#ifndef HOST_UNIT_TEST
++    jump_to_app(FLASH_APP_ADDR);
++#else
++    host_mock_jump_to_app(FLASH_APP_ADDR);
++#endif
++  }
++}
++
++/**
++  * @brief  查询是否应驻留 Bootloader (收到 UPG2 魔数、0x1D 或 0x20 升级会话)
++  */
++uint8_t boot_uart_ota_should_stay_in_boot(void)
++{
++  return (s_ota.stay_in_boot != 0U || s_active_writer == BOOT_WRITER_UART2) ? 1U : 0U;
++}
++
++/**
++  * @brief  获取当前上电周期动态生成的 boot_id
++  */
++uint32_t boot_uart_ota_get_boot_id(void)
++{
++  return s_ota.boot_id;
++}
++
++/**
++  * @brief  获取当前串口 OTA 上下文只读指针
++  */
++const mc_ota_ctx_t *boot_uart_ota_get_ctx(void)
++{
++  return &s_ota;
++}
++
++#endif /* BOOT_UART_OTA_C_INCLUDED */
+diff --git a/bootloader/src/bsp_eeprom.c b/bootloader/src/bsp_eeprom.c
+index a5abaa6..24ebdb7 100644
+--- a/bootloader/src/bsp_eeprom.c
++++ b/bootloader/src/bsp_eeprom.c
+@@ -235,7 +235,8 @@ eeprom_status_t bsp_eeprom_dump(uint8_t start_addr, uint16_t length) {
+   printf("\r\n--- EEPROM Full Dump (Start: 0x%02X, Length: %u) ---\r\n", start_addr, length);
+   while (offset < length) {
+     uint8_t cur_addr = (uint8_t)(start_addr + offset);
+-    uint8_t chunk = (uint8_t)((length - offset >= 16U) ? 16U : (length - offset));
++    uint16_t rem = (uint16_t)(length - offset);
++    uint8_t chunk = (uint8_t)((rem >= 16U) ? 16U : rem);
+     eeprom_status_t status = bsp_eeprom_read_buffer(cur_addr, row_buf, chunk);
+ 
+     if (status != EEPROM_OK) {
+diff --git a/bootloader/src/bsp_uart.c b/bootloader/src/bsp_uart.c
+index dcf2b53..777b5db 100644
+--- a/bootloader/src/bsp_uart.c
++++ b/bootloader/src/bsp_uart.c
+@@ -101,3 +101,8 @@ int _write(int fd, char *pbuffer, int size)
+ 
+   return size;
+ }
++
++#if !defined(BOOT_UART_OTA_STANDALONE_OBJECT) && !defined(HOST_UNIT_TEST)
++#include "boot_uart_ota.c"
++#endif
++
+diff --git a/bootloader/src/main.c b/bootloader/src/main.c
+index 0a921b2..c2f1be2 100644
+--- a/bootloader/src/main.c
++++ b/bootloader/src/main.c
+@@ -16,6 +16,7 @@
+ #include "bootloader_timestamp.h"
+ #include "bootloader_build_info.h"
+ #include "bsp_eeprom.h"
++#include "boot_uart_ota.h"
+ #include <stdbool.h>
+ #include <stdint.h>
+ #include <stdio.h>
+@@ -73,50 +74,45 @@ static void usb_bus_disconnect_se0(uint32_t duration_ms) {
+   delay_ms(duration_ms);
+ }
+ 
+-void jump_to_app(uint32_t address) {
+-  uint32_t stkptr = *(volatile uint32_t *)address;
+-  uint32_t jumpaddr = *(volatile uint32_t *)(address + 4U);
+-
+-  /* 0. 强制拉低 D+/D- 200ms 执行 SE0 断开，确保 U 盘内部 PHY 感知断开并在 App 中可重新枚举 */
+-  usb_bus_disconnect_se0(200U);
+-
+-  /* 1. 关闭全局中断 */
+-  __disable_irq();
+-
+-  /* 2. 等待调试串口发送彻底完成并复位外设 */
++/**
++  * @brief  复位并关闭所有 Bootloader 外设 (USART1/USART2/USB OTG/SysTick/NVIC)
++  */
++static void deinit_bootloader_peripherals(void) {
+   uint32_t uart_timeout = 200000U;
+-  while (usart_flag_get(USART1, USART_TDC_FLAG) == RESET) {
++  while (usart_flag_get(USART1, USART_TDC_FLAG) == RESET && uart_timeout > 0U) {
+     uart_timeout--;
+-    if (uart_timeout == 0U) {
+-      break;
+-    }
+   }
+   usart_enable(USART1, FALSE);
+   crm_periph_reset(CRM_USART1_PERIPH_RESET, TRUE);
+   crm_periph_reset(CRM_USART1_PERIPH_RESET, FALSE);
+ 
+-  /* 3. 复位并关闭 USB 控制器与外设时钟 */
++  boot_uart_ota_deinit();
++
+   nvic_irq_disable(OTGFS1_IRQn);
+   __NVIC_ClearPendingIRQ(OTGFS1_IRQn);
+   crm_periph_clock_enable(CRM_OTGFS1_PERIPH_CLOCK, FALSE);
+   crm_periph_reset(CRM_OTGFS1_PERIPH_RESET, TRUE);
+   crm_periph_reset(CRM_OTGFS1_PERIPH_RESET, FALSE);
+ 
+-  /* 4. 停止并清除 SysTick 定时器 */
+   SysTick->CTRL = 0;
+   SysTick->LOAD = 0;
+   SysTick->VAL = 0;
+ 
+-  /* 5. 清除 NVIC 所有挂起与使能中断 */
+-  for (uint32_t i = 0; i < 8; i++) {
+-    NVIC->ICER[i] = 0xFFFFFFFF;
+-    NVIC->ICPR[i] = 0xFFFFFFFF;
++  for (uint32_t i = 0U; i < 8U; i++) {
++    NVIC->ICER[i] = 0xFFFFFFFFU;
++    NVIC->ICPR[i] = 0xFFFFFFFFU;
+   }
++}
+ 
+-  /* 6. 重定向 VTOR 向量表 */
++void jump_to_app(uint32_t address) {
++  uint32_t stkptr = *(volatile uint32_t *)address;
++  uint32_t jumpaddr = *(volatile uint32_t *)(address + 4U);
++
++  usb_bus_disconnect_se0(200U);
++  __disable_irq();
++  deinit_bootloader_peripherals();
+   SCB->VTOR = address;
+ 
+-  /* 7. 原子切换 MSP 并直接分支跳转至 Reset_Handler (汇编原子执行，绝不经过 C 栈) */
+   __asm volatile (
+     "msr msp, %0\n"
+     "bx  %1\n"
+@@ -170,47 +166,48 @@ static void eeprom_startup_probe(void) {
+   }
+ }
+ 
+-int main(void) {
++/**
++  * @brief  初始化 USB Host OTG 控制器与 48MHz HICK 时钟源
++  */
++static void usb_host_init_hardware(void) {
+   uint32_t hick_timeout = 1000000U;
+ 
+-  nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
+-  system_clock_config();
+-  timebase_init();
+-  uart_print_init(115200);
+-
+-  printf("\r\n========================================\r\n");
+-  printf("  AT32F435 U-Disk Bootloader (" __DATE__ " " __TIME__ " | Build #%lu)\r\n", (uint32_t)BOOTLOADER_BUILD_NUMBER);
+-  printf("  Flash: 1024KB | Bl: 128KB | App: 0x08020000\r\n");
+-  printf("========================================\r\n");
+-
+-  eeprom_startup_probe();
+-
+   usb_gpio_config();
+   crm_periph_clock_enable(OTG_CLOCK, TRUE);
+-
+-  /* 配置 48MHz HICK 高速内部时钟为 USB 时钟源 (对齐 MC_APP 硬件时钟树) */
+   crm_clock_source_enable(CRM_CLOCK_SOURCE_HICK, TRUE);
+-  while (crm_flag_get(CRM_HICK_STABLE_FLAG) != SET && --hick_timeout > 0) {
++  while (crm_flag_get(CRM_HICK_STABLE_FLAG) != SET && --hick_timeout > 0U) {
+   }
+   crm_usb_clock_source_select(CRM_USB_CLOCK_SOURCE_HICK);
+-
+   nvic_irq_enable(OTG_IRQ, 0, 0);
+-
+   usbh_init(&otg_core_struct, USB_FULL_SPEED_CORE_ID, USB_ID,
+             &uhost_msc_class_handler, &usbh_user_handle);
++  delay_ms(200U);
++}
+ 
+-  /* 引入 200ms 总线物理稳定等待期，消除 U 盘上电暂态抖动 (对齐 mcu-p3) */
+-  delay_ms(200);
++int main(void) {
++  nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
++  system_clock_config();
++  timebase_init();
++  uart_print_init(115200);
++  boot_uart_ota_init();
++
++  printf("\r\n========================================\r\n");
++  printf("  AT32F435 U-Disk + UART2 Bootloader (" __DATE__ " " __TIME__ " | Build #%lu)\r\n",
++         (uint32_t)BOOTLOADER_BUILD_NUMBER);
++  printf("  Flash: 1024KB | Bl: 128KB | App: 0x08020000\r\n");
++  printf("========================================\r\n");
+ 
+-  printf("Probing for U-disk (2.0s timeout window)...\r\n");
++  eeprom_startup_probe();
++  usb_host_init_hardware();
++  printf("Probing for U-disk / UART2 OTA (2.0s timeout window)...\r\n");
+ 
+   uint32_t last_tick = get_systick_ms();
+-  uint32_t probe_ticks = 0;
++  uint32_t probe_ticks = 0U;
+ 
+   while (1) {
++    boot_uart_ota_poll();
+     usbh_loop_handler(&otg_core_struct.host);
+-
+-    if (g_upgrade_in_progress) {
++    if (g_upgrade_in_progress || boot_uart_ota_should_stay_in_boot() != 0U) {
+       continue;
+     }
+ 
+@@ -218,7 +215,6 @@ int main(void) {
+     if (now != last_tick) {
+       probe_ticks += (now - last_tick);
+       last_tick = now;
+-
+       if (probe_ticks >= 2000U && !g_udisk_connected) {
+         handle_no_disk_timeout(probe_ticks);
+       }
+diff --git a/bootloader/src/usbh_user.c b/bootloader/src/usbh_user.c
+index 8e333ed..5b70185 100644
+--- a/bootloader/src/usbh_user.c
++++ b/bootloader/src/usbh_user.c
+@@ -4,6 +4,7 @@
+   * @brief    USB Host IAP User Implementation for AT32F435VGT7
+   **************************************************************************
+   */
++#ifndef HOST_UNIT_TEST
+ #include "usbh_user.h"
+ #include "usb_conf.h"
+ #include "usb_core.h"
+@@ -11,7 +12,9 @@
+ #include "at32f435_437_flash.h"
+ #include "at32f435_437_crc.h"
+ #include "at32f435_437_clock.h"
++#endif
+ #include "firmware_trailer.h"
++#include "boot_uart_ota.h"
+ #include <string.h>
+ #include <stdio.h>
+ #include <strings.h>
+@@ -98,6 +101,7 @@ static usb_sts_type usbh_user_disconnect(void)
+   printf("USB Device Disconnected.\r\n");
+   g_udisk_connected = 0;
+   g_upgrade_in_progress = 0;
++  boot_ota_release_writer(BOOT_WRITER_USB);
+   s_list_counter = 0;
+   s_appstate = USER_INIT;
+   return USB_OK;
+@@ -131,7 +135,8 @@ static uint8_t find_upgrade_bin(const char *path)
+     {
+       continue;
+     }
+-    if (strcasecmp(fno.fname, UPGRADE_BIN_NAME) == 0)
++    if (strcasecmp(fno.fname, UPGRADE_BIN_NAME) == 0 ||
++        strcasecmp(fno.fname, "firmwaremc.bin") == 0)
+     {
+       s_upgrade_bin.base_addr = FLASH_APP_ADDR;
+       s_upgrade_bin.filesize = fno.fsize;
+@@ -152,7 +157,11 @@ static uint8_t find_upgrade_bin(const char *path)
+ static uint32_t calculate_flash_crc(uint32_t base_addr, uint32_t filesize)
+ {
+   uint32_t words = (filesize + 3U) / 4U;
++#ifdef HOST_UNIT_TEST
++  const uint32_t *p_flash = (const uint32_t *)host_mock_flash_ptr(base_addr);
++#else
+   const uint32_t *p_flash = (const uint32_t *)base_addr;
++#endif
+   uint32_t crc_val = 0;
+ 
+   crm_periph_clock_enable(CRM_CRC_PERIPH_CLOCK, TRUE);
+@@ -215,7 +224,8 @@ static int flash_erase_sectors(uint32_t base_addr, uint32_t filesize)
+ {
+   uint32_t sector_count = (filesize + FLASH_SECTOR_SIZE - 1U) / FLASH_SECTOR_SIZE;
+ 
+-  printf("Erasing %lu sectors (2KB each) from 0x%08lX...\r\n", sector_count, base_addr);
++  printf("Erasing %lu sectors (2KB each) from 0x%08lX...\r\n",
++         (unsigned long)sector_count, (unsigned long)base_addr);
+   flash_unlock();
+ 
+   for (uint32_t i = 0; i < sector_count; i++)
+@@ -225,7 +235,7 @@ static int flash_erase_sectors(uint32_t base_addr, uint32_t filesize)
+     if (status != FLASH_OPERATE_DONE)
+     {
+       flash_lock();
+-      printf("Erase failed at 0x%08lX: %d\r\n", erase_addr, status);
++      printf("Erase failed at 0x%08lX: %d\r\n", (unsigned long)erase_addr, (int)status);
+       return -1;
+     }
+   }
+@@ -244,7 +254,7 @@ static int flash_write_image(FIL *pfile, uint32_t base_addr, uint32_t filesize)
+   uint32_t curr_addr = base_addr;
+   uint32_t remaining = filesize;
+ 
+-  printf("Writing image to Flash (%lu B)...\r\n", filesize);
++  printf("Writing image to Flash (%lu B)...\r\n", (unsigned long)filesize);
+   f_lseek(pfile, 0);
+   flash_unlock();
+ 
+@@ -270,7 +280,7 @@ static int flash_write_image(FIL *pfile, uint32_t base_addr, uint32_t filesize)
+       if (status != FLASH_OPERATE_DONE)
+       {
+         flash_lock();
+-        printf("Program failed at 0x%08lX: %d\r\n", curr_addr + (i * 4U), status);
++        printf("Program failed at 0x%08lX: %d\r\n", (unsigned long)(curr_addr + (i * 4U)), (int)status);
+         return -1;
+       }
+     }
+@@ -282,17 +292,17 @@ static int flash_write_image(FIL *pfile, uint32_t base_addr, uint32_t filesize)
+ }
+ 
+ /**
+-  * @brief  擦除前固件预验签门禁 (选项 A: 严格防混刷与魔数校验)
++  * @brief  擦除前固件预验签门禁 (校验 ATSG 魔数、版本、Board ID、896KB 上限与 Trailer CRC32)
+   */
+ static int verify_firmware_trailer(FIL *pfile, uint32_t filesize, uint32_t *p_payload_len)
+ {
+   fw_trailer_t trailer;
+   UINT bytes_read = 0;
+ 
+-  if (pfile == NULL || p_payload_len == NULL || filesize < TRAILER_SIZE_BYTES)
++  if (pfile == NULL || p_payload_len == NULL || filesize <= TRAILER_SIZE_BYTES)
+   {
+-    printf("[PRE-VERIFY] Reject: File too small (%lu B, min %u B)\r\n",
+-           filesize, TRAILER_SIZE_BYTES);
++    printf("[PRE-VERIFY] Reject: File too small (%lu B, min > %u B)\r\n",
++           (unsigned long)filesize, (unsigned int)TRAILER_SIZE_BYTES);
+     return -1;
+   }
+ 
+@@ -304,37 +314,24 @@ static int verify_firmware_trailer(FIL *pfile, uint32_t filesize, uint32_t *p_pa
+     return -1;
+   }
+ 
+-  if (trailer.magic != TRAILER_MAGIC_ATSG)
++  int rc = boot_verify_trailer_struct(&trailer, BOARD_ID_MC_AT32F435, MC_MAX_APP_SIZE);
++  if (rc != 0)
+   {
+-    printf("[PRE-VERIFY] Reject: Bad magic 0x%08lX (Missing ATSG signature)\r\n", trailer.magic);
+-    return -1;
+-  }
+-
+-  if (trailer.board_id != BOARD_ID_MC_AT32F435)
+-  {
+-    if (trailer.board_id == BOARD_ID_TH_AT32F423)
+-    {
+-      printf("[PRE-VERIFY] REJECTED: Cross-flashing blocked! TH firmware (0x%08lX) on MC board!\r\n",
+-             trailer.board_id);
+-    }
+-    else
+-    {
+-      printf("[PRE-VERIFY] REJECTED: Unknown Board ID 0x%08lX (Target MC: 0x%08lX)\r\n",
+-             trailer.board_id, (unsigned long)BOARD_ID_MC_AT32F435);
+-    }
+-    return -2;
++    printf("[PRE-VERIFY] REJECTED: Trailer check failed (rc=%d, magic=0x%08lX, board=0x%08lX)\r\n",
++           rc, (unsigned long)trailer.magic, (unsigned long)trailer.board_id);
++    return rc;
+   }
+ 
+   if (trailer.payload_len != (filesize - TRAILER_SIZE_BYTES))
+   {
+     printf("[PRE-VERIFY] Reject: Payload length mismatch (%lu != %lu)\r\n",
+-           trailer.payload_len, (filesize - TRAILER_SIZE_BYTES));
++           (unsigned long)trailer.payload_len, (unsigned long)(filesize - TRAILER_SIZE_BYTES));
+     return -3;
+   }
+ 
+   *p_payload_len = trailer.payload_len;
+   printf("[PRE-VERIFY] PASS: MC Firmware verified. Payload: %lu B, Ver: 0x%08lX\r\n",
+-         trailer.payload_len, trailer.fw_version);
++         (unsigned long)trailer.payload_len, (unsigned long)trailer.fw_version);
+   return 0;
+ }
+ 
+@@ -364,7 +361,8 @@ static int write_bin_to_flash(void)
+   if (base_addr < FLASH_APP_ADDR || (base_addr + payload_len) > FLASH_END_ADDR)
+   {
+     f_close(&s_file);
+-    printf("Invalid firmware memory range: 0x%08lX + 0x%08lX\r\n", base_addr, payload_len);
++    printf("Invalid firmware memory range: 0x%08lX + 0x%08lX\r\n",
++           (unsigned long)base_addr, (unsigned long)payload_len);
+     return -1;
+   }
+ 
+@@ -382,11 +380,12 @@ static int write_bin_to_flash(void)
+ 
+   if (crc_flash != crc_file)
+   {
+-    printf("CRC Check Mismatch! Flash: 0x%08lX, File: 0x%08lX\r\n", crc_flash, crc_file);
++    printf("CRC Check Mismatch! Flash: 0x%08lX, File: 0x%08lX\r\n",
++           (unsigned long)crc_flash, (unsigned long)crc_file);
+     return -1;
+   }
+ 
+-  printf("CRC32 Check OK: 0x%08lX\r\n", crc_flash);
++  printf("CRC32 Check OK: 0x%08lX\r\n", (unsigned long)crc_flash);
+   return 0;
+ }
+ 
+@@ -429,15 +428,30 @@ static void list_udisk_root_files(void)
+     }
+     else
+     {
+-      printf("  [FILE] %-24s  %lu Bytes\r\n", fno.fname, (uint32_t)fno.fsize);
++      printf("  [FILE] %-24s  %lu Bytes\r\n", fno.fname, (unsigned long)fno.fsize);
+       count++;
+     }
+   }
+   f_closedir(&dir);
+-  printf("Total: %lu file(s) in root\r\n", count);
++  printf("Total: %lu file(s) in root\r\n", (unsigned long)count);
+   printf("===================================\r\n");
+ }
+ 
++/**
++ * @brief  提取去除扩展名后的文件名主体
++ */
++static void extract_base_filename(const char *p_old_name, char *p_base, size_t max_len)
++{
++  const char *p_dot = strrchr(p_old_name, '.');
++  size_t name_len = (p_dot != NULL) ? (size_t)(p_dot - p_old_name) : strlen(p_old_name);
++  if (name_len >= max_len)
++  {
++    name_len = max_len - 1U;
++  }
++  memcpy(p_base, p_old_name, name_len);
++  p_base[name_len] = '\0';
++}
++
+ /**
+  * @brief  固件重命名（先删除可能存在的旧文件，后原子改名，避免FR_EXIST错误）
+  * @param  p_old_name: 原文件名（如 "firmwaremc.bin"）
+@@ -448,7 +462,6 @@ static void rename_firmware_file(const char *p_old_name, const char *p_new_ext,
+   char old_path[96];
+   char new_path[96];
+   char base_name[64];
+-  const char *p_dot = NULL;
+   FILINFO fno;
+   FRESULT res;
+ 
+@@ -456,32 +469,11 @@ static void rename_firmware_file(const char *p_old_name, const char *p_new_ext,
+   {
+     return;
+   }
+-
+-  /* 提取文件名主体，去除旧扩展名 */
+-  p_dot = strrchr(p_old_name, '.');
+-  if (p_dot != NULL)
+-  {
+-    size_t name_len = (size_t)(p_dot - p_old_name);
+-    if (name_len >= sizeof(base_name))
+-    {
+-      name_len = sizeof(base_name) - 1U;
+-    }
+-    strncpy(base_name, p_old_name, name_len);
+-    base_name[name_len] = '\0';
+-  }
+-  else
+-  {
+-    strncpy(base_name, p_old_name, sizeof(base_name) - 1U);
+-    base_name[sizeof(base_name) - 1U] = '\0';
+-  }
+-
++  extract_base_filename(p_old_name, base_name, sizeof(base_name));
+   snprintf(old_path, sizeof(old_path), "0:/%s", p_old_name);
+   snprintf(new_path, sizeof(new_path), "0:/%s.%s", base_name, p_new_ext);
+ 
+-  /* 1. 若目标文件已存在则先删除，确保 f_rename 不因 FR_EXIST 报错 */
+   f_unlink(new_path);
+-
+-  /* 2. 执行原子重命名 */
+   res = f_rename(old_path, new_path);
+   if (res != FR_OK)
+   {
+@@ -489,35 +481,26 @@ static void rename_firmware_file(const char *p_old_name, const char *p_new_ext,
+     return;
+   }
+ 
+-  /* 3. 强制卸载以刷出 FatFs 脏扇区缓存，并硬件延时 50ms 等待排空 */
+   f_mount(NULL, "0:/", 0);
+   delay_ms(50);
+-
+-  /* 4. 重新挂载文件系统以进行物理 FS Check */
+-  res = f_mount(&s_fs, "0:/", 1);
+-  if (res != FR_OK)
++  if (f_mount(&s_fs, "0:/", 1) != FR_OK)
+   {
+-    printf("[BOOT] Remount failed during FS check (err=%d)\r\n", (int)res);
++    printf("[BOOT] Remount failed during FS check\r\n");
+     return;
+   }
+-
+-  /* 5. Check 1: 验证源文件已彻底消失 */
+   if (f_stat(old_path, &fno) != FR_NO_FILE)
+   {
+     printf("[BOOT] FS Check FAILED: Old file %s still exists!\r\n", old_path);
+     return;
+   }
+-
+-  /* 6. Check 2: 验证新文件存在且字节大小严格匹配 (若传入有效 expected_size) */
+   if (f_stat(new_path, &fno) != FR_OK || (expected_size > 0U && fno.fsize != (FSIZE_t)expected_size))
+   {
+     printf("[BOOT] FS Check FAILED: %s stat mismatch (size=%lu, expect=%lu)\r\n",
+-           new_path, (uint32_t)fno.fsize, expected_size);
++           new_path, (unsigned long)fno.fsize, (unsigned long)expected_size);
+     return;
+   }
+-
+   printf("[BOOT] FS Check PASSED: %s -> %s verified (Size=%lu B).\r\n",
+-         old_path, new_path, (uint32_t)fno.fsize);
++         old_path, new_path, (unsigned long)fno.fsize);
+ }
+ 
+ static void handle_state_list_root(void)
+@@ -535,8 +518,16 @@ static void handle_state_readlist(void)
+   printf("Searching for upgrade package (%s)...\r\n", UPGRADE_BIN_NAME);
+   if (find_upgrade_bin("0:/"))
+   {
++    if (boot_ota_acquire_writer(BOOT_WRITER_USB) == 0U)
++    {
++      printf("[BOOT] UART2 OTA active, deferring USB U-disk upgrade.\r\n");
++      s_appstate = USER_IDEL;
++      return;
++    }
+     printf("Found: %s, Size: %lu bytes, Target: 0x%08lX\r\n",
+-           s_upgrade_bin.bin_name, s_upgrade_bin.filesize, s_upgrade_bin.base_addr);
++           s_upgrade_bin.bin_name,
++           (unsigned long)s_upgrade_bin.filesize,
++           (unsigned long)s_upgrade_bin.base_addr);
+     g_upgrade_in_progress = 1;
+     s_appstate = USER_WRITE;
+     return;
+@@ -544,8 +535,12 @@ static void handle_state_readlist(void)
+ 
+   printf("No valid upgrade package (%s) found on U-disk.\r\n", UPGRADE_BIN_NAME);
+ 
+-  /* 若片内存在合法 App，立即注销文件系统并安全跳转运行，不做任何多余动作 */
+-  if (is_app_valid(FLASH_APP_ADDR))
++  /* 若处于串口驻留模式则保持驻留；否则若片内存在合法 App，立即注销文件系统并安全跳转运行 */
++  if (boot_uart_ota_should_stay_in_boot() != 0U)
++  {
++    s_appstate = USER_IDEL;
++  }
++  else if (is_app_valid(FLASH_APP_ADDR))
+   {
+     f_mount(NULL, "0:/", 0);
+     printf("[BOOT] No MC firmware. Valid App found at 0x%08X, jumping...\r\n", FLASH_APP_ADDR);
+@@ -583,6 +578,7 @@ static void handle_state_write(void)
+ static void handle_state_idle(void)
+ {
+   f_mount(NULL, "0:/", 0);
++  boot_ota_release_writer(BOOT_WRITER_USB);
+   if (g_upgrade_status == 1)
+   {
+     printf("Jumping to Application at 0x%08X...\r\n", FLASH_APP_ADDR);
+diff --git a/scripts/pack_firmware.py b/scripts/pack_firmware.py
+index c8a43e8..fcc8974 100755
+--- a/scripts/pack_firmware.py
++++ b/scripts/pack_firmware.py
+@@ -17,9 +17,12 @@ TRAILER_STRUCT_VER = 0x00010000        # v1.0
+ BOARD_ID_MC = 0x43500001               # AT32F435 主控
+ BOARD_ID_TH = 0x42300001               # AT32F423 喷头从控
+ TRAILER_TOTAL_SIZE = 128
++MAX_APP_SIZE_MC = 896 * 1024           # 917,504 Bytes (896KB)
++MAX_APP_SIZE_TH = 236 * 1024           # 241,664 Bytes (236KB, 预留 0x0803F000 4KB Stage-A Anchor)
+ 
+ 
+ def parse_args():
++    """解析固件打包命令行参数。"""
+     parser = argparse.ArgumentParser(description="AT32 固件打包与128B Trailer追加工具 (8.3短文件名体系)")
+     parser.add_argument("-i", "--input", required=True, help="原始未打包固件路径 (如 build/firmware.bin)")
+     parser.add_argument("-o", "--output", default=None,
+@@ -31,8 +34,24 @@ def parse_args():
+     return parser.parse_args()
+ 
+ 
++def get_max_app_size(board_id: int) -> int:
++    """根据硬件识别码返回允许的最大净荷尺寸（字节）。"""
++    if board_id == BOARD_ID_MC:
++        return MAX_APP_SIZE_MC
++    if board_id == BOARD_ID_TH:
++        return MAX_APP_SIZE_TH
++    raise ValueError(f"Unsupported board_id: 0x{board_id:08X}")
++
++
+ def build_trailer(payload: bytes, board_id: int, fw_version: int) -> bytes:
++    """校验固件净荷分区上限并构造 128 字节 ATSG 签名尾块。"""
+     payload_len = len(payload)
++    max_app_size = get_max_app_size(board_id)
++    if payload_len <= 0 or payload_len > max_app_size:
++        raise ValueError(
++            f"[ERROR] Payload size {payload_len} B out of bounds for board 0x{board_id:08X} "
++            f"(allowed: 1..{max_app_size} B)"
++        )
+     sha256_hash = hashlib.sha256(payload).digest()
+     sig_r = b"\x00" * 32
+     sig_s = b"\x00" * 32
+@@ -61,6 +80,7 @@ def build_trailer(payload: bytes, board_id: int, fw_version: int) -> bytes:
+ 
+ 
+ def main():
++    """主入口：读取输入固件、执行尺寸与 Trailer 打包并落盘输出。"""
+     args = parse_args()
+     input_path = Path(args.input)
+ 
+@@ -76,7 +96,11 @@ def main():
+         output_path = input_path.parent / default_name
+ 
+     payload = input_path.read_bytes()
+-    trailer = build_trailer(payload, args.board_id, args.version)
++    try:
++        trailer = build_trailer(payload, args.board_id, args.version)
++    except ValueError as exc:
++        print(str(exc), file=sys.stderr)
++        sys.exit(1)
+ 
+     output_path.parent.mkdir(parents=True, exist_ok=True)
+     output_path.write_bytes(payload + trailer)
+diff --git a/tests/run_tests.sh b/tests/run_tests.sh
+new file mode 100755
+index 0000000..4862cf0
+--- /dev/null
++++ b/tests/run_tests.sh
+@@ -0,0 +1,99 @@
++#!/bin/sh
++# TWIN-63 MC Bootloader 交叉编译、打包边界与主机单元测试脚本
++set -eu
++
++echo "=== [1/4] Cross-compile MC Bootloader & verify 128KB Flash budget + zero USART6 coupling ==="
++make clean all
++BIN_SIZE=$(stat -c%s build/bootloader.bin)
++echo "bootloader.bin size: ${BIN_SIZE} bytes (limit: 131072 bytes)"
++test "${BIN_SIZE}" -le 131072
++if arm-none-eabi-nm build/bootloader.elf | grep -v " W " | grep -i "usart6"; then
++  echo "[FAIL] Non-weak USART6 symbol found in MC Bootloader ELF!"
++  exit 1
++fi
++if grep -rn "USART6" bootloader/src/ bootloader/inc/; then
++  echo "[FAIL] USART6 reference found in MC Bootloader source/headers!"
++  exit 1
++fi
++echo "[PASS] Cross-compile <=128KB and zero USART6 coupling verified!"
++
++echo "=== [2/4] Verify scripts/pack_firmware.py MC (896KB=917,504B) & TH (236KB=241,664B) boundary gate ==="
++python3 - <<'PY'
++import subprocess, sys, tempfile
++from pathlib import Path
++
++with tempfile.TemporaryDirectory() as tmp:
++    tdir = Path(tmp)
++    # MC 正例: 917504B (896KB)
++    mc_ok = tdir / "mc_ok.bin"
++    mc_ok.write_bytes(b"\xAA" * 917504)
++    r1 = subprocess.run([sys.executable, "scripts/pack_firmware.py", "-i", str(mc_ok), "-b", "0x43500001", "-o", str(tdir / "fw_mc.bin")])
++    assert r1.returncode == 0 and (tdir / "fw_mc.bin").stat().st_size == 917504 + 128
++
++    # MC 负例: 917505B (896KB + 1B) 必须失败
++    mc_over = tdir / "mc_over.bin"
++    mc_over.write_bytes(b"\xAA" * 917505)
++    r2 = subprocess.run([sys.executable, "scripts/pack_firmware.py", "-i", str(mc_over), "-b", "0x43500001", "-o", str(tdir / "fw_mc_over.bin")])
++    assert r2.returncode != 0
++
++    # TH 正例: 241664B (236KB)
++    th_ok = tdir / "th_ok.bin"
++    th_ok.write_bytes(b"\x55" * 241664)
++    r3 = subprocess.run([sys.executable, "scripts/pack_firmware.py", "-i", str(th_ok), "-b", "0x42300001", "-o", str(tdir / "fw_th.bin")])
++    assert r3.returncode == 0 and (tdir / "fw_th.bin").stat().st_size == 241664 + 128
++
++    # TH 负例: 241665B (236KB + 1B) 必须失败
++    th_over = tdir / "th_over.bin"
++    th_over.write_bytes(b"\x55" * 241665)
++    r4 = subprocess.run([sys.executable, "scripts/pack_firmware.py", "-i", str(th_over), "-b", "0x42300001", "-o", str(tdir / "fw_th_over.bin")])
++    assert r4.returncode != 0
++print("[PASS] scripts/pack_firmware.py MC(896KB) & TH(236KB) boundary checks passed!")
++PY
++
++echo "=== [3/4] Compile & run host unit tests for MC Bootloader MiniMCProto v2.0 OTA ==="
++gcc -O2 -g3 -Wall -Wextra -Werror -DHOST_UNIT_TEST \
++    -Ibootloader/inc \
++    tests/test_mc_boot_ota.c \
++    -o build/test_mc_boot_ota
++./build/test_mc_boot_ota
++
++echo "=== [4/4] Verify C function length (<=50 lines) and parameter count (<=4) gate ==="
++python3 - <<'PY'
++import re, sys
++from pathlib import Path
++
++files = [
++    Path("bootloader/src/boot_uart_ota.c"), Path("bootloader/src/usbh_user.c"),
++    Path("bootloader/src/main.c"),
++    Path("bootloader/src/bsp_uart.c"),
++    Path("tests/test_mc_boot_ota.c"),
++]
++
++func_hdr = re.compile(r'^[A-Za-z_][\w\s\*]*?\b([A-Za-z_]\w*)\s*\(([^;{}]*)\)\s*\{', re.M)
++for p in files:
++    text = p.read_text(encoding="utf-8")
++    for m in func_hdr.finditer(text):
++        name = m.group(1)
++        if name in ("if", "while", "for", "switch"):
++            continue
++        params_raw = m.group(2).strip()
++        params = [] if params_raw in ("", "void") else [x.strip() for x in params_raw.split(",")]
++        brace_start = text.find("{", m.start())
++        depth = 0
++        end_idx = brace_start
++        for idx in range(brace_start, len(text)):
++            if text[idx] == "{":
++                depth += 1
++            elif text[idx] == "}":
++                depth -= 1
++                if depth == 0:
++                    end_idx = idx
++                    break
++        start_line = text.count("\n", 0, m.start()) + 1
++        end_line = text.count("\n", 0, end_idx) + 1
++        n_lines = end_line - start_line + 1
++        if n_lines > 50 or len(params) > 4:
++            print(f"[FAIL] {p}:{name} lines={n_lines} params={len(params)}")
++            sys.exit(1)
++print("[PASS] All checked C functions satisfy <=50 lines and <=4 parameters!")
++PY
+diff --git a/tests/test_mc_boot_ota.c b/tests/test_mc_boot_ota.c
+new file mode 100644
+index 0000000..0e3f177
+--- /dev/null
++++ b/tests/test_mc_boot_ota.c
+@@ -0,0 +1,702 @@
++/**
++  **************************************************************************
++  * @file     test_mc_boot_ota.c
++  * @brief    MC Bootloader (AT32F435) USART2 MiniMCProto v2.0 与 USB Host 状态机单元测试套件
++  **************************************************************************
++  */
++#include <stdio.h>
++#include <stdlib.h>
++#include <stdint.h>
++#include <string.h>
++
++/* 模拟 usbh_user.h / FatFs / AT32 Flash & CRC 所需类型声明以支持宿主直接编译 usbh_user.c */
++#define __USBH_USER_H
++#define FLASH_APP_ADDR            (0x08020000U)
++#define UPGRADE_BIN_NAME          "fw_mc.bin"
++#define CRM_CRC_PERIPH_CLOCK      (1U)
++#define TRUE                      (1)
++#define FALSE                     (0)
++#define FA_READ                   (0x01U)
++#define AM_DIR                    (0x10U)
++
++typedef int confirm_state;
++typedef enum { USB_OK = 0 } usb_sts_type;
++typedef enum { FLASH_OPERATE_DONE = 0, FLASH_PROGRAM_ERROR = 1 } flash_status_type;
++typedef enum { FR_OK = 0, FR_DISK_ERR = 1, FR_NO_FILE = 4 } FRESULT;
++typedef unsigned int UINT;
++typedef uint32_t FSIZE_t;
++typedef struct { uint32_t dummy; } FATFS;
++typedef struct { uint32_t offset; uint32_t size; } FIL;
++typedef struct { uint32_t idx; } DIR;
++typedef struct { FSIZE_t fsize; uint8_t fattrib; char fname[64]; } FILINFO;
++typedef struct { uint32_t dummy; } otg_core_type;
++typedef struct {
++  usb_sts_type (*usbh_user_init)(void);
++  usb_sts_type (*usbh_user_reset)(void);
++  usb_sts_type (*usbh_user_attached)(void);
++  usb_sts_type (*usbh_user_disconnect)(void);
++  usb_sts_type (*usbh_user_speed)(uint8_t speed);
++  usb_sts_type (*usbh_user_mfc_string)(void *string);
++  usb_sts_type (*usbh_user_product_string)(void *string);
++  usb_sts_type (*usbh_user_serial_string)(void *string);
++  usb_sts_type (*usbh_user_enumeration_done)(void);
++  usb_sts_type (*user_application)(void);
++  usb_sts_type (*usbh_user_active_vbus)(void *uhost, confirm_state state);
++  usb_sts_type (*usbh_user_not_support)(void);
++} usbh_user_handler_type;
++
++otg_core_type otg_core_struct;
++extern volatile uint8_t g_udisk_connected;
++extern volatile uint8_t g_upgrade_in_progress;
++extern volatile uint8_t g_upgrade_status;
++uint8_t is_app_valid(uint32_t address);
++void jump_to_app(uint32_t address);
++
++#include "boot_uart_ota.h"
++
++/* Host 模拟 Flash (32KB 测试窗口映射 0x08020000 起) 与串口/复位/U盘文件状态 */
++#define SIM_FLASH_SIZE            (32U * 1024U)
++#define SIM_UDISK_MAX_SIZE        (4096U)
++static uint8_t s_sim_flash[SIM_FLASH_SIZE];
++static uint32_t s_erase_count = 0U;
++static uint32_t s_sim_magic = 0U;
++static uint32_t s_sim_systick = 1234U;
++static uint32_t s_reset_count = 0U;
++static uint32_t s_jump_count = 0U;
++static uint32_t s_last_jump_addr = 0U;
++static uint8_t s_last_tx[MINIMC_MAX_FRAME_SIZE];
++static uint16_t s_last_tx_len = 0U;
++static uint32_t s_hw_crc_acc = 0xFFFFFFFFUL;
++static char s_udisk_fname[64];
++static uint8_t s_udisk_data[SIM_UDISK_MAX_SIZE];
++static uint32_t s_udisk_fsize = 0U;
++static uint8_t s_udisk_has_file = 0U;
++
++/**
++  * @brief  断言辅助函数：条件为假时打印错误并退出
++  */
++static void require_true(int cond, const char *msg)
++{
++  if (!cond)
++  {
++    fprintf(stderr, "[FAIL] %s\n", msg);
++    exit(1);
++  }
++}
++
++/**
++  * @brief  返回模拟系统毫秒计数
++  */
++uint32_t host_mock_get_systick_ms(void)
++{
++  return s_sim_systick;
++}
++
++/**
++  * @brief  模拟擦除一个 2KB Flash 扇区
++  */
++int host_mock_flash_erase_sector(uint32_t sector_addr)
++{
++  if (sector_addr < FLASH_APP_ADDR ||
++      (sector_addr - FLASH_APP_ADDR + MC_FLASH_SECTOR_SIZE) > SIM_FLASH_SIZE)
++  {
++    return -1;
++  }
++  memset(&s_sim_flash[sector_addr - FLASH_APP_ADDR], 0xFF, MC_FLASH_SECTOR_SIZE);
++  s_erase_count++;
++  return 0;
++}
++
++/**
++  * @brief  模拟向 Flash 写入字节并执行 AND 编程与回读校验
++  */
++int host_mock_flash_write_bytes(uint32_t addr, const uint8_t *p_data, uint32_t len)
++{
++  if (addr < FLASH_APP_ADDR || (addr - FLASH_APP_ADDR + len) > SIM_FLASH_SIZE)
++  {
++    return -1;
++  }
++  uint32_t off = addr - FLASH_APP_ADDR;
++  for (uint32_t i = 0U; i < len; i++)
++  {
++    s_sim_flash[off + i] &= p_data[i];
++    if (s_sim_flash[off + i] != p_data[i])
++    {
++      return -2;
++    }
++  }
++  return 0;
++}
++
++/**
++  * @brief  获取模拟 Flash 指针
++  */
++const uint8_t *host_mock_flash_ptr(uint32_t addr)
++{
++  return &s_sim_flash[addr - FLASH_APP_ADDR];
++}
++
++/**
++  * @brief  捕获 USART2 发送的响应帧
++  */
++void host_mock_uart2_send_bytes(const uint8_t *p_data, uint16_t len)
++{
++  if (len <= sizeof(s_last_tx))
++  {
++    memcpy(s_last_tx, p_data, len);
++    s_last_tx_len = len;
++  }
++}
++
++/**
++  * @brief  读取模拟 SRAM 顶部 UPG2 魔数
++  */
++uint32_t host_mock_read_magic(void)
++{
++  return s_sim_magic;
++}
++
++/**
++  * @brief  写入模拟 SRAM 顶部 UPG2 魔数
++  */
++void host_mock_write_magic(uint32_t val)
++{
++  s_sim_magic = val;
++}
++
++/**
++  * @brief  模拟 NVIC_SystemReset
++  */
++void host_mock_system_reset(void)
++{
++  s_reset_count++;
++}
++
++/**
++  * @brief  模拟 jump_to_app
++  */
++void host_mock_jump_to_app(uint32_t addr)
++{
++  s_jump_count++;
++  s_last_jump_addr = addr;
++}
++
++/**
++  * @brief  供 usbh_user.c 调用的跳转入口包装
++  */
++void jump_to_app(uint32_t address)
++{
++  host_mock_jump_to_app(address);
++}
++
++/**
++  * @brief  校验模拟 Flash 首地址处的 MSP 与 Reset_Handler 向量合法性
++  */
++uint8_t is_app_valid(uint32_t address)
++{
++  const uint8_t *p = host_mock_flash_ptr(address);
++  uint32_t msp = 0U;
++  uint32_t pc = 0U;
++  memcpy(&msp, &p[0], 4U);
++  memcpy(&pc, &p[4], 4U);
++  if (msp < 0x20001000U || msp > 0x20060000U)
++  {
++    return 0U;
++  }
++  if (pc < 0x08020000U || pc > 0x08100000U || (pc & 1U) == 0U)
++  {
++    return 0U;
++  }
++  return 1U;
++}
++
++/**
++  * @brief  模拟延时与外设时钟/CRC/Flash 接口桩函数
++  */
++static void delay_ms(uint32_t ms) { s_sim_systick += ms; }
++static void crm_periph_clock_enable(uint32_t periph, confirm_state st) { (void)periph; (void)st; }
++static void crc_data_reset(void) { s_hw_crc_acc = 0xFFFFFFFFUL; }
++static uint32_t crc_one_word_calculate(uint32_t val)
++{
++  s_hw_crc_acc ^= val;
++  for (uint8_t b = 0U; b < 32U; b++)
++  {
++    s_hw_crc_acc = (s_hw_crc_acc & 0x80000000UL) ? ((s_hw_crc_acc << 1U) ^ 0x04C11DB7UL) : (s_hw_crc_acc << 1U);
++  }
++  return s_hw_crc_acc;
++}
++static void flash_unlock(void) {}
++static void flash_lock(void) {}
++static flash_status_type flash_sector_erase(uint32_t addr)
++{
++  return (host_mock_flash_erase_sector(addr) == 0) ? FLASH_OPERATE_DONE : FLASH_PROGRAM_ERROR;
++}
++static flash_status_type flash_word_program(uint32_t addr, uint32_t data)
++{
++  return (host_mock_flash_write_bytes(addr, (const uint8_t *)&data, 4U) == 0) ? FLASH_OPERATE_DONE : FLASH_PROGRAM_ERROR;
++}
++
++/**
++  * @brief  模拟 FatFs 挂载与目录遍历接口
++  */
++static FRESULT f_mount(FATFS *fs, const char *path, uint8_t opt) { (void)fs; (void)path; (void)opt; return FR_OK; }
++static FRESULT f_opendir(DIR *dp, const char *path) { (void)path; dp->idx = 0U; return FR_OK; }
++static FRESULT f_closedir(DIR *dp) { (void)dp; return FR_OK; }
++static FRESULT f_readdir(DIR *dp, FILINFO *fno)
++{
++  if (s_udisk_has_file && dp->idx == 0U)
++  {
++    dp->idx = 1U;
++    fno->fsize = s_udisk_fsize;
++    fno->fattrib = 0U;
++    strncpy(fno->fname, s_udisk_fname, sizeof(fno->fname) - 1U);
++    fno->fname[sizeof(fno->fname) - 1U] = '\0';
++  }
++  else
++  {
++    fno->fname[0] = '\0';
++  }
++  return FR_OK;
++}
++
++/**
++  * @brief  模拟 FatFs 文件打开、定位、读取与关闭接口
++  */
++static FRESULT f_open(FIL *fp, const char *path, uint8_t mode)
++{
++  (void)mode;
++  const char *base = (strncmp(path, "0:/", 3) == 0) ? (path + 3) : path;
++  if (!s_udisk_has_file || strcasecmp(base, s_udisk_fname) != 0)
++  {
++    return FR_NO_FILE;
++  }
++  fp->offset = 0U;
++  fp->size = s_udisk_fsize;
++  return FR_OK;
++}
++static FRESULT f_lseek(FIL *fp, FSIZE_t ofs)
++{
++  if (ofs > fp->size) { return FR_DISK_ERR; }
++  fp->offset = ofs;
++  return FR_OK;
++}
++static FRESULT f_read(FIL *fp, void *buff, UINT btr, UINT *br)
++{
++  uint32_t avail = (fp->offset < fp->size) ? (fp->size - fp->offset) : 0U;
++  uint32_t n = (btr < avail) ? btr : avail;
++  if (n > 0U)
++  {
++    memcpy(buff, &s_udisk_data[fp->offset], n);
++    fp->offset += n;
++  }
++  *br = (UINT)n;
++  return FR_OK;
++}
++static FRESULT f_close(FIL *fp) { (void)fp; return FR_OK; }
++
++/**
++  * @brief  模拟 FatFs 文件删除、重命名与状态查询接口
++  */
++static FRESULT f_unlink(const char *path)
++{
++  const char *base = (strncmp(path, "0:/", 3) == 0) ? (path + 3) : path;
++  if (s_udisk_has_file && strcasecmp(base, s_udisk_fname) == 0)
++  {
++    s_udisk_has_file = 0U;
++  }
++  return FR_OK;
++}
++static FRESULT f_rename(const char *old_p, const char *new_p)
++{
++  const char *old_b = (strncmp(old_p, "0:/", 3) == 0) ? (old_p + 3) : old_p;
++  const char *new_b = (strncmp(new_p, "0:/", 3) == 0) ? (new_p + 3) : new_p;
++  if (!s_udisk_has_file || strcasecmp(old_b, s_udisk_fname) != 0)
++  {
++    return FR_NO_FILE;
++  }
++  strncpy(s_udisk_fname, new_b, sizeof(s_udisk_fname) - 1U);
++  s_udisk_fname[sizeof(s_udisk_fname) - 1U] = '\0';
++  return FR_OK;
++}
++static FRESULT f_stat(const char *path, FILINFO *fno)
++{
++  const char *base = (strncmp(path, "0:/", 3) == 0) ? (path + 3) : path;
++  if (!s_udisk_has_file || strcasecmp(base, s_udisk_fname) != 0)
++  {
++    return FR_NO_FILE;
++  }
++  fno->fsize = s_udisk_fsize;
++  fno->fattrib = 0U;
++  memcpy(fno->fname, s_udisk_fname, sizeof(fno->fname));
++  return FR_OK;
++}
++
++#include "../bootloader/src/boot_uart_ota.c"
++#include "../bootloader/src/usbh_user.c"
++
++/**
++  * @brief  构造并向 USART2 接收状态机注入一帧 MiniMCProto v2.0 报文
++  */
++static void send_minimc_frame(uint8_t dst,
++                              uint8_t cmd,
++                              uint16_t seq,
++                              const void *p_payload)
++{
++  minimc_frame_hdr_t hdr;
++  uint16_t len = 0U;
++  if (cmd == MINIMC_CMD_PING || cmd == MINIMC_CMD_SYSTEM_CONTROL) { len = 4U; }
++  else if (cmd == MINIMC_CMD_OTA_START) { len = 144U; }
++  else if (cmd == MINIMC_CMD_OTA_FINISH) { len = 8U; }
++
++  hdr.sof0 = MINIMC_SOF_0;
++  hdr.sof1 = MINIMC_SOF_1;
++  hdr.src_id = MINIMC_NODE_AP;
++  hdr.dst_id = dst;
++  hdr.flags = (uint8_t)(MINIMC_FLAG_VERSION_V2 | MINIMC_FLAG_WANTS_ACK);
++  hdr.cmd_id = cmd;
++  hdr.hop_limit = MINIMC_DEFAULT_HOP_LIMIT;
++  hdr.route_ctrl = 0U;
++  hdr.seq_id = seq;
++  hdr.payload_len = len;
++
++  uint8_t raw[MINIMC_MAX_FRAME_SIZE];
++  memcpy(raw, &hdr, MINIMC_HEADER_SIZE);
++  if (len > 0U && p_payload != NULL)
++  {
++    memcpy(&raw[MINIMC_HEADER_SIZE], p_payload, len);
++  }
++  uint16_t crc = boot_crc16_ccitt(raw, (uint32_t)(MINIMC_HEADER_SIZE + len));
++  raw[MINIMC_HEADER_SIZE + len] = (uint8_t)(crc & 0xFFU);
++  raw[MINIMC_HEADER_SIZE + len + 1U] = (uint8_t)((crc >> 8U) & 0xFFU);
++
++  s_last_tx_len = 0U;
++  for (uint16_t i = 0U; i < (uint16_t)(MINIMC_FRAME_OVERHEAD + len); i++)
++  {
++    boot_uart_ota_rx_byte_isr(raw[i]);
++  }
++  boot_uart_ota_poll();
++}
++
++/**
++  * @brief  发送 512B 分块的 0x21 CMD_OTA_DATA 数据帧
++  */
++static void send_ota_data_chunk(uint16_t seq,
++                                uint32_t offset,
++                                const uint8_t *p_data)
++{
++  uint16_t data_len = 512U;
++  uint16_t pay_len = (uint16_t)(sizeof(minimc_payload_ota_data_hdr_t) + data_len);
++  minimc_frame_hdr_t hdr = {
++    MINIMC_SOF_0, MINIMC_SOF_1, MINIMC_NODE_AP, MINIMC_NODE_MC,
++    (uint8_t)(MINIMC_FLAG_VERSION_V2 | MINIMC_FLAG_WANTS_ACK),
++    MINIMC_CMD_OTA_DATA, MINIMC_DEFAULT_HOP_LIMIT, 0U, seq, pay_len
++  };
++  minimc_payload_ota_data_hdr_t dh;
++  dh.offset = offset;
++  dh.chunk_bytes = data_len;
++  dh.chunk_crc16 = boot_crc16_ccitt(p_data, data_len);
++
++  uint8_t raw[MINIMC_MAX_FRAME_SIZE];
++  memcpy(raw, &hdr, MINIMC_HEADER_SIZE);
++  memcpy(&raw[MINIMC_HEADER_SIZE], &dh, sizeof(dh));
++  memcpy(&raw[MINIMC_HEADER_SIZE + sizeof(dh)], p_data, data_len);
++  uint16_t crc = boot_crc16_ccitt(raw, (uint32_t)(MINIMC_HEADER_SIZE + pay_len));
++  raw[MINIMC_HEADER_SIZE + pay_len] = (uint8_t)(crc & 0xFFU);
++  raw[MINIMC_HEADER_SIZE + pay_len + 1U] = (uint8_t)((crc >> 8U) & 0xFFU);
++
++  s_last_tx_len = 0U;
++  for (uint16_t i = 0U; i < (uint16_t)(MINIMC_FRAME_OVERHEAD + pay_len); i++)
++  {
++    boot_uart_ota_rx_byte_isr(raw[i]);
++  }
++  boot_uart_ota_poll();
++}
++
++/**
++  * @brief  生成合法测试镜像与 128B ATSG Trailer
++  */
++static void build_mc_image_and_trailer(uint8_t *p_img,
++                                       uint32_t len,
++                                       fw_trailer_t *p_tr,
++                                       uint32_t *p_crc)
++{
++  for (uint32_t i = 0U; i < len; i++)
++  {
++    p_img[i] = (uint8_t)((i * 37U + 11U) & 0xFFU);
++  }
++  uint32_t msp = 0x20040000UL;
++  uint32_t pc = 0x08020101UL;
++  memcpy(&p_img[0], &msp, 4U);
++  memcpy(&p_img[4], &pc, 4U);
++
++  memset(p_tr, 0, sizeof(*p_tr));
++  p_tr->magic = TRAILER_MAGIC_ATSG;
++  p_tr->struct_ver = TRAILER_STRUCT_VER_V1;
++  p_tr->board_id = BOARD_ID_MC_AT32F435;
++  p_tr->fw_version = 0x01020300UL;
++  p_tr->payload_len = len;
++  p_tr->trailer_crc32 = boot_crc32_ieee((const uint8_t *)p_tr, TRAILER_HEADER_CRC_SIZE);
++  *p_crc = boot_crc32_ieee(p_img, len);
++}
++
++/**
++  * @brief  在模拟 U 盘中装载指定文件名、镜像净荷与 128B Trailer
++  */
++static void mount_sim_udisk_package(const char *fname,
++                                    const uint8_t *p_img,
++                                    uint32_t img_len,
++                                    const fw_trailer_t *p_tr)
++{
++  strncpy(s_udisk_fname, fname, sizeof(s_udisk_fname) - 1U);
++  s_udisk_fname[sizeof(s_udisk_fname) - 1U] = '\0';
++  memcpy(s_udisk_data, p_img, img_len);
++  memcpy(&s_udisk_data[img_len], p_tr, sizeof(*p_tr));
++  s_udisk_fsize = img_len + (uint32_t)sizeof(*p_tr);
++  s_udisk_has_file = 1U;
++  s_appstate = USER_INIT;
++  g_upgrade_status = 0U;
++  g_upgrade_in_progress = 0U;
++}
++
++/**
++  * @brief  测试 UPG2 驻留魔数、0x01/0x02、0x03/0x04、0x1D 及 DST=0x03 严格静默丢弃
++  */
++static void test_magic_info_heartbeat_and_dst_filter(void)
++{
++  s_sim_magic = BOOT_MC_UPGRADE_MAGIC_VAL;
++  boot_uart_ota_init();
++  require_true(s_sim_magic == 0UL, "UPG2 magic must be cleared on init");
++  require_true(boot_uart_ota_should_stay_in_boot() == 1U, "UPG2 magic sets stay_in_boot");
++  uint32_t bid1 = boot_uart_ota_get_boot_id();
++
++  boot_uart_ota_init();
++  uint32_t bid2 = boot_uart_ota_get_boot_id();
++  require_true(bid1 != 0U && bid2 != 0U && bid1 != bid2, "dynamic boot_id changes across init");
++
++  /* DST=0x03 (TH) 必须静默忽略，零字节发送 */
++  send_minimc_frame(MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, 1U, NULL);
++  require_true(s_last_tx_len == 0U, "DST=0x03 must be ignored by MC Bootloader");
++
++  /* 0x01 -> 0x02 CMD_VERSION_REPORT */
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_GET_VERSION, 2U, NULL);
++  require_true(s_last_tx_len == 30U && s_last_tx[5] == MINIMC_CMD_VERSION_REPORT, "0x02 VERSION_REPORT");
++  minimc_payload_version_report_t vrep;
++  memcpy(&vrep, &s_last_tx[12], sizeof(vrep));
++  require_true(vrep.capability_flags == MC_BOOT_CAPABILITY_FLAGS && vrep.boot_id == bid2, "MC capability_flags == 0xC0080435");
++
++  /* 0x03 -> 0x04 CMD_PONG */
++  uint32_t tok = 0xCAFEBABEUL;
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_PING, 3U, &tok);
++  require_true(s_last_tx_len == 26U && s_last_tx[5] == MINIMC_CMD_PONG, "0x04 PONG");
++
++  /* 0x1D JumpToBootloader(2) & Reboot(1) */
++  minimc_payload_sys_ctrl_t sc_boot = {2U, 1U, 10U};
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_SYSTEM_CONTROL, 4U, &sc_boot);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && boot_uart_ota_should_stay_in_boot() == 1U, "0x1D stay in boot");
++  minimc_payload_sys_ctrl_t sc_reboot = {1U, 1U, 10U};
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_SYSTEM_CONTROL, 5U, &sc_reboot);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_reset_count == 1U, "0x1D reboot");
++}
++
++/**
++  * @brief  测试单写者互斥锁 (USB Host vs USART2) 与 0x20 擦除前零擦除负例门禁及恢复
++  */
++static void test_single_writer_mutex_and_zero_erase_admission(void)
++{
++  uint8_t img[1024];
++  fw_trailer_t tr;
++  uint32_t crc = 0U;
++  build_mc_image_and_trailer(img, sizeof(img), &tr, &crc);
++  boot_uart_ota_init();
++  s_erase_count = 0U;
++
++  minimc_payload_ota_start_t req;
++  memset(&req, 0, sizeof(req));
++  req.target_device = MINIMC_NODE_MC;
++  req.target_component = 1U;
++  req.fw_size_bytes = sizeof(img);
++  req.fw_crc32 = crc;
++  req.trailer = tr;
++
++  /* 1. USB 升级占用时，USART2 0x20 必须返回 NACK 0x05 (DEVICE_BUSY) 且零擦除 */
++  g_upgrade_in_progress = 1U;
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 10U, &req);
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_DEVICE_BUSY, "USB busy -> NACK 0x05");
++  require_true(s_erase_count == 0U, "USB busy zero erase");
++  g_upgrade_in_progress = 0U;
++
++  /* 2. 917,505B (896KB + 1B) 超限必须返回 NACK 0x14 (OTA_IMAGE_OVERSIZE) 且零擦除 */
++  req.fw_size_bytes = MC_MAX_APP_SIZE + 1U;
++  req.trailer = tr;
++  req.trailer.payload_len = MC_MAX_APP_SIZE + 1U;
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 11U, &req);
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_OTA_IMAGE_OVERSIZE && s_erase_count == 0U, "oversize 917505B zero erase");
++
++  /* 3. 错板 (TH 0x42300001) 与坏 trailer_crc32 必须返回 NACK 0x06 且零擦除，且状态保持 IDLE 并可恢复 */
++  req.fw_size_bytes = sizeof(img);
++  req.trailer = tr;
++  req.trailer.board_id = BOARD_ID_TH_AT32F423;
++  req.trailer.trailer_crc32 = boot_crc32_ieee((const uint8_t *)&req.trailer, TRAILER_HEADER_CRC_SIZE);
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 12U, &req);
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_COMMAND_REJECTED && s_erase_count == 0U, "wrong board zero erase");
++
++  req.trailer = tr;
++  req.trailer.trailer_crc32 ^= 0xDEADBEEFUL;
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 13U, &req);
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_COMMAND_REJECTED && s_erase_count == 0U, "bad trailer_crc32 zero erase");
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_STATUS, 14U, NULL);
++  require_true(s_last_tx[5] == MINIMC_CMD_OTA_STATUS && s_last_tx[12] == 0U, "state stays IDLE and recovers");
++}
++
++/**
++  * @brief  测试完整 0x20 -> 0x21 (含重传幂等与错位 0x13) -> 0x23 -> 0x22 升级与校验跳转
++  */
++static void test_full_ota_flow_and_crc_verification(void)
++{
++  uint8_t img[1024];
++  fw_trailer_t tr;
++  uint32_t crc = 0U;
++  build_mc_image_and_trailer(img, sizeof(img), &tr, &crc);
++  memset(s_sim_flash, 0xAA, sizeof(s_sim_flash));
++  boot_uart_ota_init();
++  s_erase_count = 0U;
++  s_jump_count = 0U;
++
++  minimc_payload_ota_start_t req;
++  memset(&req, 0, sizeof(req));
++  req.target_device = MINIMC_NODE_MC;
++  req.target_component = 1U;
++  req.fw_size_bytes = sizeof(img);
++  req.fw_crc32 = crc;
++  req.trailer = tr;
++
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 20U, &req);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_erase_count == 0U, "0x20 ACK before sector write");
++  require_true(boot_ota_acquire_writer(BOOT_WRITER_USB) == 0U, "USB blocked while UART2 holds writer");
++
++  /* 错位 offset=512 必须返回 NACK 0x13 (OTA_INVALID_OFFSET) */
++  send_ota_data_chunk(21U, 512U, &img[512]);
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_OTA_INVALID_OFFSET, "offset mismatch 0x13");
++
++  /* 写入 Chunk 0 (0..512) -> 触发首个 2KB 扇区擦除，重传 Chunk 0 幂等返回 ACK */
++  send_ota_data_chunk(22U, 0U, &img[0]);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_erase_count == 1U, "Chunk 0 ACK & 1 sector erased");
++  send_ota_data_chunk(23U, 0U, &img[0]);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_erase_count == 1U, "Chunk 0 retransmit idempotent");
++
++  /* 写入 Chunk 1 (512..1024) 并查询 0x23 STATUS */
++  send_ota_data_chunk(24U, 512U, &img[512]);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK, "Chunk 1 ACK");
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_STATUS, 25U, NULL);
++  require_true(s_last_tx[5] == MINIMC_CMD_OTA_STATUS && s_last_tx_len == 22U, "0x23 status 8B payload");
++
++  /* 0x22 CMD_OTA_FINISH 校验通过并触发 jump_to_app(0x08020000) */
++  minimc_payload_ota_finish_t fin_req = {crc, 1U, {0U, 0U, 0U}};
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_FINISH, 26U, &fin_req);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_jump_count == 1U && s_last_jump_addr == FLASH_APP_ADDR, "0x22 ACK and jump");
++  require_true(memcmp(s_sim_flash, img, sizeof(img)) == 0, "Flash image matches 100%");
++}
++
++/**
++  * @brief  直接驱动 usbh_user_handle.user_application() 验证 USB Host U 盘升级成功与坏 trailer_crc32 零擦除拒绝
++  */
++static void test_usb_host_udisk_upgrade_and_bad_trailer_zero_erase(void)
++{
++  uint8_t img[1024];
++  fw_trailer_t tr;
++  uint32_t crc = 0U;
++  build_mc_image_and_trailer(img, sizeof(img), &tr, &crc);
++
++  /* 1. 坏 trailer_crc32 的 firmwaremc.bin：擦除前预验签失败 -> s_erase_count == 0，重命名为 firmwaremc.err */
++  fw_trailer_t bad_tr = tr;
++  bad_tr.trailer_crc32 ^= 0x55AA55AAUL;
++  memset(s_sim_flash, 0xAA, sizeof(s_sim_flash));
++  boot_uart_ota_init();
++  s_erase_count = 0U;
++  s_jump_count = 0U;
++  mount_sim_udisk_package("firmwaremc.bin", img, sizeof(img), &bad_tr);
++
++  usbh_user_handle.user_application(); /* USER_INIT -> USER_READLIST */
++  usbh_user_handle.user_application(); /* USER_READLIST -> USER_WRITE */
++  usbh_user_handle.user_application(); /* USER_WRITE -> USER_IDEL */
++  usbh_user_handle.user_application(); /* USER_IDEL */
++  require_true(s_erase_count == 0U && s_jump_count == 0U, "USB bad trailer_crc32 must abort before erase");
++  require_true(strcmp(s_udisk_fname, "firmwaremc.err") == 0, "bad USB package renamed to firmwaremc.err");
++  require_true(boot_ota_get_active_writer() == BOOT_WRITER_NONE, "USB writer released after failure");
++
++  /* 2. 合法 firmwaremc.bin：擦写成功 -> 重命名为 firmwaremc.cur -> 释放锁并 jump_to_app(0x08020000) */
++  mount_sim_udisk_package("firmwaremc.bin", img, sizeof(img), &tr);
++  usbh_user_handle.user_application(); /* USER_INIT -> USER_READLIST */
++  usbh_user_handle.user_application(); /* USER_READLIST -> USER_WRITE */
++  usbh_user_handle.user_application(); /* USER_WRITE -> USER_IDEL */
++  usbh_user_handle.user_application(); /* USER_IDEL -> jump_to_app */
++  require_true(s_erase_count == 1U && s_jump_count == 1U && s_last_jump_addr == FLASH_APP_ADDR, "USB upgrade success & jump");
++  require_true(strcmp(s_udisk_fname, "firmwaremc.cur") == 0, "valid USB package renamed to firmwaremc.cur");
++  require_true(memcmp(s_sim_flash, img, sizeof(img)) == 0, "USB Flash image matches 100%");
++}
++
++/**
++  * @brief  验证 USB Host 状态机与 USART2 状态机双向并发竞争互斥拒绝及释放后恢复升级
++  */
++static void test_usb_and_uart2_contention_and_recovery(void)
++{
++  uint8_t img[1024];
++  fw_trailer_t tr;
++  uint32_t crc = 0U;
++  build_mc_image_and_trailer(img, sizeof(img), &tr, &crc);
++  memset(s_sim_flash, 0xAA, sizeof(s_sim_flash));
++  boot_uart_ota_init();
++  s_erase_count = 0U;
++  s_jump_count = 0U;
++  minimc_payload_ota_start_t req;
++  memset(&req, 0, sizeof(req));
++  req.target_device = MINIMC_NODE_MC;
++  req.target_component = 1U;
++  req.fw_size_bytes = sizeof(img);
++  req.fw_crc32 = crc;
++  req.trailer = tr;
++  /* 场景 A：UART2 先通过 0x20 持有锁 -> USB 状态机在 USER_READLIST 被互斥拒绝转入 USER_IDEL -> UART2 完成升级 */
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 30U, &req);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK, "UART2 acquires writer first");
++  mount_sim_udisk_package("firmwaremc.bin", img, sizeof(img), &tr);
++  usbh_user_handle.user_application();
++  usbh_user_handle.user_application();
++  require_true(s_appstate == USER_IDEL && g_upgrade_in_progress == 0U, "USB deferred while UART2 active");
++  send_ota_data_chunk(31U, 0U, &img[0]);
++  send_ota_data_chunk(32U, 512U, &img[512]);
++  minimc_payload_ota_finish_t fin_req = {crc, 1U, {0U, 0U, 0U}};
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_FINISH, 33U, &fin_req);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_jump_count == 1U, "UART2 finishes OTA after deferring USB");
++  /* 场景 B：USB 在 USER_READLIST 先持有锁 -> UART2 0x20 收到 NACK 0x05 -> USB 完成释放后 UART2 重试成功 */
++  boot_uart_ota_init();
++  s_erase_count = 0U;
++  s_jump_count = 0U;
++  mount_sim_udisk_package("firmwaremc.bin", img, sizeof(img), &tr);
++  usbh_user_handle.user_application();
++  usbh_user_handle.user_application();
++  require_true(g_upgrade_in_progress == 1U && boot_ota_get_active_writer() == BOOT_WRITER_USB, "USB holds writer");
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 34U, &req);
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_DEVICE_BUSY && s_erase_count == 0U, "UART2 NACK 0x05");
++  usbh_user_handle.user_application();
++  usbh_user_handle.user_application();
++  require_true(boot_ota_get_active_writer() == BOOT_WRITER_NONE && g_upgrade_in_progress == 0U, "USB releases writer");
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_START, 35U, &req);
++  send_ota_data_chunk(36U, 0U, &img[0]);
++  send_ota_data_chunk(37U, 512U, &img[512]);
++  send_minimc_frame(MINIMC_NODE_MC, MINIMC_CMD_OTA_FINISH, 38U, &fin_req);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_jump_count == 2U, "UART2 completes recovery upgrade");
++}
++
++/**
++  * @brief  测试主入口
++  */
++int main(void)
++{
++  test_magic_info_heartbeat_and_dst_filter();
++  test_single_writer_mutex_and_zero_erase_admission();
++  test_full_ota_flow_and_crc_verification();
++  test_usb_host_udisk_upgrade_and_bad_trailer_zero_erase();
++  test_usb_and_uart2_contention_and_recovery();
++  printf("[PASS] test_mc_boot_ota: all MC Bootloader MiniMCProto v2.0 & USB Host tests passed!\n");
++  return 0;
++}
