@@ -1,0 +1,2466 @@
+diff --git a/contracts/twin/telemetry_types.h b/contracts/twin/telemetry_types.h
+index d5efc40..5393b98 100644
+--- a/contracts/twin/telemetry_types.h
++++ b/contracts/twin/telemetry_types.h
+@@ -52,16 +52,17 @@ extern "C" {
+ #define MINIMC_ROUTE_ALLOW_REROUTE           (1U << 1)
+ #define MINIMC_ROUTE_IS_ROUTED               (1U << 2)
+ 
+-/* 命令码定义（与 mcu-p3 TWIN-47 & TWIN-48 MiniMCProto V2 严格对齐） */
++/* 命令码定义（与 MiniMCProto v2.0 Rev 2.0.4 规范严格对齐） */
+ #define MINIMC_CMD_ACK                       0x00U
+ #define MINIMC_CMD_GET_VERSION               0x01U
+ #define MINIMC_CMD_VERSION_REPORT            0x02U
+ #define MINIMC_CMD_PING                      0x03U
++#define MINIMC_CMD_HEARTBEAT                 0x03U
+ #define MINIMC_CMD_PONG                      0x04U
+-#define MINIMC_CMD_ESTOP_ACK                 0x05U
++/* 0x05 保持未分配保留，彻底移除已废止的 MINIMC_CMD_ESTOP_ACK */
+ #define MINIMC_CMD_NACK                      0x06U
++#define MINIMC_CMD_NACK_LEGACY               0x06U
+ #define MINIMC_CMD_LOG_MESSAGE               0x07U
+-#define MINIMC_CMD_SYSTEM_CONTROL            0x10U
+ #define MINIMC_CMD_SET_TEMP                  0x10U
+ #define MINIMC_CMD_MOTION_HOME               0x11U
+ #define MINIMC_CMD_MOTION_MOVE               0x12U
+@@ -76,6 +77,7 @@ extern "C" {
+ #define MINIMC_CMD_FILAMENT_CONTROL          0x19U
+ #define MINIMC_CMD_LEVEL_TRIGGER             0x1AU
+ #define MINIMC_CMD_GCODE_EXEC                0x1CU
++#define MINIMC_CMD_SYSTEM_CONTROL            0x1DU
+ #define MINIMC_CMD_OTA_START                 0x20U
+ #define MINIMC_CMD_OTA_DATA                  0x21U
+ #define MINIMC_CMD_OTA_FINISH                0x22U
+@@ -84,7 +86,58 @@ extern "C" {
+ #define MINIMC_CMD_TELEMETRY_REPORT          0x40U
+ #define MINIMC_CMD_ALARM_EVENT               0x50U
+ 
++/* MiniMCProto v2.0 Rev 2.0.4 标准 NACK 与 OTA 错误码定义 */
++#define MINIMC_ERR_NONE                      0x00U
++#define MINIMC_ERR_UNKNOWN_CMD               0x01U
++#define MINIMC_ERR_INVALID_PAYLOAD_LEN       0x02U
++#define MINIMC_ERR_PARAM_OUT_OF_RANGE        0x03U
++#define MINIMC_ERR_HARDWARE_FAULT            0x04U
++#define MINIMC_ERR_DEVICE_BUSY               0x05U
++#define MINIMC_ERR_COMMAND_REJECTED          0x06U
++#define MINIMC_ERR_OTA_NOT_READY             0x10U
++#define MINIMC_ERR_OTA_OFFSET_MISMATCH       0x11U
++#define MINIMC_ERR_OTA_FLASH_WRITE_FAIL      0x12U
++#define MINIMC_ERR_OTA_CRC_MISMATCH          0x13U
++#define MINIMC_ERR_OTA_OVERSIZE              0x14U
++
++/* 统一固件包 Trailer 魔数、板卡标识与 Bootloader 能力位常量 */
++#define MINIMC_FW_TRAILER_MAGIC              0x41545347UL /* "ATSG" 小端序 */
++#define MINIMC_FW_TRAILER_VERSION            0x00010000UL /* v1.0 结构体版本 */
++#define MINIMC_FW_STRUCT_VER                 0x00010000UL /* v1.0 结构体版本同义宏 */
++#define MINIMC_BOARD_ID_MC                   0x43500001UL /* "CP\x00\x01" */
++#define MINIMC_BOARD_ID_TH                   0x42300001UL /* "B0\x00\x01" */
++#define MINIMC_NODE_MC                       0x02U
++#define MINIMC_NODE_TH                       0x03U
++#define MINIMC_CAP_FLAG_BOOT_MODE            0x80000000UL /* bit31: 1=BOOT, 0=APP */
++#define MINIMC_MC_APP_MAX_BYTES              917504UL     /* MC App 最大 896KB */
++#define MINIMC_TH_APP_MAX_BYTES              241664UL     /* TH App 最大 236KB */
++#define MINIMC_MC_MAX_APP_BYTES              917504UL
++#define MINIMC_TH_MAX_APP_BYTES              241664UL
++#define MINIMC_OTA_CHUNK_MAX_BYTES           512U         /* 0x21 单包最大数据块 */
++#define MINIMC_OTA_DEFAULT_CHUNK_SIZE        512U
++
++/* 0x1D 系统控制动作枚举常量 */
++#define MINIMC_SYS_CTRL_REBOOT_NORMAL        0x01U
++#define MINIMC_SYS_CTRL_ENTER_BOOTLOADER     0x02U
++#define MINIMC_SYS_CTRL_ACTION_ENTER_BOOT    0x02U
++#define MINIMC_SYS_CTRL_CLEAR_FAULT_LOCK     0x03U
++
++/* 0x23 OTA 状态机枚举常量 */
++#define MINIMC_OTA_STATE_IDLE                0U
++#define MINIMC_OTA_STATE_RECEIVING           1U
++#define MINIMC_OTA_STATE_READY_TO_COMMIT     2U
++#define MINIMC_OTA_STATE_COMMITTED           3U
++#define MINIMC_OTA_STATE_ERROR               4U
++
+ /* 线协议控制载荷字节长度 */
++#define MINIMC_ACK_PAYLOAD_SIZE              4U
++#define MINIMC_NACK_PAYLOAD_SIZE             3U
++#define MINIMC_SYS_CTRL_REQ_SIZE             4U
++#define MINIMC_FW_TRAILER_SIZE               128U
++#define MINIMC_OTA_START_REQ_SIZE            144U
++#define MINIMC_OTA_DATA_HDR_SIZE             8U
++#define MINIMC_OTA_FINISH_REQ_SIZE           8U
++#define MINIMC_OTA_STATUS_RESP_SIZE          8U
+ #define MINIMC_SET_TEMP_REQ_SIZE             4U
+ #define MINIMC_HOME_REQ_SIZE                 4U
+ #define MINIMC_MOVE_REQ_SIZE                 16U
+@@ -130,6 +183,7 @@ extern "C" {
+ #define MINIMC_HEADER_SIZE                   12U
+ #define MINIMC_CRC16_SIZE                    2U
+ #define MINIMC_MIN_FRAME_SIZE                14U
++#define MINIMC_MAX_PAYLOAD_SIZE              520U
+ #define MINIMC_MAX_PAYLOAD_LEN               1024U
+ #define MINIMC_MAX_FRAME_SIZE                1038U
+ #define MINIMC_TEMP_PAYLOAD_SIZE             16U
+@@ -322,6 +376,104 @@ typedef struct {
+     uint16_t ack_seq;             /**< 确认序列号 */
+ } minimc_gcode_resp_t;
+ 
++/**
++ * @brief 0x00 (MINIMC_CMD_ACK) 4字节标准确认响应载荷（Rev 2.0.4）
++ */
++typedef struct {
++    uint8_t  acked_cmd_id;        /**< 被确认命令码 */
++    uint16_t acked_seq;           /**< 被确认序列号（小端序） */
++    uint8_t  status_code;         /**< 执行状态码（0x00=OK） */
++} minimc_ack_payload_t;
++
++/**
++ * @brief 0x04 (MINIMC_CMD_NACK) 3字节标准拒绝响应载荷（Rev 2.0.4）
++ */
++typedef struct {
++    uint8_t rejected_cmd_id;      /**< 被拒绝命令码 */
++    uint8_t error_code;           /**< 标准错误码（MINIMC_ERR_*） */
++    uint8_t detail_info;          /**< 补充错误详情或状态枚举 */
++} minimc_nack_payload_t;
++
++/**
++ * @brief 0x1D (MINIMC_CMD_SYSTEM_CONTROL) 4字节系统生命周期控制请求载荷（Rev 2.0.4）
++ */
++typedef struct {
++    uint8_t  action;              /**< 动作码（1=REBOOT_NORMAL, 2=ENTER_BOOTLOADER, 3=CLEAR_FAULT_LOCK） */
++    uint8_t  target_component;    /**< 目标组件（0=MAIN_APP） */
++    uint16_t delay_ms;            /**< 延迟执行毫秒数 */
++} minimc_payload_sys_ctrl_t;
++
++/**
++ * @brief 128字节 ATSG 统一固件包尾部元数据结构体（Rev 2.0.4）
++ */
++typedef struct {
++    uint32_t magic;               /**< 魔数 0x41545347 ("ATSG" 小端序) */
++    uint32_t struct_version;      /**< 结构体版本 0x00010000 */
++    uint32_t board_id;            /**< 板卡 ID（MC=0x43500001, TH=0x42300001） */
++    uint32_t version_code;        /**< 固件版本号 ((major << 8) | minor) */
++    uint32_t payload_len;         /**< 裸二进制固件载荷字节长度 */
++    uint8_t  payload_sha256[32];  /**< 裸二进制载荷 SHA-256 摘要 */
++    uint8_t  sig_r[32];           /**< 签名 R 分量（首版填 0） */
++    uint8_t  sig_s[32];           /**< 签名 S 分量（首版填 0） */
++    uint8_t  reserved[8];         /**< 保留对齐区（必须全 0） */
++    uint32_t trailer_crc32;       /**< 前 124 字节 IEEE 802.3 CRC32 */
++} minimc_fw_trailer_t;
++
++/**
++ * @brief 0x20 (MINIMC_CMD_OTA_START) 144字节固件升级启动请求载荷（Rev 2.0.4）
++ */
++typedef struct {
++    uint8_t             target_device;    /**< 目标节点 ID（0x02=MC, 0x03=TH） */
++    uint8_t             target_component; /**< 目标组件（0=MAIN_APP） */
++    uint8_t             force_flag;       /**< 强制刷写标志位 */
++    uint8_t             reserved;         /**< 保留对齐字节 */
++    uint32_t            fw_size_bytes;    /**< 裸二进制固件载荷总字节数 */
++    uint32_t            fw_crc32;         /**< 裸二进制固件载荷 IEEE 802.3 CRC32 */
++    uint32_t            fw_version_code;  /**< 固件版本编码 */
++    minimc_fw_trailer_t trailer;          /**< 128 字节完整 ATSG Trailer */
++} minimc_payload_ota_start_t;
++
++/**
++ * @brief 0x21 (MINIMC_CMD_OTA_DATA) 8字节固件数据分片头部结构体（Rev 2.0.4）
++ */
++typedef struct {
++    uint32_t offset;              /**< 固件载荷偏移量（字节） */
++    uint16_t chunk_bytes;         /**< 本分片有效数据字节数（1..512） */
++    uint16_t chunk_crc16;         /**< 本分片数据 CRC-16/CCITT-FALSE */
++} minimc_payload_ota_data_hdr_t;
++
++/**
++ * @brief 0x22 (MINIMC_CMD_OTA_FINISH) 8字节固件升级完成校验与提交请求载荷（Rev 2.0.4）
++ */
++typedef struct {
++    uint32_t fw_crc32;            /**< 全镜像预期 IEEE 802.3 CRC32 */
++    uint8_t  action_after_verify; /**< 校验通过后动作（1=REBOOT_TO_NEW_APP） */
++    uint8_t  reserved[3];         /**< 保留字节，置 0 */
++} minimc_payload_ota_finish_t;
++
++/**
++ * @brief 0x02 (MINIMC_CMD_VERSION_REPORT) 16字节版本与能力回报载荷（Rev 2.0.4）
++ */
++typedef struct {
++    uint8_t  proto_major;         /**< 协议主版本（2） */
++    uint8_t  proto_minor;         /**< 协议次版本（0） */
++    uint8_t  major;               /**< 固件主版本号 */
++    uint8_t  minor;               /**< 固件次版本号 */
++    uint32_t boot_id;             /**< 32位启动会话代次 ID */
++    uint32_t git_commit_short;    /**< 32位 Git Commit 短哈希 */
++    uint32_t capability_flags;    /**< 能力标志位（Bit31: 1=BOOT_MODE, 0=APP_MODE） */
++} minimc_payload_version_report_t;
++
++/**
++ * @brief 0x23 (MINIMC_CMD_OTA_STATUS) 8字节固件升级状态查询响应载荷（Rev 2.0.4）
++ */
++typedef struct {
++    uint8_t  ota_state;           /**< 升级状态（0=IDLE, 1=ERASED, 2=CHUNK0_CACHED_RAM, 3=FLASH_WRITING, 4=VERIFIED_COMMITTED, 5=ERROR） */
++    uint8_t  error_code;          /**< 最近一次错误码（MINIMC_ERR_*） */
++    uint16_t cached_chunk0_bytes; /**< 首块 RAM 暂存字节数（0 或 <=512） */
++    uint32_t bytes_written;       /**< 已物理写入 Flash 的累计字节数 */
++} minimc_payload_ota_status_t;
++
+ #pragma pack(pop)
+ 
+ /* 编译期结构体内存布局与字节尺寸静态断言 */
+@@ -354,6 +506,22 @@ static_assert(sizeof(minimc_gcode_req_t) == MINIMC_GCODE_REQ_MAX_SIZE,
+               "minimc_gcode_req_t size must be 62 bytes");
+ static_assert(sizeof(minimc_gcode_resp_t) == MINIMC_GCODE_RESP_SIZE,
+               "minimc_gcode_resp_t size must be 4 bytes");
++static_assert(sizeof(minimc_ack_payload_t) == MINIMC_ACK_PAYLOAD_SIZE,
++              "minimc_ack_payload_t size must be 4 bytes");
++static_assert(sizeof(minimc_nack_payload_t) == MINIMC_NACK_PAYLOAD_SIZE,
++              "minimc_nack_payload_t size must be 3 bytes");
++static_assert(sizeof(minimc_payload_sys_ctrl_t) == MINIMC_SYS_CTRL_REQ_SIZE,
++              "minimc_payload_sys_ctrl_t size must be 4 bytes");
++static_assert(sizeof(minimc_fw_trailer_t) == MINIMC_FW_TRAILER_SIZE,
++              "minimc_fw_trailer_t size must be 128 bytes");
++static_assert(sizeof(minimc_payload_ota_start_t) == MINIMC_OTA_START_REQ_SIZE,
++              "minimc_payload_ota_start_t size must be 144 bytes");
++static_assert(sizeof(minimc_payload_ota_data_hdr_t) == MINIMC_OTA_DATA_HDR_SIZE,
++              "minimc_payload_ota_data_hdr_t size must be 8 bytes");
++static_assert(sizeof(minimc_payload_ota_finish_t) == MINIMC_OTA_FINISH_REQ_SIZE,
++              "minimc_payload_ota_finish_t size must be 8 bytes");
++static_assert(sizeof(minimc_payload_ota_status_t) == MINIMC_OTA_STATUS_RESP_SIZE,
++              "minimc_payload_ota_status_t size must be 8 bytes");
+ #elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
+ _Static_assert(sizeof(minimc_header_t) == MINIMC_HEADER_SIZE,
+                "minimc_header_t size must be exactly 12 bytes");
+diff --git a/services/device_manager/CMakeLists.txt b/services/device_manager/CMakeLists.txt
+index b1f329f..c4fb320 100644
+--- a/services/device_manager/CMakeLists.txt
++++ b/services/device_manager/CMakeLists.txt
+@@ -19,6 +19,7 @@ set(DEV_SOURCES
+     device_manager_state.cpp
+     device_manager_dbus.cpp
+     device_manager_service.cpp
++    firmware_updater.cpp
+     ${SOC_AP_ROOT}/middleware/dbus/src/aisoc_dbus_msg.cpp
+     ${SOC_AP_ROOT}/middleware/dbus/src/aisoc_dbus_core.cpp
+     ${SOC_AP_ROOT}/middleware/dbus/src/aisoc_dbus_client.cpp
+@@ -74,6 +75,15 @@ target_compile_options(test_device_manager_state PRIVATE
+ )
+ add_test(NAME test_device_manager_state COMMAND test_device_manager_state)
+ 
++add_executable(test_firmware_updater
++    ${SOC_AP_ROOT}/tests/device_manager/twin/test_firmware_updater.cpp
++)
++target_link_libraries(test_firmware_updater PRIVATE device_manager)
++target_compile_options(test_firmware_updater PRIVATE
++    -Wall -Wextra -Wpedantic
++)
++add_test(NAME test_firmware_updater COMMAND test_firmware_updater)
++
+ add_executable(test_device_manager
+     ${SOC_AP_ROOT}/tests/device_manager/twin/test_device_manager.cpp
+     ${SOC_AP_ROOT}/services/forward/forward_protocol.cpp
+diff --git a/services/device_manager/device_manager_state.cpp b/services/device_manager/device_manager_state.cpp
+index f0aa244..39f1b79 100644
+--- a/services/device_manager/device_manager_state.cpp
++++ b/services/device_manager/device_manager_state.cpp
+@@ -203,6 +203,8 @@ void dev_state_init_snapshot(device_manager_state_t* state) {
+     state->is_heating = false;
+     state->is_printing = false;
+     state->is_fault = false;
++    state->is_maintenance = false;
++    state->ota_recovery_pending = false;
+ 
+     dev_leveling_grid_t* g = find_or_create_grid_binding(state);
+     if (g != nullptr) {
+@@ -268,6 +270,16 @@ static void update_system_status_desc(device_manager_state_t* state) {
+     if (state == nullptr || state->is_fault) {
+         return;
+     }
++    if (state->is_maintenance) {
++        strncpy(state->snapshot.system_status_desc, "UPGRADING_MAINTENANCE", sizeof(state->snapshot.system_status_desc) - 1U);
++        strncpy(state->device_state, "UPGRADING_MAINTENANCE", sizeof(state->device_state) - 1U);
++        return;
++    }
++    if (state->ota_recovery_pending) {
++        strncpy(state->snapshot.system_status_desc, "OTA_RECOVERY_PENDING", sizeof(state->snapshot.system_status_desc) - 1U);
++        strncpy(state->device_state, "OTA_RECOVERY_PENDING", sizeof(state->device_state) - 1U);
++        return;
++    }
+     const dev_state_version_binding_t* b = find_version_binding(state);
+     const bool mc_offline = (state->snapshot.bed_temp_millic == AISOC_TEMP_MILLIC_OFFLINE) ||
+                             (b != nullptr && b->mc_ver.is_valid && b->mc_ver.status == DEV_VER_STATUS_OFFLINE);
+@@ -434,6 +446,10 @@ aisoc_dev_status_t dev_state_eval_freshness(
+     if (state == nullptr) {
+         return AISOC_DEV_ERR_NULL_PTR;
+     }
++    if (state->is_maintenance) {
++        update_system_status_desc(state);
++        return AISOC_DEV_OK;
++    }
+     const dev_state_version_binding_t* vb = find_version_binding(state);
+     const bool mc_off = (vb != nullptr && vb->mc_ver.is_valid && vb->mc_ver.status == DEV_VER_STATUS_OFFLINE);
+     const bool th_off = (vb != nullptr && vb->th_ver.is_valid && vb->th_ver.status == DEV_VER_STATUS_OFFLINE);
+@@ -589,9 +605,9 @@ aisoc_dev_status_t dev_state_get_snapshot_json(
+     format_temp_c_val(state->snapshot.tool_temp_millic, t_c_str, sizeof(t_c_str));
+ 
+     const char* b_st = sensor_status_to_str(state->snapshot.bed_sensor_status);
+-    const char* b_q = quality_to_str(state->snapshot.bed_quality);
++    const char* b_q = state->is_maintenance ? "MAINTENANCE_HOLD" : quality_to_str(state->snapshot.bed_quality);
+     const char* t_st = sensor_status_to_str(state->snapshot.tool_sensor_status);
+-    const char* t_q = quality_to_str(state->snapshot.tool_quality);
++    const char* t_q = state->is_maintenance ? "MAINTENANCE_HOLD" : quality_to_str(state->snapshot.tool_quality);
+ 
+     char dev_block[600] = {0};
+     format_devices_block_json(state, dev_block, sizeof(dev_block));
+@@ -669,6 +685,10 @@ aisoc_dev_status_t dev_state_check_admission(
+         strncpy(out_res->reason, "DEVICE_IN_FAULT_STATE", sizeof(out_res->reason) - 1U);
+         return AISOC_DEV_ERR_FAULT;
+     }
++    if (state->is_maintenance) {
++        strncpy(out_res->reason, "UPGRADING_MAINTENANCE", sizeof(out_res->reason) - 1U);
++        return AISOC_DEV_ERR_BUSY;
++    }
+ 
+     const uint64_t now_ns = get_host_monotonic_ns();
+     const uint64_t elapsed_ns = (now_ns >= state->last_admission_ns) ? (now_ns - state->last_admission_ns) : 0U;
+@@ -1000,6 +1020,10 @@ aisoc_dev_status_t dev_state_eval_version_freshness(
+     if (state == nullptr) {
+         return AISOC_DEV_ERR_NULL_PTR;
+     }
++    if (state->is_maintenance) {
++        update_system_status_desc(state);
++        return AISOC_DEV_OK;
++    }
+     dev_state_version_binding_t* b = find_or_create_version_binding(state);
+     if (b == nullptr) {
+         return AISOC_DEV_ERR_BUSY;
+@@ -1069,3 +1093,87 @@ aisoc_dev_status_t dev_state_get_mcu_version(
+     }
+     return AISOC_DEV_ERR_INVALID_ARG;
+ }
++
++/**
++ * @brief 校验 OTA 升级前四项物理安全准入条件（作业空闲、运动空闲、温度有效无故障、加热全关）
++ */
++aisoc_dev_status_t dev_state_check_ota_admission(
++    const device_manager_state_t* state,
++    const dev_ota_safety_ctx_t* safety,
++    dev_admission_res_t* out_res
++) {
++    if (state == nullptr || safety == nullptr || out_res == nullptr) {
++        return AISOC_DEV_ERR_NULL_PTR;
++    }
++    out_res->accepted = false;
++    const bool job_ok = !state->is_printing &&
++        (safety->job_state == 0U || safety->job_state == 3U || safety->job_state == 4U);
++    if (!job_ok) {
++        strncpy(out_res->reason, "OTA_REJECTED_JOB_ACTIVE", sizeof(out_res->reason) - 1U);
++        return AISOC_DEV_ERR_NOT_SAFE_FOR_OTA;
++    }
++    if (safety->mc_state != 0U) {
++        strncpy(out_res->reason, "OTA_REJECTED_MOTION_MOVING", sizeof(out_res->reason) - 1U);
++        return AISOC_DEV_ERR_NOT_SAFE_FOR_OTA;
++    }
++    const bool heater_off = !state->is_heating &&
++        (safety->target_bed_deci_c <= 0) && (safety->target_tool_deci_c <= 0) &&
++        (safety->bed_heater_duty == 0U) && (safety->tool_heater_duty == 0U);
++    if (!heater_off) {
++        strncpy(out_res->reason, "OTA_REJECTED_HEATER_ACTIVE", sizeof(out_res->reason) - 1U);
++        return AISOC_DEV_ERR_NOT_SAFE_FOR_OTA;
++    }
++    if (!safety->recovery_mode) {
++        const bool temp_valid =
++            (state->snapshot.bed_temp_millic != AISOC_TEMP_MILLIC_FAULT) &&
++            (state->snapshot.bed_temp_millic != AISOC_TEMP_MILLIC_OFFLINE) &&
++            (state->snapshot.tool_temp_millic != AISOC_TEMP_MILLIC_FAULT) &&
++            (state->snapshot.tool_temp_millic != AISOC_TEMP_MILLIC_OFFLINE) &&
++            (state->snapshot.bed_sensor_status == (uint32_t)AISOC_SENSOR_OK) &&
++            (state->snapshot.tool_sensor_status == (uint32_t)AISOC_SENSOR_OK);
++        if (!temp_valid) {
++            strncpy(out_res->reason, "OTA_REJECTED_TEMP_SENSOR_INVALID", sizeof(out_res->reason) - 1U);
++            return AISOC_DEV_ERR_NOT_SAFE_FOR_OTA;
++        }
++    }
++    out_res->accepted = true;
++    strncpy(out_res->reason, "SAFE_FOR_OTA", sizeof(out_res->reason) - 1U);
++    return AISOC_DEV_OK;
++}
++
++/**
++ * @brief 进入 UPGRADING_MAINTENANCE 固件升级维护锁定态，暂停常规 1.5s/3.0s 遥测超时衰退
++ */
++aisoc_dev_status_t dev_state_enter_maintenance(device_manager_state_t* state) {
++    if (state == nullptr) {
++        return AISOC_DEV_ERR_NULL_PTR;
++    }
++    state->is_maintenance = true;
++    state->ota_recovery_pending = false;
++    state->is_fault = false;
++    strncpy(state->device_state, "UPGRADING_MAINTENANCE", sizeof(state->device_state) - 1U);
++    strncpy(state->snapshot.system_status_desc, "UPGRADING_MAINTENANCE", sizeof(state->snapshot.system_status_desc) - 1U);
++    return AISOC_DEV_OK;
++}
++
++/**
++ * @brief 退出 UPGRADING_MAINTENANCE 维护态（支持标记 OTA_RECOVERY_PENDING 待重连恢复）
++ */
++aisoc_dev_status_t dev_state_exit_maintenance(
++    device_manager_state_t* state,
++    bool recovery_pending
++) {
++    if (state == nullptr) {
++        return AISOC_DEV_ERR_NULL_PTR;
++    }
++    state->is_maintenance = false;
++    state->ota_recovery_pending = recovery_pending;
++    if (recovery_pending) {
++        strncpy(state->device_state, "OTA_RECOVERY_PENDING", sizeof(state->device_state) - 1U);
++        strncpy(state->snapshot.system_status_desc, "OTA_RECOVERY_PENDING", sizeof(state->snapshot.system_status_desc) - 1U);
++    } else {
++        strncpy(state->device_state, "IDLE", sizeof(state->device_state) - 1U);
++        update_system_status_desc(state);
++    }
++    return AISOC_DEV_OK;
++}
+diff --git a/services/device_manager/device_manager_state.h b/services/device_manager/device_manager_state.h
+index 5da7d15..627abf1 100644
+--- a/services/device_manager/device_manager_state.h
++++ b/services/device_manager/device_manager_state.h
+@@ -274,6 +274,30 @@ aisoc_dev_status_t dev_state_get_mcu_version(
+  */
+ void dev_state_reset_bindings(void);
+ 
++/**
++ * @brief 校验 OTA 升级前四项物理安全准入条件（作业空闲、运动空闲、温度有效无故障、加热全关）
++ */
++aisoc_dev_status_t dev_state_check_ota_admission(
++    const device_manager_state_t* state,
++    const dev_ota_safety_ctx_t* safety,
++    dev_admission_res_t* out_res
++);
++
++/**
++ * @brief 进入 UPGRADING_MAINTENANCE 固件升级维护锁定态，暂停常规 1.5s/3.0s 遥测超时衰退
++ */
++aisoc_dev_status_t dev_state_enter_maintenance(
++    device_manager_state_t* state
++);
++
++/**
++ * @brief 退出 UPGRADING_MAINTENANCE 维护态（支持标记 OTA_RECOVERY_PENDING 待重连恢复）
++ */
++aisoc_dev_status_t dev_state_exit_maintenance(
++    device_manager_state_t* state,
++    bool recovery_pending
++);
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/services/device_manager/device_manager_types.h b/services/device_manager/device_manager_types.h
+index 14bbf72..dc0f28f 100644
+--- a/services/device_manager/device_manager_types.h
++++ b/services/device_manager/device_manager_types.h
+@@ -45,9 +45,23 @@ typedef enum {
+     AISOC_DEV_ERR_FAULT        = -6, /**< 设备处于故障锁定态 */
+     AISOC_DEV_ERR_DBUS_INIT    = -7, /**< D-Bus 总线初始化失败 */
+     AISOC_DEV_ERR_DDS_INIT     = -8, /**< DDS 域参与者初始化失败 */
+-    AISOC_DEV_ERR_TIMEOUT      = -9  /**< 通信或等待超时 */
++    AISOC_DEV_ERR_TIMEOUT      = -9, /**< 通信或等待超时 */
++    AISOC_DEV_ERR_NOT_SAFE_FOR_OTA = -10 /**< 不满足 OTA 升级四项安全准入条件 */
+ } aisoc_dev_status_t;
+ 
++/**
++ * @brief 固件升级（OTA）四项物理安全准入上下文结构体（TWIN-65）
++ */
++typedef struct {
++    uint8_t job_state;           /**< 作业状态（0=IDLE, 1=PRINTING, 2=PAUSED, 3=COMPLETED, 4=CANCELLED） */
++    uint8_t mc_state;            /**< 运动规划状态（0=IDLE, 1=MOVING） */
++    int16_t target_bed_deci_c;   /**< 热床设定目标温度（0.1°C） */
++    int16_t target_tool_deci_c;  /**< 喷头设定目标温度（0.1°C） */
++    uint8_t bed_heater_duty;     /**< 热床加热 PWM 占空比（%） */
++    uint8_t tool_heater_duty;    /**< 喷头加热 PWM 占空比（%） */
++    bool    recovery_mode;       /**< 是否为单节点 Boot 恢复刷写模式 */
++} dev_ota_safety_ctx_t;
++
+ /**
+  * @brief 设备管理服务启动配置参数结构体
+  */
+@@ -74,6 +88,8 @@ typedef struct {
+     bool                     is_heating;                           /**< 是否处于加热状态 */
+     bool                     is_printing;                          /**< 是否处于打印作业状态 */
+     bool                     is_fault;                             /**< 是否处于故障锁定状态 */
++    bool                     is_maintenance;                       /**< 是否处于固件升级维护锁定态 */
++    bool                     ota_recovery_pending;                 /**< 是否处于升级后待重连恢复态 */
+     uint64_t                 last_admission_ns;                    /**< 最近一次准入请求单调时钟戳 */
+     pthread_mutex_t          state_mutex;                          /**< 保护状态与快照读写的互斥锁 */
+     aisoc_dbus_bus_type_t    dbus_bus_type;                        /**< D-Bus 总线类型 */
+diff --git a/services/device_manager/firmware_updater.cpp b/services/device_manager/firmware_updater.cpp
+new file mode 100644
+index 0000000..46d2510
+--- /dev/null
++++ b/services/device_manager/firmware_updater.cpp
+@@ -0,0 +1,554 @@
++/**
++ * @file firmware_updater.cpp
++ * @brief SoC AP 统一固件升级编排器实现（TWIN-65：暂存扫描、只读封存、128B ATSG 预检与四阶段确认闭环）
++ * @details 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md。
++ */
++
++#include "firmware_updater.h"
++#include <cstdio>
++#include <cstring>
++#include <dirent.h>
++#include <sys/stat.h>
++#include <unistd.h>
++
++/** @brief 静态双槽封存镜像缓存（槽 0 供 MC 0x02，槽 1 供 TH 0x03，零动态堆分配） */
++static uint8_t s_sealed_file_buf[2][920000];
++
++/** @brief SHA-256 64 轮常数表 */
++static const uint32_t k_sha256_k[64] = {
++    0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL,
++    0x3956c25bUL, 0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL,
++    0xd807aa98UL, 0x12835b01UL, 0x243185beUL, 0x550c7dc3UL,
++    0x72be5d74UL, 0x80deb1feUL, 0x9bdc06a7UL, 0xc19bf174UL,
++    0xe49b69c1UL, 0xefbe4786UL, 0x0fc19dc6UL, 0x240ca1ccUL,
++    0x2de92c6fUL, 0x4a7484aaUL, 0x5cb0a9dcUL, 0x76f988daUL,
++    0x983e5152UL, 0xa831c66dUL, 0xb00327c8UL, 0xbf597fc7UL,
++    0xc6e00bf3UL, 0xd5a79147UL, 0x06ca6351UL, 0x14292967UL,
++    0x27b70a85UL, 0x2e1b2138UL, 0x4d2c6dfcUL, 0x53380d13UL,
++    0x650a7354UL, 0x766a0abbUL, 0x81c2c92eUL, 0x92722c85UL,
++    0xa2bfe8a1UL, 0xa81a664bUL, 0xc24b8b70UL, 0xc76c51a3UL,
++    0xd192e819UL, 0xd6990624UL, 0xf40e3585UL, 0x106aa070UL,
++    0x19a4c116UL, 0x1e376c08UL, 0x2748774cUL, 0x34b0bcb5UL,
++    0x391c0cb3UL, 0x4ed8aa4aUL, 0x5b9cca4fUL, 0x682e6ff3UL,
++    0x748f82eeUL, 0x78a5636fUL, 0x84c87814UL, 0x8cc70208UL,
++    0x90befffaUL, 0xa4506cebUL, 0xbef9a3f7UL, 0xc67178f2UL
++};
++
++/**
++ * @brief 32 位无符号整数循环右移辅助函数
++ * @param x 待移位数值
++ * @param n 右移位数
++ * @return uint32_t 循环右移结果
++ */
++static uint32_t rotr32(uint32_t x, uint32_t n) {
++    return (x >> n) | (x << (32U - n));
++}
++
++/**
++ * @brief 执行单个 64 字节数据块的 SHA-256 压缩变换
++ * @param state 8 个 32 位哈希状态寄存器数组
++ * @param block 64 字节输入块指针
++ */
++static void sha256_transform_block(uint32_t state[8], const uint8_t block[64]) {
++    uint32_t w[64];
++    for (size_t i = 0U; i < 16U; ++i) {
++        const size_t j = i * 4U;
++        w[i] = ((uint32_t)block[j] << 24U) | ((uint32_t)block[j + 1U] << 16U) |
++               ((uint32_t)block[j + 2U] << 8U) | (uint32_t)block[j + 3U];
++    }
++    for (size_t i = 16U; i < 64U; ++i) {
++        const uint32_t s0 = rotr32(w[i - 15U], 7U) ^ rotr32(w[i - 15U], 18U) ^ (w[i - 15U] >> 3U);
++        const uint32_t s1 = rotr32(w[i - 2U], 17U) ^ rotr32(w[i - 2U], 19U) ^ (w[i - 2U] >> 10U);
++        w[i] = w[i - 16U] + s0 + w[i - 7U] + s1;
++    }
++    uint32_t v[8];
++    for (size_t i = 0U; i < 8U; ++i) v[i] = state[i];
++    for (size_t i = 0U; i < 64U; ++i) {
++        const uint32_t s1 = rotr32(v[4], 6U) ^ rotr32(v[4], 11U) ^ rotr32(v[4], 25U);
++        const uint32_t ch = (v[4] & v[5]) ^ ((~v[4]) & v[6]);
++        const uint32_t t1 = v[7] + s1 + ch + k_sha256_k[i] + w[i];
++        const uint32_t s0 = rotr32(v[0], 2U) ^ rotr32(v[0], 13U) ^ rotr32(v[0], 22U);
++        const uint32_t maj = (v[0] & v[1]) ^ (v[0] & v[2]) ^ (v[1] & v[2]);
++        const uint32_t t2 = s0 + maj;
++        v[7] = v[6]; v[6] = v[5]; v[5] = v[4]; v[4] = v[3] + t1;
++        v[3] = v[2]; v[2] = v[1]; v[1] = v[0]; v[0] = t1 + t2;
++    }
++    for (size_t i = 0U; i < 8U; ++i) state[i] += v[i];
++}
++
++/**
++ * @brief 计算字节缓冲区的 IEEE 802.3 CRC32 校验值（多项式 0xEDB88320）
++ * @param data 输入字节流只读指针
++ * @param len 字节长度
++ * @return uint32_t CRC32 计算结果
++ */
++uint32_t fw_updater_crc32(const uint8_t* data, size_t len) {
++    if (data == nullptr && len > 0U) {
++        return 0U;
++    }
++    uint32_t crc = 0xFFFFFFFFUL;
++    for (size_t i = 0U; i < len; ++i) {
++        crc ^= (uint32_t)data[i];
++        for (uint8_t b = 0U; b < 8U; ++b) {
++            const uint32_t mask = (uint32_t)(-(int32_t)(crc & 1UL));
++            crc = (crc >> 1U) ^ (0xEDB88320UL & mask);
++        }
++    }
++    return ~crc;
++}
++
++/**
++ * @brief 计算字节缓冲区的标准 FIPS 180-4 SHA-256 摘要
++ * @param data 输入字节流只读指针
++ * @param len 字节长度
++ * @param out_hash 32 字节摘要输出数组（非空）
++ * @return aisoc_dev_status_t 成功返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_sha256(
++    const uint8_t* data,
++    size_t len,
++    uint8_t out_hash[32]
++) {
++    if (out_hash == nullptr || (data == nullptr && len > 0U)) {
++        return AISOC_DEV_ERR_NULL_PTR;
++    }
++    uint32_t state[8] = {
++        0x6a09e667UL, 0xbb67ae85UL, 0x3c6ef372UL, 0xa54ff53aUL,
++        0x510e527fUL, 0x9b05688cUL, 0x1f83d9abUL, 0x5be0cd19UL
++    };
++    size_t offset = 0U;
++    while (offset + 64U <= len) {
++        sha256_transform_block(state, data + offset);
++        offset += 64U;
++    }
++    uint8_t tail[128];
++    std::memset(tail, 0, sizeof(tail));
++    const size_t rem = len - offset;
++    if (rem > 0U) std::memcpy(tail, data + offset, rem);
++    tail[rem] = 0x80U;
++    const size_t pad_blocks = (rem < 56U) ? 1U : 2U;
++    const uint64_t bit_len = (uint64_t)len * 8ULL;
++    for (size_t b = 0U; b < 8U; ++b) {
++        tail[pad_blocks * 64U - 1U - b] = (uint8_t)((bit_len >> (b * 8U)) & 0xFFU);
++    }
++    for (size_t blk = 0U; blk < pad_blocks; ++blk) {
++        sha256_transform_block(state, tail + blk * 64U);
++    }
++    for (size_t i = 0U; i < 8U; ++i) {
++        out_hash[i * 4U]      = (uint8_t)((state[i] >> 24U) & 0xFFU);
++        out_hash[i * 4U + 1U] = (uint8_t)((state[i] >> 16U) & 0xFFU);
++        out_hash[i * 4U + 2U] = (uint8_t)((state[i] >> 8U) & 0xFFU);
++        out_hash[i * 4U + 3U] = (uint8_t)(state[i] & 0xFFU);
++    }
++    return AISOC_DEV_OK;
++}
++
++/**
++ * @brief 检查文件名是否为完整的 .bin 固件文件（忽略 .part 未完成文件）
++ * @param name 文件名字符串
++ * @return bool 是完整 .bin 返回 true，否则返回 false
++ */
++static bool is_complete_bin_filename(const char* name) {
++    if (name == nullptr) return false;
++    const size_t len = std::strlen(name);
++    if (len < 5U) return false;
++    if (std::strstr(name, ".part") != nullptr) return false;
++    return (std::strcmp(name + len - 4U, ".bin") == 0);
++}
++
++/**
++ * @brief 扫描 incoming 目录：忽略 .part 文件，发现完整 .bin 时进入 PACKAGE_STAGED_PENDING_CONFIRM
++ * @param incoming_dir 暂存目录路径（非空）
++ * @param status 升级器状态结构体指针（非空）
++ * @return aisoc_dev_status_t 成功返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_scan_incoming(
++    const char* incoming_dir,
++    fw_updater_status_t* status
++) {
++    if (incoming_dir == nullptr || status == nullptr) {
++        return AISOC_DEV_ERR_NULL_PTR;
++    }
++    DIR* dir = opendir(incoming_dir);
++    if (dir == nullptr) {
++        return AISOC_DEV_ERR_INVALID_ARG;
++    }
++    status->staged_mc_file[0] = '\0';
++    status->staged_th_file[0] = '\0';
++    bool found_any = false;
++    struct dirent* ent = nullptr;
++    while ((ent = readdir(dir)) != nullptr) {
++        if (!is_complete_bin_filename(ent->d_name)) continue;
++        found_any = true;
++        if (std::strstr(ent->d_name, "th") != nullptr || std::strstr(ent->d_name, "TH") != nullptr) {
++            std::snprintf(status->staged_th_file, sizeof(status->staged_th_file), "%.120s", ent->d_name);
++        } else {
++            std::snprintf(status->staged_mc_file, sizeof(status->staged_mc_file), "%.120s", ent->d_name);
++        }
++    }
++    closedir(dir);
++    if (found_any) {
++        status->lifecycle_stage = FW_STAGE_PACKAGE_STAGED_PENDING_CONFIRM;
++        std::snprintf(status->status_text, sizeof(status->status_text), "PACKAGE_STAGED_PENDING_CONFIRM");
++    } else {
++        status->lifecycle_stage = FW_STAGE_IDLE;
++        std::snprintf(status->status_text, sizeof(status->status_text), "IDLE");
++    }
++    return AISOC_DEV_OK;
++}
++
++/**
++ * @brief 校验 128B ATSG 尾块的魔数、结构版本、目标 board_id、镜像尺寸上限及 trailer_crc32
++ * @param tr 128B 尾块结构体只读指针
++ * @param target_node 期望目标节点（0x02=MC, 0x03=TH）
++ * @return bool 校验通过返回 true
++ */
++static bool verify_trailer_header_and_limits(const minimc_fw_trailer_t* tr, uint8_t target_node) {
++    if (tr == nullptr) return false;
++    if (tr->magic != MINIMC_FW_TRAILER_MAGIC || tr->struct_version != MINIMC_FW_STRUCT_VER) {
++        return false;
++    }
++    const uint32_t expected_board = (target_node == MINIMC_NODE_TH)
++        ? MINIMC_BOARD_ID_TH : MINIMC_BOARD_ID_MC;
++    const uint32_t max_bytes = (target_node == MINIMC_NODE_TH)
++        ? MINIMC_TH_MAX_APP_BYTES : MINIMC_MC_MAX_APP_BYTES;
++    if (tr->board_id != expected_board || tr->payload_len == 0U || tr->payload_len > max_bytes) {
++        return false;
++    }
++    const uint32_t calc_tr_crc = fw_updater_crc32((const uint8_t*)tr, sizeof(minimc_fw_trailer_t) - 4U);
++    return (calc_tr_crc == tr->trailer_crc32);
++}
++
++/**
++ * @brief 对内存中的固件字节流（裸镜像 + 128B ATSG Trailer）执行离线预检并填充 0x20 请求
++ * @param raw_file_bytes 完整固件文件字节流指针（非空）
++ * @param total_file_len 完整固件文件总字节数
++ * @param target_node 期望目标节点 ID（0x02=MC, 0x03=TH）
++ * @param out_pkg 输出固件包描述符指针（非空）
++ * @return aisoc_dev_status_t 校验通过返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_verify_buffer(
++    const uint8_t* raw_file_bytes,
++    size_t total_file_len,
++    uint8_t target_node,
++    fw_sealed_package_t* out_pkg
++) {
++    if (raw_file_bytes == nullptr || out_pkg == nullptr) {
++        return AISOC_DEV_ERR_NULL_PTR;
++    }
++    if (total_file_len <= sizeof(minimc_fw_trailer_t)) {
++        return AISOC_DEV_ERR_INVALID_ARG;
++    }
++    const size_t payload_len = total_file_len - sizeof(minimc_fw_trailer_t);
++    minimc_fw_trailer_t tr;
++    std::memcpy(&tr, raw_file_bytes + payload_len, sizeof(tr));
++    if (tr.payload_len != (uint32_t)payload_len || !verify_trailer_header_and_limits(&tr, target_node)) {
++        return AISOC_DEV_ERR_INVALID_ARG;
++    }
++    uint8_t calc_sha[32];
++    if (fw_updater_sha256(raw_file_bytes, payload_len, calc_sha) != AISOC_DEV_OK ||
++        std::memcmp(calc_sha, tr.payload_sha256, 32U) != 0) {
++        return AISOC_DEV_ERR_INVALID_ARG;
++    }
++    out_pkg->target_node = target_node;
++    out_pkg->payload_len = (uint32_t)payload_len;
++    out_pkg->fw_crc32 = fw_updater_crc32(raw_file_bytes, payload_len);
++    out_pkg->trailer = tr;
++    out_pkg->payload_buf = raw_file_bytes;
++    out_pkg->start_req.target_device = target_node;
++    out_pkg->start_req.target_component = 1U;
++    out_pkg->start_req.force_flag = 0U;
++    out_pkg->start_req.reserved = 0U;
++    out_pkg->start_req.fw_size_bytes = out_pkg->payload_len;
++    out_pkg->start_req.fw_crc32 = out_pkg->fw_crc32;
++    out_pkg->start_req.fw_version_code = tr.version_code;
++    out_pkg->start_req.trailer = tr;
++    return AISOC_DEV_OK;
++}
++
++/**
++ * @brief 将源文件内容复制到封存目录并设置 0444 只读权限，同时加载至静态缓冲区
++ * @param src_path 源文件路径
++ * @param dst_path 目标封存文件路径
++ * @param buf 静态缓冲指针
++ * @param out_len 输出文件总长度指针
++ * @return bool 成功返回 true
++ */
++static bool copy_and_seal_readonly(
++    const char* src_path,
++    const char* dst_path,
++    uint8_t* buf,
++    size_t* out_len
++) {
++    if (src_path == nullptr || dst_path == nullptr || buf == nullptr || out_len == nullptr) return false;
++    FILE* fp_in = std::fopen(src_path, "rb");
++    if (fp_in == nullptr) return false;
++    const size_t n = std::fread(buf, 1U, sizeof(s_sealed_file_buf[0]), fp_in);
++    const int extra = std::fgetc(fp_in);
++    std::fclose(fp_in);
++    if (n <= sizeof(minimc_fw_trailer_t) || extra != EOF) return false;
++
++    (void)unlink(dst_path);
++    FILE* fp_out = std::fopen(dst_path, "wb");
++    if (fp_out == nullptr) return false;
++    const size_t written = std::fwrite(buf, 1U, n, fp_out);
++    std::fclose(fp_out);
++    if (written != n || chmod(dst_path, 0444) != 0) return false;
++    *out_len = n;
++    return true;
++}
++
++/**
++ * @brief 将暂存镜像复制封存至只读目录（0444）并执行 128B ATSG 尾块、SHA-256 与尺寸上限离线预检
++ * @param src_path 源固件文件路径（非空）
++ * @param sealed_dir 封存目标目录路径（非空）
++ * @param target_node 期望目标节点 ID（0x02=MC, 0x03=TH）
++ * @param out_pkg 输出封存并校验通过的固件包描述符指针（非空）
++ * @return aisoc_dev_status_t 校验通过返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_seal_and_verify_file(
++    const char* src_path,
++    const char* sealed_dir,
++    uint8_t target_node,
++    fw_sealed_package_t* out_pkg
++) {
++    if (src_path == nullptr || sealed_dir == nullptr || out_pkg == nullptr) {
++        return AISOC_DEV_ERR_NULL_PTR;
++    }
++    (void)mkdir(sealed_dir, 0755);
++    const char* base = std::strrchr(src_path, '/');
++    const char* fname = (base != nullptr) ? (base + 1) : src_path;
++    std::memset(out_pkg, 0, sizeof(*out_pkg));
++    std::snprintf(out_pkg->sealed_path, sizeof(out_pkg->sealed_path), "%s/%s", sealed_dir, fname);
++
++    const size_t slot = (target_node == MINIMC_NODE_TH) ? 1U : 0U;
++    size_t total_len = 0U;
++    if (!copy_and_seal_readonly(src_path, out_pkg->sealed_path, s_sealed_file_buf[slot], &total_len)) {
++        return AISOC_DEV_ERR_INVALID_ARG;
++    }
++    return fw_updater_verify_buffer(s_sealed_file_buf[slot], total_len, target_node, out_pkg);
++}
++
++/**
++ * @brief 更新升级状态快照并触发可选的阶段变更回调钩子
++ * @param tr 传输层接口指针
++ * @param st 状态快照指针
++ * @param stage 四阶段确认等级
++ * @param text 状态文本字符串
++ */
++static void update_confirm_stage(
++    const fw_ota_transport_t* tr,
++    fw_updater_status_t* st,
++    fw_confirm_stage_t stage,
++    const char* text
++) {
++    if (st == nullptr || text == nullptr) return;
++    st->confirm_stage = stage;
++    std::snprintf(st->status_text, sizeof(st->status_text), "%s", text);
++    if (tr != nullptr && tr->on_stage_transition != nullptr) {
++        tr->on_stage_transition(tr->user_ctx, st);
++    }
++}
++
++/**
++ * @brief 阶段 A：查询升级前 boot_id，若节点处于 APP_MODE 则发送 0x1D 进入 BOOT_MODE 并核实重枚举
++ * @param tr 传输层接口指针
++ * @param dst 目标节点 ID
++ * @param st 状态快照指针
++ * @return bool 成功进入 BOOT_MODE 返回 true
++ */
++static bool enter_boot_mode_and_verify(
++    const fw_ota_transport_t* tr,
++    uint8_t dst,
++    fw_updater_status_t* st
++) {
++    minimc_payload_version_report_t ver = {0, 0, 0, 0, 0, 0, 0};
++    if (tr->query_version(tr->user_ctx, dst, &ver)) {
++        st->pre_upgrade_boot_id = ver.boot_id;
++        if ((ver.capability_flags & MINIMC_CAP_FLAG_BOOT_MODE) != 0U) {
++            return true;
++        }
++    }
++    uint8_t nack_err = 0U;
++    if (!tr->send_sys_ctrl(tr->user_ctx, dst, MINIMC_SYS_CTRL_ACTION_ENTER_BOOT, &nack_err)) {
++        std::snprintf(st->last_error, sizeof(st->last_error), "0x1D rejected err=0x%02X", (unsigned)nack_err);
++        return false;
++    }
++    for (uint8_t i = 0U; i < 5U; ++i) {
++        if (tr->query_version(tr->user_ctx, dst, &ver) &&
++            ((ver.capability_flags & MINIMC_CAP_FLAG_BOOT_MODE) != 0U)) {
++            return true;
++        }
++    }
++    std::snprintf(st->last_error, sizeof(st->last_error), "BOOT_MODE capability_flags verify failed");
++    return false;
++}
++
++/**
++ * @brief 阶段 1 & 2：发送 0x20 握手与 0x21 分块数据流，并通过 0x23 核实 Stage 1 (RAM) 与 Stage 2 (Flash)
++ * @param tr 传输层接口指针
++ * @param pkg 封存固件包描述符指针
++ * @param st 状态快照指针
++ * @return bool 全部分块传输并经 0x23 核实通过返回 true
++ */
++static bool stream_chunks_and_verify_stages_1_2(
++    const fw_ota_transport_t* tr,
++    const fw_sealed_package_t* pkg,
++    fw_updater_status_t* st
++) {
++    uint8_t nack = 0U;
++    if (!tr->ota_start(tr->user_ctx, pkg->target_node, &pkg->start_req, &nack)) {
++        std::snprintf(st->last_error, sizeof(st->last_error), "0x20 OTA_START failed err=0x%02X", (unsigned)nack);
++        return false;
++    }
++    uint32_t offset = 0U;
++    while (offset < pkg->payload_len) {
++        const uint32_t rem = pkg->payload_len - offset;
++        const uint16_t chunk_len = (rem > MINIMC_OTA_DEFAULT_CHUNK_SIZE)
++            ? (uint16_t)MINIMC_OTA_DEFAULT_CHUNK_SIZE : (uint16_t)rem;
++        if (!tr->ota_send_chunk(tr->user_ctx, pkg->target_node, offset, pkg->payload_buf + offset, chunk_len, &nack)) {
++            std::snprintf(st->last_error, sizeof(st->last_error), "0x21 chunk offset=%u failed", (unsigned)offset);
++            return false;
++        }
++        minimc_payload_ota_status_t ota_st = {0, 0, 0, 0};
++        if (tr->ota_query_status != nullptr && tr->ota_query_status(tr->user_ctx, pkg->target_node, &ota_st)) {
++            st->bytes_written = ota_st.bytes_written;
++            st->cached_chunk0_bytes = ota_st.cached_chunk0_bytes;
++        }
++        if (offset == 0U) {
++            st->progress_pct = 15U;
++            update_confirm_stage(tr, st, FW_CONFIRM_STAGE_1_CHUNK0_CACHED_RAM, "CHUNK0_CACHED_RAM");
++        } else {
++            st->progress_pct = (uint8_t)(20U + ((offset + chunk_len) * 70U) / pkg->payload_len);
++            update_confirm_stage(tr, st, FW_CONFIRM_STAGE_2_FLASH_WRITTEN, "FLASH_WRITTEN");
++        }
++        offset += chunk_len;
++    }
++    return true;
++}
++
++/**
++ * @brief 阶段 4：轮询 0x01->0x02 与 0x14->0x15，严格核实 APP_MODE、新 boot_id、目标版本与鲜活温度
++ * @param cfg 升级配置结构体指针
++ * @param pkg 固件包描述符指针
++ * @param st 状态快照指针
++ * @return bool Stage 4 核实全部通过返回 true
++ */
++static bool verify_stage4_new_app_online(
++    const fw_upgrade_exec_cfg_t* cfg,
++    const fw_sealed_package_t* pkg,
++    fw_updater_status_t* st
++) {
++    const fw_ota_transport_t* tr = cfg->transport;
++    const uint8_t max_polls = (cfg->stage4_max_polls > 0U) ? cfg->stage4_max_polls : 5U;
++    for (uint8_t i = 0U; i < max_polls; ++i) {
++        minimc_payload_version_report_t ver = {0, 0, 0, 0, 0, 0, 0};
++        int16_t temp_deci = 0;
++        if (!tr->query_version(tr->user_ctx, pkg->target_node, &ver)) continue;
++        const bool is_app_mode = ((ver.capability_flags & MINIMC_CAP_FLAG_BOOT_MODE) == 0U);
++        const bool new_boot_id = (ver.boot_id != 0U) && (ver.boot_id != st->pre_upgrade_boot_id);
++        const uint32_t rep_ver = ((uint32_t)ver.major << 8U) | (uint32_t)ver.minor;
++        const bool ver_match = (rep_ver == pkg->trailer.version_code);
++        const bool temp_ok = (tr->query_temp_deci_c != nullptr) &&
++                             tr->query_temp_deci_c(tr->user_ctx, pkg->target_node, &temp_deci) &&
++                             (temp_deci >= 50 && temp_deci <= 3000);
++        if (is_app_mode && new_boot_id && ver_match && temp_ok) {
++            st->post_upgrade_boot_id = ver.boot_id;
++            st->progress_pct = 100U;
++            st->lifecycle_stage = FW_STAGE_SUCCEEDED;
++            update_confirm_stage(tr, st, FW_CONFIRM_STAGE_4_NEW_APP_ONLINE_VERIFIED, "SUCCEEDED");
++            return true;
++        }
++    }
++    return false;
++}
++
++/**
++ * @brief 执行单节点四阶段固件升级闭环（含安全门禁、进入维护态、Stage 1~4 硬隔离与恢复态判定）
++ * @param cfg 升级执行配置结构体只读指针（非空）
++ * @param pkg 已预检通过的固件包描述符只读指针（非空）
++ * @param out_status 升级状态快照输出指针（非空）
++ * @return aisoc_dev_status_t Stage 4 核验通过返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_execute_node(
++    const fw_upgrade_exec_cfg_t* cfg,
++    const fw_sealed_package_t* pkg,
++    fw_updater_status_t* out_status
++) {
++    if (cfg == nullptr || cfg->dev_state == nullptr || cfg->safety == nullptr ||
++        cfg->transport == nullptr || pkg == nullptr || out_status == nullptr) {
++        return AISOC_DEV_ERR_NULL_PTR;
++    }
++    if (!cfg->recovery_mode) {
++        dev_admission_res_t adm_res = {};
++        const aisoc_dev_status_t adm = dev_state_check_ota_admission(cfg->dev_state, cfg->safety, &adm_res);
++        if (adm != AISOC_DEV_OK) {
++            out_status->lifecycle_stage = FW_STAGE_FAILED;
++            std::snprintf(out_status->status_text, sizeof(out_status->status_text), "REJECTED_NOT_SAFE");
++            return adm;
++        }
++    }
++    (void)dev_state_enter_maintenance(cfg->dev_state);
++    out_status->active_node = pkg->target_node;
++    out_status->lifecycle_stage = FW_STAGE_UPGRADING;
++    out_status->confirm_stage = FW_CONFIRM_STAGE_0_NONE;
++    out_status->progress_pct = 5U;
++
++    const fw_ota_transport_t* tr = cfg->transport;
++    uint8_t nack = 0U;
++    if (!enter_boot_mode_and_verify(tr, pkg->target_node, out_status) ||
++        !stream_chunks_and_verify_stages_1_2(tr, pkg, out_status) ||
++        !tr->ota_finish(tr->user_ctx, pkg->target_node, pkg->payload_len, pkg->fw_crc32, &nack)) {
++        out_status->lifecycle_stage = FW_STAGE_OTA_RECOVERY_PENDING;
++        std::snprintf(out_status->status_text, sizeof(out_status->status_text), "OTA_RECOVERY_PENDING");
++        (void)dev_state_exit_maintenance(cfg->dev_state, true);
++        return AISOC_DEV_ERR_TIMEOUT;
++    }
++    /* Stage 3：0x22 ACK 仅代表镜像校验与回填提交完成，进度严禁超过 95%，严禁宣称 SUCCEEDED */
++    out_status->progress_pct = 95U;
++    update_confirm_stage(tr, out_status, FW_CONFIRM_STAGE_3_IMAGE_VERIFIED_COMMITTED, "IMAGE_VERIFIED_COMMITTED");
++
++    if (!verify_stage4_new_app_online(cfg, pkg, out_status)) {
++        out_status->lifecycle_stage = FW_STAGE_OTA_RECOVERY_PENDING;
++        std::snprintf(out_status->status_text, sizeof(out_status->status_text), "OTA_RECOVERY_PENDING");
++        (void)dev_state_exit_maintenance(cfg->dev_state, true);
++        return AISOC_DEV_ERR_TIMEOUT;
++    }
++    (void)dev_state_exit_maintenance(cfg->dev_state, false);
++    return AISOC_DEV_OK;
++}
++
++/**
++ * @brief 按架构规定顺序执行双节点串行升级（常规态：先 TH 0x03 后 MC 0x02；恢复态：先 MC 0x02 后 TH 0x03）
++ * @param cfg 升级执行配置结构体只读指针（非空）
++ * @param th_pkg TH 固件包描述符可空指针
++ * @param mc_pkg MC 固件包描述符可空指针
++ * @param out_status 升级状态快照输出指针（非空）
++ * @return aisoc_dev_status_t 全部成功返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_execute_batch(
++    const fw_upgrade_exec_cfg_t* cfg,
++    const fw_sealed_package_t* th_pkg,
++    const fw_sealed_package_t* mc_pkg,
++    fw_updater_status_t* out_status
++) {
++    if (cfg == nullptr || out_status == nullptr || (th_pkg == nullptr && mc_pkg == nullptr)) {
++        return AISOC_DEV_ERR_NULL_PTR;
++    }
++    const fw_sealed_package_t* first_pkg = cfg->recovery_mode ? mc_pkg : th_pkg;
++    const fw_sealed_package_t* second_pkg = cfg->recovery_mode ? th_pkg : mc_pkg;
++
++    if (first_pkg != nullptr) {
++        const aisoc_dev_status_t st1 = fw_updater_execute_node(cfg, first_pkg, out_status);
++        if (st1 != AISOC_DEV_OK) {
++            return st1;
++        }
++    }
++    if (second_pkg != nullptr) {
++        const aisoc_dev_status_t st2 = fw_updater_execute_node(cfg, second_pkg, out_status);
++        if (st2 != AISOC_DEV_OK) {
++            return st2;
++        }
++    }
++    return AISOC_DEV_OK;
++}
+diff --git a/services/device_manager/firmware_updater.h b/services/device_manager/firmware_updater.h
+new file mode 100644
+index 0000000..be45877
+--- /dev/null
++++ b/services/device_manager/firmware_updater.h
+@@ -0,0 +1,183 @@
++/**
++ * @file firmware_updater.h
++ * @brief SoC AP 统一固件升级编排器（TWIN-65：目录扫描、封存、128B ATSG 离线预检与四阶段确认闭环）
++ * @details 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md。
++ */
++
++#ifndef AISOC_DEVICE_MANAGER_FIRMWARE_UPDATER_H
++#define AISOC_DEVICE_MANAGER_FIRMWARE_UPDATER_H
++
++#include "device_manager_state.h"
++#include "telemetry_types.h"
++#include <stddef.h>
++#include <stdint.h>
++#include <stdbool.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/** @brief 固件升级任务生命周期主状态枚举 */
++typedef enum {
++    FW_STAGE_IDLE = 0,                           /**< 空闲态（无待升级包） */
++    FW_STAGE_PACKAGE_STAGED_PENDING_CONFIRM = 1, /**< 发现完整 .bin 包，等待人工确认触发 */
++    FW_STAGE_SEALED_PRECHECK_OK = 2,             /**< 已只读封存并通过 128B ATSG Trailer 离线预检 */
++    FW_STAGE_UPGRADING = 3,                      /**< 正在执行串口停等升级 */
++    FW_STAGE_SUCCEEDED = 4,                      /**< Stage 4 新 App 在线核验通过（100%） */
++    FW_STAGE_OTA_RECOVERY_PENDING = 5,           /**< Stage 4 超时或中断，等待恢复重刷 */
++    FW_STAGE_FAILED = 6                          /**< 预检或升级过程拒绝/失败 */
++} fw_lifecycle_stage_t;
++
++/** @brief 四阶段落盘与生效确认等级枚举（严禁 Stage 3 伪报 100% SUCCEEDED） */
++typedef enum {
++    FW_CONFIRM_STAGE_0_NONE = 0,                    /**< 尚未完成首包缓存 */
++    FW_CONFIRM_STAGE_1_CHUNK0_CACHED_RAM = 1,       /**< Stage 1：0x20 ACK + chunk_0 暂存 Boot RAM */
++    FW_CONFIRM_STAGE_2_FLASH_WRITTEN = 2,           /**< Stage 2：后续分块写入 Flash 并经 0x23 核实 */
++    FW_CONFIRM_STAGE_3_IMAGE_VERIFIED_COMMITTED = 3,/**< Stage 3：0x22 ACK 整包 CRC+chunk_0 回填成功（上限 95%） */
++    FW_CONFIRM_STAGE_4_NEW_APP_ONLINE_VERIFIED = 4  /**< Stage 4：0x01/0x02 APP_MODE + 新 boot_id + 鲜活温度（100%） */
++} fw_confirm_stage_t;
++
++/** @brief 单个已封存并预检通过的固件镜像描述符 */
++typedef struct {
++    uint8_t target_node;                 /**< 目标节点 ID（0x02=MC, 0x03=TH） */
++    char sealed_path[256];               /**< 封存只读文件路径 */
++    uint32_t payload_len;                /**< 裸 App 镜像字节长度 */
++    uint32_t fw_crc32;                   /**< 裸 App 镜像 IEEE 802.3 CRC32 */
++    minimc_fw_trailer_t trailer;         /**< 128B ATSG 固件尾块 */
++    minimc_payload_ota_start_t start_req;/**< 144B 0x20 握手请求结构体 */
++    const uint8_t* payload_buf;          /**< 内存中缓存的裸镜像数据只读指针 */
++} fw_sealed_package_t;
++
++/** @brief 固件升级实时进度与状态快照结构体 */
++typedef struct {
++    fw_lifecycle_stage_t lifecycle_stage;/**< 升级主状态 */
++    fw_confirm_stage_t confirm_stage;    /**< 四阶段确认等级（0~4） */
++    uint8_t active_node;                 /**< 当前操作节点（0x02 或 0x03） */
++    uint8_t progress_pct;                /**< 升级进度百分比（Stage 3 封顶 95%，Stage 4 达 100%） */
++    uint32_t bytes_written;              /**< 经 0x23 核实的已写入字节数 */
++    uint16_t cached_chunk0_bytes;        /**< 经 0x23 核实的 chunk_0 RAM 暂存字节数 */
++    uint32_t pre_upgrade_boot_id;        /**< 升级前记录的节点 boot_id */
++    uint32_t post_upgrade_boot_id;       /**< Stage 4 核实的新 App boot_id */
++    char staged_mc_file[128];            /**< 暂存区发现的 MC 固件文件名 */
++    char staged_th_file[128];            /**< 暂存区发现的 TH 固件文件名 */
++    char status_text[64];                /**< 状态文本（如 IMAGE_VERIFIED_COMMITTED / SUCCEEDED） */
++    char last_error[128];                /**< 最近一次错误描述 */
++} fw_updater_status_t;
++
++/** @brief 升级传输层抽象回调接口（支持真实 ForwardService 与确定性单测注入） */
++typedef struct {
++    void* user_ctx; /**< 传输层上下文指针 */
++    bool (*query_version)(void* ctx, uint8_t dst, minimc_payload_version_report_t* out_ver); /**< 0x01->0x02 版本查询 */
++    bool (*query_temp_deci_c)(void* ctx, uint8_t dst, int16_t* out_temp_deci_c);             /**< 0x14->0x15 温度查询 */
++    bool (*send_sys_ctrl)(void* ctx, uint8_t dst, uint8_t action, uint8_t* out_nack_err);    /**< 0x1D 受控进 Boot */
++    bool (*ota_start)(void* ctx, uint8_t dst, const minimc_payload_ota_start_t* req, uint8_t* out_nack_err); /**< 0x20 握手 */
++    bool (*ota_send_chunk)(void* ctx, uint8_t dst, uint32_t offset, const uint8_t* data, uint16_t len, uint8_t* out_nack_err); /**< 0x21 分块 */
++    bool (*ota_query_status)(void* ctx, uint8_t dst, minimc_payload_ota_status_t* out_st);   /**< 0x23 进度查询 */
++    bool (*ota_finish)(void* ctx, uint8_t dst, uint32_t size, uint32_t crc32, uint8_t* out_nack_err); /**< 0x22 终验提交 */
++    void (*on_stage_transition)(void* ctx, const fw_updater_status_t* snap);                 /**< 阶段变更观测钩子（可选） */
++} fw_ota_transport_t;
++
++/** @brief 单节点或双节点升级执行请求参数结构体 */
++typedef struct {
++    device_manager_state_t* dev_state;   /**< 设备状态机指针（非空） */
++    const dev_ota_safety_ctx_t* safety;  /**< 升级前安全互锁状态指针（非空） */
++    const fw_ota_transport_t* transport; /**< 传输层接口指针（非空） */
++    bool recovery_mode;                  /**< 是否处于断电/异常恢复模式（MC App 失联时先刷 MC） */
++    uint8_t stage4_max_polls;            /**< Stage 4 轮询新 App 上线的最大尝试次数（默认 5） */
++} fw_upgrade_exec_cfg_t;
++
++/**
++ * @brief 计算字节缓冲区的 IEEE 802.3 CRC32 校验值
++ * @param data 输入字节流只读指针
++ * @param len 字节长度
++ * @return uint32_t CRC32 计算结果
++ */
++uint32_t fw_updater_crc32(const uint8_t* data, size_t len);
++
++/**
++ * @brief 计算字节缓冲区的标准 FIPS 180-4 SHA-256 摘要
++ * @param data 输入字节流只读指针
++ * @param len 字节长度
++ * @param out_hash 32 字节摘要输出数组（非空）
++ * @return aisoc_dev_status_t 成功返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_sha256(
++    const uint8_t* data,
++    size_t len,
++    uint8_t out_hash[32]
++);
++
++/**
++ * @brief 扫描 incoming 目录：忽略 .part 文件，发现完整 .bin 时进入 PACKAGE_STAGED_PENDING_CONFIRM
++ * @param incoming_dir 暂存目录路径（非空）
++ * @param status 升级器状态结构体指针（非空）
++ * @return aisoc_dev_status_t 成功返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_scan_incoming(
++    const char* incoming_dir,
++    fw_updater_status_t* status
++);
++
++/**
++ * @brief 将暂存镜像复制封存至只读目录（0444）并执行 128B ATSG 尾块、SHA-256 与尺寸上限离线预检
++ * @param src_path 源固件文件路径（非空）
++ * @param sealed_dir 封存目标目录路径（非空）
++ * @param target_node 期望目标节点 ID（0x02=MC, 0x03=TH）
++ * @param out_pkg 输出封存并校验通过的固件包描述符指针（非空，内部 payload_buf 指向调用方提供的缓冲区或静态区）
++ * @return aisoc_dev_status_t 校验通过返回 AISOC_DEV_OK，否则返回错误码
++ */
++aisoc_dev_status_t fw_updater_seal_and_verify_file(
++    const char* src_path,
++    const char* sealed_dir,
++    uint8_t target_node,
++    fw_sealed_package_t* out_pkg
++);
++
++/**
++ * @brief 对内存中的固件字节流（裸镜像 + 128B ATSG Trailer）执行离线预检并填充 0x20 请求
++ * @param raw_file_bytes 完整固件文件字节流指针（非空）
++ * @param total_file_len 完整固件文件总字节数
++ * @param target_node 期望目标节点 ID（0x02=MC, 0x03=TH）
++ * @param out_pkg 输出固件包描述符指针（非空）
++ * @return aisoc_dev_status_t 校验通过返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_verify_buffer(
++    const uint8_t* raw_file_bytes,
++    size_t total_file_len,
++    uint8_t target_node,
++    fw_sealed_package_t* out_pkg
++);
++
++/**
++ * @brief 执行单节点四阶段固件升级闭环（含安全门禁、进入维护态、Stage 1~4 硬隔离与恢复态判定）
++ * @param cfg 升级执行配置结构体只读指针（非空）
++ * @param pkg 已预检通过的固件包描述符只读指针（非空）
++ * @param out_status 升级状态快照输出指针（非空）
++ * @return aisoc_dev_status_t Stage 4 核验通过返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_execute_node(
++    const fw_upgrade_exec_cfg_t* cfg,
++    const fw_sealed_package_t* pkg,
++    fw_updater_status_t* out_status
++);
++
++/**
++ * @brief 按架构规定顺序执行双节点串行升级（常规态：先 TH 0x03 后 MC 0x02；恢复态：先 MC 0x02 后 TH 0x03）
++ * @param cfg 升级执行配置结构体只读指针（非空）
++ * @param th_pkg TH 固件包描述符可空指针
++ * @param mc_pkg MC 固件包描述符可空指针
++ * @param out_status 升级状态快照输出指针（非空）
++ * @return aisoc_dev_status_t 全部成功返回 AISOC_DEV_OK
++ */
++aisoc_dev_status_t fw_updater_execute_batch(
++    const fw_upgrade_exec_cfg_t* cfg,
++    const fw_sealed_package_t* th_pkg,
++    const fw_sealed_package_t* mc_pkg,
++    fw_updater_status_t* out_status
++);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* AISOC_DEVICE_MANAGER_FIRMWARE_UPDATER_H */
+diff --git a/services/forward/forward_protocol.cpp b/services/forward/forward_protocol.cpp
+index a4ac0dc..507ca88 100644
+--- a/services/forward/forward_protocol.cpp
++++ b/services/forward/forward_protocol.cpp
+@@ -645,7 +645,111 @@ aisoc_fwd_status_t fwd_proto_build_gcode_frame(
+ }
+ 
+ /**
+- * @brief 校验控制响应帧（支持匹配目标响应与 NACK 0x06 检测）
++ * @brief 构造 0x1D (CMD_SYSTEM_CONTROL) 4字节受控进 Bootloader / 软复位请求帧
++ */
++aisoc_fwd_status_t fwd_proto_build_sys_ctrl_frame(
++    uint8_t dst_id,
++    const minimc_payload_sys_ctrl_t* req,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++) {
++    if (req == nullptr || out_buf == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    fwd_cmd_req_t cmd_req = {
++        dst_id, MINIMC_CMD_SYSTEM_CONTROL, seq,
++        (const uint8_t*)req, sizeof(minimc_payload_sys_ctrl_t), false
++    };
++    return fwd_proto_build_cmd_frame(&cmd_req, out_buf);
++}
++
++/**
++ * @brief 构造 0x20 (CMD_OTA_START) 144字节固件升级启动请求帧（含 128B ATSG Trailer）
++ */
++aisoc_fwd_status_t fwd_proto_build_ota_start_frame(
++    uint8_t dst_id,
++    const minimc_payload_ota_start_t* req,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++) {
++    if (req == nullptr || out_buf == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    fwd_cmd_req_t cmd_req = {
++        dst_id, MINIMC_CMD_OTA_START, seq,
++        (const uint8_t*)req, sizeof(minimc_payload_ota_start_t), false
++    };
++    return fwd_proto_build_cmd_frame(&cmd_req, out_buf);
++}
++
++/**
++ * @brief 构造 0x21 (CMD_OTA_DATA) 固件数据分片请求帧（8B 头 + 1..512B 数据，最大 534B 帧）
++ */
++aisoc_fwd_status_t fwd_proto_build_ota_data_frame(
++    const fwd_ota_chunk_req_t* req,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++) {
++    if (req == nullptr || req->chunk_data == nullptr || out_buf == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    if (req->chunk_len == 0U || req->chunk_len > MINIMC_OTA_CHUNK_MAX_BYTES) {
++        return AISOC_FWD_ERR_INVALID_ARG;
++    }
++    uint8_t payload[MINIMC_MAX_PAYLOAD_SIZE] = {0};
++    minimc_payload_ota_data_hdr_t hdr = {};
++    hdr.offset = req->offset;
++    hdr.chunk_bytes = req->chunk_len;
++    uint16_t crc16 = 0U;
++    (void)telemetry_calc_crc16(req->chunk_data, req->chunk_len, &crc16);
++    hdr.chunk_crc16 = crc16;
++    std::memcpy(payload, &hdr, sizeof(hdr));
++    std::memcpy(payload + sizeof(hdr), req->chunk_data, req->chunk_len);
++    const size_t total_pl = sizeof(hdr) + (size_t)req->chunk_len;
++    fwd_cmd_req_t cmd_req = {
++        req->dst_id, MINIMC_CMD_OTA_DATA, seq, payload, total_pl, false
++    };
++    return fwd_proto_build_cmd_frame(&cmd_req, out_buf);
++}
++
++/**
++ * @brief 构造 0x22 (CMD_OTA_FINISH) 8字节固件升级完成校验与提交请求帧
++ */
++aisoc_fwd_status_t fwd_proto_build_ota_finish_frame(
++    uint8_t dst_id,
++    const minimc_payload_ota_finish_t* req,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++) {
++    if (req == nullptr || out_buf == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    fwd_cmd_req_t cmd_req = {
++        dst_id, MINIMC_CMD_OTA_FINISH, seq,
++        (const uint8_t*)req, sizeof(minimc_payload_ota_finish_t), false
++    };
++    return fwd_proto_build_cmd_frame(&cmd_req, out_buf);
++}
++
++/**
++ * @brief 构造 0x23 (CMD_OTA_STATUS) 0字节固件升级状态查询请求帧
++ */
++aisoc_fwd_status_t fwd_proto_build_ota_status_frame(
++    uint8_t dst_id,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++) {
++    if (out_buf == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    fwd_cmd_req_t cmd_req = {
++        dst_id, MINIMC_CMD_OTA_STATUS, seq, nullptr, 0U, false
++    };
++    return fwd_proto_build_cmd_frame(&cmd_req, out_buf);
++}
++
++/**
++ * @brief 校验控制响应帧（支持匹配目标响应与 NACK 0x04/0x06 检测，严禁将 0x05 视为合法 ACK）
+  */
+ aisoc_fwd_status_t fwd_proto_check_ctrl_response(
+     const minimc::FrameView* frame,
+@@ -662,7 +766,12 @@ aisoc_fwd_status_t fwd_proto_check_ctrl_response(
+     if (!is_resp || !src_match || !dst_match || !seq_match) {
+         return AISOC_FWD_ERR_INVALID_ARG;
+     }
+-    if (frame->header.cmd_id == MINIMC_CMD_NACK || (frame->header.flags & 0x08U) != 0U) {
++    if (frame->header.cmd_id == 0x05U) {
++        return AISOC_FWD_ERR_INVALID_ARG;
++    }
++    if (frame->header.cmd_id == MINIMC_CMD_NACK ||
++        frame->header.cmd_id == MINIMC_CMD_NACK_LEGACY ||
++        (frame->header.flags & 0x08U) != 0U) {
+         *out_result = AISOC_FWD_ERR_NACK;
+         return AISOC_FWD_OK;
+     }
+diff --git a/services/forward/forward_protocol.h b/services/forward/forward_protocol.h
+index ecec1e4..6fdea17 100644
+--- a/services/forward/forward_protocol.h
++++ b/services/forward/forward_protocol.h
+@@ -262,12 +262,22 @@ typedef struct {
+  * @brief 控制指令响应帧接收输出缓存结构体
+  */
+ typedef struct {
+-    uint8_t  payload[64];
++    uint8_t  payload[MINIMC_MAX_PAYLOAD_SIZE];
+     size_t   payload_len;
+     uint32_t elapsed_ms;
+     uint8_t  rx_cmd;
+ } fwd_ctrl_rx_t;
+ 
++/**
++ * @brief 0x21 (CMD_OTA_DATA) 固件数据分片发送参数结构体（符合 <=4 入参门禁）
++ */
++typedef struct {
++    uint8_t        dst_id;      /**< 目标节点 ID（0x02=MC, 0x03=TH） */
++    uint32_t       offset;      /**< 镜像字节偏移量 */
++    const uint8_t* chunk_data;  /**< 分片数据缓冲区指针 */
++    uint16_t       chunk_len;   /**< 分片字节长度（1..512） */
++} fwd_ota_chunk_req_t;
++
+ /**
+  * @brief 构造通用 MiniMCProto V2 单播请求帧
+  */
+@@ -359,6 +369,54 @@ aisoc_fwd_status_t fwd_proto_build_gcode_frame(
+     fwd_frame_buf_t* out_buf
+ );
+ 
++/**
++ * @brief 构造 0x1D (CMD_SYSTEM_CONTROL) 4字节受控进 Bootloader / 软复位请求帧
++ */
++aisoc_fwd_status_t fwd_proto_build_sys_ctrl_frame(
++    uint8_t dst_id,
++    const minimc_payload_sys_ctrl_t* req,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++);
++
++/**
++ * @brief 构造 0x20 (CMD_OTA_START) 144字节固件升级启动请求帧（含 128B ATSG Trailer）
++ */
++aisoc_fwd_status_t fwd_proto_build_ota_start_frame(
++    uint8_t dst_id,
++    const minimc_payload_ota_start_t* req,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++);
++
++/**
++ * @brief 构造 0x21 (CMD_OTA_DATA) 固件数据分片请求帧（8B 头 + 1..512B 数据，最大 534B 帧）
++ */
++aisoc_fwd_status_t fwd_proto_build_ota_data_frame(
++    const fwd_ota_chunk_req_t* req,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++);
++
++/**
++ * @brief 构造 0x22 (CMD_OTA_FINISH) 8字节固件升级完成校验与提交请求帧
++ */
++aisoc_fwd_status_t fwd_proto_build_ota_finish_frame(
++    uint8_t dst_id,
++    const minimc_payload_ota_finish_t* req,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++);
++
++/**
++ * @brief 构造 0x23 (CMD_OTA_STATUS) 0字节固件升级状态查询请求帧
++ */
++aisoc_fwd_status_t fwd_proto_build_ota_status_frame(
++    uint8_t dst_id,
++    uint16_t seq,
++    fwd_frame_buf_t* out_buf
++);
++
+ /**
+  * @brief 校验控制响应帧（支持匹配目标响应与 NACK 0x06 检测）
+  */
+diff --git a/services/forward/forward_service.cpp b/services/forward/forward_service.cpp
+index d92faa5..7729adc 100644
+--- a/services/forward/forward_service.cpp
++++ b/services/forward/forward_service.cpp
+@@ -532,7 +532,7 @@ static aisoc_fwd_status_t send_and_wait_ctrl_locked(
+ }
+ 
+ /**
+- * @brief 向单个节点发送 0x17 停止指令并等待 0x00/0x05 ACK
++ * @brief 向单个节点发送 0x17 停止指令并等待 0x00 CMD_ACK
+  */
+ static aisoc_fwd_status_t send_stop_to_node_locked(
+     forward_service_state_t* state,
+@@ -550,7 +550,7 @@ static aisoc_fwd_status_t send_stop_to_node_locked(
+         return b_st;
+     }
+     fwd_ctrl_expect_t expect = {
+-        dst_id, seq, MINIMC_CMD_ACK, MINIMC_CMD_ESTOP_ACK, 0U, AISOC_FWD_DEFAULT_TIMEOUT_MS
++        dst_id, seq, MINIMC_CMD_ACK, MINIMC_CMD_ACK, 0U, AISOC_FWD_DEFAULT_TIMEOUT_MS
+     };
+     fwd_ctrl_rx_t rx = {};
+     return send_and_wait_ctrl_locked(state, &fbuf, &expect, &rx);
+@@ -951,3 +951,191 @@ aisoc_fwd_status_t forward_service_execute_gcode(
+     pthread_mutex_unlock(&state->uart_mutex);
+     return AISOC_FWD_OK;
+ }
++
++/**
++ * @brief 发送 OTA 请求帧并在指定超时与最大重试次数内等待响应（在持有 uart_mutex 下调用）
++ */
++static aisoc_fwd_status_t send_ota_with_retry_locked(
++    forward_service_state_t* state,
++    const fwd_frame_buf_t* tx_frame,
++    const fwd_ctrl_expect_t* expect,
++    fwd_ctrl_rx_t* out_rx
++) {
++    if (state == nullptr || tx_frame == nullptr || expect == nullptr || out_rx == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    if (!state->serial_ctx.is_open) {
++        fwd_uart_open(state);
++    }
++    if (!state->serial_ctx.is_open) {
++        record_fault_context(state, expect, 0U, AISOC_FWD_ERR_SERIAL_OPEN);
++        return AISOC_FWD_ERR_SERIAL_OPEN;
++    }
++    const uint8_t max_tries = 3U;
++    aisoc_fwd_status_t rx_st = AISOC_FWD_ERR_TIMEOUT;
++    for (uint8_t attempt = 0U; attempt < max_tries; ++attempt) {
++        const aisoc_fwd_status_t tx_st = fwd_uart_send_frame(state, tx_frame->data, tx_frame->length);
++        if (tx_st != AISOC_FWD_OK) {
++            record_fault_context(state, expect, 0U, tx_st);
++            return tx_st;
++        }
++        rx_st = fwd_uart_wait_ctrl_response(state, expect, out_rx);
++        const bool is_crc_nack = (rx_st == AISOC_FWD_ERR_NACK) &&
++            (out_rx->payload_len >= 2U) && (out_rx->payload[1] == MINIMC_ERR_OTA_CRC_MISMATCH);
++        if ((rx_st != AISOC_FWD_ERR_TIMEOUT && !is_crc_nack) || (attempt + 1U) >= max_tries) {
++            break;
++        }
++        usleep(10000);
++    }
++    if (rx_st != AISOC_FWD_OK) {
++        record_fault_context(state, expect, out_rx->elapsed_ms, rx_st);
++        return rx_st;
++    }
++    std::memset(&state->last_fault, 0, sizeof(state->last_fault));
++    return AISOC_FWD_OK;
++}
++
++/**
++ * @brief 执行 0x1D (CMD_SYSTEM_CONTROL) 受控进入 Bootloader 或软复位停等闭环
++ */
++aisoc_fwd_status_t forward_service_sys_control(
++    forward_service_state_t* state,
++    uint8_t dst_id,
++    const minimc_payload_sys_ctrl_t* req
++) {
++    if (state == nullptr || req == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    pthread_mutex_lock(&state->uart_mutex);
++    uint8_t buf[64] = {0};
++    fwd_frame_buf_t fbuf = { buf, sizeof(buf), 0U };
++    const uint16_t seq = (uint16_t)(++state->next_seq);
++    const aisoc_fwd_status_t b_st = fwd_proto_build_sys_ctrl_frame(dst_id, req, seq, &fbuf);
++    if (b_st != AISOC_FWD_OK) {
++        pthread_mutex_unlock(&state->uart_mutex);
++        return b_st;
++    }
++    const uint32_t tmo_ms = (dst_id == MINIMC_DEV_SCM_TH) ? 500U : 300U;
++    fwd_ctrl_expect_t expect = { dst_id, seq, MINIMC_CMD_ACK, MINIMC_CMD_ACK, 0U, tmo_ms };
++    fwd_ctrl_rx_t rx = {};
++    const aisoc_fwd_status_t st = send_ota_with_retry_locked(state, &fbuf, &expect, &rx);
++    pthread_mutex_unlock(&state->uart_mutex);
++    return st;
++}
++
++/**
++ * @brief 执行 0x20 (CMD_OTA_START) 144字节固件升级启动停等闭环（含超时重试）
++ */
++aisoc_fwd_status_t forward_service_ota_start(
++    forward_service_state_t* state,
++    uint8_t dst_id,
++    const minimc_payload_ota_start_t* req
++) {
++    if (state == nullptr || req == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    pthread_mutex_lock(&state->uart_mutex);
++    uint8_t buf[256] = {0};
++    fwd_frame_buf_t fbuf = { buf, sizeof(buf), 0U };
++    const uint16_t seq = (uint16_t)(++state->next_seq);
++    const aisoc_fwd_status_t b_st = fwd_proto_build_ota_start_frame(dst_id, req, seq, &fbuf);
++    if (b_st != AISOC_FWD_OK) {
++        pthread_mutex_unlock(&state->uart_mutex);
++        return b_st;
++    }
++    const uint32_t tmo_ms = (dst_id == MINIMC_DEV_SCM_TH) ? 3000U : 2000U;
++    fwd_ctrl_expect_t expect = { dst_id, seq, MINIMC_CMD_ACK, MINIMC_CMD_ACK, 0U, tmo_ms };
++    fwd_ctrl_rx_t rx = {};
++    const aisoc_fwd_status_t st = send_ota_with_retry_locked(state, &fbuf, &expect, &rx);
++    pthread_mutex_unlock(&state->uart_mutex);
++    return st;
++}
++
++/**
++ * @brief 执行 0x21 (CMD_OTA_DATA) 单分片（8B头 + 1..512B数据）停等闭环（含超时/CRC重试）
++ */
++aisoc_fwd_status_t forward_service_ota_send_chunk(
++    forward_service_state_t* state,
++    const fwd_ota_chunk_req_t* req
++) {
++    if (state == nullptr || req == nullptr || req->chunk_data == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    pthread_mutex_lock(&state->uart_mutex);
++    uint8_t buf[600] = {0};
++    fwd_frame_buf_t fbuf = { buf, sizeof(buf), 0U };
++    const uint16_t seq = (uint16_t)(++state->next_seq);
++    const aisoc_fwd_status_t b_st = fwd_proto_build_ota_data_frame(req, seq, &fbuf);
++    if (b_st != AISOC_FWD_OK) {
++        pthread_mutex_unlock(&state->uart_mutex);
++        return b_st;
++    }
++    const uint32_t tmo_ms = (req->offset == 512U) ? 3000U : 1500U;
++    fwd_ctrl_expect_t expect = { req->dst_id, seq, MINIMC_CMD_ACK, MINIMC_CMD_ACK, 0U, tmo_ms };
++    fwd_ctrl_rx_t rx = {};
++    const aisoc_fwd_status_t st = send_ota_with_retry_locked(state, &fbuf, &expect, &rx);
++    pthread_mutex_unlock(&state->uart_mutex);
++    return st;
++}
++
++/**
++ * @brief 执行 0x23 (CMD_OTA_STATUS) 8字节固件升级写入进度查询停等闭环
++ */
++aisoc_fwd_status_t forward_service_ota_query_status(
++    forward_service_state_t* state,
++    uint8_t dst_id,
++    minimc_payload_ota_status_t* out_status
++) {
++    if (state == nullptr || out_status == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    pthread_mutex_lock(&state->uart_mutex);
++    uint8_t buf[64] = {0};
++    fwd_frame_buf_t fbuf = { buf, sizeof(buf), 0U };
++    const uint16_t seq = (uint16_t)(++state->next_seq);
++    const aisoc_fwd_status_t b_st = fwd_proto_build_ota_status_frame(dst_id, seq, &fbuf);
++    if (b_st != AISOC_FWD_OK) {
++        pthread_mutex_unlock(&state->uart_mutex);
++        return b_st;
++    }
++    const uint32_t tmo_ms = (dst_id == MINIMC_DEV_SCM_TH) ? 500U : 300U;
++    fwd_ctrl_expect_t expect = {
++        dst_id, seq, MINIMC_CMD_OTA_STATUS, MINIMC_CMD_OTA_STATUS,
++        MINIMC_OTA_STATUS_RESP_SIZE, tmo_ms
++    };
++    fwd_ctrl_rx_t rx = {};
++    const aisoc_fwd_status_t st = send_ota_with_retry_locked(state, &fbuf, &expect, &rx);
++    if (st == AISOC_FWD_OK) {
++        std::memcpy(out_status, rx.payload, sizeof(minimc_payload_ota_status_t));
++    }
++    pthread_mutex_unlock(&state->uart_mutex);
++    return st;
++}
++
++/**
++ * @brief 执行 0x22 (CMD_OTA_FINISH) 8字节全片 CRC32 校验与提交激活停等闭环
++ */
++aisoc_fwd_status_t forward_service_ota_finish(
++    forward_service_state_t* state,
++    uint8_t dst_id,
++    const minimc_payload_ota_finish_t* req
++) {
++    if (state == nullptr || req == nullptr) {
++        return AISOC_FWD_ERR_NULL_PTR;
++    }
++    pthread_mutex_lock(&state->uart_mutex);
++    uint8_t buf[64] = {0};
++    fwd_frame_buf_t fbuf = { buf, sizeof(buf), 0U };
++    const uint16_t seq = (uint16_t)(++state->next_seq);
++    const aisoc_fwd_status_t b_st = fwd_proto_build_ota_finish_frame(dst_id, req, seq, &fbuf);
++    if (b_st != AISOC_FWD_OK) {
++        pthread_mutex_unlock(&state->uart_mutex);
++        return b_st;
++    }
++    const uint32_t tmo_ms = (dst_id == MINIMC_DEV_SCM_TH) ? 4000U : 3000U;
++    fwd_ctrl_expect_t expect = { dst_id, seq, MINIMC_CMD_ACK, MINIMC_CMD_ACK, 0U, tmo_ms };
++    fwd_ctrl_rx_t rx = {};
++    const aisoc_fwd_status_t st = send_ota_with_retry_locked(state, &fbuf, &expect, &rx);
++    pthread_mutex_unlock(&state->uart_mutex);
++    return st;
++}
+diff --git a/services/forward/forward_service.h b/services/forward/forward_service.h
+index 10d18a1..54e8b33 100644
+--- a/services/forward/forward_service.h
++++ b/services/forward/forward_service.h
+@@ -194,6 +194,50 @@ aisoc_fwd_status_t forward_service_execute_gcode(
+     minimc_gcode_resp_t* out_resp
+ );
+ 
++/**
++ * @brief 执行 0x1D (CMD_SYSTEM_CONTROL) 受控进入 Bootloader 或软复位停等闭环
++ */
++aisoc_fwd_status_t forward_service_sys_control(
++    forward_service_state_t* state,
++    uint8_t dst_id,
++    const minimc_payload_sys_ctrl_t* req
++);
++
++/**
++ * @brief 执行 0x20 (CMD_OTA_START) 144字节固件升级启动停等闭环（含最多2次超时重试）
++ */
++aisoc_fwd_status_t forward_service_ota_start(
++    forward_service_state_t* state,
++    uint8_t dst_id,
++    const minimc_payload_ota_start_t* req
++);
++
++/**
++ * @brief 执行 0x21 (CMD_OTA_DATA) 单分片（8B头 + 1..512B数据）停等闭环（含超时/CRC重试）
++ */
++aisoc_fwd_status_t forward_service_ota_send_chunk(
++    forward_service_state_t* state,
++    const fwd_ota_chunk_req_t* req
++);
++
++/**
++ * @brief 执行 0x23 (CMD_OTA_STATUS) 8字节固件升级写入进度查询停等闭环
++ */
++aisoc_fwd_status_t forward_service_ota_query_status(
++    forward_service_state_t* state,
++    uint8_t dst_id,
++    minimc_payload_ota_status_t* out_status
++);
++
++/**
++ * @brief 执行 0x22 (CMD_OTA_FINISH) 8字节全片 CRC32 校验与提交激活停等闭环
++ */
++aisoc_fwd_status_t forward_service_ota_finish(
++    forward_service_state_t* state,
++    uint8_t dst_id,
++    const minimc_payload_ota_finish_t* req
++);
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/services/forward/forward_uart.cpp b/services/forward/forward_uart.cpp
+index 9f4c90d..010761d 100644
+--- a/services/forward/forward_uart.cpp
++++ b/services/forward/forward_uart.cpp
+@@ -405,7 +405,9 @@ aisoc_fwd_status_t fwd_uart_wait_ctrl_response(
+         for (size_t i = 0U; i < bytes_read; ++i) {
+             if (process_incoming_ctrl_byte(state, raw_rx_buf[i], expect, out_rx)) {
+                 out_rx->elapsed_ms = get_monotonic_ms() - start_ms;
+-                return (out_rx->rx_cmd == MINIMC_CMD_NACK) ? AISOC_FWD_ERR_NACK : AISOC_FWD_OK;
++                const bool is_nack = (out_rx->rx_cmd == MINIMC_CMD_NACK) ||
++                                     (out_rx->rx_cmd == MINIMC_CMD_NACK_LEGACY);
++                return is_nack ? AISOC_FWD_ERR_NACK : AISOC_FWD_OK;
+             }
+         }
+     }
+diff --git a/services/ui_gateway/ui_gateway_server.cpp b/services/ui_gateway/ui_gateway_server.cpp
+index f3a8e7f..aad7788 100644
+--- a/services/ui_gateway/ui_gateway_server.cpp
++++ b/services/ui_gateway/ui_gateway_server.cpp
+@@ -863,6 +863,74 @@ static void handle_estop_clear_route(client_conn_t* client) {
+     send_json_and_close(client, 200, "{\"status\":\"ok\",\"estop_active\":false,\"message\":\"E-STOP cleared\"}");
+ }
+ 
++/**
++ * @brief 发送 HTTP 409 Conflict 固件升级维护态锁定响应并关闭连接
++ * @param client 客户端连接槽指针
++ * @param reason 冲突原因字符串
++ */
++static void send_409_maintenance(client_conn_t* client, const char* reason) {
++    if (client == nullptr) return;
++    char resp[UI_GW_RESP_BUF_SIZE] = {0};
++    ui_gw_http_build_error_response(
++        409,
++        (reason != nullptr) ? reason : "UPGRADING_MAINTENANCE: control locked during firmware upgrade",
++        resp,
++        sizeof(resp)
++    );
++    send_http_response(client->client_fd, resp);
++    close_client(client);
++}
++
++/**
++ * @brief 判断给定请求路径是否属于 UPGRADING_MAINTENANCE 期间必须锁定拦截的控制路由
++ * @param path 请求路径字符串
++ * @return bool 属于受控路由返回 true
++ */
++static bool is_maintenance_locked_route(const char* path) {
++    if (path == nullptr) return false;
++    const char* locked[] = {
++        "/api/v1/temperature/set", "/api/v1/filament/slots", "/api/v1/gcode/execute",
++        "/api/v1/jobs/start", "/api/v1/jobs/pause", "/api/v1/jobs/resume",
++        "/api/v1/jobs/cancel", "/api/v1/motion/jog", "/api/v1/motion/home",
++        "/api/v1/leveling/trigger"
++    };
++    for (size_t i = 0U; i < sizeof(locked) / sizeof(locked[0]); ++i) {
++        if (std::strcmp(path, locked[i]) == 0) return true;
++    }
++    return false;
++}
++
++/**
++ * @brief 处理 GET /api/v1/ota/status 与 POST /api/v1/ota/trigger 固件升级状态及确认路由
++ * @param server 服务端实例指针
++ * @param client 客户端连接槽指针
++ * @param req 解析后的 HTTP 请求结构体只读指针
++ * @return bool 命中 OTA 路由返回 true
++ */
++static bool dispatch_ota_route(
++    ui_gw_server_t* server,
++    client_conn_t* client,
++    const http_request_t* req
++) {
++    if (server == nullptr || client == nullptr || req == nullptr) return false;
++    if (std::strcmp(req->path, "/api/v1/ota/status") == 0) {
++        const char* body = (server->ota_status_json[0] != '\0')
++            ? server->ota_status_json
++            : "{\"stage\":\"IDLE\",\"confirm_stage\":0,\"progress_pct\":0,\"is_maintenance\":false}";
++        send_json_and_close(client, 200, body);
++        return true;
++    }
++    if (std::strcmp(req->path, "/api/v1/ota/trigger") == 0) {
++        if (server->is_maintenance) {
++            send_409_maintenance(client, "UPGRADING_MAINTENANCE: upgrade already in progress");
++        } else {
++            send_json_and_close(client, 200, "{\"status\":\"ok\",\"message\":\"OTA upgrade confirmed\"}");
++        }
++        return true;
++    }
++    return false;
++}
++
+ /**
+  * @brief 分发打印作业、G-code 上传、运动控制与自动调平相关 HTTP 路由
+  * @param server 服务端实例指针
+@@ -926,6 +994,10 @@ static void dispatch_http_request(ui_gw_server_t* server, client_conn_t* client)
+         ui_gw_http_build_json_response(204, "{}", resp, sizeof(resp));
+         send_http_response(client->client_fd, resp);
+         close_client(client);
++    } else if (server->is_maintenance && is_maintenance_locked_route(req.path)) {
++        send_409_maintenance(client, "UPGRADING_MAINTENANCE: control locked during firmware upgrade");
++    } else if (dispatch_ota_route(server, client, &req)) {
++        /* OTA 路由已在 dispatch_ota_route 中完成处理 */
+     } else if (std::strcmp(req.path, "/api/v1/temperature/snapshot") == 0 ||
+                std::strcmp(req.path, "/api/v1/state") == 0) {
+         handle_snapshot_route(server, client);
+@@ -1025,6 +1097,34 @@ ui_gw_status_t ui_gw_server_set_hw_online(ui_gw_server_t* server, bool is_online
+     return UI_GW_OK;
+ }
+ 
++/**
++ * @brief 设置服务端是否处于固件升级维护窗口（维护态下锁定控制路由返回 HTTP 409）
++ * @param server 服务端实例指针
++ * @param is_maintenance 是否处于升级维护窗口
++ * @return ui_gw_status_t 成功返回 UI_GW_OK
++ */
++ui_gw_status_t ui_gw_server_set_maintenance(ui_gw_server_t* server, bool is_maintenance) {
++    if (server == nullptr) {
++        return UI_GW_ERR_NULL_PTR;
++    }
++    server->is_maintenance = is_maintenance;
++    return UI_GW_OK;
++}
++
++/**
++ * @brief 更新 OTA 四阶段进度与状态 JSON 快照
++ * @param server 服务端实例指针
++ * @param ota_json OTA 状态 JSON 字符串
++ * @return ui_gw_status_t 成功返回 UI_GW_OK
++ */
++ui_gw_status_t ui_gw_server_set_ota_status_json(ui_gw_server_t* server, const char* ota_json) {
++    if (server == nullptr || ota_json == nullptr) {
++        return UI_GW_ERR_NULL_PTR;
++    }
++    std::snprintf(server->ota_status_json, sizeof(server->ota_status_json), "%s", ota_json);
++    return UI_GW_OK;
++}
++
+ /**
+  * @brief 关闭所有客户端连接与监听套接字并停止 UI 网关服务端
+  * @param server 服务端实例指针
+diff --git a/services/ui_gateway/ui_gateway_server.h b/services/ui_gateway/ui_gateway_server.h
+index 592d8e5..5d84ce1 100644
+--- a/services/ui_gateway/ui_gateway_server.h
++++ b/services/ui_gateway/ui_gateway_server.h
+@@ -22,9 +22,11 @@ typedef struct {
+     uint16_t port;                          /**< 绑定监听端口号 */
+     bool is_running;                        /**< 服务端是否处于运行态 */
+     bool is_hw_online;                      /**< 下游 MCU 硬件链路是否在线 */
++    bool is_maintenance;                    /**< 是否处于 UPGRADING_MAINTENANCE 升级维护窗口 */
+     client_conn_t clients[UI_GW_MAX_CLIENTS];/**< 并发客户端连接池 */
+     ui_gw_dbus_client_t* dbus_client;       /**< 关联的 D-Bus 客户端指针 */
+     char static_root[256];                  /**< 静态网页资源根目录 */
++    char ota_status_json[512];              /**< OTA 四阶段状态快照 JSON 缓存 */
+ } ui_gw_server_t;
+ 
+ /**
+@@ -53,6 +55,28 @@ ui_gw_status_t ui_gw_server_set_hw_online(
+     bool is_online
+ );
+ 
++/**
++ * @brief 设置服务端是否处于固件升级维护窗口（维护态下锁定控制路由返回 HTTP 409）
++ * @param server 服务端实例指针（非空）
++ * @param is_maintenance 是否处于升级维护窗口
++ * @return UI_GW_OK 表示成功
++ */
++ui_gw_status_t ui_gw_server_set_maintenance(
++    ui_gw_server_t* server,
++    bool is_maintenance
++);
++
++/**
++ * @brief 更新 OTA 四阶段进度与状态 JSON 快照
++ * @param server 服务端实例指针（非空）
++ * @param ota_json OTA 状态 JSON 字符串（非空）
++ * @return UI_GW_OK 表示成功
++ */
++ui_gw_status_t ui_gw_server_set_ota_status_json(
++    ui_gw_server_t* server,
++    const char* ota_json
++);
++
+ /**
+  * @brief 关闭所有客户端连接与监听套接字
+  * @param server 服务端实例指针（非空）
+diff --git a/tests/device_manager/twin/test_firmware_updater.cpp b/tests/device_manager/twin/test_firmware_updater.cpp
+new file mode 100644
+index 0000000..d13ec15
+--- /dev/null
++++ b/tests/device_manager/twin/test_firmware_updater.cpp
+@@ -0,0 +1,341 @@
++/**
++ * @file test_firmware_updater.cpp
++ * @brief TWIN-65 SoC AP 统一固件升级编排器、128B ATSG 预检、维护态抑制与四阶段确认闭环单测套件
++ * @details 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md。
++ */
++
++#include "firmware_updater.h"
++#include "device_manager_state.h"
++#include <cassert>
++#include <cstdio>
++#include <cstring>
++#include <sys/stat.h>
++#include <unistd.h>
++
++/** @brief 合成测试用合法固件镜像（含裸 payload 与 128B ATSG Trailer）的参数结构体 */
++typedef struct {
++    uint32_t board_id;      /**< 目标板卡 ID */
++    uint32_t fw_version;    /**< 固件版本号 */
++    uint32_t git_commit;    /**< Git 短哈希 */
++    uint32_t payload_len;   /**< 裸镜像字节数 */
++} synth_pkg_cfg_t;
++
++/**
++ * @brief 在给定缓冲区中合成带合法 128B ATSG Trailer（含 SHA-256 与 CRC32）的固件文件字节流
++ * @param cfg 合成配置结构体只读指针
++ * @param out_buf 输出字节缓冲区指针
++ * @param out_total_len 输出总字节长度指针
++ */
++static void build_valid_atsg_package(
++    const synth_pkg_cfg_t* cfg,
++    uint8_t* out_buf,
++    size_t* out_total_len
++) {
++    for (uint32_t i = 0U; i < cfg->payload_len; ++i) {
++        out_buf[i] = (uint8_t)((i * 31U + 7U) & 0xFFU);
++    }
++    minimc_fw_trailer_t tr;
++    std::memset(&tr, 0, sizeof(tr));
++    tr.magic = MINIMC_FW_TRAILER_MAGIC;
++    tr.struct_version = MINIMC_FW_STRUCT_VER;
++    tr.board_id = cfg->board_id;
++    tr.version_code = cfg->fw_version;
++    tr.payload_len = cfg->payload_len;
++    (void)fw_updater_sha256(out_buf, cfg->payload_len, tr.payload_sha256);
++    tr.trailer_crc32 = fw_updater_crc32((const uint8_t*)&tr, sizeof(tr) - 4U);
++    std::memcpy(out_buf + cfg->payload_len, &tr, sizeof(tr));
++    *out_total_len = (size_t)cfg->payload_len + sizeof(tr);
++}
++
++/**
++ * @brief 测试 1：验证 incoming 目录扫描忽略 .part 文件，完整 .bin 进入 PACKAGE_STAGED_PENDING_CONFIRM 且不自动开刷
++ */
++static void test_incoming_scanner_and_readonly_sealing(void) {
++    std::printf("[RUN ] test_incoming_scanner_and_readonly_sealing\n");
++    const char* inc_dir = "/tmp/twin65_inc_test";
++    const char* seal_dir = "/tmp/twin65_seal_test";
++    (void)mkdir(inc_dir, 0755);
++    (void)unlink("/tmp/twin65_inc_test/fw_th.bin.part");
++    (void)unlink("/tmp/twin65_inc_test/fw_th.bin");
++    (void)unlink("/tmp/twin65_seal_test/fw_th.bin");
++
++    uint8_t raw_pkg[2048];
++    size_t total_len = 0U;
++    const synth_pkg_cfg_t cfg = { MINIMC_BOARD_ID_TH, 0x02010000UL, 0x6356C05AUL, 1024U };
++    build_valid_atsg_package(&cfg, raw_pkg, &total_len);
++
++    FILE* fp = std::fopen("/tmp/twin65_inc_test/fw_th.bin.part", "wb");
++    assert(fp != nullptr);
++    (void)std::fwrite(raw_pkg, 1U, total_len, fp);
++    std::fclose(fp);
++
++    fw_updater_status_t st = {};
++    assert(fw_updater_scan_incoming(inc_dir, &st) == AISOC_DEV_OK);
++    assert(st.lifecycle_stage == FW_STAGE_IDLE);
++
++    assert(std::rename("/tmp/twin65_inc_test/fw_th.bin.part", "/tmp/twin65_inc_test/fw_th.bin") == 0);
++    assert(fw_updater_scan_incoming(inc_dir, &st) == AISOC_DEV_OK);
++    assert(st.lifecycle_stage == FW_STAGE_PACKAGE_STAGED_PENDING_CONFIRM);
++    assert(std::strcmp(st.staged_th_file, "fw_th.bin") == 0);
++
++    fw_sealed_package_t sealed = {};
++    assert(fw_updater_seal_and_verify_file("/tmp/twin65_inc_test/fw_th.bin", seal_dir, MINIMC_NODE_TH, &sealed) == AISOC_DEV_OK);
++    struct stat sb = {};
++    assert(stat(sealed.sealed_path, &sb) == 0);
++    assert((sb.st_mode & 0777) == 0444);
++    assert(sealed.payload_len == 1024U);
++    assert(sealed.start_req.fw_size_bytes == 1024U);
++    std::printf("[PASS] test_incoming_scanner_and_readonly_sealing\n");
++}
++
++/**
++ * @brief 测试 2：验证 128B ATSG Trailer 离线预检对错 board_id、坏 SHA-256、坏 trailer_crc32 与 241,665B 超限的拒绝
++ */
++static void test_offline_precheck_negative_cases(void) {
++    std::printf("[RUN ] test_offline_precheck_negative_cases\n");
++    static uint8_t s_big_buf[250000];
++    size_t total_len = 0U;
++    const synth_pkg_cfg_t ok_cfg = { MINIMC_BOARD_ID_TH, 0x02010000UL, 0x6356C05AUL, 1024U };
++    build_valid_atsg_package(&ok_cfg, s_big_buf, &total_len);
++
++    fw_sealed_package_t pkg = {};
++    /* 1. 目标节点与 board_id 不匹配（用 TH 包刷 MC） */
++    assert(fw_updater_verify_buffer(s_big_buf, total_len, MINIMC_NODE_MC, &pkg) == AISOC_DEV_ERR_INVALID_ARG);
++
++    /* 2. 篡改裸镜像 1 字节破坏 SHA-256 */
++    s_big_buf[100] ^= 0xFFU;
++    assert(fw_updater_verify_buffer(s_big_buf, total_len, MINIMC_NODE_TH, &pkg) == AISOC_DEV_ERR_INVALID_ARG);
++    s_big_buf[100] ^= 0xFFU;
++
++    /* 3. 篡改 trailer_crc32 */
++    s_big_buf[total_len - 1U] ^= 0xAAU;
++    assert(fw_updater_verify_buffer(s_big_buf, total_len, MINIMC_NODE_TH, &pkg) == AISOC_DEV_ERR_INVALID_ARG);
++
++    /* 4. TH 镜像达到 241,665B（超过 236KB = 241,664B 上限）必须拒绝 */
++    const synth_pkg_cfg_t over_cfg = { MINIMC_BOARD_ID_TH, 0x02010000UL, 0x6356C05AUL, 241665U };
++    build_valid_atsg_package(&over_cfg, s_big_buf, &total_len);
++    assert(fw_updater_verify_buffer(s_big_buf, total_len, MINIMC_NODE_TH, &pkg) == AISOC_DEV_ERR_INVALID_ARG);
++    std::printf("[PASS] test_offline_precheck_negative_cases\n");
++}
++
++static void init_valid_dev_temps(device_manager_state_t* dev) {
++    dev_state_init_snapshot(dev);
++    aisoc_raw_temp_t bed = {};
++    bed.source_node = 1U;
++    bed.temperature_millic = 60000;
++    bed.sensor_status = AISOC_SENSOR_OK;
++    bed.host_received_ns = 1000000000ULL;
++    aisoc_raw_temp_t noz = {};
++    noz.source_node = 2U;
++    noz.temperature_millic = 210000;
++    noz.sensor_status = AISOC_SENSOR_OK;
++    noz.host_received_ns = 1000000000ULL;
++    (void)dev_state_update_raw_sample(dev, &bed);
++    (void)dev_state_update_raw_sample(dev, &noz);
++}
++
++/**
++ * @brief 测试 3：验证四条件安全准入门禁与 UPGRADING_MAINTENANCE 期间 1.5s/3.0s 衰退抑制
++ */
++static void test_safety_gate_and_maintenance_decay_suppression(void) {
++    std::printf("[RUN ] test_safety_gate_and_maintenance_decay_suppression\n");
++    device_manager_state_t dev = {};
++    init_valid_dev_temps(&dev);
++
++    dev_admission_res_t adm_res = {};
++    dev_ota_safety_ctx_t safe_ctx = { 1U, 0U, 0, 0, 0U, 0U, false };
++    assert(dev_state_check_ota_admission(&dev, &safe_ctx, &adm_res) == AISOC_DEV_ERR_NOT_SAFE_FOR_OTA);
++    safe_ctx = { 0U, 1U, 0, 0, 0U, 0U, false };
++    assert(dev_state_check_ota_admission(&dev, &safe_ctx, &adm_res) == AISOC_DEV_ERR_NOT_SAFE_FOR_OTA);
++    safe_ctx = { 0U, 0U, 600, 0, 0U, 0U, false };
++    assert(dev_state_check_ota_admission(&dev, &safe_ctx, &adm_res) == AISOC_DEV_ERR_NOT_SAFE_FOR_OTA);
++    safe_ctx = { 0U, 0U, 0, 0, 0U, 50U, false };
++    assert(dev_state_check_ota_admission(&dev, &safe_ctx, &adm_res) == AISOC_DEV_ERR_NOT_SAFE_FOR_OTA);
++    safe_ctx = { 0U, 0U, 0, 0, 0U, 0U, false };
++    assert(dev_state_check_ota_admission(&dev, &safe_ctx, &adm_res) == AISOC_DEV_OK);
++
++    assert(dev_state_enter_maintenance(&dev) == AISOC_DEV_OK);
++
++    /* 推进 +10s（远超 3.0s）：维护态下严禁误判 OFFLINE 或打入 2147483646 哨兵 */
++    (void)dev_state_eval_freshness(&dev, 11000000000ULL);
++    assert(dev.snapshot.bed_temp_millic == 60000);
++    assert(dev.snapshot.tool_temp_millic == 210000);
++    (void)dev_state_check_admission(&dev, "UI_GATEWAY", &adm_res);
++    assert(!adm_res.accepted);
++
++    char snap[2048] = {0};
++    (void)dev_state_get_snapshot_json(&dev, snap, sizeof(snap));
++    assert(std::strstr(snap, "\"device_state\":\"UPGRADING_MAINTENANCE\"") != nullptr);
++    assert(std::strstr(snap, "\"quality\":\"MAINTENANCE_HOLD\"") != nullptr);
++    std::printf("[PASS] test_safety_gate_and_maintenance_decay_suppression\n");
++}
++
++/** @brief 模拟双节点升级传输层上下文结构体 */
++typedef struct {
++    bool in_boot[4];
++    uint32_t boot_id[4];
++    uint32_t fw_ver[4];
++    uint32_t git_commit[4];
++    uint32_t bytes_written[4];
++    uint16_t cached_chunk0[4];
++    bool fail_stage4_reboot;
++    uint8_t upgrade_order[4];
++    size_t order_cnt;
++    fw_confirm_stage_t stage_at_0x22_ack;
++    uint8_t progress_at_0x22_ack;
++    char text_at_0x22_ack[64];
++} mock_ota_bus_t;
++
++/** @brief 模拟 0x01->0x02 版本查询回调 */
++static bool mock_query_ver(void* ctx, uint8_t dst, minimc_payload_version_report_t* out_ver) {
++    mock_ota_bus_t* bus = (mock_ota_bus_t*)ctx;
++    out_ver->proto_major = 2U;
++    out_ver->proto_minor = 0U;
++    out_ver->major = (uint8_t)((bus->fw_ver[dst] >> 8U) & 0xFFU);
++    out_ver->minor = (uint8_t)(bus->fw_ver[dst] & 0xFFU);
++    out_ver->boot_id = bus->boot_id[dst];
++    out_ver->git_commit_short = bus->git_commit[dst];
++    out_ver->capability_flags = bus->in_boot[dst] ? MINIMC_CAP_FLAG_BOOT_MODE : 0x07UL;
++    return true;
++}
++
++/** @brief 模拟 0x14->0x15 鲜活温度查询回调 */
++static bool mock_query_temp(void* ctx, uint8_t dst, int16_t* out_temp_deci_c) {
++    const mock_ota_bus_t* bus = (const mock_ota_bus_t*)ctx;
++    if (bus->in_boot[dst]) return false;
++    *out_temp_deci_c = (dst == MINIMC_NODE_TH) ? 2100 : 600;
++    return true;
++}
++
++/** @brief 模拟 0x1D 进入 Bootloader 回调 */
++static bool mock_send_sys_ctrl(void* ctx, uint8_t dst, uint8_t action, uint8_t* out_nack_err) {
++    (void)action;
++    (void)out_nack_err;
++    mock_ota_bus_t* bus = (mock_ota_bus_t*)ctx;
++    bus->in_boot[dst] = true;
++    bus->boot_id[dst] += 0x10U;
++    return true;
++}
++
++/** @brief 模拟 0x20 OTA_START 握手回调 */
++static bool mock_ota_start(void* ctx, uint8_t dst, const minimc_payload_ota_start_t* req, uint8_t* out_nack) {
++    (void)req;
++    (void)out_nack;
++    mock_ota_bus_t* bus = (mock_ota_bus_t*)ctx;
++    bus->bytes_written[dst] = 0U;
++    bus->cached_chunk0[dst] = 0U;
++    bus->upgrade_order[bus->order_cnt++] = dst;
++    return true;
++}
++
++/** @brief 模拟 0x21 OTA_DATA 分块接收回调（chunk_0 缓存在 RAM，后续写入 Flash） */
++static bool mock_ota_chunk(void* ctx, uint8_t dst, uint32_t offset, const uint8_t* data, uint16_t len, uint8_t* out_nack) {
++    (void)data;
++    (void)out_nack;
++    mock_ota_bus_t* bus = (mock_ota_bus_t*)ctx;
++    if (offset == 0U) {
++        bus->cached_chunk0[dst] = len;
++        bus->bytes_written[dst] = 0U;
++    } else {
++        bus->bytes_written[dst] += len;
++    }
++    return true;
++}
++
++/** @brief 模拟 0x23 OTA_STATUS 查询回调 */
++static bool mock_ota_status(void* ctx, uint8_t dst, minimc_payload_ota_status_t* out_st) {
++    const mock_ota_bus_t* bus = (const mock_ota_bus_t*)ctx;
++    out_st->ota_state = 2U;
++    out_st->error_code = 0U;
++    out_st->cached_chunk0_bytes = bus->cached_chunk0[dst];
++    out_st->bytes_written = bus->bytes_written[dst];
++    return true;
++}
++
++/** @brief 模拟 0x22 OTA_FINISH 终验提交回调 */
++static bool mock_ota_finish(void* ctx, uint8_t dst, uint32_t size, uint32_t crc32, uint8_t* out_nack) {
++    (void)size;
++    (void)crc32;
++    (void)out_nack;
++    mock_ota_bus_t* bus = (mock_ota_bus_t*)ctx;
++    if (!bus->fail_stage4_reboot) {
++        bus->in_boot[dst] = false;
++        bus->boot_id[dst] += 0x1000U;
++        bus->fw_ver[dst] = (dst == MINIMC_NODE_TH) ? 0x0202UL : 0x0203UL;
++        bus->git_commit[dst] = (dst == MINIMC_NODE_TH) ? 0xAABBCCDDUL : 0x11223344UL;
++    }
++    return true;
++}
++
++/** @brief 捕获 Stage 3 转换瞬间的快照以证明 0x22 ACK 时绝不越级宣称 100% SUCCEEDED */
++static void on_stage_cb(void* ctx, const fw_updater_status_t* snap) {
++    mock_ota_bus_t* bus = (mock_ota_bus_t*)ctx;
++    if (snap->confirm_stage == FW_CONFIRM_STAGE_3_IMAGE_VERIFIED_COMMITTED) {
++        bus->stage_at_0x22_ack = snap->confirm_stage;
++        bus->progress_at_0x22_ack = snap->progress_pct;
++        std::snprintf(bus->text_at_0x22_ack, sizeof(bus->text_at_0x22_ack), "%s", snap->status_text);
++    }
++}
++
++/**
++ * @brief 测试 4：验证先 TH (0x03) 后 MC (0x02) 串行升级、Stage 1~4 硬隔离以及 Stage 4 失败转入 OTA_RECOVERY_PENDING
++ */
++static void test_serial_th_then_mc_and_stage4_hard_isolation(void) {
++    std::printf("[RUN ] test_serial_th_then_mc_and_stage4_hard_isolation\n");
++    uint8_t th_raw[2048], mc_raw[2048];
++    size_t th_len = 0U, mc_len = 0U;
++    const synth_pkg_cfg_t th_c = { MINIMC_BOARD_ID_TH, 0x0202UL, 0xAABBCCDDUL, 1024U };
++    const synth_pkg_cfg_t mc_c = { MINIMC_BOARD_ID_MC, 0x0203UL, 0x11223344UL, 1024U };
++    build_valid_atsg_package(&th_c, th_raw, &th_len);
++    build_valid_atsg_package(&mc_c, mc_raw, &mc_len);
++
++    fw_sealed_package_t th_pkg = {}, mc_pkg = {};
++    assert(fw_updater_verify_buffer(th_raw, th_len, MINIMC_NODE_TH, &th_pkg) == AISOC_DEV_OK);
++    assert(fw_updater_verify_buffer(mc_raw, mc_len, MINIMC_NODE_MC, &mc_pkg) == AISOC_DEV_OK);
++
++    mock_ota_bus_t bus = {};
++    bus.boot_id[MINIMC_NODE_TH] = 0x10U;
++    bus.boot_id[MINIMC_NODE_MC] = 0x20U;
++    fw_ota_transport_t tr = {
++        &bus, mock_query_ver, mock_query_temp, mock_send_sys_ctrl,
++        mock_ota_start, mock_ota_chunk, mock_ota_status, mock_ota_finish, on_stage_cb
++    };
++    device_manager_state_t dev = {};
++    init_valid_dev_temps(&dev);
++
++    dev_ota_safety_ctx_t safe = { 0U, 0U, 0, 0, 0U, 0U, false };
++    fw_upgrade_exec_cfg_t exec_cfg = { &dev, &safe, &tr, false, 3U };
++    fw_updater_status_t st = {};
++
++    assert(fw_updater_execute_batch(&exec_cfg, &th_pkg, &mc_pkg, &st) == AISOC_DEV_OK);
++    assert(bus.order_cnt == 2U && bus.upgrade_order[0] == MINIMC_NODE_TH && bus.upgrade_order[1] == MINIMC_NODE_MC);
++    assert(bus.stage_at_0x22_ack == FW_CONFIRM_STAGE_3_IMAGE_VERIFIED_COMMITTED);
++    assert(bus.progress_at_0x22_ack == 95U);
++    assert(std::strcmp(bus.text_at_0x22_ack, "IMAGE_VERIFIED_COMMITTED") == 0);
++    assert(st.confirm_stage == FW_CONFIRM_STAGE_4_NEW_APP_ONLINE_VERIFIED);
++    assert(st.progress_pct == 100U && std::strcmp(st.status_text, "SUCCEEDED") == 0);
++    assert(!dev.is_maintenance && !dev.ota_recovery_pending);
++
++    /* Stage 4 负例：0x22 ACK 后节点卡在 Bootloader 未跳回 App，必须转入 OTA_RECOVERY_PENDING */
++    bus.fail_stage4_reboot = true;
++    assert(fw_updater_execute_node(&exec_cfg, &th_pkg, &st) == AISOC_DEV_ERR_TIMEOUT);
++    assert(st.confirm_stage == FW_CONFIRM_STAGE_3_IMAGE_VERIFIED_COMMITTED);
++    assert(st.lifecycle_stage == FW_STAGE_OTA_RECOVERY_PENDING);
++    assert(std::strcmp(st.status_text, "OTA_RECOVERY_PENDING") == 0);
++    assert(dev.ota_recovery_pending == true);
++    std::printf("[PASS] test_serial_th_then_mc_and_stage4_hard_isolation\n");
++}
++
++int main(void) {
++    std::printf("=================================================================\n");
++    std::printf("Running TWIN-65 FirmwareUpdater & 4-Stage Confirmation Test Suite\n");
++    std::printf("=================================================================\n");
++    test_incoming_scanner_and_readonly_sealing();
++    test_offline_precheck_negative_cases();
++    test_safety_gate_and_maintenance_decay_suppression();
++    test_serial_th_then_mc_and_stage4_hard_isolation();
++    std::printf("=================================================================\n");
++    std::printf("All TWIN-65 FirmwareUpdater test suites PASSED!\n");
++    std::printf("=================================================================\n");
++    return 0;
++}
+diff --git a/tests/forward/twin/test_forward_protocol.cpp b/tests/forward/twin/test_forward_protocol.cpp
+index 889ec00..d2232a2 100644
+--- a/tests/forward/twin/test_forward_protocol.cpp
++++ b/tests/forward/twin/test_forward_protocol.cpp
+@@ -89,6 +89,51 @@ static void test_control_frame_builders(void) {
+     check_cond(raw[5] == MINIMC_CMD_GCODE_EXEC && raw[12] == 7U, "0x1C cmd and line_len=7");
+ }
+ 
++/**
++ * @brief 测试 TWIN-65 0x1D/0x20~0x23 OTA 帧构建（含 520B 大载荷）与废弃 0x05 响应拒绝
++ */
++static void test_twin65_ota_frame_builders(void) {
++    std::printf("[TEST 2B] Verify TWIN-65 0x1D/0x20~0x23 OTA frame builders & 0x05 rejection...\n");
++    uint8_t raw[600] = {0};
++    fwd_frame_buf_t fb = { raw, sizeof(raw), 0U };
++
++    minimc_payload_sys_ctrl_t sys_req = { MINIMC_SYS_CTRL_ENTER_BOOTLOADER, 0U, 0U };
++    check_cond(fwd_proto_build_sys_ctrl_frame(0x03U, &sys_req, 20U, &fb) == AISOC_FWD_OK, "build 0x1D ok");
++    check_cond(raw[5] == MINIMC_CMD_SYSTEM_CONTROL && fb.length == 18U, "0x1D cmd=0x1D len=18");
++
++    minimc_payload_ota_start_t st_req = {};
++    st_req.target_device = 0x03U;
++    st_req.fw_size_bytes = 65536U;
++    st_req.trailer.magic = MINIMC_FW_TRAILER_MAGIC;
++    check_cond(fwd_proto_build_ota_start_frame(0x03U, &st_req, 21U, &fb) == AISOC_FWD_OK, "build 0x20 ok");
++    check_cond(raw[5] == MINIMC_CMD_OTA_START && fb.length == 158U, "0x20 cmd=0x20 len=158 (144B payload)");
++
++    uint8_t chunk[512] = { 0xAAU, 0x55U };
++    fwd_ota_chunk_req_t cd = { 0x02U, 0U, chunk, 512U };
++    check_cond(fwd_proto_build_ota_data_frame(&cd, 22U, &fb) == AISOC_FWD_OK, "build 0x21 512B chunk ok");
++    check_cond(raw[5] == MINIMC_CMD_OTA_DATA && fb.length == 534U, "0x21 len=534 (520B payload)");
++
++    minimc_payload_ota_finish_t fin_req = { 0x12345678UL, 1U, {0, 0, 0} };
++    check_cond(fwd_proto_build_ota_finish_frame(0x02U, &fin_req, 23U, &fb) == AISOC_FWD_OK, "build 0x22 ok");
++    check_cond(raw[5] == MINIMC_CMD_OTA_FINISH && fb.length == 22U, "0x22 cmd=0x22 len=22");
++
++    check_cond(fwd_proto_build_ota_status_frame(0x03U, 24U, &fb) == AISOC_FWD_OK, "build 0x23 ok");
++    check_cond(raw[5] == MINIMC_CMD_OTA_STATUS && fb.length == 14U, "0x23 cmd=0x23 len=14");
++
++    minimc::FrameView fv_05 = {};
++    fv_05.header.sof_1 = MINIMC_SOF_1;
++    fv_05.header.sof_2 = MINIMC_SOF_2;
++    fv_05.header.src_id = 0x02U;
++    fv_05.header.dst_id = MINIMC_DEV_AP;
++    fv_05.header.flags = MINIMC_RESP_FLAGS_V2;
++    fv_05.header.cmd_id = 0x05U;
++    fv_05.header.seq = 25U;
++    fwd_ctrl_expect_t exp_p = { 0x02U, 25U, MINIMC_CMD_ACK, MINIMC_CMD_ACK, 0U, 100U };
++    aisoc_fwd_status_t res_st = AISOC_FWD_OK;
++    check_cond(fwd_proto_check_ctrl_response(&fv_05, &exp_p, &res_st) == AISOC_FWD_ERR_INVALID_ARG,
++               "0x05 deprecated ESTOP_ACK rejected with AISOC_FWD_ERR_INVALID_ARG");
++}
++
+ /**
+  * @brief pty_mcu_responder_t 测试辅助配置与状态上下文结构体
+  */
+@@ -100,7 +145,7 @@ typedef struct {
+ } pty_mcu_responder_t;
+ 
+ /**
+- * @brief 填充 PTY 响应载荷
++ * @brief 填充 PTY 响应载荷（小于 50 行）
+  */
+ static size_t fill_pty_resp_payload(
+     const minimc::FrameView* req_f,
+@@ -111,42 +156,43 @@ static size_t fill_pty_resp_payload(
+     *out_cmd = cmd;
+     if (cmd == MINIMC_CMD_SET_TEMP || cmd == MINIMC_CMD_TEMP_QUERY) {
+         *out_cmd = MINIMC_CMD_TEMP_REPORT;
+-        minimc_temp_wire_payload_t tr = {};
+-        tr.current_temp_deci_c = 600;
+-        tr.target_temp_deci_c = 600;
++        const minimc_temp_wire_payload_t tr = { 600, 600, 0U, 0U, 0U, 0U, 0U };
+         std::memcpy(pl, &tr, sizeof(tr));
+         return sizeof(tr);
+     }
+     if (cmd == MINIMC_CMD_MOTION_HOME || cmd == MINIMC_CMD_MOTION_MOVE || cmd == MINIMC_CMD_POS_QUERY) {
+         *out_cmd = MINIMC_CMD_POS_QUERY;
+-        minimc_pos_resp_t pr = { 12500, 25000, 400, 100, 0U, 0x07U, 0U };
++        const minimc_pos_resp_t pr = { 12500, 25000, 400, 100, 0U, 0x07U, 0U };
+         std::memcpy(pl, &pr, sizeof(pr));
+         return sizeof(pr);
+     }
+     if (cmd == MINIMC_CMD_JOB_CONTROL) {
+-        minimc_job_resp_t jr = { req_f->payload.data[0], 0U, 100U, 35U };
++        const minimc_job_resp_t jr = { req_f->payload.data[0], 0U, 100U, 35U };
+         std::memcpy(pl, &jr, sizeof(jr));
+         return sizeof(jr);
+     }
+     if (cmd == MINIMC_CMD_LEVEL_GRID_QUERY || cmd == MINIMC_CMD_LEVEL_TRIGGER) {
+         *out_cmd = MINIMC_CMD_LEVEL_GRID_QUERY;
+-        minimc_level_grid_wire_payload_t gr = {};
+-        gr.grid_points_x = 5U;
+-        gr.grid_points_y = 5U;
++        minimc_level_grid_wire_payload_t gr = { 5U, 5U, {0} };
+         for (int i = 0; i < 9; ++i) gr.z_offset_um[i] = (int16_t)((i - 4) * 10);
+         std::memcpy(pl, &gr, sizeof(gr));
+         return sizeof(gr);
+     }
+     if (cmd == MINIMC_CMD_SLOT_SELECT) {
+-        minimc_filament_resp_t fr = { req_f->payload.data[0], 0x0FU, 2U, 0U };
++        const minimc_filament_resp_t fr = { req_f->payload.data[0], 0x0FU, 2U, 0U };
+         std::memcpy(pl, &fr, sizeof(fr));
+         return sizeof(fr);
+     }
+     if (cmd == MINIMC_CMD_GCODE_EXEC) {
+-        minimc_gcode_resp_t gc = { 0U, 8U, req_f->header.seq };
++        const minimc_gcode_resp_t gc = { 0U, 8U, req_f->header.seq };
+         std::memcpy(pl, &gc, sizeof(gc));
+         return sizeof(gc);
+     }
++    if (cmd == MINIMC_CMD_OTA_STATUS) {
++        const minimc_payload_ota_status_t st = { 2U, 0U, 512U, 512U };
++        std::memcpy(pl, &st, sizeof(st));
++        return sizeof(st);
++    }
+     *out_cmd = MINIMC_CMD_ACK;
+     return 0U;
+ }
+@@ -300,6 +346,21 @@ static void test_single_node_commands(forward_service_state_t* state) {
+     dev_leveling_grid_t grid = {};
+     check_cond(forward_service_query_level_grid(state, true, &grid) == AISOC_FWD_OK, "0x1A+0x18 grid ok");
+     check_cond(grid.points_x == 5U && grid.points_y == 5U && grid.z_offset_um[0] == -40, "0x18 grid matches");
++
++    minimc_payload_sys_ctrl_t sys_req = { MINIMC_SYS_CTRL_ENTER_BOOTLOADER, 0U, 0U };
++    check_cond(forward_service_sys_control(state, 0x03U, &sys_req) == AISOC_FWD_OK, "0x1D sys_control ok");
++    minimc_payload_ota_start_t ota_st_req = {};
++    ota_st_req.target_device = 0x03U;
++    ota_st_req.fw_size_bytes = 1024U;
++    check_cond(forward_service_ota_start(state, 0x03U, &ota_st_req) == AISOC_FWD_OK, "0x20 ota_start ok");
++    uint8_t chunk[512] = { 0x11U };
++    fwd_ota_chunk_req_t cdesc = { 0x03U, 0U, chunk, 512U };
++    check_cond(forward_service_ota_send_chunk(state, &cdesc) == AISOC_FWD_OK, "0x21 ota_send_chunk 512B ok");
++    minimc_payload_ota_status_t ota_stat = {};
++    check_cond(forward_service_ota_query_status(state, 0x03U, &ota_stat) == AISOC_FWD_OK, "0x23 ota_query_status ok");
++    check_cond(ota_stat.ota_state == 2U && ota_stat.cached_chunk0_bytes == 512U, "0x23 status payload matches");
++    minimc_payload_ota_finish_t fin_req = { 0x11223344UL, 1U, {0, 0, 0} };
++    check_cond(forward_service_ota_finish(state, 0x03U, &fin_req) == AISOC_FWD_OK, "0x22 ota_finish ok");
+ }
+ 
+ /**
+@@ -312,6 +373,7 @@ int main(void) {
+ 
+     test_baud_rate_mapping();
+     test_control_frame_builders();
++    test_twin65_ota_frame_builders();
+ 
+     int master_fd = -1;
+     int slave_fd = -1;
+diff --git a/tests/ui_gateway/twin/test_ui_gateway_routes.cpp b/tests/ui_gateway/twin/test_ui_gateway_routes.cpp
+index 55f956c..7dfbb58 100644
+--- a/tests/ui_gateway/twin/test_ui_gateway_routes.cpp
++++ b/tests/ui_gateway/twin/test_ui_gateway_routes.cpp
+@@ -469,6 +469,48 @@ static void test_job_ack_driven_and_instant_pause(dev_stub_ctx_t* stub) {
+     stub->force_err = 0;
+ }
+ 
++/**
++ * @brief 验证 TWIN-65 UPGRADING_MAINTENANCE 期间控制路由返回 HTTP 409 且 OTA 状态查询保持 200 OK
++ * @param port 监听端口
++ * @param server 网关服务端实例指针
++ */
++static void test_twin65_maintenance_lock_and_ota_routes(uint16_t port, ui_gw_server_t* server) {
++    std::printf("[TEST 5] Verify TWIN-65 UPGRADING_MAINTENANCE HTTP 409 lock & OTA routes...\n");
++    char rx[1024] = {0};
++    ui_gw_server_set_ota_status_json(
++        server,
++        "{\"stage\":\"IMAGE_VERIFIED_COMMITTED\",\"confirm_stage\":3,\"progress_pct\":95,\"is_maintenance\":true}"
++    );
++    ui_gw_server_set_maintenance(server, true);
++
++    check_cond(send_http_req(port, "POST", "/api/v1/temperature/set", rx) &&
++               std::strstr(rx, "HTTP/1.1 409") != nullptr &&
++               std::strstr(rx, "UPGRADING_MAINTENANCE") != nullptr,
++               "temp/set returns 409 Conflict during UPGRADING_MAINTENANCE");
++    check_cond(send_http_req(port, "POST", "/api/v1/filament/slots", rx) &&
++               std::strstr(rx, "HTTP/1.1 409") != nullptr,
++               "filament/slots returns 409 Conflict during UPGRADING_MAINTENANCE");
++    check_cond(send_http_req(port, "POST", "/api/v1/gcode/execute", rx) &&
++               std::strstr(rx, "HTTP/1.1 409") != nullptr,
++               "gcode/execute returns 409 Conflict during UPGRADING_MAINTENANCE");
++    check_cond(send_http_req(port, "POST", "/api/v1/motion/home", rx) &&
++               std::strstr(rx, "HTTP/1.1 409") != nullptr,
++               "motion/home returns 409 Conflict during UPGRADING_MAINTENANCE");
++    check_cond(send_http_req(port, "POST", "/api/v1/jobs/start", rx) &&
++               std::strstr(rx, "HTTP/1.1 409") != nullptr,
++               "jobs/start returns 409 Conflict during UPGRADING_MAINTENANCE");
++    check_cond(send_http_req(port, "GET", "/api/v1/ota/status", rx) &&
++               std::strstr(rx, "HTTP/1.1 200 OK") != nullptr &&
++               std::strstr(rx, "\"confirm_stage\":3") != nullptr &&
++               std::strstr(rx, "\"progress_pct\":95") != nullptr,
++               "GET /api/v1/ota/status returns 200 OK with Stage 3 95% status during maintenance");
++
++    ui_gw_server_set_maintenance(server, false);
++    check_cond(send_http_req(port, "POST", "/api/v1/ota/trigger", rx) &&
++               std::strstr(rx, "HTTP/1.1 200 OK") != nullptr,
++               "POST /api/v1/ota/trigger returns 200 OK after maintenance exit");
++}
++
+ int main(void) {
+     std::printf("=================================================================\n");
+     std::printf("Running TWIN-49 UI Gateway Zero-Mock & Route Verification Suite\n");
+@@ -499,6 +541,7 @@ int main(void) {
+         usleep(50000);
+         test_http_routes_200_503_504(port, &server, &stub);
+         test_job_ack_driven_and_instant_pause(&stub);
++        test_twin65_maintenance_lock_and_ota_routes(port, &server);
+         pump.running = false;
+         pthread_join(gw_tid, nullptr);
+         pthread_join(dev_tid, nullptr);

@@ -1,0 +1,84 @@
+diff --git a/color-engine-mcu/io_toggle/inc/minimc_proto.h b/color-engine-mcu/io_toggle/inc/minimc_proto.h
+index 2b57c7d..54589a7 100644
+--- a/color-engine-mcu/io_toggle/inc/minimc_proto.h
++++ b/color-engine-mcu/io_toggle/inc/minimc_proto.h
+@@ -48,7 +48,6 @@ extern "C" {
+ #define MINIMC_CMD_EMERGENCY_STOP   0x17U
+ #define MINIMC_CMD_LEVEL_GRID_QUERY 0x18U
+ #define MINIMC_CMD_SLOT_SELECT      0x19U
+-#undef MINIMC_CMD_FILAMENT_CONTROL
+ #define MINIMC_CMD_FILAMENT_CONTROL 0x19U
+ #define MINIMC_CMD_FILAMENT_CTRL_V2 0x19U
+ #define MINIMC_CMD_LEVEL_TRIGGER    0x1AU
+diff --git a/color-engine-mcu/io_toggle/inc/usart.h b/color-engine-mcu/io_toggle/inc/usart.h
+index ca3792f..2167ff0 100644
+--- a/color-engine-mcu/io_toggle/inc/usart.h
++++ b/color-engine-mcu/io_toggle/inc/usart.h
+@@ -44,7 +44,7 @@ extern "C" {
+ #define MINIMC_CMD_TEMP_REPORT_V2   0x15U
+ #endif
+ #ifndef MINIMC_CMD_FILAMENT_CONTROL
+-#define MINIMC_CMD_FILAMENT_CONTROL 0x15U
++#define MINIMC_CMD_FILAMENT_CONTROL 0x19U
+ #endif
+ #ifndef MINIMC_CMD_MOTION_STOP
+ #define MINIMC_CMD_MOTION_STOP      0x17U
+diff --git a/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c b/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
+index 2bd9c45..6286bd1 100644
+--- a/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
++++ b/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
+@@ -750,15 +750,15 @@ static void test_cascade_rx_and_tx_logging(void)
+     assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=3 cmd=0x14 status=OK nozzle_ddC=245 adc_raw=3911 pullup_sel=0 fault=0") != NULL);
+     assert(strstr(s_usart3_capture, "dir=TX node=TH seq=3 cmd=0x14 status=ACK nozzle_ddC=245 adc_raw=3911 pullup_sel=0 fault=0") != NULL);
+ 
+-    /* 4. 短载荷 SET_TEMP (0x10) / FILAMENT_CONTROL (0x15) -> RX + NACK (err_code=0x02)，未知命令 0xFE -> 0x04 */
++    /* 4. 短载荷 SET_TEMP (0x10) / FILAMENT_CONTROL (0x19) -> RX + NACK (err_code=0x02)，未知命令 0xFE -> 0x04 */
+     const uint8_t set_temp_pay[2] = { 0x66U, 0x08U };
+     inject_minimc_req(4U, MINIMC_CMD_SET_TEMP, set_temp_pay, 2U);
+     assert(strstr(s_usart3_capture, "dir=RX node=TH seq=4 cmd=0x10 status=OK len=16 nozzle_set=2150") != NULL);
+     assert(strstr(s_usart3_capture, "dir=TX node=TH seq=4 cmd=0x06 status=NACK err_code=0x02") != NULL);
+ 
+-    const uint8_t fil_pay[2] = { 2U, 0U };
++    const uint8_t fil_pay[2] = { 2U, 1U };
+     inject_minimc_req(5U, MINIMC_CMD_FILAMENT_CONTROL, fil_pay, 2U);
+-    assert(strstr(s_usart3_capture, "dir=RX node=TH seq=5 cmd=0x15 status=OK len=16 op=LOAD slot=2") != NULL);
++    assert(strstr(s_usart3_capture, "dir=RX node=TH seq=5 cmd=0x19 status=OK len=16 op=LOAD slot=2") != NULL);
+     assert(strstr(s_usart3_capture, "dir=TX node=TH seq=5 cmd=0x06 status=NACK err_code=0x02") != NULL);
+ 
+     inject_minimc_req(5U, 0xFEU, NULL, 0U);
+@@ -768,7 +768,7 @@ static void test_cascade_rx_and_tx_logging(void)
+     th_debug_notify_filament("LOAD", 2U, 0x0FU, "DONE");
+     th_debug_notify_filament("SELECT", 3U, 0x0FU, "DONE");
+     drain_usart3_dma();
+-    assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=5 cmd=0x15 status=OK op=LOAD slot=2 active_slot=2 filament_present_mask=0x0F step_state=DONE") != NULL);
++    assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=5 cmd=0x19 status=OK op=LOAD slot=2 active_slot=2 filament_present_mask=0x0F step_state=DONE") != NULL);
+     assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=5 cmd=0x19 status=OK op=SELECT slot=3 active_slot=3 filament_present_mask=0x0F step_state=DONE") != NULL);
+     printf("[PASS] test_cascade_rx_and_tx_logging\n");
+ }
+@@ -790,7 +790,7 @@ static void test_periodic_state_and_dynamic_sync(void)
+     minimc_proto_poll();
+     drain_usart3_dma();
+     assert(strstr(s_usart3_capture, "ts=2000 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=245 adc_raw=3911 pullup_sel=0 fault=0") != NULL);
+-    assert(strstr(s_usart3_capture, "ts=2000 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x0F step_state=IDLE") != NULL);
++    assert(strstr(s_usart3_capture, "ts=2000 dir=STATE node=TH seq=0 cmd=0x19 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x0F step_state=IDLE") != NULL);
+ 
+     /* 500ms 窗口内 (<2Hz 限制)：严禁输出新的心跳日志 */
+     clear_capture();
+@@ -810,7 +810,7 @@ static void test_periodic_state_and_dynamic_sync(void)
+     minimc_proto_poll();
+     drain_usart3_dma();
+     assert(strstr(s_usart3_capture, "ts=2500 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=2100 adc_raw=493 pullup_sel=1 fault=0") != NULL);
+-    assert(strstr(s_usart3_capture, "ts=2500 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=1 active_slot=1 filament_present_mask=0x00 step_state=FEEDING") != NULL);
++    assert(strstr(s_usart3_capture, "ts=2500 dir=STATE node=TH seq=0 cmd=0x19 status=OK op=LOAD slot=1 active_slot=1 filament_present_mask=0x00 step_state=FEEDING") != NULL);
+ 
+     /* 模拟 +500ms (t=3000ms) 开路故障与退料状态 */
+     clear_capture();
+@@ -820,7 +820,7 @@ static void test_periodic_state_and_dynamic_sync(void)
+     minimc_proto_poll();
+     drain_usart3_dma();
+     assert(strstr(s_usart3_capture, "ts=3000 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=32767 adc_raw=4095 pullup_sel=0 fault=1") != NULL);
+-    assert(strstr(s_usart3_capture, "ts=3000 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=UNLOAD slot=1 active_slot=1 filament_present_mask=0x00 step_state=RETRACTING") != NULL);
++    assert(strstr(s_usart3_capture, "ts=3000 dir=STATE node=TH seq=0 cmd=0x19 status=OK op=UNLOAD slot=1 active_slot=1 filament_present_mask=0x00 step_state=RETRACTING") != NULL);
+     printf("[PASS] test_periodic_state_and_dynamic_sync\n");
+ }
+ 
