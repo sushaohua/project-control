@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Review
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -110,7 +110,7 @@ forbidden_paths:
 - boot/**
 - test_harness/.agents/rules/**
 source_baseline:
-  project-control: 297dac582583d089f4734758fbd32b10dabf2573
+  project-control: 5952dcbb48657b03f9e9857b82c1b5371f5d55a8
   soc-ap: 7184edfc796923e2f2c6e3e57ef3a9f791164b51
   mcu-p3: 3f1cfa66c6d27422cf038936b29aca7e45edb511
   test_harness: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
@@ -118,7 +118,7 @@ source_baseline:
   boot/bootloaderth: 64b7100d3b0260ad1c24b627986475dcd45ad383
 base_commit: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
 branch: main
-candidate_commit: null
+candidate_commit: e7f7f574fee7dce8cc78b52772ff32a03b9b345f
 dispatch_binding:
   source_commit: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
