@@ -1,7 +1,7 @@
 ---
 id: TWIN-65
 title: TWIN-65 SoC AP协议栈对齐Rev 2.0.4、/var/update原子封存、维护互斥与四阶段升级编排服务
-revision: 2
+revision: 3
 plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
@@ -33,7 +33,7 @@ review_assignments:
     planned_session_alias: planned-qa-twin-65
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-65/runs/qa_03/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-65/runs/qa_04/qa_review_report.md
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -92,7 +92,7 @@ forbidden_paths:
 - test_harness/**
 - soc-ap/.agents/rules/**
 source_baseline:
-  project-control: 6d8b9dc8a59366c9e0d0c8126240b1caf69ab321
+  project-control: bc4c58b9b8230feb75ba956953978fcd5786af4d
   soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
   mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
@@ -100,7 +100,7 @@ source_baseline:
   boot/bootloaderth: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
 base_commit: c6692b244e0aa09d04e7051293f9fef3c67535dd
 branch: main
-candidate_commit: 42a1dc4465b4a848c768283c570a48be63ec1e6b
+candidate_commit: 7184edfc796923e2f2c6e3e57ef3a9f791164b51
 dispatch_binding:
   source_commit: c6692b244e0aa09d04e7051293f9fef3c67535dd
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -130,7 +130,7 @@ read_sources:
 worktree: soc-ap
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 2
+  task_revision: 3
   lease_id: lease-twin-65-20261106-01
   expires_at: '2026-11-07T22:00:00+08:00'
 resources:
