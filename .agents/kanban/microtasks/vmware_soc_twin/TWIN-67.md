@@ -99,7 +99,7 @@ source_baseline:
   test_harness: cf81195eca55bcd772ef2daa2fd4aa41634c1492
   boot/bootloadermc: faa2ed00dc9b6c8567dd44e875028f65073aab62
   boot/bootloaderth: 64b7100d3b0260ad1c24b627986475dcd45ad383
-base_commit: 0719d5cb465bbfe9c9a75d5272a72064cf6f01fc
+base_commit: 8557c79743c4980bb6e5dfc9676e93eb53f1f33b
 branch: main
 candidate_commit: null
 dispatch_binding:
