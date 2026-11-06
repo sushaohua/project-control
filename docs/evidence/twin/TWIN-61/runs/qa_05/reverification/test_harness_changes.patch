@@ -1,0 +1,184 @@
+diff --git a/hil/tests/test_composite_lifecycle_sequences.py b/hil/tests/test_composite_lifecycle_sequences.py
+index 1f9431d..efa6e97 100644
+--- a/hil/tests/test_composite_lifecycle_sequences.py
++++ b/hil/tests/test_composite_lifecycle_sequences.py
+@@ -117,7 +117,7 @@ def validate_temperature_set_contract(payload: Dict[str, object]) -> Tuple[int,
+ 
+ 
+ def _check_slots_weight_list(slots_obj: object) -> Tuple[bool, str]:
+-    """校验 `slots` 数组内单槽 `mixing_weight` 在合法区间且权重总和等于 `100` 或 `10000`。"""
++    """校验 `slots` 数组内单槽 `mixing_weight` 在合法区间且权重总和严格等于 `10000`。"""
+     if not isinstance(slots_obj, list) or len(slots_obj) == 0:
+         return False, "slots must be non-empty list"
+     weight_sum = 0
+@@ -131,13 +131,13 @@ def _check_slots_weight_list(slots_obj: object) -> Tuple[bool, str]:
+             if not isinstance(w, int) or w < 0 or w > 10000:
+                 return False, "slot mixing_weight out of [0, 10000]"
+             weight_sum += w
+-    if has_weights and weight_sum not in (100, 10000):
+-        return False, f"slots mixing_weight sum {weight_sum} not in (100, 10000)"
++    if has_weights and weight_sum != 10000:
++        return False, f"slots mixing_weight sum {weight_sum} != 10000"
+     return True, "ok"
+ 
+ 
+ def validate_seq03_filament_slots_contract(payload: Dict[str, object]) -> Tuple[int, str]:
+-    """校验复合序列 SEQ-03 的料槽与混色参数契约。"""
++    """校验复合序列 SEQ-03 的料槽与混色参数契约（总权重必须严格等于 10000）。"""
+     if "slot_id" in payload:
+         sid = payload["slot_id"]
+         if not isinstance(sid, int) or sid < 0 or sid >= 4:
+@@ -153,7 +153,7 @@ def validate_seq03_filament_slots_contract(payload: Dict[str, object]) -> Tuple[
+                 return 400, "invalid numeric action"
+         elif not isinstance(act, str) or act.lower() not in ("select", "load", "unload"):
+             return 400, "invalid action"
+-    if "total_mixing_weight" in payload and payload["total_mixing_weight"] not in (100, 10000):
++    if "total_mixing_weight" in payload and payload["total_mixing_weight"] != 10000:
+         return 400, "invalid total_mixing_weight"
+     if "slots" in payload:
+         ok_slots, reason = _check_slots_weight_list(payload["slots"])
+@@ -355,10 +355,13 @@ def _drive_live_seq03(http_base: str, mc_log_path: Optional[Path], th_log_path:
+     c_bad_slot, _ = _http_json_call(http_base, "POST", "/api/v1/filament/slots", {"slot_id": 4, "action": 0})
+     c_bad_act, _ = _http_json_call(http_base, "POST", "/api/v1/filament/slots", {"slot_id": 0, "action": 3})
+     c_w_ok, _ = _http_json_call(
+-        http_base, "POST", "/api/v1/filament/slots", {"total_mixing_weight": 100, "slots": [{"mixing_weight": 50}, {"mixing_weight": 50}]}
++        http_base, "POST", "/api/v1/filament/slots", {"total_mixing_weight": 10000, "slots": [{"mixing_weight": 4000}, {"mixing_weight": 6000}]}
+     )
+-    c_w_bad, _ = _http_json_call(
+-        http_base, "POST", "/api/v1/filament/slots", {"total_mixing_weight": 99, "slots": [{"mixing_weight": 49}, {"mixing_weight": 50}]}
++    c_w_bad100, _ = _http_json_call(
++        http_base, "POST", "/api/v1/filament/slots", {"total_mixing_weight": 100, "slots": [{"mixing_weight": 40}, {"mixing_weight": 60}]}
++    )
++    c_w_bad9000, _ = _http_json_call(
++        http_base, "POST", "/api/v1/filament/slots", {"total_mixing_weight": 9000, "slots": [{"mixing_weight": 4000}, {"mixing_weight": 5000}]}
+     )
+     mc_text = mc_log_path.read_text(encoding="utf-8", errors="replace") if (mc_log_path and mc_log_path.exists()) else ""
+     th_text = th_log_path.read_text(encoding="utf-8", errors="replace") if (th_log_path and th_log_path.exists()) else ""
+@@ -366,7 +369,8 @@ def _drive_live_seq03(http_base: str, mc_log_path: Optional[Path], th_log_path:
+         c_bad_slot == 400
+         and c_bad_act == 400
+         and c_w_ok == 200
+-        and c_w_bad == 400
++        and c_w_bad100 == 400
++        and c_w_bad9000 == 400
+         and "heater_duty_percent=0" in mc_text
+         and "cmd=0x19 status=ACK" in mc_text
+         and "op=LOAD" in th_text
+@@ -433,11 +437,42 @@ def _poll_until_offline_decay(
+     return elapsed_ms, last_state
+ 
+ 
++def _poll_until_reconnect_recovery(
++    http_base: str,
++    clock_fn: Callable[[], float],
++    sleep_fn: Callable[[float], None],
++) -> Tuple[bool, int]:
++    """在 `reconnect_hook()` 后记录起始单调时钟并在 `3000ms` 窗口内轮询恢复 `READY`/`IDLE` 与有效温度。"""
++    start_ts = clock_fn()
++    for _ in range(15):
++        _http_json_call(http_base, "POST", "/api/v1/temperature/sample", {})
++        _, rec_state = _http_json_call(http_base, "GET", "/api/v1/state")
++        elapsed_recover_ms = int(round((clock_fn() - start_ts) * 1000.0))
++        bed_rec = rec_state.get("bed", {})
++        tool_rec = rec_state.get("tool", {})
++        recovered = bool(
++            rec_state.get("mc_online") is True
++            and rec_state.get("th_online") is True
++            and rec_state.get("system_status") in ("READY", "IDLE")
++            and isinstance(bed_rec, dict)
++            and bed_rec.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE
++            and isinstance(tool_rec, dict)
++            and tool_rec.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE
++        )
++        if recovered:
++            return (0 <= elapsed_recover_ms <= AISOC_FRESHNESS_FAULT_MS), elapsed_recover_ms
++        if elapsed_recover_ms > AISOC_FRESHNESS_FAULT_MS:
++            break
++        sleep_fn(0.2)
++    elapsed_recover_ms = int(round((clock_fn() - start_ts) * 1000.0))
++    return False, elapsed_recover_ms
++
++
+ def _drive_live_seq05(http_base: str, hooks: Dict[str, object]) -> bool:
+     """
+-    执行 SEQ-05 实机 HTTP 闭环（使用真实测量 `elapsed_ms`，严禁硬编码 `3200`）：
++    执行 SEQ-05 实机 HTTP 闭环（使用真实测量 `elapsed_ms` 与 `recover_ms <= 3000ms`）：
+     急停 (`0x17`) -> 调用 `disconnect` 钩子并测量 `>=3.0s` 衰减 -> 校验离线哨兵 `2147483646`、
+-    `oobe_completed=False`、4路断料非绿、控制指令返回 `503/504` -> 调用 `reconnect` 钩子恢复在线与 `READY`。
++    `oobe_completed=False`、4路断料非绿、控制指令返回 `503/504` -> 调用 `reconnect` 钩子并在 `<=3.0s` 内恢复在线。
+     """
+     _http_json_call(http_base, "POST", "/api/v1/motion/stop", {})
+     disconnect_fn = hooks.get("disconnect")
+@@ -458,19 +493,9 @@ def _drive_live_seq05(http_base: str, hooks: Dict[str, object]) -> bool:
+         return False
+ 
+     reconnect_fn()
+-    _http_json_call(http_base, "POST", "/api/v1/temperature/sample", {})
+-    _, rec_state = _http_json_call(http_base, "GET", "/api/v1/state")
+-    bed_rec = rec_state.get("bed", {})
+-    tool_rec = rec_state.get("tool", {})
+-    return bool(
+-        rec_state.get("mc_online") is True
+-        and rec_state.get("th_online") is True
+-        and rec_state.get("system_status") == "READY"
+-        and isinstance(bed_rec, dict)
+-        and bed_rec.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE
+-        and isinstance(tool_rec, dict)
+-        and tool_rec.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE
+-    )
++    rec_ok, recover_ms = _poll_until_reconnect_recovery(http_base, clock_fn, sleep_fn)
++    hooks["last_recover_ms"] = recover_ms
++    return rec_ok
+ 
+ 
+ def run_live_composite_sequences(
+@@ -488,7 +513,7 @@ def run_live_composite_sequences(
+     :param hooks: 断链/重连与时钟钩子字典 `{"disconnect": fn, "reconnect": fn, ...}`
+     :return: (是否全部通过, 序列执行报告字典)
+     """
+-    active_hooks = hooks or {}
++    active_hooks = dict(hooks) if hooks else {}
+     s1 = _drive_live_seq01(http_base, mc_log_path)
+     s2 = _drive_live_seq02(http_base, mc_log_path)
+     s3 = _drive_live_seq03(http_base, mc_log_path, th_log_path)
+@@ -501,6 +526,7 @@ def run_live_composite_sequences(
+         "SEQ-03": s3,
+         "SEQ-04": s4,
+         "SEQ-05": s5,
++        "recover_ms": int(active_hooks.get("last_recover_ms", -1)),
+         "passed": passed,
+     }
+ 
+@@ -799,14 +825,29 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+         self.assertEqual(validate_temperature_set_contract({"bed_target_c": 131})[0], 400)
+ 
+     def test_seq03_filament_save_decoupling_and_400_validation(self) -> None:
+-        """验证 SEQ-03：合法槽位/动作/混色权重返回 200，越界 slot_id=4、action=3、权重和!=100/10000 返回 400。"""
++        """验证 SEQ-03：合法槽位/动作/混色权重 10000 返回 200，越界 slot_id=4、action=3、权重和 100/9000 返回 400。"""
+         self.assertEqual(
+             validate_seq03_filament_slots_contract(
+-                {"slot_id": 0, "action": 0, "total_mixing_weight": 100, "slots": [{"mixing_weight": 50}, {"mixing_weight": 50}]}
++                {"slot_id": 0, "action": 0, "total_mixing_weight": 10000, "slots": [{"mixing_weight": 4000}, {"mixing_weight": 6000}]}
+             )[0],
+             200,
+         )
+-        self.assertEqual(validate_seq03_filament_slots_contract({"total_mixing_weight": 99})[0], 400)
++        self.assertEqual(
++            validate_seq03_filament_slots_contract(
++                {"total_mixing_weight": 100, "slots": [{"mixing_weight": 40}, {"mixing_weight": 60}]}
++            )[0],
++            400,
++        )
++        self.assertEqual(
++            validate_seq03_filament_slots_contract({"slots": [{"mixing_weight": 40}, {"mixing_weight": 60}]})[0],
++            400,
++        )
++        self.assertEqual(
++            validate_seq03_filament_slots_contract(
++                {"total_mixing_weight": 9000, "slots": [{"mixing_weight": 4000}, {"mixing_weight": 5000}]}
++            )[0],
++            400,
++        )
+         self.assertEqual(validate_seq03_filament_slots_contract({"slot_id": 4})[0], 400)
+         self.assertEqual(validate_seq03_filament_slots_contract({"action": 3})[0], 400)
+ 

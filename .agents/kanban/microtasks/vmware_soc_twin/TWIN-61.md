@@ -1,7 +1,7 @@
 ---
 id: TWIN-61
 title: TWIN-61 全量HIL主测试计划与290帧/5类复合脚本固化(ISS-005)及project-control/tools Batch PC-1中文注释补齐(ISS-018)
-revision: 5
+revision: 6
 plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
@@ -25,7 +25,7 @@ requirement_id: REQ-20261105-002
 demand_id: DEM-20261105-018
 confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
 approval_id: APPR-20261105-004
-accepted_scope: "Docker QA sandbox verification and independent non-author review (QA + ARCH) of ISS-20261105-005 full HIL acceptance master plan (project-control/docs/planning/hil_full_acceptance_master_plan_20261105.md), test_harness/hil/tests/test_290_frame_burst_stress.py & test_composite_lifecycle_sequences.py (test_harness candidate ef657531b845557b6f1d0cc64786b783635446ab), and ISS-20261105-018 Batch PC-1 Chinese code comments across project-control/tools/** (41 files, committed in project-control at c1d2c461aa65e6497c295843a2735d0d02ee2e2d, diffable via git -C ../project-control diff 5686e1931123650bb2251045353c18c8baa00f65..c1d2c461aa65e6497c295843a2735d0d02ee2e2d). Live workspace intake scan of 20261105_twin55_codex_hil_issues.md (which intentionally preserves reported_by.actor_type: MODEL per its line 17 constraint) and physical HIL bench execution (covered by TWIN-55) are out of scope for this software sandbox run; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
+accepted_scope: "Docker QA sandbox verification and independent non-author review (QA + ARCH) of ISS-20261105-005 full HIL acceptance master plan (project-control/docs/planning/hil_full_acceptance_master_plan_20261105.md), test_harness/hil/tests/test_290_frame_burst_stress.py & test_composite_lifecycle_sequences.py (test_harness candidate cc3b9f46f1eb5a9b4903f17477672ed26521776a), and ISS-20261105-018 Batch PC-1 Chinese code comments across project-control/tools/** (41 files, committed in project-control at c1d2c461aa65e6497c295843a2735d0d02ee2e2d, diffable via git -C ../project-control diff 5686e1931123650bb2251045353c18c8baa00f65..c1d2c461aa65e6497c295843a2735d0d02ee2e2d). Live workspace intake scan of 20261105_twin55_codex_hil_issues.md (which intentionally preserves reported_by.actor_type: MODEL per its line 17 constraint) and physical HIL bench execution (covered by TWIN-55) are out of scope for this software sandbox run; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
@@ -34,14 +34,14 @@ review_assignments:
     planned_session_alias: planned-qa-twin-61
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-61/runs/qa_05/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-61/runs/qa_06/qa_review_report.md
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-61
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-61/runs/qa_05/arch_review_report.md
+    evidence: docs/evidence/twin/TWIN-61/runs/qa_06/arch_review_report.md
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -83,7 +83,7 @@ source_baseline:
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 branch: main
-candidate_commit: ef657531b845557b6f1d0cc64786b783635446ab
+candidate_commit: cc3b9f46f1eb5a9b4903f17477672ed26521776a
 dispatch_binding:
   source_commit: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -107,7 +107,7 @@ read_sources:
 worktree: test_harness
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 5
+  task_revision: 6
   lease_id: lease-twin-61-20261105-01
   expires_at: '2026-11-06T22:00:00+08:00'
 resources:

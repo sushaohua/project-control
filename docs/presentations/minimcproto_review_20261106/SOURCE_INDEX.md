@@ -1,0 +1,78 @@
+# MiniMCProto PPT 来源索引
+
+生成日期：2026-11-06。讲解稿不构成协议修订、软件或HIL接受。
+
+- **P01**：`project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md:47`
+  - commit `96c04135ea9761a9f109ce829d97f25cbdadc5e2`；SHA256 `9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54`
+- **P02**：`project-control/docs/specs/minimcproto_ack_nack_contract_alignment_matrix_20261102.md:49`
+  - commit `96c04135ea9761a9f109ce829d97f25cbdadc5e2`；SHA256 `efa28a8dba708527a18309a0fb2956c233cd85f7009c91d8316bb7ff570ad683`
+- **P03**：`project-control/docs/planning/end_to_end_physical_link_remediation_plan_20261104.md:124`
+  - commit `96c04135ea9761a9f109ce829d97f25cbdadc5e2`；SHA256 `21dd6cc16b9eb7d643662b6fba681e6360f4dcd98cdece55439c6f759c5b22cc`
+- **P04**：`project-control/docs/architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md:12`
+  - commit `96c04135ea9761a9f109ce829d97f25cbdadc5e2`；SHA256 `6c0e672c50bc526d8b4e662c2c354114ef5c8c0180d4a3dd5563908726584c7a`
+- **A01**：`soc-ap/core/forward/minimc/codec.h:24`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `64c96965ad6fa506337e2cec72e12f2555e7a3665def5454336e171ef75d693e`
+- **A02**：`soc-ap/core/forward/minimc/parser.cpp:212`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `bc2796a5455153e540b30d6c82f44de79706560e77e174b94766733e52dbac09`
+- **A03**：`soc-ap/services/forward/forward_protocol.cpp:650`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `9c4f627228ff59f187b0d2fedfa51b7d8bd8c1dd23f3954acdfd13c60a4e0148`
+- **A04**：`soc-ap/services/forward/forward_uart.cpp:379`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `020ad7a2a14f71fa99c10da04c75d14d5ba84a105b8d9729c9f35c2faf536738`
+- **A05**：`soc-ap/services/forward/forward_service.cpp:178`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `58bf635a8f09c65044b591083ea6b87c1c5ff4c68a49f8ec40331878bfaeb60f`
+- **A06**：`soc-ap/services/forward/forward_dbus.cpp:14`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `561bc25d9bad1f5e89052a33d4127190d026b2adf34fd25d36dde1383e3bb769`
+- **A07**：`soc-ap/services/device_manager/device_manager_service.cpp:112`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `cca2ceb4b2282f87bb6b2ef0647d04cf8ab179f973927fb223189bca88677997`
+- **A08**：`soc-ap/services/device_manager/device_manager_dbus.cpp:73`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `806f5b60d6f0e0619f16643f6333496aae17092dfa04125e5f77487850da8ade`
+- **A09**：`soc-ap/services/ui_gateway/ui_gateway_service.cpp:3`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `564d975f6aefdb293a1927e9debe9038a1c15dc9db5096fa82089785f7f5884e`
+- **A10**：`soc-ap/services/ui_gateway/ui_gateway_dbus.cpp:64`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `9b7c01de6efdeff528c795f5a68dee3ef7e14fcac8284571bc755e52f5afa3a6`
+- **A11**：`soc-ap/middleware/dbus/include/aisoc_dbus.h:485`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `c5d32747e54facabddd0b51d07cbfb9da78f779b89ce8b42c93ea11561dd205a`
+- **A12**：`soc-ap/middleware/dds/include/aisoc_dds.h:281`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `5e608efaba3f75af24c2d4c4df864bad4b3c16c4603ededc89d0c60a29bd011e`
+- **A13**：`soc-ap/contracts/twin/telemetry_types.h:64`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `22bb610898e472ef80ed736c2df18419d36afbac31e0f7cd66df6678610ed41e`
+- **A14**：`soc-ap/contracts/twin/telemetry.idl:44`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `50987edd6419d7c4ac61a18b87f1f7f18638b9595db0c042dae0071d2a81b516`
+- **A15**：`soc-ap/contracts/twin/dbus_interfaces.xml:15`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `1b0d193eeae4b4678ff67b1617223829a990239a7b0a1f78f55b06ca66fd2fdd`
+- **A16**：`soc-ap/middleware/dds/src/aisoc_dds_common.cpp:55`
+  - commit `c6692b244e0aa09d04e7051293f9fef3c67535dd`；SHA256 `902da04ef253bb84ed68665966a6eeaad4c76e93a4fea3917d3511920ae5356f`
+- **M01**：`mcu-p3/motion-controller-mcu/project/src/minimc_proto.c:2210`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `84fe202978c5a7a05bd16fd98061e3d0874ec8d2bbbe45e21679e5d57b0e3016`
+- **M02**：`mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h:280`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `21f66bf4446705e1a7afcbcf89166c60971d0347c45e7fdd4bf3f6f979e40e44`
+- **M03**：`mcu-p3/motion-controller-mcu/project/src/main.c:260`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `1d2d99568898ebc9a2ba1d70f039cc90bc74de35be86dfaab5f1886020ec1e47`
+- **M04**：`mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2151`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `46591589cb059e5239ecf333a6c7e43eb3ed19e7cf69faf615c28c08e9e58549`
+- **M05**：`mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:440`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `2a9b46511ed74d3e5549c4f7028d20bc891a5b739ca858f8e716d1c1627b833c`
+- **M06**：`mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c:593`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `b9bc66526deb77d909d6f74dd6d15c4d9367638343627350e1ec9f1bd79f50f0`
+- **M07**：`mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h:58`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `3b4a8c44b8e054c2e9dbfcbd449d2aca498176d57c1b687108cc7f17c74487fe`
+- **M08**：`mcu-p3/color-engine-mcu/io_toggle/src/user/main.c:88`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `3d3e71823d158473f5958123c7afe471a78a3cfe429868e416d739305c5c3a3a`
+- **M09**：`mcu-p3/color-engine-mcu/io_toggle/src/app/mycontrol.c:3814`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `9fc2a4cdf077e9263cc6509d147e3e6cab89f21ff94cf4d802a25669eb8750f9`
+- **M10**：`mcu-p3/motion-controller-mcu/project/src/wk_usart.c:242`
+  - commit `191e355a4227268a472bafd6862d4a8c854e0544`；SHA256 `c2d0cbb8ad28d3b2198dc3962d301762f88311171373821c541f218d1536363b`
+- **Q01**：`project-control/docs/evidence/twin/TWIN-50/runs/qa_03/qa_review_report.md:16`
+  - commit `96c04135ea9761a9f109ce829d97f25cbdadc5e2`；SHA256 `b41de0120d053704eb2924d2cf39924fca3c0f92e1030a3f34e4e5d9095fd791`
+- **Q02**：`project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-47.md:26`
+  - commit `96c04135ea9761a9f109ce829d97f25cbdadc5e2`；SHA256 `3e12b206156de341fb7fbdee275a2f53d51c5b634035d053c060c27fde745cd8`
+- **Q03**：`project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-48.md:26`
+  - commit `96c04135ea9761a9f109ce829d97f25cbdadc5e2`；SHA256 `f904e75a92f6b0e975845e58b426e4bc26ff5b8191488d24e03697003a014c94`
+- **Q04**：`project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-49.md:26`
+  - commit `96c04135ea9761a9f109ce829d97f25cbdadc5e2`；SHA256 `75a945931f0663d955a0e17dd5af9b6c6a1e8a0abecef45930c22d62a866965f`
+- **Q05**：`test_harness/static_checks/minimcproto/check_opcode_alignment.py:10`
+  - commit `9f3918a2f9fc79a683ce218436b005e593a7109b`；SHA256 `bcc098de7793d08c79f391be82f55a1d3b099b9984f8db08952722ad8b1253e9`
+- **B01**：`boot/bootloadermc/bootloader/src/main.c:173`
+  - commit `4fc171ea61912561949b9a0cfc1da8975e4c39ba`；SHA256 `ad006b47140a18d3ce47d719f412338388bf7da48c23c873afbbf20f6b267588`
+- **B02**：`boot/bootloaderth/inc/iap.h:4`
+  - commit `769fccbe52464ad7ceb856c5e89cb0d25abbbf87`；SHA256 `ab52cbcf024de1fd9fe6dcacef8ebd7ac2ad7d9c31a2905e069eaf26355de07f`

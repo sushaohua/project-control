@@ -1,0 +1,11 @@
+{
+  "task_id": "TWIN-62",
+  "task_revision": 1,
+  "run_id": "run_103541",
+  "verdict": "FAILED",
+  "exit_code": 1,
+  "summary": "Sandbox QA execution failed",
+  "build_count": 0,
+  "test_count": 1,
+  "timestamp": "2026-11-06T02:36:17.046304+00:00"
+}

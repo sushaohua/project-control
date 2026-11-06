@@ -4,7 +4,7 @@
 - **Role**: `ENG_BOOT_TH` (`eng-vertical`)
 - **Repository & Branch**: `boot/bootloaderth` (`soc_debug`)
 - **Base Commit**: `769fccbe52464ad7ceb856c5e89cb0d25abbbf87`
-- **Candidate Commit**: `9b40f8fb7c4bb6008126e94653f615039bad4d64`
+- **Candidate Commit**: `64b7100d3b0260ad1c24b627986475dcd45ad383`
 
 ## 1. Read Sources Registered (`read_sources`)
 - `boot/bootloaderth/.repo-rules/AGENTS.md`

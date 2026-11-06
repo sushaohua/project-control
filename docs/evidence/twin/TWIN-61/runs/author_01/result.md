@@ -12,7 +12,7 @@ branches:
   test_harness: main
   project_control: main
 candidate_commits:
-  test_harness: c33ae18e25806b63010f2c7aba03e3ac9a5c3f28
+  test_harness: ef657531b845557b6f1d0cc64786b783635446ab
   project_control: HEAD
 status: READY_FOR_QA
 ---
@@ -27,7 +27,7 @@ status: READY_FOR_QA
 - `project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-61.md`
 
 ## 2. 交付范围与变更摘要
-- **`test_harness` 候选提交**：`test_harness@c33ae18e25806b63010f2c7aba03e3ac9a5c3f28`
+- **`test_harness` 候选提交**：`test_harness@ef657531b845557b6f1d0cc64786b783635446ab`
 - **核心交付物**：
   1. **ISS-20261105-005 全量 HIL 主测试计划与自动化脚本固化**：
      - 交付 `project-control/docs/planning/hil_full_acceptance_master_plan_20261105.md`（覆盖正常、边界/异常、290 帧高频突发压力、5 类复合控制序列、断线恢复与三端原始证据对账矩阵）；

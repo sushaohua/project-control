@@ -1,0 +1,18 @@
+{
+  "task_id": "TWIN-62",
+  "task_revision": 2,
+  "candidate_commit": "9b40f8fb7c4bb6008126e94653f615039bad4d64",
+  "role": "QA",
+  "decision": "BLOCKED",
+  "summary": "已核对 bundle、任务范围、冻结运行证据和定向差异。服务器记录的命令通过，但验收要求的负向证据未完整覆盖，暂不能确认全部范围。",
+  "findings": [
+    "阻断：接受范围要求 0x20 的坏 trailer_crc32 请求返回 NACK 且不擦除 Flash。测试 test_ota_start_negative_zero_erase 覆盖超限和错 board_id，但未构造坏 trailer_crc32 请求，因此此项必需负向证据缺失。源码中的 iap_trailer_validate 检查不能替代该验收证据。",
+    "冻结证据索引、server_verdict.json、runtime.log 与定向差异的 SHA256 均与索引相符；运行记录为 PASSED、exit_code 0。author_01/result.md 的内容随冻结命令输出可核对。source_report 为空，无需核验 source_report SHA256。",
+    "差异涉及范围内文件；boot/bootloadermc、soc-ap、mcu-p3、test_harness 和 project-control 均无差异。未发现接受范围之外的改动。",
+    "非阻断建议：为 OTA_START 坏 trailer CRC 增加零擦除断言，并在失败会话后验证状态机及后续请求恢复。"
+  ],
+  "accepted_scope": "审查 TWIN-62 revision 2 的 MiniMCProto v2.0 TH Bootloader 接受范围：7 命令最小升级子集、Chunk 0 RAM 缓存、Anchor 两阶段提交、236KB 上限、pack_firmware.py 边界检查、宿主机状态机单测及函数规模/中文注释门禁。arm-none-eabi-gcc 交叉编译与 16KB 链接器验证由 author_01/result.md 记录且明确排除在本 Docker QA 沙箱范围外；实体 HIL 烧录由 TWIN-67 覆盖且排除在本范围外，未将其描述为本轮验证通过。",
+  "unexecuted": [
+    "接受范围内的坏 trailer_crc32 负向用例及零 Flash 擦除结果缺少可核验证据。"
+  ]
+}

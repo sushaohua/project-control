@@ -1,7 +1,7 @@
 ---
 id: TWIN-62
 title: TWIN-62 TH Bootloader 16KB预算内MiniMCProto v2.0最小升级子集与236KB对齐
-revision: 1
+revision: 4
 plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
@@ -33,7 +33,7 @@ review_assignments:
     planned_session_alias: planned-qa-twin-62
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-62/runs/qa_01/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-62/runs/qa_04/qa_review_report.md
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -86,7 +86,7 @@ forbidden_paths:
 - boot/bootloaderth/.repo-rules/**
 - boot/bootloaderth/ldscripts/AT32A423xC_FLASH.ld
 source_baseline:
-  project-control: c1d2c461aa65e6497c295843a2735d0d02ee2e2d
+  project-control: 45c5cdf791ae3d88b76949525ec1b46d25832083
   soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
   mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
@@ -94,7 +94,7 @@ source_baseline:
   boot/bootloaderth: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
 base_commit: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
 branch: soc_debug
-candidate_commit: 9b40f8fb7c4bb6008126e94653f615039bad4d64
+candidate_commit: 64b7100d3b0260ad1c24b627986475dcd45ad383
 dispatch_binding:
   source_commit: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -124,7 +124,7 @@ read_sources:
 worktree: boot/bootloaderth
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
+  task_revision: 4
   lease_id: lease-twin-62-20261106-01
   expires_at: '2026-11-07T22:00:00+08:00'
 resources:
@@ -161,7 +161,7 @@ verification:
   commands:
   - id: build_and_test_twin-62
     cwd: boot/bootloaderth
-    command: 'python3 -c "import subprocess, sys, tempfile, os; tmpd = tempfile.mkdtemp(); [ (open(os.path.join(tmpd, f\"in_{sz}.bin\"), \"wb\").write(b\"\\x5A\" * sz), res := subprocess.run([sys.executable, \"tools/pack_firmware.py\", os.path.join(tmpd, f\"in_{sz}.bin\"), os.path.join(tmpd, f\"out_{sz}.bin\")], capture_output=True, text=True), assert_ok := (res.returncode == 0 and os.path.getsize(os.path.join(tmpd, f\"out_{sz}.bin\")) == sz + 128) if ok else (res.returncode != 0), (sys.exit(1) if not assert_ok else None)) for sz, ok in [(241663, True), (241664, True), (241665, False), (245760, False)] ]; print(\"[PASS] S03 pack_firmware.py 236KB boundary checks (241663/241664/241665/245760) passed!\")" && gcc -std=c11 -O2 -Wall -Wextra -Werror -DIAP_HOST_TEST -DDEBUG_LOG_ENABLE=0 -Iinc src/iap.c src/flash.c tests/test_th_boot_ota.c -o /tmp/test_th_boot_ota && /tmp/test_th_boot_ota && rm -f /tmp/test_th_boot_ota && python3 -c "import pathlib, re, sys; files = [\"inc/iap.h\", \"inc/flash.h\", \"inc/usart.h\", \"src/iap.c\", \"src/flash.c\", \"src/main.c\", \"src/usart.c\", \"tools/pack_firmware.py\", \"tests/test_th_boot_ota.c\"]; cjk = re.compile(r\"[\\u4e00-\\u9fff]\"); [ (txt := pathlib.Path(p).read_text(encoding=\"utf-8\"), assert_cjk := sum(1 for l in txt.splitlines() if cjk.search(l)) >= 3, print(f\"[DOC-CHECK PASS] {p}: cjk_lines={sum(1 for l in txt.splitlines() if cjk.search(l))}\"), (sys.exit(1) if not assert_cjk else None)) for p in files ]; print(\"[PASS] S04 & code_documentation_standard check passed!\")"'
+    command: 'cat ../../project-control/docs/evidence/twin/TWIN-62/runs/author_01/result.md && python3 -c "import subprocess, sys, tempfile, os; tmpd = tempfile.mkdtemp(); [ (open(os.path.join(tmpd, f\"in_{sz}.bin\"), \"wb\").write(b\"\\x5A\" * sz), res := subprocess.run([sys.executable, \"tools/pack_firmware.py\", os.path.join(tmpd, f\"in_{sz}.bin\"), os.path.join(tmpd, f\"out_{sz}.bin\")], capture_output=True, text=True), assert_ok := (res.returncode == 0 and os.path.getsize(os.path.join(tmpd, f\"out_{sz}.bin\")) == sz + 128) if ok else (res.returncode != 0), (sys.exit(1) if not assert_ok else None)) for sz, ok in [(241663, True), (241664, True), (241665, False), (245760, False)] ]; print(\"[PASS] S03 pack_firmware.py 236KB boundary checks (241663/241664/241665/245760) passed!\")" && gcc -std=c11 -O2 -Wall -Wextra -Werror -DIAP_HOST_TEST -DDEBUG_LOG_ENABLE=0 -Iinc src/iap.c src/flash.c tests/test_th_boot_ota.c -o /tmp/test_th_boot_ota && /tmp/test_th_boot_ota && rm -f /tmp/test_th_boot_ota && sed -n "85,122p" tests/run_tests.sh | sh && python3 -c "import pathlib, re, sys; files = [\"inc/iap.h\", \"inc/flash.h\", \"inc/usart.h\", \"src/iap.c\", \"src/flash.c\", \"src/main.c\", \"src/usart.c\", \"tools/pack_firmware.py\", \"tests/test_th_boot_ota.c\"]; cjk = re.compile(r\"[\\u4e00-\\u9fff]\"); [ (txt := pathlib.Path(p).read_text(encoding=\"utf-8\"), assert_cjk := sum(1 for l in txt.splitlines() if cjk.search(l)) >= 3, print(f\"[DOC-CHECK PASS] {p}: cjk_lines={sum(1 for l in txt.splitlines() if cjk.search(l))}\"), (sys.exit(1) if not assert_cjk else None)) for p in files ]; print(\"[PASS] S04 & code_documentation_standard check passed!\")"'
     expected: "Docker QA沙箱内pack_firmware.py 236KB边界门禁(S03)、test_th_boot_ota MiniMCProto v2.0 7命令状态机与负例单测、函数规模/入参及中文注释门禁(S04) 100%通过。（accepted_scope说明：qa-sandbox:20261029镜像不含arm-none-eabi-gcc交叉编译器，宿主机交叉编译9360B <= 16384B及S01链接器溢出验证已在author_01/result.md核验，实体HIL烧录在TWIN-67核验，均排除在本Docker沙箱范围外）"
     availability: available
   positive_cases:

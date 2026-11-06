@@ -1,0 +1,29 @@
+diff --git a/tests/test_th_boot_ota.c b/tests/test_th_boot_ota.c
+index 46aa42c..e3799cb 100644
+--- a/tests/test_th_boot_ota.c
++++ b/tests/test_th_boot_ota.c
+@@ -233,7 +233,7 @@ static void test_identity_ping_and_guard_cases(void)
+ }
+ 
+ /**
+-  * @brief  测试 0x20 擦除前原子准入负例（错板、坏 CRC、241665B 超限全部零擦除）
++  * @brief  测试 0x20 擦除前原子准入负例（错板、坏 trailer_crc32、241665B 超限全部零擦除）
+   */
+ static void test_ota_start_negative_zero_erase(void)
+ {
+@@ -265,6 +265,15 @@ static void test_ota_start_negative_zero_erase(void)
+   send_minimc_req(MINIMC_CMD_OTA_START, 11U, &start_req, sizeof(start_req));
+   require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_COMMAND_REJECTED, "wrong board NACK");
+   require_true(s_erase_count == 0U, "wrong board zero erase");
++
++  /* 坏 trailer_crc32 必须返回 NACK 0x06、零擦除且 ota_state 保持 0 (IDLE)，且后续查询正常恢复 */
++  start_req.trailer = tr;
++  start_req.trailer.trailer_crc32 ^= 0xA5A55A5AU;
++  send_minimc_req(MINIMC_CMD_OTA_START, 12U, &start_req, sizeof(start_req));
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_COMMAND_REJECTED, "bad trailer_crc32 NACK");
++  require_true(s_erase_count == 0U, "bad trailer_crc32 zero erase");
++  send_minimc_req(MINIMC_CMD_OTA_STATUS, 13U, NULL, 0U);
++  require_true(s_last_tx[5] == MINIMC_CMD_OTA_STATUS && s_last_tx[16] == 0U, "ota_state stays IDLE and recovers");
+ }
+ 
+ /**

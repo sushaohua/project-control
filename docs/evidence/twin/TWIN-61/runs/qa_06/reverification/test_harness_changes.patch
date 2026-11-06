@@ -1,0 +1,221 @@
+diff --git a/hil/tests/test_composite_lifecycle_sequences.py b/hil/tests/test_composite_lifecycle_sequences.py
+index efa6e97..7fcbf2c 100644
+--- a/hil/tests/test_composite_lifecycle_sequences.py
++++ b/hil/tests/test_composite_lifecycle_sequences.py
+@@ -7,7 +7,7 @@
+ 本脚本固化 `hil_full_acceptance_master_plan_20261105.md` §5 定义的 5 类端到端复合业务序列：
+ - `SEQ-01`: OOBE 完成 + 双板动态 `boot_id` 与 `raw_adc` 对账 + 归零 (`G28`) -> XYZ 点动 -> 急停 (`0x17`) -> 故障清除 -> 再次归零恢复 `READY`
+ - `SEQ-02`: 归零 (`0x11`) -> 25点网格调平 (`0x1A`+`0x18`) -> 点动 (`0x12`) -> 204B 坐标查询 (`0x16`) 零截断闭环 + 喷头 (`5/210/300°C`) 与热床 (`5/60/130°C`) 设温及越界 (`4/131/301°C` -> `400`) 与归零 (`0°C`)
+-- `SEQ-03`: 先执行 `0°C`（`0%` 加热占空比安全锁死 `heater_duty_percent == 0`）安全设温校验 -> 保存料槽配置 (`POST /api/v1/filament/config` 不触发 `0x19 LOAD` 且不改 `210°C`) -> 安全预热至 `210°C` -> 显式 `SELECT(0)/LOAD(1)/UNLOAD(2)` -> 越界 `slot_id=4` 与 `action=3` (`400` 及 MC `NACK 0x03`) -> 混色权重和 `100`/`10000` (`200`) vs 非法 (`400`)
++- `SEQ-03`: 先执行 `0°C`（`0%` 加热占空比安全锁死 `heater_duty_percent == 0`）安全设温校验 -> 保存料槽配置 (`POST /api/v1/filament/config` 不触发 `0x19 LOAD` 且不改 `210°C`) -> 安全预热至 `210°C` -> 显式 `SELECT(0)/LOAD(1)/UNLOAD(2)` -> 越界 `slot_id=4` 与 `action=3` (`400` 及 MC `NACK 0x03`) -> 混色权重总和严格等于 `10000` (`200`) vs 非法 (`400`)
+ - `SEQ-04`: G-code 上传三类独立负例 (`bad.txt`, `empty.gcode`, `bad_body.gcode` 均 `400`) -> 合法 `ok.gcode` 上传 (`200` 且 `IDLE`) -> 显式启动 (`PRINTING`) -> `0x1C` 级联步进推进 -> 暂停 (`PAUSED`) -> 继续 (`PRINTING`) -> 取消 (`IDLE`)
+ - `SEQ-05`: 急停 (`0x17`) -> 调用真实 `disconnect_hook()` 并通过单调时钟 `clock_fn` 测量真实 `elapsed_ms >= 3000` 衰减 -> 断言 `OFFLINE`、离线哨兵 `2147483646`、`oobe_completed=False`、4路断料非绿、控制返回 `503/504` -> 调用 `reconnect_hook()` 恢复 `mc_online=True, th_online=True`、真实温度与 `READY` -> 未知路由 `404` 35B 完整帧校验
+ """
+@@ -183,14 +183,49 @@ def validate_seq04_gcode_upload_and_two_stage_job(
+     return 200, job_state, "upload staged"
+ 
+ 
++def verify_seq05_reconnect_recovery(
++    elapsed_recover_ms: int,
++    recovered_snapshot: Dict[str, object],
++) -> Tuple[bool, str]:
++    """
++    校验 SEQ-05 重连恢复契约（`HIL-CASE-46`）：
++    要求 `0 <= elapsed_recover_ms <= 3000`，`mc_online=True`、`th_online=True`、状态为 `READY`/`IDLE`，
++    `telemetry_quality == "FRESH"`，且喷头 (`5000..300000 m°C`) 与热床 (`5000..130000 m°C`) 退出离线/故障哨兵并恢复 `FRESH`。
++    """
++    if elapsed_recover_ms < 0 or elapsed_recover_ms > AISOC_FRESHNESS_FAULT_MS:
++        return False, f"elapsed_recover_ms {elapsed_recover_ms}ms out of [0, 3000]ms"
++    if recovered_snapshot.get("mc_online") is not True or recovered_snapshot.get("th_online") is not True:
++        return False, "mc_online/th_online not restored to True"
++    state_val = recovered_snapshot.get("system_status") or recovered_snapshot.get("device_state")
++    if state_val not in ("READY", "IDLE"):
++        return False, f"unexpected recovered state: {state_val}"
++    if recovered_snapshot.get("telemetry_quality", "FRESH") != "FRESH":
++        return False, "recovered telemetry_quality is not FRESH"
++    bed = recovered_snapshot.get("bed")
++    tool = recovered_snapshot.get("tool")
++    if not isinstance(bed, dict) or not isinstance(tool, dict):
++        return False, "missing bed or tool telemetry in recovered snapshot"
++    bed_t = int(bed.get("temperature_millic", AISOC_TEMP_MILLIC_OFFLINE))
++    tool_t = int(tool.get("temperature_millic", AISOC_TEMP_MILLIC_OFFLINE))
++    sentinels = (AISOC_TEMP_MILLIC_OFFLINE, AISOC_TEMP_MILLIC_FAULT)
++    if bed_t in sentinels or not (AISOC_BED_VALID_MIN_MILLIC <= bed_t <= AISOC_BED_VALID_MAX_MILLIC):
++        return False, f"recovered bed temperature_millic {bed_t} invalid or sentinel"
++    if tool_t in sentinels or not (AISOC_NOZZLE_VALID_MIN_MILLIC <= tool_t <= AISOC_NOZZLE_VALID_MAX_MILLIC):
++        return False, f"recovered tool temperature_millic {tool_t} invalid or sentinel"
++    if bed.get("quality", "FRESH") != "FRESH" or tool.get("quality", "FRESH") != "FRESH":
++        return False, "recovered bed/tool quality must be FRESH"
++    return True, "SEQ-05 reconnect recovery verified"
++
++
+ def verify_seq05_estop_offline_degradation_and_404_framing(
+     elapsed_offline_ms: int,
+     snapshot_after_disconnect: Dict[str, object],
+     raw_404_http_response: bytes,
++    recovery_info: object = 0,
+ ) -> Tuple[bool, str]:
+     """
+-    校验 SEQ-05：要求实测断链耗时 `elapsed_offline_ms >= 3000`，且状态降级为 `OFFLINE`/`DEGRADED`、
+-    温度置离线哨兵 `2147483646`、`oobe_completed=False`、4 路断料传感器非绿色，以及 404 响应帧完整。
++    校验 SEQ-05：要求实测断链耗时 `elapsed_offline_ms >= 3000`，状态降级为 `OFFLINE`/`DEGRADED`、
++    温度置离线哨兵 `2147483646`、`oobe_completed=False`、4 路断料传感器非绿色、重连耗时 `0 <= elapsed_recover_ms <= 3000` 及 404 帧完整。
+     """
+     if elapsed_offline_ms < AISOC_FRESHNESS_FAULT_MS:
+         return False, f"offline elapsed time {elapsed_offline_ms}ms < 3000ms threshold"
+@@ -207,6 +242,14 @@ def verify_seq05_estop_offline_degradation_and_404_framing(
+     sensors = snapshot_after_disconnect.get("filament_sensors", ["OFFLINE"] * 4)
+     if not isinstance(sensors, list) or any(s in ("OK", "NORMAL", "GREEN") for s in sensors):
+         return False, "filament sensors must not show green/OK while offline"
++    if isinstance(recovery_info, int) and (recovery_info < 0 or recovery_info > AISOC_FRESHNESS_FAULT_MS):
++        return False, f"elapsed_recover_ms {recovery_info}ms out of [0, 3000]ms"
++    if isinstance(recovery_info, dict):
++        rec_ms = int(recovery_info.get("elapsed_recover_ms", 0))
++        rec_snap = recovery_info.get("recovered_snapshot", recovery_info)
++        rec_ok, rec_msg = verify_seq05_reconnect_recovery(rec_ms, rec_snap if isinstance(rec_snap, dict) else {})
++        if not rec_ok:
++            return False, rec_msg
+ 
+     header_end = raw_404_http_response.find(b"\r\n\r\n")
+     if header_end < 0:
+@@ -333,7 +376,7 @@ def _drive_live_seq03(http_base: str, mc_log_path: Optional[Path], th_log_path:
+     执行 SEQ-03 实机 HTTP 闭环：
+     先执行 `0°C` (`0%` 占空比安全锁死) 设温 -> 保存料槽配置 (`POST /api/v1/filament/config` 不触发 `0x19 LOAD` 且不改 `210°C`) ->
+     预热至 `210°C` -> 显式 `SELECT(0)/LOAD(1)/UNLOAD(2)` -> 越界 `slot_id=4` 与 `action=3` (`400` 及 MC `NACK 0x03`) ->
+-    混色权重和 `100` (`200`) vs `99` (`400`)。
++    混色权重总和严格等于 `10000` (`200`) vs `100`/`9000` (`400`)。
+     """
+     if not _verify_seq03_zero_duty_safe_lock(http_base):
+         return False
+@@ -442,25 +485,15 @@ def _poll_until_reconnect_recovery(
+     clock_fn: Callable[[], float],
+     sleep_fn: Callable[[float], None],
+ ) -> Tuple[bool, int]:
+-    """在 `reconnect_hook()` 后记录起始单调时钟并在 `3000ms` 窗口内轮询恢复 `READY`/`IDLE` 与有效温度。"""
++    """在 `reconnect_hook()` 后记录起始单调时钟并在 `3000ms` 窗口内轮询恢复 `READY`/`IDLE`、有效物理温度与 `FRESH` 质量。"""
+     start_ts = clock_fn()
+     for _ in range(15):
+         _http_json_call(http_base, "POST", "/api/v1/temperature/sample", {})
+         _, rec_state = _http_json_call(http_base, "GET", "/api/v1/state")
+         elapsed_recover_ms = int(round((clock_fn() - start_ts) * 1000.0))
+-        bed_rec = rec_state.get("bed", {})
+-        tool_rec = rec_state.get("tool", {})
+-        recovered = bool(
+-            rec_state.get("mc_online") is True
+-            and rec_state.get("th_online") is True
+-            and rec_state.get("system_status") in ("READY", "IDLE")
+-            and isinstance(bed_rec, dict)
+-            and bed_rec.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE
+-            and isinstance(tool_rec, dict)
+-            and tool_rec.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE
+-        )
+-        if recovered:
+-            return (0 <= elapsed_recover_ms <= AISOC_FRESHNESS_FAULT_MS), elapsed_recover_ms
++        rec_ok, _ = verify_seq05_reconnect_recovery(elapsed_recover_ms, rec_state)
++        if rec_ok:
++            return True, elapsed_recover_ms
+         if elapsed_recover_ms > AISOC_FRESHNESS_FAULT_MS:
+             break
+         sleep_fn(0.2)
+@@ -519,6 +552,7 @@ def run_live_composite_sequences(
+     s3 = _drive_live_seq03(http_base, mc_log_path, th_log_path)
+     s4 = _drive_live_seq04(http_base, mc_log_path, th_log_path)
+     s5 = _drive_live_seq05(http_base, active_hooks)
++    recover_ms = int(active_hooks.get("last_recover_ms", -1))
+     passed = bool(s1 and s2 and s3 and s4 and s5)
+     return passed, {
+         "SEQ-01": s1,
+@@ -526,7 +560,8 @@ def run_live_composite_sequences(
+         "SEQ-03": s3,
+         "SEQ-04": s4,
+         "SEQ-05": s5,
+-        "recover_ms": int(active_hooks.get("last_recover_ms", -1)),
++        "seq05": {"passed": s5, "recover_ms": recover_ms},
++        "recover_ms": recover_ms,
+         "passed": passed,
+     }
+ 
+@@ -593,6 +628,7 @@ class _CompositeSimState:
+             return {
+                 "system_status": "OFFLINE",
+                 "device_state": "OFFLINE",
++                "telemetry_quality": "OFFLINE",
+                 "mc_online": False,
+                 "th_online": False,
+                 "oobe_completed": False,
+@@ -601,16 +637,18 @@ class _CompositeSimState:
+                 "bed": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "raw_adc": 4095, "quality": "FAULT"},
+                 "tool": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "raw_adc": 4095, "quality": "FAULT"},
+             }
++        quality = "STALE" if (not self.link_connected and off_ms >= AISOC_FRESHNESS_STALE_MS) else "FRESH"
+         return {
+             "system_status": self.system_status,
+             "device_state": self.system_status,
++            "telemetry_quality": quality,
+             "mc_online": True,
+             "th_online": True,
+             "oobe_completed": self.oobe_completed,
+             "heater_duty_percent": self.heater_duty_percent,
+             "filament_sensors": ["OK", "OK", "OK", "OK"],
+-            "bed": {"temperature_millic": 60000, "raw_adc": 3120, "quality": "FRESH"},
+-            "tool": {"temperature_millic": 210000, "raw_adc": 1850, "quality": "FRESH"},
++            "bed": {"temperature_millic": 60000, "raw_adc": 3120, "quality": quality},
++            "tool": {"temperature_millic": 210000, "raw_adc": 1850, "quality": quality},
+         }
+ 
+ 
+@@ -877,7 +915,7 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+         )
+ 
+     def test_seq05_offline_3s_sentinel_and_404_framing(self) -> None:
+-        """验证 SEQ-05：断链 >=3.0s 打入 2147483646 离线哨兵、小于 3.0s 被拒绝，且 404 帧完整。"""
++        """验证 SEQ-05：断链 >=3.0s 打入 2147483646 离线哨兵、重连 <=3.0s 边界通过、>3.0s 与故障哨兵/非 FRESH 被拒绝。"""
+         offline_snap = {
+             "system_status": "OFFLINE",
+             "device_state": "OFFLINE",
+@@ -886,6 +924,15 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+             "bed": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "quality": "FAULT"},
+             "tool": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "quality": "FAULT"},
+         }
++        recovered_ok = {
++            "system_status": "READY",
++            "device_state": "READY",
++            "telemetry_quality": "FRESH",
++            "mc_online": True,
++            "th_online": True,
++            "bed": {"temperature_millic": 60000, "quality": "FRESH"},
++            "tool": {"temperature_millic": 210000, "quality": "FRESH"},
++        }
+         raw_404 = (
+             b"HTTP/1.1 404 Not Found\r\n"
+             b"Content-Type: application/json\r\n"
+@@ -893,10 +940,17 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+             b"Connection: close\r\n\r\n"
+             b'{"error":404,"message":"Not Found"}'
+         )
+-        self.assertTrue(verify_seq05_estop_offline_degradation_and_404_framing(3200, offline_snap, raw_404)[0])
+-        self.assertFalse(verify_seq05_estop_offline_degradation_and_404_framing(2500, offline_snap, raw_404)[0])
++        self.assertTrue(verify_seq05_estop_offline_degradation_and_404_framing(3200, offline_snap, raw_404, 3000)[0])
++        self.assertFalse(verify_seq05_estop_offline_degradation_and_404_framing(3200, offline_snap, raw_404, 3001)[0])
++        self.assertFalse(verify_seq05_estop_offline_degradation_and_404_framing(2500, offline_snap, raw_404, 300)[0])
+         bad_green = dict(offline_snap, filament_sensors=["OK", "OFFLINE", "OFFLINE", "OFFLINE"])
+-        self.assertFalse(verify_seq05_estop_offline_degradation_and_404_framing(3200, bad_green, raw_404)[0])
++        self.assertFalse(verify_seq05_estop_offline_degradation_and_404_framing(3200, bad_green, raw_404, 300)[0])
++        self.assertTrue(verify_seq05_reconnect_recovery(3000, recovered_ok)[0])
++        self.assertFalse(verify_seq05_reconnect_recovery(3001, recovered_ok)[0])
++        bad_fault_snap = dict(recovered_ok, tool={"temperature_millic": AISOC_TEMP_MILLIC_FAULT, "quality": "FRESH"})
++        self.assertFalse(verify_seq05_reconnect_recovery(500, bad_fault_snap)[0])
++        bad_stale_snap = dict(recovered_ok, telemetry_quality="STALE")
++        self.assertFalse(verify_seq05_reconnect_recovery(500, bad_stale_snap)[0])
+ 
+     def test_run_live_composite_sequences_end_to_end_with_stateful_sim(self) -> None:
+         """验证 `run_live_composite_sequences` 配合步进时钟与断链/重连钩子完整跑通 SEQ-01..SEQ-05。"""
+@@ -931,6 +985,8 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+             self.assertTrue(passed, f"Composite sequence suite failed: {report}")
+             for key in ("SEQ-01", "SEQ-02", "SEQ-03", "SEQ-04", "SEQ-05"):
+                 self.assertTrue(report[key], f"{key} failed in end-to-end composite HTTP suite")
++            self.assertGreaterEqual(int(report["seq05"]["recover_ms"]), 0)
++            self.assertLessEqual(int(report["seq05"]["recover_ms"]), AISOC_FRESHNESS_FAULT_MS)
+ 
+ 
+ def main(argv: Optional[Sequence[str]] = None) -> int:

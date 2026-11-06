@@ -1,0 +1,13 @@
+{
+  "task_id": "TWIN-61",
+  "task_revision": 6,
+  "candidate_commit": "cc3b9f46f1eb5a9b4903f17477672ed26521776a",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "复验读取并校验了同角色上一轮 QA 报告（SHA256 与索引一致，结论 BLOCKED）及本轮定向差异。整改已加入重连 3000ms 边界和超时负例；但恢复校验器会把缺失的质量字段默认视为 FRESH，已证实不符合验收条款。",
+  "findings": [
+    "阻断：test_composite_lifecycle_sequences.py 的 verify_seq05_reconnect_recovery 使用 recovered_snapshot.get(\"telemetry_quality\", \"FRESH\")，床和喷头质量也以 .get(\"quality\", \"FRESH\") 处理。因而缺少这些质量字段的快照仍可能通过恢复校验；本轮新增负例只拒绝显式 STALE 和故障哨兵，未拒绝缺失质量字段。这不符合接受范围所含验收主计划 §2 的 T_recover 要求恢复 ONLINE/FRESH，也不符合该校验器自身声明的 FRESH 条件。"
+  ],
+  "accepted_scope": "复验 QA 上一候选 ef657531b845557b6f1d0cc64786b783635446ab 到本候选的 test_harness 增量差异，核查受影响的 SEQ-05 恢复时限和恢复状态验证、相关正负向及端到端复合序列回归，以及冻结的指定验证命令证据；核对 290 帧脚本回归和验收主计划。project-control、soc-ap、mcu-p3 本轮无差异；Batch PC-1 中文注释和其他 HIL 脚本按候选索引及指定回归结果核查。实体硬件台架执行与 live workspace intake scan 属任务合同排除项，不作为未执行项，也不声称已通过。",
+  "unexecuted": []
+}

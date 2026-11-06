@@ -1,0 +1,2544 @@
+diff --git a/Makefile b/Makefile
+index 013415d..af2e809 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,8 +1,9 @@
+ # ------------------------------------------------
+-# Generic Makefile for AT32A423 Bootloader
++# Generic Makefile for AT32A423 Bootloader (TH)
+ # ------------------------------------------------
+ 
+-TARGET = bootloader423
++TARGET = bootloaderth
++LEGACY_TARGET = bootloader423
+ BUILD_DIR = build
+ 
+ # Toolchain
+@@ -82,12 +83,16 @@ $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
+ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
+ 	@echo "[LD] $@"
+ 	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@
++	@cp -f $@ $(BUILD_DIR)/$(LEGACY_TARGET).elf
++	@cp -f $(BUILD_DIR)/$(TARGET).map $(BUILD_DIR)/$(LEGACY_TARGET).map
+ 
+ $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+ 	@$(HEX) $< $@
++	@cp -f $@ $(BUILD_DIR)/$(LEGACY_TARGET).hex
+ 
+ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+ 	@$(BIN) $< $@
++	@cp -f $@ $(BUILD_DIR)/$(LEGACY_TARGET).bin
+ 
+ $(BUILD_DIR):
+ 	mkdir -p $@
+diff --git a/inc/flash.h b/inc/flash.h
+index ab504bb..9b931e6 100644
+--- a/inc/flash.h
++++ b/inc/flash.h
+@@ -15,7 +15,9 @@ extern "C" {
+ #include <stdint.h>
+ #include <stdbool.h>
+ #include <stddef.h>
++#ifndef IAP_HOST_TEST
+ #include "at32a423.h"
++#endif
+ 
+ /**
+   * @brief 存储基址与分区定义
+@@ -27,11 +29,18 @@ extern "C" {
+ #define SRAM_END_ADDR           ((uint32_t)0x2000C000U)       /* 48KB SRAM */
+ 
+ #define APP_START_ADDR          ((uint32_t)0x08004000U)       /* App 基址 (Sector 8) */
+-#define APP_MAX_SIZE            ((uint32_t)(236U * 1024U))    /* App 最大载荷 236KB (Sector 8..126) */
++#define APP_MAX_SIZE            ((uint32_t)(236U * 1024U))    /* App 最大净载荷 236KB (241,664B, Sector 8..126) */
+ #define APP_END_ADDR            (APP_START_ADDR + APP_MAX_SIZE)
+ #define TRAILER_ANCHOR_ADDR     ((uint32_t)0x0803F800U)       /* Sector 127 锚点固化基址 (2KB) */
+ #define ANCHOR_MAGIC            ((uint32_t)0x414E4348U)       /* "ANCH" 锚点魔数 */
+ 
++#ifdef IAP_HOST_TEST
++extern uint8_t g_sim_flash[FLASH_TOTAL_SIZE];
++#define FLASH_PTR(addr)         (&g_sim_flash[(uint32_t)(addr) - FLASH_BASE_ADDR])
++#else
++#define FLASH_PTR(addr)         ((const volatile uint8_t *)(uintptr_t)(addr))
++#endif
++
+ /**
+   * @brief Flash 驱动操作状态码
+   */
+@@ -57,13 +66,18 @@ flash_result_t bsp_flash_erase_sector(uint32_t sector_addr);
+   * @retval 状态码
+   */
+ flash_result_t bsp_flash_erase_first_app_sector(void);
++
++/**
++  * @brief  擦除固件元数据锚点扇区 (Sector 127)
++  * @retval 状态码
++  */
+ flash_result_t bsp_flash_erase_anchor_sector(void);
+ 
+ /**
+   * @brief  写入分块数据并立即执行物理回读比对
+   * @param  write_addr: 写入物理地址
+   * @param  p_buffer: 数据缓冲区指针
+-  * @param  len: 写入字节数 (偶数)
++  * @param  len: 写入字节数 (奇数末尾补 0xFF)
+   * @retval 状态码
+   */
+ flash_result_t bsp_flash_write_and_verify(uint32_t write_addr, const uint8_t *p_buffer, uint32_t len);
+@@ -75,11 +89,17 @@ flash_result_t bsp_flash_write_and_verify(uint32_t write_addr, const uint8_t *p_
+ bool bsp_flash_app_vector_is_valid(void);
+ 
+ /**
+-  * @brief  穿透校验 Application 完整性 (第二道防线: 锚点 + 全片 CRC32)
+-  * @retval true: 完整健康; false: 损坏或位翻转
++  * @brief  穿透校验 Application 完整性 (第二道防线: 强制 Sector 127 Anchor + 全片 CRC32)
++  * @retval true: 完整健康; false: 损坏、无有效 Anchor 或位翻转
+   */
+ bool bsp_flash_app_integrity_check(void);
+ 
++/**
++  * @brief  bsp_flash_app_integrity_check 的规范同义包装函数
++  * @retval true: 完整健康; false: 损坏或无有效 Anchor
++  */
++bool flash_verify_app_integrity(void);
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/inc/iap.h b/inc/iap.h
+index e2e55f1..e9e1c11 100644
+--- a/inc/iap.h
++++ b/inc/iap.h
+@@ -1,7 +1,7 @@
+ /**
+   **************************************************************************
+   * @file     iap.h
+-  * @brief    IAP 升级协议、定长帧结构与状态机头文件
++  * @brief    TH Bootloader MiniMCProto v2.0 最小升级子集协议与状态机头文件
+   **************************************************************************
+   */
+ 
+@@ -19,48 +19,112 @@ extern "C" {
+ #include "usart.h"
+ 
+ /**
+-  * @brief 双 MCU 通信协议常量定义
++  * @brief MiniMCProto v2.0 (Rev 2.0.4) 帧头、节点与能力常量定义
+   */
+-#define FRAME_SOF1             ((uint8_t)0x5AU)
+-#define FRAME_SOF2             ((uint8_t)0xA5U)
++#define MINIMC_SOF_0                    (0x55U)
++#define MINIMC_SOF_1                    (0xAAU)
++#define MINIMC_HEADER_SIZE              (12U)
++#define MINIMC_CRC_SIZE                 (2U)
++#define MINIMC_FRAME_OVERHEAD           (14U)
++#define MINIMC_MAX_PAYLOAD_SIZE         (520U)
++#define MINIMC_MAX_FRAME_SIZE           (534U)
++#define MINIMC_DEFAULT_HOP_LIMIT        (4U)
+ 
+-#define CMD_TH_HELLO            ((uint8_t)0x10U)
+-#define CMD_TH_START_UPG        ((uint8_t)0x11U)
+-#define ACK_TH_START_UPG        ((uint8_t)0x91U)
+-#define CMD_TH_PUSH_CHUNK       ((uint8_t)0x12U)
+-#define ACK_TH_PUSH_CHUNK       ((uint8_t)0x92U)
+-#define CMD_TH_FINISH           ((uint8_t)0x13U)
+-#define ACK_TH_FINISH           ((uint8_t)0x93U)
++#define MINIMC_NODE_AP                  (0x01U)
++#define MINIMC_NODE_MC                  (0x02U)
++#define MINIMC_NODE_TH                  (0x03U)
++#define MINIMC_NODE_BROADCAST           (0xFFU)
+ 
+-#define TRAILER_MAGIC           ((uint32_t)0x41545347U)   /* "ATSG" */
+-#define BOARD_ID_TH             ((uint32_t)0x42300001U)   /* TH 硬件识别码 */
+-#define BL_VERSION_CODE         ((uint32_t)0x00010000U)   /* Bootloader v1.0.0 */
+-#define BL_VERSION_STR          "1.0.0"
+-#define BL_BUILD_TIMESTAMP      __DATE__ " " __TIME__
++#define MINIMC_FLAG_WANTS_ACK           (0x01U)
++#define MINIMC_FLAG_IS_RESPONSE         (0x02U)
++#define MINIMC_FLAG_VERSION_V2          (0x04U)
++#define MINIMC_FLAG_PRIORITY            (0x10U)
++#define MINIMC_ROUTE_IS_ROUTED          (0x04U)
+ 
+-#define BOOT_UPGRADE_FLAG_ADDR  (0x20008000UL)            /* 跨复位升级意图标志地址 (安全隔离区) */
+-#define BOOT_UPGRADE_MAGIC      (0x55504744UL)            /* "UPGD" 升级意图魔数 */
+-#define BOOT_NORMAL_TIMEOUT_MS  (1000U)                   /* 冷启动等待窗口 (1000ms) */
++/**
++  * @brief MiniMCProto v2.0 (Rev 2.0.4) 统一命令字定义
++  */
++#define MINIMC_CMD_ACK                  (0x00U)
++#define MINIMC_CMD_GET_VERSION          (0x01U)
++#define MINIMC_CMD_VERSION_REPORT       (0x02U)
++#define MINIMC_CMD_PING                 (0x03U)
++#define MINIMC_CMD_PONG                 (0x04U)
++#define MINIMC_CMD_NACK                 (0x06U)
++#define MINIMC_CMD_SET_TEMP             (0x10U)
++#define MINIMC_CMD_MOTION_MOVE          (0x12U)
++#define MINIMC_CMD_TEMP_QUERY           (0x14U)
++#define MINIMC_CMD_GET_TEMP             (0x14U)
++#define MINIMC_CMD_TEMP_REPORT          (0x15U)
++#define MINIMC_CMD_TEMP_REPORT_V2       (0x15U)
++#define MINIMC_CMD_POS_QUERY            (0x16U)
++#define MINIMC_CMD_GET_POS              (0x16U)
++#define MINIMC_CMD_EMERGENCY_STOP       (0x17U)
++#define MINIMC_CMD_MOTION_STOP          (0x17U)
++#define MINIMC_CMD_POS_REPORT           (0x18U)
++#define MINIMC_CMD_SLOT_SELECT          (0x19U)
++#define MINIMC_CMD_FILAMENT_CONTROL     (0x19U)
++#define MINIMC_CMD_FILAMENT_STATUS      (0x1AU)
++#define MINIMC_CMD_GCODE_LINE           (0x1CU)
++#define MINIMC_CMD_SYSTEM_CONTROL       (0x1DU)
++#define MINIMC_CMD_OTA_START            (0x20U)
++#define MINIMC_CMD_OTA_DATA             (0x21U)
++#define MINIMC_CMD_OTA_FINISH           (0x22U)
++#define MINIMC_CMD_OTA_STATUS           (0x23U)
+ 
+-#define CHUNK_MAX_SIZE          ((uint16_t)512U)
+-#define FRAME_MAX_PAYLOAD       ((uint16_t)520U)
++/**
++  * @brief MiniMCProto v2.0 (Rev 2.0.4) 标准错误码定义
++  */
++#define MINIMC_ERR_CRC_FAIL             (0x01U)
++#define MINIMC_ERR_MTU_EXCEEDED         (0x02U)
++#define MINIMC_ERR_SEQ_OUT_OF_WINDOW    (0x03U)
++#define MINIMC_ERR_UNKNOWN_CMD          (0x04U)
++#define MINIMC_ERR_DEVICE_BUSY          (0x05U)
++#define MINIMC_ERR_COMMAND_REJECTED     (0x06U)
++#define MINIMC_ERR_OTA_ERASE_FAIL       (0x10U)
++#define MINIMC_ERR_OTA_WRITE_FAIL       (0x11U)
++#define MINIMC_ERR_OTA_CRC_MISMATCH     (0x12U)
++#define MINIMC_ERR_OTA_INVALID_OFFSET   (0x13U)
++#define MINIMC_ERR_OTA_IMAGE_OVERSIZE   (0x14U)
+ 
+ /**
+-  * @brief 128 字节固件尾部元数据 (Trailer) 结构体
++  * @brief TH Bootloader 硬件与 Trailer 常量定义
+   */
++#define TRAILER_MAGIC                   ((uint32_t)0x41545347U)   /* "ATSG" 固件包尾魔数 */
++#define TRAILER_STRUCT_VER              ((uint32_t)0x00010000U)   /* Trailer 结构版本 v1.0 */
++#define BOARD_ID_TH                     ((uint32_t)0x42300001U)   /* TH 硬件识别码 */
++#define BL_VERSION_CODE                 ((uint32_t)0x00010000U)   /* Bootloader v1.0.0 */
++#define BL_VERSION_STR                  "1.0.0"
++#define BL_BUILD_TIMESTAMP              __DATE__ " " __TIME__
++#define TH_BOOT_CAPABILITY_FLAGS        ((uint32_t)0xE0080423U)   /* Bit31=Boot, Bit30=ATSG, Bit29=Chunk0+Anchor, 512B */
++#ifndef FW_GIT_COMMIT_SHORT
++#define FW_GIT_COMMIT_SHORT             ((uint32_t)0x769FCCBEU)
++#endif
++
++#define BOOT_UPGRADE_FLAG_ADDR          (0x20008000UL)            /* 跨复位升级意图标志地址 (安全隔离区) */
++#define BOOT_UPGRADE_BOOT_ID_ADDR       (0x20008004UL)            /* 跨复位动态 boot_id 递增种子地址 */
++#define BOOT_UPGRADE_MAGIC              (0x55504744UL)            /* "UPGD" 升级意图魔数 */
++#define BOOT_NORMAL_TIMEOUT_MS          (1000U)                   /* 冷启动等待窗口 (1000ms) */
++
++#define CHUNK_MAX_SIZE                  ((uint16_t)512U)
++#define CHUNK_MIN_REGULAR_SIZE          ((uint16_t)64U)
++#define FRAME_MAX_PAYLOAD               ((uint16_t)520U)
++
+ #pragma pack(push, 1)
++/**
++  * @brief 128 字节固件尾部元数据 (ATSG Trailer) 结构体
++  */
+ typedef struct
+ {
+   uint32_t magic;             /* 固定魔数: 0x41545347 ("ATSG") */
+   uint32_t struct_ver;        /* 格式版本: 0x00010000 */
+   uint32_t board_id;          /* 硬件识别码: 0x42300001 */
+   uint32_t fw_version;        /* 固件发布版本号 */
+-  uint32_t payload_len;       /* 实际固件代码字节数 (<= 240KB) */
++  uint32_t payload_len;       /* 实际固件代码字节数 (<= 236KB / 241664B) */
+   uint8_t  sha256[32];        /* Payload SHA-256 哈希 */
+   uint8_t  sig_r[32];         /* 签名分量 R */
+   uint8_t  sig_s[32];         /* 签名分量 S */
+   uint8_t  reserved[8];       /* 保留对齐填充 */
+-  uint32_t trailer_crc32;     /* 前 124 字节的 CRC32 校验 */
++  uint32_t trailer_crc32;     /* 前 124 字节的 IEEE CRC32 校验 */
+ } fw_trailer_t;
+ 
+ /**
+@@ -73,36 +137,147 @@ typedef struct
+   uint32_t     firmware_crc32;  /* Finish 终验全片 CRC32 */
+   uint32_t     anchor_crc32;    /* 前 136 字节自身的 CRC32 校验 */
+ } app_anchor_meta_t;
+-#pragma pack(pop)
+ 
+-#define IAP_STATUS_OK                  ((uint8_t)0x00U)
+-#define IAP_START_STATUS_MAGIC_ERR     ((uint8_t)0x01U)
+-#define IAP_START_STATUS_BOARD_ERR     ((uint8_t)0x02U)
+-#define IAP_START_STATUS_SIZE_ERR      ((uint8_t)0x03U)
+-#define IAP_START_STATUS_ERASE_ERR     ((uint8_t)0x04U)
+-#define IAP_START_STATUS_TRAILER_CRC_ERR ((uint8_t)0x05U)
++/**
++  * @brief MiniMCProto v2.0 12 字节帧头结构体
++  */
++typedef struct
++{
++  uint8_t  sof0;
++  uint8_t  sof1;
++  uint8_t  src_id;
++  uint8_t  dst_id;
++  uint8_t  flags;
++  uint8_t  cmd_id;
++  uint8_t  hop_limit;
++  uint8_t  route_ctrl;
++  uint16_t seq_id;
++  uint16_t payload_len;
++} minimc_frame_hdr_t;
+ 
+-#define IAP_CHUNK_STATUS_OK            ((uint8_t)0x00U)
+-#define IAP_CHUNK_STATUS_ERR           ((uint8_t)0x01U)
++/**
++  * @brief 0x00 CMD_ACK 4 字节标准应答载荷
++  */
++typedef struct
++{
++  uint8_t  planner_buf_free;
++  uint8_t  rx_fifo_free_units;
++  uint16_t reserved;
++} minimc_payload_ack_t;
++
++/**
++  * @brief 0x06 CMD_NACK 3 字节否定应答载荷
++  */
++typedef struct
++{
++  uint8_t  error_code;
++  uint16_t expected_seq;
++} minimc_payload_nack_t;
++
++/**
++  * @brief 0x02 CMD_VERSION_REPORT 16 字节载荷
++  */
++typedef struct
++{
++  uint8_t  proto_major;
++  uint8_t  proto_minor;
++  uint8_t  fw_major;
++  uint8_t  fw_minor;
++  uint32_t boot_id;
++  uint32_t git_commit_short;
++  uint32_t capability_flags;
++} minimc_payload_version_report_t;
+ 
+-#define IAP_FINISH_STATUS_OK           ((uint8_t)0x00U)
+-#define IAP_FINISH_STATUS_CRC_ERR      ((uint8_t)0x01U)
++/**
++  * @brief 0x04 CMD_PONG 12 字节载荷
++  */
++typedef struct
++{
++  uint32_t echo_token;
++  uint32_t uptime_ms;
++  uint16_t rx_ok_count;
++  uint16_t rx_crc_err_count;
++} minimc_payload_pong_t;
+ 
+ /**
+-  * @brief 升级状态机状态枚举
++  * @brief 0x1D CMD_SYSTEM_CONTROL 4 字节载荷
++  */
++typedef struct
++{
++  uint8_t  action;
++  uint8_t  target_component;
++  uint16_t delay_ms;
++} minimc_payload_sys_ctrl_t;
++
++/**
++  * @brief 0x20 CMD_OTA_START 144 字节原子准入载荷 (16B 标准头 + 128B ATSG Trailer)
++  */
++typedef struct
++{
++  uint8_t      target_device;
++  uint8_t      target_component;
++  uint8_t      force_flag;
++  uint8_t      reserved;
++  uint32_t     fw_size_bytes;
++  uint32_t     fw_crc32;
++  uint32_t     new_version_raw;
++  fw_trailer_t trailer;
++} minimc_payload_ota_start_t;
++
++/**
++  * @brief 0x21 CMD_OTA_DATA 8 字节数据块头部
++  */
++typedef struct
++{
++  uint32_t offset;
++  uint16_t chunk_bytes;
++  uint16_t chunk_crc16;
++} minimc_payload_ota_data_hdr_t;
++
++/**
++  * @brief 0x22 CMD_OTA_FINISH 8 字节终验载荷
++  */
++typedef struct
++{
++  uint32_t fw_crc32;
++  uint8_t  action_after_verify;
++  uint8_t  reserved[3];
++} minimc_payload_ota_finish_t;
++
++/**
++  * @brief 0x23 CMD_OTA_STATUS 8 字节状态报告载荷
++  */
++typedef struct
++{
++  uint8_t  ota_state;
++  uint8_t  error_code;
++  uint16_t cached_chunk0_bytes;
++  uint32_t bytes_written;
++} minimc_payload_ota_status_t;
++#pragma pack(pop)
++
++/**
++  * @brief 升级状态机状态枚举 (对齐 0x23 CMD_OTA_STATUS.ota_state)
+   */
+ typedef enum
+ {
+   IAP_STATE_IDLE                = 0U,
+-  IAP_STATE_RECEIVING_CHUNKS    = 1U,
+-  IAP_STATE_FINISHED            = 2U,
+-  IAP_STATE_ERROR               = 3U
++  IAP_STATE_ERASED_READY        = 1U,
++  IAP_STATE_CHUNK0_CACHED_RAM   = 2U,
++  IAP_STATE_FLASH_WRITING       = 3U,
++  IAP_STATE_VERIFIED_COMMITTED  = 4U,
++  IAP_STATE_ERROR               = 5U
+ } iap_state_t;
+ 
+ /**
+-  * @brief  计算 8 位累加和校验值 Checksum = (CMD + Len_L + Len_H + sum(Payload)) & 0xFF
++  * @brief  初始化 TH Bootloader 协议栈与动态 boot_id
++  */
++void iap_init(void);
++
++/**
++  * @brief  计算 CRC-16/CCITT-FALSE 校验值 (Poly=0x1021, Init=0xFFFF)
+   */
+-uint8_t iap_checksum_calc(uint8_t cmd, uint16_t len, const uint8_t *p_payload);
++uint16_t iap_crc16_ccitt(const uint8_t *p_data, uint16_t len);
+ 
+ /**
+   * @brief  计算 CRC32 (IEEE 802.3) 校验值
+@@ -110,19 +285,24 @@ uint8_t iap_checksum_calc(uint8_t cmd, uint16_t len, const uint8_t *p_payload);
+ uint32_t iap_crc32_calc(const uint8_t *p_data, uint32_t len);
+ 
+ /**
+-  * @brief  校验 Trailer 128B 元数据合法性
++  * @brief  校验 Trailer 128B 元数据合法性 (含 236KB 上限与前 124B CRC32)
+   */
+ bool iap_trailer_validate(const fw_trailer_t *p_trailer);
+ 
+ /**
+-  * @brief  查询当前是否已进入升级中状态
++  * @brief  查询当前是否已进入升级活跃态
+   */
+ bool iap_is_upgrade_active(void);
+ 
+ /**
+-  * @brief  向上位机 MC 发送开机握手报到帧 CMD_TH_HELLO
++  * @brief  获取当前 OTA 状态快照 (供状态查询与单测核验)
++  */
++void iap_get_ota_status(minimc_payload_ota_status_t *p_status);
++
++/**
++  * @brief  向 MiniMCProto v2.0 接收状态机喂入单个字节
+   */
+-void iap_send_hello(void);
++void iap_feed_byte(uint8_t byte);
+ 
+ /**
+   * @brief  驱动处理串口升级接收状态机
+diff --git a/inc/usart.h b/inc/usart.h
+index 596ea71..0ae444d 100644
+--- a/inc/usart.h
++++ b/inc/usart.h
+@@ -1,7 +1,7 @@
+ /**
+   **************************************************************************
+   * @file     usart.h
+-  * @brief    双串口驱动头文件 (USART1 升级 + USART3 日志)
++  * @brief    双串口驱动头文件 (USART1 MiniMCProto v2.0 升级 + USART3 调试日志)
+   **************************************************************************
+   */
+ 
+@@ -15,7 +15,9 @@ extern "C" {
+ #include <stdint.h>
+ #include <stdbool.h>
+ #include <stddef.h>
++#ifndef IAP_HOST_TEST
+ #include "at32a423.h"
++#endif
+ 
+ /**
+   * @brief 全局日志开关 (1: 开启 USART3 调试日志; 0: 关闭并剔除体积)
+@@ -29,8 +31,8 @@ extern "C" {
+ /**
+   * @brief 串口通信波特率定义
+   */
+-#define USART1_BAUDRATE_MC      (921600U)  /* 板间私有升级总线 (直连 MC435) */
+-#define USART3_BAUDRATE_DEBUG   (115200U)  /* 本地调试日志输出接口 (直连 PC 监控口) */
++#define USART1_BAUDRATE_MC      (921600U)  /* 板间级联总线 (直连 MC435 USART6) */
++#define USART3_BAUDRATE_DEBUG   (115200U)  /* 本地调试日志输出接口 (直连监控口) */
+ 
+ /**
+   * @brief 环形接收缓冲区结构体
+@@ -44,7 +46,7 @@ typedef struct
+ } usart_ring_buf_t;
+ 
+ /**
+-  * @brief  初始化 USART1 (板间私有升级总线: PB6 TX / PB7 RX)
++  * @brief  初始化 USART1 (板间升级总线: PB6 TX / PB7 RX @ 921600 8N1)
+   * @param  baudrate: 通信波特率 (如 921600)
+   */
+ void bsp_uart1_init(uint32_t baudrate);
+@@ -56,6 +58,12 @@ void bsp_uart1_init(uint32_t baudrate);
+   */
+ bool bsp_uart1_read_byte(uint8_t *p_byte);
+ 
++/**
++  * @brief  查询 USART1 接收环形缓冲区剩余空间 (以 64 字节为单位)
++  * @retval 剩余 64B 单元数
++  */
++uint8_t bsp_uart1_rx_free_units(void);
++
+ /**
+   * @brief  USART1 发送数据帧 (带硬件超时保护)
+   * @param  p_data: 待发送数据指针
+@@ -76,10 +84,14 @@ void bsp_uart3_init(uint32_t baudrate);
+   */
+ void bsp_uart3_put_char(uint8_t ch);
+ 
++/**
++  * @brief  USART3 轻量级格式化日志输出 (支持 %s/%u/%d/%x/%X/%%，避免引入重型 stdio)
++  */
++void bsp_uart3_log(const char *prefix, const char *fmt, ...);
++
+ #if (DEBUG_LOG_ENABLE == 1)
+-#include <stdio.h>
+-#define LOG_INFO(fmt, ...)      printf("[TH_BL] " fmt "\r\n", ##__VA_ARGS__)
+-#define LOG_ERR(fmt, ...)       printf("[TH_ERR] " fmt "\r\n", ##__VA_ARGS__)
++#define LOG_INFO(fmt, ...)      bsp_uart3_log("[TH_BL] ", fmt, ##__VA_ARGS__)
++#define LOG_ERR(fmt, ...)       bsp_uart3_log("[TH_ERR] ", fmt, ##__VA_ARGS__)
+ #else
+ #define LOG_INFO(fmt, ...)      ((void)0)
+ #define LOG_ERR(fmt, ...)       ((void)0)
+diff --git a/src/flash.c b/src/flash.c
+index a901ca1..fa45761 100644
+--- a/src/flash.c
++++ b/src/flash.c
+@@ -1,15 +1,41 @@
+ /**
+   **************************************************************************
+   * @file     flash.c
+-  * @brief    Flash 2KB 扇区擦除、半字写入及即时物理回读驱动实现
++  * @brief    Flash 2KB 扇区擦除、半字写入、即时物理回读及强制 Anchor 完整性校验实现
+   **************************************************************************
+   */
+ 
+ #include "flash.h"
+ #include "iap.h"
+ 
++#ifdef IAP_HOST_TEST
++typedef enum
++{
++  FLASH_OPERATE_DONE = 0,
++  FLASH_PROGRAM_ERROR = 1
++} flash_status_type;
++extern void flash_unlock(void);
++extern void flash_lock(void);
++extern flash_status_type flash_sector_erase(uint32_t sector_address);
++extern flash_status_type flash_halfword_program(uint32_t address, uint16_t data);
++#endif
++
++/**
++  * @brief  从指定 Flash 地址按小端序读取 32 位无符号整数
++  * @param  addr: Flash 物理地址
++  * @retval 32 位数值
++  */
++static uint32_t flash_read_u32_le(uint32_t addr)
++{
++  const volatile uint8_t *p = FLASH_PTR(addr);
++  return (uint32_t)p[0] |
++         ((uint32_t)p[1] << 8U) |
++         ((uint32_t)p[2] << 16U) |
++         ((uint32_t)p[3] << 24U);
++}
++
+ /**
+-  * @brief  擦除指定的 2KB 物理扇区 (严格限制在 Bootloader 之外)
++  * @brief  擦除指定的 2KB 物理扇区 (严格限制在 Bootloader 16KB 区域之外)
+   * @param  sector_addr: 扇区起始物理地址
+   * @retval 状态码
+   */
+@@ -73,7 +99,10 @@ flash_result_t bsp_flash_write_and_verify(uint32_t write_addr, const uint8_t *p_
+   {
+     return FLASH_STATUS_ERR_PARAM;
+   }
+-  if ((write_addr < APP_START_ADDR) || ((write_addr + len) > (FLASH_BASE_ADDR + FLASH_TOTAL_SIZE)))
++  bool is_below_app = (write_addr < APP_START_ADDR);
++  bool is_exceed_flash = (len > FLASH_TOTAL_SIZE) ||
++                         (write_addr > ((FLASH_BASE_ADDR + FLASH_TOTAL_SIZE) - len));
++  if (is_below_app || is_exceed_flash)
+   {
+     return FLASH_STATUS_ERR_ADDR_RANGE;
+   }
+@@ -83,8 +112,8 @@ flash_result_t bsp_flash_write_and_verify(uint32_t write_addr, const uint8_t *p_
+   for (uint32_t i = 0U; i < len; i += 2U)
+   {
+     uint16_t low_byte = (uint16_t)p_buffer[i];
+-    uint16_t high_byte = (i + 1U < len) ? ((uint16_t)p_buffer[i + 1U] << 8U) : 0xFF00U;
+-    uint16_t half_word = low_byte | high_byte;
++    uint16_t high_byte = (i + 1U < len) ? (uint16_t)((uint32_t)p_buffer[i + 1U] << 8U) : (uint16_t)0xFF00U;
++    uint16_t half_word = (uint16_t)(low_byte | high_byte);
+ 
+     flash_status_type prog_status = flash_halfword_program(write_addr + i, half_word);
+     if (prog_status != FLASH_OPERATE_DONE)
+@@ -96,10 +125,10 @@ flash_result_t bsp_flash_write_and_verify(uint32_t write_addr, const uint8_t *p_
+   flash_lock();
+ 
+   /* 步骤 2: 逐字节执行硬件物理回读校验比对 */
++  const volatile uint8_t *p_flash = FLASH_PTR(write_addr);
+   for (uint32_t j = 0U; j < len; j++)
+   {
+-    uint8_t flash_val = *(volatile uint8_t *)(write_addr + j);
+-    if (flash_val != p_buffer[j])
++    if (p_flash[j] != p_buffer[j])
+     {
+       return FLASH_STATUS_ERR_VERIFY;
+     }
+@@ -114,22 +143,22 @@ flash_result_t bsp_flash_write_and_verify(uint32_t write_addr, const uint8_t *p_
+   */
+ bool bsp_flash_app_vector_is_valid(void)
+ {
+-  /* 读取 App 栈顶指针与复位向量 */
+-  uint32_t app_msp = *(volatile uint32_t *)APP_START_ADDR;
+-  uint32_t app_entry = *(volatile uint32_t *)(APP_START_ADDR + 4U);
++  uint32_t app_msp = flash_read_u32_le(APP_START_ADDR);
++  uint32_t app_entry = flash_read_u32_le(APP_START_ADDR + 4U);
+ 
+   /* 校验栈顶是否落在 48KB SRAM 范围 (0x20000000 ~ 0x2000C000) */
+   bool is_msp_valid = (app_msp >= SRAM_START_ADDR) && (app_msp <= SRAM_END_ADDR);
+ 
+-  /* 校验复位入口是否落在 App Flash 范围且最高字节为 0x08 */
++  /* 校验复位入口是否落在 App Flash 范围 (0x08004000 ~ 0x0803F000) */
+   bool is_entry_valid = (app_entry >= APP_START_ADDR) && (app_entry < APP_END_ADDR);
+ 
+   return (is_msp_valid && is_entry_valid);
+ }
+ 
+ /**
+-  * @brief  穿透校验 Application 完整性 (第二道防线: 锚点 + 全片 CRC32)
+-  * @retval true: 完整健康; false: 损坏或位翻转
++  * @brief  穿透校验 Application 完整性 (第二道防线: 强制 Sector 127 Anchor + 全片 CRC32)
++  *         已修复无有效 Anchor 时的回退漏洞：若无有效 ANCH 锚点一律返回 false 驻留 Boot
++  * @retval true: 完整健康; false: 损坏或无有效 Anchor
+   */
+ bool bsp_flash_app_integrity_check(void)
+ {
+@@ -138,15 +167,10 @@ bool bsp_flash_app_integrity_check(void)
+     return false;
+   }
+ 
+-  const app_anchor_meta_t *p_anchor = (const app_anchor_meta_t *)TRAILER_ANCHOR_ADDR;
+-  if (p_anchor->anchor_magic == 0xFFFFFFFFUL)
+-  {
+-    LOG_INFO("No Anchor found in Sector 127 (raw ELF). Fallback to vector check.");
+-    return true;
+-  }
++  const app_anchor_meta_t *p_anchor = (const app_anchor_meta_t *)(const void *)FLASH_PTR(TRAILER_ANCHOR_ADDR);
+   if (p_anchor->anchor_magic != ANCHOR_MAGIC)
+   {
+-    LOG_ERR("Anchor magic mismatch: 0x%08X", (unsigned int)p_anchor->anchor_magic);
++    LOG_ERR("Anchor missing or magic mismatch: 0x%08X", (unsigned int)p_anchor->anchor_magic);
+     return false;
+   }
+ 
+@@ -157,7 +181,8 @@ bool bsp_flash_app_integrity_check(void)
+     return false;
+   }
+ 
+-  uint32_t calc_fw_crc = iap_crc32_calc((const uint8_t *)APP_START_ADDR, p_anchor->trailer.payload_len);
++  const uint8_t *p_app = (const uint8_t *)(const void *)FLASH_PTR(APP_START_ADDR);
++  uint32_t calc_fw_crc = iap_crc32_calc(p_app, p_anchor->trailer.payload_len);
+   if (calc_fw_crc != p_anchor->firmware_crc32)
+   {
+     LOG_ERR("App CRC32 mismatch! exp=0x%08X, got=0x%08X",
+@@ -168,3 +193,12 @@ bool bsp_flash_app_integrity_check(void)
+   LOG_INFO("App integrity 100%% verified via Sector 127 Anchor!");
+   return true;
+ }
++
++/**
++  * @brief  bsp_flash_app_integrity_check 的规范同义包装函数
++  * @retval true: 完整健康; false: 损坏或无有效 Anchor
++  */
++bool flash_verify_app_integrity(void)
++{
++  return bsp_flash_app_integrity_check();
++}
+diff --git a/src/iap.c b/src/iap.c
+index 36929c0..a39ff8f 100644
+--- a/src/iap.c
++++ b/src/iap.c
+@@ -1,40 +1,142 @@
+ /**
+   **************************************************************************
+   * @file     iap.c
+-  * @brief    IAP 升级协议、定长帧解析、Trailer 验签及状态机驱动实现
++  * @brief    TH Bootloader MiniMCProto v2.0 最小 7 命令升级子集与两阶段提交实现
+   **************************************************************************
+   */
+ 
+ #include "iap.h"
++#ifndef IAP_HOST_TEST
++#include "tmr.h"
++#else
++extern uint32_t tmr_get_tick(void);
++extern void tmr_delay_ms(uint32_t ms);
++#endif
++#include <string.h>
++
++typedef struct
++{
++  iap_state_t  state;
++  uint8_t      last_err;
++  bool         active_session;
++  bool         has_cached_chunk0;
++  uint16_t     cached_chunk0_len;
++  uint32_t     target_fw_len;
++  uint32_t     target_fw_crc32;
++  uint32_t     expected_offset;
++  uint32_t     last_written_offset;
++  bool         has_last_written;
++  uint32_t     bytes_written_flash;
++  uint32_t     boot_id;
++  uint16_t     rx_ok_count;
++  uint16_t     rx_crc_err_count;
++  fw_trailer_t cached_trailer;
++  uint8_t      chunk0_buf[CHUNK_MAX_SIZE];
++} iap_ota_ctx_t;
++
++typedef struct
++{
++  uint8_t            step;
++  uint16_t           idx;
++  uint16_t           rx_crc;
++  uint8_t            raw_hdr[MINIMC_HEADER_SIZE];
++  minimc_frame_hdr_t hdr;
++  uint8_t            payload[MINIMC_MAX_PAYLOAD_SIZE];
++} iap_rx_ctx_t;
++
++static iap_ota_ctx_t s_ota;
++static iap_rx_ctx_t s_rx;
+ 
+-static iap_state_t s_iap_state = IAP_STATE_IDLE;
+-static uint32_t s_target_fw_len = 0U;
+-static uint8_t s_chunk0_buf[CHUNK_MAX_SIZE];
+-static bool s_has_cached_chunk0 = false;
+-static fw_trailer_t s_cached_trailer;
++#ifdef IAP_HOST_TEST
++extern void host_test_on_system_reset(void);
++extern void host_test_on_app_load(uint32_t app_addr);
++#endif
+ 
+ /**
+-  * @brief  查询当前是否已进入升级中状态
++  * @brief  初始化 TH Bootloader 协议状态机并生成动态非零 boot_id
++  */
++void iap_init(void)
++{
++  (void)memset(&s_ota, 0, sizeof(s_ota));
++  (void)memset(&s_rx, 0, sizeof(s_rx));
++#ifndef IAP_HOST_TEST
++  volatile uint32_t *p_seed = (volatile uint32_t *)BOOT_UPGRADE_BOOT_ID_ADDR;
++  uint32_t next_id = (*p_seed) + 1U;
++  if (next_id == 0U || next_id == 0xFFFFFFFFU)
++  {
++    next_id = 1U;
++  }
++  *p_seed = next_id;
++  s_ota.boot_id = 0xB0030000U ^ (next_id * 0x9E3779B1U) ^ tmr_get_tick();
++#else
++  s_ota.boot_id = 0xB0031001U;
++#endif
++  if (s_ota.boot_id == 0U)
++  {
++    s_ota.boot_id = 0xB0030001U;
++  }
++}
++
++/**
++  * @brief  查询当前是否已进入升级活跃态
+   */
+ bool iap_is_upgrade_active(void)
+ {
+-  return (s_iap_state != IAP_STATE_IDLE);
++  return s_ota.active_session;
+ }
+ 
+ /**
+-  * @brief  计算 8 位累加和校验值 Checksum = (CMD + Len_L + Len_H + sum(Payload)) & 0xFF
++  * @brief  获取当前 OTA 状态快照
+   */
+-uint8_t iap_checksum_calc(uint8_t cmd, uint16_t len, const uint8_t *p_payload)
++void iap_get_ota_status(minimc_payload_ota_status_t *p_status)
+ {
+-  uint32_t sum = (uint32_t)cmd + (uint32_t)(len & 0xFFU) + (uint32_t)((len >> 8U) & 0xFFU);
+-  if (p_payload != NULL)
++  if (p_status == NULL)
+   {
+-    for (uint16_t i = 0U; i < len; i++)
++    return;
++  }
++  p_status->ota_state = (uint8_t)s_ota.state;
++  p_status->error_code = s_ota.last_err;
++  p_status->cached_chunk0_bytes = s_ota.cached_chunk0_len;
++  p_status->bytes_written = s_ota.bytes_written_flash;
++}
++
++/**
++  * @brief  无表紧凑计算 CRC-16/CCITT-FALSE (Poly=0x1021, Init=0xFFFF)
++  */
++static uint16_t iap_crc16_update(uint16_t crc, const uint8_t *p_data, uint16_t len)
++{
++  if (p_data == NULL)
++  {
++    return crc;
++  }
++  for (uint16_t i = 0U; i < len; i++)
++  {
++    crc ^= (uint16_t)((uint16_t)p_data[i] << 8U);
++    for (uint8_t b = 0U; b < 8U; b++)
+     {
+-      sum += (uint32_t)p_payload[i];
++      if ((crc & 0x8000U) != 0U)
++      {
++        crc = (uint16_t)((crc << 1U) ^ 0x1021U);
++      }
++      else
++      {
++        crc = (uint16_t)(crc << 1U);
++      }
+     }
+   }
+-  return (uint8_t)(sum & 0xFFU);
++  return crc;
++}
++
++/**
++  * @brief  计算单段数据 CRC-16/CCITT-FALSE
++  */
++uint16_t iap_crc16_ccitt(const uint8_t *p_data, uint16_t len)
++{
++  if (p_data == NULL && len > 0U)
++  {
++    return 0U;
++  }
++  return iap_crc16_update(0xFFFFU, p_data, len);
+ }
+ 
+ /**
+@@ -46,7 +148,6 @@ static uint32_t iap_crc32_accumulate(uint32_t crc, const uint8_t *p_data, uint32
+   {
+     return crc;
+   }
+-
+   for (uint32_t i = 0U; i < len; i++)
+   {
+     crc ^= (uint32_t)p_data[i];
+@@ -70,11 +171,15 @@ static uint32_t iap_crc32_accumulate(uint32_t crc, const uint8_t *p_data, uint32
+   */
+ uint32_t iap_crc32_calc(const uint8_t *p_data, uint32_t len)
+ {
++  if (p_data == NULL && len > 0U)
++  {
++    return 0U;
++  }
+   return ~iap_crc32_accumulate(0xFFFFFFFFU, p_data, len);
+ }
+ 
+ /**
+-  * @brief  校验 128 字节 Trailer 元数据合法性
++  * @brief  校验 128 字节 ATSG Trailer 元数据合法性
+   */
+ bool iap_trailer_validate(const fw_trailer_t *p_trailer)
+ {
+@@ -82,346 +187,581 @@ bool iap_trailer_validate(const fw_trailer_t *p_trailer)
+   {
+     return false;
+   }
+-
+   bool is_magic_ok = (p_trailer->magic == TRAILER_MAGIC);
++  bool is_ver_ok = (p_trailer->struct_ver == TRAILER_STRUCT_VER);
+   bool is_board_ok = (p_trailer->board_id == BOARD_ID_TH);
+   bool is_len_ok = (p_trailer->payload_len > 0U) && (p_trailer->payload_len <= APP_MAX_SIZE);
+-
+-  if (!is_magic_ok || !is_board_ok || !is_len_ok)
++  if (!is_magic_ok || !is_ver_ok || !is_board_ok || !is_len_ok)
+   {
+-    LOG_ERR("Trailer check failed: magic/board/len invalid");
+     return false;
+   }
+-
+   uint32_t calc_crc = iap_crc32_calc((const uint8_t *)p_trailer, 124U);
+-  if (calc_crc != p_trailer->trailer_crc32)
+-  {
+-    LOG_ERR("Trailer CRC32 mismatch: exp=0x%08X, got=0x%08X",
+-            (unsigned int)p_trailer->trailer_crc32, (unsigned int)calc_crc);
+-    return false;
+-  }
+-
+-  return true;
++  return (calc_crc == p_trailer->trailer_crc32);
+ }
+ 
+ /**
+-  * @brief  发送私有定长协议帧
+-  *         格式: [5A A5] + [CMD: 1B] + [Length: 2B (小端)] + [Payload: N B] + [Checksum: 1B]
++  * @brief  通用小帧发送函数 (最大载荷 16B，整帧 <= 30B，使用 32B 栈数组节省 SRAM)
+   */
+-static void iap_send_frame(uint8_t cmd, const uint8_t *p_payload, uint16_t len)
++static void iap_send_small_frame(const minimc_frame_hdr_t *p_req, uint8_t resp_cmd, const uint8_t *p_payload, uint16_t len)
+ {
+-  uint8_t tx_buf[FRAME_MAX_PAYLOAD + 6U];
+-  tx_buf[0] = FRAME_SOF1;
+-  tx_buf[1] = FRAME_SOF2;
+-  tx_buf[2] = cmd;
+-  tx_buf[3] = (uint8_t)(len & 0xFFU);
+-  tx_buf[4] = (uint8_t)((len >> 8U) & 0xFFU);
++  if (p_req == NULL || len > 16U)
++  {
++    return;
++  }
++  uint8_t tx_buf[32];
++  tx_buf[0] = MINIMC_SOF_0;
++  tx_buf[1] = MINIMC_SOF_1;
++  tx_buf[2] = MINIMC_NODE_TH;
++  tx_buf[3] = p_req->src_id;
++  tx_buf[4] = (uint8_t)(MINIMC_FLAG_VERSION_V2 | MINIMC_FLAG_IS_RESPONSE);
++  tx_buf[5] = resp_cmd;
++  tx_buf[6] = MINIMC_DEFAULT_HOP_LIMIT;
++  tx_buf[7] = 0U;
++  tx_buf[8] = (uint8_t)(p_req->seq_id & 0xFFU);
++  tx_buf[9] = (uint8_t)((p_req->seq_id >> 8U) & 0xFFU);
++  tx_buf[10] = (uint8_t)(len & 0xFFU);
++  tx_buf[11] = (uint8_t)((len >> 8U) & 0xFFU);
+ 
+   for (uint16_t i = 0U; i < len; i++)
+   {
+-    tx_buf[5U + i] = p_payload[i];
++    tx_buf[MINIMC_HEADER_SIZE + i] = p_payload[i];
+   }
++  uint16_t crc = iap_crc16_ccitt(tx_buf, (uint16_t)(MINIMC_HEADER_SIZE + len));
++  tx_buf[MINIMC_HEADER_SIZE + len] = (uint8_t)(crc & 0xFFU);
++  tx_buf[MINIMC_HEADER_SIZE + len + 1U] = (uint8_t)((crc >> 8U) & 0xFFU);
+ 
+-  uint8_t checksum = iap_checksum_calc(cmd, len, p_payload);
+-  tx_buf[5U + len] = checksum;
++  (void)bsp_uart1_send_data(tx_buf, (uint16_t)(MINIMC_FRAME_OVERHEAD + len));
++}
+ 
+-  bsp_uart1_send_data(tx_buf, 6U + len);
++/**
++  * @brief  发送标准 4 字节 0x00 CMD_ACK 应答帧
++  */
++static void iap_send_ack(const minimc_frame_hdr_t *p_req)
++{
++  minimc_payload_ack_t ack;
++  ack.planner_buf_free = 0U;
++  ack.rx_fifo_free_units = bsp_uart1_rx_free_units();
++  ack.reserved = 0U;
++  iap_send_small_frame(p_req, MINIMC_CMD_ACK, (const uint8_t *)&ack, sizeof(ack));
+ }
+ 
+ /**
+-  * @brief  发送 CMD_TH_HELLO 握手报到帧
+-  *         Payload 结构: AppValid(1B) + BoardID(4B) + Version(4B)
++  * @brief  发送标准 3 字节 0x06 CMD_NACK 否定应答帧并记录最近错误码
+   */
+-void iap_send_hello(void)
++static void iap_send_nack(const minimc_frame_hdr_t *p_req, uint8_t err_code)
+ {
+-  uint8_t payload[9];
+-  uint32_t board_id = BOARD_ID_TH;
+-  uint32_t bl_ver = BL_VERSION_CODE;
+-  uint8_t app_valid = bsp_flash_app_integrity_check() ? 1U : 0U;
++  s_ota.last_err = err_code;
++  minimc_payload_nack_t nack;
++  nack.error_code = err_code;
++  nack.expected_seq = (p_req != NULL) ? p_req->seq_id : 0U;
++  iap_send_small_frame(p_req, MINIMC_CMD_NACK, (const uint8_t *)&nack, sizeof(nack));
++}
+ 
+-  payload[0] = app_valid;
+-  payload[1] = (uint8_t)(board_id & 0xFFU);
+-  payload[2] = (uint8_t)((board_id >> 8U) & 0xFFU);
+-  payload[3] = (uint8_t)((board_id >> 16U) & 0xFFU);
+-  payload[4] = (uint8_t)((board_id >> 24U) & 0xFFU);
++/**
++  * @brief  处理 0x01 GET_VERSION 命令，返回 16B 0x02 VERSION_REPORT
++  */
++static void iap_handle_get_version(const minimc_frame_hdr_t *p_req)
++{
++  if (p_req->payload_len != 0U)
++  {
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  s_ota.active_session = true;
++  minimc_payload_version_report_t rep;
++  rep.proto_major = 2U;
++  rep.proto_minor = 0U;
++  rep.fw_major = 1U;
++  rep.fw_minor = 0U;
++  rep.boot_id = s_ota.boot_id;
++  rep.git_commit_short = FW_GIT_COMMIT_SHORT;
++  rep.capability_flags = TH_BOOT_CAPABILITY_FLAGS;
++  iap_send_small_frame(p_req, MINIMC_CMD_VERSION_REPORT, (const uint8_t *)&rep, sizeof(rep));
++}
+ 
+-  payload[5] = (uint8_t)(bl_ver & 0xFFU);
+-  payload[6] = (uint8_t)((bl_ver >> 8U) & 0xFFU);
+-  payload[7] = (uint8_t)((bl_ver >> 16U) & 0xFFU);
+-  payload[8] = (uint8_t)((bl_ver >> 24U) & 0xFFU);
++/**
++  * @brief  处理 0x03 PING 命令，返回 12B 0x04 PONG
++  */
++static void iap_handle_ping(const minimc_frame_hdr_t *p_req, const uint8_t *p_payload)
++{
++  if (p_req->payload_len != 4U)
++  {
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  minimc_payload_pong_t pong;
++  (void)memcpy(&pong.echo_token, p_payload, sizeof(uint32_t));
++  pong.uptime_ms = tmr_get_tick();
++  pong.rx_ok_count = s_ota.rx_ok_count;
++  pong.rx_crc_err_count = s_ota.rx_crc_err_count;
++  iap_send_small_frame(p_req, MINIMC_CMD_PONG, (const uint8_t *)&pong, sizeof(pong));
++}
+ 
+-  LOG_INFO("Sending CMD_TH_HELLO (AppValid=%d)", app_valid);
+-  iap_send_frame(CMD_TH_HELLO, payload, 9U);
++/**
++  * @brief  处理 0x1D CMD_SYSTEM_CONTROL 命令 (Boot 下 JumpToBootloader 幂等回 ACK)
++  */
++static void iap_handle_sys_ctrl(const minimc_frame_hdr_t *p_req, const uint8_t *p_payload)
++{
++  if (p_req->payload_len != sizeof(minimc_payload_sys_ctrl_t))
++  {
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  minimc_payload_sys_ctrl_t ctrl;
++  (void)memcpy(&ctrl, p_payload, sizeof(ctrl));
++  if (ctrl.action > 2U || (ctrl.target_component != 0U && ctrl.target_component != 1U))
++  {
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  s_ota.active_session = true;
++  iap_send_ack(p_req);
++  if (ctrl.action == 1U)
++  {
++    tmr_delay_ms((ctrl.delay_ms > 100U) ? 100U : ctrl.delay_ms);
++#ifndef IAP_HOST_TEST
++    NVIC_SystemReset();
++#else
++    host_test_on_system_reset();
++#endif
++  }
+ }
+ 
+ /**
+-  * @brief  处理 CMD_TH_START_UPG 升级开始指令
++  * @brief  处理 0x20 CMD_OTA_START (144B: 16B 标准头 + 128B ATSG Trailer 擦除前原子准入)
+   */
+-static void iap_handle_start_upg(const uint8_t *p_payload, uint16_t len)
++static void iap_handle_ota_start(const minimc_frame_hdr_t *p_req, const uint8_t *p_payload)
+ {
+-  uint8_t ack_status = IAP_STATUS_OK;
+-  s_has_cached_chunk0 = false;
+-  if (len < sizeof(fw_trailer_t))
++  if (p_req->payload_len != sizeof(minimc_payload_ota_start_t))
++  {
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  minimc_payload_ota_start_t req;
++  (void)memcpy(&req, p_payload, sizeof(req));
++
++  if (req.target_device != MINIMC_NODE_TH || req.target_component != 1U)
+   {
+-    ack_status = IAP_START_STATUS_SIZE_ERR;
+-    iap_send_frame(ACK_TH_START_UPG, &ack_status, 1U);
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  if (req.fw_size_bytes > APP_MAX_SIZE || req.trailer.payload_len > APP_MAX_SIZE)
++  {
++    iap_send_nack(p_req, MINIMC_ERR_OTA_IMAGE_OVERSIZE);
++    return;
++  }
++  if (req.fw_size_bytes == 0U || req.fw_size_bytes != req.trailer.payload_len ||
++      !iap_trailer_validate(&req.trailer))
++  {
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
+     return;
+   }
+ 
+-  const fw_trailer_t *p_trailer = (const fw_trailer_t *)p_payload;
+-  if (p_trailer->magic != TRAILER_MAGIC) { ack_status = IAP_START_STATUS_MAGIC_ERR; }
+-  else if (p_trailer->board_id != BOARD_ID_TH) { ack_status = IAP_START_STATUS_BOARD_ERR; }
+-  else if ((p_trailer->payload_len == 0U) || (p_trailer->payload_len > APP_MAX_SIZE))
++  if (bsp_flash_erase_first_app_sector() != FLASH_STATUS_OK ||
++      bsp_flash_erase_anchor_sector() != FLASH_STATUS_OK)
+   {
+-    ack_status = IAP_START_STATUS_SIZE_ERR;
++    s_ota.state = IAP_STATE_ERROR;
++    iap_send_nack(p_req, MINIMC_ERR_OTA_ERASE_FAIL);
++    return;
+   }
+-  else if (!iap_trailer_validate(p_trailer)) { ack_status = IAP_START_STATUS_TRAILER_CRC_ERR; }
+-  else
++
++  s_ota.active_session = true;
++  s_ota.cached_trailer = req.trailer;
++  s_ota.target_fw_len = req.fw_size_bytes;
++  s_ota.target_fw_crc32 = req.fw_crc32;
++  s_ota.expected_offset = 0U;
++  s_ota.last_written_offset = 0U;
++  s_ota.has_last_written = false;
++  s_ota.has_cached_chunk0 = false;
++  s_ota.cached_chunk0_len = 0U;
++  s_ota.bytes_written_flash = 0U;
++  s_ota.last_err = 0U;
++  s_ota.state = IAP_STATE_ERASED_READY;
++  iap_send_ack(p_req);
++}
++
++/**
++  * @brief  将 offset >= 512 的数据块按需擦除 2KB 扇区并写入 Flash 回读校验
++  */
++static flash_result_t iap_write_flash_chunk(uint32_t offset, const uint8_t *p_data, uint16_t chunk_len)
++{
++  uint32_t start_addr = APP_START_ADDR + offset;
++  uint32_t end_addr = start_addr + (uint32_t)chunk_len - 1U;
++  uint32_t first_sector = (start_addr / FLASH_SECTOR_SIZE) * FLASH_SECTOR_SIZE;
++  uint32_t last_sector = (end_addr / FLASH_SECTOR_SIZE) * FLASH_SECTOR_SIZE;
++
++  for (uint32_t sec = first_sector; sec <= last_sector; sec += FLASH_SECTOR_SIZE)
+   {
+-    s_cached_trailer = *p_trailer;
+-    s_target_fw_len = p_trailer->payload_len;
+-    LOG_INFO("Trailer verified. TargetLen=%u. Erasing app & anchor sectors...", (unsigned int)s_target_fw_len);
+-    flash_result_t erase_res = bsp_flash_erase_first_app_sector();
+-    flash_result_t anchor_res = bsp_flash_erase_anchor_sector();
+-    if (erase_res != FLASH_STATUS_OK || anchor_res != FLASH_STATUS_OK)
++    if (sec > APP_START_ADDR && (start_addr <= sec))
+     {
+-      ack_status = IAP_START_STATUS_ERASE_ERR;
+-      LOG_ERR("Erase sector failed: res=%d anchor=%d", erase_res, anchor_res);
++      flash_result_t er_res = bsp_flash_erase_sector(sec);
++      if (er_res != FLASH_STATUS_OK)
++      {
++        return er_res;
++      }
+     }
+-    else
++  }
++  return bsp_flash_write_and_verify(start_addr, p_data, chunk_len);
++}
++
++/**
++  * @brief  将单块固件数据写入 Chunk0 SRAM 缓存或 Flash 区域
++  */
++static uint8_t iap_store_ota_chunk(uint32_t offset, const uint8_t *p_fw, uint16_t chunk_len)
++{
++  uint32_t pos = 0U;
++  if (offset < CHUNK_MAX_SIZE)
++  {
++    uint32_t c0_space = CHUNK_MAX_SIZE - offset;
++    uint16_t copy_len = (chunk_len < (uint16_t)c0_space) ? chunk_len : (uint16_t)c0_space;
++    (void)memcpy(&s_ota.chunk0_buf[offset], p_fw, copy_len);
++    s_ota.has_cached_chunk0 = true;
++    if ((uint16_t)(offset + copy_len) > s_ota.cached_chunk0_len)
+     {
+-      s_iap_state = IAP_STATE_RECEIVING_CHUNKS;
+-      LOG_INFO("App & anchor sectors erased. TH ready for chunks.");
++      s_ota.cached_chunk0_len = (uint16_t)(offset + copy_len);
+     }
++    s_ota.state = IAP_STATE_CHUNK0_CACHED_RAM;
++    pos += copy_len;
+   }
+ 
+-  iap_send_frame(ACK_TH_START_UPG, &ack_status, 1U);
++  if (pos < chunk_len)
++  {
++    uint32_t flash_off = offset + pos;
++    uint16_t flash_len = (uint16_t)(chunk_len - (uint16_t)pos);
++    flash_result_t res = iap_write_flash_chunk(flash_off, &p_fw[pos], flash_len);
++    if (res != FLASH_STATUS_OK)
++    {
++      s_ota.state = IAP_STATE_ERROR;
++      return (res == FLASH_STATUS_ERR_ERASE) ? MINIMC_ERR_OTA_ERASE_FAIL : MINIMC_ERR_OTA_WRITE_FAIL;
++    }
++    s_ota.bytes_written_flash += flash_len;
++    s_ota.state = IAP_STATE_FLASH_WRITING;
++  }
++  return 0U;
+ }
+ 
+ /**
+-  * @brief  处理 CMD_TH_PUSH_CHUNK 分块写入指令 (ChunkIndex + 512B 数据)
+-  */
+-/**
+-  * @brief  跨扇区边界写入单个数据块并执行物理回读比对
++  * @brief  校验 0x21 CMD_OTA_DATA 块偏移与常规最小块长合法性
+   */
+-static flash_result_t iap_write_chunk_to_flash(uint32_t offset, const uint8_t *p_data)
++static uint8_t iap_validate_ota_data_bounds(uint32_t offset, uint16_t fw_len)
+ {
+-  uint32_t write_addr = APP_START_ADDR + offset;
+-  if (((offset % FLASH_SECTOR_SIZE) == 0U) && (offset > 0U))
++  if (offset != s_ota.expected_offset ||
++      offset > s_ota.target_fw_len ||
++      (uint32_t)fw_len > (s_ota.target_fw_len - offset))
+   {
+-    bsp_flash_erase_sector(write_addr);
++    return MINIMC_ERR_OTA_INVALID_OFFSET;
+   }
+-  return bsp_flash_write_and_verify(write_addr, p_data, CHUNK_MAX_SIZE);
++  bool is_last_chunk = ((offset + (uint32_t)fw_len) == s_ota.target_fw_len);
++  if (!is_last_chunk && fw_len < CHUNK_MIN_REGULAR_SIZE)
++  {
++    return MINIMC_ERR_COMMAND_REJECTED;
++  }
++  return 0U;
+ }
+ 
+ /**
+-  * @brief  处理 CMD_TH_PUSH_CHUNK 分块写入指令 (ChunkIndex + 512B 数据)
++  * @brief  处理 0x21 CMD_OTA_DATA 分块传输指令 (支持 Chunk0 缓存与重传幂等 ACK)
+   */
+-static void iap_handle_push_chunk(const uint8_t *p_payload, uint16_t len)
++static void iap_handle_ota_data(const minimc_frame_hdr_t *p_req, const uint8_t *p_payload)
+ {
+-  uint8_t ack_payload[5] = {0U, 0U, 0U, 0U, IAP_CHUNK_STATUS_ERR};
+-  if (s_iap_state != IAP_STATE_RECEIVING_CHUNKS || len != 516U)
++  bool state_ok = (s_ota.state == IAP_STATE_ERASED_READY) ||
++                  (s_ota.state == IAP_STATE_CHUNK0_CACHED_RAM) ||
++                  (s_ota.state == IAP_STATE_FLASH_WRITING);
++  if (!state_ok || p_req->payload_len <= sizeof(minimc_payload_ota_data_hdr_t))
+   {
+-    iap_send_frame(ACK_TH_PUSH_CHUNK, ack_payload, 5U);
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
+     return;
+   }
+ 
+-  uint32_t chunk_idx = (uint32_t)p_payload[0] | ((uint32_t)p_payload[1] << 8U) |
+-                       ((uint32_t)p_payload[2] << 16U) | ((uint32_t)p_payload[3] << 24U);
+-  for (uint8_t k = 0U; k < 4U; k++) { ack_payload[k] = p_payload[k]; }
+-  ack_payload[4] = IAP_CHUNK_STATUS_OK;
+-
+-  if (chunk_idx == 0U)
++  minimc_payload_ota_data_hdr_t dhdr;
++  (void)memcpy(&dhdr, p_payload, sizeof(dhdr));
++  uint16_t fw_len = (uint16_t)(p_req->payload_len - sizeof(dhdr));
++  const uint8_t *p_fw = &p_payload[sizeof(dhdr)];
++  if (dhdr.chunk_bytes == 0U || dhdr.chunk_bytes > CHUNK_MAX_SIZE ||
++      dhdr.chunk_bytes != fw_len || iap_crc16_ccitt(p_fw, fw_len) != dhdr.chunk_crc16)
+   {
+-    for (uint16_t i = 0U; i < CHUNK_MAX_SIZE; i++) { s_chunk0_buf[i] = p_payload[4U + i]; }
+-    s_has_cached_chunk0 = true;
+-    iap_send_frame(ACK_TH_PUSH_CHUNK, ack_payload, 5U);
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
+     return;
+   }
+-
+-  uint32_t offset = chunk_idx * CHUNK_MAX_SIZE;
+-  if (offset + CHUNK_MAX_SIZE > APP_MAX_SIZE)
++  if (s_ota.has_last_written && dhdr.offset == s_ota.last_written_offset)
+   {
+-    ack_payload[4] = IAP_CHUNK_STATUS_ERR;
+-    iap_send_frame(ACK_TH_PUSH_CHUNK, ack_payload, 5U);
++    iap_send_ack(p_req);
+     return;
+   }
+ 
+-  flash_result_t write_res = iap_write_chunk_to_flash(offset, &p_payload[4]);
+-  if (write_res != FLASH_STATUS_OK)
++  uint8_t b_err = iap_validate_ota_data_bounds(dhdr.offset, fw_len);
++  uint8_t s_err = (b_err == 0U) ? iap_store_ota_chunk(dhdr.offset, p_fw, fw_len) : b_err;
++  if (s_err != 0U)
+   {
+-    ack_payload[4] = IAP_CHUNK_STATUS_ERR;
+-    LOG_ERR("Write/Verify chunk fail at idx %u, res=%d", (unsigned int)chunk_idx, write_res);
++    iap_send_nack(p_req, s_err);
++    return;
+   }
+-  iap_send_frame(ACK_TH_PUSH_CHUNK, ack_payload, 5U);
++  s_ota.last_written_offset = dhdr.offset;
++  s_ota.has_last_written = true;
++  s_ota.expected_offset += fw_len;
++  iap_send_ack(p_req);
+ }
+ 
+ /**
+-  * @brief  计算当前已接收完整固件的 CRC32 (联合 SRAM Chunk 0 与 Flash 后续)
++  * @brief  联合 SRAM Chunk 0 与 Flash 后续段计算全片净荷 IEEE CRC32
+   */
+ static uint32_t iap_calculate_firmware_crc32(void)
+ {
+-  if (!s_has_cached_chunk0)
+-  {
+-    return iap_crc32_calc((const uint8_t *)APP_START_ADDR, s_target_fw_len);
+-  }
+-
+-  uint32_t c0_len = (s_target_fw_len < CHUNK_MAX_SIZE) ? s_target_fw_len : CHUNK_MAX_SIZE;
+-  uint32_t crc_accum = iap_crc32_accumulate(0xFFFFFFFFU, s_chunk0_buf, c0_len);
+-  if (s_target_fw_len > CHUNK_MAX_SIZE)
++  uint32_t c0_len = (s_ota.target_fw_len < CHUNK_MAX_SIZE) ? s_ota.target_fw_len : CHUNK_MAX_SIZE;
++  uint32_t crc_accum = iap_crc32_accumulate(0xFFFFFFFFU, s_ota.chunk0_buf, c0_len);
++  if (s_ota.target_fw_len > CHUNK_MAX_SIZE)
+   {
+-    const uint8_t *p_flash_tail = (const uint8_t *)(APP_START_ADDR + CHUNK_MAX_SIZE);
+-    crc_accum = iap_crc32_accumulate(crc_accum, p_flash_tail, s_target_fw_len - CHUNK_MAX_SIZE);
++    const uint8_t *p_tail = (const uint8_t *)(const void *)FLASH_PTR(APP_START_ADDR + CHUNK_MAX_SIZE);
++    crc_accum = iap_crc32_accumulate(crc_accum, p_tail, s_ota.target_fw_len - CHUNK_MAX_SIZE);
+   }
+   return ~crc_accum;
+ }
+ 
+ /**
+-  * @brief  将固件元数据锚点固化写入 Sector 127
++  * @brief  将固件元数据锚点固化写入 Sector 127 (0x0803F800)
+   */
+ static flash_result_t iap_commit_anchor_metadata(uint32_t fw_crc)
+ {
+   app_anchor_meta_t anchor;
+   anchor.anchor_magic = ANCHOR_MAGIC;
+-  anchor.trailer = s_cached_trailer;
++  anchor.trailer = s_ota.cached_trailer;
+   anchor.firmware_crc32 = fw_crc;
+   anchor.anchor_crc32 = iap_crc32_calc((const uint8_t *)&anchor, 136U);
+   return bsp_flash_write_and_verify(TRAILER_ANCHOR_ADDR, (const uint8_t *)&anchor, sizeof(app_anchor_meta_t));
+ }
+ 
+ /**
+-  * @brief  处理 CMD_TH_FINISH 传输完成与终验指令
++  * @brief  终止失败的 OTA 会话并清理首扇区与 Anchor 扇区
+   */
+-static void iap_handle_finish(const uint8_t *p_payload, uint16_t len)
++static void iap_abort_ota_on_error(const minimc_frame_hdr_t *p_req, uint8_t err_code)
+ {
+-  uint8_t ack_status = IAP_FINISH_STATUS_OK;
+-  if (len < 4U)
++  (void)bsp_flash_erase_first_app_sector();
++  (void)bsp_flash_erase_anchor_sector();
++  s_ota.has_cached_chunk0 = false;
++  s_ota.cached_chunk0_len = 0U;
++  s_ota.bytes_written_flash = 0U;
++  s_ota.state = IAP_STATE_ERROR;
++  iap_send_nack(p_req, err_code);
++}
++
++/**
++  * @brief  处理 0x22 CMD_OTA_FINISH 终验与两阶段提交 (先写 Anchor 再写 Chunk0)
++  */
++static void iap_handle_ota_finish(const minimc_frame_hdr_t *p_req, const uint8_t *p_payload)
++{
++  if (p_req->payload_len != sizeof(minimc_payload_ota_finish_t))
+   {
+-    ack_status = IAP_FINISH_STATUS_CRC_ERR;
+-    iap_send_frame(ACK_TH_FINISH, &ack_status, 1U);
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
+     return;
+   }
++  minimc_payload_ota_finish_t fin;
++  (void)memcpy(&fin, p_payload, sizeof(fin));
+ 
+-  uint32_t exp_crc32 = (uint32_t)p_payload[0] | ((uint32_t)p_payload[1] << 8U) |
+-                       ((uint32_t)p_payload[2] << 16U) | ((uint32_t)p_payload[3] << 24U);
+-  uint32_t calc_crc32 = iap_calculate_firmware_crc32();
++  if (s_ota.state == IAP_STATE_VERIFIED_COMMITTED && fin.fw_crc32 == s_ota.target_fw_crc32)
++  {
++    iap_send_ack(p_req);
++    return;
++  }
+ 
+-  if (calc_crc32 != exp_crc32 || !s_has_cached_chunk0)
++  bool recv_complete = s_ota.has_cached_chunk0 &&
++                       (s_ota.target_fw_len > 0U) &&
++                       (s_ota.expected_offset == s_ota.target_fw_len);
++  uint32_t calc_crc = recv_complete ? iap_calculate_firmware_crc32() : 0U;
++  if (!recv_complete || calc_crc != fin.fw_crc32 || fin.fw_crc32 != s_ota.target_fw_crc32)
+   {
+-    LOG_ERR("Final CRC32 error! calc=0x%08X, exp=0x%08X", (unsigned int)calc_crc32, (unsigned int)exp_crc32);
+-    bsp_flash_erase_first_app_sector();
+-    bsp_flash_erase_anchor_sector();
+-    s_has_cached_chunk0 = false;
+-    ack_status = IAP_FINISH_STATUS_CRC_ERR;
+-    s_iap_state = IAP_STATE_ERROR;
+-    iap_send_frame(ACK_TH_FINISH, &ack_status, 1U);
++    iap_abort_ota_on_error(p_req, MINIMC_ERR_OTA_CRC_MISMATCH);
+     return;
+   }
+ 
+-  /* 终验成功：先固化 Sector 127 锚点，再原子提交 Chunk 0 向量表 */
+-  flash_result_t anchor_res = iap_commit_anchor_metadata(exp_crc32);
+-  flash_result_t c0_res = bsp_flash_write_and_verify(APP_START_ADDR, s_chunk0_buf, CHUNK_MAX_SIZE);
++  uint32_t c0_len = (s_ota.target_fw_len < CHUNK_MAX_SIZE) ? s_ota.target_fw_len : CHUNK_MAX_SIZE;
++  flash_result_t anchor_res = iap_commit_anchor_metadata(fin.fw_crc32);
++  flash_result_t c0_res = bsp_flash_write_and_verify(APP_START_ADDR, s_ota.chunk0_buf, c0_len);
+   if (anchor_res != FLASH_STATUS_OK || c0_res != FLASH_STATUS_OK)
+   {
+-    bsp_flash_erase_first_app_sector();
+-    bsp_flash_erase_anchor_sector();
+-    s_has_cached_chunk0 = false;
+-    ack_status = IAP_FINISH_STATUS_CRC_ERR;
+-    s_iap_state = IAP_STATE_ERROR;
+-    iap_send_frame(ACK_TH_FINISH, &ack_status, 1U);
++    iap_abort_ota_on_error(p_req, MINIMC_ERR_OTA_WRITE_FAIL);
+     return;
+   }
+ 
+-  LOG_INFO("Final CRC32 verified, Anchor & Chunk 0 committed! Jumping...");
+-  s_iap_state = IAP_STATE_FINISHED;
+-  iap_send_frame(ACK_TH_FINISH, &ack_status, 1U);
+-  for (volatile uint32_t delay = 0U; delay < 200000U; delay++) {}
+-  app_load(APP_START_ADDR);
++  s_ota.bytes_written_flash = s_ota.target_fw_len;
++  s_ota.state = IAP_STATE_VERIFIED_COMMITTED;
++  iap_send_ack(p_req);
++  if (fin.action_after_verify == 1U)
++  {
++    tmr_delay_ms(50U);
++    app_load(APP_START_ADDR);
++  }
++}
++
++/**
++  * @brief  处理 0x23 CMD_OTA_STATUS 状态查询指令
++  */
++static void iap_handle_ota_status(const minimc_frame_hdr_t *p_req)
++{
++  if (p_req->payload_len != 0U)
++  {
++    iap_send_nack(p_req, MINIMC_ERR_COMMAND_REJECTED);
++    return;
++  }
++  minimc_payload_ota_status_t st;
++  iap_get_ota_status(&st);
++  iap_send_small_frame(p_req, MINIMC_CMD_OTA_STATUS, (const uint8_t *)&st, sizeof(st));
+ }
+ 
+ /**
+-  * @brief  协议分发中心
++  * @brief  分发已通过帧头与外层 CRC16 校验的 MiniMCProto v2.0 命令
+   */
+-static void iap_dispatch_cmd(uint8_t cmd, const uint8_t *p_payload, uint16_t len)
++static void iap_dispatch_frame(const minimc_frame_hdr_t *p_hdr, const uint8_t *p_payload)
+ {
+-  switch (cmd)
++  if (p_hdr->dst_id != MINIMC_NODE_TH)
+   {
+-    case CMD_TH_START_UPG:
+-      iap_handle_start_upg(p_payload, len);
++    return;
++  }
++  if ((p_hdr->flags & 0x0CU) != MINIMC_FLAG_VERSION_V2 ||
++      (p_hdr->flags & MINIMC_FLAG_IS_RESPONSE) != 0U)
++  {
++    return;
++  }
++
++  switch (p_hdr->cmd_id)
++  {
++    case MINIMC_CMD_GET_VERSION:
++      iap_handle_get_version(p_hdr);
++      break;
++    case MINIMC_CMD_PING:
++      iap_handle_ping(p_hdr, p_payload);
++      break;
++    case MINIMC_CMD_SYSTEM_CONTROL:
++      iap_handle_sys_ctrl(p_hdr, p_payload);
++      break;
++    case MINIMC_CMD_OTA_START:
++      iap_handle_ota_start(p_hdr, p_payload);
+       break;
+-    case CMD_TH_PUSH_CHUNK:
+-      iap_handle_push_chunk(p_payload, len);
++    case MINIMC_CMD_OTA_DATA:
++      iap_handle_ota_data(p_hdr, p_payload);
+       break;
+-    case CMD_TH_FINISH:
+-      iap_handle_finish(p_payload, len);
++    case MINIMC_CMD_OTA_FINISH:
++      iap_handle_ota_finish(p_hdr, p_payload);
++      break;
++    case MINIMC_CMD_OTA_STATUS:
++      iap_handle_ota_status(p_hdr);
+       break;
+     default:
++      iap_send_nack(p_hdr, MINIMC_ERR_UNKNOWN_CMD);
+       break;
+   }
+ }
+ 
+ /**
+-  * @brief  驱动处理串口升级接收状态机上下文
++  * @brief  完成一帧接收后的外层 CRC16 校验与分发
+   */
+-typedef struct
++static void iap_finalize_rx_frame(void)
+ {
+-  uint8_t  step;
+-  uint8_t  cmd;
+-  uint16_t len;
+-  uint16_t idx;
+-  uint8_t  payload[FRAME_MAX_PAYLOAD];
+-} iap_rx_ctx_t;
+-
+-static iap_rx_ctx_t s_rx_ctx;
++  uint16_t crc = iap_crc16_update(0xFFFFU, s_rx.raw_hdr, MINIMC_HEADER_SIZE);
++  if (s_rx.hdr.payload_len > 0U)
++  {
++    crc = iap_crc16_update(crc, s_rx.payload, s_rx.hdr.payload_len);
++  }
++  if (crc != s_rx.rx_crc)
++  {
++    s_ota.rx_crc_err_count++;
++    return;
++  }
++  s_ota.rx_ok_count++;
++  iap_dispatch_frame(&s_rx.hdr, s_rx.payload);
++}
+ 
+ /**
+-  * @brief  驱动处理串口升级接收状态机
++  * @brief  处理帧头同步与 12 字节帧头接收阶段 (step 0..2)
+   */
+-void iap_upgrade_app_handle(void)
++static void iap_feed_header_byte(uint8_t byte)
+ {
+-  uint8_t byte;
+-  while (bsp_uart1_read_byte(&byte))
++  if (s_rx.step == 0U)
+   {
+-    if (s_rx_ctx.step == 0U && byte == FRAME_SOF1) { s_rx_ctx.step = 1U; }
+-    else if (s_rx_ctx.step == 1U) { s_rx_ctx.step = (byte == FRAME_SOF2) ? 2U : ((byte == FRAME_SOF1) ? 1U : 0U); }
+-    else if (s_rx_ctx.step == 2U) { s_rx_ctx.cmd = byte; s_rx_ctx.step = 3U; }
+-    else if (s_rx_ctx.step == 3U) { s_rx_ctx.len = (uint16_t)byte; s_rx_ctx.step = 4U; }
+-    else if (s_rx_ctx.step == 4U)
++    if (byte == MINIMC_SOF_0)
+     {
+-      s_rx_ctx.len |= ((uint16_t)byte << 8U);
+-      s_rx_ctx.idx = 0U;
+-      s_rx_ctx.step = (s_rx_ctx.len > FRAME_MAX_PAYLOAD) ? 0U : ((s_rx_ctx.len == 0U) ? 6U : 5U);
++      s_rx.raw_hdr[0] = byte;
++      s_rx.step = 1U;
+     }
+-    else if (s_rx_ctx.step == 5U)
++    return;
++  }
++  if (s_rx.step == 1U)
++  {
++    if (byte == MINIMC_SOF_1)
+     {
+-      s_rx_ctx.payload[s_rx_ctx.idx++] = byte;
+-      if (s_rx_ctx.idx >= s_rx_ctx.len) { s_rx_ctx.step = 6U; }
++      s_rx.raw_hdr[1] = byte;
++      s_rx.idx = 2U;
++      s_rx.step = 2U;
+     }
+-    else if (s_rx_ctx.step == 6U)
++    else
+     {
+-      s_rx_ctx.step = 0U;
+-      uint8_t calc_cs = iap_checksum_calc(s_rx_ctx.cmd, s_rx_ctx.len, s_rx_ctx.payload);
+-      if (calc_cs == byte)
+-      {
+-        iap_dispatch_cmd(s_rx_ctx.cmd, s_rx_ctx.payload, s_rx_ctx.len);
+-      }
+-      else
+-      {
+-        LOG_ERR("Frame Checksum err: calc=0x%02X, rx=0x%02X", calc_cs, byte);
+-      }
++      s_rx.step = (byte == MINIMC_SOF_0) ? 1U : 0U;
++    }
++    return;
++  }
++  s_rx.raw_hdr[s_rx.idx] = byte;
++  s_rx.idx++;
++  if (s_rx.idx >= MINIMC_HEADER_SIZE)
++  {
++    (void)memcpy(&s_rx.hdr, s_rx.raw_hdr, MINIMC_HEADER_SIZE);
++    if (s_rx.hdr.payload_len > MINIMC_MAX_PAYLOAD_SIZE)
++    {
++      s_rx.step = 0U;
++      return;
+     }
++    s_rx.idx = 0U;
++    s_rx.step = (s_rx.hdr.payload_len == 0U) ? 4U : 3U;
+   }
+ }
+ 
+ /**
+-  * @brief  执行 8 步安全跳转至指定 Application 物理地址
++  * @brief  向 MiniMCProto v2.0 接收状态机喂入单个字节
+   */
++void iap_feed_byte(uint8_t byte)
++{
++  if (s_rx.step <= 2U)
++  {
++    iap_feed_header_byte(byte);
++    return;
++  }
++  if (s_rx.step == 3U)
++  {
++    s_rx.payload[s_rx.idx] = byte;
++    s_rx.idx++;
++    if (s_rx.idx >= s_rx.hdr.payload_len)
++    {
++      s_rx.step = 4U;
++    }
++    return;
++  }
++  if (s_rx.step == 4U)
++  {
++    s_rx.rx_crc = (uint16_t)byte;
++    s_rx.step = 5U;
++    return;
++  }
++  s_rx.rx_crc |= (uint16_t)((uint16_t)byte << 8U);
++  s_rx.step = 0U;
++  iap_finalize_rx_frame();
++}
++
++/**
++  * @brief  驱动处理串口升级接收状态机
++  */
++void iap_upgrade_app_handle(void)
++{
++  uint8_t byte = 0U;
++  while (bsp_uart1_read_byte(&byte))
++  {
++    iap_feed_byte(byte);
++  }
++}
++
++#ifndef IAP_HOST_TEST
+ /**
+   * @brief  跳转前外设排空、关闭与中断反初始化
+   */
+ static void app_jump_deinit_hardware(void)
+ {
+-  /* 等待串口发送完成并排空 */
+   uint32_t to = 50000U;
+   while ((usart_flag_get(USART1, USART_TDC_FLAG) == RESET) && (--to > 0U)) {}
+ #if (DEBUG_LOG_ENABLE == 1)
+@@ -451,12 +791,14 @@ static void app_jump_deinit_hardware(void)
+     NVIC->ICPR[i] = 0xFFFFFFFFU;
+   }
+ }
++#endif
+ 
+ /**
+   * @brief  安全跳转至 Application (内联汇编原子跳转)
+   */
+ void app_load(uint32_t app_addr)
+ {
++#ifndef IAP_HOST_TEST
+   uint32_t msp_val = *(volatile uint32_t *)app_addr;
+   bool is_msp_valid = (msp_val >= SRAM_START_ADDR) && (msp_val <= SRAM_END_ADDR);
+   if (!is_msp_valid)
+@@ -471,7 +813,7 @@ void app_load(uint32_t app_addr)
+   /* 步骤 5: 重设 SCB 向量表基地址 VTOR */
+   SCB->VTOR = app_addr;
+ 
+-  /* 步骤 6 & 7: 原子切换主堆栈指针并直接跳转至 Reset_Handler (杜绝 C 尾部出栈) */
++  /* 步骤 6 & 7: 原子切换主堆栈指针并直接跳转至 Reset_Handler */
+   uint32_t reset_handler = *(volatile uint32_t *)(app_addr + 4U);
+   __asm volatile (
+     "msr msp, %0\n"
+@@ -480,4 +822,7 @@ void app_load(uint32_t app_addr)
+     : "r" (msp_val), "r" (reset_handler)
+     : "memory"
+   );
++#else
++  host_test_on_app_load(app_addr);
++#endif
+ }
+diff --git a/src/main.c b/src/main.c
+index 25a7d87..655b042 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -1,7 +1,7 @@
+ /**
+   **************************************************************************
+   * @file     main.c
+-  * @brief    AT32A423 工具头从控 (TH) Bootloader 主程序
++  * @brief    AT32A423 工具头从控 (TH) Bootloader 主程序 (MiniMCProto v2.0)
+   **************************************************************************
+   */
+ 
+@@ -20,36 +20,34 @@ static void boot_check_and_wait_handshake(void)
+   volatile uint32_t *p_flag = (volatile uint32_t *)BOOT_UPGRADE_FLAG_ADDR;
+   bool is_req_by_app = (*p_flag == BOOT_UPGRADE_MAGIC);
+ 
+-  /* 无论 App 是否有效，均上报开机 HELLO 帧告知 MC 当前状态 */
+-  iap_send_hello();
+-
+-  /* 检查是否由 App M997 软复位触发升级 */
++  /* 检查是否由 App 0x1D 软复位触发升级 */
+   if (is_req_by_app)
+   {
+     *p_flag = 0U; /* 立即清除魔数，防止后续意外重启误入升级态 */
+-    LOG_INFO("Reboot triggered by App (M997). Forcing infinite upgrade wait state.");
+-    return; /* 直接返回至 main() 中的 while(1) 升级循环，取消超时跳转 */
++    LOG_INFO("Reboot triggered by App (0x1D UPGD). Staying in Bootloader.");
++    return;
+   }
+ 
+   if (!is_app_valid)
+   {
+-    LOG_ERR("App integrity check FAILED! Forcing Bootloader wait state.");
++    LOG_ERR("App integrity check FAILED! Staying in Bootloader recovery mode.");
+     return;
+   }
+ 
+-  LOG_INFO("App integrity VALID. Listening %ums for MC upgrade request...", (unsigned int)BOOT_NORMAL_TIMEOUT_MS);
++  LOG_INFO("App integrity VALID. Listening %ums for MiniMCProto v2.0 request...",
++           (unsigned int)BOOT_NORMAL_TIMEOUT_MS);
+   uint32_t start_tick = tmr_get_tick();
+   while ((tmr_get_tick() - start_tick) < BOOT_NORMAL_TIMEOUT_MS)
+   {
+     iap_upgrade_app_handle();
+     if (iap_is_upgrade_active())
+     {
+-      LOG_INFO("Upgrade request received within window.");
++      LOG_INFO("MiniMCProto v2.0 session active. Staying in Bootloader.");
+       return;
+     }
+   }
+ 
+-  LOG_INFO("Window timeout with NO upgrade request. Safe jumping to App...");
++  LOG_INFO("Window timeout with NO upgrade session. Safe jumping to App...");
+   app_load(APP_START_ADDR);
+ }
+ 
+@@ -64,41 +62,32 @@ int main(void)
+   /* 步骤 2: 配置 NVIC 优先级分组 */
+   nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
+ 
+-  /* 步骤 3: 初始化 SysTick 1ms 定时时基 */
++  /* 步骤 3: 初始化 SysTick 1ms 定时时基与协议状态机 */
+   tmr_init();
++  iap_init();
+ 
+   /* 步骤 4: 初始化双串口 */
+   bsp_uart3_init(USART3_BAUDRATE_DEBUG); /* 调试输出口: PC4/PC5 @ 115200 */
+   bsp_uart1_init(USART1_BAUDRATE_MC);    /* 板间升级口: PB6/PB7 @ 921600 */
+ 
+   LOG_INFO("==================================================");
+-  LOG_INFO("  AT32A423 Toolhead (TH) Bootloader v%s", BL_VERSION_STR);
++  LOG_INFO("  AT32A423 Toolhead (TH) Bootloader v%s (MiniMC v2.0)", BL_VERSION_STR);
+   LOG_INFO("  Build Date : %s", BL_BUILD_TIMESTAMP);
+-  LOG_INFO("  Core Clock : %u MHz", (unsigned int)(system_core_clock / 1000000U));
+-  LOG_INFO("  Flash Size : %u KB (App: %u KB)", (unsigned int)(FLASH_TOTAL_SIZE / 1024U), (unsigned int)(APP_MAX_SIZE / 1024U));
+-  LOG_INFO("  App Base   : 0x%08X", (unsigned int)APP_START_ADDR);
++  LOG_INFO("  Flash Size : %u KB (App Max: %u KB)",
++           (unsigned int)(FLASH_TOTAL_SIZE / 1024U),
++           (unsigned int)(APP_MAX_SIZE / 1024U));
++  LOG_INFO("  App Base   : 0x%08X | Anchor: 0x%08X",
++           (unsigned int)APP_START_ADDR,
++           (unsigned int)TRAILER_ANCHOR_ADDR);
+   LOG_INFO("  Board ID   : 0x%08X", (unsigned int)BOARD_ID_TH);
+   LOG_INFO("==================================================");
+ 
+   /* 步骤 5: 执行冷启动握手与跳转决断 */
+   boot_check_and_wait_handshake();
+ 
+-  /* 步骤 6: 持续运行升级状态机主循环 (无固件时每 1000ms 周期广播 HELLO) */
+-  uint32_t last_distress_tick = tmr_get_tick();
++  /* 步骤 6: 持续运行 MiniMCProto v2.0 升级状态机主循环 */
+   while (1)
+   {
+     iap_upgrade_app_handle();
+-
+-    if (!iap_is_upgrade_active())
+-    {
+-      if ((tmr_get_tick() - last_distress_tick) >= 1000U)
+-      {
+-        last_distress_tick = tmr_get_tick();
+-        if (!bsp_flash_app_integrity_check())
+-        {
+-          iap_send_hello();
+-        }
+-      }
+-    }
+   }
+ }
+diff --git a/src/usart.c b/src/usart.c
+index 2cb4a17..4ed9312 100644
+--- a/src/usart.c
++++ b/src/usart.c
+@@ -1,11 +1,12 @@
+ /**
+   **************************************************************************
+   * @file     usart.c
+-  * @brief    双串口底层驱动实现 (USART1 升级 + USART3 调试日志)
++  * @brief    双串口底层驱动实现 (USART1 MiniMCProto v2.0 升级 + USART3 调试日志)
+   **************************************************************************
+   */
+ 
+ #include "usart.h"
++#include <stdarg.h>
+ 
+ static volatile usart_ring_buf_t s_uart1_rx_buf;
+ 
+@@ -72,6 +73,20 @@ bool bsp_uart1_read_byte(uint8_t *p_byte)
+   return true;
+ }
+ 
++/**
++  * @brief  查询 USART1 接收环形缓冲区剩余空间 (以 64 字节为单位)
++  * @retval 剩余 64B 单元数
++  */
++uint8_t bsp_uart1_rx_free_units(void)
++{
++  uint16_t used = s_uart1_rx_buf.count;
++  if (used >= USART1_REC_BUF_SIZE)
++  {
++    return 0U;
++  }
++  return (uint8_t)((USART1_REC_BUF_SIZE - used) >> 6U);
++}
++
+ /**
+   * @brief  USART1 发送数据块 (带超时保护)
+   * @param  p_data: 数据源
+@@ -190,24 +205,88 @@ void bsp_uart3_put_char(uint8_t ch)
+ }
+ 
+ /**
+-  * @brief  标准库 printf 重定向实现
++  * @brief  向 USART3 输出无符号整数 (十进制或十六进制)
++  */
++static void bsp_uart3_put_uint(uint32_t val, uint8_t base, uint8_t width)
++{
++  char buf[12];
++  uint8_t idx = 0U;
++  if (val == 0U)
++  {
++    buf[idx] = '0';
++    idx++;
++  }
++  while (val > 0U && idx < sizeof(buf))
++  {
++    uint8_t rem = (uint8_t)(val % base);
++    buf[idx] = (char)((rem < 10U) ? ('0' + rem) : ('A' + (rem - 10U)));
++    idx++;
++    val /= base;
++  }
++  while (idx < width && idx < sizeof(buf))
++  {
++    buf[idx] = '0';
++    idx++;
++  }
++  while (idx > 0U)
++  {
++    idx--;
++    bsp_uart3_put_char((uint8_t)buf[idx]);
++  }
++}
++
++/**
++  * @brief  向 USART3 输出以 '\0' 结尾的字符串
+   */
+-int _write(int file, char *ptr, int len)
++static void bsp_uart3_put_str(const char *str)
+ {
+-  (void)file;
+-  if (ptr == NULL || len <= 0)
++  if (str == NULL)
+   {
+-    return 0;
++    return;
+   }
++  for (uint32_t i = 0U; str[i] != '\0'; i++)
++  {
++    bsp_uart3_put_char((uint8_t)str[i]);
++  }
++}
++
++/**
++  * @brief  USART3 轻量级格式化日志输出
++  */
++void bsp_uart3_log(const char *prefix, const char *fmt, ...)
++{
+ #if (DEBUG_LOG_ENABLE == 1)
+-  for (int i = 0; i < len; i++)
++  if (fmt == NULL)
++  {
++    return;
++  }
++  bsp_uart3_put_str(prefix);
++  va_list ap;
++  va_start(ap, fmt);
++  for (uint32_t i = 0U; fmt[i] != '\0'; i++)
+   {
+-    if (ptr[i] == '\n')
++    if (fmt[i] != '%')
++    {
++      bsp_uart3_put_char((uint8_t)fmt[i]);
++      continue;
++    }
++    i++;
++    uint8_t width = 0U;
++    while (fmt[i] >= '0' && fmt[i] <= '9')
+     {
+-      bsp_uart3_put_char('\r');
++      width = (uint8_t)(width * 10U + (uint8_t)(fmt[i] - '0'));
++      i++;
+     }
+-    bsp_uart3_put_char((uint8_t)ptr[i]);
++    if (fmt[i] == 's') { bsp_uart3_put_str(va_arg(ap, const char *)); }
++    else if (fmt[i] == 'u' || fmt[i] == 'd') { bsp_uart3_put_uint(va_arg(ap, uint32_t), 10U, width); }
++    else if (fmt[i] == 'X' || fmt[i] == 'x') { bsp_uart3_put_uint(va_arg(ap, uint32_t), 16U, width); }
++    else if (fmt[i] != '\0') { bsp_uart3_put_char((uint8_t)fmt[i]); }
++    else { break; }
+   }
++  va_end(ap);
++  bsp_uart3_put_str("\r\n");
++#else
++  (void)prefix;
++  (void)fmt;
+ #endif
+-  return len;
+ }
+diff --git a/tests/run_tests.sh b/tests/run_tests.sh
+new file mode 100755
+index 0000000..1b2edf0
+--- /dev/null
++++ b/tests/run_tests.sh
+@@ -0,0 +1,122 @@
++#!/bin/sh
++# TH Bootloader (TWIN-62) 构建、16KB/236KB 边界门禁与宿主机单元测试脚本
++set -eu
++
++SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
++REPO_ROOT="$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)"
++cd "$REPO_ROOT"
++
++echo "=== [1/4] Cross-compile TH Bootloader & check 16KB Flash / 48KB SRAM budget (S01/S02) ==="
++make clean all
++test -f build/bootloaderth.bin
++BIN_SIZE="$(stat -c%s build/bootloaderth.bin)"
++echo "bootloaderth.bin size: ${BIN_SIZE} bytes (limit: 16384 bytes)"
++test "$BIN_SIZE" -le 16384
++
++# 校验链接器对超过 16KB 镜像的硬拦截能力 (S01 负例)
++python3 - <<'PY'
++import subprocess, sys, tempfile, os
++
++with tempfile.TemporaryDirectory() as tmpd:
++    over_c = os.path.join(tmpd, "oversize.c")
++    with open(over_c, "w", encoding="utf-8") as f:
++        f.write('__attribute__((used, section(".init"))) const unsigned char g_over[16384] = {1};\n')
++    over_o = os.path.join(tmpd, "oversize.o")
++    subprocess.run(
++        ["arm-none-eabi-gcc", "-mcpu=cortex-m4", "-mthumb", "-mfpu=fpv4-sp-d16", "-mfloat-abi=hard", "-c", over_c, "-o", over_o],
++        check=True,
++    )
++    objs = [os.path.join("build", fn) for fn in os.listdir("build") if fn.endswith(".o")] + [over_o]
++    res = subprocess.run(
++        [
++            "arm-none-eabi-gcc",
++            "-mcpu=cortex-m4",
++            "-mthumb",
++            "-mfpu=fpv4-sp-d16",
++            "-mfloat-abi=hard",
++            "-specs=nano.specs",
++            "-specs=nosys.specs",
++            "-Tldscripts/AT32A423xC_FLASH.ld",
++            "-Wl,--gc-sections",
++            *objs,
++            "-o",
++            os.path.join(tmpd, "over.elf"),
++        ],
++        capture_output=True,
++        text=True,
++    )
++    if res.returncode == 0:
++        print("[FAIL] Oversize 16KB link test unexpectedly succeeded!", file=sys.stderr)
++        sys.exit(1)
++    print("[PASS] S01 linker overflow gate rejected >16KB image with exit code", res.returncode)
++PY
++
++echo "=== [2/4] Check tools/pack_firmware.py 236KB (241,664B) boundary gate (S03) ==="
++python3 - <<'PY'
++import subprocess, sys, tempfile, os
++
++with tempfile.TemporaryDirectory() as tmpd:
++    for sz, expect_ok in [(241663, True), (241664, True), (241665, False), (240 * 1024, False)]:
++        in_p = os.path.join(tmpd, f"in_{sz}.bin")
++        out_p = os.path.join(tmpd, f"out_{sz}.bin")
++        with open(in_p, "wb") as f:
++            f.write(b"\x5A" * sz)
++        res = subprocess.run([sys.executable, "tools/pack_firmware.py", in_p, out_p], capture_output=True, text=True)
++        if expect_ok and res.returncode != 0:
++            print(f"[FAIL] Expected {sz}B to succeed, got rc={res.returncode}", file=sys.stderr)
++            sys.exit(1)
++        if expect_ok and os.path.getsize(out_p) != sz + 128:
++            print(f"[FAIL] Packed size mismatch for {sz}B", file=sys.stderr)
++            sys.exit(1)
++        if (not expect_ok) and res.returncode == 0:
++            print(f"[FAIL] Expected {sz}B (>236KB) to be rejected!", file=sys.stderr)
++            sys.exit(1)
++print("[PASS] S03 pack_firmware.py 236KB boundary checks (241663/241664/241665/245760) passed!")
++PY
++
++echo "=== [3/4] Run host unit tests for TH Bootloader MiniMCProto v2.0 state machine ==="
++mkdir -p build/host_tests
++gcc -std=c11 -O2 -Wall -Wextra -Werror -DIAP_HOST_TEST -DDEBUG_LOG_ENABLE=0 \
++    -Iinc src/iap.c src/flash.c tests/test_th_boot_ota.c -o build/host_tests/test_th_boot_ota
++./build/host_tests/test_th_boot_ota
++rm -rf build/host_tests
++
++echo "=== [4/4] Verify C function length (<=50 lines) and parameter count (<=4) gate (S04) ==="
++python3 - <<'PY'
++import re, sys
++
++files = ["src/iap.c", "src/flash.c", "src/main.c", "src/usart.c", "tests/test_th_boot_ota.c"]
++func_pat = re.compile(r"^[A-Za-z_][\w\s\*]*\b([A-Za-z_]\w*)\s*\(([^;]*)\)\s*\{", re.M)
++
++for path in files:
++    with open(path, "r", encoding="utf-8") as f:
++        text = f.read()
++    lines = text.splitlines()
++    i = 0
++    while i < len(lines):
++        line = lines[i].strip()
++        if line.endswith("{") or (i + 1 < len(lines) and lines[i + 1].strip() == "{"):
++            sig = line if line.endswith("{") else (line + " " + lines[i + 1].strip())
++            if "(" in sig and ")" in sig and not sig.startswith(("if", "for", "while", "switch", "typedef", "struct", "enum")):
++                args_str = sig[sig.find("(") + 1 : sig.rfind(")")].strip()
++                params = 0 if args_str in ("", "void") else len(args_str.split(","))
++                if params > 4:
++                    print(f"[FAIL] {path}:{i+1} has {params} parameters (>4): {sig}", file=sys.stderr)
++                    sys.exit(1)
++                brace_start = i if line.endswith("{") else i + 1
++                depth = 0
++                end_line = brace_start
++                for j in range(brace_start, len(lines)):
++                    depth += lines[j].count("{") - lines[j].count("}")
++                    if depth == 0:
++                        end_line = j
++                        break
++                body_len = end_line - i + 1
++                if body_len > 50:
++                    print(f"[FAIL] {path}:{i+1} function length {body_len} > 50: {sig}", file=sys.stderr)
++                    sys.exit(1)
++                i = end_line + 1
++                continue
++        i += 1
++print("[PASS] S04 all C functions in boot/bootloaderth satisfy <=50 lines and <=4 parameters!")
++PY
+diff --git a/tests/test_th_boot_ota.c b/tests/test_th_boot_ota.c
+new file mode 100644
+index 0000000..e3799cb
+--- /dev/null
++++ b/tests/test_th_boot_ota.c
+@@ -0,0 +1,350 @@
++/**
++  **************************************************************************
++  * @file     test_th_boot_ota.c
++  * @brief    TH Bootloader MiniMCProto v2.0 最小升级子集宿主机单元测试
++  **************************************************************************
++  */
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include "iap.h"
++#include "flash.h"
++#include "usart.h"
++
++typedef enum
++{
++  FLASH_OPERATE_DONE = 0,
++  FLASH_PROGRAM_ERROR = 1
++} flash_status_type;
++
++uint8_t g_sim_flash[FLASH_TOTAL_SIZE];
++static uint32_t s_erase_count = 0U;
++static uint32_t s_prog_count = 0U;
++static uint32_t s_reset_count = 0U;
++static uint32_t s_jump_addr = 0U;
++static uint32_t s_sim_tick_ms = 1234U;
++static uint8_t s_last_tx[64];
++static uint16_t s_last_tx_len = 0U;
++
++/**
++  * @brief  测试断言辅助函数（不受 NDEBUG 影响）
++  */
++static void require_true(bool cond, const char *msg)
++{
++  if (!cond)
++  {
++    fprintf(stderr, "[FAIL] %s\n", (msg != NULL) ? msg : "assertion failed");
++    exit(1);
++  }
++}
++
++/**
++  * @brief  模拟 Flash 解锁接口
++  */
++void flash_unlock(void) {}
++
++/**
++  * @brief  模拟 Flash 上锁接口
++  */
++void flash_lock(void) {}
++
++/**
++  * @brief  模拟 2KB Flash 扇区擦除并将对应区域置为 0xFF
++  */
++flash_status_type flash_sector_erase(uint32_t sector_address)
++{
++  uint32_t off = sector_address - FLASH_BASE_ADDR;
++  (void)memset(&g_sim_flash[off], 0xFF, FLASH_SECTOR_SIZE);
++  s_erase_count++;
++  return FLASH_OPERATE_DONE;
++}
++
++/**
++  * @brief  模拟 Flash 半字编程操作
++  */
++flash_status_type flash_halfword_program(uint32_t address, uint16_t data)
++{
++  uint32_t off = address - FLASH_BASE_ADDR;
++  g_sim_flash[off] = (uint8_t)(g_sim_flash[off] & (uint8_t)(data & 0xFFU));
++  g_sim_flash[off + 1U] = (uint8_t)(g_sim_flash[off + 1U] & (uint8_t)((data >> 8U) & 0xFFU));
++  s_prog_count++;
++  return FLASH_OPERATE_DONE;
++}
++
++/**
++  * @brief  模拟获取系统毫秒计数
++  */
++uint32_t tmr_get_tick(void)
++{
++  return s_sim_tick_ms;
++}
++
++/**
++  * @brief  模拟毫秒延时
++  */
++void tmr_delay_ms(uint32_t ms)
++{
++  s_sim_tick_ms += ms;
++}
++
++/**
++  * @brief  模拟软复位回调计数
++  */
++void host_test_on_system_reset(void)
++{
++  s_reset_count++;
++}
++
++/**
++  * @brief  模拟跳转 App 回调记录
++  */
++void host_test_on_app_load(uint32_t app_addr)
++{
++  s_jump_addr = app_addr;
++}
++
++/**
++  * @brief  模拟串口读取字节（单测直接调用 iap_feed_byte）
++  */
++bool bsp_uart1_read_byte(uint8_t *p_byte)
++{
++  (void)p_byte;
++  return false;
++}
++
++/**
++  * @brief  模拟串口剩余接收缓冲单元数
++  */
++uint8_t bsp_uart1_rx_free_units(void)
++{
++  return 16U;
++}
++
++/**
++  * @brief  捕获 Bootloader 通过 USART1 发送的响应帧
++  */
++bool bsp_uart1_send_data(const uint8_t *p_data, uint16_t len)
++{
++  if (p_data == NULL || len > sizeof(s_last_tx))
++  {
++    return false;
++  }
++  (void)memcpy(s_last_tx, p_data, len);
++  s_last_tx_len = len;
++  return true;
++}
++
++/**
++  * @brief  构造并向状态机喂入一帧完整 MiniMCProto v2.0 请求帧
++  */
++static void send_minimc_req(uint8_t cmd_id, uint16_t seq_id, const void *p_payload, uint16_t len)
++{
++  uint8_t frame[MINIMC_MAX_FRAME_SIZE];
++  frame[0] = MINIMC_SOF_0;
++  frame[1] = MINIMC_SOF_1;
++  frame[2] = MINIMC_NODE_AP;
++  frame[3] = MINIMC_NODE_TH;
++  frame[4] = (uint8_t)(MINIMC_FLAG_VERSION_V2 | MINIMC_FLAG_WANTS_ACK);
++  frame[5] = cmd_id;
++  frame[6] = 3U;
++  frame[7] = MINIMC_ROUTE_IS_ROUTED;
++  frame[8] = (uint8_t)(seq_id & 0xFFU);
++  frame[9] = (uint8_t)((seq_id >> 8U) & 0xFFU);
++  frame[10] = (uint8_t)(len & 0xFFU);
++  frame[11] = (uint8_t)((len >> 8U) & 0xFFU);
++  if (p_payload != NULL && len > 0U)
++  {
++    (void)memcpy(&frame[MINIMC_HEADER_SIZE], p_payload, len);
++  }
++  uint16_t crc = iap_crc16_ccitt(frame, (uint16_t)(MINIMC_HEADER_SIZE + len));
++  frame[MINIMC_HEADER_SIZE + len] = (uint8_t)(crc & 0xFFU);
++  frame[MINIMC_HEADER_SIZE + len + 1U] = (uint8_t)((crc >> 8U) & 0xFFU);
++
++  s_last_tx_len = 0U;
++  for (uint16_t i = 0U; i < (uint16_t)(MINIMC_FRAME_OVERHEAD + len); i++)
++  {
++    iap_feed_byte(frame[i]);
++  }
++}
++
++/**
++  * @brief  构造测试固件镜像与配套 128B ATSG Trailer
++  */
++static void build_test_image_and_trailer(uint8_t *p_img, uint32_t len, fw_trailer_t *p_tr, uint32_t *p_crc)
++{
++  for (uint32_t i = 0U; i < len; i++)
++  {
++    p_img[i] = (uint8_t)((i * 7U + 3U) & 0xFFU);
++  }
++  /* 写入合法栈顶 (0x2000B000) 与复位向量 (0x08004101) */
++  uint32_t msp = 0x2000B000U;
++  uint32_t pc = 0x08004101U;
++  (void)memcpy(&p_img[0], &msp, 4U);
++  (void)memcpy(&p_img[4], &pc, 4U);
++
++  (void)memset(p_tr, 0, sizeof(*p_tr));
++  p_tr->magic = TRAILER_MAGIC;
++  p_tr->struct_ver = TRAILER_STRUCT_VER;
++  p_tr->board_id = BOARD_ID_TH;
++  p_tr->fw_version = 0x00010200U;
++  p_tr->payload_len = len;
++  p_tr->trailer_crc32 = iap_crc32_calc((const uint8_t *)p_tr, 124U);
++  *p_crc = iap_crc32_calc(p_img, len);
++}
++
++/**
++  * @brief  测试 0x01/0x02 版本报告、0x03/0x04 心跳与 0x1D 系统控制及非法帧恢复
++  */
++static void test_identity_ping_and_guard_cases(void)
++{
++  (void)memset(g_sim_flash, 0xFF, sizeof(g_sim_flash));
++  iap_init();
++
++  /* G20: 缺少版本位 (Flags=0x01) 必须静默拒绝 */
++  uint8_t bad_ver[14] = {0x55, 0xAA, 0x01, 0x03, 0x01, 0x01, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
++  uint16_t c_bad = iap_crc16_ccitt(bad_ver, 12U);
++  bad_ver[12] = (uint8_t)(c_bad & 0xFFU);
++  bad_ver[13] = (uint8_t)((c_bad >> 8U) & 0xFFU);
++  for (uint8_t i = 0U; i < 14U; i++) { iap_feed_byte(bad_ver[i]); }
++  require_true(s_last_tx_len == 0U, "G20 bad version bit must be ignored");
++
++  /* G19: 1025B 超限帧头必须立即丢弃且不影响后续正常帧 */
++  uint8_t over_hdr[12] = {0x55, 0xAA, 0x01, 0x03, 0x05, 0x21, 0x04, 0x00, 0x03, 0x00, 0x01, 0x04};
++  for (uint8_t i = 0U; i < 12U; i++) { iap_feed_byte(over_hdr[i]); }
++  require_true(s_last_tx_len == 0U, "G19 oversize header must be dropped");
++
++  /* 0x01 -> 0x02 VERSION_REPORT */
++  send_minimc_req(MINIMC_CMD_GET_VERSION, 1U, NULL, 0U);
++  require_true(s_last_tx_len == 30U && s_last_tx[5] == MINIMC_CMD_VERSION_REPORT, "0x02 len and cmd");
++  minimc_payload_version_report_t vrep;
++  (void)memcpy(&vrep, &s_last_tx[12], sizeof(vrep));
++  require_true(vrep.capability_flags == TH_BOOT_CAPABILITY_FLAGS && vrep.boot_id != 0U, "TH boot caps");
++
++  /* 0x03 -> 0x04 PONG */
++  uint32_t tok = 0xCAFEBABEU;
++  send_minimc_req(MINIMC_CMD_PING, 2U, &tok, 4U);
++  require_true(s_last_tx_len == 26U && s_last_tx[5] == MINIMC_CMD_PONG, "0x04 pong");
++
++  /* 0x1D JumpToBootloader 幂等回 0x00 ACK */
++  minimc_payload_sys_ctrl_t sc = {2U, 1U, 10U};
++  send_minimc_req(MINIMC_CMD_SYSTEM_CONTROL, 3U, &sc, sizeof(sc));
++  require_true(s_last_tx_len == 18U && s_last_tx[5] == MINIMC_CMD_ACK, "0x1D ack");
++}
++
++/**
++  * @brief  测试 0x20 擦除前原子准入负例（错板、坏 trailer_crc32、241665B 超限全部零擦除）
++  */
++static void test_ota_start_negative_zero_erase(void)
++{
++  uint8_t img[1024];
++  fw_trailer_t tr;
++  uint32_t crc = 0U;
++  build_test_image_and_trailer(img, sizeof(img), &tr, &crc);
++  s_erase_count = 0U;
++
++  minimc_payload_ota_start_t start_req;
++  (void)memset(&start_req, 0, sizeof(start_req));
++  start_req.target_device = MINIMC_NODE_TH;
++  start_req.target_component = 1U;
++  start_req.fw_size_bytes = 241665U;
++  start_req.fw_crc32 = crc;
++  start_req.trailer = tr;
++  start_req.trailer.payload_len = 241665U;
++
++  /* 241,665B (236KB + 1B) 必须返回 NACK 0x14 且零擦除 */
++  send_minimc_req(MINIMC_CMD_OTA_START, 10U, &start_req, sizeof(start_req));
++  require_true(s_last_tx_len == 17U && s_last_tx[5] == MINIMC_CMD_NACK, "241665B NACK");
++  require_true(s_last_tx[12] == MINIMC_ERR_OTA_IMAGE_OVERSIZE && s_erase_count == 0U, "241665B 0x14 zero erase");
++
++  /* 错板 (MC 0x43500001) 必须返回 NACK 0x06 且零擦除 */
++  start_req.fw_size_bytes = sizeof(img);
++  start_req.trailer = tr;
++  start_req.trailer.board_id = 0x43500001U;
++  start_req.trailer.trailer_crc32 = iap_crc32_calc((const uint8_t *)&start_req.trailer, 124U);
++  send_minimc_req(MINIMC_CMD_OTA_START, 11U, &start_req, sizeof(start_req));
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_COMMAND_REJECTED, "wrong board NACK");
++  require_true(s_erase_count == 0U, "wrong board zero erase");
++
++  /* 坏 trailer_crc32 必须返回 NACK 0x06、零擦除且 ota_state 保持 0 (IDLE)，且后续查询正常恢复 */
++  start_req.trailer = tr;
++  start_req.trailer.trailer_crc32 ^= 0xA5A55A5AU;
++  send_minimc_req(MINIMC_CMD_OTA_START, 12U, &start_req, sizeof(start_req));
++  require_true(s_last_tx[5] == MINIMC_CMD_NACK && s_last_tx[12] == MINIMC_ERR_COMMAND_REJECTED, "bad trailer_crc32 NACK");
++  require_true(s_erase_count == 0U, "bad trailer_crc32 zero erase");
++  send_minimc_req(MINIMC_CMD_OTA_STATUS, 13U, NULL, 0U);
++  require_true(s_last_tx[5] == MINIMC_CMD_OTA_STATUS && s_last_tx[16] == 0U, "ota_state stays IDLE and recovers");
++}
++
++/**
++  * @brief  发送单块 0x21 CMD_OTA_DATA 的测试辅助函数
++  */
++static void send_ota_chunk(uint16_t seq, uint32_t offset, const uint8_t *p_data, uint16_t len)
++{
++  uint8_t buf[MINIMC_MAX_PAYLOAD_SIZE];
++  minimc_payload_ota_data_hdr_t dh;
++  dh.offset = offset;
++  dh.chunk_bytes = len;
++  dh.chunk_crc16 = iap_crc16_ccitt(p_data, len);
++  (void)memcpy(buf, &dh, sizeof(dh));
++  (void)memcpy(&buf[sizeof(dh)], p_data, len);
++  send_minimc_req(MINIMC_CMD_OTA_DATA, seq, buf, (uint16_t)(sizeof(dh) + len));
++}
++
++/**
++  * @brief  测试完整升级闭环、Chunk0 缓存、重传幂等、无 Anchor 防护与两阶段提交
++  */
++static void test_full_ota_commit_and_anchor_guard(void)
++{
++  uint8_t img[1024];
++  fw_trailer_t tr;
++  uint32_t crc = 0U;
++  build_test_image_and_trailer(img, sizeof(img), &tr, &crc);
++
++  /* 验证无 Anchor 回退漏洞已修复：即使 0x08004000 有合法向量，无 Anchor 仍返回 false */
++  (void)memcpy(&g_sim_flash[APP_START_ADDR - FLASH_BASE_ADDR], img, 64U);
++  require_true(!bsp_flash_app_integrity_check(), "raw vector without Anchor must be rejected");
++
++  minimc_payload_ota_start_t start_req = {MINIMC_NODE_TH, 1U, 0U, 0U, sizeof(img), crc, 0x00010200U, tr};
++  send_minimc_req(MINIMC_CMD_OTA_START, 20U, &start_req, sizeof(start_req));
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK && s_erase_count == 2U, "OTA_START ACK and 2 sectors erased");
++
++  /* 发送首块 512B：缓存在 SRAM，bytes_written 仍为 0，Flash 首扇区仍为 0xFF */
++  send_ota_chunk(21U, 0U, &img[0], 512U);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK, "chunk0 ACK");
++  minimc_payload_ota_status_t st;
++  iap_get_ota_status(&st);
++  require_true(st.ota_state == IAP_STATE_CHUNK0_CACHED_RAM && st.cached_chunk0_bytes == 512U && st.bytes_written == 0U,
++               "chunk0 cached in SRAM with bytes_written == 0");
++  require_true(g_sim_flash[APP_START_ADDR - FLASH_BASE_ADDR] == 0xFFU, "0x08004000 untouched before finish");
++
++  /* 同 offset=0 重传幂等 ACK */
++  send_ota_chunk(21U, 0U, &img[0], 512U);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK, "retransmit chunk0 idempotent ACK");
++
++  /* 发送第二块 512B：写入 Flash 0x08004200，bytes_written == 512 */
++  send_ota_chunk(22U, 512U, &img[512], 512U);
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK, "chunk1 ACK");
++  iap_get_ota_status(&st);
++  require_true(st.ota_state == IAP_STATE_FLASH_WRITING && st.bytes_written == 512U, "chunk1 flash written");
++  require_true(!bsp_flash_app_integrity_check(), "incomplete commit must stay in boot");
++
++  /* 0x22 FINISH 终验通过，两阶段提交 Anchor + Chunk0 */
++  minimc_payload_ota_finish_t fin = {crc, 1U, {0U, 0U, 0U}};
++  send_minimc_req(MINIMC_CMD_OTA_FINISH, 23U, &fin, sizeof(fin));
++  require_true(s_last_tx[5] == MINIMC_CMD_ACK, "OTA_FINISH ACK");
++  require_true(bsp_flash_app_integrity_check(), "committed image + Anchor verified");
++  require_true(s_jump_addr == APP_START_ADDR, "jumped to APP_START_ADDR");
++}
++
++/**
++  * @brief  单元测试主入口
++  */
++int main(void)
++{
++  test_identity_ping_and_guard_cases();
++  test_ota_start_negative_zero_erase();
++  test_full_ota_commit_and_anchor_guard();
++  printf("[PASS] test_th_boot_ota: all TH Bootloader MiniMCProto v2.0 tests passed!\n");
++  return 0;
++}
+diff --git a/tools/pack_firmware.py b/tools/pack_firmware.py
+index ba5704d..6c7ae94 100755
+--- a/tools/pack_firmware.py
++++ b/tools/pack_firmware.py
+@@ -5,39 +5,23 @@
+ 生成符合双 MCU 在线升级协议的完整从控固件 (firmwareth.bin / fw_th.bin)
+ """
+ 
+-import sys
++import binascii
++import hashlib
+ import os
+ import struct
+-import hashlib
+-import binascii
+-
+-TRAILER_MAGIC = 0x41545347       # "ATSG"
+-TRAILER_STRUCT_VER = 0x00010000  # v1.0.0
+-BOARD_ID_TH = 0x42300001         # AT32A423 Toolhead (TH)
+-FW_VERSION_DEFAULT = 0x00010000  # v1.0.0
+-MAX_PAYLOAD_SIZE = 240 * 1024    # 240 KB (245,760 bytes)
++import sys
+ 
+-def pack_firmware(input_bin_path, output_bin_path=None, fw_version=FW_VERSION_DEFAULT):
+-    if not os.path.exists(input_bin_path):
+-        print(f"[ERR] 输入固件不存在: {input_bin_path}")
+-        return 1
++TRAILER_MAGIC = 0x41545347       # "ATSG" 固件尾部魔数
++TRAILER_STRUCT_VER = 0x00010000  # v1.0.0 结构版本
++BOARD_ID_TH = 0x42300001         # AT32A423 / AT32F423 Toolhead (TH) 板卡标识
++FW_VERSION_DEFAULT = 0x00010000  # 默认固件版本 v1.0.0
++MAX_PAYLOAD_SIZE = 236 * 1024    # 236 KB (241,664 字节，Sector 8..126 净荷上限)
+ 
+-    with open(input_bin_path, "rb") as f:
+-        raw_data = f.read()
+ 
++def build_atsg_trailer(raw_data, fw_version=FW_VERSION_DEFAULT, board_id=BOARD_ID_TH):
++    """根据净荷二进制构建 128 字节 ATSG 尾部元数据及 CRC32"""
+     payload_len = len(raw_data)
+-    if payload_len == 0:
+-        print("[ERR] 固件文件为空!")
+-        return 1
+-    if payload_len > MAX_PAYLOAD_SIZE:
+-        print(f"[ERR] 固件大小超限: {payload_len} 字节 (最大允许 {MAX_PAYLOAD_SIZE} 字节 / 240KB)")
+-        return 1
+-
+-    # 1. 计算 Payload 哈希与 CRC32
+     sha256_hash = hashlib.sha256(raw_data).digest()
+-    payload_crc32 = binascii.crc32(raw_data) & 0xFFFFFFFF
+-
+-    # 2. 组装 Trailer 前 124 字节
+     sig_r = b"\x00" * 32
+     sig_s = b"\x00" * 32
+     reserved = b"\x00" * 8
+@@ -46,25 +30,22 @@ def pack_firmware(input_bin_path, output_bin_path=None, fw_version=FW_VERSION_DE
+         "<IIIII32s32s32s8s",
+         TRAILER_MAGIC,
+         TRAILER_STRUCT_VER,
+-        BOARD_ID_TH,
++        board_id,
+         fw_version,
+         payload_len,
+         sha256_hash,
+         sig_r,
+         sig_s,
+-        reserved
++        reserved,
+     )
+-
+-    # 3. 计算 Trailer 自身的 CRC32 (前 124 字节)
+     trailer_crc32 = binascii.crc32(trailer_header_124) & 0xFFFFFFFF
+-
+-    # 4. 组装完整 128 字节 Trailer
+     full_trailer = trailer_header_124 + struct.pack("<I", trailer_crc32)
+     assert len(full_trailer) == 128, f"Trailer 尺寸异常: {len(full_trailer)} != 128"
++    return full_trailer, trailer_crc32
+ 
+-    # 5. 生成输出文件
+-    signed_data = raw_data + full_trailer
+ 
++def _write_packed_outputs(input_bin_path, output_bin_path, signed_data):
++    """将签名打包后的固件写入目标路径与 U 盘别名路径"""
+     if output_bin_path is None:
+         out_dir = os.path.dirname(input_bin_path)
+         output_bin_path = os.path.join(out_dir, "firmwareth.bin")
+@@ -72,19 +53,42 @@ def pack_firmware(input_bin_path, output_bin_path=None, fw_version=FW_VERSION_DE
+     with open(output_bin_path, "wb") as f:
+         f.write(signed_data)
+ 
+-    # 同步生成 fw_th.bin 供 U 盘测试检索
+     out_dir = os.path.dirname(output_bin_path)
+     u_disk_bin_path = os.path.join(out_dir, "fw_th.bin")
+     if os.path.abspath(output_bin_path) != os.path.abspath(u_disk_bin_path):
+         with open(u_disk_bin_path, "wb") as f:
+             f.write(signed_data)
++    return output_bin_path, u_disk_bin_path
++
++
++def pack_firmware(input_bin_path, output_bin_path=None, fw_version=FW_VERSION_DEFAULT):
++    """校验 TH 固件净荷尺寸（<= 236KB）并追加 128B ATSG Trailer"""
++    if not os.path.exists(input_bin_path):
++        print(f"[ERR] 输入固件不存在: {input_bin_path}")
++        return 1
++
++    with open(input_bin_path, "rb") as f:
++        raw_data = f.read()
++
++    payload_len = len(raw_data)
++    if payload_len == 0:
++        print("[ERR] 固件文件为空!")
++        return 1
++    if payload_len > MAX_PAYLOAD_SIZE:
++        print(f"[ERR] 固件大小超限: {payload_len} 字节 (最大允许 {MAX_PAYLOAD_SIZE} 字节 / 236KB)")
++        return 1
++
++    payload_crc32 = binascii.crc32(raw_data) & 0xFFFFFFFF
++    full_trailer, trailer_crc32 = build_atsg_trailer(raw_data, fw_version, BOARD_ID_TH)
++    signed_data = raw_data + full_trailer
++    out_path, u_disk_path = _write_packed_outputs(input_bin_path, output_bin_path, signed_data)
+ 
+     print("==================================================")
+     print("      AT32A423 Firmware Trailer Pack Report       ")
+     print("==================================================")
+     print(f" Input File     : {input_bin_path}")
+-    print(f" Output File    : {output_bin_path}")
+-    print(f" U-Disk Alias   : {u_disk_bin_path}")
++    print(f" Output File    : {out_path}")
++    print(f" U-Disk Alias   : {u_disk_path}")
+     print(f" Payload Size   : {payload_len} Bytes ({payload_len / 1024:.2f} KB)")
+     print(f" Payload CRC32  : 0x{payload_crc32:08X}")
+     print(f" Payload SHA256 : {hashlib.sha256(raw_data).hexdigest()}")
+@@ -96,6 +100,7 @@ def pack_firmware(input_bin_path, output_bin_path=None, fw_version=FW_VERSION_DE
+     print("[SUCCESS] 固件打包完成，128B 自描述 Trailer 校验一致！\n")
+     return 0
+ 
++
+ if __name__ == "__main__":
+     if len(sys.argv) < 2:
+         default_in = "color-engine-mcu/io_toggle/build/fw_th.bin"

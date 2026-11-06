@@ -1,0 +1,13 @@
+{
+  "scope": "仅文档生成与渲染检查；非工程测试或正式QA",
+  "pptx_pages": 30,
+  "pdf_pages": 30,
+  "speaker_notes_pages": 30,
+  "frozen_source_files_verified": 99,
+  "native_shape_bounds": "within slide",
+  "rendered_text_retention": "all non-cover standalone text shapes found in PDF",
+  "teaching_vectors": "两条教学帧CRC由binascii.crc_hqx独立复算一致",
+  "visual_inspection": "30页缩略图检查；7、16、23、24、27页放大检查；侧栏和代码排版已修正",
+  "dbus_fastdds_comparison_page": 27,
+  "business_build_test_or_hardware_executed": false
+}

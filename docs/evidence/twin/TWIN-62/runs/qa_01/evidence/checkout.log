@@ -1,0 +1,42 @@
+=== Checkout repository 'project-control' from ssh://git@192.168.77.113:2222/sushaohua/project-control.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/project-control.git -> 0
+$ git fetch origin 45c5cdf791ae3d88b76949525ec1b46d25832083 -> 0
+From ssh://192.168.77.113:2222/sushaohua/project-control
+ * branch            45c5cdf791ae3d88b76949525ec1b46d25832083 -> FETCH_HEAD
+$ git checkout 45c5cdf791ae3d88b76949525ec1b46d25832083 -> 0
+=== Checkout repository 'soc-ap' from ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git -> 0
+$ git fetch origin c6692b244e0aa09d04e7051293f9fef3c67535dd -> 0
+From ssh://192.168.77.113:2222/sushaohua/soc-ap
+ * branch            c6692b244e0aa09d04e7051293f9fef3c67535dd -> FETCH_HEAD
+$ git checkout c6692b244e0aa09d04e7051293f9fef3c67535dd -> 0
+=== Checkout repository 'mcu-p3' from ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git -> 0
+$ git fetch origin 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7 -> 0
+From ssh://192.168.77.113:2222/sushaohua/mcu-p3
+ * branch            57674d8b07d6c75a4d20b3fcd52c23df964aa7a7 -> FETCH_HEAD
+$ git checkout 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7 -> 0
+=== Checkout repository 'test_harness' from ssh://git@192.168.77.113:2222/sushaohua/test_harness.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/test_harness.git -> 0
+$ git fetch origin 19c12bfeeac852670e8bdcb65ce0abcd1de121c1 -> 0
+From ssh://192.168.77.113:2222/sushaohua/test_harness
+ * branch            19c12bfeeac852670e8bdcb65ce0abcd1de121c1 -> FETCH_HEAD
+$ git checkout 19c12bfeeac852670e8bdcb65ce0abcd1de121c1 -> 0
+=== Checkout repository 'boot/bootloadermc' from ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git -> 0
+$ git fetch origin 4fc171ea61912561949b9a0cfc1da8975e4c39ba -> 0
+From ssh://192.168.77.113:2222/sushaohua/bootloadermc
+ * branch            4fc171ea61912561949b9a0cfc1da8975e4c39ba -> FETCH_HEAD
+$ git checkout 4fc171ea61912561949b9a0cfc1da8975e4c39ba -> 0
+=== Checkout repository 'boot/bootloaderth' from ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git -> 0
+$ git fetch origin 9b40f8fb7c4bb6008126e94653f615039bad4d64 -> 0
+From ssh://192.168.77.113:2222/sushaohua/bootloaderth
+ * branch            9b40f8fb7c4bb6008126e94653f615039bad4d64 -> FETCH_HEAD
+$ git checkout 9b40f8fb7c4bb6008126e94653f615039bad4d64 -> 0

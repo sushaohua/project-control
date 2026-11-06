@@ -1,0 +1,255 @@
+{
+  "title": "MiniMCProto v2.0：协议机制与多端接入",
+  "subtitle": "AP ↔ MC ↔ TH · 跨团队技术交流与评审",
+  "date": "2026-11-06",
+  "sources": {
+    "P01": ["project-control", "docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md", "1.2 逐字节"],
+    "P02": ["project-control", "docs/specs/minimcproto_ack_nack_contract_alignment_matrix_20261102.md", "2.1 基础属性"],
+    "P03": ["project-control", "docs/planning/end_to_end_physical_link_remediation_plan_20261104.md", "2.2.2 跨仓命令码"],
+    "P04": ["project-control", "docs/architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md", "status:"],
+    "A01": ["soc-ap", "core/forward/minimc/codec.h", "MAX_PAYLOAD"],
+    "A02": ["soc-ap", "core/forward/minimc/parser.cpp", "parser_feed_byte"],
+    "A03": ["soc-ap", "services/forward/forward_protocol.cpp", "fwd_proto_check_ctrl_response"],
+    "A04": ["soc-ap", "services/forward/forward_uart.cpp", "fwd_uart_wait_ctrl_response"],
+    "A05": ["soc-ap", "services/forward/forward_service.cpp", "forward_service_execute_query"],
+    "A06": ["soc-ap", "services/forward/forward_dbus.cpp", "TriggerQuery"],
+    "A07": ["soc-ap", "services/device_manager/device_manager_service.cpp", "on_dds_raw_temp_cb"],
+    "A08": ["soc-ap", "services/device_manager/device_manager_dbus.cpp", "handle_get_snapshot"],
+    "A09": ["soc-ap", "services/ui_gateway/ui_gateway_service.cpp", "SSE"],
+    "A10": ["soc-ap", "services/ui_gateway/ui_gateway_dbus.cpp", "GetSnapshot"],
+    "A11": ["soc-ap", "middleware/dbus/include/aisoc_dbus.h", "aisoc_dbus_call_method"],
+    "A12": ["soc-ap", "middleware/dds/include/aisoc_dds.h", "aisoc_dds_publish_raw_temp"],
+    "A13": ["soc-ap", "contracts/twin/telemetry_types.h", "MINIMC_CMD_SYSTEM_CONTROL"],
+    "A14": ["soc-ap", "contracts/twin/telemetry.idl", "BEST_EFFORT"],
+    "A15": ["soc-ap", "contracts/twin/dbus_interfaces.xml", "ForwardInterface"],
+    "A16": ["soc-ap", "middleware/dds/src/aisoc_dds_common.cpp", "configure_writer_qos"],
+    "M01": ["mcu-p3", "motion-controller-mcu/project/src/minimc_proto.c", "handle_ap_frame"],
+    "M02": ["mcu-p3", "motion-controller-mcu/project/inc/minimc_proto.h", "MINIMC_MAX_PAYLOAD_SIZE"],
+    "M03": ["mcu-p3", "motion-controller-mcu/project/src/main.c", "minimc_proto_poll"],
+    "M04": ["mcu-p3", "motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c", "minimc_proto_consume_ap_enqueued"],
+    "M05": ["mcu-p3", "motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c", "minimc_proto_push_ap_rx"],
+    "M06": ["mcu-p3", "color-engine-mcu/io_toggle/src/app/minimc_proto.c", "dispatch_th_command"],
+    "M07": ["mcu-p3", "color-engine-mcu/io_toggle/inc/minimc_proto.h", "MINIMC_MAX_PAYLOAD_SIZE"],
+    "M08": ["mcu-p3", "color-engine-mcu/io_toggle/src/user/main.c", "th_control_poll_once"],
+    "M09": ["mcu-p3", "color-engine-mcu/io_toggle/src/app/mycontrol.c", "bool th_control_enqueue_gcode"],
+    "M10": ["mcu-p3", "motion-controller-mcu/project/src/wk_usart.c", "forward_uart_send_line"],
+    "Q01": ["project-control", "docs/evidence/twin/TWIN-50/runs/qa_03/qa_review_report.md", "accepted_scope:"],
+    "Q02": ["project-control", ".agents/kanban/microtasks/vmware_soc_twin/TWIN-47.md", "accepted_scope:"],
+    "Q03": ["project-control", ".agents/kanban/microtasks/vmware_soc_twin/TWIN-48.md", "accepted_scope:"],
+    "Q04": ["project-control", ".agents/kanban/microtasks/vmware_soc_twin/TWIN-49.md", "accepted_scope:"],
+    "Q05": ["test_harness", "static_checks/minimcproto/check_opcode_alignment.py", "EXPECTED_OPCODES"],
+    "B01": ["boot/bootloadermc", "bootloader/src/main.c", "int main"],
+    "B02": ["boot/bootloaderth", "inc/iap.h", "IAP"]
+  },
+  "slides": [
+    {
+      "section": "开场", "title": "MiniMCProto v2.0", "lead": "协议机制与多端接入", "layout": "cover", "minutes": 0.5,
+      "cards": [{"title": "AP", "body": "Linux 服务与用户入口"}, {"title": "MC", "body": "运动控制与级联转发"}, {"title": "TH", "body": "工具头与耗材控制"}],
+      "refs": ["P01", "A05", "M01", "M06"],
+      "notes": "定位：跨团队技术交流，重点是机制、接入方法和接口评审。正文讲解约40分钟，讨论约4分钟；含附录共30页。讲解基于2026-11-06读取并冻结的各仓已提交代码；这不是一份固件发布说明或新的QA批准。命令表冲突和未验证边界会在相应页面说明。"
+    },
+    {
+      "section": "开场", "title": "围绕四个问题展开", "lead": "从一条报文，走到一个跨进程、跨板卡的业务调用", "layout": "cards", "minutes": 0.5,
+      "cards": [{"title": "01 · 协议基础", "body": "帧、CMD、扩展和路由\n收到什么，如何找到目标"}, {"title": "02 · 当前实现", "body": "查询与控制命令矩阵\n代码支持到哪里"}, {"title": "03 · 三端接入", "body": "AP 收发解析；MC/TH 主流程\n新增代码如何影响原业务"}, {"title": "04 · AP 通信架构", "body": "服务边界、D-Bus、Fast DDS\n控制与状态如何协作"}],
+      "refs": ["P01", "A05", "M03", "M08"],
+      "notes": "建议时间分配：基础约14分钟、当前实现约4分钟、三端接入约14分钟、AP架构与证据约7分钟，最后讨论约4分钟。可以根据现场对协议熟悉程度压缩基础部分。所有伪代码都是主干讲解，不作为可复制编译的实现。"
+    },
+    {
+      "section": "01 / 协议基础", "title": "先看物理链路与逻辑地址", "lead": "AP 可直接寻址 TH；MC 是中间节点，也是业务执行节点", "layout": "topology", "minutes": 1.5,
+      "cards": [{"title": "AP · 0x01", "body": "forward-service\n业务串口"}, {"title": "MC · 0x02", "body": "USART2 ↔ AP\nUSART6 ↔ TH"}, {"title": "TH · 0x03", "body": "USART1 ↔ MC\n工具头执行"}],
+      "bottom": "业务链路：921600 baud　｜　调试：MC USART1 / TH USART3，115200 baud",
+      "refs": ["A05", "A04", "M01", "M06", "M08"],
+      "notes": "区分三种标识：线帧节点地址为AP=1、MC=2、TH=3；AP部分服务API使用target_node=1表示MC、2表示TH；串口设备名则是运行环境的映射。接入时必须经过明确转换，不能把服务枚举直接写入DST。图示端口角色来自当前代码，具体/dev/ttyUSB编号属于台架配置，不在本PPT中固化。"
+    },
+    {
+      "section": "01 / 协议基础", "title": "一帧 = 12 字节头 + 载荷 + 2 字节 CRC", "lead": "固定头负责投递与关联；Payload 承载命令的数据契约", "layout": "wire", "minutes": 2,
+      "fields": [["0–1", "55 AA", 2], ["2", "SRC", 1], ["3", "DST", 1], ["4", "Flags", 1], ["5", "CMD", 1], ["6", "Hop", 1], ["7", "Route", 1], ["8–9", "Seq", 2], ["10–11", "Len", 2]],
+      "cards": [{"title": "关联", "body": "16 位 Seq 端到端关联\n多字节字段按约定小端编码"}, {"title": "校验", "body": "CRC-16/CCITT-FALSE\npoly=0x1021，init=0xFFFF"}, {"title": "边界", "body": "主规范最大载荷 1024B\n当前 MC / TH 解析上限 64B"}],
+      "refs": ["P01", "A01", "A02", "M02", "M07"],
+      "notes": "CRC覆盖帧头及载荷，尾部CRC自身不参与计算，CRC低字节在前。载荷从偏移12开始；不要把接收缓冲区直接强转成含多字节字段的结构体。1024B是主规范与AP能力，64B是当前MC/TH解析器的实际拒收边界，不能混用；接收批量、DMA缓冲大小与最大载荷也不是同一个概念。"
+    },
+    {
+      "section": "01 / 协议基础", "title": "Flags、Hop、Route 各管一件事", "lead": "响应标志、优先级与路由行为要分别解释", "layout": "table", "minutes": 1.5,
+      "columns": ["字段", "关键定义", "讲解要点"], "widths": [2.1, 4.2, 5.2],
+      "rows": [["Flags", "bit0 WANTS_ACK；bit1 IS_RESPONSE", "请求是否需要响应，与是否已经完成是两回事"], ["版本位", "bit2–3：v2.0 编码为 0x04", "相同版本位不自动证明命令语义一致"], ["优先级", "bit4 IS_PRIORITY", "需要配合命令与处理时序；不能只看名称"], ["Hop", "每转发一跳递减；≤1 不再转发", "防止转发循环，不能用业务进度替代"], ["Route", "bit2 IS_ROUTED", "记录发生过中继；变更后必须重算 CRC"]],
+      "bottom": "典型单播请求 Flags=0x05；响应 Flags=0x06。广播急停按主规范不请求即时 ACK。",
+      "refs": ["P01", "M01"],
+      "notes": "主规范广播急停使用0x12及优先级，当前业务代码使用0x17停机，两者尚未完成一致性裁定；此页的广播规则仅说明主规范，不表示当前端点已完整实现。Hop的边界应按具体转发逻辑核对，主规范部分描述使用“为0丢弃”，转发规则实际要求发送前剩余跳数大于1。"
+    },
+    {
+      "section": "01 / 协议基础", "title": "CMD 是语义入口，不只是一个数字", "lead": "一个可接入的命令，需要完整定义请求与结果", "layout": "cards", "minutes": 1,
+      "cards": [{"title": "投递条件", "body": "CMD + 源/目的节点\n请求/响应方向与 Flags"}, {"title": "载荷契约", "body": "长度、字段顺序、类型\n字节序、单位和有效范围"}, {"title": "响应关系", "body": "响应 CMD 与 Seq\nACK / NACK、错误码、期限"}, {"title": "执行语义", "body": "接收、入队、执行、完成\n需要何种状态回读与物理证据"}],
+      "refs": ["P01", "P02", "A03", "M01"],
+      "notes": "同一CMD的请求与响应可以具有不同载荷；但方向、标志和长度必须有明确注册。合法别名是同一个含义的不同名称；同值对应系统复位和设温则是契约冲突，不能通过按长度猜测来掩盖。后续升级将同时涉及App与Boot，必须先解决命名空间问题。"
+    },
+    {
+      "section": "01 / 协议基础", "title": "非侵入路由：转发规则与当前实现要分开看", "lead": "规范要求保持业务载荷；当前 MC 还维护单个在途事务及响应白名单", "layout": "code", "minutes": 2,
+      "code_title": "规范中的中继主干 · 讲解伪代码",
+      "code": ["收到完整帧并通过 CRC", "若 DST 是本机：交业务分发", "否则若有有效路由且 Hop > 1：", "    复制整帧，保留 SRC / DST / Seq / Payload", "    Hop -= 1", "    Route |= IS_ROUTED", "    重算 CRC，再从出口串口发送"],
+      "cards": [{"title": "当前 MC 已有", "body": "AP→TH 转发与回传\n头字段更新、CRC 重算"}, {"title": "当前实现边界", "body": "单个 pending 事务\n按 CMD / Seq / 长度校验 TH 响应"}, {"title": "扩展影响", "body": "新增 CMD 仍需核对响应映射\n广播当前按 MC 本地消费处理"}],
+      "refs": ["P01", "M01"],
+      "notes": "源码handle_th_relay_req和handle_th_frame不是完全无状态、任意CMD透明的通用路由器。请求转发后记录s_relay_pending、seq、cmd及200ms起点；响应经validate_th_relay_resp和is_valid_th_relay_cmd检查。handle_ap_frame对0xFF进入MC本地分支并返回。以上是冻结代码事实，不应在讲解中夸大为所有拓扑、任意命令或广播均透明。"
+    },
+    {
+      "section": "01 / 协议基础", "title": "沿一条 GET_VERSION 报文看路由", "lead": "AP→TH 请求：CMD=0x01，Seq=1，零载荷；示例由已知字段独立计算", "layout": "hex", "minutes": 2,
+      "cards": [{"title": "AP 发给 MC", "body": "DST=03 · Hop=04 · Route=00"}, {"title": "MC 转发给 TH", "body": "DST=03 · Hop=03 · Route=04"}],
+      "bottom": "端到端 SRC / DST / Seq / CMD / Payload 保持；Hop、Route 与尾部 CRC 随中继变化。",
+      "refs": ["P01", "M01", "M06"],
+      "notes": "本页字节串由生成脚本按冻结协议字段计算并复算CRC，是教学示例，不是本轮串口抓包。SRC=01、DST=03、Flags=05、CMD=01、Seq=0001、Len=0000。响应应由TH以SRC=03、DST=01、Flags=06、CMD=02回传并关联同一Seq。接收端仍需核验实际版本报告载荷，不能仅凭看到55AA判为成功。"
+    },
+    {
+      "section": "01 / 协议基础", "title": "响应成功，具体成功到哪一步？", "lead": "业务响应、通用 ACK 与物理完成需要明确边界", "layout": "cards", "minutes": 1.5,
+      "cards": [{"title": "通用 ACK / NACK", "body": "规范：ACK=0x00，4B\nNACK=0x06，3B"}, {"title": "命令专用响应", "body": "版本 0x02；温度 0x15\n位置 0x16；料槽 0x19"}, {"title": "完成判据", "body": "入队或目标已更新\n不能直接推出加热/运动已完成"}, {"title": "现状差异", "body": "当前部分停机 ACK 为零载荷\n与规范 4B ACK 仍需对齐"}],
+      "refs": ["P01", "P02", "M01", "M06", "A03"],
+      "notes": "规范ACK载荷包含planner_buf_free、rx_fifo_free_units和reserved；NACK包含error_code与expected_seq。业务方可定义专用响应，但不能把所有响应都称为固定4B通用ACK。冻结MC/TH存在零载荷停机ACK路径，AP部分校验expected_payload_len=0表示不限定长度，因而端间互通不等于满足规范。动作完成应结合真实执行状态与必要测量。"
+    },
+    {
+      "section": "01 / 协议基础", "title": "异常路径也属于协议的一部分", "lead": "把失败关联回目标节点、请求序号和超时阶段", "layout": "table", "minutes": 1,
+      "columns": ["情形", "接收 / 调用层处理", "上层应看到什么"], "widths": [2.3, 4.4, 4.8],
+      "rows": [["CRC / 帧长不符", "流解析器拒收，重新同步帧边界", "等待合法响应，最后可到达有界超时"], ["源 / 目的 / Seq 不符", "不认作当前控制请求的成功响应", "保留关联错误上下文"], ["合法 NACK", "识别 0x06，解析错误内容", "显式失败，不显示完成"], ["TH 未回包", "MC 在途超时；AP 调用期限兜底", "失败阶段、node、Seq、elapsed_ms"], ["串口断开 / 数据陈旧", "关闭失效连接、传播链路与快照状态", "锁定相关控制，展示数据有效性"]],
+      "refs": ["A02", "A03", "A04", "M01", "A08"],
+      "notes": "当前AP等待控制响应使用有界循环和短时串口读取，MC也有级联超时检查。各层HTTP/D-Bus错误映射应按具体入口核对，不能把所有失败机械映射成同一个状态码。本页强调错误传播机制，不声称所有错误分支已获真实拔线验证。"
+    },
+    {
+      "section": "01 / 协议基础", "title": "新增命令的接入清单", "lead": "先注册契约，再改发送端、接收端与验证资产", "layout": "flow", "minutes": 1,
+      "steps": [{"title": "注册", "body": "唯一 CMD\n载荷 / 单位 / 响应"}, {"title": "发送端", "body": "编码与准入\n期限与错误传播"}, {"title": "接收端", "body": "分发到实际执行器\n返回明确结果"}, {"title": "级联", "body": "路由容量\n在途响应映射"}, {"title": "验证", "body": "独立固定向量\n必要真实 HIL"}],
+      "bottom": "Bootloader 可只实现升级子集；相同命令的字节含义与错误行为仍须一致。",
+      "refs": ["P01", "M01", "M06", "Q05", "P04"],
+      "notes": "流程是接入建议，不是已经完成的治理工具。当前检查器只验证指定宏矩阵；应从已接受契约独立建立预期，不能用同一个错误常量同时生成测试输入与预期。Boot升级仍在方案阶段，TH的16KB预算允许裁剪命令功能，不允许另造相同名称、不同含义的线协议。"
+    },
+    {
+      "section": "02 / 当前实现", "title": "当前查询能力：先建立可观测性", "lead": "下表是冻结代码的处理路径，不能直接等同于每项真机验收", "layout": "table", "minutes": 1,
+      "columns": ["请求", "响应", "MC", "TH", "主要数据"], "widths": [2.7, 1.8, 1.1, 1.1, 4.8],
+      "rows": [["0x01 GET_VERSION", "0x02", "有", "有", "协议 / 固件版本、身份与 boot_id"], ["0x03 PING", "0x04", "有", "有", "请求时间戳、节点时序与运行信息"], ["0x14 TEMP_QUERY", "0x15", "有", "有", "当前/目标温度、ADC、状态等"], ["0x16 POS_QUERY", "0x16", "有", "—", "坐标、运行状态、归位标记"], ["0x18 LEVEL_GRID_QUERY", "0x18", "有", "—", "5×5 网格；52B 响应"]],
+      "bottom": "TH 查询经 MC 级联；AP 响应解析还保留部分历史兼容判断。",
+      "refs": ["A03", "M01", "M06"],
+      "notes": "有=存在对应命令构建/分发或查询处理路径；—=TH本地未实现该业务查询。AP核心宿主查询与forward-service公开方法并非完全相同的入口，不把宏定义存在视为业务入口已开放。OTA 0x20～0x23、STREAM 0x31、TELEMETRY 0x40和ALARM 0x50等宏声明不能证明已有端到端业务处理，应用端当前查询/控制矩阵与协议预留能力分别理解。版本和boot_id的可信身份仍需与完整commit及固件哈希映射。"
+    },
+    {
+      "section": "02 / 当前实现", "title": "当前控制能力：业务映射一览", "lead": "0x10 / 0x12 是现实现值，与主规范冲突；见下一页", "layout": "table", "minutes": 1.5,
+      "columns": ["现实现 CMD", "MC 路径", "TH 路径", "关键结果"], "widths": [3.2, 3.1, 2.6, 2.6],
+      "rows": [["0x10 SET_TEMP", "加热目标 / G-code桥接", "喷嘴目标 / M104", "回温度数据"], ["0x11 HOME / 0x12 MOVE", "G28 / G1 入队及状态更新", "非 XYZ 执行节点", "回位置状态"], ["0x13 JOB_CONTROL", "作业状态处理", "—", "回作业状态"], ["0x17 MOTION_STOP", "停机 / quickStop路径", "紧急队列 M112", "回 ACK"], ["0x19 SLOT_SELECT", "本地处理及级联", "选槽 / 进退丝队列", "回耗材状态"], ["0x1A / 0x18", "调平触发 / 网格回读", "—", "回 5×5 网格"], ["0x1C GCODE_EXEC", "MC 执行或 TH 级联", "G/M/T 队列", "回受理状态"]],
+      "refs": ["A13", "M01", "M06", "M09"],
+      "notes": "这里讲的是当前软件行为，尤其不能把HOME/MOVE返回位置当成真实动作完成。MC存在裸板非阻塞策略：入队后修改current_position/axis_known_position，Marlin某路径对AP入队标记直接同步并返回。TH控制回复也可能早于队列执行。当前作业状态不能据此宣称完整文件打印链路已验收。"
+    },
+    {
+      "section": "02 / 当前实现", "title": "必须带到评审的契约差异", "lead": "这些差异尚未因端间互通或静态检查通过而消失", "layout": "table", "minutes": 2, "warn": true,
+      "columns": ["项目", "主规范 Rev 2.0.3", "当前代码 / 状态"], "widths": [2.1, 4.1, 5.3],
+      "rows": [["0x10", "SYSTEM_CONTROL，3B", "SET_TEMP，4B；AP 同时定义两种语义宏"], ["0x12", "EMERGENCY_STOP，广播", "MOTION_MOVE；停机主要使用 0x17"], ["最大载荷", "1024B", "AP 1024B；MC / TH 64B"], ["通用 ACK", "0x00，固定 4B", "部分停机路径回零载荷 ACK"], ["后续修订", "当前主规范仍为 Rev 2.0.3", "Rev 2.0.4 的改号与升级内容处于待审方案"]],
+      "bottom": "当前处理顺序：ARCH / Owner 先裁定统一契约 → 再定型升级接口；方案建议不写成已生效标准。",
+      "refs": ["P01", "P02", "P04", "A13", "M02", "M07", "Q05"],
+      "notes": "11月5日完整升级架构方案提出保留0x10设温、0x12运动及改用0x1D系统控制等推荐取舍，但其状态为待用户审阅、未批准实现。这里不替架构或用户做裁定。QA静态矩阵本身硬编码0x10设温与0x12运动，故其17项对齐只能证明限定表的端间一致。协议自身的广播急停长度示例也需在统一契约中消除歧义。"
+    },
+    {
+      "section": "03 / 三端接入", "title": "AP forward：职责分成四层", "lead": "业务方法、帧契约、串口事务、流解析各有边界", "layout": "flow", "minutes": 1,
+      "steps": [{"title": "D-Bus / Service", "body": "业务准入\n串口互斥、分配 Seq"}, {"title": "Protocol", "body": "构造请求\n校验并解析响应"}, {"title": "UART", "body": "发送 / 有界等待\n串口失效处理"}, {"title": "Parser / Codec", "body": "流式组帧 / CRC\n显式字段编码"}],
+      "bottom": "主要代码：services/forward/　＋　core/forward/minimc/。业务方通过公开服务入口调用。",
+      "refs": ["A02", "A03", "A04", "A05", "A06"],
+      "notes": "forward_service.cpp组织事务、序列号与DDS发布；forward_protocol.cpp构造业务帧及校验响应；forward_uart.cpp处理串口与等待；core/forward/minimc下提供编码和流式解析。这里描述当前调用关系，接口内部仍有可改进之处，PPT不会把设计层次推断为严格线程或进程隔离。"
+    },
+    {
+      "section": "03 / 三端接入", "title": "AP 发送：一次受控串口事务", "lead": "以温度查询 / 控制请求为主干，省略具体字段编码", "layout": "code", "minutes": 2,
+      "code_title": "forward_service + forward_protocol · 伪代码",
+      "code": ["调用业务方法(request)", "加锁 uart_mutex", "确保串口已打开；失败则传播链路错误", "seq = next_seq++", "frame = encode(dst, cmd, seq, payload)", "若串口发送失败：记录错误并退出", "result = wait_response(dst, seq, deadline)", "若采样有效：转换单位并发布 DDS", "解锁，返回明确结果 / 错误"],
+      "cards": [{"title": "事务串行化", "body": "同一 UART 入口互斥\n避免交叉读写与 Seq 混淆"}, {"title": "期限有界", "body": "调用期限与串口读取期限\n失败不能伪装为成功"}],
+      "refs": ["A03", "A04", "A05"],
+      "notes": "对应forward_service_execute_query和控制类方法。代码片段不是所有业务共用的实际函数名组合；它提炼共同主干。序号在线帧是16位；Mutex持有跨越等待阶段，意味着并发业务排队、吞吐和长命令预算必须考虑。采样发布发生在合法响应解析后，控制类无采样结果时不会机械发布温度。"
+    },
+    {
+      "section": "03 / 三端接入", "title": "AP 接收：先成帧，再认领响应", "lead": "串口 read 得到的是字节片段，不能假设一次 read 就是一帧", "layout": "code", "minutes": 2,
+      "code_title": "forward_uart + minimc parser · 伪代码",
+      "code": ["在总期限内读取一小段字节", "对每个 byte：", "    喂给 parser：SOF → 头部 → 载荷 → CRC", "    尚未成帧：继续等待", "    完整帧：核对 IS_RESPONSE / SRC / DST / Seq", "    合法 NACK：返回明确错误", "    核对响应 CMD 与约定载荷长度", "    解码结果，结束本次等待", "期限到达仍无合法响应：返回 TIMEOUT"],
+      "cards": [{"title": "流式处理", "body": "支持帧拆分、粘连及噪声恢复\n长度上限参与边界检查"}, {"title": "业务关联", "body": "CRC 正确只是第一步\n还要匹配节点、序号与命令"}],
+      "refs": ["A02", "A03", "A04"],
+      "notes": "AP parser_feed_byte在CRC和状态机层生成FrameView；控制响应随后经fwd_proto_check_ctrl_response检查。当前实现expected_payload_len=0可表示不约束载荷长度，这也是规范4B ACK可能被零载荷路径绕过的原因之一。此页伪代码讲共同流程，没有声称当前所有命令都具备严格完整的长度验证。"
+    },
+    {
+      "section": "03 / 三端接入", "title": "MC：中断只收字节，主循环完成协议处理", "lead": "保持协议工作与现有 UI、Marlin 主流程的调度关系可见", "layout": "code", "minutes": 1.5,
+      "code_title": "MC main.c / minimc_proto.c · 伪代码",
+      "code": ["USART2 / USART6 接收入口：字节入环形队列", "主循环：", "    排空 AP 接收队列，逐字节解析", "    排空 TH 接收队列，逐字节解析", "    检查级联在途事务超时", "    排空 [MC-DBG] 日志", "    继续既有 UI / Marlin / 板级管理"],
+      "cards": [{"title": "主入口", "body": "minimc_proto_poll()\n在 main() 循环内调用"}, {"title": "帧分流", "body": "55 AA → 新协议\n5A A5 → 原迪文屏处理"}],
+      "refs": ["M01", "M03", "M05"],
+      "notes": "minimc_proto_poll负责AP和TH字节排空、级联超时、周期状态和调试日志排空。memu_gui.c的USART2入口压入协议队列，只有5AA5帧头才置原GUI解析标记。实际中断/DMA批量、主循环排空预算与环形容量应联合评估；本PPT未额外运行实时性或洪泛测试。"
+    },
+    {
+      "section": "03 / 三端接入", "title": "MC 分发：本地业务与 TH 级联两条路径", "lead": "根据目的节点选择执行者，按请求序号维护响应关系", "layout": "code", "minutes": 1.5,
+      "code_title": "handle_ap_frame / handle_mc_query · 伪代码",
+      "code": ["收到通过校验的完整 AP 帧", "若 DST 是 MC 或广播：", "    查询类 → 读取版本 / 温度 / 坐标 / 网格", "    控制类 → 目标设置 / 队列桥接 / 停机处理", "    未支持 → NACK", "若 DST 是 TH：", "    记录 pending，更新路由字段并转发", "    校验 TH 回包与 pending 匹配后回传 AP"],
+      "cards": [{"title": "复用原业务", "body": "加热目标、G-code队列\nquickStop、真实采样入口"}, {"title": "级联有边界", "body": "在途占用、响应映射、超时\n新增命令须同步核对"}],
+      "refs": ["M01", "M04", "M10"],
+      "notes": "handle_mc_query依次尝试核心查询、运动/调平和控制命令分组，最终未知命令返回NACK。MC还会自己生成到TH的0x1C G-code帧，该路径与AP原生寻址TH都使用同一链路和在途资源，需要互斥。按冻结代码，广播不继续转发TH；这与主规范通用广播路由存在范围差异。"
+    },
+    {
+      "section": "03 / 三端接入", "title": "MC 对既有业务的影响：重点审查执行语义", "lead": "软件接入路径已存在；动作是否真实完成需要单独判断", "layout": "cards", "minutes": 1.5, "warn": true,
+      "cards": [{"title": "输入隔离", "body": "新协议与旧屏协议分流\n避免同一字节触发两套解析器"}, {"title": "命令来源", "body": "AP / 原本地业务共享队列\n检查顺序、占用和停机联锁"}, {"title": "源码中的边界", "body": "HOME / MOVE 入队后更新坐标\nAP 标记路径可提前同步并返回"}, {"title": "验收关注", "body": "位置 / Debug / ACK 与物理测量关联\n不能用逻辑坐标证明电机已动"}],
+      "refs": ["M01", "M04", "M05", "Q02"],
+      "notes": "冻结MC handle_mc_home在mc_proto_enqueue_gcode后将选定轴current_position清零并置axis_known_position；handle_mc_move先更新逻辑坐标，再构造G1。Marlin process_commands中存在minimc_proto_consume_ap_enqueued命中后plan_set_position并return的路径。这里只陈述源码及其证明边界，不替ARCH作现场机械故障结论。TWIN-47验收范围明确是软件C单测，硬件HIL被排除。"
+    },
+    {
+      "section": "03 / 三端接入", "title": "TH：新协议适配到既有控制队列", "lead": "协议层做解析与分发，既有 G/M/T 控制在主循环推进", "layout": "code", "minutes": 1.5,
+      "code_title": "TH main.c / minimc_proto.c / mycontrol.c · 伪代码",
+      "code": ["主循环：", "    minimc_proto_poll()", "        解析并校验发往 TH 的帧", "        分发查询、设温、料槽、停机、G-code", "        必要控制转换为队列命令，生成响应", "    th_control_poll_once()", "        先推进紧急命令，再推进普通队列", "    排空 [TH-DBG]；继续 Board_manage / loop"],
+      "cards": [{"title": "通信与执行解耦", "body": "USART1 业务协议\nUSART3 独立 Debug"}, {"title": "已有控制复用", "body": "M104 / M112 / G/M/T\n队列容量与紧急通道保留"}],
+      "refs": ["M06", "M08", "M09"],
+      "notes": "协议文件提供weak控制队列入口以便链接和测试；真实mycontrol.c中存在对应强实现，因此讲解必须核对实际链接实现，不能仅看到weak函数就认定实际业务是桩。th_control_enqueue_gcode可因队列满失败，部分命令对入队返回的处理不完全一致，需要在动作完成语义和异常用例中覆盖。"
+    },
+    {
+      "section": "03 / 三端接入", "title": "TH 兼容边界：应用通信与 Boot 升级分开", "lead": "当前统一覆盖应用层；Boot 串口协议迁移仍处方案阶段", "layout": "cards", "minutes": 1.5,
+      "cards": [{"title": "应用层兼容", "body": "0x19 为现主用料槽命令\n接收侧保留 0x15 / 0x1B 历史入口"}, {"title": "原有业务影响", "body": "新协议入既有控制队列\n核对加热、耗材、停机与调度"}, {"title": "当前 Boot 事实", "body": "MC Boot：USB Host / U盘\nTH Boot：旧 5A A5 私有 IAP"}, {"title": "规划边界", "body": "未来升级统一 MiniMCProto 子集\nTH Boot ≤16KB；尚未实现生效"}],
+      "refs": ["M06", "M07", "M09", "B01", "B02", "P04"],
+      "notes": "不能把0x15温度报告响应与历史0x15耗材请求不加方向地看成同一业务。保留历史入口并不代表建议继续发送旧命令。用户已要求未来升级保持TH App236KB和Boot16KB、MC Boot不承担TH路由、保留MC U盘能力；本PPT仅交代边界，不展开尚未批准的升级载荷和新命令码。"
+    },
+    {
+      "section": "03 / 三端接入", "title": "完整调用示例：TH 温度即时采样", "lead": "从用户入口到返回状态，控制路径与采样路径在这里相遇", "layout": "sequence", "minutes": 2,
+      "lanes": ["Web / Gateway", "DeviceManager", "Forward", "MC", "TH"],
+      "messages": [[0,1,"D-Bus：RequestImmediateSample"],[1,2,"D-Bus：TriggerQuery"],[2,3,"UART：DST=03 CMD=14 Seq=n"],[3,4,"中继：Hop-1 / Route / CRC"],[4,3,"温度响应：CMD=15 / Seq=n"],[3,2,"关联检查后回传"],[2,1,"DDS：RawTempTelemetry"],[1,0,"D-Bus GetSnapshot → SSE / HTTP"]],
+      "refs": ["A05", "A06", "A07", "A08", "A09", "A10", "M01", "M06"],
+      "notes": "这是依据当前代码组织的教学时序，不是本轮运行实测时序图；各箭头不承诺固定时延。采样返回后Forward发布原始温度，DeviceManager订阅后更新权威快照。UI Gateway目前通过D-Bus读取快照并向浏览器SSE广播，不应画成已经直接订阅DDS快照。调用返回与DDS快照消费存在调度关系，接入方需要观察generation和数据新鲜度。"
+    },
+    {
+      "section": "04 / AP 通信架构", "title": "AP 当前架构：三项业务服务 + 两项通信 SDK", "lead": "服务分工按现实现绘制，预留 Topic 不等于已部署的业务服务", "layout": "architecture", "minutes": 1.5,
+      "refs": ["A05", "A07", "A08", "A09", "A10", "A11", "A12", "A14"],
+      "notes": "当前主要可执行服务为ui_gateway、device_manager和forward。ui_gateway处理HTTP/SSE及D-Bus客户端；device_manager处理状态、准入和快照；forward处理UART与DDS原始采样。DDS层有motion和filament类型/Topic支持，不能据此声称存在独立motion-service/th-service运行进程。系统还有独立dbus-daemon作为总线基础设施，不算第四项产品业务服务。"
+    },
+    {
+      "section": "04 / AP 通信架构", "title": "D-Bus：有目标、有返回的控制与查询", "lead": "通过服务名、对象路径、接口和方法定位一次调用", "layout": "flow", "minutes": 1,
+      "steps": [{"title": "调用定位", "body": "Bus Name\nObject / Interface / Method"}, {"title": "业务准入", "body": "DeviceInterface\n状态与参数检查"}, {"title": "硬件入口", "body": "ForwardInterface\n有期限的串口事务"}, {"title": "结果传播", "body": "返回值 / 错误\n必要状态信号"}],
+      "bottom": "项目示例：GetSnapshot、RequestImmediateSample、SetTemperature、MotionHome、EmergencyStop。",
+      "refs": ["A06", "A08", "A10", "A11", "A15"],
+      "notes": "D-Bus SDK封装连接、消息序列化、同步RPC、超时和服务注册。D-Bus也支持信号广播，不能简单说它只能请求应答。项目把需要明确处理者、准入和返回值的本机业务控制放在这里；总线调用返回成功本身不保证物理执行完成，仍取决于Forward响应与业务完成契约。"
+    },
+    {
+      "section": "04 / AP 通信架构", "title": "Fast DDS：让采样与状态按 Topic 流动", "lead": "发布者与订阅者按类型和 QoS 匹配，解耦数据生产与消费", "layout": "flow", "minutes": 1,
+      "steps": [{"title": "Forward", "body": "合法温度响应\n转换为统一采样结构"}, {"title": "raw_temp", "body": "RELIABLE / VOLATILE\nKEEP_LAST(5)"}, {"title": "DeviceManager", "body": "订阅采样、更新快照\n状态与新鲜度处理"}, {"title": "temperature_snapshot", "body": "BEST_EFFORT /\nTRANSIENT_LOCAL；深度1"}],
+      "bottom": "当前 UI 读取快照仍走 D-Bus；DDS 已发布快照 Topic，可供匹配的其他消费者使用。",
+      "refs": ["A05", "A07", "A09", "A12", "A14", "A16"],
+      "notes": "Topic全名分别为telemetry/raw_temp与state/temperature_snapshot。QoS依据当前IDL、服务配置和configure_writer_qos代码；middleware/dds/README对快照可靠性写RELIABLE，与代码BEST_EFFORT不一致，此处采用代码现状，不能把README预期写成运行事实。TRANSIENT_LOCAL是当前发布者存活范围内的保留策略，不是数据库持久化。RELIABLE也不代表零丢包、无限缓存或物理执行确认。"
+    },
+    {
+      "section": "04 / AP 通信架构", "title": "D-Bus 与 Fast DDS：本项目为何同时使用", "lead": "D-Bus 组织明确调用；Fast DDS 分发连续数据与状态", "layout": "table", "minutes": 2,
+      "columns": ["维度", "D-Bus", "Fast DDS"], "widths": [2.0, 4.75, 4.75],
+      "rows": [["交互模型", "方法调用 / 返回 / 错误；也支持信号", "按 Topic 和类型发布 / 订阅"], ["典型关系", "调用者定位具体服务对象", "生产者与多个消费者按匹配关系通信"], ["当前项目用途", "控制、准入、即时采样触发、快照查询", "原始温度采样、温度快照分发"], ["结果处理", "调用期限、返回值与业务错误", "QoS、匹配、样本新鲜度和数据质量"], ["通信范围", "当前使用本机 D-Bus 总线", "支持网络化 DDS；本项目此处讲 AP 内部"], ["完成语义", "RPC 成功取决于方法定义", "样本送达取决于 QoS 与消费状态"]],
+      "bottom": "项目路径：D-Bus 触发采样 → Forward 串口取数 → DDS 更新 DeviceManager → D-Bus / SSE 提供页面快照。",
+      "refs": ["A05", "A07", "A09", "A10", "A11", "A12", "A16"],
+      "notes": "本页为用户补充要求。请强调这是本项目的选择，不是两个中间件全部能力的边界：D-Bus可发信号，DDS也可以在上层构建请求应答；这里没有把它们描述为互斥替代。当前D-Bus调用用于控制的处理者、返回值和期限清楚；DDS用于同型数据多方消费及有界QoS。两者都不能独立证明MCU命令已完成，更不能证明电机动作。"
+    },
+    {
+      "section": "04 / AP 通信架构", "title": "用同一请求串起四类闭环证据", "lead": "把“软件互通”和“硬件交付”分别说清楚", "layout": "cards", "minutes": 1,
+      "cards": [{"title": "入口结果", "body": "Web / API 请求与返回\n业务是否受理、是否完成"}, {"title": "业务线帧", "body": "921600 原始请求与响应\n节点、Seq、CMD、CRC"}, {"title": "节点 Debug", "body": "[MC-DBG] / [TH-DBG]\n关联真实分发与执行状态"}, {"title": "物理 / 测量", "body": "坐标、限位、温度、料槽\n与该命令对应的实际结果"}],
+      "bottom": "TWIN-47～50 已完成登记；其软件 / PTY 接受范围不自动扩大为全部功能真实 HIL 通过。",
+      "refs": ["Q01", "Q02", "Q03", "Q04", "M01", "M06"],
+      "notes": "同一请求应关联原始报文、节点日志、现场固件身份及适用的物理测量。查询类不必强求状态跃迁，运动类则不能只读逻辑坐标。TWIN-50最终qa_03明确排除物理MCU HIL；本PPT未启动构建、测试、烧录或串口采集，也不宣称这四类证据在本轮已重新获取。"
+    },
+    {
+      "section": "评审讨论", "title": "带着这四个问题结束评审", "lead": "优先收敛会影响接入和安全的决定", "layout": "cards", "minutes": 4,
+      "cards": [{"title": "01 · 唯一契约", "body": "0x10 / 0x12 与 ACK 如何裁定？\n以哪个准确版本对外接入？"}, {"title": "02 · 路由范围", "body": "是否支持任意扩展命令与广播？\n当前 pending / 响应白名单如何迁移？"}, {"title": "03 · 完成语义", "body": "ACK、入队、状态回读与物理完成\n分别由谁证明、何时超时？"}, {"title": "04 · 升级边界", "body": "先冻结 App / Boot 共用契约\n再定型最小升级接口与迁移步骤"}],
+      "refs": ["P01", "P02", "P04", "M01", "M04", "M06"],
+      "notes": "把问题交给对应协议/模块Owner记录决定、准确版本及后续影响。本PPT用于解释与评审，不自行修改协议、代码或任务状态。已经确认的TH Boot16KB、TH App236KB、保留MC U盘、MC Boot不路由TH等边界不再组织重复选择题。建议先形成统一契约，升级完整方案随同一次用户确认。"
+    },
+    {
+      "section": "附录 / 来源", "title": "讲解基线与源码导航", "lead": "基于各仓已提交 HEAD 的冻结快照；完整 SHA、文件哈希和出处见配套清单", "layout": "baselines", "minutes": 0,
+      "refs": ["P01", "A03", "A04", "A05", "A07", "A08", "M01", "M04", "M06", "M09", "Q01"],
+      "notes": "冻结project-control=96c04135ea97、soc-ap=c6692b244e0a、mcu-p3=191e355a4227、test_harness=9f3918a2f9fc；BootMC=4fc171ea6191、BootTH=769fccbe5246。完整40位提交在source_manifest.json。冻结时MC有minimc_proto.c与test_twin44_mc_debug.c未提交修改，未纳入正文；PC存在后续QA记录和任务状态变化，按清单登记但不当作已提交规范。TWIN-57～61后续修复属于当前HEAD的一部分，其在途接受不能据此宣称全部完结。每页备注保留精确文件路径及定位；源码源快照留在artifacts供本机重生成。"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+=== Docker Container Inspect: 2ca2b6e7b6cd ===
+{
+  "id": "2ca2b6e7b6cdcd61cef5c182af5e0950812c903a59d4bd5df721056759bde92f",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-06T02:36:14.301842181Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-62_run_103541_20261106_023541",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (boot/bootloaderth) cat ../project-control/docs/evidence/twin/TWIN-62/runs/author_01/result.md && python3 -c "import subprocess, sys, tempfile, os; tmpd = tempfile.mkdtemp(); [ (open(os.path.join(tmpd, f\"in_{sz}.bin\"), \"wb\").write(b\"\\x5A\" * sz), res := subprocess.run([sys.executable, \"tools/pack_firmware.py\", os.path.join(tmpd, f\"in_{sz}.bin\"), os.path.join(tmpd, f\"out_{sz}.bin\")], capture_output=True, text=True), assert_ok := (res.returncode == 0 and os.path.getsize(os.path.join(tmpd, f\"out_{sz}.bin\")) == sz + 128) if ok else (res.returncode != 0), (sys.exit(1) if not assert_ok else None)) for sz, ok in [(241663, True), (241664, True), (241665, False), (245760, False)] ]; print(\"[PASS] S03 pack_firmware.py 236KB boundary checks (241663/241664/241665/245760) passed!\")" && gcc -std=c11 -O2 -Wall -Wextra -Werror -DIAP_HOST_TEST -DDEBUG_LOG_ENABLE=0 -Iinc src/iap.c src/flash.c tests/test_th_boot_ota.c -o /tmp/test_th_boot_ota && /tmp/test_th_boot_ota && rm -f /tmp/test_th_boot_ota && python3 -c "import pathlib, re, sys; files = [\"inc/iap.h\", \"inc/flash.h\", \"inc/usart.h\", \"src/iap.c\", \"src/flash.c\", \"src/main.c\", \"src/usart.c\", \"tools/pack_firmware.py\", \"tests/test_th_boot_ota.c\"]; cjk = re.compile(r\"[\\u4e00-\\u9fff]\"); [ (txt := pathlib.Path(p).read_text(encoding=\"utf-8\"), assert_cjk := sum(1 for l in txt.splitlines() if cjk.search(l)) >= 3, print(f\"[DOC-CHECK PASS] {p}: cjk_lines={sum(1 for l in txt.splitlines() if cjk.search(l))}\"), (sys.exit(1) if not assert_cjk else None)) for p in files ]; print(\"[PASS] S04 & code_documentation_standard check passed!\")" -> 1
+
+cat: ../project-control/docs/evidence/twin/TWIN-62/runs/author_01/result.md: No such file or directory
