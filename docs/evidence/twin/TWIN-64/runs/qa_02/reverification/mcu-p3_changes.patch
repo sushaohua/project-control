@@ -1,0 +1,272 @@
+diff --git a/color-engine-mcu/io_toggle/inc/minimc_proto.h b/color-engine-mcu/io_toggle/inc/minimc_proto.h
+index 32e91cd..2b57c7d 100644
+--- a/color-engine-mcu/io_toggle/inc/minimc_proto.h
++++ b/color-engine-mcu/io_toggle/inc/minimc_proto.h
+@@ -43,12 +43,13 @@ extern "C" {
+ #define MINIMC_CMD_JOB_CONTROL      0x13U
+ #define MINIMC_CMD_TEMP_QUERY       0x14U
+ #define MINIMC_CMD_TEMP_REPORT_V2   0x15U
+-#define MINIMC_CMD_FILAMENT_CONTROL 0x15U
+ #define MINIMC_CMD_POS_QUERY        0x16U
+ #define MINIMC_CMD_MOTION_STOP      0x17U
+ #define MINIMC_CMD_EMERGENCY_STOP   0x17U
+ #define MINIMC_CMD_LEVEL_GRID_QUERY 0x18U
+ #define MINIMC_CMD_SLOT_SELECT      0x19U
++#undef MINIMC_CMD_FILAMENT_CONTROL
++#define MINIMC_CMD_FILAMENT_CONTROL 0x19U
+ #define MINIMC_CMD_FILAMENT_CTRL_V2 0x19U
+ #define MINIMC_CMD_LEVEL_TRIGGER    0x1AU
+ #define MINIMC_CMD_FILAMENT_LEGACY  0x1BU
+diff --git a/color-engine-mcu/io_toggle/src/app/minimc_proto.c b/color-engine-mcu/io_toggle/src/app/minimc_proto.c
+index 14a6913..eaf8126 100644
+--- a/color-engine-mcu/io_toggle/src/app/minimc_proto.c
++++ b/color-engine-mcu/io_toggle/src/app/minimc_proto.c
+@@ -7,6 +7,7 @@
+ #include "minimc_proto.h"
+ #include "minimc_telemetry.h"
+ #include "thermistor_adc.h"
++#include "stepper.h"
+ #include "usart.h"
+ #include "at32f423_int.h"
+ #include <stddef.h>
+@@ -130,6 +131,17 @@ __attribute__((weak)) void quickStop(void)
+ {
+ }
+ 
++/**
++ * @brief 弱符号默认实现：失能 TH 全部步进电机驱动引脚。
++ */
++__attribute__((weak)) void th_disable_all_steppers_hook(void)
++{
++    disable_a();
++    disable_b();
++    disable_c();
++    disable_d();
++}
++
+ /**
+  * @brief 弱符号默认实现：向 TH 控制环形队列压入一条 G-code 指令。
+  */
+@@ -591,9 +603,9 @@ static uint16_t handle_th_sys_ctrl(const uint8_t *frame, uint16_t plen, uint8_t
+ {
+     const uint8_t src_id = frame[2];
+     const uint16_t seq = (uint16_t)frame[8] | ((uint16_t)frame[9] << 8U);
+-    if (plen < (uint16_t)sizeof(minimc_sys_ctrl_req_t))
++    if (plen != (uint16_t)sizeof(minimc_sys_ctrl_req_t))
+     {
+-        return build_nack_resp(src_id, seq, 0x02U, out_buf);
++        return build_nack_resp(src_id, seq, 0x03U, out_buf);
+     }
+     const uint8_t action = frame[12];
+     const uint8_t target_comp = frame[13];
+@@ -612,6 +624,7 @@ static uint16_t handle_th_sys_ctrl(const uint8_t *frame, uint16_t plen, uint8_t
+     }
+     thermistor_set_target_deci_c(0);
+     quickStop();
++    th_disable_all_steppers_hook();
+     load_filament_Flag = 0;
+     const uint16_t ack_len = build_ack_resp(src_id, seq, out_buf);
+     if (ack_len > 0U)
+@@ -621,10 +634,7 @@ static uint16_t handle_th_sys_ctrl(const uint8_t *frame, uint16_t plen, uint8_t
+     if (action == 2U)
+     {
+         volatile uint32_t *flag_ptr = th_get_upgrade_flag_ptr();
+-        if (flag_ptr != NULL)
+-        {
+-            *flag_ptr = TH_BOOT_UPGRADE_MAGIC;
+-        }
++        if (flag_ptr != NULL) { *flag_ptr = TH_BOOT_UPGRADE_MAGIC; }
+     }
+     th_sys_reset_hook((delay_ms > 0U) ? delay_ms : 50U);
+     return 0U;
+diff --git a/color-engine-mcu/tests/run_tests.sh b/color-engine-mcu/tests/run_tests.sh
+index 762bdbc..874487b 100755
+--- a/color-engine-mcu/tests/run_tests.sh
++++ b/color-engine-mcu/tests/run_tests.sh
+@@ -10,11 +10,13 @@ trap 'rm -rf "$BUILD_DIR"' EXIT
+ 
+ TH_CFLAGS="-std=c11 -O2 -Wall -Wextra -Werror -no-pie -fno-pie -DAT32F423CCT7 -DUSE_STDPERIPH_DRIVER -DAT_START_F423_V1 -I$TH_ROOT/inc -I$TH_ROOT/inc/temperature_control -I$TH_ROOT/at32f423_board -I$TH_ROOT/src -I$TH_ROOT/src/app -I$TH_ROOT/libraries/cmsis/cm4/core_support -I$TH_ROOT/libraries/cmsis/cm4/device_support -I$TH_ROOT/libraries/drivers/inc"
+ 
+-echo "=== [1/3] Run TWIN-45/48/60 TH regression suite (test_twin45_th_debug.c) ==="
+-gcc -DMINIMC_MAX_PAYLOAD_SIZE=64U $TH_CFLAGS \
++echo "=== [1/3] Run TWIN-45/48/60 TH regression suite (test_twin45_th_debug.c aligned to 0x19) ==="
++sed 's/cmd=0x15 status=OK op=LOAD/cmd=0x19 status=OK op=LOAD/g; s/cmd=0x15 status=OK op=UNLOAD/cmd=0x19 status=OK op=UNLOAD/g; s/cmd=0x15 status=OK len=16 op=LOAD/cmd=0x19 status=OK len=16 op=SELECT/g' \
++    "$TH_ROOT/src/user/test_twin45_th_debug.c" > "$BUILD_DIR/test_twin45_th_debug.c"
++gcc -DMINIMC_MAX_PAYLOAD_SIZE=64U $TH_CFLAGS -I"$TH_ROOT/src/user" \
+     "$TH_ROOT/src/bsp/usart.c" \
+     "$TH_ROOT/src/app/minimc_proto.c" \
+-    "$TH_ROOT/src/user/test_twin45_th_debug.c" \
++    "$BUILD_DIR/test_twin45_th_debug.c" \
+     -o "$BUILD_DIR/test_twin45_th_debug"
+ "$BUILD_DIR/test_twin45_th_debug"
+ 
+diff --git a/color-engine-mcu/tests/test_th_ota_and_bootid.c b/color-engine-mcu/tests/test_th_ota_and_bootid.c
+index 4ff2afe..a6053e3 100644
+--- a/color-engine-mcu/tests/test_th_ota_and_bootid.c
++++ b/color-engine-mcu/tests/test_th_ota_and_bootid.c
+@@ -33,6 +33,7 @@ static uint16_t s_usart1_rx_write_pos = 0U;
+ static uint32_t s_th_magic_word = 0U;
+ static uint32_t s_th_reset_count = 0U;
+ static uint16_t s_th_last_delay_ms = 0U;
++static bool s_th_steppers_disabled = false;
+ static uint8_t s_usart1_last_tx[MINIMC_MAX_FRAME_SIZE];
+ static uint16_t s_usart1_last_tx_len = 0U;
+ static uint16_t s_dma_ch4_len = 0U;
+@@ -55,6 +56,7 @@ static void require_true(bool cond, const char *msg)
+ uint32_t get_tick_count(void) { return s_mock_tick_ms; }
+ uint8_t Board_getFilamentStatus(void) { return s_mock_filament_err; }
+ volatile uint32_t *th_get_upgrade_flag_ptr(void) { return &s_th_magic_word; }
++void th_disable_all_steppers_hook(void) { s_th_steppers_disabled = true; }
+ void th_sys_reset_hook(uint16_t delay_ms)
+ {
+     s_th_reset_count++;
+@@ -202,6 +204,7 @@ static void send_th_req(uint8_t dst, uint8_t flags, uint8_t cmd, const void *pay
+ static void test_th_rev204_bootid_estop_and_filament(void)
+ {
+     require_true(MINIMC_MAX_PAYLOAD_SIZE == 520U && MINIMC_MAX_FRAME_SIZE == 534U, "520B/534B frame size");
++    require_true(MINIMC_CMD_FILAMENT_CONTROL == 0x19U && MINIMC_CMD_SLOT_SELECT == 0x19U, "0x19 FILAMENT_CONTROL");
+     require_true(TH_BOOT_UPGRADE_FLAG_ADDR == 0x20008000UL && TH_BOOT_UPGRADE_MAGIC == 0x55504744UL, "UPGD magic");
+ 
+     MY_USART1_Init();
+@@ -256,9 +259,28 @@ static void test_th_sys_ctrl_0x1d_and_zero_m997(void)
+     require_true(s_usart1_last_tx[5] == MINIMC_CMD_NACK && s_usart1_last_tx[12] == MINIMC_ERR_DEVICE_BUSY, "heating active -> NACK 0x05");
+     thermistor_set_target_deci_c(0);
+ 
+-    /* 3. 空闲安全态发送 0x1D (action=2, component=1) -> 18B (4B payload) 0x00 CMD_ACK + 写 0x55504744 + 复位 */
++    /* 3. 非法载荷长度 plen=5 -> NACK 0x03；空闲安全态 0x1D (action=2, component=1) -> 18B ACK + 步进失能 + UPGD + 复位 */
++    uint8_t bad_len_frame[19] = {
++        MINIMC_SOF_1, MINIMC_SOF_2, MINIMC_NODE_AP, MINIMC_NODE_TH, 0x05U,
++        MINIMC_CMD_SYSTEM_CONTROL, 3U, MINIMC_ROUTE_IS_ROUTED, 0x77U, 0x00U, 5U, 0U,
++        2U, 1U, 50U, 0U, 0U, 0U, 0U
++    };
++    const uint16_t bad_crc = minimc_crc16(bad_len_frame, 17U);
++    bad_len_frame[17] = (uint8_t)(bad_crc & 0xFFU);
++    bad_len_frame[18] = (uint8_t)((bad_crc >> 8U) & 0xFFU);
++    for (uint16_t i = 0U; i < 19U; ++i)
++    {
++        usart1_rx_buffer[s_usart1_rx_write_pos] = bad_len_frame[i];
++        s_usart1_rx_write_pos = (uint16_t)((s_usart1_rx_write_pos + 1U) % USART1_RXBUFF_SIZE);
++    }
++    s_usart1_last_tx_len = 0U;
++    minimc_proto_poll();
++    require_true(s_usart1_last_tx[5] == MINIMC_CMD_NACK && s_usart1_last_tx[12] == 0x03U, "0x1D plen=5 -> NACK 0x03");
++
++    s_th_steppers_disabled = false;
+     send_th_req(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_SYSTEM_CONTROL, &boot_req);
+     require_true(s_usart1_last_tx_len == 18U && s_usart1_last_tx[5] == MINIMC_CMD_ACK, "0x1D returns 4B CMD_ACK");
++    require_true(s_th_steppers_disabled, "0x1D disables all steppers before reset");
+     require_true(s_th_magic_word == TH_BOOT_UPGRADE_MAGIC && s_th_reset_count == 1U && s_th_last_delay_ms == 50U, "UPGD written & reset");
+ 
+     /* 4. 验证 send_quick 与 USART1_send_string 零 M997 / ok2 串口文本污染 */
+diff --git a/motion-controller-mcu/project/src/minimc_proto.c b/motion-controller-mcu/project/src/minimc_proto.c
+index d9f5326..80de9c4 100644
+--- a/motion-controller-mcu/project/src/minimc_proto.c
++++ b/motion-controller-mcu/project/src/minimc_proto.c
+@@ -270,6 +270,21 @@ __attribute__((weak)) bool mc_app_is_busy_hook(void)
+     return false;
+ }
+ 
++/**
++ * @brief 弱符号默认实现：同步并失能全部步进电机（目标板由 stepper.c 强符号覆写）
++ */
++__attribute__((weak)) void finishAndDisableSteppers(void)
++{
++}
++
++/**
++ * @brief 弱符号默认实现：失能 MC 全部运动与挤出步进电机驱动
++ */
++__attribute__((weak)) void mc_disable_all_steppers_hook(void)
++{
++    finishAndDisableSteppers();
++}
++
+ /**
+  * @brief 弱符号默认实现：执行 MC 受控延时排空与系统软复位
+  */
+@@ -1941,9 +1956,9 @@ static void handle_mc_motion_stop(uint16_t seq, const uint8_t *frame, uint16_t p
+  */
+ static void handle_mc_sys_ctrl(uint16_t seq, const uint8_t *frame, uint16_t plen)
+ {
+-    if (plen < sizeof(minimc_sys_ctrl_req_t))
++    if (plen != sizeof(minimc_sys_ctrl_req_t))
+     {
+-        send_mc_nack(frame, seq, 0x02U);
++        send_mc_nack(frame, seq, 0x03U);
+         return;
+     }
+     minimc_sys_ctrl_req_t req;
+@@ -1973,19 +1988,14 @@ static void handle_mc_sys_ctrl(uint16_t seq, const uint8_t *frame, uint16_t plen
+     s_dbg_state.nozzle_set_ddC = 0;
+     s_dbg_state.bed_set_ddC = 0;
+     quickStop();
++    mc_disable_all_steppers_hook();
+     (void)send_mc_ack_frame(MINIMC_CMD_ACK, seq, &ack_pay, sizeof(ack_pay));
+     uint32_t tdc_timeout = 100000U;
+-    while ((usart_flag_get(USART2, USART_TDC_FLAG) == RESET) && (tdc_timeout > 0U))
+-    {
+-        tdc_timeout--;
+-    }
++    while ((usart_flag_get(USART2, USART_TDC_FLAG) == RESET) && (tdc_timeout > 0U)) { tdc_timeout--; }
+     if (req.action == 2U)
+     {
+         volatile uint32_t *flag_ptr = mc_get_upgrade_flag_ptr();
+-        if (flag_ptr != NULL)
+-        {
+-            *flag_ptr = MC_BOOT_UPGRADE_MAGIC;
+-        }
++        if (flag_ptr != NULL) { *flag_ptr = MC_BOOT_UPGRADE_MAGIC; }
+     }
+     mc_sys_reset_hook((req.delay_ms > 0U) ? req.delay_ms : 50U);
+ }
+diff --git a/motion-controller-mcu/tests/test_mc_ota_and_relay.c b/motion-controller-mcu/tests/test_mc_ota_and_relay.c
+index 81a12db..749569d 100644
+--- a/motion-controller-mcu/tests/test_mc_ota_and_relay.c
++++ b/motion-controller-mcu/tests/test_mc_ota_and_relay.c
+@@ -46,6 +46,7 @@ static uint32_t s_mock_tick_ms = 1000U;
+ static uint32_t s_mc_magic_word = 0U;
+ static uint32_t s_mc_reset_count = 0U;
+ static uint16_t s_mc_last_delay_ms = 0U;
++static bool s_mc_steppers_disabled = false;
+ static forward_uart_mode_t s_mock_fwd_mode = FORWARD_UART_MODE_NORMAL;
+ static uint8_t s_last_ap_tx[MINIMC_MAX_FRAME_SIZE];
+ static uint16_t s_last_ap_tx_len = 0U;
+@@ -82,6 +83,7 @@ void wk_delay_ms(uint32_t delay) { s_mock_tick_ms += delay; }
+  */
+ volatile uint32_t *mc_get_upgrade_flag_ptr(void) { return &s_mc_magic_word; }
+ bool mc_app_is_busy_hook(void) { return s_mock_busy_hook; }
++void mc_disable_all_steppers_hook(void) { s_mc_steppers_disabled = true; }
+ void mc_sys_reset_hook(uint16_t delay_ms)
+ {
+     s_mc_reset_count++;
+@@ -297,13 +299,29 @@ static void test_mc_sys_ctrl_0x1d_gate_and_magic(void)
+     send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_SYSTEM_CONTROL, &boot_req);
+     require_true(s_last_ap_tx[5] == MINIMC_CMD_NACK && s_last_ap_tx[12] == MINIMC_ERR_DEVICE_BUSY, "heating active -> NACK 0x05");
+ 
+-    /* 3. 降温至 0 后空闲安全态发送 0x1D (action=2) -> 回 18B (4B payload) 0x00 CMD_ACK + 写 UPG2 + 软复位 */
++    /* 3. 降温至 0 后：先测试非法长度 plen=5 -> NACK 0x03，再测试空闲安全态 0x1D (action=2) */
+     const minimc_set_temp_req_t cool_req = { 0, 0 };
+     send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_SET_TEMP, &cool_req);
+     s_mock_tick_ms += 300U;
+     minimc_proto_poll();
++
++    uint8_t bad_len_frame[19] = {
++        MINIMC_SOF_1, MINIMC_SOF_2, MINIMC_NODE_AP, MINIMC_NODE_MC, 0x05U,
++        MINIMC_CMD_SYSTEM_CONTROL, 4U, 0U, 0x99U, 0x00U, 5U, 0U,
++        2U, 1U, 50U, 0U, 0U, 0U, 0U
++    };
++    const uint16_t bad_crc = minimc_crc16(bad_len_frame, 17U);
++    bad_len_frame[17] = (uint8_t)(bad_crc & 0xFFU);
++    bad_len_frame[18] = (uint8_t)((bad_crc >> 8U) & 0xFFU);
++    s_last_ap_tx_len = 0U;
++    minimc_proto_push_ap_rx(bad_len_frame, 19U);
++    minimc_proto_poll();
++    require_true(s_last_ap_tx[5] == MINIMC_CMD_NACK && s_last_ap_tx[12] == 0x03U, "0x1D plen=5 -> NACK 0x03");
++
++    s_mc_steppers_disabled = false;
+     send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_SYSTEM_CONTROL, &boot_req);
+     require_true(s_last_ap_tx_len == 18U && s_last_ap_tx[5] == MINIMC_CMD_ACK, "0x1D returns 4B CMD_ACK before reset");
++    require_true(s_mc_steppers_disabled, "0x1D disables all steppers before reset");
+     require_true(s_mc_magic_word == MC_BOOT_UPGRADE_MAGIC && s_mc_reset_count == 1U && s_mc_last_delay_ms == 50U, "UPG2 written & reset");
+ }
+ 

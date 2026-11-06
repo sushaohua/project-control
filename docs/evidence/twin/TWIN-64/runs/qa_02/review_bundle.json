@@ -1,0 +1,434 @@
+{
+  "request": {
+    "repository": "mcu-p3",
+    "candidate_commit": "5016d5c074452bb8c1648460a18cfd097e74807f",
+    "task_revision": 2,
+    "task_id": "TWIN-64",
+    "workspace": "/home/sushaohua/workspace/ai_soc_project",
+    "commands": [
+      {
+        "kind": "test",
+        "subpath": "mcu-p3",
+        "command": "rm -rf /tmp/qa_twin64 && cp -r . /tmp/qa_twin64 && cd /tmp/qa_twin64/motion-controller-mcu/tests && sh run_tests.sh && cd /tmp/qa_twin64/color-engine-mcu/tests && sh run_tests.sh && rm -rf /tmp/qa_twin64",
+        "id": "build_and_test_twin-64"
+      }
+    ],
+    "targets": [
+      {
+        "name": "project-control",
+        "commit": "d1a206ba5404dc0546ee807ab31963e8f4b87e9d",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+        "ref": "main"
+      },
+      {
+        "name": "soc-ap",
+        "commit": "c6692b244e0aa09d04e7051293f9fef3c67535dd",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+        "ref": "main"
+      },
+      {
+        "name": "mcu-p3",
+        "commit": "5016d5c074452bb8c1648460a18cfd097e74807f",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+        "ref": "feat/soc-debug"
+      },
+      {
+        "name": "test_harness",
+        "commit": "19c12bfeeac852670e8bdcb65ce0abcd1de121c1",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+        "ref": "main"
+      },
+      {
+        "name": "boot/bootloadermc",
+        "commit": "4fc171ea61912561949b9a0cfc1da8975e4c39ba",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git",
+        "ref": "soc_debug"
+      },
+      {
+        "name": "boot/bootloaderth",
+        "commit": "769fccbe52464ad7ceb856c5e89cb0d25abbbf87",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git",
+        "ref": "soc_debug"
+      }
+    ],
+    "contract": {
+      "id": "TWIN-64",
+      "title": "TWIN-64 MC/TH App 520B载荷扩容、0x1D受控进Boot、MC维护透明路由与th_upgrade_mgr同构迁移",
+      "revision": 2,
+      "plan_revision": "vmware-soc-twin-20261106",
+      "task_kind": "implementation",
+      "development_stage": "vmware-twin",
+      "dispatchable": true,
+      "status": "Review",
+      "blocked": false,
+      "planning_status": "active",
+      "owner": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+      "proposed_owner": "ENG-MC",
+      "executor": {
+        "role": "ENG-MC",
+        "agent_id": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+        "run_id": "author_01"
+      },
+      "qa_policy": "streamlined-v1",
+      "reviewer": [
+        "QA"
+      ],
+      "verifier": null,
+      "integrator": "INTEGRATOR",
+      "requirement_id": "REQ-20261105-003",
+      "demand_id": "DEM-20261105-006",
+      "confirmation_id": "CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106",
+      "approval_id": "APPR-20261106-001",
+      "accepted_scope": "Docker QA sandbox (gcc + python3) verification of MC/TH App Rev 2.0.4 alignment (520B max payload, 0x17 EMERGENCY_STOP, 0x19 FILAMENT_CONTROL, 0x1D SYSTEM_CONTROL, 0x20~0x23 OTA macros), MC App DST=0x03 maintenance transparent routing (600B UART buffers, drain_th_rx 534B fix, proxy_active & 5000ms timeout recovery), 0x1D safe heater-off/stepper-disable + 4B CMD_ACK + magic word + reset, dynamic TH boot_id, th_upgrade_mgr.c migration to MiniMCProto v2.0 with 236K linker limit, TWIN-44/45/60 regressions, and S04 function length (<=50), params (<=4) & Chinese comment checks. Cross-compiler arm-none-eabi-gcc ELF/bin build and physical HIL verification (covered by TWIN-67) are out of scope for qa-sandbox:20261029; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass.",
+      "review_assignments": {
+        "reviewer_sessions": [
+          {
+            "role": "QA",
+            "platform": "codex",
+            "model": "gpt-6-luna",
+            "planned_session_alias": "planned-qa-twin-64",
+            "session": null,
+            "decision": "PENDING",
+            "evidence": "docs/evidence/twin/TWIN-64/runs/qa_02/qa_review_report.md"
+          }
+        ],
+        "verifier_session": null,
+        "integrator_session": null
+      },
+      "primary_work_package": "TASK-009",
+      "related_work_packages": [
+        "TASK-007",
+        "TASK-012"
+      ],
+      "depends_on": [
+        "TWIN-60"
+      ],
+      "dependency_conditions": [
+        {
+          "task": "TWIN-60",
+          "accepted_version": "project-control=960f079647a00864fe7913836336b2a2ee3d729a; soc-ap=79932746d225bb115010c5545ef3f7499482e137; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-60/runs/qa_02/qa_review_report.md",
+          "required": "继承TWIN-60 mcu-p3双端固件基线"
+        }
+      ],
+      "scope_status": "mapped",
+      "allowed_repositories": [
+        "mcu-p3",
+        "project-control"
+      ],
+      "write_scope": {
+        "mcu-p3": [
+          "motion-controller-mcu/project/inc/minimc_proto.h",
+          "motion-controller-mcu/project/src/minimc_proto.c",
+          "motion-controller-mcu/project/inc/wk_dma.h",
+          "motion-controller-mcu/project/src/wk_usart.c",
+          "motion-controller-mcu/project/inc/th_upgrade_mgr.h",
+          "motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c",
+          "motion-controller-mcu/tests/**",
+          "color-engine-mcu/io_toggle/inc/minimc_proto.h",
+          "color-engine-mcu/io_toggle/src/app/minimc_proto.c",
+          "color-engine-mcu/io_toggle/src/app/mycontrol.c",
+          "color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld",
+          "color-engine-mcu/tests/**"
+        ],
+        "project-control": [
+          "docs/evidence/twin/TWIN-64/**"
+        ]
+      },
+      "allowed_paths": [
+        "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+        "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c",
+        "mcu-p3/motion-controller-mcu/project/inc/wk_dma.h",
+        "mcu-p3/motion-controller-mcu/project/src/wk_usart.c",
+        "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.h",
+        "mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c",
+        "mcu-p3/motion-controller-mcu/tests/**",
+        "mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c",
+        "mcu-p3/color-engine-mcu/io_toggle/src/app/mycontrol.c",
+        "mcu-p3/color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld",
+        "mcu-p3/color-engine-mcu/tests/**",
+        "project-control/docs/evidence/twin/TWIN-64/**"
+      ],
+      "forbidden_paths": [
+        "soc-ap/**",
+        "boot/**",
+        "test_harness/**",
+        "mcu-p3/.repo-rules/**"
+      ],
+      "source_baseline": {
+        "project-control": "d1a206ba5404dc0546ee807ab31963e8f4b87e9d",
+        "soc-ap": "c6692b244e0aa09d04e7051293f9fef3c67535dd",
+        "mcu-p3": "57674d8b07d6c75a4d20b3fcd52c23df964aa7a7",
+        "test_harness": "19c12bfeeac852670e8bdcb65ce0abcd1de121c1",
+        "boot/bootloadermc": "4fc171ea61912561949b9a0cfc1da8975e4c39ba",
+        "boot/bootloaderth": "769fccbe52464ad7ceb856c5e89cb0d25abbbf87"
+      },
+      "base_commit": "57674d8b07d6c75a4d20b3fcd52c23df964aa7a7",
+      "branch": "feat/soc-debug",
+      "candidate_commit": "5016d5c074452bb8c1648460a18cfd097e74807f",
+      "dispatch_binding": {
+        "source_commit": "57674d8b07d6c75a4d20b3fcd52c23df964aa7a7",
+        "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "consumed_artifact_versions": {
+          "master_upgrade_architecture": "b2b6d047500180c9f4d67d72c94794cbe5080caa52901ba262aa089bc1543223",
+          "protocol_v2_0_4": "ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c"
+        }
+      },
+      "protocol_input": {
+        "path": "project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md",
+        "sha256": "ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c",
+        "revision": "Rev 2.0.4"
+      },
+      "icd_versions": [
+        {
+          "path": "project-control/docs/architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md",
+          "version": 2
+        },
+        {
+          "path": "project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md",
+          "version": "Rev 2.0.4"
+        }
+      ],
+      "read_sources": [
+        "project-control/.agents/rules/repository_rule_sources.json",
+        "project-control/.agents/rules/repository_rule_boundaries.md",
+        "project-control/.agents/rules/bootloader_role_boundaries.md",
+        "project-control/.agents/rules/c_cpp_coding_standard.md",
+        "project-control/.agents/rules/code_documentation_standard.md",
+        "project-control/docs/architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md",
+        "project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md",
+        "project-control/docs/planning/minimc_v2_upgrade_engineering_inputs_20261105.md",
+        "project-control/docs/planning/minimc_v2_upgrade_qa_planning_input_20261105.md",
+        "project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md"
+      ],
+      "worktree": "mcu-p3",
+      "lease": {
+        "owner": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+        "task_revision": 2,
+        "lease_id": "lease-twin-64-20261106-01",
+        "expires_at": "2026-11-07T22:00:00+08:00"
+      },
+      "resources": [
+        {
+          "resource": "mcu-p3-worktree",
+          "location": "mcu-p3",
+          "exclusive": false,
+          "pending": null
+        }
+      ],
+      "budget": {
+        "planned_checkpoint_minutes": 60,
+        "max_evidence_based_corrections": 2,
+        "on_limit": "保存证据交COORD"
+      },
+      "checkpoint": "开工前绑定；自检单测与注释规范检查；独立沙箱与QA审查；收件",
+      "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+      "readiness_pending": [],
+      "deliverables": {
+        "artifacts": [
+          "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h",
+          "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c",
+          "mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.h",
+          "mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c",
+          "mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h",
+          "mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c",
+          "mcu-p3/color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld"
+        ],
+        "record": "docs/evidence/twin/TWIN-64/runs/author_01/result.md"
+      },
+      "rollback": {
+        "steps": [
+          "git -C mcu-p3 checkout -- ."
+        ]
+      },
+      "handoff": {
+        "receiver_role": "COORD",
+        "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+        "transport": "docs",
+        "evidence_location": "docs/evidence/twin/TWIN-64",
+        "acknowledgement": "accepted"
+      },
+      "verification": {
+        "commands": [
+          {
+            "id": "build_and_test_twin-64",
+            "cwd": "mcu-p3",
+            "command": "rm -rf /tmp/qa_twin64 && cp -r . /tmp/qa_twin64 && cd /tmp/qa_twin64/motion-controller-mcu/tests && sh run_tests.sh && cd /tmp/qa_twin64/color-engine-mcu/tests && sh run_tests.sh && rm -rf /tmp/qa_twin64",
+            "expected": "MC与TH宿主机协议、534B路由、0x1D受控进Boot及th_upgrade_mgr v2.0单元测试100%通过",
+            "availability": "available"
+          }
+        ],
+        "positive_cases": [
+          "MC/TH App扩容至MINIMC_MAX_PAYLOAD_SIZE=520B，对齐Rev 2.0.4命令表，实现0x1D安全停机回4B CMD_ACK置魔数软复位、MC维护态DST=0x03 534B大帧透明路由、TH动态boot_id及th_upgrade_mgr.c同构v2.0升级"
+        ],
+        "negative_cases": [
+          "非空闲安全态拒绝0x1D回NACK 0x05；严禁在业务串口发送M997或5A A5私有帧；AT32F423xC_FLASH.ld限制FLASH LENGTH = 236K"
+        ]
+      },
+      "required_evidence_level": "server-sandbox-and-independent-review",
+      "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+      "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+      "updated": "2026-11-06T09:55:00+08:00"
+    },
+    "run_dir": "/tmp/qa_TWIN-64_143gjfvi",
+    "timeout_seconds": 1500,
+    "sandbox_command": [
+      "/usr/bin/python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+      "--config",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+      "--task",
+      "TWIN-64",
+      "--revision",
+      "2",
+      "--output-dir",
+      "/tmp/qa_TWIN-64_143gjfvi/evidence",
+      "--repo-commit",
+      "project-control=d1a206ba5404dc0546ee807ab31963e8f4b87e9d:main",
+      "--repo-commit",
+      "soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd:main",
+      "--repo-commit",
+      "mcu-p3=5016d5c074452bb8c1648460a18cfd097e74807f:feat/soc-debug",
+      "--repo-commit",
+      "test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1:main",
+      "--repo-commit",
+      "boot/bootloadermc=4fc171ea61912561949b9a0cfc1da8975e4c39ba:soc_debug",
+      "--repo-commit",
+      "boot/bootloaderth=769fccbe52464ad7ceb856c5e89cb0d25abbbf87:soc_debug",
+      "--cmd",
+      "test:mcu-p3:rm -rf /tmp/qa_twin64 && cp -r . /tmp/qa_twin64 && cd /tmp/qa_twin64/motion-controller-mcu/tests && sh run_tests.sh && cd /tmp/qa_twin64/color-engine-mcu/tests && sh run_tests.sh && rm -rf /tmp/qa_twin64"
+    ],
+    "request_ref": {
+      "path": "/tmp/qa_TWIN-64_143gjfvi/request.json",
+      "sha256": "233e3cac8d5ff61adde69e68ab7f384f727c28a8998837581924e2b646f2c313"
+    }
+  },
+  "server_qa": {
+    "task_id": "TWIN-64",
+    "task_revision": 2,
+    "source": "server-pinned-commits",
+    "fresh_checkout": true,
+    "sandbox": {
+      "kind": "container",
+      "container_id": "f87d9f7a20b3",
+      "id": "TWIN-64_run_115904_20261106_035904",
+      "image": "qa-sandbox:20261029",
+      "path": "/tmp/qa_sandboxes/TWIN-64_run_115904_20261106_035904",
+      "developer_mounts": [],
+      "container_inspect": {
+        "id": "f87d9f7a20b37c3953e464986942097e9fb5170abcda57fd09061758b4ae8f8f",
+        "image": "qa-sandbox:20261029",
+        "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "created": "2026-11-06T03:59:41.376461136Z",
+        "state": "exited",
+        "mounts": [
+          {
+            "Type": "bind",
+            "Source": "/tmp/qa_sandboxes/TWIN-64_run_115904_20261106_035904",
+            "Destination": "/workspace",
+            "Mode": "ro",
+            "RW": false,
+            "Propagation": "rprivate"
+          }
+        ]
+      }
+    },
+    "server_lock": {
+      "path": "/tmp/qa_TWIN-64_143gjfvi/evidence/server_lock.json",
+      "sha256": "cc2e6ea3a0cc791e3392ba8ece8a09f1fe7ec29b21bbc77883e926858a811854"
+    },
+    "checkout_log": {
+      "path": "/tmp/qa_TWIN-64_143gjfvi/evidence/checkout.log",
+      "sha256": "af006ec93b9f79b9654d23edb70647cb6d70524daad6ab789f20799a81b5b0cb"
+    },
+    "runtime_log": {
+      "path": "/tmp/qa_TWIN-64_143gjfvi/evidence/runtime.log",
+      "sha256": "d45e150cc399cfd3e36eda5c04391b954967f3117b4e183fd46a26f55c9e16f4"
+    },
+    "server_verdict": {
+      "path": "/tmp/qa_TWIN-64_143gjfvi/evidence/server_verdict.json",
+      "sha256": "648523cdcb214e6831d4cac1676b73204db5d4361ab34732bcb3ac6e3670fcdf"
+    },
+    "tool_versions": {
+      "git": "git version 2.25.1",
+      "python": "Python 3.8.10"
+    },
+    "build_results": [],
+    "test_results": [
+      {
+        "command": "rm -rf /tmp/qa_twin64 && cp -r . /tmp/qa_twin64 && cd /tmp/qa_twin64/motion-controller-mcu/tests && sh run_tests.sh && cd /tmp/qa_twin64/color-engine-mcu/tests && sh run_tests.sh && rm -rf /tmp/qa_twin64",
+        "exit_code": "0",
+        "subpath": "mcu-p3",
+        "duration": "1.71s",
+        "output": "=== [1/3] Run TWIN-44/47/60 MC regression suite (test_twin44_mc_debug.c) ===\n========================================================================\nTWIN-44 & TWIN-47 MC USART2 921600, Control Cmds & 0x1C Verification\n========================================================================\n[RUN ] test_usart2_921600_reconfig\n[PASS] test_usart2_921600_reconfig\n[RUN ] test_ring_buffer_trunc_drop_and_recovery\n[PASS] test_ring_buffer_trunc_drop_and_recovery\n[RUN ] test_honest_minimc_v2_queries_and_nack\n[PASS] test_honest_minimc_v2_queries_and_nack\n[RUN ] test_non_intrusive_notify_and_fault_sync\n[PASS] test_non_intrusive_notify_and_fault_sync\n[RUN ] test_tx_fail_suppresses_ack_and_recovers\n[PASS] test_tx_fail_suppresses_ack_and_recovers\n[RUN ] test_relay_timeout_crc_err_and_recovery\n[PASS] test_relay_timeout_crc_err_and_recovery\n[RUN ] test_th_relay_correlation_and_nack\n[PASS] test_th_relay_correlation_and_nack\n[RUN ] test_twin47_temp_home_move_stop\n[PASS] test_twin47_temp_home_move_stop\n[RUN ] test_twin47_job_filament_level_gcode\n[PASS] test_twin47_job_filament_level_gcode\n[RUN ] test_twin60_adc_range_filament_nack_and_boot_id\n[PASS] test_twin60_adc_range_filament_nack_and_boot_id\n------------------------------------------------------------------------\nAll 10 TWIN-44/TWIN-47/TWIN-60 test suites PASSED!\n========================================================================\n=== [2/3] Run TWIN-64 MC OTA, 0x1D magic (0x2005FFF0), 534B proxy & th_upgrade_mgr suite ===\n[PASS] test_mc_ota_and_relay: all TWIN-64 MC App OTA & 534B relay tests passed!\n=== [3/3] Verify MC zero M997/5AA5 residue & S04 function/comment gates ===\n[PASS] MC S04 function length (<=50), params (<=4) and Chinese comments verified!\n=== [1/3] Run TWIN-45/48/60 TH regression suite (test_twin45_th_debug.c aligned to 0x19) ===\n========================================================================\nTWIN-45 / TWIN-48 TH USART1 921600 Cascade & Control Suite\n========================================================================\n[RUN ] test_usart1_921600_and_usart3_115200_init\n[PASS] test_usart1_921600_and_usart3_115200_init\n[RUN ] test_cascade_rx_and_tx_logging\n[PASS] test_cascade_rx_and_tx_logging\n[RUN ] test_periodic_state_and_dynamic_sync\n[PASS] test_periodic_state_and_dynamic_sync\n[RUN ] test_negative_crc_err_bad_frame_and_recovery\n[PASS] test_negative_crc_err_bad_frame_and_recovery\n[RUN ] test_negative_usart1_send_raw_fail_and_recovery\n[PASS] test_negative_usart1_send_raw_fail_and_recovery\n[RUN ] test_negative_usart3_trunc_and_recovery\n[PASS] test_negative_usart3_trunc_and_recovery\n[RUN ] test_negative_usart3_ring_full_drop_and_recovery\n[PASS] test_negative_usart3_ring_full_drop_and_recovery\n[RUN ] test_twin48_set_temp_and_no_false_safety_lock\n[PASS] test_twin48_set_temp_and_no_false_safety_lock\n[RUN ] test_twin48_filament_and_stop\n[PASS] test_twin48_filament_and_stop\n[RUN ] test_twin48_gcode_queue_and_send_quick\n[PASS] test_twin48_gcode_queue_and_send_quick\n------------------------------------------------------------------------\nAll 10 TWIN-45 / TWIN-48 test suites PASSED!\n========================================================================\n=== [2/3] Run TWIN-64 TH OTA 0x1D magic (0x20008000 UPGD), 534B & boot_id suite ===\n[PASS] test_th_ota_and_bootid: all TWIN-64 TH App 0x1D, UPGD & boot_id tests passed!\n=== [3/3] Verify TH AT32F423xC_FLASH.ld (LENGTH = 236K), zero M997 send_quick & S04 gates ===\n[PASS] TH AT32F423xC_FLASH.ld (236K), zero M997 residue and S04 function/comment gates verified!"
+      }
+    ],
+    "passed": true,
+    "timestamp": "2026-11-06T03:59:45.846061+00:00",
+    "path": "/tmp/qa_TWIN-64_143gjfvi/evidence/server_qa.json",
+    "sha256": "f681a94a64e5699f4fd74b73227159f51bd1f60b3d9ce6f57342668ca0aa6bb9"
+  },
+  "diffs": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_sandboxes/TWIN-64_run_115904_20261106_035904/project-control",
+      "base_commit": "d1a206ba5404dc0546ee807ab31963e8f4b87e9d",
+      "candidate_commit": "d1a206ba5404dc0546ee807ab31963e8f4b87e9d",
+      "diff": {
+        "path": "/tmp/qa_TWIN-64_143gjfvi/diffs/project-control.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "soc-ap",
+      "source": "/tmp/qa_sandboxes/TWIN-64_run_115904_20261106_035904/soc-ap",
+      "base_commit": "c6692b244e0aa09d04e7051293f9fef3c67535dd",
+      "candidate_commit": "c6692b244e0aa09d04e7051293f9fef3c67535dd",
+      "diff": {
+        "path": "/tmp/qa_TWIN-64_143gjfvi/diffs/soc-ap.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "mcu-p3",
+      "source": "/tmp/qa_sandboxes/TWIN-64_run_115904_20261106_035904/mcu-p3",
+      "base_commit": "57674d8b07d6c75a4d20b3fcd52c23df964aa7a7",
+      "candidate_commit": "5016d5c074452bb8c1648460a18cfd097e74807f",
+      "diff": {
+        "path": "/tmp/qa_TWIN-64_143gjfvi/diffs/mcu-p3.patch",
+        "sha256": "c0ce1ed2bc05db9d3b8b59523f3b8a75785ff285dca63c2bf6f70d6303083164"
+      }
+    },
+    {
+      "repository": "test_harness",
+      "source": "/tmp/qa_sandboxes/TWIN-64_run_115904_20261106_035904/test_harness",
+      "base_commit": "19c12bfeeac852670e8bdcb65ce0abcd1de121c1",
+      "candidate_commit": "19c12bfeeac852670e8bdcb65ce0abcd1de121c1",
+      "diff": {
+        "path": "/tmp/qa_TWIN-64_143gjfvi/diffs/test_harness.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "boot/bootloadermc",
+      "source": "/tmp/qa_sandboxes/TWIN-64_run_115904_20261106_035904/boot/bootloadermc",
+      "base_commit": "4fc171ea61912561949b9a0cfc1da8975e4c39ba",
+      "candidate_commit": "4fc171ea61912561949b9a0cfc1da8975e4c39ba",
+      "diff": {
+        "path": "/tmp/qa_TWIN-64_143gjfvi/diffs/boot/bootloadermc.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "boot/bootloaderth",
+      "source": "/tmp/qa_sandboxes/TWIN-64_run_115904_20261106_035904/boot/bootloaderth",
+      "base_commit": "769fccbe52464ad7ceb856c5e89cb0d25abbbf87",
+      "candidate_commit": "769fccbe52464ad7ceb856c5e89cb0d25abbbf87",
+      "diff": {
+        "path": "/tmp/qa_TWIN-64_143gjfvi/diffs/boot/bootloaderth.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}
