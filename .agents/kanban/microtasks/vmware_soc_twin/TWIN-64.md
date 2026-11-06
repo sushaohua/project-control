@@ -1,7 +1,7 @@
 ---
 id: TWIN-64
 title: TWIN-64 MC/TH App 520B载荷扩容、0x1D受控进Boot、MC维护透明路由与th_upgrade_mgr同构迁移
-revision: 2
+revision: 3
 plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
@@ -33,7 +33,7 @@ review_assignments:
     planned_session_alias: planned-qa-twin-64
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-64/runs/qa_02/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-64/runs/qa_03/qa_review_report.md
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -62,8 +62,11 @@ write_scope:
   - motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c
   - motion-controller-mcu/tests/**
   - color-engine-mcu/io_toggle/inc/minimc_proto.h
+  - color-engine-mcu/io_toggle/inc/usart.h
   - color-engine-mcu/io_toggle/src/app/minimc_proto.c
   - color-engine-mcu/io_toggle/src/app/mycontrol.c
+  - color-engine-mcu/io_toggle/src/bsp/usart.c
+  - color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
   - color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld
   - color-engine-mcu/tests/**
   project-control:
@@ -77,8 +80,11 @@ allowed_paths:
 - mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c
 - mcu-p3/motion-controller-mcu/tests/**
 - mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h
+- mcu-p3/color-engine-mcu/io_toggle/inc/usart.h
 - mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c
 - mcu-p3/color-engine-mcu/io_toggle/src/app/mycontrol.c
+- mcu-p3/color-engine-mcu/io_toggle/src/bsp/usart.c
+- mcu-p3/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
 - mcu-p3/color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld
 - mcu-p3/color-engine-mcu/tests/**
 - project-control/docs/evidence/twin/TWIN-64/**
@@ -88,7 +94,7 @@ forbidden_paths:
 - test_harness/**
 - mcu-p3/.repo-rules/**
 source_baseline:
-  project-control: d1a206ba5404dc0546ee807ab31963e8f4b87e9d
+  project-control: 9798fdf601d958d2c5064220d9ff0d29a3f5e0ad
   soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
   mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
@@ -96,7 +102,7 @@ source_baseline:
   boot/bootloaderth: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
 base_commit: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
 branch: feat/soc-debug
-candidate_commit: 5016d5c074452bb8c1648460a18cfd097e74807f
+candidate_commit: 3f1cfa66c6d27422cf038936b29aca7e45edb511
 dispatch_binding:
   source_commit: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -126,7 +132,7 @@ read_sources:
 worktree: mcu-p3
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 2
+  task_revision: 3
   lease_id: lease-twin-64-20261106-01
   expires_at: '2026-11-07T22:00:00+08:00'
 resources:

@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Review
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -24,18 +24,14 @@ requirement_id: REQ-20261105-003
 demand_id: DEM-20261105-006
 confirmation_id: CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106
 approval_id: APPR-20261106-001
-accepted_scope: Docker QA sandbox verification of SoC AP Rev 2.0.4 protocol alignment
-  (remove 0x05 ESTOP_ACK, move SYSTEM_CONTROL to 0x1D, add 0x20~0x23 structs & 520B
-  payload support), /var/update .part->.bin->sealed read-only staging and offline
-  128B ATSG Trailer verification, 4-condition safety admission & UPGRADING_MAINTENANCE
-  state interlock, and Stage 1~4 stop-and-wait upgrade orchestrator.
+accepted_scope: "Docker QA sandbox (gcc/g++ + cmake + ctest) verification of SoC AP Rev 2.0.4 protocol alignment (remove 0x05 ESTOP_ACK, move SYSTEM_CONTROL to 0x1D, add 0x20~0x23 structs & 520B payload support), /var/update .part->.bin->sealed read-only staging and offline 128B ATSG Trailer verification, 4-condition safety admission & UPGRADING_MAINTENANCE state interlock, Stage 1~4 stop-and-wait upgrade orchestrator, and S04 function length (<=50), params (<=4) & Chinese comment checks. Physical HIL verification (covered by TWIN-67) is out of scope for qa-sandbox:20261029; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-65
-    session: planned-qa-twin-65
+    session: null
     decision: PENDING
     evidence: docs/evidence/twin/TWIN-65/runs/qa_01/qa_review_report.md
   verifier_session: null
@@ -96,7 +92,7 @@ forbidden_paths:
 - test_harness/**
 - soc-ap/.agents/rules/**
 source_baseline:
-  project-control: c1d2c461aa65e6497c295843a2735d0d02ee2e2d
+  project-control: 9798fdf601d958d2c5064220d9ff0d29a3f5e0ad
   soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
   mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
@@ -104,7 +100,7 @@ source_baseline:
   boot/bootloaderth: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
 base_commit: c6692b244e0aa09d04e7051293f9fef3c67535dd
 branch: main
-candidate_commit: null
+candidate_commit: 42a1dc4465b4a848c768283c570a48be63ec1e6b
 dispatch_binding:
   source_commit: c6692b244e0aa09d04e7051293f9fef3c67535dd
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -157,6 +153,7 @@ deliverables:
   - soc-ap/services/ui_gateway/**
   - soc-ap/tests/forward/**
   - soc-ap/tests/device_manager/**
+  - soc-ap/tests/ui_gateway/**
   record: docs/evidence/twin/TWIN-65/runs/author_01/result.md
 rollback:
   steps:
