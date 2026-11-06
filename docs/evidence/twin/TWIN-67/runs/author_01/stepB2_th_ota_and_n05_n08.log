@@ -1,0 +1,20 @@
+[STEP B2.1] TH Bootloader 0x01 -> 0x02: boot_id=0x58C2C1B7, commit=0x769FCCBE, cap=0xE0080423 (Bit31=True) raw=55aa0301060203040200100002000100b7c1c258becc9f76230408e03f2f
+[STEP B2.2 N05-TH-WrongBoard] 0x20 -> 0x06 (NACK), err_code=0x06, seq=3 raw=55aa030106060304030003000603000775
+[STEP B2.3 N05-TH-Oversize] 0x20 (241665 B) -> 0x06 (NACK), err_code=0x14, seq=4 raw=55aa03010606030404000300140400d7d8
+[STEP B2.5 N08-Start] Valid 0x20 CMD_OTA_START (len=76896, crc32=0xAE3C4CF6) -> 0x00 raw=55aa03010600030406000400001000009365
+[STEP B2.6 N08-Chunk0-RAM-Cached] After 512B Chunk 0: 0x23 -> state=2 (CHUNK0_CACHED_RAM), cached_c0=512, bytes_written=0 raw=55aa0301062303040f000800020000020000000032b9
+[STEP B2.7 N08-MidStream-Status] After offset 0..1024: 0x23 -> state=3 (FLASH_WRITING), cached_c0=512, bytes_written=512 raw=55aa0301062303041800080003000002000200009aaf
+[STEP B2.8 N08-Interrupt-Reset] Triggering hardware reset on TH mid-OTA WITHOUT sending 0x1D...
+[STEP B2.9 N08-Auto-Recovery-Verified] After 1.5s without 0x1D, TH 0x01 -> 0x02: boot_id=0x36FA3B68, commit=0x769FCCBE, cap=0xE0080423 (Bit31=True) raw=55aa0301060203041400100002000100683bfa36becc9f76230408e013f6
+[STEP B2.9b N08-PostReset-OTA-Status] 0x23 -> state=0 (IDLE), bytes_written=0 raw=55aa0301062303041500080000000000000000000558
+[STEP B2.10 TH-Full-OTA-Start] 0x20 (len=76896, crc32=0xAE3C4CF6) -> 0x00 raw=55aa03010600030416000400001000002758
+  [TH 0x21 Progress] chunk=200/1202 offset=12800/76896 (16.6%) elapsed=29.36s
+  [TH 0x21 Progress] chunk=400/1202 offset=25600/76896 (33.3%) elapsed=59.19s
+  [TH 0x21 Progress] chunk=600/1202 offset=38400/76896 (49.9%) elapsed=90.21s
+  [TH 0x21 Progress] chunk=800/1202 offset=51200/76896 (66.6%) elapsed=121.00s
+  [TH 0x21 Progress] chunk=1000/1202 offset=64000/76896 (83.2%) elapsed=142.59s
+  [TH 0x21 Progress] chunk=1200/1202 offset=76800/76896 (99.9%) elapsed=167.81s
+  [TH 0x21 Progress] chunk=1202/1202 offset=76896/76896 (100.0%) elapsed=167.83s
+[STEP B2.11 TH-Pre-Finish-Status] 0x23 -> state=3, last_err=0x00, cached_c0=512, bytes_written=76384/76384 raw=55aa030106230304c904080003000002602a01009df8
+[STEP B2.12 TH-OTA-Finish] 0x22 (Commit Chunk 0 + Anchor + CRC32 + Jump) -> 0x00 raw=55aa030106000304ca04040000100000b3be
+[STEP B2.13 Post-OTA TH App 0x01] -> 0x02: ver=0.2 fw=0.2 boot_id=0x634EB945 commit=0x3F1CFA66 cap=0x00000007 (Bit31=False) raw=55aa030106020304cb0410000200020045b94e6366fa1c3f07000000b051

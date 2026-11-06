@@ -1,0 +1,13 @@
+[STEP B1.1] MC Bootloader 0x01 -> 0x02: boot_id=0xC1E6CD05, commit=0x4FC171EA, cap=0xC0080435 (Bit31=True) raw=55aa020106020400010010000200010005cde6c1ea71c14f350408c04d87
+[STEP B1.2 N05-WrongBoard] 0x20 -> 0x06 (NACK), err_code=0x06, seq=2 raw=55aa02010606040002000300060200f205
+[STEP B1.3 N05-Oversize] 0x20 (917505 B) -> 0x06 (NACK), err_code=0x14, seq=3 raw=55aa02010606040003000300140300a1a3
+[STEP B1.4 N05-VerifyNoErase] 0x23 -> state=1, last_err=0x14, cached_c0=0, bytes_written=0 raw=55aa020106230400040008000114000000000000d458
+[STEP B1.5] Valid 0x20 CMD_OTA_START (len=383272, crc32=0xE4CC7AD3) -> 0x00 raw=55aa0201060004000a00040010020000f4b9
+  [0x21 Progress] chunk=150/749 offset=76800/383272 (20.0%) elapsed=4.06s
+  [0x21 Progress] chunk=300/749 offset=153600/383272 (40.1%) elapsed=8.12s
+  [0x21 Progress] chunk=450/749 offset=230400/383272 (60.1%) elapsed=12.10s
+  [0x21 Progress] chunk=600/749 offset=307200/383272 (80.2%) elapsed=16.00s
+  [0x21 Progress] chunk=749/749 offset=383272/383272 (100.0%) elapsed=19.98s
+[STEP B1.6] Pre-Finish 0x23 -> state=3, last_err=0x00, bytes_written=383272/383272 raw=55aa020106230400f80208000300000028d905006c0f
+[STEP B1.7] 0x22 CMD_OTA_FINISH -> 0x00 raw=55aa020106000400f902040010020000ef5c
+[STEP B1.8] Post-OTA MC App 0x01 -> 0x02: ver=0.2 fw=0.2 boot_id=0xC2587788 commit=0x3F1CFA66 cap=0x00000003 (Bit31=False) raw=55aa020106020400fa02100002000200887758c266fa1c3f030000005dc5

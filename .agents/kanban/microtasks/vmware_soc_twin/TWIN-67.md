@@ -7,7 +7,7 @@ task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
 status: InProgress
-blocked: true
+blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
 proposed_owner: INTEGRATOR
@@ -120,8 +120,7 @@ budget:
   on_limit: 保存证据交COORD
 checkpoint: 开工前绑定；自检单测与注释规范检查；独立沙箱与QA审查；收件
 execution_contract: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
-readiness_pending:
-- 等待物理HIL串口设备(/dev/ttyUSB*)与MC/TH实板挂载至当前虚拟机后执行D4-A双Boot实板迁移及H01~H06/U01~U08实机验收
+readiness_pending: []
 deliverables:
   artifacts:
   - project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md

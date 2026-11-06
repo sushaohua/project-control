@@ -1,0 +1,12 @@
+==================================================================
+=== STEP B4 (N07): PHYSICAL HOT-UNPLUG & RECOVERY VERIFICATION ===
+==================================================================
+[N07.1 Online Baseline] FWD_PID=113539 system_status=DEGRADED device_state=IDLE TH=ONLINE(boot_id=0x8877AA55, cap=0x00000007) tool_temp=121.2C(FRESH) ota_status={'stage': 'IDLE', 'confirm_stage': 0, 'progress_pct': 0, 'is_maintenance': False}
+  [FWD Version Handshake] [FORWARD DEBUG] RX Version Response: node=1, proto=2.0, fw=2.0, commit=0x3F1CFA66
+[N07.2 Action] Unbinding physical USB-UART /dev/ttyUSB0 (1-2.1:1.0)...
+[N07.3 Decay <=3.0s] OFFLINE & Sentinel reached=True in 2.83s: bed_millic=2147483646 tool_millic=2147483646 (0x7FFFFFFE) MC=OFFLINE TH=OFFLINE
+[N07.4 CPU <=2.0%] Unplugged daemon CPU samples=[0.3, 0.3, 0.5, 0.5]% max=0.50% (Contract: <= 2.0%)
+[N07.5 HTTP 503 Gate] jog=503 home=503 job_start=503 leveling=503 resp={'error': 503, 'message': 'Hardware offline: cannot jog motion'}
+[N07.6 Action] Rebinding physical USB-UART /dev/ttyUSB0 (1-2.1:1.0)...
+[N07.7 Auto-Recovery] Restored=True in 2.05s: tool_temp=122.3C(FRESH) TH=ONLINE(boot_id=0x8877AA55)
+[N07 PASS] Physical Hot-Unplug, Sentinel Decay <=3s, CPU <=2%, HTTP 503 Gate & Auto-Recovery Verified!

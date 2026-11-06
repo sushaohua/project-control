@@ -1,0 +1,4602 @@
+[TH-DBG] ts=663500 dir=STATE node=TH seq=2 cmd=0x14 status=OK nozzle_ddC=1203 adc_raw=2097 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=663500 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=664, tick=664000)
+[TH-DBG] ts=664000 dir=STATE node=TH seq=2 cmd=0x14 status=OK nozzle_ddC=1222 adc_raw=2047 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=664000 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+[TH-DBG] ts=664500 dir=STATE node=TH seq=2 cmd=0x14 status=OK nozzle_ddC=1222 adc_raw=2047 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=664500 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=665, tick=665000)
+[TH-DBG] ts=665000 dir=STATE node=TH seq=2 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=665000 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+[TH-DBG] ts=665500 dir=STATE node=TH seq=2 cmd=0x14 status=OK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=665500 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=666, tick=666000)
+[TH-DBG] ts=666000 dir=STATE node=TH seq=2 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=666000 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+[TH-DBG] ts=666500 dir=STATE node=TH seq=2 cmd=0x14 status=OK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=666500 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=667, tick=667000)
+[TH-DBG] ts=667000 dir=STATE node=TH seq=2 cmd=0x14 status=OK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=667000 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_BL] ==================================================
+[TH_BL]   AT32A423 Toolhead (TH) Bootloader v1.0.0 (MiniMC v2.0)
+[TH_BL]   Build Date : Nov  6 2026 15:03:46
+[TH_BL]   Flash Size : 256 KB (App Max: 236 KB)
+[TH_BL]   App Base   : 0x08004000 | Anchor: 0x0803F800
+[TH_BL]   Board ID   : 0x42300001
+[TH_BL] ==================================================
+[TH_BL] App integrity 100% verified via Sector 127 Anchor!
+[TH_BL] App integrity VALID. Listening 1000ms for MiniMCProto v2.0 request...
+[TH_BL] Window timeout with NO upgrade session. Safe jumping to App...
+[TH_BL] Executing atomic jump to App at 0x08004000...
+USART3 Init OK
+[TH_APP] === Color Engine App Started (Base: 0x08004000) ===
+[TH_APP] Version: V2.0.1-0E05 1105 | Built: 2026-11-05 13:05:14
+[TH_APP][TEST] printf float test: 123.456001, 78.90
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=19, tick=19000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=59000 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=99, tick=99000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=598000 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=638000 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=678000 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=718000 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=741199 dir=RX node=TH seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=741200 dir=TX node=TH seq=2 cmd=0x02 status=ACK fw=2.0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=758, tick=758000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=798, tick=798000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=838, tick=838000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=878, tick=878000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=918000 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=958, tick=958000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=998000 dir=STATE node=TH seq=2 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=1038, tick=1038000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=1078, tick=1078000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1090463 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090463 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090463 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090503 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090503 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090503 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090542 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090543 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090543 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090583 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090584 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090584 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090623 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090623 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090623 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090664 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090664 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090664 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090703 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090704 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090704 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090743 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090744 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090744 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090783 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090783 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090783 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090824 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090825 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090825 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090863 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090864 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090864 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090905 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090905 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090905 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090950 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090950 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090950 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090985 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1090985 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1090985 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1091024 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091024 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091025 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091064 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091065 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091065 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091105 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091106 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091106 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091145 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091146 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091146 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091185 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091185 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091185 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091226 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091226 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091226 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091266 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091266 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091266 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091306 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091306 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091306 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091345 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091345 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091346 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091386 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091386 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091386 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091425 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091426 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091426 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091472 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091472 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091472 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091507 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091507 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091507 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091546 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091546 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091546 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091587 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091587 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091587 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091626 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091627 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091627 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091666 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091666 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091667 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091706 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091707 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091707 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091746 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091747 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091747 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091787 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091788 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091788 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091827 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091827 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091827 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091867 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091867 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091867 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091908 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091908 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091908 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091948 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091948 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091948 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091994 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1091994 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1091994 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1092028 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092029 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092029 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092068 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092068 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092069 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092108 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092108 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092108 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092148 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092148 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092148 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092189 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092189 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092189 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092229 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092229 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092229 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092269 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092269 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092269 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092309 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092309 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092309 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092350 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092350 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092350 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092390 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092390 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092390 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092429 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092429 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092429 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092470 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092470 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092470 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092516 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092516 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092516 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092550 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092550 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092550 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092589 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092590 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092590 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092630 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092630 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092631 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092670 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092670 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092670 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092710 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092710 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092710 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092751 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092751 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092751 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092791 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092791 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092791 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092830 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092831 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092831 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092870 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092870 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092870 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092911 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092912 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092912 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092951 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092951 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092951 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092991 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1092991 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1092991 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1093038 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093038 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093038 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093072 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093072 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093072 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093112 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093112 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093112 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093151 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093151 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093151 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093192 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093192 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093192 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093232 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093232 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093232 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093272 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093272 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093272 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093312 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093313 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093313 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093352 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093353 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093353 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093392 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093393 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093393 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093433 dir=RX node=TH seq=1 cmd=0x1D status=OK len=18 drop=0 trunc=0
+[TH-DBG] ts=1093433 dir=ERR node=TH seq=1 cmd=0x06 status=BAD_FRAME err_code=0x04 drop=0 trunc=0
+[TH-DBG] ts=1093433 dir=TX node=TH seq=1 cmd=0x06 status=NACK err_code=0x04 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1094473 dir=RX node=TH seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=1094473 dir=TX node=TH seq=2 cmd=0x02 status=ACK fw=2.0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=1118, tick=1118000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=1158, tick=1158000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=1198, tick=1198000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_BL] ==================================================
+[TH_BL]   AT32A423 Toolhead (TH) Bootloader v1.0.0 (MiniMC v2.0)
+[TH_BL]   Build Date : Nov  6 2026 15:03:46
+[TH_BL]   Flash Size : 256 KB (App Max: 236 KB)
+[TH_BL]   App Base   : 0x08004000 | Anchor: 0x0803F800
+[TH_BL]   Board ID   : 0x42300001
+[TH_BL] ==================================================
+[TH_BL] App integrity 100% verified via Sector 127 Anchor!
+[TH_BL] App integrity VALID. Listening 1000ms for MiniMCProto v2.0 request...
+[TH_BL] Window timeout with NO upgrade session. Safe jumping to App...
+[TH_BL] Executing atomic jump to App at 0x08004000...
+USART3 Init OK
+[TH_APP] === Color Engine App Started (Base: 0x08004000) ===
+[TH_APP] Version: V2.0.1-0E05 1105 | Built: 2026-11-05 13:05:14
+[TH_APP][TEST] printf float test: 123.456001, 78.90
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=21000 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=1045 adc_raw=2498 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_BL] ==================================================
+[TH_BL]   AT32A423 Toolhead (TH) Bootloader v1.0.0 (MiniMC v2.0)
+[TH_BL]   Build Date : Nov  6 2026 15:03:46
+[TH_BL]   Flash Size : 256 KB (App Max: 236 KB)
+[TH_BL]   App Base   : 0x08004000 | Anchor: 0x0803F800
+[TH_BL]   Board ID   : 0x42300001
+[TH_BL] ==================================================
+[TH_BL] App integrity 100% verified via Sector 127 Anchor!
+[TH_BL] App integrity VALID. Listening 1000ms for MiniMCProto v2.0 request...
+[TH_BL] MiniMCProto v2.0 session active. Staying in Bootloader.
+[TH_BL] ==================================================
+[TH_BL]   AT32A423 Toolhead (TH) Bootloader v1.0.0 (MiniMC v2.0)
+[TH_BL]   Build Date : Nov  6 2026 15:03:46
+[TH_BL]   Flash Size : 256 KB (App Max: 236 KB)
+[TH_BL]   App Base   : 0x08004000 | Anchor: 0x0803F800
+[TH_BL]   Board ID   : 0x42300001
+[TH_BL] ==================================================
+[TH_ERR] App integrity check FAILED! Staying in Bootloader recovery mode.
+[TH_BL] Executing atomic jump to App at 0x08004000...
+USART3 Init OK
+[TH_APP] === Color Engine App Started (Base: 0x08004000) ===
+[TH_APP] Version: V2.0.1-530A 1106 | Built: 2026-11-06 15:10:54
+[TH_APP][TEST] printf float test: 123.456001, 78.90
+DET=1 low=0 err=0
+[TH-DBG] ts=1946 dir=RX node=TH seq=1227 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=1947 dir=TX node=TH seq=1227 cmd=0x02 status=ACK fw=2.0 boot_id=0x634EB945 commit=0x3F1CFA66 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=27, tick=27000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=67000 dir=STATE node=TH seq=1227 cmd=0x14 status=OK nozzle_ddC=1031 adc_raw=2539 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=107, tick=107000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=115697 dir=RX node=TH seq=101 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=115698 dir=TX node=TH seq=101 cmd=0x02 status=ACK fw=2.0 boot_id=0x634EB945 commit=0x3F1CFA66 drop=0 trunc=0?[TH_BL] ==================================================
+[TH_BL]   AT32A423 Toolhead (TH) Bootloader v1.0.0 (MiniMC v2.0)
+[TH_BL]   Build Date : Nov  6 2026 15:03:46
+[TH_BL]   Flash Size : 256 KB (App Max: 236 KB)
+[TH_BL]   App Base   : 0x08004000 | Anchor: 0x0803F800
+[TH_BL]   Board ID   : 0x42300001
+[TH_BL] ==================================================
+[TH_BL] App integrity 100% verified via Sector 127 Anchor!
+[TH_BL] Reboot triggered by App (0x1D UPGD). Staying in Bootloader.
+[TH_BL] Executing atomic jump to App at 0x08004000...
+USART3 Init OK
+[TH_APP] === Color Engine App Started (Base: 0x08004000) ===
+[TH_APP] Version: V2.0.1-530A 1106 | Built: 2026-11-06 15:10:54
+[TH_APP][TEST] printf float test: 123.456001, 78.90
+DET=1 low=0 err=0
+[TH-DBG] ts=1443 dir=RX node=TH seq=1308 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=1444 dir=TX node=TH seq=1308 cmd=0x02 status=ACK fw=2.0 boot_id=0x8A789505 commit=0x3F1CFA66 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=31500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=71500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=111500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=151500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1208 adc_raw=2084 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=191500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=231500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=271500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2085 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=311500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1210 adc_raw=2077 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=351500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=391500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1208 adc_raw=2083 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=431500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1208 adc_raw=2083 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=471500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1211 adc_raw=2076 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=511500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=551500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=591500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=631500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=671500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=711500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=751500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=791500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=831500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1210 adc_raw=2079 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=871500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=911500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1208 adc_raw=2084 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=951500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=991500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1031500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2085 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1071500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2086 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1111500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1151500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2085 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1191500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1231500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1271500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1211 adc_raw=2076 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1311500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2085 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1351500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1210 adc_raw=2077 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1391500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1431500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1471500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1511500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2085 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1551500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1591500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1631500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2085 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1671500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2086 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1711500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2087 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1751500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1210 adc_raw=2079 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1791500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1831500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1871500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2086 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1911500 dir=STATE node=TH seq=1308 cmd=0x14 status=OK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1921734 dir=RX node=TH seq=2170 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=1921735 dir=TX node=TH seq=2170 cmd=0x02 status=ACK fw=2.0 boot_id=0x8A789505 commit=0x3F1CFA66 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1951500 dir=STATE node=TH seq=2170 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=1991500 dir=STATE node=TH seq=2170 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2086 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2031500 dir=STATE node=TH seq=2170 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2086 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2071500 dir=STATE node=TH seq=2170 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2111500 dir=STATE node=TH seq=2170 cmd=0x14 status=OK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2151500 dir=STATE node=TH seq=2170 cmd=0x14 status=OK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2179579 dir=RX node=TH seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2179579 dir=TX node=TH seq=2 cmd=0x02 status=ACK fw=2.0 boot_id=0x8A789505 commit=0x3F1CFA66 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2191500 dir=STATE node=TH seq=2 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2085 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2205941 dir=RX node=TH seq=4 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2205942 dir=TX node=TH seq=4 cmd=0x14 status=ACK nozzle_ddC=1211 adc_raw=2075 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2206989 dir=RX node=TH seq=6 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2206990 dir=TX node=TH seq=6 cmd=0x14 status=ACK nozzle_ddC=1207 adc_raw=2087 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2208499 dir=RX node=TH seq=8 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2208500 dir=TX node=TH seq=8 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2083 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2210008 dir=RX node=TH seq=10 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2210009 dir=TX node=TH seq=10 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2211518 dir=RX node=TH seq=12 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2211519 dir=TX node=TH seq=12 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2036 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2212536 dir=RX node=TH seq=14 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2212537 dir=TX node=TH seq=14 cmd=0x14 status=ACK nozzle_ddC=1227 adc_raw=2033 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2214048 dir=RX node=TH seq=16 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2214049 dir=TX node=TH seq=16 cmd=0x14 status=ACK nozzle_ddC=1234 adc_raw=2016 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2215075 dir=RX node=TH seq=18 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2215076 dir=TX node=TH seq=18 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2036 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2216575 dir=RX node=TH seq=20 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2216576 dir=TX node=TH seq=20 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2047 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2218086 dir=RX node=TH seq=22 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2218087 dir=TX node=TH seq=22 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2038 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2219103 dir=RX node=TH seq=24 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2219104 dir=TX node=TH seq=24 cmd=0x14 status=ACK nozzle_ddC=1221 adc_raw=2049 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2220126 dir=RX node=TH seq=26 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2220127 dir=TX node=TH seq=26 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2221643 dir=RX node=TH seq=28 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2221644 dir=TX node=TH seq=28 cmd=0x14 status=ACK nozzle_ddC=1221 adc_raw=2050 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2222662 dir=RX node=TH seq=30 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2222663 dir=TX node=TH seq=30 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2058 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2223688 dir=RX node=TH seq=32 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2223689 dir=TX node=TH seq=32 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2057 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2224707 dir=RX node=TH seq=34 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2224708 dir=TX node=TH seq=34 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2068 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2225726 dir=RX node=TH seq=36 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2225727 dir=TX node=TH seq=36 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2226745 dir=RX node=TH seq=38 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2226746 dir=TX node=TH seq=38 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2069 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2227763 dir=RX node=TH seq=40 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2227764 dir=STATE node=TH seq=40 cmd=0x14 status=OK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2227764 dir=TX node=TH seq=40 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2228782 dir=RX node=TH seq=42 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2228782 dir=TX node=TH seq=42 cmd=0x14 status=ACK nozzle_ddC=1215 adc_raw=2066 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2229799 dir=RX node=TH seq=44 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2229800 dir=TX node=TH seq=44 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2067 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2230816 dir=RX node=TH seq=46 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2230817 dir=TX node=TH seq=46 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2231833 dir=RX node=TH seq=48 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2231834 dir=TX node=TH seq=48 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2080 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2232850 dir=RX node=TH seq=50 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2232851 dir=TX node=TH seq=50 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2233868 dir=RX node=TH seq=52 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2233869 dir=TX node=TH seq=52 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2080 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2235378 dir=RX node=TH seq=54 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2235379 dir=TX node=TH seq=54 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2236888 dir=RX node=TH seq=56 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2236889 dir=TX node=TH seq=56 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2237906 dir=RX node=TH seq=58 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2237907 dir=TX node=TH seq=58 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2238923 dir=RX node=TH seq=60 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2238924 dir=TX node=TH seq=60 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2239941 dir=RX node=TH seq=62 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2239942 dir=TX node=TH seq=62 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2080 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2240959 dir=RX node=TH seq=64 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2240960 dir=TX node=TH seq=64 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2241977 dir=RX node=TH seq=66 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2241978 dir=TX node=TH seq=66 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2083 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2243003 dir=RX node=TH seq=68 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2243003 dir=TX node=TH seq=68 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2244504 dir=RX node=TH seq=70 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2244505 dir=TX node=TH seq=70 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2040 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2245522 dir=RX node=TH seq=72 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2245523 dir=TX node=TH seq=72 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2040 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2246540 dir=RX node=TH seq=74 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2246541 dir=TX node=TH seq=74 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2247559 dir=RX node=TH seq=76 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2247560 dir=TX node=TH seq=76 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2249068 dir=RX node=TH seq=78 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2249069 dir=TX node=TH seq=78 cmd=0x14 status=ACK nozzle_ddC=1227 adc_raw=2033 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2250086 dir=RX node=TH seq=80 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2250087 dir=TX node=TH seq=80 cmd=0x14 status=ACK nozzle_ddC=1230 adc_raw=2025 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2251109 dir=RX node=TH seq=82 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2251110 dir=TX node=TH seq=82 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2252138 dir=RX node=TH seq=84 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2252139 dir=TX node=TH seq=84 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2253155 dir=RX node=TH seq=86 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2253156 dir=TX node=TH seq=86 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2254177 dir=RX node=TH seq=88 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2254177 dir=TX node=TH seq=88 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2057 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2255194 dir=RX node=TH seq=90 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2255195 dir=TX node=TH seq=90 cmd=0x14 status=ACK nozzle_ddC=1217 adc_raw=2061 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2256214 dir=RX node=TH seq=92 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2256214 dir=TX node=TH seq=92 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2257722 dir=RX node=TH seq=94 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2257723 dir=TX node=TH seq=94 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2058 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2258740 dir=RX node=TH seq=96 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2258741 dir=TX node=TH seq=96 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2259760 dir=RX node=TH seq=98 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2259761 dir=TX node=TH seq=98 cmd=0x14 status=ACK nozzle_ddC=1217 adc_raw=2061 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2260780 dir=RX node=TH seq=100 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2260781 dir=TX node=TH seq=100 cmd=0x14 status=ACK nozzle_ddC=1215 adc_raw=2065 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2261500 dir=STATE node=TH seq=100 cmd=0x19 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+[TH-DBG] ts=2261799 dir=RX node=TH seq=102 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2261800 dir=TX node=TH seq=102 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2069 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2262816 dir=RX node=TH seq=104 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2262817 dir=TX node=TH seq=104 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2072 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2263834 dir=RX node=TH seq=106 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2263834 dir=TX node=TH seq=106 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2264852 dir=RX node=TH seq=108 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2264853 dir=TX node=TH seq=108 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2069 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2265869 dir=RX node=TH seq=110 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2265870 dir=TX node=TH seq=110 cmd=0x14 status=ACK nozzle_ddC=1213 adc_raw=2070 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2266886 dir=RX node=TH seq=112 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2266887 dir=TX node=TH seq=112 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2081 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2267904 dir=RX node=TH seq=114 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2267905 dir=TX node=TH seq=114 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2083 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2268921 dir=RX node=TH seq=116 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2268922 dir=TX node=TH seq=116 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2082 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2269944 dir=RX node=TH seq=118 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2269945 dir=TX node=TH seq=118 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2083 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2270962 dir=RX node=TH seq=120 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2270963 dir=TX node=TH seq=120 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2084 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2272470 dir=RX node=TH seq=122 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2272471 dir=TX node=TH seq=122 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2273983 dir=RX node=TH seq=124 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2273984 dir=TX node=TH seq=124 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2082 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2275001 dir=RX node=TH seq=126 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2275002 dir=TX node=TH seq=126 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2276511 dir=RX node=TH seq=128 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2276512 dir=TX node=TH seq=128 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2277529 dir=RX node=TH seq=130 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2277530 dir=TX node=TH seq=130 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2036 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2278549 dir=RX node=TH seq=132 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2278550 dir=TX node=TH seq=132 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2280070 dir=RX node=TH seq=134 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2280071 dir=TX node=TH seq=134 cmd=0x14 status=ACK nozzle_ddC=1230 adc_raw=2025 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2281089 dir=RX node=TH seq=136 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2281090 dir=TX node=TH seq=136 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2038 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2282108 dir=RX node=TH seq=138 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2282108 dir=TX node=TH seq=138 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2283126 dir=RX node=TH seq=140 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2283127 dir=TX node=TH seq=140 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2048 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2284147 dir=RX node=TH seq=142 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2284147 dir=TX node=TH seq=142 cmd=0x14 status=ACK nozzle_ddC=1227 adc_raw=2035 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2285164 dir=RX node=TH seq=144 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2285165 dir=TX node=TH seq=144 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2048 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2286182 dir=RX node=TH seq=146 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2286183 dir=TX node=TH seq=146 cmd=0x14 status=ACK nozzle_ddC=1220 adc_raw=2053 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2287200 dir=RX node=TH seq=148 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2287201 dir=TX node=TH seq=148 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2288221 dir=RX node=TH seq=150 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2288222 dir=TX node=TH seq=150 cmd=0x14 status=ACK nozzle_ddC=1216 adc_raw=2063 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2289238 dir=RX node=TH seq=152 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2289239 dir=TX node=TH seq=152 cmd=0x14 status=ACK nozzle_ddC=1215 adc_raw=2064 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2292947 dir=RX node=TH seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2292947 dir=TX node=TH seq=2 cmd=0x02 status=ACK fw=2.0 boot_id=0x8A789505 commit=0x3F1CFA66 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2293289 dir=RX node=TH seq=4 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2293290 dir=TX node=TH seq=4 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2294197 dir=RX node=TH seq=6 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2294197 dir=TX node=TH seq=6 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2057 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2294610 dir=RX node=TH seq=8 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2294611 dir=TX node=TH seq=8 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2295520 dir=RX node=TH seq=10 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2295520 dir=STATE node=TH seq=10 cmd=0x14 status=OK nozzle_ddC=1225 adc_raw=2040 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2295520 dir=TX node=TH seq=10 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2040 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2295931 dir=RX node=TH seq=12 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2295932 dir=TX node=TH seq=12 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2296341 dir=RX node=TH seq=14 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2296342 dir=TX node=TH seq=14 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2297451 dir=RX node=TH seq=16 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2297452 dir=TX node=TH seq=16 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2298762 dir=RX node=TH seq=18 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2298762 dir=TX node=TH seq=18 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2073 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2299780 dir=RX node=TH seq=20 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2299781 dir=TX node=TH seq=20 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2069 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2301291 dir=RX node=TH seq=22 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2301292 dir=TX node=TH seq=22 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2067 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2302309 dir=RX node=TH seq=24 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2302310 dir=TX node=TH seq=24 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2067 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2303328 dir=RX node=TH seq=26 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2303329 dir=TX node=TH seq=26 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2069 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2304347 dir=RX node=TH seq=28 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2304348 dir=TX node=TH seq=28 cmd=0x14 status=ACK nozzle_ddC=1213 adc_raw=2070 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2305366 dir=RX node=TH seq=30 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2305367 dir=TX node=TH seq=30 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2080 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2306876 dir=RX node=TH seq=32 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2306877 dir=TX node=TH seq=32 cmd=0x14 status=ACK nozzle_ddC=1211 adc_raw=2075 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2308388 dir=RX node=TH seq=34 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2308388 dir=TX node=TH seq=34 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2309404 dir=RX node=TH seq=36 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2309405 dir=TX node=TH seq=36 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2082 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2310422 dir=RX node=TH seq=38 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2310423 dir=TX node=TH seq=38 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2083 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2311440 dir=RX node=TH seq=40 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2311441 dir=TX node=TH seq=40 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2081 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2312459 dir=RX node=TH seq=42 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2312460 dir=TX node=TH seq=42 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2313481 dir=RX node=TH seq=44 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2313482 dir=TX node=TH seq=44 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2314499 dir=RX node=TH seq=46 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2314499 dir=TX node=TH seq=46 cmd=0x14 status=ACK nozzle_ddC=1211 adc_raw=2076 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2315518 dir=RX node=TH seq=48 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2315518 dir=TX node=TH seq=48 cmd=0x14 status=ACK nozzle_ddC=1228 adc_raw=2032 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2316536 dir=RX node=TH seq=50 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2316536 dir=TX node=TH seq=50 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2317553 dir=RX node=TH seq=52 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2317553 dir=TX node=TH seq=52 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2318570 dir=RX node=TH seq=54 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2318571 dir=TX node=TH seq=54 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2048 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2319587 dir=RX node=TH seq=56 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2319588 dir=TX node=TH seq=56 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2321107 dir=RX node=TH seq=58 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2321108 dir=TX node=TH seq=58 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2037 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2322125 dir=RX node=TH seq=60 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2322126 dir=TX node=TH seq=60 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2323143 dir=RX node=TH seq=62 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2323144 dir=TX node=TH seq=62 cmd=0x14 status=ACK nozzle_ddC=1220 adc_raw=2051 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2324170 dir=RX node=TH seq=64 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2324171 dir=TX node=TH seq=64 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2325189 dir=RX node=TH seq=66 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2325190 dir=TX node=TH seq=66 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2054 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2326208 dir=RX node=TH seq=68 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2326208 dir=TX node=TH seq=68 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2055 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2327225 dir=RX node=TH seq=70 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2327226 dir=TX node=TH seq=70 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2328246 dir=RX node=TH seq=72 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2328247 dir=TX node=TH seq=72 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2056 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2329264 dir=RX node=TH seq=74 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2329265 dir=STATE node=TH seq=74 cmd=0x14 status=OK nozzle_ddC=1215 adc_raw=2064 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2329265 dir=TX node=TH seq=74 cmd=0x14 status=ACK nozzle_ddC=1215 adc_raw=2064 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2330289 dir=RX node=TH seq=76 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2330290 dir=TX node=TH seq=76 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2058 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2331796 dir=RX node=TH seq=78 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2331797 dir=TX node=TH seq=78 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2072 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2332815 dir=RX node=TH seq=80 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2332816 dir=TX node=TH seq=80 cmd=0x14 status=ACK nozzle_ddC=1213 adc_raw=2070 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2333835 dir=RX node=TH seq=82 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2333836 dir=TX node=TH seq=82 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2073 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2334854 dir=RX node=TH seq=84 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2334855 dir=TX node=TH seq=84 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2336361 dir=RX node=TH seq=86 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2336362 dir=TX node=TH seq=86 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2081 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2337382 dir=RX node=TH seq=88 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2337383 dir=TX node=TH seq=88 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2338400 dir=RX node=TH seq=90 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2338401 dir=TX node=TH seq=90 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2339417 dir=RX node=TH seq=92 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2339418 dir=TX node=TH seq=92 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2081 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2340435 dir=RX node=TH seq=94 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2340436 dir=TX node=TH seq=94 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2341456 dir=RX node=TH seq=96 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2341457 dir=TX node=TH seq=96 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2081 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2342474 dir=RX node=TH seq=98 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2342475 dir=TX node=TH seq=98 cmd=0x14 status=ACK nozzle_ddC=1211 adc_raw=2075 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2343492 dir=RX node=TH seq=100 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2343493 dir=TX node=TH seq=100 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2344510 dir=RX node=TH seq=102 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2344511 dir=TX node=TH seq=102 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2345529 dir=RX node=TH seq=104 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2345530 dir=TX node=TH seq=104 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2039 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2346547 dir=RX node=TH seq=106 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2346548 dir=TX node=TH seq=106 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2347565 dir=RX node=TH seq=108 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2347566 dir=TX node=TH seq=108 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2348583 dir=RX node=TH seq=110 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2348584 dir=TX node=TH seq=110 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2349601 dir=RX node=TH seq=112 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2349602 dir=TX node=TH seq=112 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2048 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2350618 dir=RX node=TH seq=114 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2350619 dir=TX node=TH seq=114 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2048 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2351636 dir=RX node=TH seq=116 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2351637 dir=TX node=TH seq=116 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2048 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2352653 dir=RX node=TH seq=118 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2352654 dir=TX node=TH seq=118 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2047 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2353671 dir=RX node=TH seq=120 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2353671 dir=TX node=TH seq=120 cmd=0x14 status=ACK nozzle_ddC=1221 adc_raw=2049 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2355181 dir=RX node=TH seq=122 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2355181 dir=TX node=TH seq=122 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2057 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2356691 dir=RX node=TH seq=124 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2356692 dir=TX node=TH seq=124 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2054 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2357710 dir=RX node=TH seq=126 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2357711 dir=TX node=TH seq=126 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2054 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2358729 dir=RX node=TH seq=128 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2358730 dir=TX node=TH seq=128 cmd=0x14 status=ACK nozzle_ddC=1215 adc_raw=2064 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2359751 dir=RX node=TH seq=130 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2359752 dir=TX node=TH seq=130 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2057 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2361258 dir=RX node=TH seq=132 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2361259 dir=TX node=TH seq=132 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2362281 dir=RX node=TH seq=134 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2362282 dir=TX node=TH seq=134 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2363000 dir=STATE node=TH seq=134 cmd=0x19 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2363298 dir=RX node=TH seq=136 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2363299 dir=TX node=TH seq=136 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2364319 dir=RX node=TH seq=138 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2364320 dir=TX node=TH seq=138 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2365337 dir=RX node=TH seq=140 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2365338 dir=TX node=TH seq=140 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2073 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2366356 dir=RX node=TH seq=142 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2366357 dir=TX node=TH seq=142 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2367867 dir=RX node=TH seq=144 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2367867 dir=TX node=TH seq=144 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2368889 dir=RX node=TH seq=146 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2368889 dir=TX node=TH seq=146 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2371597 dir=RX node=TH seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2371598 dir=TX node=TH seq=2 cmd=0x02 status=ACK fw=2.0 boot_id=0x8A789505 commit=0x3F1CFA66 drop=0 trunc=0
+[TH-DBG] ts=2371951 dir=RX node=TH seq=4 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2371952 dir=TX node=TH seq=4 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2372978 dir=RX node=TH seq=6 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2372979 dir=TX node=TH seq=6 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2080 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2373213 dir=RX node=TH seq=8 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2373214 dir=TX node=TH seq=8 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2373423 dir=RX node=TH seq=10 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2373424 dir=TX node=TH seq=10 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2373997 dir=RX node=TH seq=12 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2373997 dir=TX node=TH seq=12 cmd=0x14 status=ACK nozzle_ddC=1211 adc_raw=2075 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2374441 dir=RX node=TH seq=14 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2374441 dir=TX node=TH seq=14 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2375015 dir=RX node=TH seq=16 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2375015 dir=TX node=TH seq=16 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2040 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2375459 dir=RX node=TH seq=18 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2375460 dir=TX node=TH seq=18 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2376033 dir=RX node=TH seq=20 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2376033 dir=TX node=TH seq=20 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2037 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2376477 dir=RX node=TH seq=22 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2376478 dir=TX node=TH seq=22 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2377050 dir=RX node=TH seq=24 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2377051 dir=TX node=TH seq=24 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2036 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2377959 dir=RX node=TH seq=26 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2377960 dir=TX node=TH seq=26 cmd=0x14 status=ACK nozzle_ddC=1211 adc_raw=2075 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2378559 dir=RX node=TH seq=28 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2378560 dir=TX node=TH seq=28 cmd=0x14 status=ACK nozzle_ddC=1227 adc_raw=2033 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2378985 dir=RX node=TH seq=30 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2378986 dir=TX node=TH seq=30 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2379587 dir=RX node=TH seq=32 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2379588 dir=TX node=TH seq=32 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2047 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2380003 dir=RX node=TH seq=34 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2380004 dir=TX node=TH seq=34 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2380913 dir=RX node=TH seq=36 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2380914 dir=TX node=TH seq=36 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2083 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2381511 dir=RX node=TH seq=38 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2381512 dir=TX node=TH seq=38 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2381932 dir=RX node=TH seq=40 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2381933 dir=TX node=TH seq=40 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2080 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2382533 dir=RX node=TH seq=42 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2382534 dir=TX node=TH seq=42 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2037 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2383442 dir=RX node=TH seq=44 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2383443 dir=TX node=TH seq=44 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2384541 dir=RX node=TH seq=46 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2384542 dir=TX node=TH seq=46 cmd=0x14 status=ACK nozzle_ddC=1227 adc_raw=2033 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2385052 dir=RX node=TH seq=48 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2385052 dir=TX node=TH seq=48 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2385549 dir=RX node=TH seq=50 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2385550 dir=TX node=TH seq=50 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2386460 dir=RX node=TH seq=52 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2386461 dir=TX node=TH seq=52 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2387671 dir=RX node=TH seq=54 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2387672 dir=TX node=TH seq=54 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2388183 dir=RX node=TH seq=56 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2388184 dir=TX node=TH seq=56 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2388579 dir=RX node=TH seq=58 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2388580 dir=TX node=TH seq=58 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2389201 dir=RX node=TH seq=60 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2389201 dir=TX node=TH seq=60 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2056 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2389597 dir=RX node=TH seq=62 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2389598 dir=TX node=TH seq=62 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2037 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2390506 dir=RX node=TH seq=64 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2390506 dir=TX node=TH seq=64 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2040 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2391107 dir=RX node=TH seq=66 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2391108 dir=TX node=TH seq=66 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2039 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2391524 dir=RX node=TH seq=68 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2391525 dir=TX node=TH seq=68 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2039 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2392126 dir=RX node=TH seq=70 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2392126 dir=TX node=TH seq=70 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2036 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2392542 dir=RX node=TH seq=72 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2392543 dir=TX node=TH seq=72 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2036 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2393551 dir=RX node=TH seq=74 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2393552 dir=TX node=TH seq=74 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2394661 dir=RX node=TH seq=76 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2394661 dir=STATE node=TH seq=76 cmd=0x14 status=OK nozzle_ddC=1219 adc_raw=2056 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2394661 dir=TX node=TH seq=76 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2056 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2394961 dir=RX node=TH seq=78 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2394962 dir=TX node=TH seq=78 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2395689 dir=RX node=TH seq=80 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2395690 dir=TX node=TH seq=80 cmd=0x14 status=ACK nozzle_ddC=1221 adc_raw=2049 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2395978 dir=RX node=TH seq=82 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2395979 dir=TX node=TH seq=82 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2396710 dir=RX node=TH seq=84 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2396711 dir=TX node=TH seq=84 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2056 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2396997 dir=RX node=TH seq=86 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2396997 dir=TX node=TH seq=86 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2397737 dir=RX node=TH seq=88 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2397738 dir=TX node=TH seq=88 cmd=0x14 status=ACK nozzle_ddC=1215 adc_raw=2064 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2398854 dir=RX node=TH seq=90 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2398855 dir=TX node=TH seq=90 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2069 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2400046 dir=RX node=TH seq=92 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2400047 dir=TX node=TH seq=92 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2400264 dir=RX node=TH seq=94 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2400265 dir=TX node=TH seq=94 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2401064 dir=RX node=TH seq=96 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2401064 dir=TX node=TH seq=96 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2401283 dir=RX node=TH seq=98 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2401284 dir=TX node=TH seq=98 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2402080 dir=RX node=TH seq=100 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2402081 dir=TX node=TH seq=100 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2402307 dir=RX node=TH seq=102 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2402308 dir=TX node=TH seq=102 cmd=0x14 status=ACK nozzle_ddC=1215 adc_raw=2064 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2403101 dir=RX node=TH seq=104 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2403101 dir=TX node=TH seq=104 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2038 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2403411 dir=RX node=TH seq=106 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2403412 dir=TX node=TH seq=106 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2068 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2404120 dir=RX node=TH seq=108 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2404120 dir=TX node=TH seq=108 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2404430 dir=RX node=TH seq=110 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2404430 dir=TX node=TH seq=110 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2405136 dir=RX node=TH seq=112 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2405137 dir=TX node=TH seq=112 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2036 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2405450 dir=RX node=TH seq=114 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2405450 dir=TX node=TH seq=114 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2406153 dir=RX node=TH seq=116 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2406154 dir=TX node=TH seq=116 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2406469 dir=RX node=TH seq=118 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2406470 dir=TX node=TH seq=118 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2407174 dir=RX node=TH seq=120 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2407174 dir=TX node=TH seq=120 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2407489 dir=RX node=TH seq=122 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2407489 dir=TX node=TH seq=122 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2408193 dir=RX node=TH seq=124 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2408194 dir=TX node=TH seq=124 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2408518 dir=RX node=TH seq=126 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2408519 dir=TX node=TH seq=126 cmd=0x14 status=ACK nozzle_ddC=1227 adc_raw=2034 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2409426 dir=RX node=TH seq=128 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2409427 dir=TX node=TH seq=128 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2084 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2410015 dir=RX node=TH seq=130 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2410016 dir=TX node=TH seq=130 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2038 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2410444 dir=RX node=TH seq=132 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2410445 dir=TX node=TH seq=132 cmd=0x14 status=ACK nozzle_ddC=1210 adc_raw=2079 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2411033 dir=RX node=TH seq=134 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2411033 dir=TX node=TH seq=134 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2037 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2411463 dir=RX node=TH seq=136 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2411464 dir=TX node=TH seq=136 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2412051 dir=RX node=TH seq=138 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2412051 dir=TX node=TH seq=138 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2412482 dir=RX node=TH seq=140 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2412482 dir=TX node=TH seq=140 cmd=0x14 status=ACK nozzle_ddC=1211 adc_raw=2075 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2413068 dir=RX node=TH seq=142 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2413068 dir=TX node=TH seq=142 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2038 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2413500 dir=RX node=TH seq=144 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2413501 dir=TX node=TH seq=144 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2414418 dir=RX node=TH seq=146 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2414419 dir=TX node=TH seq=146 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2415011 dir=RX node=TH seq=148 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2415012 dir=TX node=TH seq=148 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2415436 dir=RX node=TH seq=150 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2415437 dir=TX node=TH seq=150 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2416030 dir=RX node=TH seq=152 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2416030 dir=TX node=TH seq=152 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2038 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2416455 dir=RX node=TH seq=154 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2416456 dir=TX node=TH seq=154 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2082 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2417049 dir=RX node=TH seq=156 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2417050 dir=TX node=TH seq=156 cmd=0x14 status=ACK nozzle_ddC=1227 adc_raw=2035 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2417473 dir=RX node=TH seq=158 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2417474 dir=TX node=TH seq=158 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2084 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2418068 dir=RX node=TH seq=160 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2418069 dir=TX node=TH seq=160 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2418493 dir=RX node=TH seq=162 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2418494 dir=TX node=TH seq=162 cmd=0x14 status=ACK nozzle_ddC=1208 adc_raw=2083 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2419086 dir=RX node=TH seq=164 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2419086 dir=TX node=TH seq=164 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2038 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2419514 dir=RX node=TH seq=166 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2419515 dir=TX node=TH seq=166 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2420103 dir=RX node=TH seq=168 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2420104 dir=TX node=TH seq=168 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2036 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2420535 dir=RX node=TH seq=170 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2420536 dir=TX node=TH seq=170 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2421645 dir=RX node=TH seq=172 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2421646 dir=TX node=TH seq=172 cmd=0x14 status=ACK nozzle_ddC=1221 adc_raw=2049 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2422052 dir=RX node=TH seq=174 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2422052 dir=TX node=TH seq=174 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2422664 dir=RX node=TH seq=176 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2422665 dir=TX node=TH seq=176 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2423069 dir=RX node=TH seq=178 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2423069 dir=TX node=TH seq=178 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2037 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2423682 dir=RX node=TH seq=180 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2423683 dir=TX node=TH seq=180 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2057 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2424000 dir=STATE node=TH seq=180 cmd=0x19 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2424087 dir=RX node=TH seq=182 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2424088 dir=TX node=TH seq=182 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2038 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2425009 dir=RX node=TH seq=184 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2425010 dir=TX node=TH seq=184 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2425597 dir=RX node=TH seq=186 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2425597 dir=TX node=TH seq=186 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2047 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2426028 dir=RX node=TH seq=188 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2426029 dir=TX node=TH seq=188 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2426615 dir=RX node=TH seq=190 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2426616 dir=TX node=TH seq=190 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2057 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2427048 dir=RX node=TH seq=192 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2427048 dir=TX node=TH seq=192 cmd=0x14 status=ACK nozzle_ddC=1231 adc_raw=2023 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2429763 dir=RX node=TH seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2429764 dir=TX node=TH seq=2 cmd=0x02 status=ACK fw=2.0 boot_id=0x8A789505 commit=0x3F1CFA66 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2430087 dir=RX node=TH seq=4 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2430088 dir=TX node=TH seq=4 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2039 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2431196 dir=RX node=TH seq=6 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2431197 dir=TX node=TH seq=6 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2431407 dir=RX node=TH seq=8 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2431408 dir=TX node=TH seq=8 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2054 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2432427 dir=RX node=TH seq=10 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2432428 dir=TX node=TH seq=10 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2432838 dir=RX node=TH seq=12 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2432838 dir=TX node=TH seq=12 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2081 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2433049 dir=RX node=TH seq=14 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2433049 dir=TX node=TH seq=14 cmd=0x14 status=ACK nozzle_ddC=1227 adc_raw=2035 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2462000 dir=STATE node=TH seq=14 cmd=0x14 status=OK nozzle_ddC=1210 adc_raw=2079 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2468462 dir=RX node=TH seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2468463 dir=TX node=TH seq=2 cmd=0x02 status=ACK fw=2.0 boot_id=0x8A789505 commit=0x3F1CFA66 drop=0 trunc=0
+[TH-DBG] ts=2468773 dir=RX node=TH seq=4 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2468774 dir=TX node=TH seq=4 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2469179 dir=RX node=TH seq=6 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2469180 dir=TX node=TH seq=6 cmd=0x14 status=ACK nozzle_ddC=1221 adc_raw=2049 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2469402 dir=RX node=TH seq=8 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2469403 dir=TX node=TH seq=8 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2056 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2469614 dir=RX node=TH seq=10 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2469615 dir=TX node=TH seq=10 cmd=0x14 status=ACK nozzle_ddC=1221 adc_raw=2049 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2470425 dir=RX node=TH seq=12 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2470426 dir=TX node=TH seq=12 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2471617 dir=RX node=TH seq=14 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2471618 dir=TX node=TH seq=14 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2046 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2472129 dir=RX node=TH seq=16 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2472130 dir=TX node=TH seq=16 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2054 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2472340 dir=RX node=TH seq=18 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2472341 dir=TX node=TH seq=18 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2040 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2472550 dir=RX node=TH seq=20 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2472551 dir=TX node=TH seq=20 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2472761 dir=RX node=TH seq=22 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2472762 dir=TX node=TH seq=22 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2048 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2500000 dir=STATE node=TH seq=22 cmd=0x14 status=OK nozzle_ddC=1206 adc_raw=2088 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH_APP] Heartbeat alive (cnt=2540, tick=2540000)
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2558880 dir=RX node=TH seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2558881 dir=TX node=TH seq=2 cmd=0x02 status=ACK fw=2.0 boot_id=0x8A789505 commit=0x3F1CFA66 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2559128 dir=RX node=TH seq=4 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2559129 dir=TX node=TH seq=4 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2559366 dir=RX node=TH seq=6 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2559367 dir=TX node=TH seq=6 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2559639 dir=RX node=TH seq=8 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2559640 dir=TX node=TH seq=8 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2047 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2559860 dir=RX node=TH seq=10 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2559860 dir=TX node=TH seq=10 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2041 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2560069 dir=RX node=TH seq=12 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2560070 dir=TX node=TH seq=12 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2560280 dir=RX node=TH seq=14 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2560281 dir=TX node=TH seq=14 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2561389 dir=RX node=TH seq=16 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2561390 dir=TX node=TH seq=16 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2562213 dir=RX node=TH seq=18 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2562214 dir=TX node=TH seq=18 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2563295 dir=RX node=TH seq=20 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2563296 dir=TX node=TH seq=20 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2563807 dir=RX node=TH seq=22 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2563808 dir=TX node=TH seq=22 cmd=0x14 status=ACK nozzle_ddC=1209 adc_raw=2082 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2564018 dir=RX node=TH seq=24 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2564019 dir=TX node=TH seq=24 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2040 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2564230 dir=RX node=TH seq=26 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2564231 dir=TX node=TH seq=26 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2057 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2565239 dir=RX node=TH seq=28 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2565240 dir=TX node=TH seq=28 cmd=0x14 status=ACK nozzle_ddC=1217 adc_raw=2061 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2565649 dir=RX node=TH seq=30 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2565650 dir=TX node=TH seq=30 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2058 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2565864 dir=RX node=TH seq=32 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2565865 dir=TX node=TH seq=32 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2056 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2566075 dir=RX node=TH seq=34 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2566076 dir=TX node=TH seq=34 cmd=0x14 status=ACK nozzle_ddC=1227 adc_raw=2033 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2566286 dir=RX node=TH seq=36 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2566287 dir=TX node=TH seq=36 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2068 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2576500 dir=STATE node=TH seq=36 cmd=0x14 status=OK nozzle_ddC=1207 adc_raw=2087 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2610377 dir=RX node=TH seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2610377 dir=TX node=TH seq=2 cmd=0x02 status=ACK fw=2.0 boot_id=0x8A789505 commit=0x3F1CFA66 drop=0 trunc=0
+[TH-DBG] ts=2610616 dir=RX node=TH seq=4 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2610616 dir=TX node=TH seq=4 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2048 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2610860 dir=RX node=TH seq=6 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2610861 dir=TX node=TH seq=6 cmd=0x14 status=ACK nozzle_ddC=1218 adc_raw=2057 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2611092 dir=RX node=TH seq=8 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2611093 dir=TX node=TH seq=8 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2042 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2611302 dir=RX node=TH seq=10 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2611303 dir=TX node=TH seq=10 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2039 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2611514 dir=RX node=TH seq=12 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2611515 dir=TX node=TH seq=12 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2611724 dir=RX node=TH seq=14 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2611725 dir=TX node=TH seq=14 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2037 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2611937 dir=RX node=TH seq=16 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2611938 dir=TX node=TH seq=16 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2612149 dir=RX node=TH seq=18 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2612150 dir=TX node=TH seq=18 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2612360 dir=RX node=TH seq=20 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2612361 dir=TX node=TH seq=20 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2036 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2613278 dir=RX node=TH seq=22 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2613278 dir=TX node=TH seq=22 cmd=0x14 status=ACK nozzle_ddC=1212 adc_raw=2074 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2613690 dir=RX node=TH seq=24 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2613691 dir=TX node=TH seq=24 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2068 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2613900 dir=RX node=TH seq=26 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2613901 dir=TX node=TH seq=26 cmd=0x14 status=ACK nozzle_ddC=1226 adc_raw=2037 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2614000 dir=STATE node=TH seq=26 cmd=0x19 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x00 step_state=IDLE drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2614113 dir=RX node=TH seq=28 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2614113 dir=TX node=TH seq=28 cmd=0x14 status=ACK nozzle_ddC=1222 adc_raw=2048 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2614325 dir=RX node=TH seq=30 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2614326 dir=TX node=TH seq=30 cmd=0x14 status=ACK nozzle_ddC=1220 adc_raw=2052 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2614539 dir=RX node=TH seq=32 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2614539 dir=TX node=TH seq=32 cmd=0x14 status=ACK nozzle_ddC=1232 adc_raw=2022 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2614750 dir=RX node=TH seq=34 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2614751 dir=TX node=TH seq=34 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2045 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2614962 dir=RX node=TH seq=36 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2614963 dir=TX node=TH seq=36 cmd=0x14 status=ACK nozzle_ddC=1225 adc_raw=2039 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2615174 dir=RX node=TH seq=38 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2615175 dir=TX node=TH seq=38 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2056 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2615386 dir=RX node=TH seq=40 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2615387 dir=TX node=TH seq=40 cmd=0x14 status=ACK nozzle_ddC=1219 adc_raw=2055 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2615598 dir=RX node=TH seq=42 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2615599 dir=TX node=TH seq=42 cmd=0x14 status=ACK nozzle_ddC=1223 adc_raw=2044 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+[TH-DBG] ts=2615809 dir=RX node=TH seq=44 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2615810 dir=TX node=TH seq=44 cmd=0x14 status=ACK nozzle_ddC=1214 adc_raw=2068 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2616021 dir=RX node=TH seq=46 cmd=0x14 status=OK len=14 drop=0 trunc=0
+[TH-DBG] ts=2616022 dir=TX node=TH seq=46 cmd=0x14 status=ACK nozzle_ddC=1224 adc_raw=2043 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+DET=1 low=0 err=0
+[TH-DBG] ts=2652000 dir=STATE node=TH seq=46 cmd=0x14 status=OK nozzle_ddC=1208 adc_raw=2084 pullup_sel=0 fault=0 nozzle_set_ddC=0 drop=0 trunc=0
+DET=1 low=0 err=0

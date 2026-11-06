@@ -1,0 +1,103 @@
+AT32F435 U-Disk + UART2 Bootloader (Nov  6 2026 15:11:38 | Build #129)
+Flash: 1024KB | Bl: 128KB | App: 0x08020000
+[EEPROM] I2C2 PB10/PB11 @ 100K (Addr: 0xA0) -> SUCCESS! Byte[0x00] = 0xFF
+--- EEPROM Full Dump (Start: 0x00, Length: 256) ---
+--- End of EEPROM Dump ---
+Probing for U-disk / UART2 OTA (2.0s timeout window)...
+USB Device Attached.
+USB Device Enumeration Done.
+FAT32 File System initialized.
+Searching for upgrade package (fw_mc.bin)...
+No valid upgrade package (fw_mc.bin) found on U-disk.
+[MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===
+C-[MC_APP] USB Device Attached.
+seq=0 cmd=0x14 sta[MC_APP] USB Mass Storage Application Ready.
+tu[MC_APP][UPG] FatFs mounted successfully.
+=== [MC_APP] U-Disk Root Files (0:/) ===
+[FILE] FW_MC.CUR                 367924 Bytes
+[MC_APP][UPG] Cannot find fw_th.bin or FW_TH.BIN
+[MC_APP][UPG] Cannot find fw_th.bin or FW_TH.BIN
+AT32F435 U-Disk + UART2 Bootloader (Nov  6 2026 15:11:38 | Build #129)
+Flash: 1024KB | Bl: 128KB | App: 0x08020000
+[EEPROM] I2C2 PB10/PB11 @ 100K (Addr: 0xA0) -> SUCCESS! Byte[0x00] = 0xFF
+--- EEPROM Full Dump (Start: 0x00, Length: 256) ---
+--- End of EEPROM Dump ---
+Probing for U-disk / UART2 OTA (2.0s timeout window)...
+USB Device Attached.
+USB Device Enumeration Done.
+FAT32 File System initialized.
+Searching for upgrade package (fw_mc.bin)...
+No valid upgrade package (fw_mc.bin) found on U-disk.
+[MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===
+C-[MC_APP] USB Device Attached.
+seq=0 cmd=0x14 sta[MC_APP] USB Mass Storage Application Ready.
+tu[MC_APP][UPG] FatFs mounted successfully.
+=== [MC_APP] U-Disk Root Files (0:/) ===
+[FILE] FW_MC.CUR                 367924 Bytes
+[MC_APP][UPG] Cannot find fw_th.bin or FW_TH.BIN
+[MC_APP][UPG] Cannot find fw_th.bin or FW_TH.BIN
+AT32F435 U-Disk + UART2 Bootloader (Nov  6 2026 15:11:38 | Build #129)
+Flash: 1024KB | Bl: 128KB | App: 0x08020000
+[EEPROM] I2C2 PB10/PB11 @ 100K (Addr: 0xA0) -> SUCCESS! Byte[0x00] = 0xFF
+--- EEPROM Full Dump (Start: 0x00, Length: 256) ---
+--- End of EEPROM Dump ---
+Probing for U-disk / UART2 OTA (2.0s timeout window)...
+USB Device Attached.
+USB Device Enumeration Done.
+FAT32 File System initialized.
+Searching for upgrade package (fw_mc.bin)...
+No valid upgrade package (fw_mc.bin) found on U-disk.
+[MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===
+C-[MC_APP] USB Device Attached.
+DBG] ts=2969 dir=RX node=MC seq=762 cm[MC_APP] USB Device Enumeration Completed.
+d=0x01 status=OK len=1[MC_APP] USB Mass Storage Application Ready.
+[MC-DBG] ts=2969 dir=TX node=MC seq=762 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=1061024 dir=TX node=MC seq=100 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+AT32F435 U-Disk + UART2 Bootloader (Nov  6 2026 15:11:38 | Build #129)
+Flash: 1024KB | Bl: 128KB | App: 0x08020000
+[EEPROM] I2C2 PB10/PB11 @ 100K (Addr: 0xA0) -> SUCCESS! Byte[0x00] = 0xFF
+--- EEPROM Full Dump (Start: 0x00, Length: 256) ---
+--- End of EEPROM Dump ---
+Probing for U-disk / UART2 OTA (2.0s timeout window)...
+USB Device Attached.
+USB Device Enumeration Done.
+FAT32 File System initialized.
+Searching for upgrade package (fw_mc.bin)...
+No valid upgrade package (fw_mc.bin) found on U-disk.
+[MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===
+C-[MC_APP] USB Device Attached.
+DBG] ts=2969 dir=RX node=MC seq=1310 [MC_APP] USB Device Enumeration Completed.
+cmd=0x01 status=OK le[MC_APP] USB Mass Storage Application Ready.
+[MC-DBG] ts=2969 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2969 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2969 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2970 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2970 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2970 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2971 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2971 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2971 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2972 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=2972 dir=TX node=MC seq=1310 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+AT32F435 U-Disk + UART2 Bootloader (Nov  6 2026 15:11:38 | Build #129)
+Flash: 1024KB | Bl: 128KB | App: 0x08020000
+[EEPROM] I2C2 PB10/PB11 @ 100K (Addr: 0xA0) -> SUCCESS! Byte[0x00] = 0xFF
+--- EEPROM Full Dump (Start: 0x00, Length: 256) ---
+--- End of EEPROM Dump ---
+Probing for U-disk / UART2 OTA (2.0s timeout window)...
+USB Device Attached.
+USB Device Enumeration Done.
+FAT32 File System initialized.
+Searching for upgrade package (fw_mc.bin)...
+No valid upgrade package (fw_mc.bin) found on U-disk.
+[MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===
+C-[MC_APP] USB Device Attached.
+md=0x14 status=OK nozz[MC_APP] USB Mass Storage Application Ready.
+[MC-DBG] ts=3144 dir=TX node=MC seq=2152 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=376732 dir=TX node=MC seq=1 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=490098 dir=TX node=MC seq=1 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=568749 dir=TX node=MC seq=1 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=626913 dir=TX node=MC seq=1 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=665612 dir=TX node=MC seq=1 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=756029 dir=TX node=MC seq=1 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
+[MC-DBG] ts=807525 dir=TX node=MC seq=1 cmd=0x02 status=ACK fw=2.0 boot_id=0xC2587788 commit=0x3F1CFA66 drop=0 trunc=0
