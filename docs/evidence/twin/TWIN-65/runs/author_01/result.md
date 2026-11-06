@@ -5,7 +5,7 @@
 - **执行角色**：`ENG-FWD` / `ENG-STATE` / `ENG-UI` (`eng-vertical`)
 - **目标仓库与分支**：`soc-ap` (`main`)
 - **源码基线 Commit**：`c6692b244e0aa09d04e7051293f9fef3c67535dd`
-- **交付候选 Commit**：`42a1dc4465b4a848c768283c570a48be63ec1e6b`
+- **交付候选 Commit**：`7184edfc796923e2f2c6e3e57ef3a9f791164b51`（修复 `runs/qa_03` 容器高负载下 `test_dds_version_sync_dual_nodes` 版本新鲜度与 D-Bus 广播竞态）
 
 ## 2. 规则入口与读取来源登记 (`read_sources`)
 - `soc-ap/AGENTS.md` + `soc-ap/.agents/rules/shared/SOURCE.json` (`960f079647a00864fe7913836336b2a2ee3d729a`)

@@ -1,0 +1,330 @@
+=== Docker Container Inspect: 7e53c82becb0 ===
+{
+  "id": "7e53c82becb00d33749bff3e7572d060e3edccfc608c8fd65bef0bea2278912e",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-06T05:16:09.357825505Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-65_run_131535_20261106_051535",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) rm -rf /tmp/qa_twin65 && mkdir -p /tmp/qa_twin65 && cp -r ../soc-ap /tmp/qa_twin65/soc-ap && rm -rf /tmp/qa_twin65/soc-ap/build && ([ -e /tmp/qa_twin65/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin65/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin65/soc-ap/third_party/install)) && cd /tmp/qa_twin65/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && ctest --test-dir build/device_manager --output-on-failure && ctest --test-dir build/ui_gateway --output-on-failure && python3 -c 'exec("import re,pathlib\nfiles=[\"services/device_manager/firmware_updater.cpp\",\"services/device_manager/device_manager_state.cpp\",\"services/forward/forward_protocol.cpp\",\"services/forward/forward_uart.cpp\",\"services/forward/forward_service.cpp\",\"services/ui_gateway/ui_gateway_server.cpp\"]\nfor f in files:\n lines=pathlib.Path(f).read_text().splitlines(); i=0\n while i<len(lines):\n  s=lines[i].strip()\n  if s and not s.startswith((\"//\",\"/*\",\"*\",\"#\")) and \"(\" in s and not s.startswith((\"if\",\"for\",\"while\",\"switch\",\"return\")):\n   j=i\n   while \")\" not in s and j+1<len(lines): j+=1; s+=\" \"+lines[j].strip()\n   if s.endswith(\"{\") or (j+1<len(lines) and lines[j+1].strip().startswith(\"{\")):\n    m=re.search(r\"([A-Za-z_]\\w*)\\s*\\(([^)]*)\\)\",s)\n    if m and m.group(1) not in (\"if\",\"for\",\"while\",\"switch\"):\n     p=[x.strip() for x in m.group(2).split(\",\") if x.strip() and x.strip()!=\"void\"]\n     b=s.count(\"{\")-s.count(\"}\"); k=j\n     if b==0 and k+1<len(lines) and lines[k+1].strip().startswith(\"{\"): k+=1; b=lines[k].count(\"{\")-lines[k].count(\"}\")\n     while b>0 and k+1<len(lines): k+=1; b+=lines[k].count(\"{\")-lines[k].count(\"}\")\n     assert len(p)<=4 and (k-i+1)<=50, f\"{f}:{i+1} {m.group(1)} params={len(p)} len={k-i+1}\"\n     i=k+1; continue\n  i+=1\nprint(\"[PASS] S04 function length (<=50) and params (<=4) verified on all 6 files\")")' && ! grep -rn "中文说明：模块辅助逻辑与状态说明" contracts/ services/ tests/ && echo "[PASS] code_documentation_standard.md Chinese comment check passed" && rm -rf /tmp/qa_twin65 -> 8
+=================================================================
+[BUILD] Incrementally building AI-SoC full stack...
+=================================================================
+[BUILD 1/5] runtime (build/runtime)...
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin65/soc-ap/build/runtime
+[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/tmp/qa_twin65/soc-ap/runtime/common/service_lifecycle.cpp.o
+[ 16%] Linking CXX static library libaisoc_runtime_common.a
+[ 16%] Built target aisoc_runtime_common
+[ 41%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o
+[ 41%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o
+[ 41%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o
+[ 50%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin65/soc-ap/runtime/vmware/supervisor.cpp.o
+[ 66%] Linking CXX executable test_backoff
+[ 66%] Linking CXX executable test_service_lifecycle
+[ 75%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tmp/qa_twin65/soc-ap/runtime/vmware/supervisor.cpp.o
+[ 83%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin65/soc-ap/runtime/vmware/main.cpp.o
+[ 83%] Built target test_service_lifecycle
+[ 83%] Built target test_backoff
+[ 91%] Linking CXX executable aisoc_supervisor
+[100%] Linking CXX executable test_supervisor_topology
+[100%] Built target aisoc_supervisor
+[100%] Built target test_supervisor_topology
+[BUILD 2/5] forward (build/forward & build/test_forward)...
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin65/soc-ap/build/forward
+[ 12%] Building CXX object CMakeFiles/forward_service.dir/forward_protocol.cpp.o
+[ 12%] Building CXX object CMakeFiles/forward_service.dir/forward_uart.cpp.o
+[ 12%] Building CXX object CMakeFiles/forward_service.dir/forward_service.cpp.o
+[ 16%] Building CXX object CMakeFiles/forward_service.dir/forward_dbus.cpp.o
+[ 20%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/core/forward/minimc/codec.cpp.o
+[ 25%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/core/forward/minimc/parser.cpp.o
+[ 29%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/core/forward/transport/serial_posix.cpp.o
+[ 33%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 37%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 41%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 45%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 50%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 54%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 58%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 62%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 66%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 70%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[ 75%] Linking CXX static library libforward_service.a
+[ 75%] Built target forward_service
+[ 79%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/tests/forward/twin/test_forward_service.cpp.o
+[ 83%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/tests/forward/twin/test_forward_protocol.cpp.o
+[ 87%] Building CXX object CMakeFiles/forward_service_daemon.dir/forward_main.cpp.o
+[ 91%] Linking CXX executable forward_service_daemon
+[ 95%] Linking CXX executable test_forward_protocol
+[ 95%] Built target forward_service_daemon
+[ 95%] Built target test_forward_protocol
+[100%] Linking CXX executable test_forward_service
+[100%] Built target test_forward_service
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin65/soc-ap/build/test_forward
+[  5%] Building CXX object CMakeFiles/test_forward_service.dir/test_forward_service.cpp.o
+[  5%] Building CXX object CMakeFiles/test_forward_protocol.dir/test_forward_protocol.cpp.o
+[  7%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/services/forward/forward_uart.cpp.o
+[ 10%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/services/forward/forward_protocol.cpp.o
+[ 13%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/services/forward/forward_dbus.cpp.o
+[ 15%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/services/forward/forward_service.cpp.o
+[ 18%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/services/forward/forward_protocol.cpp.o
+[ 21%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/core/forward/minimc/codec.cpp.o
+[ 23%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/services/forward/forward_uart.cpp.o
+[ 26%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/core/forward/minimc/parser.cpp.o
+[ 28%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/core/forward/transport/serial_posix.cpp.o
+[ 31%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 34%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/services/forward/forward_dbus.cpp.o
+[ 36%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 39%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 42%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/services/forward/forward_service.cpp.o
+[ 44%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/core/forward/minimc/codec.cpp.o
+[ 47%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 50%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/core/forward/minimc/parser.cpp.o
+[ 52%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 55%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/core/forward/transport/serial_posix.cpp.o
+[ 57%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 60%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 63%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 65%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 68%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 71%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 73%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 76%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 78%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 81%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 84%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 86%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 89%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 92%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[ 94%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[ 97%] Linking CXX executable test_forward_protocol
+[100%] Linking CXX executable test_forward_service
+[100%] Built target test_forward_protocol
+[100%] Built target test_forward_service
+[BUILD 3/5] device_manager (build/device_manager)...
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin65/soc-ap/build/device_manager
+[  4%] Building CXX object CMakeFiles/device_manager.dir/device_manager_dbus.cpp.o
+[  8%] Building CXX object CMakeFiles/device_manager.dir/device_manager_state.cpp.o
+[ 12%] Building CXX object CMakeFiles/device_manager.dir/device_manager_service.cpp.o
+[ 16%] Building CXX object CMakeFiles/device_manager.dir/firmware_updater.cpp.o
+[ 20%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 24%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 28%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 32%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 36%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 40%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 44%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 48%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 52%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 56%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin65/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[ 60%] Linking CXX static library libdevice_manager.a
+[ 60%] Built target device_manager
+[ 64%] Building CXX object CMakeFiles/test_firmware_updater.dir/tmp/qa_twin65/soc-ap/tests/device_manager/twin/test_firmware_updater.cpp.o
+[ 68%] Building CXX object CMakeFiles/device_manager_daemon.dir/device_manager_main.cpp.o
+[ 72%] Building CXX object CMakeFiles/test_device_manager_state.dir/tmp/qa_twin65/soc-ap/tests/device_manager/twin/test_device_manager_state.cpp.o
+[ 76%] Building CXX object CMakeFiles/test_device_manager.dir/tmp/qa_twin65/soc-ap/tests/device_manager/twin/test_device_manager.cpp.o
+[ 80%] Linking CXX executable device_manager_daemon
+[ 84%] Linking CXX executable test_firmware_updater
+[ 88%] Linking CXX executable test_device_manager_state
+[ 88%] Built target test_firmware_updater
+[ 92%] Building CXX object CMakeFiles/test_device_manager.dir/tmp/qa_twin65/soc-ap/services/forward/forward_protocol.cpp.o
+[ 96%] Building CXX object CMakeFiles/test_device_manager.dir/tmp/qa_twin65/soc-ap/core/forward/minimc/codec.cpp.o
+[ 96%] Built target device_manager_daemon
+[ 96%] Built target test_device_manager_state
+[100%] Linking CXX executable test_device_manager
+[100%] Built target test_device_manager
+[BUILD 4/5] ui_gateway (build/ui_gateway)...
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin65/soc-ap/build/ui_gateway
+[  7%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_dbus.cpp.o
+[ 14%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_server.cpp.o
+[ 21%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_service.cpp.o
+[ 28%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_http.cpp.o
+[ 35%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_job_ctrl.cpp.o
+[ 42%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 50%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 57%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 64%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin65/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 71%] Linking CXX static library libui_gateway.a
+[ 71%] Built target ui_gateway
+[ 78%] Building CXX object CMakeFiles/ui-gateway.dir/ui_gateway_main.cpp.o
+[ 85%] Building CXX object CMakeFiles/test_ui_gateway_routes.dir/tmp/qa_twin65/soc-ap/tests/ui_gateway/twin/test_ui_gateway_routes.cpp.o
+[ 92%] Linking CXX executable ui-gateway
+[100%] Linking CXX executable test_ui_gateway_routes
+[100%] Built target ui-gateway
+[100%] Built target test_ui_gateway_routes
+[BUILD 5/5] host CLI (build/host)...
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter
+-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin65/soc-ap/build/host
+[ 22%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o
+[ 22%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o
+[ 33%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o
+[ 44%] Linking CXX static library libminimcproto.a
+[ 44%] Built target minimcproto
+[ 55%] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o
+[ 66%] Building CXX object CMakeFiles/soc-ap.dir/core/host/query.cpp.o
+[ 77%] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o
+[ 88%] Linking CXX executable bin/soc-ap
+[ 88%] Built target soc-ap
+[100%] Linking CXX executable bin/minimc-probe
+[100%] Built target minimc-probe
+=================================================================
+[BUILD] All 5 full-stack targets built successfully.
+=================================================================
+Test project /tmp/qa_twin65/soc-ap/build/forward
+    Start 1: test_forward_service
+1/2 Test #1: test_forward_service .............   Passed    1.25 sec
+    Start 2: test_forward_protocol
+2/2 Test #2: test_forward_protocol ............   Passed    0.77 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   2.01 sec
+Test project /tmp/qa_twin65/soc-ap/build/device_manager
+    Start 1: test_device_manager_state
+1/3 Test #1: test_device_manager_state ........   Passed    0.23 sec
+    Start 2: test_firmware_updater
+2/3 Test #2: test_firmware_updater ............   Passed    0.00 sec
+    Start 3: test_device_manager
+3/3 Test #3: test_device_manager ..............***Failed    7.91 sec
+========================================================================
+TWIN-08 / TWIN-29 Device Manager Verification & Integration Test Suite
+========================================================================
+[RUN ] test_unit_state_init
+[PASS] test_unit_state_init
+[RUN ] test_unit_state_sample_update
+[PASS] test_unit_state_sample_update
+[RUN ] test_unit_state_admission
+[PASS] test_unit_state_admission
+[RUN ] test_unit_state_json
+[PASS] test_unit_state_json
+[RUN ] test_unit_temp_conversion_and_json
+[PASS] test_unit_temp_conversion_and_json
+[RUN ] test_unit_fault_sentinel_defense
+[PASS] test_unit_fault_sentinel_defense
+[RUN ] test_unit_offline_sentinel_defense
+[PASS] test_unit_offline_sentinel_defense
+[RUN ] test_unit_grid_proto_build_query
+[PASS] test_unit_grid_proto_build_query
+[RUN ] test_unit_grid_proto_validate_positive_and_negative
+[PASS] test_unit_grid_proto_validate_positive_and_negative
+[RUN ] test_unit_grid_proto_parse_raw
+[PASS] test_unit_grid_proto_parse_raw
+[RUN ] test_unit_state_leveling_grid_and_json
+[PASS] test_unit_state_leveling_grid_and_json
+[RUN ] test_unit_state_grid_defense
+[PASS] test_unit_state_grid_defense
+[RUN ] test_unit_version_proto_build_query
+[PASS] test_unit_version_proto_build_query
+[RUN ] test_unit_version_proto_validate_positive_and_negative
+[PASS] test_unit_version_proto_validate_positive_and_negative
+[RUN ] test_unit_version_proto_parse_raw
+[PASS] test_unit_version_proto_parse_raw
+[RUN ] test_unit_state_version_tracking_and_decay
+[PASS] test_unit_state_version_tracking_and_decay
+[RUN ] test_unit_state_get_mcu_version
+[PASS] test_unit_state_get_mcu_version
+[RUN ] test_unit_state_version_json_and_snapshot
+[PASS] test_unit_state_version_json_and_snapshot
+[RUN ] test_unit_state_version_binding_exhaustion
+[PASS] test_unit_state_version_binding_exhaustion
+[RUN ] test_unit_initial_offline_no_fake_online
+[PASS] test_unit_initial_offline_no_fake_online
+[RUN ] test_unit_freshness_timeout_and_offline_sentinel
+[PASS] test_unit_freshness_timeout_and_offline_sentinel
+[RUN ] test_unit_version_freshness_decay_and_system_status
+[PASS] test_unit_version_freshness_decay_and_system_status
+[RUN ] [&]() { return test_rpc_get_snapshot(&env.cli_conn); }
+[PASS] [&]() { return test_rpc_get_snapshot(&env.cli_conn); }
+[RUN ] [&]() { return test_dds_sync_and_signal(&env); }
+[DEVICE_MGR DEBUG] DDS RX: node=1, temp=62000 millic (62.0 C) -> Snapshot GEN=11 (DEGRADED)
+[PASS] [&]() { return test_dds_sync_and_signal(&env); }
+[RUN ] [&]() { return test_rpc_request_sample(&env.cli_conn); }
+[PASS] [&]() { return test_rpc_request_sample(&env.cli_conn); }
+[RUN ] [&]() { return test_rpc_device_state_and_estop(&env.cli_conn); }
+[PASS] [&]() { return test_rpc_device_state_and_estop(&env.cli_conn); }
+[RUN ] [&]() { return test_rpc_get_version_info(&env.cli_conn); }
+[PASS] [&]() { return test_rpc_get_version_info(&env.cli_conn); }
+[RUN ] [&]() { return test_fwd_link_state_signal_disconnect(&env); }
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_HANGUP
+[PASS] [&]() { return test_fwd_link_state_signal_disconnect(&env); }
+[RUN ] [&]() { return test_dds_version_sync_dual_nodes(&env); }
+[DEVICE_MGR DEBUG] DDS RX: node=2, temp=210000 millic (210.0 C) -> Snapshot GEN=12 (EMERGENCY_STOP_INVOKED)
+  [FAIL] /tmp/qa_twin65/soc-ap/tests/device_manager/twin/test_device_manager.cpp:1438: TH ver status ONLINE
+[FAIL] [&]() { return test_dds_version_sync_dual_nodes(&env); }
+========================================================================
+Total: Passed=28, Failed=1
+========================================================================
+
+
+67% tests passed, 1 tests failed out of 3
+
+Total Test time (real) =   8.15 sec
+
+The following tests FAILED:
+	  3 - test_device_manager (Failed)
+
+Errors while running CTest

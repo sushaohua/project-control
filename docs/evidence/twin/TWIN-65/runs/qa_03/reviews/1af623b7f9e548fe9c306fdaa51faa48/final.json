@@ -1,0 +1,19 @@
+{
+  "task_id": "TWIN-65",
+  "task_revision": 2,
+  "candidate_commit": "42a1dc4465b4a848c768283c570a48be63ec1e6b",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "已核验冻结证据与候选差异。构建成功，但 device_manager 集成回归失败，未满足接受范围要求的全套回归验证。",
+  "findings": [
+    "阻断：冻结日志记录 build/forward 的 2 项测试通过，device_manager 的状态测试与 firmware_updater 测试通过，但 test_device_manager 在双节点版本同步场景失败：TH 版本状态未达到 ONLINE（test_device_manager.cpp:1438）。验收范围要求 device_manager 全部单测及必要回归通过，因此该失败不符合接受条款。",
+    "评审说明：review_bundle.json 的 SHA256 与请求值一致；request.json、server_verdict.json、runtime.log 及 soc-ap.patch 的 SHA256 与索引记录一致。冻结结果对应候选提交 42a1dc4465b4a848c768283c570a48be63ec1e6b。source_report 为空，无需核对报告 SHA256。",
+    "已核查的日志显示五个构建目标成功构建，forward 两项测试通过，device_manager 的状态和固件升级器测试通过。未执行硬件验证，也未将其视为通过。",
+    "评审说明与最终 JSON 未能分别保存为文件：当前工作区为只读权限。"
+  ],
+  "accepted_scope": "审查范围包括 Rev 2.0.4 协议与 520B 帧容量、/var/update staging 与 128B ATSG 预检、OTA 安全准入与维护互斥、Stage 1–4 升级编排，以及 forward、device_manager、ui_gateway 回归和 S04/中文注释门禁。物理 HIL 验证由 TWIN-67 覆盖，不在本任务接受范围内。",
+  "unexecuted": [
+    "因 device_manager 回归失败导致验证命令提前退出，ui_gateway CTest 未执行。",
+    "S04 函数长度/参数数量门禁与中文注释门禁未执行。"
+  ]
+}

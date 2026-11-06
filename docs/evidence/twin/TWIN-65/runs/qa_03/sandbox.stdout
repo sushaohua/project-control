@@ -1,0 +1,5 @@
+[QA VERDICT] Sandbox QA execution failed | Evidence bundle saved to: /tmp/qa_TWIN-65_yxfyoku4/evidence
+[SERVER QA REF] {
+  "path": "/tmp/qa_TWIN-65_yxfyoku4/evidence/server_qa.json",
+  "sha256": "ec4eb2323d3561c3dee1167f4fc928dcab0186675597125bdede1479609d64c0"
+}
