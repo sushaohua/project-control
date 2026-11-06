@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Backlog
+status: InProgress
 blocked: true
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -47,8 +47,10 @@ depends_on:
 - TWIN-66
 dependency_conditions:
 - task: TWIN-66
-  accepted_version: pending
-  acceptance_evidence: docs/evidence/twin/TWIN-66/runs/qa_01/qa_review_report.md
+  accepted_version: project-control=ae168003454eb18acbf5d867c15c52042cc87f4c; soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51;
+    mcu-p3=3f1cfa66c6d27422cf038936b29aca7e45edb511; test_harness=cf81195eca55bcd772ef2daa2fd4aa41634c1492;
+    boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62; boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383
+  acceptance_evidence: docs/evidence/twin/TWIN-66/runs/qa_05/qa_review_report.md
   required: 5端门禁与软件OTA套件通过QA+ARCH双审
 scope_status: mapped
 allowed_repositories:
@@ -66,17 +68,17 @@ forbidden_paths:
 - boot/**
 - test_harness/**
 source_baseline:
-  project-control: c1d2c461aa65e6497c295843a2735d0d02ee2e2d
-  soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
-  mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
-  test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
-  boot/bootloadermc: 4fc171ea61912561949b9a0cfc1da8975e4c39ba
-  boot/bootloaderth: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
-base_commit: c1d2c461aa65e6497c295843a2735d0d02ee2e2d
+  project-control: 5e8def0aed1a66e4583b5d3e5aed89b86f5a13db
+  soc-ap: 7184edfc796923e2f2c6e3e57ef3a9f791164b51
+  mcu-p3: 3f1cfa66c6d27422cf038936b29aca7e45edb511
+  test_harness: cf81195eca55bcd772ef2daa2fd4aa41634c1492
+  boot/bootloadermc: faa2ed00dc9b6c8567dd44e875028f65073aab62
+  boot/bootloaderth: 64b7100d3b0260ad1c24b627986475dcd45ad383
+base_commit: 5e8def0aed1a66e4583b5d3e5aed89b86f5a13db
 branch: main
 candidate_commit: null
 dispatch_binding:
-  source_commit: c1d2c461aa65e6497c295843a2735d0d02ee2e2d
+  source_commit: 5e8def0aed1a66e4583b5d3e5aed89b86f5a13db
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   consumed_artifact_versions:
     master_upgrade_architecture: b2b6d047500180c9f4d67d72c94794cbe5080caa52901ba262aa089bc1543223
@@ -119,8 +121,7 @@ budget:
 checkpoint: 开工前绑定；自检单测与注释规范检查；独立沙箱与QA审查；收件
 execution_contract: project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md
 readiness_pending:
-- 等待TWIN-62~TWIN-66完成并通过Docker/软件QA
-- 等待D4-A用户专项批准一次性新版双Bootloader实板迁移完成
+- 等待物理HIL串口设备(/dev/ttyUSB*)与MC/TH实板挂载至当前虚拟机后执行D4-A双Boot实板迁移及H01~H06/U01~U08实机验收
 deliverables:
   artifacts:
   - project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md
