@@ -1,0 +1,63 @@
+{
+  "task_id": "TWIN-67",
+  "task_revision": 3,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "a89dab551c20",
+    "id": "TWIN-67_run_183757_20261106_103757",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-67_run_183757_20261106_103757",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "a89dab551c202ed0ab178da148d1cf674337bf7bacbf7604e713ce0ca1655bd5",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-06T10:38:27.930538075Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-67_run_183757_20261106_103757",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "/tmp/qa_TWIN-67_xmk0ce1n/evidence/server_lock.json",
+    "sha256": "3874ad5903986b9a6b356fa15b8b43b029296d00cca6a35fb2bc1110cbfb5300"
+  },
+  "checkout_log": {
+    "path": "/tmp/qa_TWIN-67_xmk0ce1n/evidence/checkout.log",
+    "sha256": "a444e78e94f25b953f1891bfac18621ff1bacbb0545e304b45f92474b08d6d3c"
+  },
+  "runtime_log": {
+    "path": "/tmp/qa_TWIN-67_xmk0ce1n/evidence/runtime.log",
+    "sha256": "41e5f6debf6316a54407c9f5d72cd10c2ff1fc965d6d3918fb2c2fc80b3fc6a9"
+  },
+  "server_verdict": {
+    "path": "/tmp/qa_TWIN-67_xmk0ce1n/evidence/server_verdict.json",
+    "sha256": "a4a71bb9bcb9193e20ef197e580bacee91880cb5763da671f468fef44dbad69e"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "test -f docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md && grep -q 'status: executable-validated' docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md",
+      "exit_code": "0",
+      "subpath": "project-control",
+      "duration": "0.09s",
+      "output": ""
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-06T10:38:30.843158+00:00"
+}

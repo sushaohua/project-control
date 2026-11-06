@@ -1,0 +1,11 @@
+{
+  "task_id": "TWIN-67",
+  "task_revision": 2,
+  "run_id": "run_180303",
+  "verdict": "PASSED",
+  "exit_code": 0,
+  "summary": "All sandbox tests passed",
+  "build_count": 0,
+  "test_count": 1,
+  "timestamp": "2026-11-06T10:03:42.732325+00:00"
+}

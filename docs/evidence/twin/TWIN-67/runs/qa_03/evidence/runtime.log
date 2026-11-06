@@ -1,0 +1,20 @@
+=== Docker Container Inspect: a89dab551c20 ===
+{
+  "id": "a89dab551c202ed0ab178da148d1cf674337bf7bacbf7604e713ce0ca1655bd5",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-06T10:38:27.930538075Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-67_run_183757_20261106_103757",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (project-control) test -f docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md && grep -q 'status: executable-validated' docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md -> 0
+

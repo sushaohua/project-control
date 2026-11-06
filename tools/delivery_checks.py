@@ -316,7 +316,11 @@ def check_streamlined_server_qa(header: dict, card: dict, workspace: Path) -> No
         check_server_qa(header, card, workspace)
         return
     artifacts = header.get("reviewed_artifacts") or []
-    requests = [item for item in artifacts if Path(item.get("path", "")).name == "request.json"]
+    expected_run_dir = Path(ref.get("path", "")).parent.parent
+    requests = [item for item in artifacts if Path(item.get("path", "")).name == "request.json"
+                and Path(item.get("path", "")).parent == expected_run_dir]
+    if len(requests) != 1:
+        requests = [item for item in artifacts if Path(item.get("path", "")).name == "request.json"]
     if len(requests) != 1:
         raise ValueError("Runtime primary review must bind the frozen QA request")
     run_dir = Path(requests[0]["path"]).parent

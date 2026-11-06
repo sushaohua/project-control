@@ -1,0 +1,18 @@
+{
+  "task_id": "TWIN-67",
+  "task_revision": 2,
+  "candidate_commit": "97752c4fa217d9c39bb526b843cbd8f4ca1ad86b",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "复验已读取并校验同角色上一轮报告（SHA256 69ae9349…ea9ab41）及整改差异（SHA256 a4fb1b16…b997c42）。author_02 补充了有效 U 盘包写入、N05 TH 拒绝后的状态查询及哨兵值说明；但锁定候选仍含接受写入范围外的改动，违反接受条款。另有 H06 操作者独立性及 U07 单写者互斥证据未能独立核实。未启动 Docker、构建或测试，未修改文件，也未将未执行的硬件验证判为通过。",
+  "findings": [
+    "阻断：当前候选差异仍修改了范围外的 .agents/kanban/microtasks/vmware_soc_twin/TWIN-67.md 和 docs/handoff/COORD_HANDOFF_20261106_ACCOUNT_SWITCH.md；候选完整差异还包含 docs/evidence/twin/TWIN-51/** 与 docs/work_intake/**。接受写入范围仅允许升级部署说明书和 docs/evidence/twin/TWIN-67/**，因此候选违反范围条款。",
+    "阻断：H06 要求非实现者独立按说明书实操。author_02 收据只由 INTEGRATOR 操作者自述 is_implementer=false；未提供能独立核实其非实现者身份及独立执行的证据，无法确认该验收条款。",
+    "阻断：U07 单写者互斥缺少可核验的原始证据。author_02 的 stepB5 日志记录了损坏包拒绝、有效包升级和重启防重刷，但未记录 UART OTA 与 U 盘升级并发/竞争时的仲裁行为；报告中的 PASS 不能替代该项物证。"
+  ],
+  "accepted_scope": "复验 TWIN-67 revision 2 锁定候选；重点核对上一候选 fb04c1bc049a86123628ee068822d35012f5c04e 至本候选的增量差异及受影响范围，并审阅 D4-A、H01~H06、U01~U08、N05/N07/N08 和要求的说明书校验。写入范围限于 project-control 的 docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md 与 docs/evidence/twin/TWIN-67/**。本次只读，不执行 Docker、构建、测试或硬件操作；排除范围外路径不列为未执行项。",
+  "unexecuted": [
+    "H06：取得可独立核验的操作者非实现者身份及独立实操佐证。",
+    "U07：取得 UART OTA 与 U 盘通道单写者仲裁的原始记录。"
+  ]
+}
