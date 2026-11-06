@@ -88,7 +88,7 @@ forbidden_paths:
 - test_harness/**
 - mcu-p3/.repo-rules/**
 source_baseline:
-  project-control: a9c8bd11bdbf411a13954647a0dfbc573b815804
+  project-control: d1a206ba5404dc0546ee807ab31963e8f4b87e9d
   soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
   mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
