@@ -1,0 +1,33 @@
+diff --git a/hil/tests/test_composite_lifecycle_sequences.py b/hil/tests/test_composite_lifecycle_sequences.py
+index 7fcbf2c..9f57085 100644
+--- a/hil/tests/test_composite_lifecycle_sequences.py
++++ b/hil/tests/test_composite_lifecycle_sequences.py
+@@ -199,7 +199,7 @@ def verify_seq05_reconnect_recovery(
+     state_val = recovered_snapshot.get("system_status") or recovered_snapshot.get("device_state")
+     if state_val not in ("READY", "IDLE"):
+         return False, f"unexpected recovered state: {state_val}"
+-    if recovered_snapshot.get("telemetry_quality", "FRESH") != "FRESH":
++    if recovered_snapshot.get("telemetry_quality") != "FRESH":
+         return False, "recovered telemetry_quality is not FRESH"
+     bed = recovered_snapshot.get("bed")
+     tool = recovered_snapshot.get("tool")
+@@ -212,7 +212,7 @@ def verify_seq05_reconnect_recovery(
+         return False, f"recovered bed temperature_millic {bed_t} invalid or sentinel"
+     if tool_t in sentinels or not (AISOC_NOZZLE_VALID_MIN_MILLIC <= tool_t <= AISOC_NOZZLE_VALID_MAX_MILLIC):
+         return False, f"recovered tool temperature_millic {tool_t} invalid or sentinel"
+-    if bed.get("quality", "FRESH") != "FRESH" or tool.get("quality", "FRESH") != "FRESH":
++    if bed.get("quality") != "FRESH" or tool.get("quality") != "FRESH":
+         return False, "recovered bed/tool quality must be FRESH"
+     return True, "SEQ-05 reconnect recovery verified"
+ 
+@@ -951,6 +951,10 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+         self.assertFalse(verify_seq05_reconnect_recovery(500, bad_fault_snap)[0])
+         bad_stale_snap = dict(recovered_ok, telemetry_quality="STALE")
+         self.assertFalse(verify_seq05_reconnect_recovery(500, bad_stale_snap)[0])
++        missing_q_snap = {k: v for k, v in recovered_ok.items() if k != "telemetry_quality"}
++        self.assertFalse(verify_seq05_reconnect_recovery(500, missing_q_snap)[0])
++        missing_bed_q_snap = dict(recovered_ok, bed={"temperature_millic": 60000})
++        self.assertFalse(verify_seq05_reconnect_recovery(500, missing_bed_q_snap)[0])
+ 
+     def test_run_live_composite_sequences_end_to_end_with_stateful_sim(self) -> None:
+         """验证 `run_live_composite_sequences` 配合步进时钟与断链/重连钩子完整跑通 SEQ-01..SEQ-05。"""

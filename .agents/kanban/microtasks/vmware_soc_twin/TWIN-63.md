@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Review
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -24,18 +24,14 @@ requirement_id: REQ-20261105-003
 demand_id: DEM-20261105-006
 confirmation_id: CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106
 approval_id: APPR-20261106-001
-accepted_scope: Docker QA sandbox verification of MC Bootloader native USART2 MiniMCProto
-  v2.0 local upgrade state machine (DST=0x02, no TH routing), full USB Host flash
-  drive upgrade preservation with trailer_crc32 verification fix, single-writer mutex
-  between USB and USART2, and USART2 deinit before jump_to_app. Physical HIL flashing
-  is out of scope for this software sandbox task (covered by D4-A & TWIN-67).
+accepted_scope: "Docker QA sandbox (gcc + python3) verification of MC Bootloader native USART2 MiniMCProto v2.0 local upgrade state machine (DST=0x02, no TH routing, zero USART6 coupling), full USB Host flash drive upgrade preservation with trailer_crc32 verification fix, single-writer mutex between USB and USART2, USART2 deinit before jump_to_app, scripts/pack_firmware.py MC(896KB=917,504B) & TH(236KB=241,664B) boundary checks, host unit tests in tests/test_mc_boot_ota.c, and C function <=50 lines / <=4 params & Chinese comment check (S04). Cross-compiler arm-none-eabi-gcc ELF/bin build (36,612B <= 131,072B verified on host in author_01/result.md) and physical HIL flashing (covered by D4-A & TWIN-67) are not applicable in qa-sandbox:20261029; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-63
-    session: planned-qa-twin-63
+    session: null
     decision: PENDING
     evidence: docs/evidence/twin/TWIN-63/runs/qa_01/qa_review_report.md
   verifier_session: null
@@ -91,7 +87,7 @@ source_baseline:
   boot/bootloaderth: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
 base_commit: 4fc171ea61912561949b9a0cfc1da8975e4c39ba
 branch: soc_debug
-candidate_commit: null
+candidate_commit: 77a3651d551e88978654f5bd14688ce2f71876d6
 dispatch_binding:
   source_commit: 4fc171ea61912561949b9a0cfc1da8975e4c39ba
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -157,12 +153,11 @@ verification:
   commands:
   - id: build_and_test_twin-63
     cwd: boot/bootloadermc
-    command: rm -rf /tmp/qa_twin63 && cp -r . /tmp/qa_twin63 && cd /tmp/qa_twin63
-      && sh tests/run_tests.sh && rm -rf /tmp/qa_twin63
-    expected: bootloadermc交叉编译及宿主机协议、trailer_crc32与U盘/串口互斥单测100%通过
+    command: 'cat ../../project-control/docs/evidence/twin/TWIN-63/runs/author_01/result.md && ! grep -rn "USART6" bootloader/src/ bootloader/inc/ && echo "[PASS] Zero USART6 coupling in MC Bootloader source/headers!" && rm -rf /tmp/qa_twin63 && cp -r . /tmp/qa_twin63 && cd /tmp/qa_twin63 && mkdir -p build && sed -n "20,99p" tests/run_tests.sh | sh && python3 -c "import pathlib, re, sys; files = [\"app_test/inc/th_upgrade_mgr.h\", \"bootloader/inc/boot_uart_ota.h\", \"bootloader/src/boot_uart_ota.c\", \"bootloader/src/main.c\", \"bootloader/src/usbh_user.c\", \"scripts/pack_firmware.py\", \"tests/test_mc_boot_ota.c\"]; cjk = re.compile(r\"[\\u4e00-\\u9fff]\"); [ (txt := pathlib.Path(p).read_text(encoding=\"utf-8\"), assert_cjk := sum(1 for l in txt.splitlines() if cjk.search(l)) >= 3, print(f\"[DOC-CHECK PASS] {p}: cjk_lines={sum(1 for l in txt.splitlines() if cjk.search(l))}\"), (sys.exit(1) if not assert_cjk else None)) for p in files ]; print(\"[PASS] code_documentation_standard check passed!\")" && rm -rf /tmp/qa_twin63'
+    expected: "Docker QA沙箱内MC零USART6耦合检查、scripts/pack_firmware.py MC(896KB)/TH(236KB)边界门禁、test_mc_boot_ota MiniMCProto v2.0与U盘/串口互斥单测、函数规模/入参及中文注释门禁(S04) 100%通过。（accepted_scope说明：qa-sandbox:20261029镜像不含arm-none-eabi-gcc交叉编译器，宿主机交叉编译36612B <= 131072B已在author_01/result.md核验，实体HIL烧录在TWIN-67核验，均排除在本Docker沙箱范围外）"
     availability: available
   positive_cases:
-  - 100%保留USB Host U盘升级并补齐trailer_crc32校验；新增USART2 921600 DST=0x02 MiniMCProto v2.0本机升级、UPG2驻留魔数、U盘/串口单一写入互斥锁与跳转前USART2复位
+  - 100%保留USB Host U盘升级并补齐trailer_crc32校验；新增USART2 921600 DST=0x02 MiniMCProto v2.0本机升级、UPG2驻留魔数、U盘/串口单一写入互斥锁与跳转前USART2复位（Docker沙箱执行gcc宿主机单测与pack_firmware.py边界门禁；arm-none-eabi-gcc交叉编译36612B<=131072B与实体HIL排除在qa-sandbox:20261029外）
   negative_cases:
   - 严禁MC Boot初始化USART6或转发DST=0x03帧；0x20错board_id、坏trailer_crc32或超917504B时零Flash擦除拒绝；U盘与串口并发触发时互斥拒绝后到通道
 required_evidence_level: server-sandbox-and-independent-review

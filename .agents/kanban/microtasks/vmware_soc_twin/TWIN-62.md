@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -31,9 +31,18 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-62
-    session: null
-    decision: PENDING
+    session: 01a1aecb-f61a-76f3-b694-d99bc58b92a2
+    reviewer_session: 01a1aecb-f61a-76f3-b694-d99bc58b92a2
+    commit_sha: 64b7100d3b0260ad1c24b627986475dcd45ad383
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-62/runs/qa_04/codex_events.jsonl
+      sha256: acaaa0dbe0ebe3643c2871d423be75275b3cf0b63b75c3a264b0d3d8f5355600
+    decision: APPROVED
+    reviewed_task_revision: 4
+    artifact_version: project-control=45c5cdf791ae3d88b76949525ec1b46d25832083; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1; boot/bootloadermc=4fc171ea61912561949b9a0cfc1da8975e4c39ba; boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-62/runs/qa_04/qa_review_report.md
     evidence: docs/evidence/twin/TWIN-62/runs/qa_04/qa_review_report.md
+    report_sha256: 06def3f6771faabd85f0951638982a624344d632bcfec30835ff3f98bf27288f
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -122,11 +131,7 @@ read_sources:
 - project-control/docs/planning/minimc_v2_upgrade_qa_planning_input_20261105.md
 - project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md
 worktree: boot/bootloaderth
-lease:
-  owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 4
-  lease_id: lease-twin-62-20261106-01
-  expires_at: '2026-11-07T22:00:00+08:00'
+lease: null
 resources:
 - resource: boot-bootloaderth-worktree
   location: boot/bootloaderth

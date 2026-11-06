@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -32,16 +32,34 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-61
-    session: null
-    decision: PENDING
+    session: 01a1aecd-2473-76c2-8842-4ee00b770283
+    reviewer_session: 01a1aecd-2473-76c2-8842-4ee00b770283
+    commit_sha: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-61/runs/qa_07/codex_events.jsonl
+      sha256: a05c5b299e62348cc7983214111b3661fdd621cfd6c0dc7f71dd41621ff81f0d
+    decision: APPROVED
+    reviewed_task_revision: 7
+    artifact_version: project-control=c1d2c461aa65e6497c295843a2735d0d02ee2e2d; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-61/runs/qa_07/qa_review_report.md
     evidence: docs/evidence/twin/TWIN-61/runs/qa_07/qa_review_report.md
+    report_sha256: 1c1600584388bbb898b6564d2d3d0f63e37cd6f95372b3d8150018b57c6fc9a7
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-61
-    session: null
-    decision: PENDING
+    session: 01a1aecd-e8d6-7573-b013-c207afda0826
+    reviewer_session: 01a1aecd-e8d6-7573-b013-c207afda0826
+    commit_sha: f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-61/runs/qa_07/codex_events_arch.jsonl
+      sha256: 6af169552f84d2ae7c8587504525c57afb837fe1f94d2de5c73f8296a0c89e40
+    decision: APPROVED
+    reviewed_task_revision: 7
+    artifact_version: project-control=c1d2c461aa65e6497c295843a2735d0d02ee2e2d; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=f41d93b753cfd4496f8d5c82fe1c032d1a4d4803
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-61/runs/qa_07/arch_review_report.md
     evidence: docs/evidence/twin/TWIN-61/runs/qa_07/arch_review_report.md
+    report_sha256: b26a1054defb73fee327ccf05583ab0fbc3fd0881af9d1ab13d572f0ce58751d
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -105,11 +123,7 @@ read_sources:
 - project-control/docs/architecture/twin55_issues_005_017_consolidated_remediation_plan_20261105.md
 - project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md
 worktree: test_harness
-lease:
-  owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 7
-  lease_id: lease-twin-61-20261105-01
-  expires_at: '2026-11-06T22:00:00+08:00'
+lease: null
 resources:
 - resource: test_harness-worktree
   location: test_harness
