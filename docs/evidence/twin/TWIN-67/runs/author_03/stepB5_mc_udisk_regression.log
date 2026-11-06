@@ -1,0 +1,114 @@
+[17:21:18.933]   AT32F435 U-Disk + UART2 Bootloader (Nov  6 2026 15:11:38 | Build #129)
+[17:21:18.933]   Flash: 1024KB | Bl: 128KB | App: 0x08020000
+[17:21:18.933] ========================================
+[17:21:18.934] [EEPROM] I2C2 PB10/PB11 @ 100K (Addr: 0xA0) -> SUCCESS! Byte[0x00] = 0xFF
+[17:21:18.934] 
+[17:21:18.934] --- EEPROM Full Dump (Start: 0x00, Length: 256) ---
+[17:21:18.934]   0x00: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:18.954]   0x10: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:18.954]   0x20: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:18.970]   0x30: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:18.972]   0x40: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.002]   0x50: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.002]   0x60: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.004]   0x70: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.009]   0x80: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.033]   0x90: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.033]   0xA0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.037]   0xB0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.063]   0xC0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.063]   0xD0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.064]   0xE0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.096]   0xF0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:21:19.096] --- End of EEPROM Dump ---
+[17:21:19.097] 
+[17:21:19.484] Probing for U-disk / UART2 OTA (2.0s timeout window)...
+[17:21:19.855] USB Device Attached.
+[17:21:19.871] USB Device Enumeration Done.
+[17:21:19.871] FAT32 File System initialized.
+[17:21:19.887] Searching for upgrade package (fw_mc.bin)...
+[17:21:19.887] Found: FW_MC.BIN, Size: 383272 bytes, Target: 0x08020000
+[17:21:19.890] Starting firmware flash programming...
+[17:21:19.918] [PRE-VERIFY] REJECTED: Trailer check failed (rc=-2, magic=0x43960000, board=0x00000101)
+[17:21:19.920] [SECURITY GATE] Pre-verification FAILED. Flash erase ABORTED!
+[17:21:19.932] Upgrade failed!
+[17:21:19.987] [BOOT] FS Check PASSED: 0:/FW_MC.BIN -> 0:/FW_MC.err verified (Size=383272 B).
+[17:25:43.733] USB Device Disconnected.
+[17:26:55.309] USB Device Attached.
+[17:26:55.339] USB Device Enumeration Done.
+[17:26:55.340] FAT32 File System initialized.
+[17:26:55.340] Searching for upgrade package (fw_mc.bin)...
+[17:26:55.340] Found: FW_MC.BIN, Size: 383400 bytes, Target: 0x08020000
+[17:26:55.341] Starting firmware flash programming...
+[17:26:55.370] [PRE-VERIFY] PASS: MC Firmware verified. Payload: 383272 B, Ver: 0x00010002
+[17:26:55.370] Erasing 188 sectors (2KB each) from 0x08020000...
+[17:27:03.837] Writing image to Flash (383272 B)...
+[17:27:05.591] CRC32 Check OK: 0x489B1D52
+[17:27:05.595] Upgrade FW_MC.BIN successful!
+[17:27:05.671] [BOOT] FS Check PASSED: 0:/FW_MC.BIN -> 0:/FW_MC.cur verified (Size=383400 B).
+[17:27:05.675] Jumping to Application at 0x08020000...
+[17:27:05.892] 
+[17:27:05.892] [MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===
+[17:27:05.893] [MC_APP][TEST] printf float test: 123.456001, 78.90, 0.00123
+[17:27:07.124] buzzer_flag:0
+[17:27:07.124] pid_taregt:0 0
+[17:27:07.124] pid_taregt:0 0
+[17:27:07.124] pid_taregt:0 0
+[17:27:07.124] sd status:1
+[17:27:08.126] poweroff:0
+[17:27:08.862] [M[MC_APP] Heartbeat alive (Marlin Loop OK)
+[17:27:08.916] C-[MC_APP] USB Device Attached.
+[17:27:08.922] DBG] ts=2969 dir=STATE node=MC seq=0 c[MC_APP] USB Device Enumeration Completed.
+[17:27:08.928] md=0x14 status=OK noz[MC_APP] USB Mass Storage Application Ready.
+[17:27:08.948] zle_ddC=0 nozzle_set_ddC=0 bed_ddC=32767 bed_set_ddC=0 heater_fault=1 drop=0 trunc=0
+[17:27:08.958] [MC-DBG] ts=2969 dir=STATE node=MC seq=0 cmd=0x13 status=OK job_state=IDLE progress_permille=0 ack_seq=0 drop=0 trunc=0
+[17:27:09.360] [MC-DBG] ts=3469 dir=STATE node=MC seq=0 cmd=0x14 status=OK nozzle_ddC=0 nozzle_set_ddC=0 bed_ddC=32767 bed_set_ddC=0 heater_fault=1 drop=0 trunc=0
+[17:27:09.382] [MC-DBG] ts=3469 dir=STATE node=MC seq=0 cmd=0x13 status=OK job_state=IDLE progress_permille=0 ack_seq=0 drop=0 trunc=0
+
+=== [U07/U08] Reboot verification via 0x1D soft-reset to Bootloader with U-disk attached ===
+[17:34:08.535] 
+[17:34:08.536] ========================================
+[17:34:08.536]   AT32F435 U-Disk + UART2 Bootloader (Nov  6 2026 15:11:38 | Build #129)
+[17:34:08.541]   Flash: 1024KB | Bl: 128KB | App: 0x08020000
+[17:34:08.544] ========================================
+[17:34:08.551] [EEPROM] I2C2 PB10/PB11 @ 100K (Addr: 0xA0) -> SUCCESS! Byte[0x00] = 0xFF
+[17:34:08.551] 
+[17:34:08.556] --- EEPROM Full Dump (Start: 0x00, Length: 256) ---
+[17:34:08.582]   0x00: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.582]   0x10: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.584]   0x20: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.615]   0x30: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.615]   0x40: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.615]   0x50: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.645]   0x60: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.645]   0x70: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.645]   0x80: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.648]   0x90: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.676]   0xA0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.676]   0xB0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.677]   0xC0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.706]   0xD0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.706]   0xE0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.706]   0xF0: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  |................|
+[17:34:08.707] --- End of EEPROM Dump ---
+[17:34:08.707] 
+[17:34:09.112] Probing for U-disk / UART2 OTA (2.0s timeout window)...
+[17:34:09.485] USB Device Attached.
+[17:34:09.502] USB Device Enumeration Done.
+[17:34:09.502] FAT32 File System initialized.
+[17:34:09.517] Searching for upgrade package (fw_mc.bin)...
+[17:34:09.517] No valid upgrade package (fw_mc.bin) found on U-disk.
+[17:34:09.522] [BOOT] No MC firmware. Valid App found at 0x08020000, jumping...
+[17:34:09.738] 
+[17:34:09.739] [MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===
+[17:34:09.739] [MC_APP][TEST] printf float test: 123.456001, 78.90, 0.00123
+[17:34:10.980] buzzer_flag:0
+[17:34:10.980] pid_taregt:0 0
+[17:34:10.980] pid_taregt:0 0
+[17:34:10.980] pid_taregt:0 0
+[17:34:10.980] sd status:1
+[17:34:11.976] poweroff:0
+[17:34:12.708] [M[MC_APP] Heartbeat alive (Marlin Loop OK)
+[17:34:12.775] C-[MC_APP] USB Device Attached.
+[17:34:12.775] DBG] ts=2969 dir=STATE node=MC seq=0 c[MC_APP] USB Device Enumeration Completed.
+[17:34:12.775] md=0x14 status=OK noz[MC_APP] USB Mass Storage Application Ready.

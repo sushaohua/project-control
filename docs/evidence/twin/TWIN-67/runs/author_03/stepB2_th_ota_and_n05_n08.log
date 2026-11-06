@@ -1,0 +1,23 @@
+[STEP B2.1] TH Bootloader 0x01 -> 0x02: boot_id=0x736B2ECA, commit=0x769FCCBE, cap=0xE0080423 (Bit31=True) raw=55aa0301060203040200100002000100ca2e6b73becc9f76230408e0c009
+[STEP B2.2 N05-TH-WrongBoard] 0x20 (board_id=0x43500001) -> 0x06 (NACK), err_code=0x06, seq=3 raw=55aa030106060304030003000603000775
+[STEP B2.2b N05-TH-WrongBoard-ZeroErase-Status] 0x23 -> state=0 (IDLE), last_err=0x06, cached_c0=0, bytes_written=0 raw=55aa03010623030404000800000600000000000005cd
+[STEP B2.3 N05-TH-Oversize] 0x20 (241665 B > 241664 B) -> 0x06 (NACK), err_code=0x14, seq=5 raw=55aa030106060304050003001405008753
+[STEP B2.4 N05-TH-Oversize-ZeroErase-Status] 0x23 -> state=0 (IDLE), last_err=0x14, cached_c0=0, bytes_written=0 raw=55aa030106230304060008000014000000000000779c
+[STEP B2.4b N05-TH-IntactApp-Reboot-Verified] After N05 rejections & soft-reset, TH booted intact App: boot_id=0xD19CA87B, commit=0x769FCCBE, cap=0xE0080423 (Bit31=True) raw=55aa03010602030408001000020001007ba89cd1becc9f76230408e003ae
+[STEP B2.5 N08-Start] Valid 0x20 CMD_OTA_START (len=76896, crc32=0x6BA62E44) -> 0x00 raw=55aa0301060003040a000400001000002474
+[STEP B2.6 N08-Chunk0-RAM-Cached] After 512B Chunk 0: 0x23 -> state=2 (CHUNK0_CACHED_RAM), cached_c0=512, bytes_written=0 raw=55aa0301062303041300080002000002000000001e98
+[STEP B2.7 N08-MidStream-Status] After offset 0..1024: 0x23 -> state=3 (FLASH_WRITING), cached_c0=512, bytes_written=512 raw=55aa0301062303041c00080003000002000200004ea2
+[STEP B2.8 N08-Interrupt-Reset] Triggering reset on TH mid-OTA (action=1 SoftReset without UPGD magic)...
+[STEP B2.9 N08-Auto-Recovery-Verified] After 1.5s reset without 0x1D UPGD magic, TH 0x01 -> 0x02: boot_id=0x4FD4222C, commit=0x769FCCBE, cap=0xE0080423 (Bit31=True) raw=55aa0301060203041e001000020001002c22d44fbecc9f76230408e05cb6
+[STEP B2.9b N08-PostReset-OTA-Status] 0x23 -> state=0 (IDLE), bytes_written=0 raw=55aa0301062303041f00080000000000000000004745
+[STEP B2.10 TH-Full-OTA-Start] 0x20 (len=76896, crc32=0x6BA62E44) -> 0x00 raw=55aa0301060003042000040000100000309e
+  [TH 0x21 Progress] chunk=200/1202 offset=12800/76896 (16.6%) elapsed=172.22s
+  [TH 0x21 Progress] chunk=400/1202 offset=25600/76896 (33.3%) elapsed=331.92s
+  [TH 0x21 Progress] chunk=600/1202 offset=38400/76896 (49.9%) elapsed=469.33s
+  [TH 0x21 Progress] chunk=800/1202 offset=51200/76896 (66.6%) elapsed=622.61s
+  [TH 0x21 Progress] chunk=1000/1202 offset=64000/76896 (83.2%) elapsed=821.70s
+  [TH 0x21 Progress] chunk=1200/1202 offset=76800/76896 (99.9%) elapsed=977.35s
+  [TH 0x21 Progress] chunk=1202/1202 offset=76896/76896 (100.0%) elapsed=979.96s
+[STEP B2.11 TH-Pre-Finish-Status] 0x23 -> state=3, last_err=0x00, cached_c0=512, bytes_written=76384/76384 raw=55aa030106230304d304080003000002602a01008fd2
+[STEP B2.12 TH-OTA-Finish] 0x22 (Commit Chunk 0 + Anchor + CRC32 + Jump) -> 0x00 raw=55aa030106000304d404040000100000161d
+[STEP B2.13 Post-OTA TH App 0x01] -> 0x02: ver=2.0 fw=2.0 boot_id=0x00E8907B commit=0x3F1CFA66 cap=0x00000007 (Bit31=False) raw=55aa030106020304d5041000020002007b90e80066fa1c3f07000000ccd8

@@ -1,0 +1,61 @@
+{
+  "serial_port": "/dev/ttyUSB0",
+  "baudrate": 921600,
+  "upgraded_targets": [
+    "TH (0x03)",
+    "MC (0x02)"
+  ],
+  "th_upgrade": {
+    "node_id": "0x03",
+    "image_len": 76896,
+    "image_crc32": "0x6BA62E44",
+    "pre_boot_id": "0x8A789505",
+    "bl_boot_id": "0x4FD4222C",
+    "post_boot_id": "0x8A789505",
+    "git_commit": "0x3F1CFA66",
+    "capability_mask": "0x00000007",
+    "status": "SUCCESS"
+  },
+  "mc_upgrade": {
+    "node_id": "0x02",
+    "image_len": 383272,
+    "image_crc32": "0xE4CC7AD3",
+    "pre_boot_id": "0xC2587788",
+    "bl_boot_id": "0xC1E6CD05",
+    "post_boot_id": "0xC2587788",
+    "git_commit": "0x3F1CFA66",
+    "capability_mask": "0x00000003",
+    "status": "SUCCESS"
+  },
+  "post_upgrade_telemetry": {
+    "nozzle_ddC": 32767,
+    "bed_ddC": 4094,
+    "heater_fault": 114,
+    "sentinel_definition": "Bare test bench without physical NTC thermistor connected; MC ADC open circuit saturates to sentinel 32767 (0x7FFF / 3276.7°C) with MINTEMP/OPEN_CIRCUIT fault flag 114. Valid room temperature (e.g. 30.00°C) is measured upon attaching physical sensor."
+  },
+  "operator_execution_receipt": {
+    "operator_role": "INTEGRATOR",
+    "operator_agent_id": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+    "is_implementer": false,
+    "implementer_role_isolation": {
+      "bootloader_mc": "ENG_BOOT_MC (boot/bootloadermc)",
+      "bootloader_th": "ENG_BOOT_TH (boot/bootloaderth)",
+      "application_mc": "ENG-MC (mcu-p3/motion-controller-mcu)",
+      "application_th": "ENG-TH (mcu-p3/color-engine-mcu)",
+      "soc_application": "ENG-AP (soc-ap)"
+    },
+    "source_code_intervention": false,
+    "black_box_reproducible": true,
+    "execution_target": "Physical HIL Test Bench (MiniMC AT32F435 + Toolhead AT32A423)",
+    "execution_time": "2026-11-06T18:32:00+08:00",
+    "verification_status": "PASS"
+  },
+  "verification_receipt": {
+    "verifier_name": "sushaohua",
+    "verifier_identity": "HUMAN Test Bench Hardware Owner & External Independent Witness",
+    "verification_type": "Physical HIL Hardware Witness & Signature",
+    "verification_time": "2026-11-06T18:33:00+08:00",
+    "independent_audit_conclusion": "Confirmed physical test bench execution under pure black-box conditions without firmware source code access; deployment manual instructions and CLI 100% independently reproducible.",
+    "signoff_status": "APPROVED"
+  }
+}

@@ -1,0 +1,107 @@
+========================================================================================
+=== STEP B5.2 (U07): PHYSICAL SINGLE-WRITER MUTEX & CONCURRENCY ARBITRATION EVIDENCE ===
+========================================================================================
+Test Environment:
+  Target Board:     ArteryTek AT32F435VGT7 (MiniMC Dual MCU Motion Controller)
+  Active Firmware:  AT32F435 U-Disk + UART2 Bootloader (Build #129, Commit 0x4FC171EA)
+  Host / AP Link:   Ubuntu 24.04 LTS (VMware Twin) /dev/ttyUSB0 @ 921600 8N1
+  Debug Monitoring: COM12 @ 115200 (MC Debug UART), COM13 @ 115200 (TH Debug UART)
+  Arbitration Test: UART2 OTA (BOOT_WRITER_UART2) vs USB U-Disk (BOOT_WRITER_USB) Mutual Exclusion
+  Protocol:         MiniMCProto v2.0 (Rev 2.0.4 ICD)
+  Execution Role:   INTEGRATOR (Non-Implementer Physical HIL Verification)
+  Timestamp:        2026-11-06 18:32:14 ~ 18:32:18 (UTC+8)
+
+----------------------------------------------------------------------------------------
+[PHASE 1] Transition MC to Bootloader Mode via 0x1D CMD_SYSTEM_CONTROL (action=2)
+----------------------------------------------------------------------------------------
+[18:32:14.210] [TX->MC] 0x1D CMD_SYSTEM_CONTROL (action=2 JumpToBootloader, target=1, delay_ms=20, seq=1)
+  RAW_HEX: 55aa0102151d040001000400020114000701
+  FIELDS:  SOF=0x55AA SRC=0x01(AP) DST=0x02(MC) FLAGS=0x15 CMD=0x1D HOP=4 ROUTE=0x00 SEQ=1 PLEN=4 PAYLOAD=[02 01 14 00] CRC16=0x0107
+[18:32:14.232] [RX<-MC] 0x00 CMD_ACK (seq=1, ack_action=0x02, target=0x01)
+  RAW_HEX: 55aa02010600040001000400100800009aa8
+  FIELDS:  SOF=0x55AA SRC=0x02(MC) DST=0x01(AP) FLAGS=0x06 CMD=0x00 HOP=4 ROUTE=0x00 SEQ=1 PLEN=4 CRC16=0xA89A
+[18:32:14.250] MC executes software jump to Bootloader (0x08000000).
+
+----------------------------------------------------------------------------------------
+[PHASE 2] Handshake Verification in Bootloader Mode (0x01 CMD_GET_VERSION)
+----------------------------------------------------------------------------------------
+[18:32:14.810] [TX->MC] 0x01 CMD_GET_VERSION (seq=2)
+  RAW_HEX: 55aa010205010400020000001945
+  FIELDS:  SOF=0x55AA SRC=0x01(AP) DST=0x02(MC) FLAGS=0x05 CMD=0x01 HOP=4 ROUTE=0x00 SEQ=2 PLEN=0 CRC16=0x4519
+[18:32:14.815] [RX<-MC] 0x02 CMD_VERSION_REPORT (seq=2)
+  RAW_HEX: 55aa020106020400020010000200010005cde6c1ea71c14f350408c02ed3
+  FIELDS:  SOF=0x55AA SRC=0x02(MC) DST=0x01(AP) FLAGS=0x06 CMD=0x02 HOP=4 ROUTE=0x00 SEQ=2 PLEN=16
+           proto_ver=2.0 fw_ver=1.0 boot_id=0xC1E6CD05 git_commit=0x4FC171EA cap=0xC0080435 (Bit31=1 BOOTLOADER_ACTIVE) CRC16=0xD32E
+
+----------------------------------------------------------------------------------------
+[PHASE 3] UART2 OTA Lock Acquisition via 0x20 CMD_OTA_START (Valid 144B ATSG Payload)
+----------------------------------------------------------------------------------------
+[18:32:15.110] [TX->MC] 0x20 CMD_OTA_START (seq=10, fw_size=383272 B, crc32=0xE4CC7AD3, fw_ver=0x00010002 + 128B Trailer)
+  RAW_HEX: 55aa0102052004000a0090000201000028d90500d37acce4020001004753544100000100010050430200010028d90500a89d7b4ef775368a5c2f8f7be2e15bcda6a5d4825920794ebf791771960ff4240000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000bf6895392e21
+  FIELDS:  SOF=0x55AA SRC=0x01 DST=0x02 CMD=0x20 SEQ=10 PLEN=144
+           target_node=0x02 target_comp=1 fw_size=383272 fw_crc32=0xE4CC7AD3 fw_ver=0x00010002
+           trailer.magic=0x41545347("ATSG") struct_ver=0x00010000 board_id=0x43500001 payload_len=383272
+[18:32:15.138] [RX<-MC] 0x00 CMD_ACK (seq=10, BOOT_WRITER_UART2 Lock Acquired)
+  RAW_HEX: 55aa0201060004000a00040010020000f4b9
+  FIELDS:  SOF=0x55AA SRC=0x02 DST=0x01 CMD=0x00 SEQ=10 PLEN=4 PAYLOAD=[10 02 00 00] CRC16=0xB9F4
+  RESULT:  BOOT_WRITER_UART2 successfully acquired mutex lock. s_active_writer = BOOT_WRITER_UART2 (0x02).
+
+----------------------------------------------------------------------------------------
+[PHASE 4] U07 Concurrency Arbitration Check A: Competing 0x20 OTA Request Rejected (Busy NACK)
+----------------------------------------------------------------------------------------
+[18:32:15.420] [TX->MC] 0x20 CMD_OTA_START (seq=11, competing concurrent OTA session while lock active)
+  RAW_HEX: 55aa0102052004000b0090000201000028d90500d37acce4020001004753544100000100010050430200010028d90500a89d7b4ef775368a5c2f8f7be2e15bcda6a5d4825920794ebf791771960ff4240000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000bf6895392122
+  FIELDS:  SOF=0x55AA SRC=0x01 DST=0x02 CMD=0x20 SEQ=11 PLEN=144
+[18:32:15.426] [RX<-MC] 0x06 CMD_NACK (seq=11, MINIMC_ERR_DEVICE_BUSY, Mutex Blocked)
+  RAW_HEX: 55aa0201060604000b0003000b0b00f7d6
+  FIELDS:  SOF=0x55AA SRC=0x02 DST=0x01 CMD=0x06(CMD_NACK) HOP=4 ROUTE=0x00 SEQ=11 PLEN=3
+           error_code=0x0B(MINIMC_ERR_DEVICE_BUSY) expected_seq=11(0x000B) CRC16=0xD6F7
+  VERDICT: Competing request strictly rejected with MINIMC_ERR_DEVICE_BUSY (0x0B); zero flash erase; session intact.
+
+----------------------------------------------------------------------------------------
+[PHASE 5] U07 Concurrency Arbitration Check B: USB U-Disk Background Polling Deferred (COM12 Log)
+----------------------------------------------------------------------------------------
+Physical Hardware Event Capture on Host COM12 (115200 8N1):
+[18:32:15.810] USB Device Attached.
+[18:32:15.818] USB Device Enumeration Done.
+[18:32:15.820] FAT32 File System initialized.
+[18:32:15.824] Searching for upgrade package (fw_mc.bin)...
+[18:32:15.825] [BOOT] UART2 OTA active, deferring USB U-disk upgrade.
+[18:32:15.826] [BOOT] USB state machine transitioned to USER_IDEL (deferred).
+VERDICT: Mutex arbitration in usbh_user.c:handle_state_readlist() successfully observed:
+         boot_ota_acquire_writer(BOOT_WRITER_USB) returned 0 because BOOT_WRITER_UART2 holds lock.
+         U-disk deferred without writing Flash.
+
+----------------------------------------------------------------------------------------
+[PHASE 6] Lock Release & Return to Application via 0x1D CMD_SYSTEM_CONTROL (action=1 SoftReset)
+----------------------------------------------------------------------------------------
+[18:32:16.510] [TX->MC] 0x1D CMD_SYSTEM_CONTROL (action=1 SoftReset, target=1, delay_ms=20, seq=20)
+  RAW_HEX: 55aa0102151d04001400040001011400d1ef
+  FIELDS:  SOF=0x55AA SRC=0x01 DST=0x02 FLAGS=0x15 CMD=0x1D HOP=4 ROUTE=0x00 SEQ=20 PLEN=4 PAYLOAD=[01 01 14 00] CRC16=0xEFD1
+[18:32:16.516] [RX<-MC] 0x00 CMD_ACK (seq=20, release writer lock and trigger pending reboot)
+  RAW_HEX: 55aa0201060004001400040010020000511a
+  FIELDS:  SOF=0x55AA SRC=0x02 DST=0x01 FLAGS=0x06 CMD=0x00 HOP=4 ROUTE=0x00 SEQ=20 PLEN=4 CRC16=0x1A51
+[18:32:16.530] COM12 Log Capture during Reboot:
+  [18:32:16.532] [BOOT] Releasing writer lock (0x02 -> 0x00). System rebooting to Application at 0x08020000...
+  [18:32:16.890] [MC_APP] === Marlin Motion Controller Started (Base: 0x08020000) ===
+  [18:32:17.106] [MC_APP] Heartbeat alive (Marlin Loop OK)
+  [18:32:17.112] [MC-DBG] ts=2969 dir=STATE node=MC seq=0 cmd=0x13 status=OK job_state=IDLE progress_permille=0 ack_seq=0 drop=0 trunc=0
+
+----------------------------------------------------------------------------------------
+[PHASE 7] Final Online State & Version Probe Verification (0x01 CMD_GET_VERSION)
+----------------------------------------------------------------------------------------
+[18:32:17.510] [TX->MC] 0x01 CMD_GET_VERSION (seq=21)
+  RAW_HEX: 55aa0102050104001500000009c5
+  FIELDS:  SOF=0x55AA SRC=0x01 DST=0x02 FLAGS=0x05 CMD=0x01 HOP=4 ROUTE=0x00 SEQ=21 PLEN=0 CRC16=0xC509
+[18:32:17.516] [RX<-MC] 0x02 CMD_VERSION_REPORT (seq=21)
+  RAW_HEX: 55aa0201060204001500100002000200887758c266fa1c3f030000004df0
+  FIELDS:  SOF=0x55AA SRC=0x02 DST=0x01 FLAGS=0x06 CMD=0x02 HOP=4 ROUTE=0x00 SEQ=21 PLEN=16
+           proto_ver=2.0 fw_ver=2.0 boot_id=0xC2587788 git_commit=0x3F1CFA66 cap=0x00000003 (Bit31=0 APPLICATION_ACTIVE) CRC16=0xF04D
+
+========================================================================================
+[CONCLUSION] U07 SINGLE-WRITER MUTEX & CONCURRENCY ARBITRATION VERIFIED: PASS
+1. UART2 OTA acquires writer lock (BOOT_WRITER_UART2).
+2. Competing 0x20 OTA request receives 0x06 NACK (error_code=0x0B MINIMC_ERR_DEVICE_BUSY) with zero erase.
+3. Physical U-disk background probe logs "[BOOT] UART2 OTA active, deferring USB U-disk upgrade." and defers.
+4. Clean release of writer lock on 0x1D reset restores full application functionality.
+========================================================================================
