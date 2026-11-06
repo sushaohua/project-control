@@ -93,13 +93,13 @@ forbidden_paths:
 - boot/**
 - test_harness/**
 source_baseline:
-  project-control: c0ed2150d06090c558f79cb20e180f7019242573
+  project-control: 99e64196d0dafe1b28d7a18d17208cfd6006f1ba
   soc-ap: 7184edfc796923e2f2c6e3e57ef3a9f791164b51
   mcu-p3: 3f1cfa66c6d27422cf038936b29aca7e45edb511
   test_harness: cf81195eca55bcd772ef2daa2fd4aa41634c1492
   boot/bootloadermc: faa2ed00dc9b6c8567dd44e875028f65073aab62
   boot/bootloaderth: 64b7100d3b0260ad1c24b627986475dcd45ad383
-base_commit: c0ed2150d06090c558f79cb20e180f7019242573
+base_commit: 99e64196d0dafe1b28d7a18d17208cfd6006f1ba
 branch: main
 candidate_commit: null
 dispatch_binding:
