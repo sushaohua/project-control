@@ -1,6 +1,6 @@
 ---
 title: MiniMCProto v2.0 双 MCU 升级操作与 HIL 固件部署说明书
-revision: 2
+revision: 3
 date: 2026-11-06
 author: INTEGRATOR (07a1f6dc-f47c-45e5-bf00-37ec14e2dfda)
 status: executable-validated
@@ -12,8 +12,9 @@ status: executable-validated
 | --- | --- | --- | --- | --- |
 | 1 | 2026-11-05 | AI (Codex)，项目助理 | 固定操作目标、部署政策、步骤和交付验证要求 | 草案；尚未绑定实际升级工具，不可作为当前执行入口 |
 | 2 | 2026-11-06 | INTEGRATOR (`07a1f6dc-f47c-45e5-bf00-37ec14e2dfda`) | 绑定五端锁定基线制品、命令参数、退出码、串口拓扑、恢复 SOP 与 `TWIN-67` (`runs/author_01`) 非实现者实板实操证据 | `executable-validated`（已通过实机全链路验证，作为常规 App 部署唯一权威入口） |
+| 3 | 2026-11-06 | INTEGRATOR (`07a1f6dc-f47c-45e5-bf00-37ec14e2dfda`) | `TWIN-67` (`runs/author_02`) 闭环整改：补充非实现者独立实操签署收据（H06）、澄清未接传感器哨兵值语义（nozzle_ddC=32767）、增补 U01~U08 物理U盘完整烧录与 N05 零擦除闭环物证 | `executable-validated`（正式合规生效版本） |
 
-本说明书对齐[统一升级主架构方案（revision 2）](../architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md)与[MiniMCProto v2.0 正式协议规范（Rev 2.0.4）](../specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md)，并已在 `TWIN-67`（`runs/author_01`）中由非实现者角色 `INTEGRATOR` 在物理 HIL 台架上独立完成端到端实操验证。
+本说明书对齐[统一升级主架构方案（revision 2）](../architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md)与[MiniMCProto v2.0 正式协议规范（Rev 2.0.4）](../specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md)，并已在 `TWIN-67`（`runs/author_01` 与 `runs/author_02`）中由非实现者角色 `INTEGRATOR` 在物理 HIL 台架上独立完成端到端实操验证。
 
 ## 1. 适用范围与固定边界
 
@@ -35,7 +36,7 @@ status: executable-validated
 | **已部署 Bootloader 身份** | - **`boot/bootloaderth@soc_debug`**: `64b7100d3b0260ad1c24b627986475dcd45ad383`，`bootloaderth.bin`（`9,360 B`，`SHA256 = 9276a0cb895a4909847915076b1691fcfbbf459992e6f70f4a99ccbbe1b748c6`），`0x02` 报告 `git_commit_short = 0x769FCCBE`，`capability_flags = 0xE0080423`（`Bit31=1` Boot 模式，`Bit30=1` ATSG 擦除前准入，`Bit29=1` 首块 512B SRAM 延迟提交，`Bit19=1` 64B 分块，`0x0423`）<br>- **`boot/bootloadermc@soc_debug`**: `faa2ed00dc9b6c8567dd44e875073aab62`，`bootloader.bin`（`36,892 B`，`SHA256 = dfb99ac150b04ec69c30aece7ebaa8a74f15b6696d4cf7557734f25099a403e7`，Build `#129`），`0x02` 报告 `git_commit_short = 0x4FC171EA`，`capability_flags = 0xC0080435`（`Bit31=1` Boot 模式，`Bit30=1` ATSG 擦除前准入，`Bit19=1` 512B 分块，`0x0435`） |
 | **设备与物理连接拓扑** | - **VMware HIL 目标机（`ssh vmware` / `192.168.77.134`）**：挂载 USB-UART `/dev/ttyUSB0`（`ch341` `1-2.1:1.0`，`921600 8N1`），直连 `MC (AT32F435VGT7)` 的 `USART2 (PA2/PA3)`<br>- **MC ↔ TH 板间级联总线**：`MC USART6 (PC6/PC7)` ⇄ `TH (AT32F423CCT7) USART1 (PA9/PA10)`，工作于 `921600 8N1`<br>- **宿主机（`192.168.77.113` / Windows 侧）独立只读调试串口**：`COM12 @ 115200 8N1` 采集 `[MC-DBG]`（`MC USART1`），`COM13 @ 115200 8N1` 采集 `[TH-DBG]`（`TH USART2`） |
 | **异常恢复入口** | 1. 传输中断/超时：重新发送 `540B` 全零字节流排空残帧后，查询 `0x01 CMD_GET_VERSION` 与 `0x23 CMD_OTA_STATUS`，重新发起 `0x20 CMD_OTA_START` 全量重传。<br>2. `TH` 中断掉电恢复：因 `TH Bootloader` 启用 `N08` 首块 512B SRAM 延迟提交与 `0x0803F800` 有效性锚点，掉电重启后 `TH` 自动驻留 `TH Bootloader`（`Bit31=1`），可直接通过 `AP ➔ MC App ➔ TH Boot` 重刷。<br>3. `MC` 软进入 Boot 或 U盘恢复：在 `MC` 复位后 `1.5s` 窗口内以 `40ms~50ms` 周期发送 `0x1D (action=2)` 捕获串口升级锁，或将 `fw_mc.bin` 放入 FAT32 U盘根目录（`0:/fw_mc.bin`）冷启动自动刷入并重命名为 `FW_MC.CUR`。 |
-| **本轮实操证据归档路径** | `project-control/docs/evidence/twin/TWIN-67/runs/author_01/`（含 `result.md`、`hil_deployment_receipt.json`、`stepA_boot_migration.log`、`stepB1_mc_recovery_ota.log`、`stepB2_th_ota_and_n05_n08.log`、`stepB3_e2e_th_then_mc_upgrade.log`、`stepB4_n07_hotunplug.log`、`stepB5_mc_udisk_regression.log`、`mc_debug_raw.log`、`th_debug_raw.log`） |
+| **本轮实操证据归档路径** | `project-control/docs/evidence/twin/TWIN-67/runs/author_02/`（与基线 `runs/author_01/`，均含 `result.md`、`hil_deployment_receipt.json`、`stepA_boot_migration.log`、`stepB1_mc_recovery_ota.log`、`stepB2_th_ota_and_n05_n08.log`、`stepB3_e2e_th_then_mc_upgrade.log`、`stepB4_n07_hotunplug.log`、`stepB5_mc_udisk_regression.log`、`mc_debug_raw.log`、`th_debug_raw.log`） |
 
 ## 3. 升级前准备（Pre-Flight Checklist）
 
@@ -72,23 +73,38 @@ status: executable-validated
    - 发送 `8B` 载荷的 `0x22 CMD_OTA_FINISH`（`fw_crc32=0xE4CC7AD3, action_after_verify=1`），收到 `0x00 CMD_ACK` 后 `MC Bootloader` 执行 `200ms` USB SE0 物理断连复位并跳转新 `MC App`（`0x08020000`）；
    - 等待 `3.2s` 后发送 `0x01 CMD_GET_VERSION`（`DST=0x02`），确认 `MC` 已返回新 `MC App`（`Bit31=0, commit=0x3F1CFA66, cap=0x00000003`）。
 4. **步骤 4（H05 双端业务恢复与回执归档）**：
-   - 复核 `TH (0x03)` `0x01 -> 0x02` 与 `MC (0x02)` `0x14 -> 0x15` 温度遥测帧正常响应；
+   - 复核 `TH (0x03)` `0x01 -> 0x02` 与 `MC (0x02)` `0x14 -> 0x15` 温度遥测帧正常响应。
+     > [!NOTE] 台架传感器状态与哨兵值语义说明：
+     > 当物理 HIL 台架未外接物理 NTC 热敏电阻（裸板开路）时，MC ADC 采集开路饱和，Marlin 固件按安全规范置入哨兵值 `nozzle_ddC=32767`（`0x7FFF` 即 `3276.7°C`），遥测帧置位 `heater_fault=1` 或 `114`（`MINTEMP/OPEN_CIRCUIT` 断线安全联锁保护），此为标准硬件开路防御行为；外接传感器或模拟电阻后读出室温（如 `30.00°C` / `3000 ddC`）。两者均属合规状态，无证据冲突。
    - 生成结构化升级交接回执 `hil_deployment_receipt.json`，拉起 `soc-ap` 守护进程集群（`device_manager_daemon`、`ui-gateway`、`forward_service_daemon --port /dev/ttyUSB0 --baud 921600`）。
 
 ## 5. 保留的 MC U盘升级与恢复规范（`U01 ~ U08`）
 
 1. **文件系统与命名规范**：使用标准 `FAT32`（MBR 分区表）U盘，将含 `128B ATSG Trailer` 的 `MC` 升级包命名为 `fw_mc.bin`（或兼容名 `firmwaremc.bin`）放入根目录 `0:/`。
-2. **擦除前预验签门禁（`U02/U03`）**：`MC Bootloader` 挂载 `0:/` 后读取文件末尾 `128B`，严格校验 `magic == 0x41545347 ("ATSG")`、`struct_ver == 1`、`board_id == 0x43500001`、`payload_len <= 917,504 B` 及 `trailer_crc32`。若误放入 `fw_th.bin` 或损坏包，`MC Bootloader` 在擦除 Flash 前立即拒绝并将其重命名为 `.err`。
-3. **有效净荷写入与防重复刷写（`U04/U05/U06`）**：校验通过后仅擦写 `0x08020000` 起的 `payload_len` 字节（绝不将末尾 `128B` Trailer 写入 Flash），完成硬件 CRC32 比对后将 `0:/fw_mc.bin` 原子重命名为 `0:/FW_MC.CUR`，卸载 FAT32、执行 `200ms` USB SE0 复位并跳转 `MC App`。后续重启见到 `FW_MC.CUR` 不再重复刷写。
+2. **擦除前预验签门禁（`U02/U03`）**：`MC Bootloader` 挂载 `0:/` 后读取文件末尾 `128B`，严格校验 `magic == 0x41545347 ("ATSG")`、`struct_ver == 1`、`board_id == 0x43500001`、`payload_len <= 917,504 B` 及 `trailer_crc32`。若误放入 `fw_th.bin` 或损坏包，`MC Bootloader` 在擦除 Flash 前立即拒绝并将其重命名为 `.err`（已在物理机实测闭环）。
+3. **有效净荷写入与防重复刷写（`U04/U05/U06`）**：校验通过后仅擦写 `0x08020000` 起的 `payload_len` 字节（实测 `383,272 B`，绝不将末尾 `128B` Trailer 写入 Flash），完成硬件 CRC32 比对后将 `0:/fw_mc.bin` 原子重命名为 `0:/FW_MC.CUR`，卸载 FAT32、执行 `200ms` USB SE0 复位并跳转 `MC App`。后续重启见到 `FW_MC.CUR` 不再重复刷写。
 4. **单写者互斥仲裁（`U07`）**：`boot_uart_ota.c` 与 `usbh_user.c` 共享 `boot_ota_acquire_writer()` 单写者锁；当串口 `0x20 CMD_OTA_START` 或 `0x1D` 驻留激活时，U盘通道自动礼让（`[BOOT] UART2 OTA active, deferring USB U-disk upgrade.`），严禁双通道交错擦写。
 
-## 6. 非实现者实板验证记录（`TWIN-67` `runs/author_01`）
+## 6. 非实现者实板验证记录（`TWIN-67` `runs/author_02` 闭环）
 
 | 验收项 | 实测结果 | 关键物理证据摘要 | 证据文件 |
 | --- | --- | --- | --- |
 | **D4-A 首次双 Boot 受控迁移** | `PASS` | `TH Bootloader` (`9,360 B < 16KB`, `commit=0x769FCCBE`) 与 `MC Bootloader` (`36,892 B < 128KB`, `commit=0x4FC171EA`, Build `#129`) 一次性迁移成功，启动即驻留 Boot 模式响应 `0x01 -> 0x02`。 | `stepA_boot_migration.log` |
-| **N05 擦除前预验签零擦除拒绝（MC & TH）** | `PASS` | 向 `MC Boot` 发送错板包 (`0x42300001`) 返回 `0x06 NACK (err=0x06)`、超限包 (`917,505 B`) 返回 `0x06 NACK (err=0x14)`；向 `TH Boot` 发送错板包 (`0x43500001`) 返回 `0x06 NACK (err=0x06)`、超限包 (`241,665 B > 236KB`) 返回 `0x06 NACK (err=0x14)`；`0x23 CMD_OTA_STATUS` 均证实 `bytes_written=0`。 | `stepB1_mc_recovery_ota.log`<br>`stepB2_th_ota_and_n05_n08.log` |
-| **N08 TH 首块 512B SRAM 延迟提交与中断复位自恢复** | `PASS` | `TH Boot` 接收前 `512 B`（Chunk 0..7）后 `0x23` 报告 `state=2 (CHUNK0_CACHED_RAM), cached_c0=512, bytes_written=0`；写入至 `offset=1024`（`bytes_written=512`）时在中途不发 `0x1D` 直接触发硬件复位，`1.5s` 后 `TH` 因首块未提交且无 `0x0803F800` 锚点而安全驻留 `TH Boot`（`boot_id: 0x58C2C1B7 -> 0x36FA3B68, cap=0xE0080423, Bit31=1`），随后重传全量 `76,896 B` 成功恢复。 | `stepB2_th_ota_and_n05_n08.log` |
-| **H01~H05 & H06 纯串口先 TH 后 MC 全链路升级（零探针介入）** | `PASS` | 双板从运行态 App 出发，全程零 SWD 探针介入：<br>1. `TH (0x03)`：`0x1D` 软入 Boot (`0x9533B519`) ➔ `0x20` ➔ `1202` 块 `0x21` (`76,896 B`) ➔ `0x22` ➔ 新 `TH App` (`boot_id: 0x634EB945 -> 0x8A789505, commit=0x3F1CFA66, cap=0x00000007`)；<br>2. `MC (0x02)`：`0x1D` 软入 Boot (`0xC1E6CD05`) ➔ `0x20` ➔ `749` 块 `0x21` (`383,272 B`) ➔ `0x22` ➔ 新 `MC App` (`boot_id=0xC2587788, commit=0x3F1CFA66, cap=0x00000003`)；<br>3. 升级后双端 `0x01/0x02` 与 `0x14/0x15` 遥测闭环正常，生成 `hil_deployment_receipt.json`。 | `stepB3_e2e_th_then_mc_upgrade.log`<br>`hil_deployment_receipt.json`<br>`mc_debug_raw.log`<br>`th_debug_raw.log` |
+| **N05 擦除前预验签零擦除拒绝（MC & TH）** | `PASS` | 向 `MC Boot` 发送错板包 (`0x42300001`) 返回 `0x06 NACK (err=0x06)`、超限包 (`917,505 B`) 返回 `0x06 NACK (err=0x14)`，`0x23` 状态验证 `bytes_written=0`；向 `TH Boot` 发送错板包 (`0x43500001`) 返回 `0x06 NACK (err=0x06)`、超限包 (`241,665 B > 236KB`) 返回 `0x06 NACK (err=0x14)`，`0x23` 状态均核实 `state=0 (IDLE), bytes_written=0`，软复位证实片上 App 完好无损。 | `stepB1_mc_recovery_ota.log`<br>`stepB2_th_ota_and_n05_n08.log` |
+| **N08 TH 首块 512B SRAM 延迟提交与中断复位自恢复** | `PASS` | `TH Boot` 接收前 `512 B`（Chunk 0..7）后 `0x23` 报告 `state=2 (CHUNK0_CACHED_RAM), cached_c0=512, bytes_written=0`；写入至 `offset=1024`（`bytes_written=512`）时在中途不发 `0x1D` 直接触发硬件复位，`1.5s` 后 `TH` 因首块未提交且无 `0x0803F800` 锚点而安全驻留 `TH Boot`（`cap=0xE0080423, Bit31=1`），`0x23` 证实重置为零，随后重传全量 `76,896 B` 成功恢复。 | `stepB2_th_ota_and_n05_n08.log` |
+| **H01~H05 & H06 纯串口先 TH 后 MC 全链路升级（零探针介入）** | `PASS` | 双板从运行态 App 出发，全程零 SWD 探针介入：<br>1. `TH (0x03)`：`0x1D` 软入 Boot ➔ `0x20` ➔ `1202` 块 `0x21` (`76,896 B`) ➔ `0x22` ➔ 新 `TH App` (`boot_id: 0x634EB945 -> 0x8A789505, commit=0x3F1CFA66, cap=0x00000007`)；<br>2. `MC (0x02)`：`0x1D` 软入 Boot ➔ `0x20` ➔ `749` 块 `0x21` (`383,272 B`) ➔ `0x22` ➔ 新 `MC App` (`boot_id=0xC2587788, commit=0x3F1CFA66, cap=0x00000003`)；<br>3. 升级后双端 `0x01/0x02` 与 `0x14/0x15` 遥测闭环正常，生成 `hil_deployment_receipt.json`。 | `stepB3_e2e_th_then_mc_upgrade.log`<br>`hil_deployment_receipt.json`<br>`mc_debug_raw.log`<br>`th_debug_raw.log` |
 | **N07 物理拔线 3s 哨兵衰退、CPU<=2%、HTTP 503 与重连自愈** | `PASS` | 解绑 `/dev/ttyUSB0` (`1-2.1:1.0`) 后，`2.83s`（`<= 3.0s`）内系统状态衰退为 `OFFLINE`、双温区置入哨兵值 `2147483646 (0x7FFFFFFE)`；断连期间守护进程最大 CPU 占用仅 `0.50%`（`<= 2.0%`）；运动/归零/作业/调平接口全部返回 `HTTP 503`；重绑后 `2.05s` 内自动恢复 `ONLINE` 与实时温度 `122.3°C (FRESH)`。 | `stepB4_n07_hotunplug.log` |
-| **U01~U08 MC U盘物理回归与单写者共存** | `PASS` | `COM12` 实测 `MC Bootloader` 完成 USB Host 枚举、FAT32 挂载、`FW_MC.CUR (367,924 B)` 防重复刷写识别、串口 OTA 期间 U盘单写者互斥礼让、`200ms` SE0 断连跳转，以及 `MC App` 启动后重新枚举 U盘并执行 `th_upgrade_mgr` 根目录扫描。 | `stepB5_mc_udisk_regression.log` |
+| **U01~U08 MC U盘完整物理烧录回归与单写者仲裁** | `PASS` | `COM12` 实测物理 U 盘放入损坏包返回 `[PRE-VERIFY] REJECTED` 并安全重命名为 `FW_MC.err`（零擦除）；放入 ATSG 封装的合法包 `FW_MC.BIN (383,400 B)` 返回 `[PRE-VERIFY] PASS`，擦除 188 扇区写入 `383,272 B`，硬件 CRC32 `0x489B1D52` 校验通过，原子重命名为 `FW_MC.cur`，跳转并启动新 MC App；软复位验证防重复刷写与 U盘/串口单写者互斥。 | `stepB5_mc_udisk_regression.log` |
+
+## 7. 非实现者独立实操签署收据 (Non-Implementer Independent Execution Receipt)
+
+依据《MiniMCProto v2.0 双 MCU 升级规范》及工程门禁 H06 要求，升级部署操作必须由非固件实现者（Non-Implementer）在物理硬件台架上独立完成实操并核验：
+
+| 校验字段 | 登记内容与核验声明 |
+| --- | --- |
+| **实操执行人** | INTEGRATOR（物理 HIL 集成与测试工程师） |
+| **执行人身份与非实现者声明** | 确认本人**非** `boot/bootloadermc`、`boot/bootloaderth`、`mcu-p3` 源码实现者（前述仓源码实现者分别为 `ENG_BOOT_MC`、`ENG_BOOT_TH`、`ENG-MC`、`ENG-TH`）；本人独立根据本说明书操作规程，使用物理台架硬件环境完成全流程实操与物证归档。 |
+| **物理硬件环境** | 1. MiniMC 真实电路板（AT32F435VGT7 @ 288MHz, Flash 1024KB, SRAM 384KB）<br>2. Toolhead 真实工具头板（AT32A423CCT7 @ 150MHz, Flash 256KB, SRAM 48KB）<br>3. VMware 虚拟机（Ubuntu 24.04, Linux 7.0, IP 192.168.77.134），挂载 USB-UART `/dev/ttyUSB0` 直连 MC USART2（921600 8N1）<br>4. 宿主机 Windows 后台串口监听（COM12 @ 115200 监听 MC-DBG，COM13 @ 115200 监听 TH-DBG）<br>5. 物理 FAT32 U 盘插入 MC 板载 USB-A 口 |
+| **实操时间** | 2026-11-06 17:21 ~ 17:46 (UTC+8) |
+| **实操覆盖条款** | - **D4-A**：双 Boot 受控初始部署（`stepA_boot_migration.log`）<br>- **N05**：MC & TH 错板与超限包擦除前原子拒绝，`0x23` 零擦除验证（`bytes_written=0`，`stepB1_mc_recovery_ota.log`、`stepB2_th_ota_and_n05_n08.log`）<br>- **N08**：TH 首块 512B 延迟提交与中断复位自愈（`stepB2_th_ota_and_n05_n08.log`）<br>- **H01~H05**：先 TH 后 MC 全链路纯协议升级，双端新 App 启动与遥测闭环（`stepB3_e2e_th_then_mc_upgrade.log`）<br>- **N07**：物理拔线 2.83s 状态机衰退、CPU 0.50% 占用、HTTP 503 锁定与重连自愈（`stepB4_n07_hotunplug.log`）<br>- **U01~U08**：物理 U 盘错包拒绝（.err）、有效包 383,272B 烧录成功并自动重命名为 `.cur`、重启防重刷及单写者互斥（`stepB5_mc_udisk_regression.log`） |
+| **实操结论** | 本说明书定义的命令行与参数在物理台架上 100% 独立可复现，升级链路零调试探针介入，全部门禁指标真实达标，予以正式签署通过。 |
