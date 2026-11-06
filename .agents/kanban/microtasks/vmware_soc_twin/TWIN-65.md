@@ -1,7 +1,7 @@
 ---
 id: TWIN-65
 title: TWIN-65 SoC AP协议栈对齐Rev 2.0.4、/var/update原子封存、维护互斥与四阶段升级编排服务
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
@@ -33,7 +33,7 @@ review_assignments:
     planned_session_alias: planned-qa-twin-65
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-65/runs/qa_02/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-65/runs/qa_03/qa_review_report.md
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -130,7 +130,7 @@ read_sources:
 worktree: soc-ap
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
+  task_revision: 2
   lease_id: lease-twin-65-20261106-01
   expires_at: '2026-11-07T22:00:00+08:00'
 resources:
@@ -168,14 +168,9 @@ verification:
   commands:
   - id: build_and_verify_twin-65
     cwd: soc-ap
-    command: rm -rf /tmp/qa_twin65 && mkdir -p /tmp/qa_twin65 && cp -r ../soc-ap /tmp/qa_twin65/soc-ap
-      && rm -rf /tmp/qa_twin65/soc-ap/build && ([ -e /tmp/qa_twin65/soc-ap/third_party/install
-      ] || (mkdir -p /tmp/qa_twin65/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin65/soc-ap/third_party/install))
-      && cd /tmp/qa_twin65/soc-ap && bash tools/deploy_twin.sh --build-only && ctest
-      --test-dir build/forward --output-on-failure && ctest --test-dir build/device_manager
-      --output-on-failure && ctest --test-dir build/ui_gateway --output-on-failure
-      && rm -rf /tmp/qa_twin65
-    expected: soc-ap编译及forward/device_manager/ui_gateway全部单测与OTA四阶段状态机测试100%通过
+    command: >-
+      rm -rf /tmp/qa_twin65 && mkdir -p /tmp/qa_twin65 && cp -r ../soc-ap /tmp/qa_twin65/soc-ap && rm -rf /tmp/qa_twin65/soc-ap/build && ([ -e /tmp/qa_twin65/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin65/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin65/soc-ap/third_party/install)) && cd /tmp/qa_twin65/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && ctest --test-dir build/device_manager --output-on-failure && ctest --test-dir build/ui_gateway --output-on-failure && python3 -c 'exec("import re,pathlib\nfiles=[\"services/device_manager/firmware_updater.cpp\",\"services/device_manager/device_manager_state.cpp\",\"services/forward/forward_protocol.cpp\",\"services/forward/forward_uart.cpp\",\"services/forward/forward_service.cpp\",\"services/ui_gateway/ui_gateway_server.cpp\"]\nfor f in files:\n lines=pathlib.Path(f).read_text().splitlines(); i=0\n while i<len(lines):\n  s=lines[i].strip()\n  if s and not s.startswith((\"//\",\"/*\",\"*\",\"#\")) and \"(\" in s and not s.startswith((\"if\",\"for\",\"while\",\"switch\",\"return\")):\n   j=i\n   while \")\" not in s and j+1<len(lines): j+=1; s+=\" \"+lines[j].strip()\n   if s.endswith(\"{\") or (j+1<len(lines) and lines[j+1].strip().startswith(\"{\")):\n    m=re.search(r\"([A-Za-z_]\\w*)\\s*\\(([^)]*)\\)\",s)\n    if m and m.group(1) not in (\"if\",\"for\",\"while\",\"switch\"):\n     p=[x.strip() for x in m.group(2).split(\",\") if x.strip() and x.strip()!=\"void\"]\n     b=s.count(\"{\")-s.count(\"}\"); k=j\n     if b==0 and k+1<len(lines) and lines[k+1].strip().startswith(\"{\"): k+=1; b=lines[k].count(\"{\")-lines[k].count(\"}\")\n     while b>0 and k+1<len(lines): k+=1; b+=lines[k].count(\"{\")-lines[k].count(\"}\")\n     assert len(p)<=4 and (k-i+1)<=50, f\"{f}:{i+1} {m.group(1)} params={len(p)} len={k-i+1}\"\n     i=k+1; continue\n  i+=1\nprint(\"[PASS] S04 function length (<=50) and params (<=4) verified on all 6 files\")")' && ! grep -rn "中文说明：模块辅助逻辑与状态说明" contracts/ services/ tests/ && echo "[PASS] code_documentation_standard.md Chinese comment check passed" && rm -rf /tmp/qa_twin65
+    expected: soc-ap编译及forward/device_manager/ui_gateway全部单测与OTA四阶段状态机测试及S04与中文注释门禁100%通过
     availability: available
   positive_cases:
   - 对齐Rev 2.0.4头文件与520B帧容量，实现/var/update封存与128B ATSG预检、4项安全准入、UPGRADING_MAINTENANCE维护互斥及Stage

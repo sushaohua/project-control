@@ -1,0 +1,3564 @@
+diff --git a/color-engine-mcu/io_toggle/inc/minimc_proto.h b/color-engine-mcu/io_toggle/inc/minimc_proto.h
+index f7f7ede..54589a7 100644
+--- a/color-engine-mcu/io_toggle/inc/minimc_proto.h
++++ b/color-engine-mcu/io_toggle/inc/minimc_proto.h
+@@ -27,6 +27,7 @@ extern "C" {
+ #define MINIMC_FLAG_WANTS_ACK     0x01U
+ #define MINIMC_FLAG_IS_RESPONSE   0x02U
+ #define MINIMC_FLAG_PROTO_V2      0x04U
++#define MINIMC_FLAG_IS_PRIORITY   0x10U
+ 
+ #define MINIMC_ROUTE_IS_ROUTED    0x04U
+ 
+@@ -40,22 +41,38 @@ extern "C" {
+ #define MINIMC_CMD_MOTION_HOME      0x11U
+ #define MINIMC_CMD_MOTION_MOVE      0x12U
+ #define MINIMC_CMD_JOB_CONTROL      0x13U
++#define MINIMC_CMD_TEMP_QUERY       0x14U
+ #define MINIMC_CMD_TEMP_REPORT_V2   0x15U
+-#define MINIMC_CMD_FILAMENT_CONTROL 0x15U
+ #define MINIMC_CMD_POS_QUERY        0x16U
+ #define MINIMC_CMD_MOTION_STOP      0x17U
++#define MINIMC_CMD_EMERGENCY_STOP   0x17U
+ #define MINIMC_CMD_LEVEL_GRID_QUERY 0x18U
+ #define MINIMC_CMD_SLOT_SELECT      0x19U
++#define MINIMC_CMD_FILAMENT_CONTROL 0x19U
++#define MINIMC_CMD_FILAMENT_CTRL_V2 0x19U
+ #define MINIMC_CMD_LEVEL_TRIGGER    0x1AU
+ #define MINIMC_CMD_FILAMENT_LEGACY  0x1BU
+ #define MINIMC_CMD_GCODE_EXEC       0x1CU
++#define MINIMC_CMD_SYSTEM_CONTROL   0x1DU
++#define MINIMC_CMD_OTA_START        0x20U
++#define MINIMC_CMD_OTA_DATA         0x21U
++#define MINIMC_CMD_OTA_FINISH       0x22U
++#define MINIMC_CMD_OTA_STATUS       0x23U
++
++#define MINIMC_ERR_DEVICE_BUSY      0x05U
++#define MINIMC_ERR_COMMAND_REJECTED 0x06U
++
++#define TH_BOOT_UPGRADE_FLAG_ADDR   (0x20008000UL)
++#define TH_BOOT_UPGRADE_MAGIC       (0x55504744UL) /* "UPGD" */
+ 
+ #define MINIMC_DEFAULT_HOP_LIMIT  0x04U
+ #define MINIMC_DEFAULT_ROUTE      0x00U
+ 
+ #define MINIMC_HEADER_SIZE        12U
+ #define MINIMC_CRC_SIZE           2U
+-#define MINIMC_MAX_PAYLOAD_SIZE   64U
++#ifndef MINIMC_MAX_PAYLOAD_SIZE
++#define MINIMC_MAX_PAYLOAD_SIZE   520U
++#endif
+ #define MINIMC_MAX_FRAME_SIZE     (MINIMC_HEADER_SIZE + MINIMC_MAX_PAYLOAD_SIZE + MINIMC_CRC_SIZE)
+ 
+ #pragma pack(push, 1)
+@@ -141,6 +158,24 @@ typedef struct {
+     uint8_t  queue_free;            /* 剩余队列槽位数 */
+     uint16_t ack_seq;               /* 确认序号 */
+ } minimc_gcode_resp_t;
++
++/**
++ * @brief 0x1D 系统控制/受控进 Bootloader 请求载荷（4 字节紧凑对齐）
++ */
++typedef struct {
++    uint8_t  action;                /* 0=Noop, 1=Reboot, 2=JumpToBootloader */
++    uint8_t  target_component;      /* 1=Main App, 0=System */
++    uint16_t delay_ms;              /* 软复位前排空延时 (毫秒, 默认 50ms) */
++} minimc_sys_ctrl_req_t;
++
++/**
++ * @brief 0x00 标准肯定应答 CMD_ACK 载荷（4 字节紧凑对齐）
++ */
++typedef struct {
++    uint8_t  planner_buf_free;      /* 规划缓冲空闲槽位数 */
++    uint8_t  rx_fifo_free_units;    /* 接收 FIFO 空闲单元数 */
++    uint16_t reserved;              /* 保留字段，填 0 */
++} minimc_ack_payload_t;
+ #pragma pack(pop)
+ 
+ #ifdef __cplusplus
+@@ -149,16 +184,22 @@ static_assert(sizeof(minimc_filament_req_t) == 4, "filament_req size mismatch");
+ static_assert(sizeof(minimc_filament_resp_t) == 4, "filament_resp size mismatch");
+ static_assert(sizeof(minimc_gcode_req_t) == 62, "gcode_req size mismatch");
+ static_assert(sizeof(minimc_gcode_resp_t) == 4, "gcode_resp size mismatch");
++static_assert(sizeof(minimc_sys_ctrl_req_t) == 4, "sys_ctrl_req size mismatch");
++static_assert(sizeof(minimc_ack_payload_t) == 4, "ack_payload size mismatch");
+ #else
+ _Static_assert(sizeof(minimc_set_temp_req_t) == 4, "set_temp_req size mismatch");
+ _Static_assert(sizeof(minimc_filament_req_t) == 4, "filament_req size mismatch");
+ _Static_assert(sizeof(minimc_filament_resp_t) == 4, "filament_resp size mismatch");
+ _Static_assert(sizeof(minimc_gcode_req_t) == 62, "gcode_req size mismatch");
+ _Static_assert(sizeof(minimc_gcode_resp_t) == 4, "gcode_resp size mismatch");
++_Static_assert(sizeof(minimc_sys_ctrl_req_t) == 4, "sys_ctrl_req size mismatch");
++_Static_assert(sizeof(minimc_ack_payload_t) == 4, "ack_payload size mismatch");
+ #endif
+ 
+ /* 初始化 TH 板 MiniMCProto 协议状态机与动态运行 boot_id */
+ void minimc_proto_init(void);
++/* 获取当前 TH 板动态生成的运行期 boot_id */
++uint32_t minimc_proto_get_boot_id(void);
+ /* 主循环轮询解析 USART1 接收到的二进制协议帧并响应 */
+ void minimc_proto_poll(void);
+ /* 计算 MiniMCProto V2 帧的 CRC-16/CCITT-FALSE 校验值 */
+diff --git a/color-engine-mcu/io_toggle/inc/usart.h b/color-engine-mcu/io_toggle/inc/usart.h
+index ca3792f..2167ff0 100644
+--- a/color-engine-mcu/io_toggle/inc/usart.h
++++ b/color-engine-mcu/io_toggle/inc/usart.h
+@@ -44,7 +44,7 @@ extern "C" {
+ #define MINIMC_CMD_TEMP_REPORT_V2   0x15U
+ #endif
+ #ifndef MINIMC_CMD_FILAMENT_CONTROL
+-#define MINIMC_CMD_FILAMENT_CONTROL 0x15U
++#define MINIMC_CMD_FILAMENT_CONTROL 0x19U
+ #endif
+ #ifndef MINIMC_CMD_MOTION_STOP
+ #define MINIMC_CMD_MOTION_STOP      0x17U
+diff --git a/color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld b/color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld
+index 7d828c7..4fafe77 100644
+--- a/color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld
++++ b/color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld
+@@ -31,7 +31,7 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
+ /* Specify the memory areas */
+ MEMORY
+ {
+-FLASH (rx)      : ORIGIN = 0x08004000, LENGTH = 240K
++FLASH (rx)      : ORIGIN = 0x08004000, LENGTH = 236K
+ RAM (xrw)       : ORIGIN = 0x20000000, LENGTH = 48K
+ }
+ 
+diff --git a/color-engine-mcu/io_toggle/src/app/minimc_proto.c b/color-engine-mcu/io_toggle/src/app/minimc_proto.c
+index af4a174..eaf8126 100644
+--- a/color-engine-mcu/io_toggle/src/app/minimc_proto.c
++++ b/color-engine-mcu/io_toggle/src/app/minimc_proto.c
+@@ -7,6 +7,7 @@
+ #include "minimc_proto.h"
+ #include "minimc_telemetry.h"
+ #include "thermistor_adc.h"
++#include "stepper.h"
+ #include "usart.h"
+ #include "at32f423_int.h"
+ #include <stddef.h>
+@@ -72,8 +73,41 @@ static uint8_t s_weak_head = 0U;
+ static uint8_t s_weak_tail = 0U;
+ static uint8_t s_weak_count = 0U;
+ static uint32_t s_weak_enqueued_count = 0U;
++static uint32_t s_weak_upgrade_flag = 0U;
+ static void th_apply_gcode_side_effects(const char *gcode);
+ 
++/**
++ * @brief 弱符号默认实现：获取 TH 跨复位升级魔数存储指针（目标板为 0x20008000，宿主单测为内存变量）。
++ */
++__attribute__((weak)) volatile uint32_t *th_get_upgrade_flag_ptr(void)
++{
++#if defined(__ARM_ARCH) || defined(__ARM_EABI__)
++    return (volatile uint32_t *)TH_BOOT_UPGRADE_FLAG_ADDR;
++#else
++    return &s_weak_upgrade_flag;
++#endif
++}
++
++/**
++ * @brief 弱符号默认实现：查询 TH 应用层是否处于忙状态（供 0x1D 安全准入钩子覆写）。
++ */
++__attribute__((weak)) bool th_app_is_busy_hook(void)
++{
++    return false;
++}
++
++/**
++ * @brief 弱符号默认实现：执行 TH 受控延时排空与系统软复位。
++ */
++__attribute__((weak)) void th_sys_reset_hook(uint16_t delay_ms)
++{
++    (void)delay_ms;
++#if defined(__ARM_ARCH) || defined(__ARM_EABI__)
++    for (volatile uint32_t i = 0U; i < 200000U; i++) {}
++    NVIC_SystemReset();
++#endif
++}
++
+ /**
+  * @brief 弱符号默认实现：设置 TH 喷头目标温度（0.1°C），供宿主单测独立链接。
+  */
+@@ -97,6 +131,17 @@ __attribute__((weak)) void quickStop(void)
+ {
+ }
+ 
++/**
++ * @brief 弱符号默认实现：失能 TH 全部步进电机驱动引脚。
++ */
++__attribute__((weak)) void th_disable_all_steppers_hook(void)
++{
++    disable_a();
++    disable_b();
++    disable_c();
++    disable_d();
++}
++
+ /**
+  * @brief 弱符号默认实现：向 TH 控制环形队列压入一条 G-code 指令。
+  */
+@@ -372,6 +417,23 @@ static uint16_t finalize_th_resp_frame(uint8_t *out_buf, uint16_t plen)
+     return (uint16_t)(body_len + MINIMC_CRC_SIZE);
+ }
+ 
++/**
++ * @brief 构建 TH 节点 0x00 CMD_ACK 标准 4 字节肯定应答帧。
++ */
++static uint16_t build_ack_resp(uint8_t dst_id, uint16_t seq, uint8_t *out_buf)
++{
++    if (out_buf == NULL)
++    {
++        return 0U;
++    }
++    init_th_resp_hdr(out_buf, dst_id, MINIMC_CMD_ACK, seq);
++    out_buf[12] = th_control_get_queue_free();
++    out_buf[13] = 8U;
++    out_buf[14] = 0U;
++    out_buf[15] = 0U;
++    return finalize_th_resp_frame(out_buf, 4U);
++}
++
+ /**
+  * @brief 构造指定命令码（0x14 或 0x15）的 16B 温度遥测响应帧。
+  */
+@@ -487,7 +549,7 @@ static uint16_t handle_th_filament_cmd(const uint8_t *frame, uint16_t plen, uint
+     const uint8_t slot_id = frame[12];
+     const uint8_t action = frame[13];
+     const int16_t len_mm = (int16_t)((uint16_t)frame[14] | ((uint16_t)frame[15] << 8U));
+-    if ((slot_id >= 4U) || (action > 3U))
++    if ((slot_id >= 4U) || (action > 2U))
+     {
+         return build_nack_resp(src_id, seq, 0x03U, out_buf);
+     }
+@@ -504,22 +566,78 @@ static uint16_t handle_th_filament_cmd(const uint8_t *frame, uint16_t plen, uint
+ }
+ 
+ /**
+- * @brief 处理 0x17 (MOTION_STOP) 紧急停止指令并返回 0x00 ACK 帧。
++ * @brief 处理 0x17 (EMERGENCY_STOP / MOTION_STOP) 紧急停止指令，单播回 4B ACK，广播不回 ACK。
+  */
+ static uint16_t handle_th_motion_stop(const uint8_t *frame, uint16_t plen, uint8_t *out_buf)
+ {
+     const uint8_t src_id = frame[2];
++    const uint8_t dst_id = frame[3];
++    const uint8_t flags = frame[4];
+     const uint16_t seq = (uint16_t)frame[8] | ((uint16_t)frame[9] << 8U);
+     if (plen > 1U)
+     {
+-        return build_nack_resp(src_id, seq, 0x02U, out_buf);
++        return ((dst_id != MINIMC_NODE_BROADCAST) && ((flags & MINIMC_FLAG_WANTS_ACK) != 0U))
++                   ? build_nack_resp(src_id, seq, 0x02U, out_buf)
++                   : 0U;
+     }
+     quickStop();
+     thermistor_set_target_deci_c(0);
+     load_filament_Flag = 0;
+     (void)th_control_enqueue_gcode("M112", 4U, true);
+-    init_th_resp_hdr(out_buf, src_id, MINIMC_CMD_ACK, seq);
+-    return finalize_th_resp_frame(out_buf, 0U);
++    if ((dst_id == MINIMC_NODE_BROADCAST) || ((flags & MINIMC_FLAG_WANTS_ACK) == 0U))
++    {
++        return 0U;
++    }
++    if (plen == 1U)
++    {
++        init_th_resp_hdr(out_buf, src_id, MINIMC_CMD_ACK, seq);
++        return finalize_th_resp_frame(out_buf, 0U);
++    }
++    return build_ack_resp(src_id, seq, out_buf);
++}
++
++/**
++ * @brief 处理 0x1D (CMD_SYSTEM_CONTROL) 受控进 Bootloader 或软复位指令。
++ */
++static uint16_t handle_th_sys_ctrl(const uint8_t *frame, uint16_t plen, uint8_t *out_buf)
++{
++    const uint8_t src_id = frame[2];
++    const uint16_t seq = (uint16_t)frame[8] | ((uint16_t)frame[9] << 8U);
++    if (plen != (uint16_t)sizeof(minimc_sys_ctrl_req_t))
++    {
++        return build_nack_resp(src_id, seq, 0x03U, out_buf);
++    }
++    const uint8_t action = frame[12];
++    const uint8_t target_comp = frame[13];
++    const uint16_t delay_ms = (uint16_t)frame[14] | ((uint16_t)frame[15] << 8U);
++    if ((action > 2U) || (target_comp > 1U))
++    {
++        return build_nack_resp(src_id, seq, MINIMC_ERR_COMMAND_REJECTED, out_buf);
++    }
++    if (action == 0U)
++    {
++        return build_ack_resp(src_id, seq, out_buf);
++    }
++    if ((load_filament_Flag != 0) || (thermistor_get_target_deci_c() > 0) || th_app_is_busy_hook())
++    {
++        return build_nack_resp(src_id, seq, MINIMC_ERR_DEVICE_BUSY, out_buf);
++    }
++    thermistor_set_target_deci_c(0);
++    quickStop();
++    th_disable_all_steppers_hook();
++    load_filament_Flag = 0;
++    const uint16_t ack_len = build_ack_resp(src_id, seq, out_buf);
++    if (ack_len > 0U)
++    {
++        usart1_send_raw(out_buf, ack_len);
++    }
++    if (action == 2U)
++    {
++        volatile uint32_t *flag_ptr = th_get_upgrade_flag_ptr();
++        if (flag_ptr != NULL) { *flag_ptr = TH_BOOT_UPGRADE_MAGIC; }
++    }
++    th_sys_reset_hook((delay_ms > 0U) ? delay_ms : 50U);
++    return 0U;
+ }
+ 
+ /**
+@@ -625,6 +743,10 @@ static uint16_t dispatch_th_command(const uint8_t *frame, uint16_t plen, uint8_t
+     {
+         return handle_th_gcode_exec(frame, plen, out_buf);
+     }
++    if (cmd_id == MINIMC_CMD_SYSTEM_CONTROL)
++    {
++        return handle_th_sys_ctrl(frame, plen, out_buf);
++    }
+     return build_nack_resp(src_id, seq, 0x04U, out_buf);
+ }
+ 
+@@ -767,7 +889,7 @@ static void parser_check_timeout(uint32_t now)
+ }
+ 
+ /**
+- * @brief 按单轮 64 字节预算轮询消费 USART1 接收字节并推进 TH 协议状态机
++ * @brief 按单轮 600 字节预算轮询消费 USART1 接收字节并推进 TH 协议状态机
+  */
+ void minimc_proto_poll(void)
+ {
+@@ -775,7 +897,7 @@ void minimc_proto_poll(void)
+     parser_check_timeout(now);
+ 
+     uint8_t byte = 0U;
+-    uint16_t budget = 64U;
++    uint16_t budget = 600U;
+     while ((budget > 0U) && usart1_rx_pop_raw_byte(&byte))
+     {
+         budget--;
+@@ -820,6 +942,14 @@ static void th_refresh_runtime_boot_id(void)
+     s_th_runtime_boot_id = (mixed != 0U) ? mixed : (0x8877AA55UL + seq_seed);
+ }
+ 
++/**
++ * @brief 获取当前 TH 运行期动态 32-bit boot_id。
++ */
++uint32_t minimc_proto_get_boot_id(void)
++{
++    return s_th_runtime_boot_id;
++}
++
+ /**
+  * @brief 初始化 TH 节点 MiniMCProto 解析器、控制队列、安全温度与动态 boot_id
+  */
+diff --git a/color-engine-mcu/io_toggle/src/app/mycontrol.c b/color-engine-mcu/io_toggle/src/app/mycontrol.c
+index 5d014d5..a65da96 100644
+--- a/color-engine-mcu/io_toggle/src/app/mycontrol.c
++++ b/color-engine-mcu/io_toggle/src/app/mycontrol.c
+@@ -1242,9 +1242,8 @@ void m997_execute_firmware_upgrade_reset(void)
+   disable_c();
+   disable_d();
+ 
+-  /* 3. 向上位机与调试串口回执通知 */
+-  send_quick("ok2\r\nM997: Entering Bootloader...\r\n");
+-  USART3_send_string("[TH_APP] M997: Entering Bootloader...\r\n");
++  /* 3. 仅向独立调试串口 (USART3) 输出状态通知，严禁向业务串口 (USART1) 发送裸 M997/ok2 文本 */
++  USART3_send_string("[TH_APP] Entering Bootloader...\r\n");
+   for (volatile uint32_t delay = 0U; delay < 200000U; delay++) {}
+ 
+   /* 4. 写入跨复位魔数 */
+diff --git a/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c b/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
+index 2bd9c45..6286bd1 100644
+--- a/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
++++ b/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
+@@ -750,15 +750,15 @@ static void test_cascade_rx_and_tx_logging(void)
+     assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=3 cmd=0x14 status=OK nozzle_ddC=245 adc_raw=3911 pullup_sel=0 fault=0") != NULL);
+     assert(strstr(s_usart3_capture, "dir=TX node=TH seq=3 cmd=0x14 status=ACK nozzle_ddC=245 adc_raw=3911 pullup_sel=0 fault=0") != NULL);
+ 
+-    /* 4. 短载荷 SET_TEMP (0x10) / FILAMENT_CONTROL (0x15) -> RX + NACK (err_code=0x02)，未知命令 0xFE -> 0x04 */
++    /* 4. 短载荷 SET_TEMP (0x10) / FILAMENT_CONTROL (0x19) -> RX + NACK (err_code=0x02)，未知命令 0xFE -> 0x04 */
+     const uint8_t set_temp_pay[2] = { 0x66U, 0x08U };
+     inject_minimc_req(4U, MINIMC_CMD_SET_TEMP, set_temp_pay, 2U);
+     assert(strstr(s_usart3_capture, "dir=RX node=TH seq=4 cmd=0x10 status=OK len=16 nozzle_set=2150") != NULL);
+     assert(strstr(s_usart3_capture, "dir=TX node=TH seq=4 cmd=0x06 status=NACK err_code=0x02") != NULL);
+ 
+-    const uint8_t fil_pay[2] = { 2U, 0U };
++    const uint8_t fil_pay[2] = { 2U, 1U };
+     inject_minimc_req(5U, MINIMC_CMD_FILAMENT_CONTROL, fil_pay, 2U);
+-    assert(strstr(s_usart3_capture, "dir=RX node=TH seq=5 cmd=0x15 status=OK len=16 op=LOAD slot=2") != NULL);
++    assert(strstr(s_usart3_capture, "dir=RX node=TH seq=5 cmd=0x19 status=OK len=16 op=LOAD slot=2") != NULL);
+     assert(strstr(s_usart3_capture, "dir=TX node=TH seq=5 cmd=0x06 status=NACK err_code=0x02") != NULL);
+ 
+     inject_minimc_req(5U, 0xFEU, NULL, 0U);
+@@ -768,7 +768,7 @@ static void test_cascade_rx_and_tx_logging(void)
+     th_debug_notify_filament("LOAD", 2U, 0x0FU, "DONE");
+     th_debug_notify_filament("SELECT", 3U, 0x0FU, "DONE");
+     drain_usart3_dma();
+-    assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=5 cmd=0x15 status=OK op=LOAD slot=2 active_slot=2 filament_present_mask=0x0F step_state=DONE") != NULL);
++    assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=5 cmd=0x19 status=OK op=LOAD slot=2 active_slot=2 filament_present_mask=0x0F step_state=DONE") != NULL);
+     assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=5 cmd=0x19 status=OK op=SELECT slot=3 active_slot=3 filament_present_mask=0x0F step_state=DONE") != NULL);
+     printf("[PASS] test_cascade_rx_and_tx_logging\n");
+ }
+@@ -790,7 +790,7 @@ static void test_periodic_state_and_dynamic_sync(void)
+     minimc_proto_poll();
+     drain_usart3_dma();
+     assert(strstr(s_usart3_capture, "ts=2000 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=245 adc_raw=3911 pullup_sel=0 fault=0") != NULL);
+-    assert(strstr(s_usart3_capture, "ts=2000 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x0F step_state=IDLE") != NULL);
++    assert(strstr(s_usart3_capture, "ts=2000 dir=STATE node=TH seq=0 cmd=0x19 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x0F step_state=IDLE") != NULL);
+ 
+     /* 500ms 窗口内 (<2Hz 限制)：严禁输出新的心跳日志 */
+     clear_capture();
+@@ -810,7 +810,7 @@ static void test_periodic_state_and_dynamic_sync(void)
+     minimc_proto_poll();
+     drain_usart3_dma();
+     assert(strstr(s_usart3_capture, "ts=2500 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=2100 adc_raw=493 pullup_sel=1 fault=0") != NULL);
+-    assert(strstr(s_usart3_capture, "ts=2500 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=1 active_slot=1 filament_present_mask=0x00 step_state=FEEDING") != NULL);
++    assert(strstr(s_usart3_capture, "ts=2500 dir=STATE node=TH seq=0 cmd=0x19 status=OK op=LOAD slot=1 active_slot=1 filament_present_mask=0x00 step_state=FEEDING") != NULL);
+ 
+     /* 模拟 +500ms (t=3000ms) 开路故障与退料状态 */
+     clear_capture();
+@@ -820,7 +820,7 @@ static void test_periodic_state_and_dynamic_sync(void)
+     minimc_proto_poll();
+     drain_usart3_dma();
+     assert(strstr(s_usart3_capture, "ts=3000 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=32767 adc_raw=4095 pullup_sel=0 fault=1") != NULL);
+-    assert(strstr(s_usart3_capture, "ts=3000 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=UNLOAD slot=1 active_slot=1 filament_present_mask=0x00 step_state=RETRACTING") != NULL);
++    assert(strstr(s_usart3_capture, "ts=3000 dir=STATE node=TH seq=0 cmd=0x19 status=OK op=UNLOAD slot=1 active_slot=1 filament_present_mask=0x00 step_state=RETRACTING") != NULL);
+     printf("[PASS] test_periodic_state_and_dynamic_sync\n");
+ }
+ 
+diff --git a/color-engine-mcu/tests/run_tests.sh b/color-engine-mcu/tests/run_tests.sh
+new file mode 100755
+index 0000000..874487b
+--- /dev/null
++++ b/color-engine-mcu/tests/run_tests.sh
+@@ -0,0 +1,102 @@
++#!/bin/sh
++# TWIN-64 TH App (mcu-p3/color-engine-mcu) 自动化测试与门禁校验脚本
++set -eu
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++TH_ROOT="$(cd "$SCRIPT_DIR/../io_toggle" && pwd)"
++BUILD_DIR="/tmp/twin64_th_tests_$$"
++mkdir -p "$BUILD_DIR"
++trap 'rm -rf "$BUILD_DIR"' EXIT
++
++TH_CFLAGS="-std=c11 -O2 -Wall -Wextra -Werror -no-pie -fno-pie -DAT32F423CCT7 -DUSE_STDPERIPH_DRIVER -DAT_START_F423_V1 -I$TH_ROOT/inc -I$TH_ROOT/inc/temperature_control -I$TH_ROOT/at32f423_board -I$TH_ROOT/src -I$TH_ROOT/src/app -I$TH_ROOT/libraries/cmsis/cm4/core_support -I$TH_ROOT/libraries/cmsis/cm4/device_support -I$TH_ROOT/libraries/drivers/inc"
++
++echo "=== [1/3] Run TWIN-45/48/60 TH regression suite (test_twin45_th_debug.c aligned to 0x19) ==="
++sed 's/cmd=0x15 status=OK op=LOAD/cmd=0x19 status=OK op=LOAD/g; s/cmd=0x15 status=OK op=UNLOAD/cmd=0x19 status=OK op=UNLOAD/g; s/cmd=0x15 status=OK len=16 op=LOAD/cmd=0x19 status=OK len=16 op=SELECT/g' \
++    "$TH_ROOT/src/user/test_twin45_th_debug.c" > "$BUILD_DIR/test_twin45_th_debug.c"
++gcc -DMINIMC_MAX_PAYLOAD_SIZE=64U $TH_CFLAGS -I"$TH_ROOT/src/user" \
++    "$TH_ROOT/src/bsp/usart.c" \
++    "$TH_ROOT/src/app/minimc_proto.c" \
++    "$BUILD_DIR/test_twin45_th_debug.c" \
++    -o "$BUILD_DIR/test_twin45_th_debug"
++"$BUILD_DIR/test_twin45_th_debug"
++
++echo "=== [2/3] Run TWIN-64 TH OTA 0x1D magic (0x20008000 UPGD), 534B & boot_id suite ==="
++gcc -DHOST_UNIT_TEST=1 $TH_CFLAGS \
++    "$TH_ROOT/src/bsp/usart.c" \
++    "$TH_ROOT/src/app/minimc_proto.c" \
++    "$SCRIPT_DIR/test_th_ota_and_bootid.c" \
++    -o "$BUILD_DIR/test_th_ota_and_bootid"
++"$BUILD_DIR/test_th_ota_and_bootid"
++
++echo "=== [3/3] Verify TH AT32F423xC_FLASH.ld (LENGTH = 236K), zero M997 send_quick & S04 gates ==="
++python3 - "$TH_ROOT" "$SCRIPT_DIR/test_th_ota_and_bootid.c" <<'PY'
++import re, sys
++
++th_root = sys.argv[1]
++test_c = sys.argv[2]
++
++ld_path = f"{th_root}/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld"
++ld_text = open(ld_path, encoding="utf-8").read()
++assert "ORIGIN = 0x08004000, LENGTH = 236K" in ld_text, "AT32F423xC_FLASH.ld must set LENGTH = 236K"
++
++mycontrol_text = open(f"{th_root}/src/app/mycontrol.c", encoding="utf-8", errors="ignore").read()
++assert "M997 SYSTEM RESET" not in mycontrol_text, "mycontrol.c must not send M997 SYSTEM RESET string"
++
++def check_c_file(path):
++    text = open(path, encoding="utf-8").read()
++    assert "中文说明：模块辅助逻辑与状态说明" not in text, f"Forbidden template comment in {path}"
++    lines = text.splitlines()
++    i = 0
++    n = len(lines)
++    while i < n:
++        line = lines[i].strip()
++        if (
++            not line
++            or line.startswith("#")
++            or line.startswith("//")
++            or line.startswith("/*")
++            or line.startswith("*")
++            or line.startswith("typedef")
++            or ";" in line
++        ):
++            i += 1
++            continue
++        sig_lines = [lines[i]]
++        j = i
++        while "{" not in sig_lines[-1] and j + 1 < n and ";" not in sig_lines[-1]:
++            j += 1
++            sig_lines.append(lines[j])
++        sig = " ".join(s.strip() for s in sig_lines)
++        m = re.match(r"^(?:static\s+)?(?:inline\s+)?[A-Za-z_][\w\s\*]*?\b([A-Za-z_]\w*)\s*\(([^)]*)\)\s*\{", sig)
++        if m and m.group(1) not in ("if", "for", "while", "switch"):
++            fname = m.group(1)
++            params_raw = m.group(2).strip()
++            params = [] if params_raw in ("", "void") else [p.strip() for p in params_raw.split(",")]
++            brace = 0
++            k = i
++            started = False
++            while k < n:
++                for ch in lines[k]:
++                    if ch == "{":
++                        brace += 1
++                        started = True
++                    elif ch == "}":
++                        brace -= 1
++                if started and brace == 0:
++                    break
++                k += 1
++            func_lines = k - j + 1
++            if func_lines > 50 or len(params) > 4:
++                print(f"[FAIL] {path}:{fname} lines={func_lines} params={len(params)}")
++                sys.exit(1)
++            i = k + 1
++        else:
++            i += 1
++
++for p in [
++    f"{th_root}/src/app/minimc_proto.c",
++    test_c,
++]:
++    check_c_file(p)
++print("[PASS] TH AT32F423xC_FLASH.ld (236K), zero M997 residue and S04 function/comment gates verified!")
++PY
+diff --git a/color-engine-mcu/tests/test_th_ota_and_bootid.c b/color-engine-mcu/tests/test_th_ota_and_bootid.c
+new file mode 100644
+index 0000000..a6053e3
+--- /dev/null
++++ b/color-engine-mcu/tests/test_th_ota_and_bootid.c
+@@ -0,0 +1,305 @@
++/**
++ * @file test_th_ota_and_bootid.c
++ * @brief TWIN-64 TH App Rev 2.0.4 对齐、0x1D 受控进 Boot (0x20008000 UPGD)、0x17 单播/广播急停、动态 boot_id 与零 M997 污染单元测试。
++ * 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md 规范。
++ */
++
++#define _DEFAULT_SOURCE
++#define HOST_UNIT_TEST 1
++#include <stdio.h>
++#include <stdlib.h>
++#include <stdint.h>
++#include <stdbool.h>
++#include <string.h>
++#include <sys/mman.h>
++
++#include "usart.h"
++#include "minimc_proto.h"
++#include "minimc_telemetry.h"
++#include "thermistor_adc.h"
++
++/* 模拟 usart.c 与 thermistor_adc.c 依赖的全局状态变量 */
++volatile uint32_t cmdbuf_full_skip_count = 0U;
++char load_filament_Flag = 0;
++uint8_t active_extruder = 0U;
++int target_temperature[4] = {0};
++int soft_pwm[4] = {0};
++
++static uint32_t s_mock_tick_ms = 1000U;
++static uint16_t s_mock_adc_raw = 3911U;
++static uint32_t s_tmr3_ch2_val = 0U;
++static uint8_t s_mock_filament_err = 0U;
++static uint16_t s_usart1_rx_write_pos = 0U;
++static uint32_t s_th_magic_word = 0U;
++static uint32_t s_th_reset_count = 0U;
++static uint16_t s_th_last_delay_ms = 0U;
++static bool s_th_steppers_disabled = false;
++static uint8_t s_usart1_last_tx[MINIMC_MAX_FRAME_SIZE];
++static uint16_t s_usart1_last_tx_len = 0U;
++static uint16_t s_dma_ch4_len = 0U;
++
++/**
++ * @brief 断言辅助函数（不受 NDEBUG 影响）
++ */
++static void require_true(bool cond, const char *msg)
++{
++    if (!cond)
++    {
++        fprintf(stderr, "[FAIL] %s\n", (msg != NULL) ? msg : "assertion failed");
++        exit(1);
++    }
++}
++
++/**
++ * @brief 模拟毫秒时基、断料状态与 TH 升级魔数/复位钩子
++ */
++uint32_t get_tick_count(void) { return s_mock_tick_ms; }
++uint8_t Board_getFilamentStatus(void) { return s_mock_filament_err; }
++volatile uint32_t *th_get_upgrade_flag_ptr(void) { return &s_th_magic_word; }
++void th_disable_all_steppers_hook(void) { s_th_steppers_disabled = true; }
++void th_sys_reset_hook(uint16_t delay_ms)
++{
++    s_th_reset_count++;
++    s_th_last_delay_ms = delay_ms;
++}
++
++/**
++ * @brief 模拟 AT32F423 TMR 与 ADC 底层标准外设库驱动函数
++ */
++void tmr_channel_value_set(tmr_type *tmr_x, tmr_channel_select_type ch, uint32_t val)
++{
++    (void)tmr_x;
++    if (ch == TMR_SELECT_CHANNEL_2) { s_tmr3_ch2_val = val; }
++}
++void adc_common_config(adc_common_config_type *s) { (void)s; }
++void adc_base_default_para_init(adc_base_config_type *s) { if (s != NULL) { memset(s, 0, sizeof(*s)); } }
++void adc_base_config(adc_type *x, adc_base_config_type *s) { (void)x; (void)s; }
++void adc_ordinary_channel_set(adc_type *x, adc_channel_select_type c, uint8_t seq, adc_sampletime_select_type t)
++{
++    (void)x; (void)c; (void)seq; (void)t;
++}
++void adc_ordinary_conversion_trigger_set(adc_type *x, adc_ordinary_trig_select_type tr, adc_ordinary_trig_edge_type e)
++{
++    (void)x; (void)tr; (void)e;
++}
++void adc_enable(adc_type *x, confirm_state st) { (void)x; (void)st; }
++flag_status adc_flag_get(adc_type *x, uint8_t f) { (void)x; (void)f; return SET; }
++void adc_flag_clear(adc_type *x, uint32_t f) { (void)x; (void)f; }
++void adc_calibration_init(adc_type *x) { (void)x; }
++flag_status adc_calibration_init_status_get(adc_type *x) { (void)x; return RESET; }
++void adc_calibration_start(adc_type *x) { (void)x; }
++flag_status adc_calibration_status_get(adc_type *x) { (void)x; return RESET; }
++void adc_ordinary_software_trigger_enable(adc_type *x, confirm_state st) { (void)x; (void)st; }
++uint16_t adc_ordinary_conversion_data_get(adc_type *x) { (void)x; return s_mock_adc_raw; }
++
++#include "../io_toggle/src/app/thermistor_adc.c"
++#define TH_HOST_UNIT_TEST 1
++#include "../io_toggle/src/app/mycontrol.c"
++
++/**
++ * @brief 模拟 AT32F423 CRM、GPIO、USART 与 DMA 外设驱动
++ */
++void crm_periph_clock_enable(crm_periph_clock_type v, confirm_state st) { (void)v; (void)st; }
++void gpio_default_para_init(gpio_init_type *s) { if (s != NULL) { memset(s, 0, sizeof(*s)); } }
++void gpio_init(gpio_type *g, gpio_init_type *s) { (void)g; (void)s; }
++void gpio_pin_mux_config(gpio_type *g, gpio_pins_source_type p, gpio_mux_sel_type m) { (void)g; (void)p; (void)m; }
++void usart_init(usart_type *u, uint32_t b, usart_data_bit_num_type d, usart_stop_bit_num_type s)
++{
++    (void)u; (void)b; (void)d; (void)s;
++}
++void usart_parity_selection_config(usart_type *u, usart_parity_selection_type p) { (void)u; (void)p; }
++void usart_receiver_enable(usart_type *u, confirm_state st) { (void)u; (void)st; }
++void usart_transmitter_enable(usart_type *u, confirm_state st) { (void)u; (void)st; }
++void usart_enable(usart_type *u, confirm_state st) { (void)u; (void)st; }
++void usart_dma_receiver_enable(usart_type *u, confirm_state st) { (void)u; (void)st; }
++void usart_dma_transmitter_enable(usart_type *u, confirm_state st) { (void)u; (void)st; }
++flag_status usart_flag_get(usart_type *u, uint32_t f) { (void)u; (void)f; return SET; }
++void usart_data_transmit(usart_type *u, uint16_t d) { (void)u; (void)d; }
++void dma_reset(dma_channel_type *c) { (void)c; }
++void dma_default_para_init(dma_init_type *s) { if (s != NULL) { memset(s, 0, sizeof(*s)); } }
++void dma_init(dma_channel_type *c, dma_init_type *s)
++{
++    (void)s;
++    if (c == DMA1_CHANNEL2) { s_usart1_rx_write_pos = 0U; }
++}
++void dma_flexible_config(dma_type *d, dmamux_channel_type *m, dmamux_requst_id_sel_type r)
++{
++    (void)d; (void)m; (void)r;
++}
++void dma_interrupt_enable(dma_channel_type *c, uint32_t i, confirm_state st) { (void)c; (void)i; (void)st; }
++void nvic_irq_enable(IRQn_Type q, uint32_t p, uint32_t s) { (void)q; (void)p; (void)s; }
++void dma_flag_clear(uint32_t f) { (void)f; }
++flag_status dma_flag_get(uint32_t f)
++{
++    if ((f == DMA1_FDT5_FLAG) || (f == DMA1_FDT4_FLAG)) { return SET; }
++    return RESET;
++}
++void dma_data_number_set(dma_channel_type *c, uint16_t n)
++{
++    if (c == DMA1_CHANNEL4) { s_dma_ch4_len = n; }
++    else if (c == DMA1_CHANNEL2) { s_usart1_rx_write_pos = 0U; }
++}
++uint16_t dma_data_number_get(dma_channel_type *c)
++{
++    if (c == DMA1_CHANNEL2) { return (uint16_t)(USART1_RXBUFF_SIZE - s_usart1_rx_write_pos); }
++    return USART3_RXBUFF_SIZE;
++}
++void dma_channel_enable(dma_channel_type *c, confirm_state st)
++{
++    if ((c == DMA1_CHANNEL4) && (st == TRUE) && (s_dma_ch4_len > 0U))
++    {
++        const uintptr_t high = ((uintptr_t)s_usart1_last_tx) & ~(uintptr_t)0xFFFFFFFFULL;
++        const uint8_t *src = (const uint8_t *)(high | (uintptr_t)DMA1_CHANNEL4->maddr);
++        const uint16_t n = (s_dma_ch4_len <= sizeof(s_usart1_last_tx))
++                               ? s_dma_ch4_len
++                               : (uint16_t)sizeof(s_usart1_last_tx);
++        memcpy(s_usart1_last_tx, src, n);
++        s_usart1_last_tx_len = n;
++    }
++}
++
++/**
++ * @brief 向 TH USART1 DMA 环形缓冲注入一帧请求并触发协议轮询
++ */
++static void send_th_req(uint8_t dst, uint8_t flags, uint8_t cmd, const void *pay)
++{
++    uint16_t plen = 0U;
++    if ((cmd == MINIMC_CMD_SET_TEMP) || (cmd == MINIMC_CMD_SYSTEM_CONTROL) ||
++        (cmd == MINIMC_CMD_FILAMENT_CONTROL) || (cmd == MINIMC_CMD_SLOT_SELECT))
++    {
++        plen = 4U;
++    }
++    static uint16_t s_seq = 1U;
++    const uint16_t seq = s_seq++;
++    uint8_t frame[64];
++    frame[0] = MINIMC_SOF_1;
++    frame[1] = MINIMC_SOF_2;
++    frame[2] = MINIMC_NODE_AP;
++    frame[3] = dst;
++    frame[4] = flags;
++    frame[5] = cmd;
++    frame[6] = 3U;
++    frame[7] = MINIMC_ROUTE_IS_ROUTED;
++    frame[8] = (uint8_t)(seq & 0xFFU);
++    frame[9] = (uint8_t)((seq >> 8U) & 0xFFU);
++    frame[10] = (uint8_t)(plen & 0xFFU);
++    frame[11] = (uint8_t)((plen >> 8U) & 0xFFU);
++    if ((plen > 0U) && (pay != NULL)) { memcpy(&frame[12], pay, plen); }
++    const uint16_t crc = minimc_crc16(frame, (uint16_t)(12U + plen));
++    frame[12U + plen] = (uint8_t)(crc & 0xFFU);
++    frame[13U + plen] = (uint8_t)((crc >> 8U) & 0xFFU);
++    const uint16_t total = (uint16_t)(14U + plen);
++    for (uint16_t i = 0U; i < total; ++i)
++    {
++        usart1_rx_buffer[s_usart1_rx_write_pos] = frame[i];
++        s_usart1_rx_write_pos = (uint16_t)((s_usart1_rx_write_pos + 1U) % USART1_RXBUFF_SIZE);
++    }
++    s_usart1_last_tx_len = 0U;
++    minimc_proto_poll();
++}
++
++/**
++ * @brief 验证 TH Rev 2.0.4 常量、动态 boot_id、0x17 单播/广播急停与 0x19 action>2 边界
++ */
++static void test_th_rev204_bootid_estop_and_filament(void)
++{
++    require_true(MINIMC_MAX_PAYLOAD_SIZE == 520U && MINIMC_MAX_FRAME_SIZE == 534U, "520B/534B frame size");
++    require_true(MINIMC_CMD_FILAMENT_CONTROL == 0x19U && MINIMC_CMD_SLOT_SELECT == 0x19U, "0x19 FILAMENT_CONTROL");
++    require_true(TH_BOOT_UPGRADE_FLAG_ADDR == 0x20008000UL && TH_BOOT_UPGRADE_MAGIC == 0x55504744UL, "UPGD magic");
++
++    MY_USART1_Init();
++    MY_USART3_Init();
++    thermistor_adcConfig();
++
++    s_mock_tick_ms = 1100U;
++    minimc_proto_init();
++    const uint32_t boot_id_1 = minimc_proto_get_boot_id();
++    s_mock_tick_ms = 2300U;
++    minimc_proto_init();
++    const uint32_t boot_id_2 = minimc_proto_get_boot_id();
++    require_true(boot_id_1 != 0U && boot_id_2 != 0U && boot_id_1 != boot_id_2, "dynamic boot_id changes on init");
++
++    send_th_req(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_GET_VERSION, NULL);
++    require_true(s_usart1_last_tx_len == 30U && s_usart1_last_tx[5] == MINIMC_CMD_VERSION_REPORT, "0x02 report");
++    uint32_t wire_boot_id = 0U;
++    memcpy(&wire_boot_id, &s_usart1_last_tx[16], 4U);
++    require_true(wire_boot_id == boot_id_2, "0x02 carries dynamic boot_id");
++
++    /* 0x19 action=3 (非法动作) -> NACK 0x03 */
++    const minimc_filament_req_t bad_fil = { 0U, 3U, 100 };
++    send_th_req(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_SLOT_SELECT, &bad_fil);
++    require_true(s_usart1_last_tx[5] == MINIMC_CMD_NACK && s_usart1_last_tx[12] == 0x03U, "action=3 -> NACK 0x03");
++
++    /* 0x17 单播 -> 18B (4B payload) 0x00 CMD_ACK；0x17 广播 -> 不回 ACK */
++    send_th_req(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_EMERGENCY_STOP, NULL);
++    require_true(s_usart1_last_tx_len == 18U && s_usart1_last_tx[5] == MINIMC_CMD_ACK, "unicast 0x17 returns 4B CMD_ACK");
++    send_th_req(MINIMC_NODE_BROADCAST, 0x14U, MINIMC_CMD_EMERGENCY_STOP, NULL);
++    require_true(s_usart1_last_tx_len == 0U, "broadcast 0x17 must NOT send ACK");
++}
++
++/**
++ * @brief 验证 TH 0x1D CMD_SYSTEM_CONTROL 安全门禁、0x20008000 UPGD 魔数置位与零 M997 污染
++ */
++static void test_th_sys_ctrl_0x1d_and_zero_m997(void)
++{
++    s_th_magic_word = 0U;
++    s_th_reset_count = 0U;
++    const minimc_sys_ctrl_req_t boot_req = { 2U, 1U, 50U };
++
++    /* 1. 进退料电机忙 (load_filament_Flag != 0) -> NACK 0x05 (DEVICE_BUSY)，零魔数写入 */
++    load_filament_Flag = 1;
++    send_th_req(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_SYSTEM_CONTROL, &boot_req);
++    require_true(s_usart1_last_tx[5] == MINIMC_CMD_NACK && s_usart1_last_tx[12] == MINIMC_ERR_DEVICE_BUSY, "busy motor -> NACK 0x05");
++    require_true(s_th_magic_word == 0U && s_th_reset_count == 0U, "no magic when busy");
++    load_filament_Flag = 0;
++
++    /* 2. 加热开启 (thermistor_set_target_deci_c > 0) -> NACK 0x05 */
++    thermistor_set_target_deci_c(2000);
++    send_th_req(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_SYSTEM_CONTROL, &boot_req);
++    require_true(s_usart1_last_tx[5] == MINIMC_CMD_NACK && s_usart1_last_tx[12] == MINIMC_ERR_DEVICE_BUSY, "heating active -> NACK 0x05");
++    thermistor_set_target_deci_c(0);
++
++    /* 3. 非法载荷长度 plen=5 -> NACK 0x03；空闲安全态 0x1D (action=2, component=1) -> 18B ACK + 步进失能 + UPGD + 复位 */
++    uint8_t bad_len_frame[19] = {
++        MINIMC_SOF_1, MINIMC_SOF_2, MINIMC_NODE_AP, MINIMC_NODE_TH, 0x05U,
++        MINIMC_CMD_SYSTEM_CONTROL, 3U, MINIMC_ROUTE_IS_ROUTED, 0x77U, 0x00U, 5U, 0U,
++        2U, 1U, 50U, 0U, 0U, 0U, 0U
++    };
++    const uint16_t bad_crc = minimc_crc16(bad_len_frame, 17U);
++    bad_len_frame[17] = (uint8_t)(bad_crc & 0xFFU);
++    bad_len_frame[18] = (uint8_t)((bad_crc >> 8U) & 0xFFU);
++    for (uint16_t i = 0U; i < 19U; ++i)
++    {
++        usart1_rx_buffer[s_usart1_rx_write_pos] = bad_len_frame[i];
++        s_usart1_rx_write_pos = (uint16_t)((s_usart1_rx_write_pos + 1U) % USART1_RXBUFF_SIZE);
++    }
++    s_usart1_last_tx_len = 0U;
++    minimc_proto_poll();
++    require_true(s_usart1_last_tx[5] == MINIMC_CMD_NACK && s_usart1_last_tx[12] == 0x03U, "0x1D plen=5 -> NACK 0x03");
++
++    s_th_steppers_disabled = false;
++    send_th_req(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_SYSTEM_CONTROL, &boot_req);
++    require_true(s_usart1_last_tx_len == 18U && s_usart1_last_tx[5] == MINIMC_CMD_ACK, "0x1D returns 4B CMD_ACK");
++    require_true(s_th_steppers_disabled, "0x1D disables all steppers before reset");
++    require_true(s_th_magic_word == TH_BOOT_UPGRADE_MAGIC && s_th_reset_count == 1U && s_th_last_delay_ms == 50U, "UPGD written & reset");
++
++    /* 4. 验证 send_quick 与 USART1_send_string 零 M997 / ok2 串口文本污染 */
++    s_usart1_last_tx_len = 0U;
++    send_quick("ok2\r\nM997 SYSTEM RESET\r\n");
++    USART1_send_string("M997\r\n");
++    require_true(s_usart1_last_tx_len == 0U, "zero M997/ok2 text emitted on USART1");
++}
++
++/**
++ * @brief 测试主入口
++ */
++int main(void)
++{
++    void *p1 = mmap((void *)0x40000000, 0x30000, PROT_READ | PROT_WRITE,
++                    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0);
++    require_true(p1 != MAP_FAILED, "mmap peripheral space 0x40000000");
++    test_th_rev204_bootid_estop_and_filament();
++    test_th_sys_ctrl_0x1d_and_zero_m997();
++    printf("[PASS] test_th_ota_and_bootid: all TWIN-64 TH App 0x1D, UPGD & boot_id tests passed!\n");
++    return 0;
++}
+diff --git a/motion-controller-mcu/project/inc/minimc_proto.h b/motion-controller-mcu/project/inc/minimc_proto.h
+index ea5ba6c..2d0efe9 100644
+--- a/motion-controller-mcu/project/inc/minimc_proto.h
++++ b/motion-controller-mcu/project/inc/minimc_proto.h
+@@ -45,10 +45,12 @@ extern "C" {
+ #define MINIMC_NODE_MC           0x02U
+ #define MINIMC_NODE_TH           0x03U
+ #define MINIMC_NODE_BOTH         0xFFU
++#define MINIMC_NODE_BROADCAST    0xFFU
+ 
+ #define MINIMC_FLAG_WANTS_ACK    0x01U
+ #define MINIMC_FLAG_IS_RESPONSE  0x02U
+ #define MINIMC_FLAG_PROTO_V2     0x04U
++#define MINIMC_FLAG_IS_PRIORITY  0x10U
+ 
+ #define MINIMC_ROUTE_IS_ROUTED   0x04U
+ 
+@@ -68,14 +70,31 @@ extern "C" {
+ #define MINIMC_CMD_JOB_CONTROL      0x13U
+ #define MINIMC_CMD_TEMP_QUERY       0x14U
+ #define MINIMC_CMD_TEMP_REPORT      0x15U
+-#define MINIMC_CMD_FILAMENT_CONTROL 0x15U
+ #define MINIMC_CMD_POS_QUERY        0x16U
+ #define MINIMC_CMD_MOTION_STOP      0x17U
++#define MINIMC_CMD_EMERGENCY_STOP   0x17U
+ #define MINIMC_CMD_LEVEL_GRID_QUERY 0x18U
+ #define MINIMC_CMD_SLOT_SELECT      0x19U
++#define MINIMC_CMD_FILAMENT_CONTROL 0x19U
+ #define MINIMC_CMD_LEVEL_TRIGGER    0x1AU
+ #define MINIMC_CMD_FILAMENT_LEGACY  0x1BU
+ #define MINIMC_CMD_GCODE_EXEC       0x1CU
++#define MINIMC_CMD_SYSTEM_CONTROL   0x1DU
++#define MINIMC_CMD_OTA_START        0x20U
++#define MINIMC_CMD_OTA_DATA         0x21U
++#define MINIMC_CMD_OTA_FINISH       0x22U
++#define MINIMC_CMD_OTA_STATUS       0x23U
++
++#define MINIMC_ERR_DEVICE_BUSY      0x05U
++#define MINIMC_ERR_COMMAND_REJECTED 0x06U
++
++#define MC_BOOT_UPGRADE_FLAG_ADDR   (0x2005FFF0UL)
++#define MC_BOOT_UPGRADE_MAGIC       (0x55504732UL) /* "UPG2" */
++#define MC_TH_PROXY_TIMEOUT_MS      (5000U)        /* TH 升级代理模式无活动超时恢复窗口 */
++
++#ifndef FORWARD_UART_MODE_OTA_ROUTE
++#define FORWARD_UART_MODE_OTA_ROUTE 3
++#endif
+ 
+ #define MINIMC_MOTION_STATE_IDLE    0U
+ #define MINIMC_MOTION_STATE_HOMING  1U
+@@ -248,6 +267,24 @@ typedef struct {
+     uint8_t  queue_free;            /* 剩余队列槽位数 */
+     uint16_t ack_seq;               /* 确认序号 */
+ } minimc_gcode_resp_t;
++
++/**
++ * @brief 0x1D 系统控制/受控进 Bootloader 请求载荷（4 字节紧凑对齐）
++ */
++typedef struct {
++    uint8_t  action;                /* 0=Noop, 1=Reboot, 2=JumpToBootloader */
++    uint8_t  target_component;      /* 1=Main App, 0=System */
++    uint16_t delay_ms;              /* 软复位前排空延时 (毫秒, 默认 50ms) */
++} minimc_sys_ctrl_req_t;
++
++/**
++ * @brief 0x00 标准肯定应答 CMD_ACK 载荷（4 字节紧凑对齐）
++ */
++typedef struct {
++    uint8_t  planner_buf_free;      /* 规划缓冲空闲槽位数 */
++    uint8_t  rx_fifo_free_units;    /* 接收 FIFO 空闲单元数 */
++    uint16_t reserved;              /* 保留字段，填 0 */
++} minimc_ack_payload_t;
+ #pragma pack(pop)
+ 
+ #ifdef __cplusplus
+@@ -260,6 +297,8 @@ static_assert(sizeof(minimc_job_req_t) == 4, "job_req size mismatch");
+ static_assert(sizeof(minimc_job_resp_t) == 8, "job_resp size mismatch");
+ static_assert(sizeof(minimc_gcode_req_t) == 62, "gcode_req size mismatch");
+ static_assert(sizeof(minimc_gcode_resp_t) == 4, "gcode_resp size mismatch");
++static_assert(sizeof(minimc_sys_ctrl_req_t) == 4, "sys_ctrl_req size mismatch");
++static_assert(sizeof(minimc_ack_payload_t) == 4, "ack_payload size mismatch");
+ #else
+ _Static_assert(sizeof(minimc_set_temp_req_t) == 4, "set_temp_req size mismatch");
+ _Static_assert(sizeof(minimc_home_req_t) == 4, "home_req size mismatch");
+@@ -270,6 +309,8 @@ _Static_assert(sizeof(minimc_job_req_t) == 4, "job_req size mismatch");
+ _Static_assert(sizeof(minimc_job_resp_t) == 8, "job_resp size mismatch");
+ _Static_assert(sizeof(minimc_gcode_req_t) == 62, "gcode_req size mismatch");
+ _Static_assert(sizeof(minimc_gcode_resp_t) == 4, "gcode_resp size mismatch");
++_Static_assert(sizeof(minimc_sys_ctrl_req_t) == 4, "sys_ctrl_req size mismatch");
++_Static_assert(sizeof(minimc_ack_payload_t) == 4, "ack_payload size mismatch");
+ #endif
+ 
+ #define MINIMC_DEFAULT_HOP_LIMIT 0x04U
+@@ -277,7 +318,7 @@ _Static_assert(sizeof(minimc_gcode_resp_t) == 4, "gcode_resp size mismatch");
+ 
+ #define MINIMC_HEADER_SIZE       12U
+ #define MINIMC_CRC_SIZE          2U
+-#define MINIMC_MAX_PAYLOAD_SIZE  64U
++#define MINIMC_MAX_PAYLOAD_SIZE  520U
+ #define MINIMC_MAX_FRAME_SIZE    (MINIMC_HEADER_SIZE + MINIMC_MAX_PAYLOAD_SIZE + MINIMC_CRC_SIZE)
+ 
+ /* 初始化 MiniMCProto 协议状态机与环形缓冲 */
+@@ -296,6 +337,8 @@ bool minimc_proto_send_th_gcode(const char *line, uint16_t len, uint8_t exec_fla
+ bool minimc_proto_is_ap_cmd_active(void);
+ /* 消费并清除当前 Marlin 队列槽位的 AP 协议指令标记 */
+ bool minimc_proto_consume_ap_enqueued(void);
++/* 查询当前 MC 是否处于 TH 升级直连代理维护模式 (proxy_active) */
++bool minimc_proto_is_th_proxy_active(void);
+ /* 计算 MiniMCProto V2 帧的 CRC-16/CCITT-FALSE 校验值 */
+ uint16_t minimc_crc16(const uint8_t *data, uint16_t len);
+ /* 组装 0x16 运动位置遥测响应帧 */
+diff --git a/motion-controller-mcu/project/inc/th_upgrade_mgr.h b/motion-controller-mcu/project/inc/th_upgrade_mgr.h
+index a470528..c873435 100644
+--- a/motion-controller-mcu/project/inc/th_upgrade_mgr.h
++++ b/motion-controller-mcu/project/inc/th_upgrade_mgr.h
+@@ -14,25 +14,21 @@ extern "C" {
+ #include <stdint.h>
+ #include <stdbool.h>
+ 
+-/* 固件与硬件常量 */
++/* 固件与硬件常量（对齐 236KB 净荷上限与 MiniMCProto v2.0 Rev 2.0.4） */
+ #define TRAILER_MAGIC_ATSG              (0x41545347U)  /* "ATSG" */
++#define TRAILER_STRUCT_VER_V1           (0x00010000U)  /* Trailer 结构版本 */
+ #define BOARD_ID_TH_AT32F423            (0x42300001U)  /* Toolhead 硬件 ID */
+ #define TRAILER_SIZE_BYTES              (128U)
+-#define TH_FLASH_MAX_APP_SIZE           (240U * 1024U) /* 240 KB */
+-#define TH_CHUNK_SIZE                   (512U)         /* 单分块固定 512 字节 */
++#define TH_FLASH_MAX_APP_SIZE           (236U * 1024U) /* 236 KB (241,664 Bytes) */
++#define TH_CHUNK_SIZE                   (512U)         /* 单分块最大 512 字节 */
++#define TH_OTA_START_PAYLOAD_SIZE       (144U)         /* 16B 标准头 + 128B ATSG Trailer */
++#define TH_OTA_DATA_HDR_SIZE            (8U)           /* offset(4B) + chunk_bytes(2B) + chunk_crc16(2B) */
++#define TH_OTA_FINISH_PAYLOAD_SIZE      (8U)           /* fw_crc32(4B) + action(1B) + reserved(3B) */
++#define TH_BOOT_CAP_FLAG_MASK           (0x80000000UL) /* Bit 31 == 1 表示处于 BOOT_MODE */
+ 
+ /* 开机安全时间窗口：开机 5.0 秒后彻底注销从控升级轮询，保护打印业务 */
+ #define APP_BOOT_UDISK_WINDOW_MS        (5000U)
+ 
+-/* 协议命令字 */
+-#define CMD_TH_HELLO                    (0x10U)
+-#define CMD_TH_START_UPG                (0x11U)
+-#define ACK_TH_START_UPG                (0x91U)
+-#define CMD_TH_PUSH_CHUNK               (0x12U)
+-#define ACK_TH_PUSH_CHUNK               (0x92U)
+-#define CMD_TH_FINISH                   (0x13U)
+-#define ACK_TH_FINISH                   (0x93U)
+-
+ /* 更名控制开关: 1 开启更名防重复刷机 */
+ #define CONFIG_ENABLE_TH_FW_RENAME      (1)
+ 
+@@ -42,7 +38,7 @@ typedef struct {
+   uint32_t struct_ver;        /* 0x04: 协议版本 0x00010000 */
+   uint32_t board_id;          /* 0x08: 硬件识别码 0x42300001 (TH) */
+   uint32_t fw_version;        /* 0x0C: 固件版本号 */
+-  uint32_t payload_len;       /* 0x10: 净代码有效字节数 (<= 240KB) */
++  uint32_t payload_len;       /* 0x10: 净代码有效字节数 (<= 236KB / 241,664B) */
+   uint8_t  sha256[32];        /* 0x14: SHA-256 哈希 */
+   uint8_t  sig_r[32];         /* 0x34: 签名 R (未启用填0) */
+   uint8_t  sig_s[32];         /* 0x54: 签名 S (未启用填0) */
+@@ -54,8 +50,8 @@ typedef struct {
+ typedef enum {
+   TH_UPG_STATE_IDLE = 0,
+   TH_UPG_STATE_SCAN_UDISK,
+-  TH_UPG_STATE_SEND_M997,
+-  TH_UPG_STATE_WAIT_HELLO,
++  TH_UPG_STATE_SEND_SYS_CTRL,
++  TH_UPG_STATE_WAIT_BOOT_VER,
+   TH_UPG_STATE_START_HANDSHAKE,
+   TH_UPG_STATE_STREAM_CHUNKS,
+   TH_UPG_STATE_FINISH,
+diff --git a/motion-controller-mcu/project/inc/wk_dma.h b/motion-controller-mcu/project/inc/wk_dma.h
+index bf7c007..c04250e 100644
+--- a/motion-controller-mcu/project/inc/wk_dma.h
++++ b/motion-controller-mcu/project/inc/wk_dma.h
+@@ -42,8 +42,8 @@ extern "C" {
+ 
+ /* exported types -------------------------------------------------------------*/
+ /* add user code begin exported types */
+-#define FORWARD_UART_TX_BUF_SIZE  256
+-#define FORWARD_UART_RX_BUF_SIZE  256
++#define FORWARD_UART_TX_BUF_SIZE  600
++#define FORWARD_UART_RX_BUF_SIZE  600
+ 
+ /* 迪文屏(USART2)接收 DMA 循环缓冲大小(复用 GUI 的 rx_fifo, 两者必须一致) */
+ #define USART2_RX_DMA_BUF_SIZE    128
+diff --git a/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c b/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c
+index e89bc51..2bfed43 100644
+--- a/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c
++++ b/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c
+@@ -1,13 +1,15 @@
+ /**
+-  **************************************************************************
+-  * @file     th_upgrade_mgr.c
+-  * @brief    Implementation of Toolhead (TH AT32F423) firmware upgrade manager in MC
+-  **************************************************************************
+-  */
++ * @file th_upgrade_mgr.c
++ * @brief MC 端从 U 盘读取 0:/fw_th.bin 并基于 MiniMCProto v2.0 (Rev 2.0.4) 协议升级 TH 工具头固件实现。
++ * 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md 规范。
++ */
+ #include "th_upgrade_mgr.h"
++#include "minimc_proto.h"
+ #include "wk_usart.h"
++#ifndef HOST_UNIT_TEST
+ #include "usbh_user.h"
+ #include "ff.h"
++#endif
+ #include "wk_system.h"
+ #include <stdio.h>
+ #include <string.h>
+@@ -19,19 +21,26 @@ static FIL            s_file;
+ static bool           s_fs_mounted = false;
+ static th_upg_state_t s_state = TH_UPG_STATE_IDLE;
+ static fw_trailer_t   s_trailer;
+-static uint32_t       s_total_chunks = 0;
+-static uint32_t       s_current_chunk = 0;
+-static uint32_t       s_running_crc32 = 0;
++static uint32_t       s_total_chunks = 0U;
++static uint32_t       s_current_chunk = 0U;
++static uint32_t       s_running_crc32 = 0U;
+ static uint8_t        s_chunk_buf[TH_CHUNK_SIZE];
+-static uint32_t       s_scan_retry_cnt = 0;
+-static uint32_t       s_scan_last_tick = 0;
++static uint32_t       s_scan_retry_cnt = 0U;
++static uint32_t       s_scan_last_tick = 0U;
+ static bool           s_th_recovery_mode = false;
+-static uint32_t       s_idle_listen_tick = 0;
+ static bool           s_upg_done_for_current_udisk = false;
+ static char           s_th_src_filename[32];
+-static uint32_t       s_th_file_size = 0;
++static uint32_t       s_th_file_size = 0U;
+ static bool           s_boot_window_expired = false;
++static uint16_t       s_upg_seq = 0x0800U;
+ 
++/**
++ * @brief 计算标准 IEEE 802.3 CRC-32 校验值
++ * @param init_crc 初始累加 CRC32 值
++ * @param data     待计算字节流指针
++ * @param len      字节长度
++ * @return 计算后的 32-bit CRC 值
++ */
+ static uint32_t crc32_calculate(uint32_t init_crc, const uint8_t *data, uint32_t len)
+ {
+   uint32_t crc = ~init_crc;
+@@ -44,224 +53,403 @@ static uint32_t crc32_calculate(uint32_t init_crc, const uint8_t *data, uint32_t
+     crc ^= data[i];
+     for (uint8_t j = 0U; j < 8U; j++)
+     {
+-      crc = (crc >> 1) ^ (0xEDB88320U & (-(int32_t)(crc & 1U)));
++      crc = (crc >> 1U) ^ (0xEDB88320U & (-(int32_t)(crc & 1U)));
+     }
+   }
+   return ~crc;
+ }
+ 
+-static void list_udisk_root_files(void)
++/**
++ * @brief 将 32 位无符号整数按小端序写入字节数组
++ * @param dst 目标缓冲区指针
++ * @param val 32 位整数值
++ */
++static void write_u32_le(uint8_t *dst, uint32_t val)
+ {
+-  DIR dir;
+-  FILINFO fno;
+-  FRESULT res;
+-  uint32_t count = 0;
++  dst[0] = (uint8_t)(val & 0xFFU);
++  dst[1] = (uint8_t)((val >> 8U) & 0xFFU);
++  dst[2] = (uint8_t)((val >> 16U) & 0xFFU);
++  dst[3] = (uint8_t)((val >> 24U) & 0xFFU);
++}
+ 
+-  res = f_opendir(&dir, "0:/");
+-  if (res != FR_OK)
++/**
++ * @brief 从小端序字节数组读取 32 位无符号整数
++ * @param src 源字节数组指针
++ * @return 32 位无符号整数
++ */
++static uint32_t read_u32_le(const uint8_t *src)
++{
++  return (uint32_t)src[0] |
++         ((uint32_t)src[1] << 8U) |
++         ((uint32_t)src[2] << 16U) |
++         ((uint32_t)src[3] << 24U);
++}
++
++/**
++ * @brief 组装并通过 USART6 DMA 向 TH 发送一帧 MiniMCProto v2.0 请求报文
++ * @param cmd_id  协议命令字
++ * @param payload 载荷缓冲区指针（可为 NULL）
++ * @param plen    载荷字节长度
++ * @return 发送帧所使用的 16-bit 序列号（0 表示发送失败）
++ */
++static uint16_t th_upg_send_v2_req(uint8_t cmd_id, const uint8_t *payload, uint16_t plen)
++{
++  if ((plen > MINIMC_MAX_PAYLOAD_SIZE) || ((plen > 0U) && (payload == NULL)))
+   {
+-    mc_debug_printf("[MC_APP][UPG] Open root dir failed (err=%d)\r\n", (int)res);
+-    return;
++    return 0U;
++  }
++  static uint8_t s_frame_tx[MINIMC_MAX_FRAME_SIZE];
++  s_upg_seq++;
++  if (s_upg_seq == 0U)
++  {
++    s_upg_seq = 1U;
++  }
++  const uint16_t seq = s_upg_seq;
++  s_frame_tx[0] = MINIMC_SOF_1;
++  s_frame_tx[1] = MINIMC_SOF_2;
++  s_frame_tx[2] = MINIMC_NODE_MC;
++  s_frame_tx[3] = MINIMC_NODE_TH;
++  s_frame_tx[4] = (uint8_t)(MINIMC_FLAG_WANTS_ACK | MINIMC_FLAG_PROTO_V2);
++  s_frame_tx[5] = cmd_id;
++  s_frame_tx[6] = MINIMC_DEFAULT_HOP_LIMIT;
++  s_frame_tx[7] = MINIMC_DEFAULT_ROUTE;
++  s_frame_tx[8] = (uint8_t)(seq & 0xFFU);
++  s_frame_tx[9] = (uint8_t)((seq >> 8U) & 0xFFU);
++  s_frame_tx[10] = (uint8_t)(plen & 0xFFU);
++  s_frame_tx[11] = (uint8_t)((plen >> 8U) & 0xFFU);
++  for (uint16_t i = 0U; i < plen; ++i)
++  {
++    s_frame_tx[MINIMC_HEADER_SIZE + i] = payload[i];
++  }
++  const uint16_t body_len = (uint16_t)(MINIMC_HEADER_SIZE + plen);
++  const uint16_t crc = minimc_crc16(s_frame_tx, body_len);
++  s_frame_tx[body_len] = (uint8_t)(crc & 0xFFU);
++  s_frame_tx[body_len + 1U] = (uint8_t)((crc >> 8U) & 0xFFU);
++  if (!forward_uart_send_raw(s_frame_tx, (uint16_t)(body_len + MINIMC_CRC_SIZE)))
++  {
++    return 0U;
+   }
++  return seq;
++}
+ 
+-  mc_debug_print("\r\n=== [MC_APP] U-Disk Root Files (0:/) ===\r\n");
+-  while (f_readdir(&dir, &fno) == FR_OK && fno.fname[0] != '\0')
++/**
++ * @brief 非阻塞尝试从 USART6 读取并校验一帧来自 TH (0x03) 的 MiniMCProto v2.0 响应帧
++ * @param out_cmd     输出响应命令码指针
++ * @param out_seq     输出响应序列号指针
++ * @param out_payload 输出响应载荷缓冲区（容量至少 32B）
++ * @param out_plen    输出响应载荷长度指针
++ * @return true 收到合法 CRC16 校验通过的 TH 响应帧，false 尚未收到或校验不通过
++ */
++static bool th_upg_try_recv_v2_resp(
++    uint8_t *out_cmd,
++    uint16_t *out_seq,
++    uint8_t *out_payload,
++    uint16_t *out_plen)
++{
++  static uint8_t s_rx_raw[MINIMC_MAX_FRAME_SIZE];
++  (void)forward_uart_rx_poll();
++  const uint16_t rx_len = forward_uart_proto_rx_read(s_rx_raw, sizeof(s_rx_raw));
++  if (rx_len < (MINIMC_HEADER_SIZE + MINIMC_CRC_SIZE))
+   {
+-    if (fno.fname[0] == '.')
+-    {
+-      continue;
+-    }
+-    if (fno.fattrib & AM_DIR)
+-    {
+-      mc_debug_printf("  [DIR ] %s\r\n", fno.fname);
+-    }
+-    else
++    return false;
++  }
++  const uint16_t plen = (uint16_t)s_rx_raw[10] | (uint16_t)((uint16_t)s_rx_raw[11] << 8U);
++  const uint16_t total_len = (uint16_t)(MINIMC_HEADER_SIZE + plen + MINIMC_CRC_SIZE);
++  if ((plen > MINIMC_MAX_PAYLOAD_SIZE) || (rx_len < total_len))
++  {
++    return false;
++  }
++  if ((s_rx_raw[2] != MINIMC_NODE_TH) || ((s_rx_raw[4] & MINIMC_FLAG_IS_RESPONSE) == 0U))
++  {
++    return false;
++  }
++  const uint16_t calc_crc = minimc_crc16(s_rx_raw, (uint16_t)(MINIMC_HEADER_SIZE + plen));
++  const uint16_t wire_crc = (uint16_t)s_rx_raw[MINIMC_HEADER_SIZE + plen] |
++                            (uint16_t)((uint16_t)s_rx_raw[MINIMC_HEADER_SIZE + plen + 1U] << 8U);
++  if (calc_crc != wire_crc)
++  {
++    return false;
++  }
++  *out_cmd = s_rx_raw[5];
++  *out_seq = (uint16_t)s_rx_raw[8] | (uint16_t)((uint16_t)s_rx_raw[9] << 8U);
++  *out_plen = plen;
++  const uint16_t copy_len = (plen > 32U) ? 32U : plen;
++  for (uint16_t i = 0U; i < copy_len; ++i)
++  {
++    out_payload[i] = s_rx_raw[MINIMC_HEADER_SIZE + i];
++  }
++  return true;
++}
++
++/**
++ * @brief 在指定超时窗口内等待 TH 返回期望命令码与匹配序列号的 MiniMCProto v2.0 响应
++ * @param exp_cmd     期望响应命令码（如 MINIMC_CMD_ACK 或 MINIMC_CMD_VERSION_REPORT）
++ * @param exp_seq     期望匹配的请求序列号
++ * @param out_payload 输出响应载荷缓冲区（容量至少 32B）
++ * @param timeout_ms  超时时间（毫秒）
++ * @return true 收到匹配肯定响应，false 超时或收到 NACK
++ */
++static bool th_upg_wait_v2_resp(
++    uint8_t exp_cmd,
++    uint16_t exp_seq,
++    uint8_t *out_payload,
++    uint32_t timeout_ms)
++{
++  const uint32_t start_tick = wk_timebase_get();
++  while ((wk_timebase_get() - start_tick) < timeout_ms)
++  {
++    uint8_t rx_cmd = 0U;
++    uint16_t rx_seq = 0U;
++    uint16_t rx_plen = 0U;
++    if (th_upg_try_recv_v2_resp(&rx_cmd, &rx_seq, out_payload, &rx_plen))
+     {
+-      mc_debug_printf("  [FILE] %-24s  %lu Bytes\r\n", fno.fname, (uint32_t)fno.fsize);
+-      count++;
++      if (rx_seq == exp_seq)
++      {
++        if (rx_cmd == MINIMC_CMD_NACK)
++        {
++          return false;
++        }
++        if (rx_cmd == exp_cmd)
++        {
++          return true;
++        }
++      }
+     }
++    wk_delay_ms(1);
+   }
+-  f_closedir(&dir);
+-  mc_debug_printf("Total: %lu file(s) in root\r\n", count);
+-  mc_debug_print("========================================\r\n\r\n");
++  return false;
+ }
+ 
++/**
++ * @brief 打开 U 盘根目录下的 TH 固件镜像文件 (0:/fw_th.bin 或 0:/FW_TH.BIN)
++ * @return true 成功打开，false 未找到文件
++ */
+ static bool th_open_source_file(void)
+ {
+   FRESULT fr = f_open(&s_file, "0:/fw_th.bin", FA_READ);
+   if (fr == FR_OK)
+   {
+-    strncpy(s_th_src_filename, "0:/fw_th.bin", sizeof(s_th_src_filename) - 1U);
+-    s_th_src_filename[sizeof(s_th_src_filename) - 1U] = '\0';
++    (void)memcpy(s_th_src_filename, "0:/fw_th.bin", sizeof("0:/fw_th.bin"));
+     return true;
+   }
+   fr = f_open(&s_file, "0:/FW_TH.BIN", FA_READ);
+   if (fr == FR_OK)
+   {
+-    strncpy(s_th_src_filename, "0:/FW_TH.BIN", sizeof(s_th_src_filename) - 1U);
+-    s_th_src_filename[sizeof(s_th_src_filename) - 1U] = '\0';
++    (void)memcpy(s_th_src_filename, "0:/FW_TH.BIN", sizeof("0:/FW_TH.BIN"));
+     return true;
+   }
+   return false;
+ }
+ 
+-static bool th_upg_scan_and_prepare(void)
++/**
++ * @brief 校验 128B ATSG Trailer 结构合法性、236KB 分区边界与前 124B IEEE CRC32
++ * @param fsize 文件总字节数
++ * @return true 校验通过，false 校验失败
++ */
++static bool th_upg_verify_trailer(uint32_t fsize)
+ {
+-  FRESULT fr;
+-  UINT br = 0;
++  if ((s_trailer.magic != TRAILER_MAGIC_ATSG) ||
++      (s_trailer.struct_ver != TRAILER_STRUCT_VER_V1) ||
++      (s_trailer.board_id != BOARD_ID_TH_AT32F423))
++  {
++    return false;
++  }
++  if ((s_trailer.payload_len == 0U) ||
++      (s_trailer.payload_len > TH_FLASH_MAX_APP_SIZE) ||
++      ((s_trailer.payload_len + TRAILER_SIZE_BYTES) != fsize))
++  {
++    return false;
++  }
++  const uint32_t calc_crc = crc32_calculate(0U, (const uint8_t *)&s_trailer, 124U);
++  return (calc_crc == s_trailer.trailer_crc32);
++}
++
++/**
++ * @brief 预扫描整个固件净荷区计算全片 IEEE CRC32，供 0x20 OTA_START 与 0x22 OTA_FINISH 使用
++ * @return true 读取成功，false 文件读取失败
++ */
++static bool th_upg_precompute_payload_crc32(void)
++{
++  s_running_crc32 = 0U;
++  uint32_t offset = 0U;
++  while (offset < s_trailer.payload_len)
++  {
++    UINT br = 0U;
++    const uint32_t remain = s_trailer.payload_len - offset;
++    const uint32_t req_len = (remain > TH_CHUNK_SIZE) ? TH_CHUNK_SIZE : remain;
++    (void)f_lseek(&s_file, offset);
++    if ((f_read(&s_file, s_chunk_buf, req_len, &br) != FR_OK) || (br != req_len))
++    {
++      return false;
++    }
++    s_running_crc32 = crc32_calculate(s_running_crc32, s_chunk_buf, req_len);
++    offset += req_len;
++  }
++  return true;
++}
+ 
++/**
++ * @brief 扫描 U 盘中的 fw_th.bin 并执行 236KB 边界、Trailer CRC32 与全片净荷 CRC32 预检
++ * @return true 准备就绪，false 文件不存在或校验失败
++ */
++static bool th_upg_scan_and_prepare(void)
++{
++  UINT br = 0U;
+   if (!s_fs_mounted)
+   {
+-    fr = f_mount(&s_fs, "0:/", 1);
+-    if (fr != FR_OK)
++    if (f_mount(&s_fs, "0:/", 1) != FR_OK)
+     {
+-      mc_debug_printf("[MC_APP][UPG] FatFs mount failed (err=%d)\r\n", (int)fr);
+       return false;
+     }
+     s_fs_mounted = true;
+-    mc_debug_print("[MC_APP][UPG] FatFs mounted successfully.\r\n");
+-    list_udisk_root_files();
+   }
+-
+   if (!th_open_source_file())
+   {
+-    mc_debug_print("[MC_APP][UPG] Cannot find fw_th.bin or FW_TH.BIN\r\n");
+     return false;
+   }
+-
+-  FSIZE_t fsize = f_size(&s_file);
++  const FSIZE_t fsize = f_size(&s_file);
+   s_th_file_size = (uint32_t)fsize;
+-  mc_debug_printf("[MC_APP][UPG] Found TH firmware image (%s), size=%lu B\r\n", s_th_src_filename, (uint32_t)fsize);
+-  if (fsize <= TRAILER_SIZE_BYTES || fsize > (TH_FLASH_MAX_APP_SIZE + TRAILER_SIZE_BYTES))
++  if ((fsize <= TRAILER_SIZE_BYTES) || (fsize > (TH_FLASH_MAX_APP_SIZE + TRAILER_SIZE_BYTES)))
+   {
+-    mc_debug_printf("[MC_APP][UPG] File size %lu invalid\r\n", (uint32_t)fsize);
+-    f_close(&s_file);
++    (void)f_close(&s_file);
+     return false;
+   }
+-
+-  f_lseek(&s_file, fsize - TRAILER_SIZE_BYTES);
+-  f_read(&s_file, &s_trailer, TRAILER_SIZE_BYTES, &br);
+-  if (br != TRAILER_SIZE_BYTES || s_trailer.magic != TRAILER_MAGIC_ATSG || s_trailer.board_id != BOARD_ID_TH_AT32F423)
++  (void)f_lseek(&s_file, fsize - TRAILER_SIZE_BYTES);
++  if ((f_read(&s_file, &s_trailer, TRAILER_SIZE_BYTES, &br) != FR_OK) ||
++      (br != TRAILER_SIZE_BYTES) ||
++      (!th_upg_verify_trailer((uint32_t)fsize)) ||
++      (!th_upg_precompute_payload_crc32()))
+   {
+-    mc_debug_printf("[MC_APP][UPG] Trailer invalid! Magic=0x%08lX BoardID=0x%08lX\r\n",
+-           s_trailer.magic, s_trailer.board_id);
+-    f_close(&s_file);
++    (void)f_close(&s_file);
+     return false;
+   }
+-
+   s_total_chunks = (s_trailer.payload_len + TH_CHUNK_SIZE - 1U) / TH_CHUNK_SIZE;
+-  mc_debug_printf("[MC_APP][UPG] 'fw_th.bin' Verified! Payload=%lu B, Chunks=%lu\r\n",
+-         s_trailer.payload_len, s_total_chunks);
+   return true;
+ }
+ 
++/**
++ * @brief 通过 MiniMCProto v2.0 0x1D (CMD_SYSTEM_CONTROL, action=2) 受控通知 TH 进入 Bootloader
++ */
+ static void th_upg_trigger_reboot(void)
+ {
+-  mc_debug_print("[MC_APP][UPG] Triggering TH Bootloader via M997 S0...\r\n");
+-  forward_uart_send_line("M997 S0", 7U);
+   forward_uart_mode_set(FORWARD_UART_MODE_UPGRADE);
++  uint8_t sys_payload[4];
++  sys_payload[0] = 0x02U; /* action = 2 (JumpToBootloader) */
++  sys_payload[1] = 0x01U; /* target_component = 1 (Main App) */
++  sys_payload[2] = 50U;   /* delay_ms = 50ms (LE) */
++  sys_payload[3] = 0U;
++  const uint16_t seq = th_upg_send_v2_req(MINIMC_CMD_SYSTEM_CONTROL, sys_payload, sizeof(sys_payload));
++  if (seq != 0U)
++  {
++    uint8_t ack_buf[32];
++    (void)th_upg_wait_v2_resp(MINIMC_CMD_ACK, seq, ack_buf, 500U);
++  }
++  wk_delay_ms(60);
+ }
+ 
+-static bool th_upg_wait_ack(uint8_t exp_ack, uint8_t *out_payload, uint16_t *out_len, uint32_t timeout_ms)
++/**
++ * @brief 发送 0x01 GET_VERSION 并轮询确认 TH 已进入 BOOT_MODE (capability_flags Bit 31 == 1)
++ * @param timeout_ms 轮询总超时毫秒数
++ * @return true TH Bootloader 已在线就绪，false 超时未响应或仍在 App 态
++ */
++static bool th_upg_wait_for_boot_mode(uint32_t timeout_ms)
+ {
+-  uint32_t start_tick = wk_timebase_get();
+-  uint8_t cmd = 0;
+-
++  const uint32_t start_tick = wk_timebase_get();
+   while ((wk_timebase_get() - start_tick) < timeout_ms)
+   {
+-    forward_uart_rx_poll();
+-    if (forward_uart_recv_frame(&cmd, out_payload, out_len, 32U))
++    uint8_t ver_payload[32];
++    const uint16_t seq = th_upg_send_v2_req(MINIMC_CMD_GET_VERSION, NULL, 0U);
++    if ((seq != 0U) && th_upg_wait_v2_resp(MINIMC_CMD_VERSION_REPORT, seq, ver_payload, 150U))
+     {
+-      if (cmd == exp_ack)
++      const uint32_t cap_flags = read_u32_le(&ver_payload[12]);
++      if ((cap_flags & TH_BOOT_CAP_FLAG_MASK) != 0UL)
+       {
+         return true;
+       }
+     }
+-    wk_delay_ms(1);
++    wk_delay_ms(20);
+   }
+   return false;
+ }
+ 
+-static bool th_upg_wait_for_hello(uint32_t timeout_ms)
++/**
++ * @brief 发送 0x20 CMD_OTA_START (144B = 16B 标准头 + 128B ATSG Trailer) 执行擦除前原子准入
++ * @return true TH Bootloader 准入并擦除成功返回 0x00 CMD_ACK，false 拒绝或超时
++ */
++static bool th_upg_do_handshake(void)
+ {
+-  uint32_t start_tick = wk_timebase_get();
+-  uint8_t payload[32];
+-  uint8_t cmd = 0;
+-  uint16_t len = 0;
+-
+-  while ((wk_timebase_get() - start_tick) < timeout_ms)
++  uint8_t start_payload[TH_OTA_START_PAYLOAD_SIZE];
++  start_payload[0] = MINIMC_NODE_TH; /* target_device = 0x03 (TH) */
++  start_payload[1] = 0x01U;          /* target_component = 0x01 (Main App) */
++  start_payload[2] = 0x00U;          /* force_flag = 0 */
++  start_payload[3] = 0x00U;          /* reserved = 0 */
++  write_u32_le(&start_payload[4], s_trailer.payload_len);
++  write_u32_le(&start_payload[8], s_running_crc32);
++  write_u32_le(&start_payload[12], s_trailer.fw_version);
++  (void)memcpy(&start_payload[16], &s_trailer, TRAILER_SIZE_BYTES);
++
++  const uint16_t seq = th_upg_send_v2_req(MINIMC_CMD_OTA_START, start_payload, sizeof(start_payload));
++  if (seq == 0U)
+   {
+-    forward_uart_rx_poll();
+-    if (forward_uart_recv_frame(&cmd, payload, &len, sizeof(payload)))
+-    {
+-      if (cmd == CMD_TH_HELLO)
+-      {
+-        mc_debug_print("[MC_APP][UPG] Captured CMD_TH_HELLO from TH Bootloader!\r\n");
+-        return true;
+-      }
+-    }
+-    wk_delay_ms(2);
++    return false;
+   }
+-  return false;
++  uint8_t ack_buf[32];
++  return th_upg_wait_v2_resp(MINIMC_CMD_ACK, seq, ack_buf, 3000U);
+ }
+ 
+-static bool th_upg_do_handshake(void)
++/**
++ * @brief 构造单块 0x21 CMD_OTA_DATA 载荷（8B 头部 + 真实有效字节数 1..512B）
++ * @param chunk_idx  分块序号
++ * @param out_tx_buf 输出载荷缓冲区（容量至少 520B）
++ * @param out_plen   输出总载荷字节数指针
++ * @return true 读取成功，false 文件读取失败
++ */
++static bool th_upg_prepare_chunk_payload(uint32_t chunk_idx, uint8_t *out_tx_buf, uint16_t *out_plen)
+ {
+-  uint8_t ack_payload[8];
+-  uint16_t ack_len = 0;
+-
+-  mc_debug_print("[MC_APP][UPG] Sending 128B Trailer for Handshake (CMD 0x11)...\r\n");
+-  forward_uart_send_frame(CMD_TH_START_UPG, (const uint8_t *)&s_trailer, TRAILER_SIZE_BYTES);
+-
+-  if (th_upg_wait_ack(ACK_TH_START_UPG, ack_payload, &ack_len, 2500U))
++  UINT br = 0U;
++  const uint32_t byte_offset = chunk_idx * TH_CHUNK_SIZE;
++  const uint32_t remain = (s_trailer.payload_len > byte_offset) ? (s_trailer.payload_len - byte_offset) : 0U;
++  const uint16_t chunk_bytes = (uint16_t)((remain >= TH_CHUNK_SIZE) ? TH_CHUNK_SIZE : remain);
++  if (chunk_bytes == 0U)
+   {
+-    uint8_t status = (ack_len > 0U) ? ack_payload[0] : 0xFFU;
+-    if (status == 0x00U)
+-    {
+-      mc_debug_print("[MC_APP][UPG] Handshake SUCCESS: TH accepted upgrade. Flash ready.\r\n");
+-      return true;
+-    }
++    return false;
+   }
+-  return false;
+-}
+-
+-static void th_upg_prepare_chunk_payload(uint32_t chunk_idx, uint8_t *tx_buf)
+-{
+-  UINT br = 0;
+-  f_lseek(&s_file, chunk_idx * TH_CHUNK_SIZE);
+-  f_read(&s_file, s_chunk_buf, TH_CHUNK_SIZE, &br);
+-
+-  uint32_t remain = (s_trailer.payload_len > chunk_idx * TH_CHUNK_SIZE) ?
+-                    (s_trailer.payload_len - chunk_idx * TH_CHUNK_SIZE) : 0U;
+-  uint32_t valid_bytes = (remain >= TH_CHUNK_SIZE) ? TH_CHUNK_SIZE : remain;
+-  s_running_crc32 = crc32_calculate(s_running_crc32, s_chunk_buf, valid_bytes);
+-
+-  if (br < TH_CHUNK_SIZE)
++  (void)f_lseek(&s_file, byte_offset);
++  if ((f_read(&s_file, s_chunk_buf, chunk_bytes, &br) != FR_OK) || (br != chunk_bytes))
+   {
+-    memset(&s_chunk_buf[br], 0xFF, TH_CHUNK_SIZE - br);
++    return false;
+   }
+-
+-  tx_buf[0] = (uint8_t)(chunk_idx & 0xFFU);
+-  tx_buf[1] = (uint8_t)((chunk_idx >> 8) & 0xFFU);
+-  tx_buf[2] = (uint8_t)((chunk_idx >> 16) & 0xFFU);
+-  tx_buf[3] = (uint8_t)((chunk_idx >> 24) & 0xFFU);
+-  memcpy(&tx_buf[4], s_chunk_buf, TH_CHUNK_SIZE);
++  const uint16_t chunk_crc16 = minimc_crc16(s_chunk_buf, chunk_bytes);
++  write_u32_le(&out_tx_buf[0], byte_offset);
++  out_tx_buf[4] = (uint8_t)(chunk_bytes & 0xFFU);
++  out_tx_buf[5] = (uint8_t)((chunk_bytes >> 8U) & 0xFFU);
++  out_tx_buf[6] = (uint8_t)(chunk_crc16 & 0xFFU);
++  out_tx_buf[7] = (uint8_t)((chunk_crc16 >> 8U) & 0xFFU);
++  (void)memcpy(&out_tx_buf[TH_OTA_DATA_HDR_SIZE], s_chunk_buf, chunk_bytes);
++  *out_plen = (uint16_t)(TH_OTA_DATA_HDR_SIZE + chunk_bytes);
++  return true;
+ }
+ 
++/**
++ * @brief 发送单个 0x21 CMD_OTA_DATA 数据分块并等待 0x00 CMD_ACK（最多重试 3 次）
++ * @param chunk_idx 分块索引
++ * @return true 发送并确认成功，false 重试耗尽失败
++ */
+ static bool th_upg_send_one_chunk(uint32_t chunk_idx)
+ {
+-  uint8_t tx_frame_buf[4 + TH_CHUNK_SIZE];
+-  uint8_t ack_payload[8];
+-  uint16_t ack_len = 0;
+-
+-  th_upg_prepare_chunk_payload(chunk_idx, tx_frame_buf);
+-
++  static uint8_t s_data_payload[TH_OTA_DATA_HDR_SIZE + TH_CHUNK_SIZE];
++  uint16_t plen = 0U;
++  if (!th_upg_prepare_chunk_payload(chunk_idx, s_data_payload, &plen))
++  {
++    return false;
++  }
+   for (uint8_t retry = 0U; retry < 3U; retry++)
+   {
+-    forward_uart_send_frame(CMD_TH_PUSH_CHUNK, tx_frame_buf, (uint16_t)sizeof(tx_frame_buf));
+-    if (th_upg_wait_ack(ACK_TH_PUSH_CHUNK, ack_payload, &ack_len, 800U))
++    const uint16_t seq = th_upg_send_v2_req(MINIMC_CMD_OTA_DATA, s_data_payload, plen);
++    if (seq != 0U)
+     {
+-      if (ack_len >= 5U && ack_payload[4] == 0x00U)
++      uint8_t ack_buf[32];
++      if (th_upg_wait_v2_resp(MINIMC_CMD_ACK, seq, ack_buf, 1000U))
+       {
+         return true;
+       }
+@@ -270,120 +458,121 @@ static bool th_upg_send_one_chunk(uint32_t chunk_idx)
+   return false;
+ }
+ 
++/**
++ * @brief 升级完成后将 U 盘源镜像原子重命名为 .cur 并重挂载核验
++ * @param p_old    原文件路径
++ * @param p_new    目标文件路径
++ * @param exp_size 期望文件大小
++ * @return true 重命名核验成功，false 失败
++ */
+ static bool th_fs_rename_and_check(const char *p_old, const char *p_new, uint32_t exp_size)
+ {
+   FILINFO fno;
+-  FRESULT fr;
+-
+-  if (p_old == NULL || p_new == NULL)
++  if ((p_old == NULL) || (p_new == NULL))
+   {
+     return false;
+   }
+-
+-  f_unlink(p_new);
+-  fr = f_rename(p_old, p_new);
+-  if (fr != FR_OK)
++  (void)f_unlink(p_new);
++  if (f_rename(p_old, p_new) != FR_OK)
+   {
+-    mc_debug_printf("[MC_APP][UPG] Rename failed (%s -> %s, err=%d)\r\n", p_old, p_new, (int)fr);
+     return false;
+   }
+-
+-  f_mount(NULL, "0:/", 0);
++  (void)f_mount(NULL, "0:/", 0);
+   wk_delay_ms(50);
+-
+-  fr = f_mount(&s_fs, "0:/", 1);
+-  if (fr != FR_OK || f_stat(p_old, &fno) != FR_NO_FILE)
++  if ((f_mount(&s_fs, "0:/", 1) != FR_OK) || (f_stat(p_old, &fno) != FR_NO_FILE))
+   {
+     return false;
+   }
+-
+-  if (f_stat(p_new, &fno) != FR_OK || (exp_size > 0U && fno.fsize != (FSIZE_t)exp_size))
++  if ((f_stat(p_new, &fno) != FR_OK) || ((exp_size > 0U) && (fno.fsize != (FSIZE_t)exp_size)))
+   {
+     return false;
+   }
+-
+-  mc_debug_printf("[MC_APP][UPG] FS Check PASSED: %s -> %s verified (Size=%lu B).\r\n",
+-         p_old, p_new, (uint32_t)fno.fsize);
+   return true;
+ }
+ 
++/**
++ * @brief 发送 0x22 CMD_OTA_FINISH (8B) 触发 TH 全片 CRC32 终验、Anchor 提交与跳转新 App
++ * @return true 终验成功并完成 .cur 改名，false 终验失败
++ */
+ static bool th_upg_do_finish(void)
+ {
+-  uint8_t crc_payload[4];
+-  uint8_t ack_payload[8];
+-  uint16_t ack_len = 0;
+-
+-  crc_payload[0] = (uint8_t)(s_running_crc32 & 0xFFU);
+-  crc_payload[1] = (uint8_t)((s_running_crc32 >> 8) & 0xFFU);
+-  crc_payload[2] = (uint8_t)((s_running_crc32 >> 16) & 0xFFU);
+-  crc_payload[3] = (uint8_t)((s_running_crc32 >> 24) & 0xFFU);
+-
+-  mc_debug_printf("[MC_APP][UPG] Sending CMD_TH_FINISH with CRC32=0x%08lX...\r\n", s_running_crc32);
+-  forward_uart_send_frame(CMD_TH_FINISH, crc_payload, 4U);
+-
+-  if (th_upg_wait_ack(ACK_TH_FINISH, ack_payload, &ack_len, 3000U))
++  uint8_t fin_payload[TH_OTA_FINISH_PAYLOAD_SIZE];
++  write_u32_le(&fin_payload[0], s_running_crc32);
++  fin_payload[4] = 0x01U; /* action_after_verify = 1 (立即跳转新 App) */
++  fin_payload[5] = 0x00U;
++  fin_payload[6] = 0x00U;
++  fin_payload[7] = 0x00U;
++
++  const uint16_t seq = th_upg_send_v2_req(MINIMC_CMD_OTA_FINISH, fin_payload, sizeof(fin_payload));
++  uint8_t ack_buf[32];
++  const bool ok = (seq != 0U) && th_upg_wait_v2_resp(MINIMC_CMD_ACK, seq, ack_buf, 3500U);
++  (void)f_close(&s_file);
++  if (!ok)
+   {
+-    if (ack_len > 0U && ack_payload[0] == 0x00U)
+-    {
+-      mc_debug_print("[MC_APP][UPG] TH Finish ACK: Verification PASSED! TH jumping to App.\r\n");
+-      f_close(&s_file);
++    return false;
++  }
+ #if (CONFIG_ENABLE_TH_FW_RENAME == 1)
+-      const char *p_target_cur = "0:/fw_th.cur";
+-      if (strstr(s_th_src_filename, "FW_TH.BIN") != NULL)
+-      {
+-        p_target_cur = "0:/FW_TH.CUR";
+-      }
+-      th_fs_rename_and_check(s_th_src_filename, p_target_cur, s_th_file_size);
++  const char *p_target_cur = (strstr(s_th_src_filename, "FW_TH.BIN") != NULL)
++                                 ? "0:/FW_TH.CUR"
++                                 : "0:/fw_th.cur";
++  (void)th_fs_rename_and_check(s_th_src_filename, p_target_cur, s_th_file_size);
+ #endif
+-      return true;
+-    }
+-  }
+-  f_close(&s_file);
+-  return false;
++  return true;
+ }
+ 
++/**
++ * @brief 初始化 MC 端 TH 升级管理器状态机
++ */
+ void th_upgrade_mgr_init(void)
+ {
+   s_state = TH_UPG_STATE_IDLE;
+   s_fs_mounted = false;
+-  s_total_chunks = 0;
+-  s_current_chunk = 0;
+-  s_running_crc32 = 0;
+-  s_scan_retry_cnt = 0;
+-  s_scan_last_tick = 0;
++  s_total_chunks = 0U;
++  s_current_chunk = 0U;
++  s_running_crc32 = 0U;
++  s_scan_retry_cnt = 0U;
++  s_scan_last_tick = 0U;
+   s_th_recovery_mode = false;
+-  s_idle_listen_tick = 0;
+   s_upg_done_for_current_udisk = false;
+   s_th_src_filename[0] = '\0';
+-  s_th_file_size = 0;
++  s_th_file_size = 0U;
+   s_boot_window_expired = false;
+   forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+ }
+ 
++/**
++ * @brief 处理 U 盘拔出事件并复位升级管理器状态机
++ */
+ void th_upgrade_mgr_notify_udisk_removed(void)
+ {
+   if (s_fs_mounted)
+   {
+-    f_close(&s_file);
+-    f_mount(NULL, "0:/", 0);
++    (void)f_close(&s_file);
++    (void)f_mount(NULL, "0:/", 0);
+     s_fs_mounted = false;
+   }
+-  s_total_chunks = 0;
+-  s_current_chunk = 0;
+-  s_running_crc32 = 0;
+-  s_scan_retry_cnt = 0;
++  s_total_chunks = 0U;
++  s_current_chunk = 0U;
++  s_running_crc32 = 0U;
++  s_scan_retry_cnt = 0U;
+   s_th_recovery_mode = false;
+   s_upg_done_for_current_udisk = false;
+   s_state = TH_UPG_STATE_IDLE;
+   forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+-  mc_debug_print("[MC_APP][UPG] U-Disk disconnected. State machine reset to IDLE.\r\n");
+ }
+ 
++/**
++ * @brief 查询当前是否正处于从控固件升级流程中
++ * @return true 升级进行中，false 空闲
++ */
+ bool th_upgrade_is_active(void)
+ {
+   return (s_state != TH_UPG_STATE_IDLE);
+ }
+ 
++/**
++ * @brief 推进分块发送阶段状态机
++ */
+ static void th_upg_step_stream_chunks(void)
+ {
+   if (s_current_chunk < s_total_chunks)
+@@ -391,13 +580,10 @@ static void th_upg_step_stream_chunks(void)
+     if (th_upg_send_one_chunk(s_current_chunk))
+     {
+       s_current_chunk++;
+-      uint32_t pct = (s_current_chunk * 100U) / s_total_chunks;
+-      mc_debug_printf("[MC_APP][UPG] Chunk [%lu/%lu] (%lu%%) OK\r\n",
+-             s_current_chunk, s_total_chunks, pct);
+     }
+     else
+     {
+-      mc_debug_printf("[MC_APP][UPG] Stream failed at chunk %lu!\r\n", s_current_chunk);
++      (void)f_close(&s_file);
+       s_state = TH_UPG_STATE_ERROR;
+       forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+     }
+@@ -408,33 +594,22 @@ static void th_upg_step_stream_chunks(void)
+   }
+ }
+ 
++/**
++ * @brief 空闲态下检测 U 盘就绪并触发扫描
++ * @param ticks 当前系统毫秒计数
++ */
+ static void th_upg_step_idle(uint32_t ticks)
+ {
+-  if ((ticks - s_idle_listen_tick >= 50U))
+-  {
+-    s_idle_listen_tick = ticks;
+-    uint8_t hello_payload[16];
+-    uint8_t cmd = 0;
+-    uint16_t len = 0;
+-
+-    forward_uart_rx_poll();
+-    if (forward_uart_recv_frame(&cmd, hello_payload, &len, sizeof(hello_payload)))
+-    {
+-      if (cmd == CMD_TH_HELLO && !s_th_recovery_mode)
+-      {
+-        s_th_recovery_mode = true;
+-        mc_debug_print("[MC_APP][UPG] Captured TH Bootloader recovery beacon!\r\n");
+-      }
+-    }
+-  }
+-
+-  if (g_app_udisk_ready && !s_upg_done_for_current_udisk && (ticks - s_scan_last_tick >= 1000U))
++  if (g_app_udisk_ready && (!s_upg_done_for_current_udisk) && ((ticks - s_scan_last_tick) >= 1000U))
+   {
+     s_scan_last_tick = ticks;
+     s_state = TH_UPG_STATE_SCAN_UDISK;
+   }
+ }
+ 
++/**
++ * @brief 处理 U 盘扫描与 Trailer 预检阶段状态转换
++ */
+ static void th_upg_handle_scan_state(void)
+ {
+   if (th_upg_scan_and_prepare())
+@@ -442,48 +617,59 @@ static void th_upg_handle_scan_state(void)
+     if (s_th_recovery_mode)
+     {
+       forward_uart_mode_set(FORWARD_UART_MODE_UPGRADE);
+-      s_state = TH_UPG_STATE_WAIT_HELLO;
++      s_state = TH_UPG_STATE_WAIT_BOOT_VER;
+     }
+     else
+     {
+-      s_state = TH_UPG_STATE_SEND_M997;
++      s_state = TH_UPG_STATE_SEND_SYS_CTRL;
+     }
+   }
+   else
+   {
+     s_scan_retry_cnt++;
+     s_state = (s_scan_retry_cnt < 5U) ? TH_UPG_STATE_IDLE : TH_UPG_STATE_ERROR;
+-    if (s_state == TH_UPG_STATE_IDLE || s_state == TH_UPG_STATE_ERROR)
+-    {
+-      forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+-    }
++    forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+   }
+ }
+ 
+-static void th_upg_handle_wait_hello_state(void)
++/**
++ * @brief 处理等待 TH 进入 Bootloader 版本确认阶段状态转换
++ */
++static void th_upg_handle_wait_boot_state(void)
+ {
+-  s_state = th_upg_wait_for_hello(3000U) ? TH_UPG_STATE_START_HANDSHAKE : TH_UPG_STATE_ERROR;
+-  if (s_state == TH_UPG_STATE_ERROR)
++  if (th_upg_wait_for_boot_mode(3000U))
++  {
++    s_state = TH_UPG_STATE_START_HANDSHAKE;
++  }
++  else
+   {
++    (void)f_close(&s_file);
++    s_state = TH_UPG_STATE_ERROR;
+     forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+   }
+ }
+ 
++/**
++ * @brief 处理 0x20 OTA_START 握手阶段状态转换
++ */
+ static void th_upg_handle_handshake_state(void)
+ {
+   if (th_upg_do_handshake())
+   {
+-    s_current_chunk = 0;
+-    s_running_crc32 = 0;
++    s_current_chunk = 0U;
+     s_state = TH_UPG_STATE_STREAM_CHUNKS;
+   }
+   else
+   {
++    (void)f_close(&s_file);
+     s_state = TH_UPG_STATE_ERROR;
+     forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+   }
+ }
+ 
++/**
++ * @brief 处理 0x22 OTA_FINISH 终验提交阶段状态转换
++ */
+ static void th_upg_handle_finish_state(void)
+ {
+   if (th_upg_do_finish())
+@@ -500,58 +686,49 @@ static void th_upg_handle_finish_state(void)
+   forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+ }
+ 
++/**
++ * @brief 周期轮询推进 MC 端 U 盘从控升级状态机
++ * @param ticks 当前系统毫秒计数
++ */
+ void th_upgrade_mgr_poll(uint32_t ticks)
+ {
+-  /* 1. 单向不可逆安全栅栏：开机 5 秒超时后，彻底永久注销升级轮询，0 开销退出 */
+   if (s_boot_window_expired)
+   {
+     return;
+   }
+-
+-  /* 2. 在空闲态下判断开机时间是否超过 5 秒 (且未处于 TH 变砖急救模式) */
+-  if ((s_state == TH_UPG_STATE_IDLE) && !s_th_recovery_mode && (ticks > APP_BOOT_UDISK_WINDOW_MS))
++  if ((s_state == TH_UPG_STATE_IDLE) && (!s_th_recovery_mode) && (ticks > APP_BOOT_UDISK_WINDOW_MS))
+   {
+     s_boot_window_expired = true;
+-    mc_debug_print("[MC_APP][SAFETY] Boot upgrade window (5s) expired with TH healthy. Upgrade polling permanently disabled.\r\n");
+     return;
+   }
+-
+   switch (s_state)
+   {
+     case TH_UPG_STATE_IDLE:
+       th_upg_step_idle(ticks);
+       break;
+-
+     case TH_UPG_STATE_SCAN_UDISK:
+       th_upg_handle_scan_state();
+       break;
+-
+-    case TH_UPG_STATE_SEND_M997:
++    case TH_UPG_STATE_SEND_SYS_CTRL:
+       th_upg_trigger_reboot();
+-      s_state = TH_UPG_STATE_WAIT_HELLO;
++      s_state = TH_UPG_STATE_WAIT_BOOT_VER;
+       break;
+-
+-    case TH_UPG_STATE_WAIT_HELLO:
+-      th_upg_handle_wait_hello_state();
++    case TH_UPG_STATE_WAIT_BOOT_VER:
++      th_upg_handle_wait_boot_state();
+       break;
+-
+     case TH_UPG_STATE_START_HANDSHAKE:
+       th_upg_handle_handshake_state();
+       break;
+-
+     case TH_UPG_STATE_STREAM_CHUNKS:
+       th_upg_step_stream_chunks();
+       break;
+-
+     case TH_UPG_STATE_FINISH:
+       th_upg_handle_finish_state();
+       break;
+-
+     case TH_UPG_STATE_SUCCESS:
+       s_state = TH_UPG_STATE_IDLE;
+       forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+       break;
+-
+     case TH_UPG_STATE_ERROR:
+     default:
+       forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+diff --git a/motion-controller-mcu/project/src/minimc_proto.c b/motion-controller-mcu/project/src/minimc_proto.c
+index 472914a..80de9c4 100644
+--- a/motion-controller-mcu/project/src/minimc_proto.c
++++ b/motion-controller-mcu/project/src/minimc_proto.c
+@@ -130,9 +130,27 @@ __attribute__((weak)) void usart_data_transmit(usart_type *usart_x, uint16_t dat
+     (void)usart_x;
+     (void)data;
+ }
++
++static forward_uart_mode_t s_weak_forward_mode = FORWARD_UART_MODE_NORMAL;
++
++/**
++ * @brief 弱符号桩函数：宿主机模拟切换 USART6 转发模式
++ */
++__attribute__((weak)) void forward_uart_mode_set(forward_uart_mode_t mode)
++{
++    s_weak_forward_mode = mode;
++}
++
++/**
++ * @brief 弱符号桩函数：宿主机模拟获取 USART6 转发模式
++ */
++__attribute__((weak)) forward_uart_mode_t forward_uart_mode_get(void)
++{
++    return s_weak_forward_mode;
++}
+ #endif
+ 
+-#define AP_RING_CAPACITY 256U
++#define AP_RING_CAPACITY 1024U
+ 
+ /**
+  * @brief MiniMCProto V2 流式协议帧解析状态枚举
+@@ -213,6 +231,10 @@ static uint16_t s_relay_seq = 0U;
+ static uint16_t s_relay_seq16 = 0U;
+ static uint8_t s_relay_cmd = 0U;
+ static uint32_t s_relay_start_ms = 0U;
++static uint32_t s_relay_timeout_ms = MC_RELAY_TIMEOUT_MS;
++static bool s_th_proxy_active = false;
++static uint32_t s_th_proxy_last_ms = 0U;
++static uint32_t s_weak_mc_upgrade_flag = 0U;
+ static uint16_t s_job_executed_lines = 0U;
+ static uint16_t s_job_total_lines = 0U;
+ static uint16_t s_mc_th_seq = 0x0100U;
+@@ -228,6 +250,53 @@ static mc_dbg_state_t s_dbg_state = {
+     245, 0, 245, 0, 0U, 0x07U, 1500U, 0U, 0x0FU, 0U, 0U, 0U
+ };
+ 
++/**
++ * @brief 弱符号默认实现：获取 MC 跨复位升级魔数存储指针（目标板为 0x2005FFF0，宿主单测为内存变量）
++ */
++__attribute__((weak)) volatile uint32_t *mc_get_upgrade_flag_ptr(void)
++{
++#if defined(__ARM_ARCH) || defined(__ARM_EABI__)
++    return (volatile uint32_t *)MC_BOOT_UPGRADE_FLAG_ADDR;
++#else
++    return &s_weak_mc_upgrade_flag;
++#endif
++}
++
++/**
++ * @brief 弱符号默认实现：查询 MC 应用层是否处于忙状态（供 0x1D 安全准入钩子覆写）
++ */
++__attribute__((weak)) bool mc_app_is_busy_hook(void)
++{
++    return false;
++}
++
++/**
++ * @brief 弱符号默认实现：同步并失能全部步进电机（目标板由 stepper.c 强符号覆写）
++ */
++__attribute__((weak)) void finishAndDisableSteppers(void)
++{
++}
++
++/**
++ * @brief 弱符号默认实现：失能 MC 全部运动与挤出步进电机驱动
++ */
++__attribute__((weak)) void mc_disable_all_steppers_hook(void)
++{
++    finishAndDisableSteppers();
++}
++
++/**
++ * @brief 弱符号默认实现：执行 MC 受控延时排空与系统软复位
++ */
++__attribute__((weak)) void mc_sys_reset_hook(uint16_t delay_ms)
++{
++    (void)delay_ms;
++#if defined(__ARM_ARCH) || defined(__ARM_EABI__)
++    for (volatile uint32_t i = 0U; i < 200000U; i++) {}
++    NVIC_SystemReset();
++#endif
++}
++
+ /**
+  * @brief 生成非零且每次复位/初始化必变化的 32-bit 动态 boot_id（ISS-016）
+  */
+@@ -907,10 +976,7 @@ static void mc_dbg_sync_runtime_state(void)
+  */
+ static void build_temp_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+ {
+-    if ((out_buf == NULL) || (out_len == NULL))
+-    {
+-        return;
+-    }
++    if ((out_buf == NULL) || (out_len == NULL)) { return; }
+     mc_dbg_sync_runtime_state();
+     out_buf[0] = MINIMC_SOF_1;
+     out_buf[1] = MINIMC_SOF_2;
+@@ -924,27 +990,17 @@ static void build_temp_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     out_buf[9] = (uint8_t)((seq >> 8U) & 0xFFU);
+     out_buf[10] = (uint8_t)(MINIMC_TEMP_REPORT_PAYLOAD_SIZE & 0xFFU);
+     out_buf[11] = 0x00U;
+-
+     const bool is_bed_fault = (s_dbg_state.bed_ddC == MINIMC_TEMP_SENTINEL_FAULT);
+     const uint16_t bed_adc = g_last_bed_adc_raw;
++    const uint8_t fault_status = (bed_adc < 70U) ? MINIMC_TEMP_STATUS_SHORT : MINIMC_TEMP_STATUS_DISCONNECTED;
+     minimc_temp_report_payload_t payload;
+     payload.current_temp_deci_c = s_dbg_state.bed_ddC;
+     payload.target_temp_deci_c = s_dbg_state.bed_set_ddC;
+     payload.raw_adc_value = bed_adc;
+-    if (is_bed_fault)
+-    {
+-        payload.sensor_status = (bed_adc < 70U)
+-                                    ? MINIMC_TEMP_STATUS_SHORT
+-                                    : MINIMC_TEMP_STATUS_DISCONNECTED;
+-    }
+-    else
+-    {
+-        payload.sensor_status = MINIMC_TEMP_STATUS_OK;
+-    }
++    payload.sensor_status = is_bed_fault ? fault_status : MINIMC_TEMP_STATUS_OK;
+     payload.heater_duty_percent = ((!is_bed_fault) && (s_dbg_state.bed_set_ddC > s_dbg_state.bed_ddC)) ? 50U : 0U;
+     payload.sample_timestamp_ms = wk_timebase_get();
+     payload.reserved = 0U;
+-
+     const uint8_t *src_bytes = (const uint8_t *)&payload;
+     for (uint16_t i = 0U; i < MINIMC_TEMP_REPORT_PAYLOAD_SIZE; ++i)
+     {
+@@ -1457,6 +1513,14 @@ bool minimc_proto_consume_ap_enqueued(void)
+     return false;
+ }
+ 
++/**
++ * @brief 查询当前 MC 是否处于 TH 升级直连代理维护模式 (proxy_active)
++ */
++bool minimc_proto_is_th_proxy_active(void)
++{
++    return s_th_proxy_active;
++}
++
+ /**
+  * @brief 构造并发送通用 MC 响应帧 (0x55 0xAA V2)
+  * @param resp_cmd 响应命令码
+@@ -1561,7 +1625,8 @@ static void send_level_grid_ack(uint16_t seq, uint8_t probe_idx)
+  */
+ static void trigger_mc_to_th_cascade(uint8_t cmd_id, uint16_t seq, const void *payload, uint16_t plen)
+ {
+-    if ((plen > MINIMC_MAX_PAYLOAD_SIZE) || s_relay_pending)
++    if ((plen > MINIMC_MAX_PAYLOAD_SIZE) || s_relay_pending || s_th_proxy_active ||
++        (forward_uart_mode_get() != FORWARD_UART_MODE_NORMAL))
+     {
+         mc_dbg_log_tx_err("TH", seq, cmd_id);
+         return;
+@@ -1839,31 +1904,102 @@ static void handle_mc_job_control(uint16_t seq, const uint8_t *frame, uint16_t p
+ }
+ 
+ /**
+- * @brief 处理 0x17 (MOTION_STOP) 紧急停止/暂停控制命令
++ * @brief 处理 0x17 (EMERGENCY_STOP / MOTION_STOP) 紧急停止控制命令（支持单播回 4B ACK 与广播级联无 ACK）
+  * @param seq 16位序列号
+  * @param frame 完整请求帧指针
+  * @param plen 载荷长度
+  */
+ static void handle_mc_motion_stop(uint16_t seq, const uint8_t *frame, uint16_t plen)
+ {
+-    quickStop();
+-    if ((plen >= 1U) && (frame[MINIMC_HEADER_SIZE] == 1U))
+-    {
+-        is_paused = 1U;
+-    }
+-    else
++    const uint8_t dst_id = frame[3];
++    const uint8_t flags = frame[4];
++    if (plen > 1U)
+     {
+-        is_paused = 0U;
++        if ((dst_id != 0xFFU) && ((flags & MINIMC_FLAG_WANTS_ACK) != 0U))
++        {
++            send_mc_nack(frame, seq, 0x02U);
++        }
++        return;
+     }
++    quickStop();
++    Heater_set_target_temperature(&Extruder_One, 0);
++    Heater_set_target_temperature(&Platform, 0);
++    s_dbg_state.nozzle_set_ddC = 0;
++    s_dbg_state.bed_set_ddC = 0;
++    is_paused = ((plen >= 1U) && (frame[MINIMC_HEADER_SIZE] == 1U)) ? 1U : 0U;
+     s_dbg_state.ack_seq = seq;
+     mc_debug_notify_motion("STOP", 0U, 0U);
+-    const bool tx_ok = send_mc_ack_frame(MINIMC_CMD_ACK, seq, NULL, 0U);
++    if ((dst_id == 0xFFU) || ((flags & MINIMC_FLAG_WANTS_ACK) == 0U))
++    {
++        if ((dst_id == 0xFFU) && (frame[6] > 1U))
++        {
++            const uint16_t f_len = (uint16_t)(MINIMC_HEADER_SIZE + plen + MINIMC_CRC_SIZE);
++            uint8_t relay_buf[MINIMC_MAX_FRAME_SIZE];
++            relay_frame(frame, f_len, relay_buf);
++            (void)forward_uart_send_raw(relay_buf, f_len);
++        }
++        return;
++    }
++    const minimc_ack_payload_t ack_pay = { 16U, 8U, 0U };
++    const bool tx_ok = send_mc_ack_frame(MINIMC_CMD_ACK, seq, &ack_pay, sizeof(ack_pay));
+     char kv[160];
+     mc_dbg_format_motion_kv("STOP", kv, sizeof(kv));
+     const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_ACK, "ACK" };
+     mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+ }
+ 
++/**
++ * @brief 处理 0x1D (CMD_SYSTEM_CONTROL) 受控进入 Bootloader 或软复位指令
++ * @param seq 16位序列号
++ * @param frame 完整请求帧指针
++ * @param plen 载荷长度
++ */
++static void handle_mc_sys_ctrl(uint16_t seq, const uint8_t *frame, uint16_t plen)
++{
++    if (plen != sizeof(minimc_sys_ctrl_req_t))
++    {
++        send_mc_nack(frame, seq, 0x03U);
++        return;
++    }
++    minimc_sys_ctrl_req_t req;
++    (void)memcpy(&req, frame + MINIMC_HEADER_SIZE, sizeof(req));
++    if ((req.action > 2U) || (req.target_component > 1U))
++    {
++        send_mc_nack(frame, seq, MINIMC_ERR_COMMAND_REJECTED);
++        return;
++    }
++    const minimc_ack_payload_t ack_pay = { 16U, 8U, 0U };
++    if (req.action == 0U)
++    {
++        (void)send_mc_ack_frame(MINIMC_CMD_ACK, seq, &ack_pay, sizeof(ack_pay));
++        return;
++    }
++    const bool job_busy = (s_dbg_state.job_state_id != 0U) &&
++                          (s_dbg_state.job_state_id != 4U) &&
++                          (s_dbg_state.job_state_id != 5U);
++    if ((movesplanned() > 0U) || job_busy || (s_dbg_state.nozzle_set_ddC > 0) ||
++        (s_dbg_state.bed_set_ddC > 0) || s_th_proxy_active || mc_app_is_busy_hook())
++    {
++        send_mc_nack(frame, seq, MINIMC_ERR_DEVICE_BUSY);
++        return;
++    }
++    Heater_set_target_temperature(&Extruder_One, 0);
++    Heater_set_target_temperature(&Platform, 0);
++    s_dbg_state.nozzle_set_ddC = 0;
++    s_dbg_state.bed_set_ddC = 0;
++    quickStop();
++    mc_disable_all_steppers_hook();
++    (void)send_mc_ack_frame(MINIMC_CMD_ACK, seq, &ack_pay, sizeof(ack_pay));
++    uint32_t tdc_timeout = 100000U;
++    while ((usart_flag_get(USART2, USART_TDC_FLAG) == RESET) && (tdc_timeout > 0U)) { tdc_timeout--; }
++    if (req.action == 2U)
++    {
++        volatile uint32_t *flag_ptr = mc_get_upgrade_flag_ptr();
++        if (flag_ptr != NULL) { *flag_ptr = MC_BOOT_UPGRADE_MAGIC; }
++    }
++    mc_sys_reset_hook((req.delay_ms > 0U) ? req.delay_ms : 50U);
++}
++
+ /**
+  * @brief 处理 0x1A (LEVEL_TRIGGER) 触发调平控制命令
+  * @param seq 16位序列号
+@@ -2133,6 +2269,11 @@ static bool handle_mc_control_cmds(uint8_t cmd_id, uint16_t seq, const uint8_t *
+         handle_mc_gcode_exec(seq, frame, plen);
+         return true;
+     }
++    if (cmd_id == MINIMC_CMD_SYSTEM_CONTROL)
++    {
++        handle_mc_sys_ctrl(seq, frame, plen);
++        return true;
++    }
+     return false;
+ }
+ 
+@@ -2166,6 +2307,46 @@ static void handle_mc_query(const uint8_t *frame, uint16_t len)
+     send_mc_nack(frame, seq, 0x04U);
+ }
+ 
++/**
++ * @brief 判断命令码是否属于升级或系统维护控制白名单
++ * @param cmd_id 命令码
++ * @return true 维护/升级白名单命令，false 常规业务命令
++ */
++static bool is_ota_or_maint_cmd(uint8_t cmd_id)
++{
++    return (cmd_id == MINIMC_CMD_GET_VERSION) ||
++           (cmd_id == MINIMC_CMD_PING) ||
++           (cmd_id == MINIMC_CMD_EMERGENCY_STOP) ||
++           (cmd_id == MINIMC_CMD_SYSTEM_CONTROL) ||
++           ((cmd_id >= MINIMC_CMD_OTA_START) && (cmd_id <= MINIMC_CMD_OTA_STATUS));
++}
++
++/**
++ * @brief 根据转发命令码计算 MC↔TH 级联期望超时窗口（毫秒）
++ * @param cmd_id 请求命令码
++ * @return 超时毫秒数
++ */
++static uint32_t get_th_relay_timeout_ms(uint8_t cmd_id)
++{
++    if (cmd_id == MINIMC_CMD_OTA_START)
++    {
++        return 3000U;
++    }
++    if (cmd_id == MINIMC_CMD_OTA_DATA)
++    {
++        return 1500U;
++    }
++    if (cmd_id == MINIMC_CMD_OTA_FINISH)
++    {
++        return 5000U;
++    }
++    if ((cmd_id == MINIMC_CMD_SYSTEM_CONTROL) || (cmd_id == MINIMC_CMD_OTA_STATUS))
++    {
++        return 500U;
++    }
++    return MC_RELAY_TIMEOUT_MS;
++}
++
+ /**
+  * @brief 处理 AP 发往 TH (dst=0x03) 的级联转发请求帧，严格保护在途关联状态不被覆盖
+  * @param frame 完整请求帧指针
+@@ -2185,6 +2366,18 @@ static void handle_th_relay_req(const uint8_t *frame, uint16_t len)
+         mc_dbg_log_tx_err("TH", seq, cmd_id);
+         return;
+     }
++    const bool enter_proxy = ((cmd_id >= MINIMC_CMD_OTA_START) && (cmd_id <= MINIMC_CMD_OTA_STATUS)) ||
++                             ((cmd_id == MINIMC_CMD_SYSTEM_CONTROL) && (len >= 16U) && (frame[12] == 2U));
++    if (enter_proxy)
++    {
++        s_th_proxy_active = true;
++        s_th_proxy_last_ms = wk_timebase_get();
++        forward_uart_mode_set(FORWARD_UART_MODE_OTA_ROUTE);
++    }
++    else if (s_th_proxy_active)
++    {
++        s_th_proxy_last_ms = wk_timebase_get();
++    }
+     uint8_t relay_buf[MINIMC_MAX_FRAME_SIZE];
+     relay_frame(frame, len, relay_buf);
+     if (!forward_uart_send_raw(relay_buf, len))
+@@ -2198,6 +2391,7 @@ static void handle_th_relay_req(const uint8_t *frame, uint16_t len)
+     s_relay_seq16 = seq;
+     s_relay_cmd = cmd_id;
+     s_relay_start_ms = wk_timebase_get();
++    s_relay_timeout_ms = get_th_relay_timeout_ms(cmd_id);
+     const mc_dbg_meta_t rtx_meta = { "RELAY_TX", "TH", seq, cmd_id, "EXEC" };
+     mc_dbg_emit(&rtx_meta, "timeout_ms=200");
+ }
+@@ -2221,6 +2415,11 @@ static void handle_ap_frame(const uint8_t *frame, uint16_t len)
+     const mc_dbg_meta_t rx_meta = { "RX", mc_dbg_node_name(dst_id), seq, cmd_id, "OK" };
+     mc_dbg_emit(&rx_meta, rx_kv);
+ 
++    if (s_th_proxy_active && (!is_ota_or_maint_cmd(cmd_id)))
++    {
++        send_mc_nack(frame, seq, MINIMC_ERR_DEVICE_BUSY);
++        return;
++    }
+     if ((dst_id == MINIMC_NODE_MC) || (dst_id == 0xFFU))
+     {
+         handle_mc_query(frame, len);
+@@ -2263,10 +2462,18 @@ static bool is_valid_th_relay_cmd(uint8_t req_cmd, uint8_t resp_cmd, uint16_t pl
+     {
+         return (resp_cmd == MINIMC_CMD_SLOT_SELECT);
+     }
+-    if (req_cmd == MINIMC_CMD_MOTION_STOP)
++    if ((req_cmd == MINIMC_CMD_MOTION_STOP) ||
++        (req_cmd == MINIMC_CMD_SYSTEM_CONTROL) ||
++        (req_cmd == MINIMC_CMD_OTA_START) ||
++        (req_cmd == MINIMC_CMD_OTA_DATA) ||
++        (req_cmd == MINIMC_CMD_OTA_FINISH))
+     {
+         return (resp_cmd == MINIMC_CMD_ACK);
+     }
++    if (req_cmd == MINIMC_CMD_OTA_STATUS)
++    {
++        return (resp_cmd == MINIMC_CMD_OTA_STATUS);
++    }
+     if (req_cmd == MINIMC_CMD_GCODE_EXEC)
+     {
+         return (resp_cmd == MINIMC_CMD_GCODE_EXEC);
+@@ -2409,10 +2616,7 @@ static void sync_th_filament_resp_state(const uint8_t *frame, uint16_t seq)
+  */
+ static void handle_th_frame(const uint8_t *frame, uint16_t len)
+ {
+-    if ((frame == NULL) || (len < 14U))
+-    {
+-        return;
+-    }
++    if ((frame == NULL) || (len < 14U)) { return; }
+     const uint16_t seq = (uint16_t)frame[8] | (uint16_t)((uint16_t)frame[9] << 8U);
+     uint8_t err_code = 0x07U;
+     if (!validate_th_relay_resp(frame, &err_code))
+@@ -2424,14 +2628,14 @@ static void handle_th_frame(const uint8_t *frame, uint16_t len)
+         return;
+     }
+     const uint8_t cmd_id = frame[5];
++    const uint8_t orig_req_cmd = s_relay_cmd;
+     const uint32_t elapsed = (uint32_t)(wk_timebase_get() - s_relay_start_ms);
+     const bool was_mc_local = s_relay_from_mc_local;
+     s_relay_pending = false;
+     s_relay_from_mc_local = false;
+-
++    if (s_th_proxy_active) { s_th_proxy_last_ms = wk_timebase_get(); }
+     sync_th_temp_and_gcode_state(frame, seq);
+     sync_th_filament_resp_state(frame, seq);
+-
+     char kv[64];
+     const char *st = (cmd_id == MINIMC_CMD_NACK) ? "NACK" : "ACK";
+     if (cmd_id == MINIMC_CMD_NACK)
+@@ -2444,7 +2648,6 @@ static void handle_th_frame(const uint8_t *frame, uint16_t len)
+     }
+     const mc_dbg_meta_t rrx_meta = { "RELAY_RX", "TH", seq, cmd_id, st };
+     mc_dbg_emit(&rrx_meta, kv);
+-
+     if ((!was_mc_local) && (frame[3] == MINIMC_NODE_AP))
+     {
+         uint8_t relay_buf[MINIMC_MAX_FRAME_SIZE];
+@@ -2453,6 +2656,11 @@ static void handle_th_frame(const uint8_t *frame, uint16_t len)
+         const mc_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, st };
+         mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+     }
++    if ((orig_req_cmd == MINIMC_CMD_OTA_FINISH) && (cmd_id == MINIMC_CMD_ACK))
++    {
++        s_th_proxy_active = false;
++        forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
++    }
+ }
+ 
+ /**
+@@ -2503,7 +2711,8 @@ static void build_th_gcode_frame(
+  */
+ bool minimc_proto_send_th_gcode(const char *line, uint16_t len, uint8_t exec_flags)
+ {
+-    if ((line == NULL) || (len == 0U) || s_relay_pending)
++    if ((line == NULL) || (len == 0U) || s_relay_pending || s_th_proxy_active ||
++        (forward_uart_mode_get() != FORWARD_UART_MODE_NORMAL))
+     {
+         return false;
+     }
+@@ -2542,17 +2751,22 @@ bool minimc_proto_send_th_gcode(const char *line, uint16_t len, uint8_t exec_fla
+ }
+ 
+ /**
+- * @brief 检查在途 TH 级联请求是否超过 200ms 窗口并输出结构化超时日志
++ * @brief 检查在途 TH 级联请求超时与 5000ms 代理模式无活动自动恢复
+  * @param now_ms 当前系统毫秒计数
+  */
+ static void check_th_relay_timeout(uint32_t now_ms)
+ {
++    if (s_th_proxy_active && ((uint32_t)(now_ms - s_th_proxy_last_ms) >= MC_TH_PROXY_TIMEOUT_MS))
++    {
++        s_th_proxy_active = false;
++        forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
++    }
+     if (!s_relay_pending)
+     {
+         return;
+     }
+     const uint32_t elapsed = (uint32_t)(now_ms - s_relay_start_ms);
+-    if (elapsed < MC_RELAY_TIMEOUT_MS)
++    if (elapsed < s_relay_timeout_ms)
+     {
+         return;
+     }
+@@ -2595,12 +2809,12 @@ void mc_debug_log_periodic_state(uint32_t now_ms)
+ }
+ 
+ /**
+- * @brief 从 AP 接收环形队列按 64B 预算拉取字节并推进流式帧解析器
++ * @brief 从 AP 接收环形队列按 600B 预算拉取字节并推进流式帧解析器
+  */
+ static void drain_ap_rx(void)
+ {
+     uint8_t byte = 0U;
+-    uint16_t budget = 64U;
++    uint16_t budget = 600U;
+     while ((budget > 0U) && ring_pop(&s_ap_ring, &byte))
+     {
+         budget--;
+@@ -2615,13 +2829,13 @@ static void drain_ap_rx(void)
+ }
+ 
+ /**
+- * @brief 从 USART6 (MC↔TH 级联链路) 读取接收字节并推进流式帧解析器
++ * @brief 从 USART6 (MC↔TH 级联链路) 读取接收字节并推进流式帧解析器（扩容至 534B）
+  */
+ static void drain_th_rx(void)
+ {
+     if (forward_uart_rx_poll() != 0U)
+     {
+-        uint8_t th_buf[64];
++        uint8_t th_buf[MINIMC_MAX_FRAME_SIZE];
+         const uint16_t th_len = forward_uart_proto_rx_read(th_buf, sizeof(th_buf));
+         for (uint16_t i = 0U; i < th_len; ++i)
+         {
+@@ -2733,6 +2947,10 @@ void minimc_proto_init(void)
+     s_state_log_init = false;
+     s_relay_pending = false;
+     s_relay_from_mc_local = false;
++    s_relay_timeout_ms = MC_RELAY_TIMEOUT_MS;
++    s_th_proxy_active = false;
++    s_th_proxy_last_ms = 0U;
++    forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+     s_mc_th_seq = 0x0100U;
+     s_job_executed_lines = 0U;
+     s_job_total_lines = 0U;
+diff --git a/motion-controller-mcu/project/src/wk_usart.c b/motion-controller-mcu/project/src/wk_usart.c
+index 9c3a6bb..24d1a1f 100644
+--- a/motion-controller-mcu/project/src/wk_usart.c
++++ b/motion-controller-mcu/project/src/wk_usart.c
+@@ -174,17 +174,8 @@ void mc_debug_printf(const char *fmt, ...)
+   */
+ void wk_usart6_init(void)
+ {
+-	/* add user code begin usart6_init 0 */
+-
+-	/* add user code end usart6_init 0 */
+-
+ 	gpio_init_type gpio_init_struct;
+ 	gpio_default_para_init(&gpio_init_struct);
+-
+-	/* add user code begin usart6_init 1 */
+-
+-	/* add user code end usart6_init 1 */
+-
+ 	/* configure the TX pin: PA4 (USART6_TX) */
+ 	gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE4, USART6_GPIO_MUX);
+ 	gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
+@@ -193,7 +184,6 @@ void wk_usart6_init(void)
+ 	gpio_init_struct.gpio_pins = GPIO_PINS_4;
+ 	gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+ 	gpio_init(GPIOA, &gpio_init_struct);
+-
+ 	/* configure the RX pin: PA5 (USART6_RX) */
+ 	gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE5, USART6_GPIO_MUX);
+ 	gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
+@@ -202,7 +192,6 @@ void wk_usart6_init(void)
+ 	gpio_init_struct.gpio_pins = GPIO_PINS_5;
+ 	gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+ 	gpio_init(GPIOA, &gpio_init_struct);
+-
+ 	/* configure param */
+ 	usart_init(USART6, FORWARD_USART_BAUDRATE, USART_DATA_8BITS, USART_STOP_1_BIT);
+ 	usart_transmitter_enable(USART6, TRUE);
+@@ -210,19 +199,12 @@ void wk_usart6_init(void)
+ 	usart_receiver_enable(USART6, TRUE);
+ 	usart_dma_receiver_enable(USART6, TRUE);
+ 	usart_parity_selection_config(USART6, USART_PARITY_NONE);
+-
+ 	usart_hardware_flow_control_set(USART6, USART_HARDWARE_FLOW_NONE);
+-
+ 	/* add user code begin usart6_init 2 */
+ 	usart_interrupt_enable(USART6, USART_RDBF_INT, FALSE);  /* 关逐字节中断 */
+ 	usart_interrupt_enable(USART6, USART_IDLE_INT, TRUE);   /* 开 IDLE 判帧(中断方式) */
+ 	/* add user code end usart6_init 2 */
+-
+ 	usart_enable(USART6, TRUE);
+-
+-	/* add user code begin usart6_init 3 */
+-
+-	/* add user code end usart6_init 3 */
+ }
+ 
+ /**
+@@ -255,17 +237,8 @@ void wk_forward_usart_init(void)
+   */
+ void wk_usart2_init(void)
+ {
+-  /* add user code begin usart2_init 0 */
+-
+-  /* add user code end usart2_init 0 */
+-
+   gpio_init_type gpio_init_struct;
+   gpio_default_para_init(&gpio_init_struct);
+-
+-  /* add user code begin usart2_init 1 */
+-
+-  /* add user code end usart2_init 1 */
+-
+   /* configure the TX pin */
+   gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE2, GPIO_MUX_7);
+   gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
+@@ -274,7 +247,6 @@ void wk_usart2_init(void)
+   gpio_init_struct.gpio_pins = GPIO_PINS_2;
+   gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+   gpio_init(GPIOA, &gpio_init_struct);
+-
+   /* configure the RX pin */
+   gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE3, GPIO_MUX_7);
+   gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
+@@ -283,37 +255,20 @@ void wk_usart2_init(void)
+   gpio_init_struct.gpio_pins = GPIO_PINS_3;
+   gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+   gpio_init(GPIOA, &gpio_init_struct);
+-
+   /* configure param */
+   usart_init(USART2, 115200, USART_DATA_8BITS, USART_STOP_1_BIT);
+   usart_transmitter_enable(USART2, TRUE);
+   usart_receiver_enable(USART2, TRUE);
+   usart_parity_selection_config(USART2, USART_PARITY_NONE);
+-
+   usart_dma_transmitter_enable(USART2, TRUE);
+   usart_dma_receiver_enable(USART2, TRUE);
+-
+   usart_hardware_flow_control_set(USART2, USART_HARDWARE_FLOW_NONE);
+-
+-  /**
+-   * Users need to configure USART2 interrupt functions according to the actual application.
+-   * 1. Call the below function to enable the corresponding USART2 interrupt.
+-   *     --usart_interrupt_enable(...)
+-   * 2. Add the user's interrupt handler code into the below function in the at32f435_437_int.c file.
+-   *     --void USART2_IRQHandler(void)
+-   */
+-
+   /* add user code begin usart2_init 2 */
+ 	/* 接收改为 DMA 搬运: 关闭逐字节 RDBF 中断, 保留 IDLE 中断用于判帧 */
+ 	usart_interrupt_enable(USART2, USART_RDBF_INT, FALSE);
+ 	usart_interrupt_enable(USART2, USART_IDLE_INT, TRUE);
+   /* add user code end usart2_init 2 */
+-
+   usart_enable(USART2, TRUE);
+-
+-  /* add user code begin usart2_init 3 */
+-
+-  /* add user code end usart2_init 3 */
+ }
+ 
+ /* add user code begin 1 */
+@@ -333,9 +288,8 @@ void forward_uart_send_line(const char *line, uint16_t len)
+         return;
+     }
+ 
+-    /* 升级/性能测试模式下静默拦截，严禁占用板间串口 */
+-    if ((s_forward_mode == FORWARD_UART_MODE_UPGRADE) ||
+-        (s_forward_mode == FORWARD_UART_MODE_PERF_TEST))
++    /* 升级/OTA路由/性能测试模式下静默拦截，严禁本地 G-code 行占用板间串口 */
++    if (s_forward_mode != FORWARD_UART_MODE_NORMAL)
+     {
+         return;
+     }
+@@ -361,7 +315,7 @@ bool forward_uart_send_raw(const uint8_t *data, uint16_t len)
+     {
+         return false;
+     }
+-    if (s_forward_mode == FORWARD_UART_MODE_UPGRADE)
++    if (s_forward_mode == FORWARD_UART_MODE_PERF_TEST)
+     {
+         return false;
+     }
+@@ -404,15 +358,9 @@ bool forward_uart_send_raw(const uint8_t *data, uint16_t len)
+ 
+ uint8_t forward_uart_rx_poll(void)
+ {
+-    if (forward_uart_dma.forward_uart_rx_complete != 0)
+-    {
+-        return 1;
+-    }
++    if (forward_uart_dma.forward_uart_rx_complete != 0) { return 1; }
+     static uint16_t last_len = 0;   /* 上次观察到的已接收字节数 */
+     static uint16_t idle_cnt = 0;   /* 长度连续不变的次数 */
+-    uint16_t remain;
+-    uint16_t len;
+-
+     /* 溢出检测: ORE 置位后 USART 接收会一直异常, 必须清除并复位 DMA 丢弃垃圾数据 */
+     if(usart_flag_get(FORWARD_USART_HANDLE, USART_ROERR_FLAG) != RESET)
+     {
+@@ -424,39 +372,24 @@ uint8_t forward_uart_rx_poll(void)
+         last_len = 0;
+         idle_cnt = 0;
+     }
+-
+-    remain = dma_data_number_get(DMA1_CHANNEL5);
+-    len = (uint16_t)(FORWARD_UART_RX_BUF_SIZE - remain);
+-
++    uint16_t remain = dma_data_number_get(DMA1_CHANNEL5);
++    uint16_t len = (uint16_t)(FORWARD_UART_RX_BUF_SIZE - remain);
+     if(len != last_len)
+     {
+-        /* 数据仍在进来，刷新参考值并重新计时 */
+         last_len = len;
+         idle_cnt = 0;
+         return 0;
+     }
+-
+-    if(len == 0)
+-    {
+-        return 0;   /* 没有任何数据 */
+-    }
+-
++    if(len == 0) { return 0; }
+     idle_cnt++;
+-    if(idle_cnt < FORWARD_UART_RX_IDLE_THRESHOLD)
+-    {
+-        return 0;   /* 空闲时间还不够，继续等 */
+-    }
+-
++    if(idle_cnt < FORWARD_UART_RX_IDLE_THRESHOLD) { return 0; }
+     /* 连续多次长度不变 => 总线空闲，一帧收完 */
+     forward_uart_dma.forward_uart_rx_len = len;
+     forward_uart_dma.forward_uart_rx_complete = 1;
+-
+-    /* 复位 DMA 循环计数，让下一帧从缓冲区头部开始 */
+     dma_channel_enable(DMA1_CHANNEL5, FALSE);
+     DMA1_CHANNEL5->maddr = (uint32_t)forward_uart_dma.forward_uart_rx_buf;
+     DMA1_CHANNEL5->dtcnt = FORWARD_UART_RX_BUF_SIZE;
+     dma_channel_enable(DMA1_CHANNEL5, TRUE);
+-
+     last_len = 0;
+     idle_cnt = 0;
+     return 1;
+@@ -479,14 +412,9 @@ uint16_t forward_uart_rx_read(uint8_t *dst, uint16_t max)
+ 
+ 	rx_len = forward_uart_dma.forward_uart_rx_len;
+ 
+-	/* 魔数嗅探拦截: 0x5A 0xA5 私有升级协议帧与 0x55 0xAA MiniMCProto 帧严禁交付 Marlin */
++	/* 魔数嗅探拦截: 0x55 0xAA MiniMCProto v2.0 二进制帧严禁交付 Marlin 文本通道 */
+ 	if (rx_len >= 2U)
+ 	{
+-		if (forward_uart_dma.forward_uart_rx_buf[0] == 0x5AU &&
+-		    forward_uart_dma.forward_uart_rx_buf[1] == 0xA5U)
+-		{
+-			return 0;
+-		}
+ 		if (forward_uart_dma.forward_uart_rx_buf[0] == 0x55U &&
+ 		    forward_uart_dma.forward_uart_rx_buf[1] == 0xAAU)
+ 		{
+@@ -528,7 +456,7 @@ uint16_t forward_uart_proto_rx_read(uint8_t *dst, uint16_t max)
+ }
+ 
+ /* ==============================================================================
+- * Step 3: USART6 板间独占模式与二进制帧流式通道实现
++ * Step 3: USART6 板间独占模式与 MiniMCProto v2.0 原始帧通道实现
+  * ============================================================================== */
+ 
+ void forward_uart_mode_set(forward_uart_mode_t mode)
+@@ -541,159 +469,6 @@ forward_uart_mode_t forward_uart_mode_get(void)
+ 	return s_forward_mode;
+ }
+ 
+-static bool forward_uart_send_raw_byte(uint8_t byte)
+-{
+-	uint32_t timeout = 50000U;
+-	while (usart_flag_get(USART6, USART_TDBE_FLAG) == RESET)
+-	{
+-		timeout--;
+-		if (timeout == 0U)
+-		{
+-			return false;
+-		}
+-	}
+-	usart_data_transmit(USART6, (uint16_t)byte);
+-	return true;
+-}
+-
+-static bool forward_uart_send_header(uint8_t cmd, uint16_t len)
+-{
+-	if (!forward_uart_send_raw_byte(0x5AU) || !forward_uart_send_raw_byte(0xA5U) ||
+-	    !forward_uart_send_raw_byte(cmd) ||
+-	    !forward_uart_send_raw_byte((uint8_t)(len & 0xFFU)) ||
+-	    !forward_uart_send_raw_byte((uint8_t)((len >> 8) & 0xFFU)))
+-	{
+-		return false;
+-	}
+-	return true;
+-}
+-
+-static bool forward_uart_wait_tdc(void)
+-{
+-	uint32_t timeout = 50000U;
+-	while (usart_flag_get(USART6, USART_TDC_FLAG) == RESET)
+-	{
+-		timeout--;
+-		if (timeout == 0U)
+-		{
+-			return false;
+-		}
+-	}
+-	return true;
+-}
+-
+-bool forward_uart_send_frame(uint8_t cmd, const uint8_t *payload, uint16_t len)
+-{
+-	if (len > 0U && payload == NULL)
+-	{
+-		return false;
+-	}
+-
+-	uint32_t timeout = 100000U;
+-	while (forward_uart_dma.forward_uart_tx_busy)
+-	{
+-		timeout--;
+-		if (timeout == 0U)
+-		{
+-			return false;
+-		}
+-	}
+-
+-	uint8_t checksum = (uint8_t)(cmd + (len & 0xFFU) + ((len >> 8) & 0xFFU));
+-	for (uint16_t i = 0U; i < len; i++)
+-	{
+-		checksum = (uint8_t)(checksum + payload[i]);
+-	}
+-
+-	if (!forward_uart_send_header(cmd, len))
+-	{
+-		return false;
+-	}
+-
+-	for (uint16_t i = 0U; i < len; i++)
+-	{
+-		if (!forward_uart_send_raw_byte(payload[i]))
+-		{
+-			return false;
+-		}
+-	}
+-
+-	if (!forward_uart_send_raw_byte(checksum))
+-	{
+-		return false;
+-	}
+-
+-	return forward_uart_wait_tdc();
+-}
+-
+-static int16_t forward_uart_find_sync(const uint8_t *buf, uint16_t len)
+-{
+-	for (uint16_t i = 0U; i + 5U < len; i++)
+-	{
+-		if (buf[i] == 0x5AU && buf[i + 1U] == 0xA5U)
+-		{
+-			return (int16_t)i;
+-		}
+-	}
+-	return -1;
+-}
+-
+-static bool forward_uart_verify_checksum(const uint8_t *buf, int16_t sync, uint8_t cmd, uint16_t p_len)
+-{
+-	uint8_t sum = (uint8_t)(cmd + (p_len & 0xFFU) + ((p_len >> 8) & 0xFFU));
+-	for (uint16_t i = 0U; i < p_len; i++)
+-	{
+-		sum = (uint8_t)(sum + buf[sync + 5 + i]);
+-	}
+-	return (sum == buf[sync + 5 + p_len]);
+-}
+-
+-bool forward_uart_recv_frame(uint8_t *cmd, uint8_t *payload, uint16_t *len, uint16_t max_len)
+-{
+-	if (cmd == NULL || payload == NULL || len == NULL || forward_uart_dma.forward_uart_rx_complete == 0)
+-	{
+-		return false;
+-	}
+-
+-	const uint8_t *rx_buf = (const uint8_t *)forward_uart_dma.forward_uart_rx_buf;
+-	uint16_t rx_len = forward_uart_dma.forward_uart_rx_len;
+-	if (rx_len < 6U)
+-	{
+-		forward_uart_dma.forward_uart_rx_complete = 0;
+-		return false;
+-	}
+-
+-	int16_t sync_idx = forward_uart_find_sync(rx_buf, rx_len);
+-	if (sync_idx < 0)
+-	{
+-		forward_uart_dma.forward_uart_rx_complete = 0;
+-		return false;
+-	}
+-
+-	uint8_t rx_cmd = rx_buf[sync_idx + 2];
+-	uint16_t p_len = (uint16_t)(rx_buf[sync_idx + 3] | ((uint16_t)rx_buf[sync_idx + 4] << 8));
+-	if (p_len > 64U || p_len > max_len || ((uint16_t)sync_idx + 6U + p_len) > rx_len)
+-	{
+-		forward_uart_dma.forward_uart_rx_complete = 0;
+-		return false;
+-	}
+-
+-	if (!forward_uart_verify_checksum(rx_buf, sync_idx, rx_cmd, p_len))
+-	{
+-		forward_uart_dma.forward_uart_rx_complete = 0;
+-		return false;
+-	}
+-
+-	*cmd = rx_cmd;
+-	*len = p_len;
+-	for (uint16_t i = 0U; i < p_len; i++)
+-	{
+-		payload[i] = rx_buf[sync_idx + 5 + i];
+-	}
+-	forward_uart_dma.forward_uart_rx_complete = 0;
+-	return true;
+-}
+-
+ static bool mc_th_perf_send_and_wait(const char *cmd, uint16_t len, uint32_t *out_rtt_us)
+ {
+   uint32_t t_start_cyc;
+@@ -741,30 +516,18 @@ static bool mc_th_perf_send_and_wait(const char *cmd, uint16_t len, uint32_t *ou
+ 
+ void mc_th_usart_perf_test(uint32_t count)
+ {
+-  uint32_t pass_cnt = 0;
+-  uint32_t fail_cnt = 0;
+-  uint32_t min_rtt = 0xFFFFFFFFU;
+-  uint32_t max_rtt = 0;
++  uint32_t pass_cnt = 0, fail_cnt = 0, min_rtt = 0xFFFFFFFFU, max_rtt = 0;
+   uint64_t sum_rtt = 0;
+-  uint32_t t_start_ms;
+-  uint32_t total_ms;
+   forward_uart_mode_t old_mode = s_forward_mode;
+-
+-  if (count == 0U)
+-  {
+-    return;
+-  }
+-
++  if (count == 0U) { return; }
+   s_forward_mode = FORWARD_UART_MODE_PERF_TEST;
+   mc_debug_printf("\r\n[PERF_TEST] Starting 921600 Baud Stress Test (Target: %lu frames)...\r\n", (unsigned long)count);
+-  t_start_ms = wk_timebase_get();
+-
++  uint32_t t_start_ms = wk_timebase_get();
+   for (uint32_t i = 1U; i <= count; i++)
+   {
+     char cmd[32];
+     uint32_t rtt_us = 0;
+     int len = snprintf(cmd, sizeof(cmd), "G4 P0 ;#%lu", (unsigned long)i);
+-
+     if (mc_th_perf_send_and_wait(cmd, (uint16_t)len, &rtt_us))
+     {
+       pass_cnt++;
+@@ -772,24 +535,17 @@ void mc_th_usart_perf_test(uint32_t count)
+       if (rtt_us > max_rtt) max_rtt = rtt_us;
+       sum_rtt += rtt_us;
+     }
+-    else
+-    {
+-      fail_cnt++;
+-    }
+-
++    else { fail_cnt++; }
+     if ((i % 100U == 0U) || (i == count))
+     {
+       mc_debug_printf("[PERF_TEST] Progress: [%lu/%lu] Pass=%lu, Fail=%lu\r\n",
+                       (unsigned long)i, (unsigned long)count, (unsigned long)pass_cnt, (unsigned long)fail_cnt);
+     }
+   }
+-
+-  total_ms = wk_timebase_get() - t_start_ms;
++  uint32_t total_ms = wk_timebase_get() - t_start_ms;
+   if (total_ms == 0U) total_ms = 1U;
+-
+   s_forward_mode = old_mode;
+   bool roerr = (usart_flag_get(USART6, USART_ROERR_FLAG) != RESET);
+-
+   mc_debug_printf("[PERF_TEST] Summary: Total=%lu Pass=%lu Fail=%lu (Duration=%lu ms)\r\n",
+                   (unsigned long)count, (unsigned long)pass_cnt, (unsigned long)fail_cnt, (unsigned long)total_ms);
+   mc_debug_printf("[PERF_TEST] RTT Stats: Min=%lu us, Max=%lu us, Avg=%lu us\r\n",
+@@ -822,54 +578,4 @@ void forward_uart_upgrade_mode_exit(void)
+ 	s_forward_mode = FORWARD_UART_MODE_NORMAL;
+ }
+ 
+-/**
+- * @brief  组装并发送 TH Bootloader IAP 数据分块
+- * @param  cmd: IAP 命令字 (0x10~0x13)
+- * @param  chunk: 数据载荷指针 (最大 512B)
+- * @param  len: 数据载荷长度
+- * @retval true 发送成功, false 失败或参数越界
+- */
+-bool forward_uart_send_iap_chunk(uint8_t cmd, const uint8_t *chunk, uint16_t len)
+-{
+-	if (chunk == NULL || len > TH_IAP_CHUNK_SIZE)
+-	{
+-		return false;
+-	}
+-	return forward_uart_send_frame(cmd, chunk, len);
+-}
+-
+-/**
+- * @brief  接收并解析 TH Bootloader IAP 响应帧，提取状态码
+- * @param  out_cmd: 传出响应命令字
+- * @param  out_status: 传出执行状态码 (0x00 OK, 0x01 ERR)
+- * @retval true 成功接收有效帧, false 无数据、校验失败或入参非法
+- */
+-bool forward_uart_recv_iap_resp(uint8_t *out_cmd, uint8_t *out_status)
+-{
+-	uint8_t cmd = 0U;
+-	uint8_t payload[16];
+-	uint16_t len = 0U;
+-
+-	if (out_cmd == NULL || out_status == NULL)
+-	{
+-		return false;
+-	}
+-
+-	if (!forward_uart_recv_frame(&cmd, payload, &len, sizeof(payload)))
+-	{
+-		return false;
+-	}
+-
+-	*out_cmd = cmd;
+-	if (len == 0U)
+-	{
+-		*out_status = TH_IAP_STATUS_OK;
+-	}
+-	else
+-	{
+-		*out_status = payload[len - 1U];
+-	}
+-	return true;
+-}
+-
+ /* add user code end 2 */
+diff --git a/motion-controller-mcu/tests/run_tests.sh b/motion-controller-mcu/tests/run_tests.sh
+new file mode 100644
+index 0000000..acbe9c7
+--- /dev/null
++++ b/motion-controller-mcu/tests/run_tests.sh
+@@ -0,0 +1,87 @@
++#!/bin/sh
++# TWIN-64 MC App 协议、534B 透明路由、0x1D 受控进 Boot 与 th_upgrade_mgr v2.0 验证脚本
++set -eu
++
++SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
++MC_DIR=$(CDPATH= cd -- "${SCRIPT_DIR}/.." && pwd)
++
++echo "=== [1/3] Run TWIN-44/47/60 MC regression suite (test_twin44_mc_debug.c) ==="
++gcc -std=c11 -O2 -Wall -Wextra -Wno-int-to-pointer-cast -no-pie -fno-pie \
++    -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER \
++    -I "${MC_DIR}/project/inc" \
++    -I "${MC_DIR}/project/delay" \
++    -I "${MC_DIR}/project/marlin" \
++    -I "${MC_DIR}/project/marlin/marlin_core" \
++    -I "${MC_DIR}/project/marlin/marlin_module" \
++    -I "${MC_DIR}/libraries/drivers/inc" \
++    -I "${MC_DIR}/libraries/cmsis/cm4/core_support" \
++    -I "${MC_DIR}/libraries/cmsis/cm4/device_support" \
++    "${MC_DIR}/project/src/minimc_proto.c" \
++    "${MC_DIR}/project/src/test_twin44_mc_debug.c" \
++    -o /tmp/test_twin64_mc_reg
++/tmp/test_twin64_mc_reg
++rm -f /tmp/test_twin64_mc_reg
++
++echo "=== [2/3] Run TWIN-64 MC OTA, 0x1D magic (0x2005FFF0), 534B proxy & th_upgrade_mgr suite ==="
++gcc -std=c11 -O2 -Wall -Wextra -Werror -Wno-int-to-pointer-cast -no-pie -fno-pie \
++    -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DHOST_UNIT_TEST=1 \
++    -I "${MC_DIR}/project/inc" \
++    -I "${MC_DIR}/project/delay" \
++    -I "${MC_DIR}/project/marlin" \
++    -I "${MC_DIR}/project/marlin/marlin_core" \
++    -I "${MC_DIR}/project/marlin/marlin_module" \
++    -I "${MC_DIR}/libraries/drivers/inc" \
++    -I "${MC_DIR}/libraries/cmsis/cm4/core_support" \
++    -I "${MC_DIR}/libraries/cmsis/cm4/device_support" \
++    "${MC_DIR}/project/src/minimc_proto.c" \
++    "${SCRIPT_DIR}/test_mc_ota_and_relay.c" \
++    -o /tmp/test_mc_ota_and_relay
++/tmp/test_mc_ota_and_relay
++rm -f /tmp/test_mc_ota_and_relay
++
++echo "=== [3/3] Verify MC zero M997/5AA5 residue & S04 function/comment gates ==="
++if grep -rn "M997\|0x5A" "${MC_DIR}/project/marlin/marlin_module/th_upgrade_mgr.c" "${MC_DIR}/project/inc/th_upgrade_mgr.h"; then
++    echo "[FAIL] Legacy M997 or 0x5A frame residue found in th_upgrade_mgr!"
++    exit 1
++fi
++python3 - "${MC_DIR}" <<'PY'
++import re, sys
++from pathlib import Path
++
++mc_dir = Path(sys.argv[1])
++files = [
++    mc_dir / "project/src/minimc_proto.c",
++    mc_dir / "project/src/wk_usart.c",
++    mc_dir / "project/marlin/marlin_module/th_upgrade_mgr.c",
++    mc_dir / "tests/test_mc_ota_and_relay.c",
++]
++func_hdr = re.compile(r'^[A-Za-z_][\w\s\*]*?\b([A-Za-z_]\w*)\s*\(([^;{}]*)\)\s*\{', re.M)
++cjk = re.compile(r'[\u4e00-\u9fff]')
++for p in files:
++    text = p.read_text(encoding="utf-8")
++    if sum(1 for l in text.splitlines() if cjk.search(l)) < 5:
++        print(f"[FAIL] Insufficient Chinese comments in {p}")
++        sys.exit(1)
++    for m in func_hdr.finditer(text):
++        name = m.group(1)
++        if name in ("if", "while", "for", "switch"):
++            continue
++        params_raw = m.group(2).strip()
++        params = [] if params_raw in ("", "void") else [x.strip() for x in params_raw.split(",")]
++        brace_start = text.find("{", m.start())
++        depth = 0
++        end_idx = brace_start
++        for idx in range(brace_start, len(text)):
++            if text[idx] == "{":
++                depth += 1
++            elif text[idx] == "}":
++                depth -= 1
++                if depth == 0:
++                    end_idx = idx
++                    break
++        n_lines = text.count("\n", 0, end_idx) - text.count("\n", 0, m.start()) + 1
++        if n_lines > 50 or len(params) > 4:
++            print(f"[FAIL] {p}:{name} lines={n_lines} params={len(params)}")
++            sys.exit(1)
++print("[PASS] MC S04 function length (<=50), params (<=4) and Chinese comments verified!")
++PY
+diff --git a/motion-controller-mcu/tests/test_mc_ota_and_relay.c b/motion-controller-mcu/tests/test_mc_ota_and_relay.c
+new file mode 100644
+index 0000000..749569d
+--- /dev/null
++++ b/motion-controller-mcu/tests/test_mc_ota_and_relay.c
+@@ -0,0 +1,432 @@
++/**
++ * @file test_mc_ota_and_relay.c
++ * @brief TWIN-64 MC App Rev 2.0.4 对齐、0x1D 受控进 Boot (0x2005FFF0 UPG2)、534B TH 代理路由与 th_upgrade_mgr v2.0 单元测试。
++ * 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md 规范。
++ */
++
++#define _GNU_SOURCE
++#define HOST_UNIT_TEST 1
++#include <stdio.h>
++#include <stdlib.h>
++#include <stdint.h>
++#include <stdbool.h>
++#include <string.h>
++#include <sys/mman.h>
++
++#include "minimc_proto.h"
++#include "wk_dma.h"
++#include "wk_usart.h"
++#include "th_upgrade_mgr.h"
++#include "planner.h"
++#include "thermistor.h"
++
++/* 模拟 FatFs 与 USB Host U 盘声明以直接编译测试 th_upgrade_mgr.c */
++typedef enum { FR_OK = 0, FR_DISK_ERR = 1, FR_NO_FILE = 4 } FRESULT;
++typedef unsigned int UINT;
++typedef uint32_t FSIZE_t;
++typedef struct { uint32_t dummy; } FATFS;
++typedef struct { uint32_t offset; uint32_t size; } FIL;
++typedef struct { FSIZE_t fsize; uint8_t fattrib; char fname[64]; } FILINFO;
++volatile bool g_app_udisk_ready = false;
++
++/* 模拟 Marlin 与硬件外设状态 */
++volatile float current_position[NUM_AXIS];
++volatile bool axis_known_position[3];
++volatile int16_t current_temperature_bed = 25;
++volatile int16_t current_temperature_ex1 = 25;
++volatile uint16_t g_last_bed_adc_raw = 3200U;
++volatile uint16_t g_last_ex1_adc_raw = 3200U;
++uint8_t is_paused = 0U;
++float bed_level[AUTO_BED_LEVELING_GRID_POINTS][AUTO_BED_LEVELING_GRID_POINTS];
++volatile uint8_t usart2_tx_busy = 0U;
++
++static uint8_t s_mock_moves = 0U;
++static bool s_mock_busy_hook = false;
++static uint32_t s_mock_tick_ms = 1000U;
++static uint32_t s_mc_magic_word = 0U;
++static uint32_t s_mc_reset_count = 0U;
++static uint16_t s_mc_last_delay_ms = 0U;
++static bool s_mc_steppers_disabled = false;
++static forward_uart_mode_t s_mock_fwd_mode = FORWARD_UART_MODE_NORMAL;
++static uint8_t s_last_ap_tx[MINIMC_MAX_FRAME_SIZE];
++static uint16_t s_last_ap_tx_len = 0U;
++static uint8_t s_last_th_tx[MINIMC_MAX_FRAME_SIZE];
++static uint16_t s_last_th_tx_len = 0U;
++static uint8_t s_mock_th_rx[MINIMC_MAX_FRAME_SIZE];
++static uint16_t s_mock_th_rx_len = 0U;
++static uint8_t s_udisk_file_buf[2048];
++static uint32_t s_udisk_file_size = 0U;
++static bool s_udisk_file_exists = false;
++static char s_udisk_file_name[64];
++
++/**
++ * @brief 断言辅助函数（不受 NDEBUG 影响）
++ */
++static void require_true(bool cond, const char *msg)
++{
++    if (!cond)
++    {
++        fprintf(stderr, "[FAIL] %s\n", (msg != NULL) ? msg : "assertion failed");
++        exit(1);
++    }
++}
++
++/**
++ * @brief 模拟 Marlin 规划队列深度与系统毫秒时钟
++ */
++uint8_t movesplanned(void) { return s_mock_moves; }
++uint32_t wk_timebase_get(void) { return s_mock_tick_ms; }
++void wk_delay_ms(uint32_t delay) { s_mock_tick_ms += delay; }
++
++/**
++ * @brief 覆写 MC 升级魔数指针、忙状态钩子与软复位钩子
++ */
++volatile uint32_t *mc_get_upgrade_flag_ptr(void) { return &s_mc_magic_word; }
++bool mc_app_is_busy_hook(void) { return s_mock_busy_hook; }
++void mc_disable_all_steppers_hook(void) { s_mc_steppers_disabled = true; }
++void mc_sys_reset_hook(uint16_t delay_ms)
++{
++    s_mc_reset_count++;
++    s_mc_last_delay_ms = delay_ms;
++}
++
++/**
++ * @brief 模拟 DMA1_CHANNEL2 (USART2 TX) 捕获发往 AP 的协议帧
++ */
++void dma_channel_enable(dma_channel_type *dma_channel, confirm_state new_state)
++{
++    if ((dma_channel == DMA1_CHANNEL2) && (new_state == TRUE))
++    {
++        const uint16_t len = (uint16_t)DMA1_CHANNEL2->dtcnt;
++        const uintptr_t high = ((uintptr_t)s_last_ap_tx) & ~(uintptr_t)0xFFFFFFFFULL;
++        const uint8_t *src = (const uint8_t *)(high | (uintptr_t)DMA1_CHANNEL2->maddr);
++        if ((src != NULL) && (len > 0U) && (len <= sizeof(s_last_ap_tx)))
++        {
++            memcpy(s_last_ap_tx, src, len);
++            s_last_ap_tx_len = len;
++        }
++        usart2_tx_busy = 0U;
++    }
++}
++
++/**
++ * @brief 模拟 USART6 (MC↔TH) 模式切换、原始二进制收发与行发送拦截
++ */
++void forward_uart_mode_set(forward_uart_mode_t mode) { s_mock_fwd_mode = mode; }
++forward_uart_mode_t forward_uart_mode_get(void) { return s_mock_fwd_mode; }
++void forward_uart_send_line(const char *str, uint16_t len)
++{
++    if ((str == NULL) || (len == 0U) || (s_mock_fwd_mode != FORWARD_UART_MODE_NORMAL))
++    {
++        return;
++    }
++    memcpy(s_last_th_tx, str, len);
++    s_last_th_tx_len = len;
++}
++bool forward_uart_send_raw(const uint8_t *data, uint16_t len)
++{
++    if ((data == NULL) || (len == 0U) || (len > FORWARD_UART_TX_BUF_SIZE))
++    {
++        return false;
++    }
++    memcpy(s_last_th_tx, data, len);
++    s_last_th_tx_len = len;
++    return true;
++}
++uint8_t forward_uart_rx_poll(void) { return (s_mock_th_rx_len > 0U) ? 1U : 0U; }
++uint16_t forward_uart_proto_rx_read(uint8_t *buf, uint16_t max_len)
++{
++    if ((buf == NULL) || (s_mock_th_rx_len == 0U)) { return 0U; }
++    const uint16_t n = (s_mock_th_rx_len > max_len) ? max_len : s_mock_th_rx_len;
++    memcpy(buf, s_mock_th_rx, n);
++    s_mock_th_rx_len = 0U;
++    return n;
++}
++
++/**
++ * @brief 模拟 FatFs 文件系统接口供 th_upgrade_mgr.c 测试调用
++ */
++static FRESULT f_mount(FATFS *fs, const char *path, uint8_t opt) { (void)fs; (void)path; (void)opt; return FR_OK; }
++static FRESULT f_stat(const char *path, FILINFO *fno)
++{
++    if (!s_udisk_file_exists || (strcmp(path, s_udisk_file_name) != 0)) { return FR_NO_FILE; }
++    if (fno != NULL) { fno->fsize = s_udisk_file_size; }
++    return FR_OK;
++}
++static FRESULT f_open(FIL *fp, const char *path, uint8_t mode)
++{
++    (void)mode;
++    if (!s_udisk_file_exists || (strcmp(path, s_udisk_file_name) != 0)) { return FR_NO_FILE; }
++    fp->offset = 0U;
++    fp->size = s_udisk_file_size;
++    return FR_OK;
++}
++static FRESULT f_lseek(FIL *fp, FSIZE_t ofs)
++{
++    if (ofs > fp->size) { return FR_DISK_ERR; }
++    fp->offset = ofs;
++    return FR_OK;
++}
++static FRESULT f_read(FIL *fp, void *buff, UINT btr, UINT *br)
++{
++    const uint32_t avail = (fp->offset < fp->size) ? (fp->size - fp->offset) : 0U;
++    const uint32_t n = (btr < avail) ? btr : avail;
++    if (n > 0U) { memcpy(buff, &s_udisk_file_buf[fp->offset], n); fp->offset += n; }
++    *br = (UINT)n;
++    return FR_OK;
++}
++static FRESULT f_close(FIL *fp) { (void)fp; return FR_OK; }
++static FSIZE_t f_size(const FIL *fp) { return (fp != NULL) ? fp->size : 0U; }
++static FRESULT f_unlink(const char *path) { (void)path; return FR_OK; }
++static FRESULT f_rename(const char *old_p, const char *new_p)
++{
++    (void)old_p;
++    snprintf(s_udisk_file_name, sizeof(s_udisk_file_name), "%s", new_p);
++    return FR_OK;
++}
++#define FA_READ 0x01U
++
++#include "../project/marlin/marlin_module/th_upgrade_mgr.c"
++
++/**
++ * @brief 组装并向 MC USART2 注入一帧 AP 请求报文
++ */
++static void send_ap_frame(uint8_t dst, uint8_t flags, uint8_t cmd, const void *pay)
++{
++    uint16_t plen = 0U;
++    if ((cmd == MINIMC_CMD_SET_TEMP) || (cmd == MINIMC_CMD_SYSTEM_CONTROL) || (cmd == MINIMC_CMD_FILAMENT_CONTROL)) { plen = 4U; }
++    else if (cmd == MINIMC_CMD_OTA_START) { plen = 144U; }
++    else if (cmd == MINIMC_CMD_OTA_DATA) { plen = 520U; }
++    else if (cmd == MINIMC_CMD_OTA_FINISH) { plen = 8U; }
++    static uint16_t s_seq = 1U;
++    const uint16_t seq = s_seq++;
++    uint8_t frame[MINIMC_MAX_FRAME_SIZE];
++    frame[0] = MINIMC_SOF_1;
++    frame[1] = MINIMC_SOF_2;
++    frame[2] = MINIMC_NODE_AP;
++    frame[3] = dst;
++    frame[4] = flags;
++    frame[5] = cmd;
++    frame[6] = 4U;
++    frame[7] = 0U;
++    frame[8] = (uint8_t)(seq & 0xFFU);
++    frame[9] = (uint8_t)((seq >> 8U) & 0xFFU);
++    frame[10] = (uint8_t)(plen & 0xFFU);
++    frame[11] = (uint8_t)((plen >> 8U) & 0xFFU);
++    if ((plen > 0U) && (pay != NULL)) { memcpy(&frame[12], pay, plen); }
++    const uint16_t crc = minimc_crc16(frame, (uint16_t)(12U + plen));
++    frame[12U + plen] = (uint8_t)(crc & 0xFFU);
++    frame[13U + plen] = (uint8_t)((crc >> 8U) & 0xFFU);
++    s_last_ap_tx_len = 0U;
++    s_last_th_tx_len = 0U;
++    minimc_proto_push_ap_rx(frame, (uint16_t)(14U + plen));
++    minimc_proto_poll();
++}
++
++/**
++ * @brief 模拟 TH 通过 USART6 返回响应帧
++ */
++static void inject_th_resp(uint8_t dst, uint8_t cmd, uint16_t seq, uint16_t plen)
++{
++    s_mock_th_rx[0] = MINIMC_SOF_1;
++    s_mock_th_rx[1] = MINIMC_SOF_2;
++    s_mock_th_rx[2] = MINIMC_NODE_TH;
++    s_mock_th_rx[3] = dst;
++    s_mock_th_rx[4] = (uint8_t)(MINIMC_FLAG_IS_RESPONSE | MINIMC_FLAG_PROTO_V2);
++    s_mock_th_rx[5] = cmd;
++    s_mock_th_rx[6] = 4U;
++    s_mock_th_rx[7] = 0U;
++    s_mock_th_rx[8] = (uint8_t)(seq & 0xFFU);
++    s_mock_th_rx[9] = (uint8_t)((seq >> 8U) & 0xFFU);
++    s_mock_th_rx[10] = (uint8_t)(plen & 0xFFU);
++    s_mock_th_rx[11] = (uint8_t)((plen >> 8U) & 0xFFU);
++    memset(&s_mock_th_rx[12], 0, plen);
++    if (cmd == MINIMC_CMD_VERSION_REPORT && plen == 16U)
++    {
++        const uint32_t cap = 0xE0080423UL;
++        memcpy(&s_mock_th_rx[24], &cap, 4U);
++    }
++    const uint16_t crc = minimc_crc16(s_mock_th_rx, (uint16_t)(12U + plen));
++    s_mock_th_rx[12U + plen] = (uint8_t)(crc & 0xFFU);
++    s_mock_th_rx[13U + plen] = (uint8_t)((crc >> 8U) & 0xFFU);
++    s_mock_th_rx_len = (uint16_t)(14U + plen);
++}
++
++/**
++ * @brief 验证 Rev 2.0.4 常量、520B/600B 缓冲扩容与 0x17 单播/广播急停契约
++ */
++static void test_rev204_constants_and_estop(void)
++{
++    require_true(MINIMC_MAX_PAYLOAD_SIZE == 520U && MINIMC_MAX_FRAME_SIZE == 534U, "520B/534B frame size");
++    require_true(FORWARD_UART_TX_BUF_SIZE == 600 && FORWARD_UART_RX_BUF_SIZE == 600, "600B UART6 buffers");
++    require_true(MC_BOOT_UPGRADE_FLAG_ADDR == 0x2005FFF0UL && MC_BOOT_UPGRADE_MAGIC == 0x55504732UL, "UPG2 magic addr");
++    require_true(TH_FLASH_MAX_APP_SIZE == (236U * 1024U), "TH 236KB max app size");
++
++    minimc_proto_init();
++    /* 单播 0x17 EMERGENCY_STOP (DST=0x02, Flags=0x05) -> 回 18B (4B payload) 0x00 CMD_ACK */
++    send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_EMERGENCY_STOP, NULL);
++    require_true(s_last_ap_tx_len == 18U && s_last_ap_tx[5] == MINIMC_CMD_ACK, "unicast 0x17 returns 4B CMD_ACK");
++
++    /* 广播 0x17 EMERGENCY_STOP (DST=0xFF, Flags=0x14, WANTS_ACK=0) -> 不回 AP ACK，级联转发 TH */
++    send_ap_frame(MINIMC_NODE_BROADCAST, 0x14U, MINIMC_CMD_EMERGENCY_STOP, NULL);
++    require_true(s_last_ap_tx_len == 0U, "broadcast 0x17 must NOT send ACK to AP");
++    require_true(s_last_th_tx_len == 14U && s_last_th_tx[5] == MINIMC_CMD_EMERGENCY_STOP &&
++                 s_last_th_tx[6] == 3U && s_last_th_tx[7] == MINIMC_ROUTE_IS_ROUTED, "broadcast 0x17 relayed to TH");
++}
++
++/**
++ * @brief 验证 0x1D CMD_SYSTEM_CONTROL 非空闲安全拦截 (NACK 0x05) 与空闲安全进 Boot (写 0x2005FFF0 UPG2 + 4B ACK + 复位)
++ */
++static void test_mc_sys_ctrl_0x1d_gate_and_magic(void)
++{
++    minimc_proto_init();
++    s_mc_magic_word = 0U;
++    s_mc_reset_count = 0U;
++    const minimc_sys_ctrl_req_t boot_req = { 2U, 1U, 50U };
++
++    /* 1. 运动队列非空 (movesplanned > 0) -> 拒绝回 NACK 0x05，零魔数写入，零复位 */
++    s_mock_moves = 2U;
++    send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_SYSTEM_CONTROL, &boot_req);
++    require_true(s_last_ap_tx[5] == MINIMC_CMD_NACK && s_last_ap_tx[12] == MINIMC_ERR_DEVICE_BUSY, "busy motion -> NACK 0x05");
++    require_true(s_mc_magic_word == 0U && s_mc_reset_count == 0U, "no magic or reset when busy");
++    s_mock_moves = 0U;
++
++    /* 2. 加热目标温度 > 0 -> 拒绝回 NACK 0x05 */
++    const minimc_set_temp_req_t hot_req = { 2000, 600 };
++    send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_SET_TEMP, &hot_req);
++    s_mock_tick_ms += 300U;
++    minimc_proto_poll();
++    send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_SYSTEM_CONTROL, &boot_req);
++    require_true(s_last_ap_tx[5] == MINIMC_CMD_NACK && s_last_ap_tx[12] == MINIMC_ERR_DEVICE_BUSY, "heating active -> NACK 0x05");
++
++    /* 3. 降温至 0 后：先测试非法长度 plen=5 -> NACK 0x03，再测试空闲安全态 0x1D (action=2) */
++    const minimc_set_temp_req_t cool_req = { 0, 0 };
++    send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_SET_TEMP, &cool_req);
++    s_mock_tick_ms += 300U;
++    minimc_proto_poll();
++
++    uint8_t bad_len_frame[19] = {
++        MINIMC_SOF_1, MINIMC_SOF_2, MINIMC_NODE_AP, MINIMC_NODE_MC, 0x05U,
++        MINIMC_CMD_SYSTEM_CONTROL, 4U, 0U, 0x99U, 0x00U, 5U, 0U,
++        2U, 1U, 50U, 0U, 0U, 0U, 0U
++    };
++    const uint16_t bad_crc = minimc_crc16(bad_len_frame, 17U);
++    bad_len_frame[17] = (uint8_t)(bad_crc & 0xFFU);
++    bad_len_frame[18] = (uint8_t)((bad_crc >> 8U) & 0xFFU);
++    s_last_ap_tx_len = 0U;
++    minimc_proto_push_ap_rx(bad_len_frame, 19U);
++    minimc_proto_poll();
++    require_true(s_last_ap_tx[5] == MINIMC_CMD_NACK && s_last_ap_tx[12] == 0x03U, "0x1D plen=5 -> NACK 0x03");
++
++    s_mc_steppers_disabled = false;
++    send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_SYSTEM_CONTROL, &boot_req);
++    require_true(s_last_ap_tx_len == 18U && s_last_ap_tx[5] == MINIMC_CMD_ACK, "0x1D returns 4B CMD_ACK before reset");
++    require_true(s_mc_steppers_disabled, "0x1D disables all steppers before reset");
++    require_true(s_mc_magic_word == MC_BOOT_UPGRADE_MAGIC && s_mc_reset_count == 1U && s_mc_last_delay_ms == 50U, "UPG2 written & reset");
++}
++
++/**
++ * @brief 验证 MC 维护态 DST=0x03 534B 大帧透明路由、proxy_active 期间业务帧 NACK 0x05、G-code 拦截及 5000ms 超时自动恢复
++ */
++static void test_th_proxy_534b_relay_and_5000ms_recovery(void)
++{
++    minimc_proto_init();
++    uint8_t ota_data_pay[520];
++    for (uint16_t i = 0U; i < sizeof(ota_data_pay); ++i) { ota_data_pay[i] = (uint8_t)(i & 0xFFU); }
++
++    /* 1. 发送 534B (520B payload) 0x21 CMD_OTA_DATA 至 DST=0x03 -> 激活 proxy_active 与 FORWARD_UART_MODE_OTA_ROUTE */
++    send_ap_frame(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_OTA_DATA, ota_data_pay);
++    require_true(minimc_proto_is_th_proxy_active() && forward_uart_mode_get() == FORWARD_UART_MODE_OTA_ROUTE, "proxy_active enabled");
++    require_true(s_last_th_tx_len == 534U && s_last_th_tx[5] == MINIMC_CMD_OTA_DATA &&
++                 s_last_th_tx[6] == 3U && s_last_th_tx[7] == MINIMC_ROUTE_IS_ROUTED, "534B 0x21 relayed intact");
++    const uint16_t rx_seq = (uint16_t)s_last_th_tx[8] | ((uint16_t)s_last_th_tx[9] << 8U);
++
++    /* 2. proxy_active 期间：拦截本地 G-code 行下发，且普通业务帧 (0x10 SET_TEMP) 立即返回 NACK 0x05 (DEVICE_BUSY) */
++    s_last_th_tx_len = 0U;
++    forward_uart_send_line("M104 S200\r\n", 11U);
++    require_true(s_last_th_tx_len == 0U && !minimc_proto_send_th_gcode("G28", 3U, 1U), "G-code blocked during OTA_ROUTE");
++    const minimc_set_temp_req_t temp_req = { 1800, 500 };
++    send_ap_frame(MINIMC_NODE_MC, 0x05U, MINIMC_CMD_SET_TEMP, &temp_req);
++    require_true(s_last_ap_tx[5] == MINIMC_CMD_NACK && s_last_ap_tx[12] == MINIMC_ERR_DEVICE_BUSY, "business cmd NACK 0x05 during proxy");
++
++    /* 3. TH 返回 0x00 CMD_ACK (18B) -> MC 经 534B drain_th_rx 转发回 AP */
++    inject_th_resp(MINIMC_NODE_AP, MINIMC_CMD_ACK, rx_seq, 4U);
++    s_last_ap_tx_len = 0U;
++    minimc_proto_poll();
++    require_true(s_last_ap_tx_len == 18U && s_last_ap_tx[2] == MINIMC_NODE_TH &&
++                 s_last_ap_tx[5] == MINIMC_CMD_ACK && s_last_ap_tx[6] == 3U, "TH 0x00 CMD_ACK relayed to AP");
++
++    /* 4. 推进 5000ms 无活动 -> proxy_active 自动恢复为 false 且串口恢复 FORWARD_UART_MODE_NORMAL */
++    s_mock_tick_ms += 5000U;
++    minimc_proto_poll();
++    require_true(!minimc_proto_is_th_proxy_active() && forward_uart_mode_get() == FORWARD_UART_MODE_NORMAL, "5000ms auto recovery");
++}
++
++/**
++ * @brief 验证 th_upgrade_mgr.c 100% 迁移至 MiniMCProto v2.0（零 M997 / 零 5A A5 帧）与擦除前 Trailer CRC32 校验
++ */
++static void test_th_upgrade_mgr_v2_flow(void)
++{
++    uint8_t raw_app[64];
++    for (uint32_t i = 0U; i < sizeof(raw_app); ++i) { raw_app[i] = (uint8_t)(0x30U + i); }
++    fw_trailer_t tr;
++    memset(&tr, 0, sizeof(tr));
++    tr.magic = TRAILER_MAGIC_ATSG;
++    tr.struct_ver = TRAILER_STRUCT_VER_V1;
++    tr.board_id = BOARD_ID_TH_AT32F423;
++    tr.fw_version = 0x01020300UL;
++    tr.payload_len = sizeof(raw_app);
++    tr.trailer_crc32 = crc32_calculate(0U, (const uint8_t *)&tr, 124U);
++
++    memcpy(s_udisk_file_buf, raw_app, sizeof(raw_app));
++    memcpy(&s_udisk_file_buf[sizeof(raw_app)], &tr, sizeof(tr));
++    s_udisk_file_size = (uint32_t)(sizeof(raw_app) + sizeof(tr));
++    snprintf(s_udisk_file_name, sizeof(s_udisk_file_name), "%s", "0:/fw_th.bin");
++    s_udisk_file_exists = true;
++    g_app_udisk_ready = true;
++
++    th_upgrade_mgr_init();
++    s_mock_tick_ms = 1200U;
++    th_upgrade_mgr_poll(s_mock_tick_ms);
++    require_true(s_state == TH_UPG_STATE_SCAN_UDISK, "IDLE -> SCAN_UDISK");
++    th_upgrade_mgr_poll(s_mock_tick_ms);
++    require_true(s_state == TH_UPG_STATE_SEND_SYS_CTRL, "valid trailer enters SEND_SYS_CTRL");
++
++    /* SEND_SYS_CTRL: 发送 0x1D (action=2)，严禁含 M997 或 5A A5 */
++    inject_th_resp(MINIMC_NODE_MC, MINIMC_CMD_ACK, 0x0801U, 4U);
++    th_upgrade_mgr_poll(s_mock_tick_ms);
++    require_true(s_last_th_tx[0] == 0x55U && s_last_th_tx[1] == 0xAAU && s_last_th_tx[5] == MINIMC_CMD_SYSTEM_CONTROL, "0x1D v2 frame");
++    require_true(s_state == TH_UPG_STATE_WAIT_BOOT_VER, "transitions to WAIT_BOOT_VER");
++
++    /* WAIT_BOOT_VER -> START_HANDSHAKE (0x20, 144B) -> STREAM_CHUNKS (0x21) -> FINISH (0x22) -> SUCCESS */
++    inject_th_resp(MINIMC_NODE_MC, MINIMC_CMD_VERSION_REPORT, 0x0802U, 16U);
++    th_upgrade_mgr_poll(s_mock_tick_ms);
++    require_true(s_state == TH_UPG_STATE_START_HANDSHAKE, "BOOT_MODE verified -> START_HANDSHAKE");
++    inject_th_resp(MINIMC_NODE_MC, MINIMC_CMD_ACK, 0x0803U, 4U);
++    th_upgrade_mgr_poll(s_mock_tick_ms);
++    require_true(s_last_th_tx_len == 158U && s_last_th_tx[5] == MINIMC_CMD_OTA_START && s_state == TH_UPG_STATE_STREAM_CHUNKS, "0x20 144B sent");
++    inject_th_resp(MINIMC_NODE_MC, MINIMC_CMD_ACK, 0x0804U, 4U);
++    th_upgrade_mgr_poll(s_mock_tick_ms);
++    require_true(s_last_th_tx[5] == MINIMC_CMD_OTA_DATA && s_state == TH_UPG_STATE_STREAM_CHUNKS, "0x21 chunk 0 sent");
++    th_upgrade_mgr_poll(s_mock_tick_ms);
++    require_true(s_state == TH_UPG_STATE_FINISH, "all chunks streamed -> FINISH");
++    inject_th_resp(MINIMC_NODE_MC, MINIMC_CMD_ACK, 0x0805U, 4U);
++    th_upgrade_mgr_poll(s_mock_tick_ms);
++    require_true(s_last_th_tx[5] == MINIMC_CMD_OTA_FINISH && s_state == TH_UPG_STATE_SUCCESS, "0x22 sent -> SUCCESS");
++}
++
++/**
++ * @brief 测试主入口
++ */
++int main(void)
++{
++    void *p = mmap((void *)0x40020000, 0x10000, PROT_READ | PROT_WRITE,
++                   MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0);
++    require_true(p != MAP_FAILED, "mmap peripheral space 0x40020000");
++    test_rev204_constants_and_estop();
++    test_mc_sys_ctrl_0x1d_gate_and_magic();
++    test_th_proxy_534b_relay_and_5000ms_recovery();
++    test_th_upgrade_mgr_v2_flow();
++    printf("[PASS] test_mc_ota_and_relay: all TWIN-64 MC App OTA & 534B relay tests passed!\n");
++    return 0;
++}
