@@ -79,7 +79,7 @@ forbidden_paths:
 - test_harness/**
 - boot/bootloadermc/.repo-rules/**
 source_baseline:
-  project-control: 5cd627395877b8f5eccd884a83c70e3a5d0cc73a
+  project-control: 2a86f91735f6865626b0794b726d90e1f2247d68
   soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
   mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
