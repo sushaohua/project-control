@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -31,9 +31,18 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-65
-    session: null
-    decision: PENDING
+    session: 01a1af54-c7ae-7d11-b51a-3ee0390c4262
+    reviewer_session: 01a1af54-c7ae-7d11-b51a-3ee0390c4262
+    decision: APPROVED
+    commit_sha: 7184edfc796923e2f2c6e3e57ef3a9f791164b51
+    reviewed_task_revision: 3
+    artifact_version: project-control=bc4c58b9b8230feb75ba956953978fcd5786af4d; soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1; boot/bootloadermc=4fc171ea61912561949b9a0cfc1da8975e4c39ba; boot/bootloaderth=769fccbe52464ad7ceb856c5e89cb0d25abbbf87
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-65/runs/qa_04/qa_review_report.md
     evidence: docs/evidence/twin/TWIN-65/runs/qa_04/qa_review_report.md
+    report_sha256: ef486c46564f3eb2091b3f0b0073779dbb740909546494dd3b69109a9d8f482c
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-65/runs/qa_04/codex_events.jsonl
+      sha256: 241300cfb0e9c47f3426afabfac1b4a4cd7c80a26d90fa8b42818eed497b012e
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009

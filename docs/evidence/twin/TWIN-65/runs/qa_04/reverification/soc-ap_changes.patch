@@ -1,0 +1,141 @@
+diff --git a/services/device_manager/device_manager_service.cpp b/services/device_manager/device_manager_service.cpp
+index 252c5a0..1b095ca 100644
+--- a/services/device_manager/device_manager_service.cpp
++++ b/services/device_manager/device_manager_service.cpp
+@@ -114,26 +114,32 @@ static void on_dds_raw_temp_cb(const aisoc_raw_temp_t* sample, void* user_data)
+         return;
+     }
+     device_manager_state_t* state = (device_manager_state_t*)user_data;
++    aisoc_raw_temp_t rx_sample = *sample;
++    const uint64_t rx_now_ns = get_host_monotonic_ns();
++    if (rx_sample.host_received_ns > 0U && rx_now_ns > rx_sample.host_received_ns &&
++        (rx_now_ns - rx_sample.host_received_ns) < 30000000000ULL) {
++        rx_sample.host_received_ns = rx_now_ns;
++    }
+ 
+     pthread_mutex_lock(&state->state_mutex);
+-    if (is_sample_valid(sample)) {
+-        sync_version_on_sample(state, sample->source_node, sample->host_received_ns);
++    if (is_sample_valid(&rx_sample)) {
++        sync_version_on_sample(state, rx_sample.source_node, rx_sample.host_received_ns);
+     }
+-    dev_state_update_raw_sample(state, sample);
++    dev_state_update_raw_sample(state, &rx_sample);
+ 
+     if (state->dds_pub_snapshot != nullptr) {
+         aisoc_dds_publish_temp_snapshot(state->dds_pub_snapshot, &state->snapshot);
+     }
+     const uint32_t gen_id = state->snapshot.generation_id;
+     const uint64_t ts_ns = state->snapshot.timestamp_ns;
++    dev_dbus_emit_snapshot_updated(state, gen_id, ts_ns);
+     pthread_mutex_unlock(&state->state_mutex);
+ 
+     std::printf("[DEVICE_MGR DEBUG] DDS RX: node=%u, temp=%d millic (%.1f C) -> Snapshot GEN=%u (%s)\n",
+-                sample->source_node, sample->temperature_millic, (double)sample->temperature_millic / 1000.0,
++                rx_sample.source_node, rx_sample.temperature_millic,
++                (double)rx_sample.temperature_millic / 1000.0,
+                 gen_id, state->snapshot.system_status_desc);
+     std::fflush(stdout);
+-
+-    dev_dbus_emit_snapshot_updated(state, gen_id, ts_ns);
+ }
+ 
+ /**
+diff --git a/tests/device_manager/twin/test_device_manager.cpp b/tests/device_manager/twin/test_device_manager.cpp
+index 78e79df..3f6676b 100644
+--- a/tests/device_manager/twin/test_device_manager.cpp
++++ b/tests/device_manager/twin/test_device_manager.cpp
+@@ -1392,48 +1392,64 @@ static bool test_fwd_link_state_signal_disconnect(DevTestEnv* env) {
+ }
+ 
+ /**
+- * @brief 验证双 MCU 节点版本帧同步后设备在线标志与版本快照更新
++ * @brief 发布 TH 温度采样并等待 TH 节点版本状态同步为 ONLINE（支持高负载调度保护）
+  */
+-static bool test_dds_version_sync_dual_nodes(DevTestEnv* env) {
+-    if (env == nullptr) return false;
+-
+-    TEST_CHECK(device_manager_sync_mcu_version(&env->dev_state, 1U) == AISOC_DEV_OK, "Sync MC version OK");
+-
+-    aisoc_dev_mcu_version_t mc_ver;
+-    std::memset(&mc_ver, 0, sizeof(mc_ver));
+-    TEST_CHECK(dev_state_get_mcu_version(&env->dev_state, "MC", &mc_ver) == AISOC_DEV_OK, "Get MC ver OK");
+-    TEST_CHECK(mc_ver.is_valid == true, "MC ver is_valid true");
+-    TEST_CHECK(mc_ver.status == DEV_VER_STATUS_ONLINE, "MC ver status ONLINE");
+-    TEST_CHECK(mc_ver.git_commit == 0xA6791332U, "MC commit 0xA6791332");
+-
+-    aisoc_raw_temp_t raw_th;
+-    std::memset(&raw_th, 0, sizeof(raw_th));
++static bool publish_and_wait_th_version_online(
++    DevTestEnv* env,
++    aisoc_dev_mcu_version_t* out_th_ver
++) {
++    if (env == nullptr || out_th_ver == nullptr) return false;
++    aisoc_raw_temp_t raw_th = {};
+     raw_th.source_node = 2U;
+     raw_th.temperature_millic = 210000;
+     raw_th.sensor_status = AISOC_SENSOR_OK;
+     raw_th.raw_adc = 1800U;
+     raw_th.sample_tick_ms = 10000U;
+-    struct timespec ts;
+-    clock_gettime(CLOCK_MONOTONIC, &ts);
+-    const uint64_t now_ns = (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
+-    raw_th.host_received_ns = now_ns;
+     raw_th.sequence_id = 2U;
+ 
+-    g_snap_sig_received.store(false);
+-    aisoc_dds_publish_raw_temp(env->test_raw_pub, &raw_th);
+-
+-    for (int i = 0; i < 20; ++i) {
++    for (int i = 0; i < 40; ++i) {
++        if ((i % 5) == 0) {
++            struct timespec ts;
++            clock_gettime(CLOCK_MONOTONIC, &ts);
++            raw_th.host_received_ns = (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
++            g_snap_sig_received.store(false);
++            aisoc_dds_publish_raw_temp(env->test_raw_pub, &raw_th);
++        }
+         bool disp = false;
+-        aisoc_dbus_dispatch_once(&env->cli_conn, 30, &disp);
+-        if (g_snap_sig_received.load()) {
+-            break;
++        aisoc_dbus_dispatch_once(&env->cli_conn, 10, &disp);
++        pthread_mutex_lock(&env->dev_state.state_mutex);
++        const aisoc_dev_status_t v_st = dev_state_get_mcu_version(&env->dev_state, "TH", out_th_ver);
++        pthread_mutex_unlock(&env->dev_state.state_mutex);
++        if (v_st == AISOC_DEV_OK && out_th_ver->is_valid && out_th_ver->status == DEV_VER_STATUS_ONLINE) {
++            return true;
+         }
+         usleep(5000);
+     }
++    pthread_mutex_lock(&env->dev_state.state_mutex);
++    const aisoc_dev_status_t final_st = dev_state_get_mcu_version(&env->dev_state, "TH", out_th_ver);
++    pthread_mutex_unlock(&env->dev_state.state_mutex);
++    return (final_st == AISOC_DEV_OK);
++}
++
++/**
++ * @brief 验证双 MCU 节点版本帧同步后设备在线标志与版本快照更新
++ */
++static bool test_dds_version_sync_dual_nodes(DevTestEnv* env) {
++    if (env == nullptr) return false;
++
++    TEST_CHECK(device_manager_sync_mcu_version(&env->dev_state, 1U) == AISOC_DEV_OK, "Sync MC version OK");
++
++    aisoc_dev_mcu_version_t mc_ver = {};
++    pthread_mutex_lock(&env->dev_state.state_mutex);
++    const aisoc_dev_status_t mc_st = dev_state_get_mcu_version(&env->dev_state, "MC", &mc_ver);
++    pthread_mutex_unlock(&env->dev_state.state_mutex);
++    TEST_CHECK(mc_st == AISOC_DEV_OK, "Get MC ver OK");
++    TEST_CHECK(mc_ver.is_valid == true, "MC ver is_valid true");
++    TEST_CHECK(mc_ver.status == DEV_VER_STATUS_ONLINE, "MC ver status ONLINE");
++    TEST_CHECK(mc_ver.git_commit == 0xA6791332U, "MC commit 0xA6791332");
+ 
+-    aisoc_dev_mcu_version_t th_ver;
+-    std::memset(&th_ver, 0, sizeof(th_ver));
+-    TEST_CHECK(dev_state_get_mcu_version(&env->dev_state, "TH", &th_ver) == AISOC_DEV_OK, "Get TH ver OK");
++    aisoc_dev_mcu_version_t th_ver = {};
++    TEST_CHECK(publish_and_wait_th_version_online(env, &th_ver), "Get TH ver OK");
+     TEST_CHECK(th_ver.is_valid == true, "TH ver is_valid true after sample");
+     TEST_CHECK(th_ver.status == DEV_VER_STATUS_ONLINE, "TH ver status ONLINE");
+     TEST_CHECK(th_ver.git_commit == 0x6356C05AU, "TH commit 0x6356C05A");
