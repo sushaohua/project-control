@@ -1,0 +1,21 @@
+schema_version: 1
+approval_id: APPR-20261106-001
+revision: 1
+approved_at: '2026-11-06T09:15:30+08:00'
+approved_by:
+  actor_type: HUMAN
+  actor_id: sushaohua
+  source_channel: coord_interactive_session
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+  verbatim_decision: 待确认的 4 项决策（D1 ~ D4），全部选择推荐方案A。
+bound_confirmation:
+  confirmation_id: CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106
+  revision: 1
+  path: project-control/docs/work_intake/confirmations/CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106.yaml
+  sha256: 200c2e484f8e8bf67303aab66b2591550512653b84845f16826b0b7c6a17b0d5
+approved_demands:
+- demand_id: DEM-20261105-006
+  category_id: REQ-20261105-003
+  demand_confirmed: true
+  implementation_summary_approved: true
+  qa_policy: streamlined-v1

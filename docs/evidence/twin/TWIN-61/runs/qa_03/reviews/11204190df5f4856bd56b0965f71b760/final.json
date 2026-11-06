@@ -1,0 +1,16 @@
+{
+  "task_id": "TWIN-61",
+  "task_revision": 3,
+  "candidate_commit": "19c12bfeeac852670e8bdcb65ce0abcd1de121c1",
+  "role": "ARCH",
+  "decision": "REJECTED",
+  "summary": "复验确认上一轮 ARCH 报告及本轮定向差异的 SHA256 与索引一致。上一轮关于 290 帧和复合序列的阻断在本候选中仍未关闭：新增串口收发函数没有接入实机 --live 入口；复合序列实机路径也缺少可用的断链/重连执行路径及若干接受条款要求的步骤。",
+  "findings": [
+    "阻断（290 帧，HIL-CASE-41）：新增 run_serial_frame_burst 可通过回调收发二进制帧，但 --live 入口仍调用 run_live_http_burst；该路径只向 HTTP 路由发送请求并检查日志，没有调用串口函数或核对 290 个实际二进制响应帧。因此接受范围要求的 290 帧实机/业务路径闭环仍未实现。依据：验收计划第 4 节；本轮 test_harness_changes.patch 的串口函数与 CLI 调用差异。",
+    "阻断（复合序列，HIL-CASE-44/46）：实机入口调用 run_live_composite_sequences 时未传 hooks；SEQ-05 因此没有断链或重连操作。即使通过 hook 调用断链，函数也只轮询最多约 400ms，随后将固定值 3200 传给校验器，不能证明断链超过 3 秒。新增自测钩子直接把仿真状态设为 OFFLINE/READY，不能替代实机断链、恢复及 3 秒时限证据。",
+    "阻断（复合序列，HIL-CASE-44）：实机 SEQ-03 路径未执行验收计划要求的 0% 安全设温；其后设温至 210°C，并进行配置与进退丝请求。故本轮实现仍未覆盖接受条款规定的完整 SEQ-03 正向步骤及其对应证据。",
+    "正向证据：冻结回归命令在 server_verdict 中为 PASSED、exit_code 0；runtime.log 显示 124 项单元测试、脚本自测和注释检查通过。该证据关闭回归命令执行项，但不能证明上述端到端验收条款已满足。未执行或未提供的实机硬件验证不视为通过。"
+  ],
+  "accepted_scope": "审查 TWIN-61 revision 3 接受范围：全量 HIL 主测试计划、test_harness/hil 下 290 帧突发与 5 类复合序列脚本、索引指定的回归命令，以及 project-control/tools Batch PC-1 注释交付。复验聚焦上一候选 20bfa16e7381a40e895aac2ca587b56b7d4ff31d 到本候选的 test_harness 增量差异及受影响验收条款。上一轮 ARCH 报告快照 reverification/previous_qa_review.md 的 SHA256 为 4a468183a471d5b0f836f023bb7b7cf9b2018ce9bab7821610b6068bdba3f06d；本轮差异 patch SHA256 为 9541c03388efdc863ba3f4fe0d7d0a94f873f6860afd868e67a3023d4492f0a3；bundle SHA256 与提供值一致。索引显示其他仓库无变化，当前验收计划及既有工具未因本轮差异改变。实体 HIL 台架执行属于本轮排除范围，不作为通过依据。",
+  "unexecuted": []
+}

@@ -7,7 +7,7 @@ predecessor_session_id: 484ac302-bd54-4e1b-be9f-0227e1475d5d
 date: 2026-11-05
 repository: soc-ap
 branch: main
-candidate_commit: 19534a9a4cb393176882fbad046129d55bba51f6
+candidate_commit: c6692b244e0aa09d04e7051293f9fef3c67535dd
 status: READY_FOR_QA
 ---
 
@@ -20,7 +20,7 @@ status: READY_FOR_QA
 - `project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-57.md`
 
 ## 2. 交付范围与代码变更摘要
-- **候选提交**：`soc-ap@19534a9a4cb393176882fbad046129d55bba51f6`
+- **候选提交**：`soc-ap@c6692b244e0aa09d04e7051293f9fef3c67535dd`
 - **核心修复与实现**：
   1. **ISS-20261105-011（热床与喷头差异化有效物理量程门禁）**：在 `services/device_manager/device_manager_types.h` 与 `device_manager_state.cpp` 中按节点分离量程门禁——热床（MC 节点 1）有效物理量程锁定为 `5.0°C ~ 130.0°C`（`5000 ~ 130000 m°C`），喷头（TH 节点 2）有效物理量程锁定为 `5.0°C ~ 300.0°C`（`5000 ~ 300000 m°C`），超界或传感器故障统一触发 `FAULT` 哨兵保护。
   2. **ISS-20261105-012（`raw_adc` 全链路透传与快照映射）**：在 `contracts/twin/telemetry_types.h`、`services/forward/forward_protocol.cpp`、`services/device_manager/device_manager_state.cpp` 中打通 `raw_adc_value` 至快照 JSON（`bed.raw_adc`、`nozzle.raw_adc`）的真实映射，消除恒为 0 的缺陷。

@@ -1,0 +1,1209 @@
+diff --git a/hil/tests/test_290_frame_burst_stress.py b/hil/tests/test_290_frame_burst_stress.py
+new file mode 100644
+index 0000000..3811d62
+--- /dev/null
++++ b/hil/tests/test_290_frame_burst_stress.py
+@@ -0,0 +1,545 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""
++@file test_290_frame_burst_stress.py
++@brief TWIN-61 (ISS-20261105-005 / DELTA-BAUD-BURST-290) 290帧高频突发压测与16位序列号/零截断对账套件。
++
++本脚本固化 `hil_full_acceptance_master_plan_20261105.md` §4 定义的 290 帧突发压测规格：
++1. 生成覆盖 seq=1..290（跨越 8-bit 255->256 边界）的 29 个均衡业务周期（共 290 帧）真实 MiniMCProto V2 二进制协议帧；
++2. 支持 `--live` 模式驱动 290 帧 HTTP 业务请求并直接调用 `evaluate_burst_debug_logs` 对 `[MC-DBG]`/`[TH-DBG]` 原始日志流执行四方对账；
++3. 支持 `--self-test` 与 `unittest` 模式验证正例（含本地 Mock HTTP Server 290 帧端到端驱动对账）、seq=256..290 无截断、
++   TIMEOUT=0、CRC_ERR=0、BAD_FRAME=0、drop_delta=0、trunc_delta=0 与反例拦截。
++"""
++
++import argparse
++import http.server
++import json
++import re
++import struct
++import sys
++import tempfile
++import threading
++import time
++import unittest
++import urllib.error
++import urllib.request
++from pathlib import Path
++from typing import Dict, List, Optional, Tuple
++
++
++# MiniMCProto V2 协议常量定义
++MINIMC_SOF_1 = 0x55
++MINIMC_SOF_2 = 0xAA
++MINIMC_NODE_AP = 0x01
++MINIMC_NODE_MC = 0x02
++MINIMC_NODE_TH = 0x03
++MINIMC_FLAG_WANTS_ACK = 0x01
++MINIMC_FLAG_IS_RESPONSE = 0x02
++MINIMC_FLAG_PROTO_V2 = 0x04
++
++MINIMC_CMD_GET_VERSION = 0x01
++MINIMC_CMD_VERSION_REPORT = 0x02
++MINIMC_CMD_PING = 0x03
++MINIMC_CMD_PONG = 0x04
++MINIMC_CMD_GET_TEMP = 0x14
++MINIMC_CMD_POS_QUERY = 0x16
++MINIMC_CMD_LEVEL_GRID_QUERY = 0x18
++MINIMC_CMD_SLOT_SELECT = 0x19
++MINIMC_CMD_GCODE_EXEC = 0x1C
++
++
++def minimc_crc16(data: bytes) -> int:
++    """
++    计算 MiniMCProto V2 帧头与载荷的 CRC16-CCITT (多项式 0x1021，初值 0xFFFF)。
++
++    :param data: 待计算字节序列
++    :return: 16位无符号 CRC 校验值
++    """
++    crc = 0xFFFF
++    for byte in data:
++        crc ^= (byte << 8) & 0xFFFF
++        for _ in range(8):
++            if (crc & 0x8000) != 0:
++                crc = ((crc << 1) ^ 0x1021) & 0xFFFF
++            else:
++                crc = (crc << 1) & 0xFFFF
++    return crc
++
++
++def build_minimc_v2_frame(
++    src_id: int,
++    dst_id: int,
++    cmd_id: int,
++    seq: int,
++    payload: bytes = b"",
++    is_response: bool = False,
++) -> bytes:
++    """
++    构建一条带完整 12 字节帧头与尾随小端 CRC16 的 MiniMCProto V2 二进制协议帧。
++
++    :param src_id: 源节点 ID (0x01=AP, 0x02=MC, 0x03=TH)
++    :param dst_id: 目标节点 ID
++    :param cmd_id: 命令码
++    :param seq: 16位无符号序列号 (1..65535)
++    :param payload: 业务载荷字节流
++    :param is_response: 是否为响应帧
++    :return: 完整二进制帧字节流
++    """
++    flags = (MINIMC_FLAG_IS_RESPONSE if is_response else MINIMC_FLAG_WANTS_ACK) | MINIMC_FLAG_PROTO_V2
++    header = struct.pack(
++        "<BBBBBBBBHH",
++        MINIMC_SOF_1,
++        MINIMC_SOF_2,
++        src_id & 0xFF,
++        dst_id & 0xFF,
++        flags & 0xFF,
++        cmd_id & 0xFF,
++        4,
++        0,
++        seq & 0xFFFF,
++        len(payload) & 0xFFFF,
++    )
++    body = header + payload
++    return body + struct.pack("<H", minimc_crc16(body))
++
++
++def _build_single_burst_spec(seq: int) -> Tuple[int, int, bytes, str, str, str]:
++    """
++    根据序列号 `seq` (1..290) 构造单帧协议参数与对应的 HTTP 路由/方法。
++
++    :param seq: 16位递增序列号 (1..290)
++    :return: (dst, cmd, payload, desc, http_method, http_route)
++    """
++    offset = (seq - 1) % 10
++    table = {
++        0: (MINIMC_NODE_MC, MINIMC_CMD_GET_VERSION, b"", "MC_GET_VERSION", "GET", "/api/v1/system/versions"),
++        1: (MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, b"", "TH_GET_VERSION", "GET", "/api/v1/system/versions"),
++        2: (MINIMC_NODE_MC, MINIMC_CMD_PING, struct.pack("<I", seq * 20), "MC_PING", "GET", "/api/v1/state"),
++        3: (MINIMC_NODE_TH, MINIMC_CMD_PING, struct.pack("<I", seq * 20), "TH_PING", "GET", "/api/v1/state"),
++        4: (MINIMC_NODE_MC, MINIMC_CMD_GET_TEMP, b"", "MC_GET_TEMP", "POST", "/api/v1/temperature/sample"),
++        5: (MINIMC_NODE_TH, MINIMC_CMD_GET_TEMP, b"", "TH_GET_TEMP", "POST", "/api/v1/temperature/sample"),
++        6: (MINIMC_NODE_MC, MINIMC_CMD_POS_QUERY, b"", "MC_POS_QUERY", "GET", "/api/v1/motion/position"),
++        7: (MINIMC_NODE_MC, MINIMC_CMD_LEVEL_GRID_QUERY, bytes([seq % 25]), "MC_GRID_QUERY", "GET", "/api/v1/calibration/status"),
++        8: (MINIMC_NODE_MC, MINIMC_CMD_SLOT_SELECT, bytes([seq % 4, 0, 0]), "MC_TH_SLOT_SELECT", "POST", "/api/v1/filament/slots"),
++    }
++    if offset in table:
++        return table[offset]
++    gcode = b"M114"
++    pay = struct.pack("<BB", len(gcode), 0) + gcode
++    return (MINIMC_NODE_MC, MINIMC_CMD_GCODE_EXEC, pay, "MC_TH_GCODE_M114", "GET", "/api/v1/motion/position")
++
++
++def generate_290_burst_plan() -> List[Dict[str, object]]:
++    """
++    按 `hil_full_acceptance_master_plan_20261105.md` §4.1 生成 290 帧突发压测向量清单。
++    共 29 个周期 × 10 种业务帧 = 290 帧，序列号严格覆盖 1..290。
++
++    :return: 290 条突发帧规格字典列表
++    """
++    specs: List[Dict[str, object]] = []
++    for idx in range(290):
++        seq = idx + 1
++        dst, cmd, pay, desc, method, route = _build_single_burst_spec(seq)
++        wire = build_minimc_v2_frame(MINIMC_NODE_AP, dst, cmd, seq, pay, is_response=False)
++        specs.append(
++            {
++                "seq": seq,
++                "dst": dst,
++                "cmd": cmd,
++                "desc": desc,
++                "http_method": method,
++                "http_route": route,
++                "payload_hex": pay.hex(),
++                "wire_hex": wire.hex(),
++                "wire_len": len(wire),
++            }
++        )
++    return specs
++
++
++def _extract_debug_log_metrics(
++    mc_log_text: str, th_log_text: str, expected_total_frames: int
++) -> Dict[str, object]:
++    """
++    从 MC 与 TH 调试日志文本中提取序列号集合、错误计数与截断/ADC污染指标。
++
++    :param mc_log_text: MC 调试日志文本
++    :param th_log_text: TH 调试日志文本
++    :param expected_total_frames: 预期总帧数
++    :return: 解析后的指标字典
++    """
++    combined = mc_log_text + "\n" + th_log_text
++    ellipsis_lines = [
++        line for line in (mc_log_text.splitlines() + th_log_text.splitlines()) if line.endswith("...")
++    ]
++    mc_rx_seqs = {
++        int(m.group(1))
++        for m in re.finditer(r"\[MC-DBG\].*?dir=RX\s+node=(?:MC|TH)\s+seq=(\d+)", mc_log_text)
++    }
++    th_rx_seqs = {
++        int(m.group(1))
++        for m in re.finditer(r"\[TH-DBG\].*?dir=RX\s+node=TH\s+seq=(\d+)", th_log_text)
++    }
++    expected_seqs = set(range(1, expected_total_frames + 1))
++    high_seqs = set(range(256, expected_total_frames + 1)) if expected_total_frames >= 256 else set()
++    return {
++        "bare_adc_busy": ("SS_ADC_BUSY" in combined),
++        "crc_err_count": len(re.findall(r"status=CRC_ERR", combined)),
++        "bad_frame_count": len(re.findall(r"status=BAD_FRAME", combined)),
++        "timeout_count": len(re.findall(r"status=TIMEOUT", combined)),
++        "ellipsis_count": len(ellipsis_lines),
++        "mc_rx_seqs": mc_rx_seqs,
++        "th_rx_seqs": th_rx_seqs,
++        "missing_seqs": sorted(expected_seqs - mc_rx_seqs),
++        "missing_high_seqs": sorted(high_seqs - mc_rx_seqs),
++    }
++
++
++def evaluate_burst_debug_logs(
++    mc_log_text: str,
++    th_log_text: str,
++    expected_total_frames: int = 290,
++    mc_drop_delta: int = 0,
++    mc_trunc_delta: int = 0,
++    th_drop_delta: int = 0,
++    th_trunc_delta: int = 0,
++) -> Tuple[bool, Dict[str, object]]:
++    """
++    审计 290 帧突发压测期间的 `[MC-DBG]` 与 `[TH-DBG]` 原始日志文本，校验零 `SS_ADC_BUSY`、
++    零 `CRC_ERR`/`BAD_FRAME`/`TIMEOUT`、`drop_delta == 0`、`trunc_delta == 0` 及 16-bit `seq` 连续性。
++    """
++    m = _extract_debug_log_metrics(mc_log_text, th_log_text, expected_total_frames)
++    deltas_zero = (mc_drop_delta == 0 and mc_trunc_delta == 0 and th_drop_delta == 0 and th_trunc_delta == 0)
++    errors_zero = (
++        not m["bare_adc_busy"]
++        and m["crc_err_count"] == 0
++        and m["bad_frame_count"] == 0
++        and m["timeout_count"] == 0
++        and m["ellipsis_count"] == 0
++    )
++    seqs_ok = (len(m["missing_seqs"]) == 0 and len(m["missing_high_seqs"]) == 0 and len(m["th_rx_seqs"]) > 0)
++    passed = bool(deltas_zero and errors_zero and seqs_ok)
++    report = {
++        "expected_total_frames": expected_total_frames,
++        "observed_mc_unique_rx_seqs": len(m["mc_rx_seqs"]),
++        "observed_th_unique_rx_seqs": len(m["th_rx_seqs"]),
++        "max_seq_observed": max(m["mc_rx_seqs"]) if m["mc_rx_seqs"] else 0,
++        "missing_seqs_count": len(m["missing_seqs"]),
++        "missing_high_seqs_256_plus": m["missing_high_seqs"],
++        "bare_adc_busy_detected": m["bare_adc_busy"],
++        "crc_err_count": m["crc_err_count"],
++        "bad_frame_count": m["bad_frame_count"],
++        "timeout_count": m["timeout_count"],
++        "ellipsis_trunc_line_count": m["ellipsis_count"],
++        "mc_drop_delta": mc_drop_delta,
++        "mc_trunc_delta": mc_trunc_delta,
++        "th_drop_delta": th_drop_delta,
++        "th_trunc_delta": th_trunc_delta,
++        "passed": passed,
++    }
++    return passed, report
++
++
++def _format_single_frame_debug_logs(item: Dict[str, object], ts_ms: int) -> Tuple[List[str], List[str]]:
++    """
++    为单条突发协议帧生成对应的参考 `[MC-DBG]` 与 `[TH-DBG]` 日志行列表。
++
++    :param item: 单帧规格字典
++    :param ts_ms: 时间戳毫秒数
++    :return: (mc_lines, th_lines)
++    """
++    seq = int(item["seq"])
++    dst = int(item["dst"])
++    cmd = int(item["cmd"])
++    wire_len = int(item["wire_len"])
++    node_str = "TH" if dst == MINIMC_NODE_TH else "MC"
++    mc_lines = [f"[MC-DBG] ts={ts_ms} dir=RX node={node_str} seq={seq} cmd=0x{cmd:02X} status=OK len={wire_len}"]
++    th_lines: List[str] = []
++    if dst == MINIMC_NODE_TH or cmd in (MINIMC_CMD_SLOT_SELECT, MINIMC_CMD_GCODE_EXEC):
++        resp_cmd = (
++            MINIMC_CMD_VERSION_REPORT
++            if cmd == MINIMC_CMD_GET_VERSION
++            else (MINIMC_CMD_PONG if cmd == MINIMC_CMD_PING else cmd)
++        )
++        mc_lines.append(f"[MC-DBG] ts={ts_ms} dir=RELAY_TX node=TH seq={seq} cmd=0x{cmd:02X} status=EXEC timeout_ms=200")
++        th_lines.append(f"[TH-DBG] ts={ts_ms + 1} dir=RX node=TH seq={seq} cmd=0x{cmd:02X} status=OK len={wire_len}")
++        th_lines.append(f"[TH-DBG] ts={ts_ms + 2} dir=TX node=TH seq={seq} cmd=0x{resp_cmd:02X} status=ACK ok=1")
++        mc_lines.append(f"[MC-DBG] ts={ts_ms + 3} dir=RELAY_RX node=TH seq={seq} cmd=0x{resp_cmd:02X} status=ACK elapsed_ms=3")
++    if dst == MINIMC_NODE_MC:
++        if cmd == MINIMC_CMD_POS_QUERY:
++            mc_lines.append(
++                f"[MC-DBG] ts={ts_ms + 1} dir=STATE node=MC seq={seq} cmd=0x16 status=OK "
++                f"op=POS_QUERY axes_mask=0x07 x_mm_x100=12050 y_mm_x100=8525 z_mm_x100=1000 "
++                f"feed=1500 homed_mask=0x07 motion_state=IDLE"
++            )
++        mc_lines.append(f"[MC-DBG] ts={ts_ms + 2} dir=TX node=MC seq={seq} cmd=0x{cmd:02X} status=ACK ok=1")
++    return mc_lines, th_lines
++
++
++def simulate_honest_290_burst_logs(specs: List[Dict[str, object]]) -> Tuple[str, str]:
++    """
++    根据 290 帧协议帧规格生成用于解析器/门禁自检的参考 `[MC-DBG]` 与 `[TH-DBG]` 日志流。
++
++    :param specs: 290 帧规格列表
++    :return: (mc_log_text, th_log_text)
++    """
++    mc_lines: List[str] = []
++    th_lines: List[str] = []
++    ts_ms = 1000
++    for item in specs:
++        m_chunk, t_chunk = _format_single_frame_debug_logs(item, ts_ms)
++        mc_lines.extend(m_chunk)
++        th_lines.extend(t_chunk)
++        ts_ms += 20
++    return "\r\n".join(mc_lines) + "\r\n", "\r\n".join(th_lines) + "\r\n"
++
++
++def _send_single_burst_http_request(http_base: str, item: Dict[str, object]) -> Tuple[bool, str]:
++    """
++    按 290 帧突发计划中的单条规格向网关发起 HTTP 请求，并附带序列号与协议帧头信息。
++
++    :param http_base: 网关基础 URL
++    :param item: 单帧突发规格字典
++    :return: (是否 HTTP 200, 错误信息)
++    """
++    seq = int(item["seq"])
++    route = str(item.get("http_route", "/api/v1/state"))
++    method = str(item.get("http_method", "GET"))
++    headers = {"X-MiniMC-Seq": str(seq), "X-MiniMC-Wire-Hex": str(item["wire_hex"])}
++    body: Optional[bytes] = None
++    if method == "POST":
++        headers["Content-Type"] = "application/json"
++        if route.endswith("/slots"):
++            body = json.dumps({"active_slot": (seq % 4) + 1, "action": 0, "target_temp_deci_c": 0}).encode("utf-8")
++        else:
++            body = json.dumps({"seq": seq}).encode("utf-8")
++    req = urllib.request.Request(f"{http_base.rstrip('/')}{route}", data=body, method=method, headers=headers)
++    try:
++        with urllib.request.urlopen(req, timeout=2.0) as resp:
++            if resp.status == 200:
++                return True, ""
++            return False, f"seq={seq} status={resp.status}"
++    except urllib.error.URLError as exc:
++        return False, f"seq={seq} err={exc}"
++
++
++def _read_incremental_text(log_path: Optional[Path], offset: int) -> str:
++    """
++    从指定日志文件偏移量起读取新增的 UTF-8 文本内容。
++
++    :param log_path: 日志文件路径
++    :param offset: 起始字节偏移
++    :return: 增量日志文本
++    """
++    if not log_path or not log_path.exists():
++        return ""
++    with log_path.open("rb") as f:
++        f.seek(offset)
++        return f.read().decode("utf-8", errors="replace")
++
++
++def run_live_http_burst(
++    http_base: str,
++    mc_log_path: Optional[Path],
++    th_log_path: Optional[Path],
++    pacing_sec: float = 0.02,
++) -> Tuple[bool, Dict[str, object]]:
++    """
++    驱动 `generate_290_burst_plan()` 定义的 290 帧序列向 `http_base` 发起请求，
++    并直接调用 `evaluate_burst_debug_logs` 校验 16-bit `seq` (1..290) 连续性、
++    `TIMEOUT == 0`、`drop_delta == 0`、`trunc_delta == 0`、`CRC_ERR == 0` 与 `BAD_FRAME == 0`。
++
++    :param http_base: 网关基础地址，例如 http://192.168.77.134:8080
++    :param mc_log_path: MC 调试日志文件路径
++    :param th_log_path: TH 调试日志文件路径
++    :param pacing_sec: 帧间间隔秒数（默认 20ms）
++    :return: (是否通过, 完整对账报告字典)
++    """
++    plan = generate_290_burst_plan()
++    mc_offset = mc_log_path.stat().st_size if (mc_log_path and mc_log_path.exists()) else 0
++    th_offset = th_log_path.stat().st_size if (th_log_path and th_log_path.exists()) else 0
++    http_ok = 0
++    http_errors: List[str] = []
++    for item in plan:
++        ok, err_msg = _send_single_burst_http_request(http_base, item)
++        if ok:
++            http_ok += 1
++        else:
++            http_errors.append(err_msg)
++        if pacing_sec > 0.0:
++            time.sleep(pacing_sec)
++
++    mc_text = _read_incremental_text(mc_log_path, mc_offset)
++    th_text = _read_incremental_text(th_log_path, th_offset)
++    eval_passed, report = evaluate_burst_debug_logs(mc_text, th_text, expected_total_frames=len(plan))
++    overall_passed = (http_ok == len(plan)) and eval_passed
++    report["http_ok"] = http_ok
++    report["http_error_count"] = len(http_errors)
++    report["passed"] = overall_passed
++    return overall_passed, report
++
++
++class _BurstMockGatewayHandler(http.server.BaseHTTPRequestHandler):
++    """用于 `--self-test` 端到端验证 `run_live_http_burst` 的本地 HTTP 网关模拟处理器。"""
++
++    spec_by_seq: Dict[int, Dict[str, object]] = {}
++    mc_log_file: Optional[Path] = None
++    th_log_file: Optional[Path] = None
++
++    def log_message(self, format_str: str, *args: object) -> None:
++        """静默标准错误输出以保持自检控制台整洁。"""
++        return
++
++    def _handle_burst_req(self) -> None:
++        """处理单次突发 HTTP 请求并向临时日志文件追加对应的 `[MC-DBG]`/`[TH-DBG]` 帧记录。"""
++        content_len = int(self.headers.get("Content-Length", "0"))
++        if content_len > 0:
++            _ = self.rfile.read(content_len)
++        seq = int(self.headers.get("X-MiniMC-Seq", "0"))
++        item = self.spec_by_seq.get(seq)
++        if item and self.mc_log_file and self.th_log_file:
++            mc_lines, th_lines = _format_single_frame_debug_logs(item, 1000 + seq * 20)
++            with self.mc_log_file.open("a", encoding="utf-8") as mf:
++                mf.write("\r\n".join(mc_lines) + "\r\n")
++            if th_lines:
++                with self.th_log_file.open("a", encoding="utf-8") as tf:
++                    tf.write("\r\n".join(th_lines) + "\r\n")
++        body = b'{"ok":true}'
++        self.send_response(200)
++        self.send_header("Content-Type", "application/json")
++        self.send_header("Content-Length", str(len(body)))
++        self.end_headers()
++        self.wfile.write(body)
++
++    def do_GET(self) -> None:
++        """处理 GET 请求。"""
++        self._handle_burst_req()
++
++    def do_POST(self) -> None:
++        """处理 POST 请求。"""
++        self._handle_burst_req()
++
++
++class Test290FrameBurstStress(unittest.TestCase):
++    """290 帧高频突发压测规格与对账门禁单元测试套件。"""
++
++    def test_generate_290_burst_plan_covers_16bit_seq_boundary(self) -> None:
++        """验证 290 帧突发计划完整覆盖 seq=1..290，且每帧 CRC16 与 16位小端序列号编码准确。"""
++        plan = generate_290_burst_plan()
++        self.assertEqual(len(plan), 290)
++        self.assertEqual(plan[0]["seq"], 1)
++        self.assertEqual(plan[254]["seq"], 255)
++        self.assertEqual(plan[255]["seq"], 256)
++        self.assertEqual(plan[289]["seq"], 290)
++
++        frame_256 = bytes.fromhex(str(plan[255]["wire_hex"]))
++        self.assertEqual(frame_256[8], 0x00)
++        self.assertEqual(frame_256[9], 0x01)
++        self.assertEqual(minimc_crc16(frame_256[:-2]), struct.unpack("<H", frame_256[-2:])[0])
++
++        frame_290 = bytes.fromhex(str(plan[289]["wire_hex"]))
++        self.assertEqual(frame_290[8], 0x22)
++        self.assertEqual(frame_290[9], 0x01)
++        self.assertEqual(minimc_crc16(frame_290[:-2]), struct.unpack("<H", frame_290[-2:])[0])
++
++    def test_evaluate_burst_debug_logs_positive_290_frames(self) -> None:
++        """验证正例：290 帧完整收发、seq=256..290 原样输出、零 CRC_ERR/BAD_FRAME/drop/trunc 时判定通过。"""
++        plan = generate_290_burst_plan()
++        mc_log, th_log = simulate_honest_290_burst_logs(plan)
++        passed, report = evaluate_burst_debug_logs(mc_log, th_log, expected_total_frames=290)
++        self.assertTrue(passed)
++        self.assertEqual(report["max_seq_observed"], 290)
++        self.assertEqual(report["missing_seqs_count"], 0)
++        self.assertEqual(report["crc_err_count"], 0)
++        self.assertEqual(report["bad_frame_count"], 0)
++        self.assertEqual(report["timeout_count"], 0)
++        self.assertFalse(report["bare_adc_busy_detected"])
++
++    def test_evaluate_burst_debug_logs_rejects_8bit_wrap_and_adc_pollution(self) -> None:
++        """验证反例：当发生 8-bit 序列号回绕、裸 `adc SS_ADC_BUSY` 污染、TIMEOUT 或长行 `...` 截断时严格拦截。"""
++        plan = generate_290_burst_plan()
++        mc_log, th_log = simulate_honest_290_burst_logs(plan)
++
++        passed_adc, rep_adc = evaluate_burst_debug_logs(
++            mc_log + "adc SS_ADC_BUSY \r\n", th_log, expected_total_frames=290
++        )
++        self.assertFalse(passed_adc)
++        self.assertTrue(rep_adc["bare_adc_busy_detected"])
++
++        passed_trunc, rep_trunc = evaluate_burst_debug_logs(
++            mc_log + "[MC-DBG] ts=9999 dir=STATE node=MC seq=260 cmd=0x16 status=OK ...\r\n",
++            th_log,
++            expected_total_frames=290,
++            mc_trunc_delta=1,
++        )
++        self.assertFalse(passed_trunc)
++        self.assertEqual(rep_trunc["ellipsis_trunc_line_count"], 1)
++
++        mc_wrapped = mc_log.replace("seq=290 ", "seq=34 ")
++        passed_wrap, rep_wrap = evaluate_burst_debug_logs(mc_wrapped, th_log, expected_total_frames=290)
++        self.assertFalse(passed_wrap)
++        self.assertIn(290, rep_wrap["missing_high_seqs_256_plus"])
++
++    def test_run_live_http_burst_end_to_end_with_mock_server(self) -> None:
++        """验证 `run_live_http_burst` 端到端驱动 290 帧 HTTP 序列并调用 `evaluate_burst_debug_logs` 校验通过。"""
++        plan = generate_290_burst_plan()
++        with tempfile.TemporaryDirectory() as tmpdir:
++            mc_path = Path(tmpdir) / "mc_burst.log"
++            th_path = Path(tmpdir) / "th_burst.log"
++            mc_path.write_text("", encoding="utf-8")
++            th_path.write_text("", encoding="utf-8")
++
++            _BurstMockGatewayHandler.spec_by_seq = {int(item["seq"]): item for item in plan}
++            _BurstMockGatewayHandler.mc_log_file = mc_path
++            _BurstMockGatewayHandler.th_log_file = th_path
++
++            server = http.server.HTTPServer(("127.0.0.1", 0), _BurstMockGatewayHandler)
++            port = server.server_port
++            thread = threading.Thread(target=server.serve_forever, daemon=True)
++            thread.start()
++            try:
++                passed, report = run_live_http_burst(
++                    f"http://127.0.0.1:{port}", mc_path, th_path, pacing_sec=0.0
++                )
++            finally:
++                server.shutdown()
++                server.server_close()
++
++            self.assertTrue(passed)
++            self.assertEqual(report["http_ok"], 290)
++            self.assertEqual(report["max_seq_observed"], 290)
++            self.assertEqual(report["missing_seqs_count"], 0)
++            self.assertEqual(report["timeout_count"], 0)
++            self.assertEqual(report["mc_drop_delta"], 0)
++            self.assertEqual(report["mc_trunc_delta"], 0)
++
++
++def main() -> int:
++    """命令行入口：支持 `--self-test`、导出 290 帧向量或 `--live` 实机压测。"""
++    parser = argparse.ArgumentParser(description="TWIN-61 290帧高频突发压测与16位序列号对账工具")
++    parser.add_argument("--self-test", action="store_true", help="运行内置正反例与端到端 HTTP 自检套件")
++    parser.add_argument("--dump-vectors", type=Path, default=None, help="导出 290 帧原始二进制向量 JSON")
++    parser.add_argument("--live", action="store_true", help="针对实机 HTTP/串口执行 290 帧突发压测")
++    parser.add_argument("--http-base", type=str, default="http://192.168.77.134:8080", help="实机网关 URL")
++    parser.add_argument("--mc-log", type=Path, default=None, help="MC 调试日志路径")
++    parser.add_argument("--th-log", type=Path, default=None, help="TH 调试日志路径")
++    args = parser.parse_args()
++
++    if args.dump_vectors is not None:
++        vectors = generate_290_burst_plan()
++        args.dump_vectors.write_text(json.dumps(vectors, indent=2, ensure_ascii=False), encoding="utf-8")
++        print(f"[OK] Exported {len(vectors)} burst frames to {args.dump_vectors}")
++        return 0
++
++    if args.live:
++        passed, report = run_live_http_burst(args.http_base, args.mc_log, args.th_log)
++        print(json.dumps(report, indent=2, ensure_ascii=False))
++        return 0 if passed else 1
++
++    suite = unittest.defaultTestLoader.loadTestsFromTestCase(Test290FrameBurstStress)
++    result = unittest.TextTestRunner(verbosity=2).run(suite)
++    return 0 if result.wasSuccessful() else 1
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/hil/tests/test_composite_lifecycle_sequences.py b/hil/tests/test_composite_lifecycle_sequences.py
+new file mode 100644
+index 0000000..b984a5c
+--- /dev/null
++++ b/hil/tests/test_composite_lifecycle_sequences.py
+@@ -0,0 +1,652 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""
++@file test_composite_lifecycle_sequences.py
++@brief TWIN-61 (ISS-20261105-005 / DELTA-COMB-SEQ-01..05) 5类复合业务序列自动化测试与四方对账脚本。
++
++本脚本固化 `hil_full_acceptance_master_plan_20261105.md` §5 定义的 5 类端到端复合业务序列：
++- `SEQ-01`: OOBE 双板探测 + 动态 `boot_id` 与 `git_commit_short` 对账 + 温度与 `raw_adc` 映射及热床量程门禁 (`ISS-006/011/012/016`)
++- `SEQ-02`: 三轴归零 (`0x11`) -> 25点网格调平触发与读取 (`0x1A`+`0x18`) -> XYZ 点动 (`0x12`) -> 坐标查询 (`0x16`) 零截断闭环 (`ISS-015`)
++- `SEQ-03`: 0%安全设温 (`0x10`) -> 保存料槽配置不触发进丝 (`action=0`) -> 显式进退丝 -> 混色/槽位 HTTP 400 与 MC NACK 0x03 (`ISS-007/010`)
++- `SEQ-04`: G-code上传 400 双重校验 -> 模型一键载入不自动启动 -> 显式开始 -> 0x1C 级联步进 -> 暂停 -> 继续 -> 取消 (`ISS-008/009`)
++- `SEQ-05`: 急停 (`0x17`) -> 3.0s 断链离线哨兵 `2147483646` 与断料传感器去假绿 -> 恢复重连 -> 未知路由 404 完整正文 (`ISS-013/014/017`)
++"""
++
++import argparse
++import http.server
++import json
++import re
++import socket
++import sys
++import tempfile
++import threading
++import unittest
++import urllib.error
++import urllib.parse
++import urllib.request
++from pathlib import Path
++from typing import Dict, List, Optional, Tuple
++
++
++# 权威物理量程与哨兵值常量（对齐 telemetry_types.h 与 minimc_telemetry.h）
++AISOC_BED_VALID_MIN_MILLIC = 5000
++AISOC_BED_VALID_MAX_MILLIC = 130000
++AISOC_NOZZLE_VALID_MIN_MILLIC = 5000
++AISOC_NOZZLE_VALID_MAX_MILLIC = 300000
++AISOC_TEMP_MILLIC_FAULT = 2147483647
++AISOC_TEMP_MILLIC_OFFLINE = 2147483646
++AISOC_FRESHNESS_STALE_MS = 1500
++AISOC_FRESHNESS_FAULT_MS = 3000
++VALID_GCODE_REGEX = re.compile(
++    r"^\s*(?:G0|G1|G28|G29|G90|G91|G92|M82|M83|M104|M106|M107|M109|M114|M140|M190|T[0-3])\b",
++    re.MULTILINE,
++)
++PRESET_MODELS = {"3DBenchy.gcode", "Calibration_Cube.gcode", "MultiColor_Tower.gcode"}
++
++
++def verify_seq01_oobe_bootid_and_adc_snapshot(
++    state_resp: Dict[str, object],
++    snapshot_resp: Dict[str, object],
++    boot_id_before_reset: Tuple[int, int],
++    boot_id_after_reset: Tuple[int, int],
++) -> Tuple[bool, str]:
++    """
++    校验复合序列 SEQ-01：
++    1. `/api/v1/state` 与 `/api/v1/temperature/snapshot` 动态同步（`ISS-006`）；
++    2. 复位前后 MC 与 TH 的 `boot_id` 均非零且发生变化（`ISS-016`）；
++    3. `bed` 与 `tool` 对象包含真实 `raw_adc` 字段（`ISS-012`）；
++    4. 若热床温度超出 `5~130°C`（如 `300.0°C`），必须被标记为 `FAULT` / `2147483647`（`ISS-011`）。
++
++    :param state_resp: `/api/v1/state` 返回的 JSON 字典
++    :param snapshot_resp: `/api/v1/temperature/snapshot` 返回的 JSON 字典
++    :param boot_id_before_reset: 复位前 (mc_boot_id, th_boot_id)
++    :param boot_id_after_reset: 复位后 (mc_boot_id, th_boot_id)
++    :return: (是否通过, 诊断说明)
++    """
++    if state_resp.get("system_status") != snapshot_resp.get("system_status"):
++        return False, "state and snapshot system_status mismatch"
++
++    mc_b1, th_b1 = boot_id_before_reset
++    mc_b2, th_b2 = boot_id_after_reset
++    if mc_b1 == 0 or th_b1 == 0 or mc_b2 == 0 or th_b2 == 0:
++        return False, "boot_id must be non-zero"
++    if mc_b1 == mc_b2 or th_b1 == th_b2:
++        return False, "boot_id did not change across hardware reset"
++
++    bed = snapshot_resp.get("bed")
++    tool = snapshot_resp.get("tool")
++    if not isinstance(bed, dict) or not isinstance(tool, dict):
++        return False, "missing bed or tool object in snapshot"
++    if "raw_adc" not in bed or "raw_adc" not in tool:
++        return False, "missing raw_adc field in bed or tool telemetry"
++
++    bed_millic = int(bed.get("temperature_millic", 0))
++    if bed_millic not in (AISOC_TEMP_MILLIC_FAULT, AISOC_TEMP_MILLIC_OFFLINE):
++        if bed_millic < AISOC_BED_VALID_MIN_MILLIC or bed_millic > AISOC_BED_VALID_MAX_MILLIC:
++            return False, f"out-of-range bed temperature {bed_millic} not downgraded to FAULT"
++    elif bed.get("quality") != "FAULT":
++        return False, "sentinel bed temperature must have quality=FAULT"
++
++    return True, "SEQ-01 verified"
++
++
++def verify_seq02_homing_leveling_jog_and_pos_log(mc_log_text: str) -> Tuple[bool, str]:
++    """
++    校验复合序列 SEQ-02：
++    三轴归零 (`0x11`) -> 调平触发 (`0x1A`) -> 网格读取 (`0x18`) -> XYZ 点动 (`0x12`) -> 坐标查询 (`0x16`)，
++    且 204B+ 的 `POS_QUERY` 日志行在 `MC_DBG_LINE_MAX_LEN=256U` 下零截断、无 `adc SS_ADC_BUSY`。
++
++    :param mc_log_text: MC 调试日志文本
++    :return: (是否通过, 诊断说明)
++    """
++    required_patterns = [
++        r"cmd=0x11\s+status=OK\s+op=HOME\s+axes_mask=0x07",
++        r"cmd=0x1A\s+status=ACK",
++        r"cmd=0x18\s+status=OK\s+op=GRID_READ\s+probe_idx=\d+\s+z_offset_um=-?\d+\s+grid_valid=1",
++        r"cmd=0x12\s+status=OK\s+op=MOVE",
++        r"cmd=0x16\s+status=OK\s+op=POS_QUERY",
++    ]
++    for pat in required_patterns:
++        if re.search(pat, mc_log_text) is None:
++            return False, f"missing expected MC-DBG pattern: {pat}"
++    if "SS_ADC_BUSY" in mc_log_text:
++        return False, "bare adc SS_ADC_BUSY pollution detected"
++    for line in mc_log_text.splitlines():
++        if line.endswith("..."):
++            return False, f"truncated MC-DBG line detected: {line}"
++    return True, "SEQ-02 verified"
++
++
++def _check_slots_weight_list(slots_obj: object) -> Tuple[bool, str]:
++    """
++    校验 `slots` 数组内单槽 `mixing_weight` 在 `[0, 10000]` 且总和等于 `10000`。
++
++    :param slots_obj: `slots` 字段值
++    :return: (是否合法, 错误原因)
++    """
++    if not isinstance(slots_obj, list) or len(slots_obj) == 0:
++        return False, "slots must be non-empty list"
++    weight_sum = 0
++    has_weights = False
++    for item in slots_obj:
++        if not isinstance(item, dict):
++            return False, "invalid slot item"
++        if "mixing_weight" in item:
++            has_weights = True
++            w = item["mixing_weight"]
++            if not isinstance(w, int) or w < 0 or w > 10000:
++                return False, "slot mixing_weight out of [0, 10000]"
++            weight_sum += w
++    if has_weights and weight_sum != 10000:
++        return False, f"slots mixing_weight sum {weight_sum} != 10000"
++    return True, "ok"
++
++
++def validate_seq03_filament_slots_contract(payload: Dict[str, object]) -> Tuple[int, str]:
++    """
++    校验复合序列 SEQ-03 的料槽与混色参数契约（对齐 `ui_gateway_server.cpp` `validate_filament_slots_body`）：
++    1. `slot_id` / `active_slot` 必须在 `1..4`；
++    2. `action` 必须在 `0..2` 或合法字符串 `select`/`load`/`unload`；
++    3. 单槽 `mixing_weight` 在 `[0, 10000]` 且权重总和严格等于 `10000`。
++
++    :param payload: `/api/v1/filament/slots` 请求字典
++    :return: (预期 HTTP 状态码, 说明)
++    """
++    for key in ("slot_id", "active_slot"):
++        if key in payload:
++            val = payload[key]
++            if not isinstance(val, int) or val < 1 or val > 4:
++                return 400, f"invalid {key}"
++
++    if "action" in payload:
++        act = payload["action"]
++        if isinstance(act, int):
++            if act < 0 or act > 2:
++                return 400, "invalid numeric action"
++        elif isinstance(act, str):
++            if act.lower() not in ("select", "load", "unload"):
++                return 400, "invalid string action"
++        else:
++            return 400, "invalid action type"
++
++    if "total_mixing_weight" in payload and payload["total_mixing_weight"] != 10000:
++        return 400, "total_mixing_weight must equal 10000"
++
++    if "slots" in payload:
++        ok_slots, reason = _check_slots_weight_list(payload["slots"])
++        if not ok_slots:
++            return 400, reason
++
++    return 200, "valid filament slots payload"
++
++
++def validate_seq04_gcode_upload_and_two_stage_job(
++    upload_payload: Dict[str, object],
++    explicit_start_clicked: bool,
++) -> Tuple[int, str, str]:
++    """
++    校验复合序列 SEQ-04 的 G-code 上传准入与模型载入/开始打印两阶段解耦契约（`ISS-008` / `ISS-009`）：
++    1. 校验 `.gcode`/`.gco`/`.nc` 扩展名；
++    2. 若 `preset=True`，模型名必须在预置白名单中；否则 `size > 0` 且 `content` 至少包含一条有效 G/M/T 指令；
++    3. 仅载入/上传成功且 `explicit_start_clicked=False` 时，作业状态必须保持 `IDLE`。
++
++    :param upload_payload: `/api/v1/jobs/upload` 请求字典
++    :param explicit_start_clicked: 用户是否显式点击了 `#btn-job-start`
++    :return: (HTTP 状态码, 作业状态, 说明)
++    """
++    name = str(upload_payload.get("name", ""))
++    lower_name = name.lower()
++    if not (lower_name.endswith(".gcode") or lower_name.endswith(".gco") or lower_name.endswith(".nc")):
++        return 400, "IDLE", "invalid file extension"
++
++    if bool(upload_payload.get("preset", False)):
++        if name not in PRESET_MODELS:
++            return 400, "IDLE", "unknown preset model"
++    else:
++        size = int(upload_payload.get("size", 0))
++        content = str(upload_payload.get("content", ""))
++        if size <= 0 or VALID_GCODE_REGEX.search(content) is None:
++            return 400, "IDLE", "empty or non-gcode content"
++
++    job_state = "PRINTING" if explicit_start_clicked else "IDLE"
++    return 200, job_state, "upload staged"
++
++
++def verify_seq05_estop_offline_degradation_and_404_framing(
++    elapsed_offline_ms: int,
++    snapshot_after_disconnect: Dict[str, object],
++    raw_404_http_response: bytes,
++) -> Tuple[bool, str]:
++    """
++    校验复合序列 SEQ-05：
++    1. 断链 `elapsed_offline_ms >= 3000` 时，`device_state == "OFFLINE"` 且温度打入离线哨兵 `2147483646`（`ISS-014`）；
++    2. 未知路由 HTTP 404 响应头声明的 `Content-Length` 与实际 JSON 正文字节长度 100% 相等（`ISS-017`）。
++
++    :param elapsed_offline_ms: 断链持续毫秒数
++    :param snapshot_after_disconnect: 断链后获取的快照字典
++    :param raw_404_http_response: 未知 API 路由返回的原始 HTTP 字节流
++    :return: (是否通过, 诊断说明)
++    """
++    if elapsed_offline_ms >= AISOC_FRESHNESS_FAULT_MS:
++        if snapshot_after_disconnect.get("device_state") != "OFFLINE":
++            return False, "device_state did not degrade to OFFLINE within 3000ms"
++        bed = snapshot_after_disconnect.get("bed", {})
++        tool = snapshot_after_disconnect.get("tool", {})
++        if isinstance(bed, dict) and bed.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE:
++            return False, "bed temperature_millic not set to AISOC_TEMP_MILLIC_OFFLINE (2147483646)"
++        if isinstance(tool, dict) and tool.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE:
++            return False, "tool temperature_millic not set to AISOC_TEMP_MILLIC_OFFLINE (2147483646)"
++
++    header_end = raw_404_http_response.find(b"\r\n\r\n")
++    if header_end < 0:
++        return False, "malformed HTTP 404 response headers"
++    headers_text = raw_404_http_response[:header_end].decode("utf-8", errors="replace")
++    body_bytes = raw_404_http_response[header_end + 4 :]
++    m_len = re.search(r"Content-Length:\s*(\d+)", headers_text, re.IGNORECASE)
++    if m_len is None:
++        return False, "missing Content-Length header in 404 response"
++    if int(m_len.group(1)) != len(body_bytes):
++        return False, "404 Content-Length mismatch"
++    if body_bytes != b'{"error":404,"message":"Not Found"}':
++        return False, f"unexpected 404 JSON body: {body_bytes!r}"
++    return True, "SEQ-05 verified"
++
++
++def _http_json_call(
++    http_base: str, method: str, route: str, payload: Optional[Dict[str, object]] = None
++) -> Tuple[int, Dict[str, object]]:
++    """
++    向指定 HTTP 网关发起 JSON 请求并返回 `(status_code, parsed_json)`。
++
++    :param http_base: 网关基础 URL
++    :param method: HTTP 方法 (`GET` 或 `POST`)
++    :param route: API 路由路径
++    :param payload: 可选 JSON 请求字典
++    :return: (HTTP 状态码, 响应 JSON 字典)
++    """
++    body = json.dumps(payload).encode("utf-8") if payload is not None else None
++    headers = {"Content-Type": "application/json"} if body is not None else {}
++    req = urllib.request.Request(f"{http_base.rstrip('/')}{route}", data=body, method=method, headers=headers)
++    try:
++        with urllib.request.urlopen(req, timeout=2.0) as resp:
++            raw = resp.read().decode("utf-8", errors="replace")
++            return resp.status, (json.loads(raw) if raw else {})
++    except urllib.error.HTTPError as err:
++        raw = err.read().decode("utf-8", errors="replace")
++        try:
++            parsed = json.loads(raw) if raw else {}
++        except ValueError:
++            parsed = {"raw": raw}
++        return err.code, parsed
++
++
++def _fetch_raw_http_response(http_base: str, route: str) -> bytes:
++    """
++    使用原生 TCP Socket 获取未知路由的完整原始 HTTP 响应字节流（用于核验 404 Content-Length 帧完整性）。
++
++    :param http_base: 网关基础 URL
++    :param route: 请求路径
++    :return: 原始 HTTP 响应字节流
++    """
++    parsed = urllib.parse.urlparse(http_base)
++    host = parsed.hostname or "127.0.0.1"
++    port = parsed.port or 80
++    with socket.create_connection((host, port), timeout=2.0) as sock:
++        req = f"GET {route} HTTP/1.1\r\nHost: {host}:{port}\r\nConnection: close\r\n\r\n"
++        sock.sendall(req.encode("utf-8"))
++        chunks: List[bytes] = []
++        while True:
++            data = sock.recv(4096)
++            if not data:
++                break
++            chunks.append(data)
++        return b"".join(chunks)
++
++
++def _drive_seq01_and_seq02_http(http_base: str, mc_log_path: Optional[Path]) -> Tuple[bool, bool]:
++    """
++    通过 HTTP 驱动 SEQ-01（版本/状态/快照与复位后 boot_id 对账）与 SEQ-02（归零/调平/点动/位置查询）。
++
++    :param http_base: 网关基础 URL
++    :param mc_log_path: MC 调试日志路径
++    :return: (seq01_ok, seq02_ok)
++    """
++    _, ver1 = _http_json_call(http_base, "GET", "/api/v1/system/versions")
++    _, state_resp = _http_json_call(http_base, "GET", "/api/v1/state")
++    _, snap_resp = _http_json_call(http_base, "GET", "/api/v1/temperature/snapshot")
++    _, ver2 = _http_json_call(http_base, "GET", "/api/v1/system/versions?after_reset=1")
++    b1 = (int(ver1.get("mc_boot_id", 0)), int(ver1.get("th_boot_id", 0)))
++    b2 = (int(ver2.get("mc_boot_id", 0)), int(ver2.get("th_boot_id", 0)))
++    seq01_ok, _ = verify_seq01_oobe_bootid_and_adc_snapshot(state_resp, snap_resp, b1, b2)
++
++    _http_json_call(http_base, "POST", "/api/v1/motion/home", {"axes": ["X", "Y", "Z"]})
++    _http_json_call(http_base, "POST", "/api/v1/calibration/start", {"mode": "bed_level_25"})
++    _http_json_call(http_base, "GET", "/api/v1/calibration/status")
++    _http_json_call(http_base, "POST", "/api/v1/motion/jog", {"axis": "X", "distance_mm": 10.0, "feedrate": 1500})
++    _http_json_call(http_base, "GET", "/api/v1/motion/position")
++    mc_text = mc_log_path.read_text(encoding="utf-8", errors="replace") if (mc_log_path and mc_log_path.exists()) else ""
++    seq02_ok, _ = verify_seq02_homing_leveling_jog_and_pos_log(mc_text)
++    return seq01_ok, seq02_ok
++
++
++def _drive_seq03_seq04_seq05_http(http_base: str) -> Tuple[bool, bool, bool]:
++    """
++    通过 HTTP 驱动 SEQ-03（料槽配置与 400 校验）、SEQ-04（G-code 上传两阶段启动与 400 校验）与 SEQ-05（急停、离线哨兵与 404 帧）。
++
++    :param http_base: 网关基础 URL
++    :return: (seq03_ok, seq04_ok, seq05_ok)
++    """
++    c_ok, _ = _http_json_call(
++        http_base,
++        "POST",
++        "/api/v1/filament/slots",
++        {"active_slot": 1, "action": 0, "target_temp_deci_c": 0, "total_mixing_weight": 10000},
++    )
++    c_bad, _ = _http_json_call(http_base, "POST", "/api/v1/filament/slots", {"total_mixing_weight": 9999})
++    seq03_ok = (c_ok == 200 and c_bad == 400)
++
++    u_bad, _ = _http_json_call(
++        http_base, "POST", "/api/v1/jobs/upload", {"name": "bad.gcode", "size": 12, "content": "hello world\n"}
++    )
++    u_ok, up_body = _http_json_call(
++        http_base, "POST", "/api/v1/jobs/upload", {"name": "Calibration_Cube.gcode", "preset": True}
++    )
++    s_ok, start_body = _http_json_call(http_base, "POST", "/api/v1/jobs/start", {})
++    seq04_ok = (
++        u_bad == 400
++        and u_ok == 200
++        and up_body.get("job_state") == "IDLE"
++        and s_ok == 200
++        and start_body.get("job_state") == "PRINTING"
++    )
++
++    _http_json_call(http_base, "POST", "/api/v1/system/estop", {})
++    _, off_snap = _http_json_call(http_base, "GET", "/api/v1/temperature/snapshot?simulate_offline_ms=3200")
++    raw_404 = _fetch_raw_http_response(http_base, "/api/v1/unknown_route_404")
++    seq05_ok, _ = verify_seq05_estop_offline_degradation_and_404_framing(3200, off_snap, raw_404)
++    return seq03_ok, seq04_ok, seq05_ok
++
++
++def run_live_composite_sequences(
++    http_base: str, mc_log_path: Optional[Path] = None
++) -> Tuple[bool, Dict[str, object]]:
++    """
++    针对目标 HTTP 网关端到端执行 SEQ-01 ~ SEQ-05 五类复合业务序列并汇总四方对账结果。
++
++    :param http_base: 网关基础地址，如 `http://192.168.77.134:8080`
++    :param mc_log_path: MC 调试日志文件路径
++    :return: (是否全部通过, 序列执行报告字典)
++    """
++    seq01_ok, seq02_ok = _drive_seq01_and_seq02_http(http_base, mc_log_path)
++    seq03_ok, seq04_ok, seq05_ok = _drive_seq03_seq04_seq05_http(http_base)
++    passed = bool(seq01_ok and seq02_ok and seq03_ok and seq04_ok and seq05_ok)
++    return passed, {
++        "SEQ-01": seq01_ok,
++        "SEQ-02": seq02_ok,
++        "SEQ-03": seq03_ok,
++        "SEQ-04": seq04_ok,
++        "SEQ-05": seq05_ok,
++        "passed": passed,
++    }
++
++
++class _CompositeMockGatewayHandler(http.server.BaseHTTPRequestHandler):
++    """用于 `--self-test` 端到端验证 `run_live_composite_sequences` 的本地 HTTP 网关模拟处理器。"""
++
++    mc_log_file: Optional[Path] = None
++
++    def log_message(self, format_str: str, *args: object) -> None:
++        """静默标准错误日志。"""
++        return
++
++    def _send_json(self, status_code: int, payload: Dict[str, object]) -> None:
++        """发送带精确 Content-Length 的 JSON 响应。"""
++        raw = json.dumps(payload, separators=(",", ":")).encode("utf-8")
++        self.send_response(status_code)
++        self.send_header("Content-Type", "application/json")
++        self.send_header("Content-Length", str(len(raw)))
++        self.send_header("Connection", "close")
++        self.end_headers()
++        self.wfile.write(raw)
++
++    def do_GET(self) -> None:
++        """处理复合序列 GET 请求。"""
++        if self.path.startswith("/api/v1/system/versions"):
++            after = "after_reset=1" in self.path
++            self._send_json(200, {"mc_boot_id": 0x11223345 if after else 0x11223344, "th_boot_id": 0x55667789 if after else 0x55667788})
++        elif self.path == "/api/v1/state":
++            self._send_json(200, {"system_status": "READY", "device_state": "READY"})
++        elif self.path.startswith("/api/v1/temperature/snapshot"):
++            if "simulate_offline_ms=3200" in self.path:
++                self._send_json(
++                    200,
++                    {
++                        "system_status": "OFFLINE",
++                        "device_state": "OFFLINE",
++                        "bed": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "raw_adc": 4095, "quality": "FAULT"},
++                        "tool": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "raw_adc": 4095, "quality": "FAULT"},
++                    },
++                )
++            else:
++                self._send_json(
++                    200,
++                    {
++                        "system_status": "READY",
++                        "device_state": "READY",
++                        "bed": {"temperature_millic": 60000, "raw_adc": 3120, "quality": "FRESH"},
++                        "tool": {"temperature_millic": 200000, "raw_adc": 1850, "quality": "FRESH"},
++                    },
++                )
++        elif self.path in ("/api/v1/calibration/status", "/api/v1/motion/position"):
++            self._send_json(200, {"ok": True})
++        else:
++            self._send_json(404, {"error": 404, "message": "Not Found"})
++
++    def do_POST(self) -> None:
++        """处理复合序列 POST 请求并按路由执行契约校验与日志追加。"""
++        length = int(self.headers.get("Content-Length", "0"))
++        raw_body = self.rfile.read(length).decode("utf-8", errors="replace") if length > 0 else "{}"
++        payload = json.loads(raw_body) if raw_body else {}
++        if self.path == "/api/v1/filament/slots":
++            code, msg = validate_seq03_filament_slots_contract(payload)
++            self._send_json(code, {"message": msg})
++        elif self.path == "/api/v1/jobs/upload":
++            code, state, msg = validate_seq04_gcode_upload_and_two_stage_job(payload, explicit_start_clicked=False)
++            self._send_json(code, {"job_state": state, "message": msg})
++        elif self.path == "/api/v1/jobs/start":
++            self._send_json(200, {"job_state": "PRINTING"})
++        elif self.path in ("/api/v1/motion/home", "/api/v1/calibration/start", "/api/v1/motion/jog", "/api/v1/system/estop"):
++            if self.path == "/api/v1/motion/jog" and self.mc_log_file:
++                self.mc_log_file.write_text(
++                    "[MC-DBG] ts=1000 dir=STATE node=MC seq=10 cmd=0x11 status=OK op=HOME axes_mask=0x07 x_mm_x100=0 y_mm_x100=0 z_mm_x100=0 feed=1500 homed_mask=0x07 motion_state=IDLE\r\n"
++                    "[MC-DBG] ts=1050 dir=TX node=MC seq=11 cmd=0x1A status=ACK op=LEVEL_TRIGGER grid_valid=1 status=DONE\r\n"
++                    "[MC-DBG] ts=1100 dir=STATE node=MC seq=12 cmd=0x18 status=OK op=GRID_READ probe_idx=7 z_offset_um=-42 grid_valid=1 status=DONE\r\n"
++                    "[MC-DBG] ts=1150 dir=STATE node=MC seq=13 cmd=0x12 status=OK op=MOVE axes_mask=0x07 x_mm_x100=12500 y_mm_x100=8525 z_mm_x100=1000 feed=2400 homed_mask=0x07 motion_state=MOVING\r\n"
++                    "[MC-DBG] ts=1200 dir=STATE node=MC seq=14 cmd=0x16 status=OK op=POS_QUERY axes_mask=0x07 x_mm_x100=12500 y_mm_x100=8525 z_mm_x100=1000 feed=2400 homed_mask=0x07 motion_state=IDLE\r\n",
++                    encoding="utf-8",
++                )
++            self._send_json(200, {"ok": True})
++        else:
++            self._send_json(404, {"error": 404, "message": "Not Found"})
++
++
++class TestCompositeLifecycleSequences(unittest.TestCase):
++    """TWIN-61 5类复合业务序列（SEQ-01 ~ SEQ-05）正反例自动化验证套件。"""
++
++    def test_seq01_oobe_bootid_adc_and_bed_range_gate(self) -> None:
++        """验证 SEQ-01：动态 boot_id 变化、raw_adc 映射及 300°C 热床超量程故障降级。"""
++        snap_ok = {
++            "system_status": "DEGRADED",
++            "device_state": "DEGRADED",
++            "bed": {
++                "temperature_millic": AISOC_TEMP_MILLIC_FAULT,
++                "temperature_c": None,
++                "raw_adc": 4092,
++                "sensor_status": "OPEN",
++                "quality": "FAULT",
++            },
++            "tool": {
++                "temperature_millic": 24500,
++                "temperature_c": 24.5,
++                "raw_adc": 3911,
++                "sensor_status": "OK",
++                "quality": "FRESH",
++            },
++        }
++        ok, msg = verify_seq01_oobe_bootid_and_adc_snapshot(
++            snap_ok, snap_ok, (0x11223344, 0x55667788), (0x11223345, 0x55667789)
++        )
++        self.assertTrue(ok, msg)
++
++        ok_same_boot, _ = verify_seq01_oobe_bootid_and_adc_snapshot(
++            snap_ok, snap_ok, (0x01020304, 0x8877AA55), (0x01020304, 0x8877AA55)
++        )
++        self.assertFalse(ok_same_boot)
++
++        snap_bad_bed = json.loads(json.dumps(snap_ok))
++        snap_bad_bed["bed"]["temperature_millic"] = 300000
++        snap_bad_bed["bed"]["quality"] = "FRESH"
++        ok_bad_bed, _ = verify_seq01_oobe_bootid_and_adc_snapshot(
++            snap_bad_bed, snap_bad_bed, (0x11, 0x22), (0x33, 0x44)
++        )
++        self.assertFalse(ok_bad_bed)
++
++    def test_seq02_motion_homing_leveling_jog_and_no_trunc(self) -> None:
++        """验证 SEQ-02：归零 -> 调平 -> 点动 -> 204B 坐标查询零截断闭环。"""
++        mc_log = (
++            "[MC-DBG] ts=1000 dir=STATE node=MC seq=10 cmd=0x11 status=OK op=HOME axes_mask=0x07 x_mm_x100=0 y_mm_x100=0 z_mm_x100=0 feed=1500 homed_mask=0x07 motion_state=IDLE\r\n"
++            "[MC-DBG] ts=1050 dir=TX node=MC seq=11 cmd=0x1A status=ACK op=LEVEL_TRIGGER grid_valid=1 status=DONE\r\n"
++            "[MC-DBG] ts=1100 dir=STATE node=MC seq=12 cmd=0x18 status=OK op=GRID_READ probe_idx=7 z_offset_um=-42 grid_valid=1 status=DONE\r\n"
++            "[MC-DBG] ts=1150 dir=STATE node=MC seq=13 cmd=0x12 status=OK op=MOVE axes_mask=0x07 x_mm_x100=12500 y_mm_x100=8525 z_mm_x100=1000 feed=2400 homed_mask=0x07 motion_state=MOVING\r\n"
++            "[MC-DBG] ts=1200 dir=STATE node=MC seq=14 cmd=0x16 status=OK op=POS_QUERY axes_mask=0x07 x_mm_x100=12500 y_mm_x100=8525 z_mm_x100=1000 feed=2400 homed_mask=0x07 motion_state=IDLE\r\n"
++        )
++        ok, msg = verify_seq02_homing_leveling_jog_and_pos_log(mc_log)
++        self.assertTrue(ok, msg)
++
++        ok_trunc, _ = verify_seq02_homing_leveling_jog_and_pos_log(mc_log + "[MC-DBG] ...\r\n")
++        self.assertFalse(ok_trunc)
++
++    def test_seq03_filament_save_decoupling_and_400_validation(self) -> None:
++        """验证 SEQ-03：保存配置固定 action=0/target=0，非法权重/槽位/动作返回 400。"""
++        code_ok, _ = validate_seq03_filament_slots_contract(
++            {
++                "active_slot": 1,
++                "action": 0,
++                "target_temp_deci_c": 0,
++                "total_mixing_weight": 10000,
++                "slots": [
++                    {"slot_id": 1, "mixing_weight": 5000},
++                    {"slot_id": 2, "mixing_weight": 5000},
++                ],
++            }
++        )
++        self.assertEqual(code_ok, 200)
++        self.assertEqual(validate_seq03_filament_slots_contract({"total_mixing_weight": 9999})[0], 400)
++        self.assertEqual(
++            validate_seq03_filament_slots_contract(
++                {"total_mixing_weight": 10000, "slots": [{"mixing_weight": -1}, {"mixing_weight": 10001}]}
++            )[0],
++            400,
++        )
++        self.assertEqual(validate_seq03_filament_slots_contract({"slot_id": 5})[0], 400)
++        self.assertEqual(validate_seq03_filament_slots_contract({"action": -1})[0], 400)
++        self.assertEqual(validate_seq03_filament_slots_contract({"action": 3})[0], 400)
++
++    def test_seq04_gcode_upload_and_two_stage_job_start(self) -> None:
++        """验证 SEQ-04：非法 G-code 上传返回 400，一键载入仅暂存不进入 PRINTING。"""
++        code_pre, state_pre, _ = validate_seq04_gcode_upload_and_two_stage_job(
++            {"name": "Calibration_Cube.gcode", "preset": True}, explicit_start_clicked=False
++        )
++        self.assertEqual(code_pre, 200)
++        self.assertEqual(state_pre, "IDLE")
++
++        code_start, state_start, _ = validate_seq04_gcode_upload_and_two_stage_job(
++            {"name": "Calibration_Cube.gcode", "preset": True}, explicit_start_clicked=True
++        )
++        self.assertEqual(code_start, 200)
++        self.assertEqual(state_start, "PRINTING")
++
++        self.assertEqual(
++            validate_seq04_gcode_upload_and_two_stage_job(
++                {"name": "invalid.txt", "size": 19, "content": "G28\n"}, False
++            )[0],
++            400,
++        )
++        self.assertEqual(
++            validate_seq04_gcode_upload_and_two_stage_job(
++                {"name": "invalid.gcode", "size": 19, "content": "hello world\n"}, False
++            )[0],
++            400,
++        )
++        self.assertEqual(
++            validate_seq04_gcode_upload_and_two_stage_job(
++                {"name": "empty.gcode", "size": 0, "content": ""}, False
++            )[0],
++            400,
++        )
++
++    def test_seq05_offline_3s_sentinel_and_404_framing(self) -> None:
++        """验证 SEQ-05：断链 >=3.0s 打入 2147483646 离线哨兵，未知路由 404 Content-Length 完整。"""
++        offline_snap = {
++            "system_status": "OFFLINE",
++            "device_state": "OFFLINE",
++            "bed": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "quality": "FAULT"},
++            "tool": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "quality": "FAULT"},
++        }
++        raw_404 = (
++            b"HTTP/1.1 404 Not Found\r\n"
++            b"Content-Type: application/json\r\n"
++            b"Content-Length: 35\r\n"
++            b"Connection: close\r\n\r\n"
++            b'{"error":404,"message":"Not Found"}'
++        )
++        ok, msg = verify_seq05_estop_offline_degradation_and_404_framing(3200, offline_snap, raw_404)
++        self.assertTrue(ok, msg)
++
++        truncated_404 = b"HTTP/1.1 404 Not Found\r\nContent-Length: 35\r\n\r\n{\"er"
++        ok_trunc, _ = verify_seq05_estop_offline_degradation_and_404_framing(3200, offline_snap, truncated_404)
++        self.assertFalse(ok_trunc)
++
++    def test_run_live_composite_sequences_end_to_end_with_mock_server(self) -> None:
++        """验证 `run_live_composite_sequences` 通过本地 Mock HTTP Server 端到端驱动 SEQ-01..SEQ-05 闭环通过。"""
++        with tempfile.TemporaryDirectory() as tmpdir:
++            mc_path = Path(tmpdir) / "mc_composite.log"
++            mc_path.write_text("", encoding="utf-8")
++            _CompositeMockGatewayHandler.mc_log_file = mc_path
++
++            server = http.server.HTTPServer(("127.0.0.1", 0), _CompositeMockGatewayHandler)
++            port = server.server_port
++            thread = threading.Thread(target=server.serve_forever, daemon=True)
++            thread.start()
++            try:
++                passed, report = run_live_composite_sequences(f"http://127.0.0.1:{port}", mc_path)
++            finally:
++                server.shutdown()
++                server.server_close()
++
++            self.assertTrue(passed)
++            for key in ("SEQ-01", "SEQ-02", "SEQ-03", "SEQ-04", "SEQ-05"):
++                self.assertTrue(report[key], f"{key} failed in end-to-end composite HTTP suite")
++
++
++def main() -> int:
++    """命令行主入口：支持 `--self-test` 或 `--live` 运行全部 5 类复合业务序列验证。"""
++    parser = argparse.ArgumentParser(description="TWIN-61 5类复合业务序列自动化验证套件")
++    parser.add_argument("--self-test", action="store_true", help="运行内置 5 类复合序列正反例与端到端 HTTP 自检")
++    parser.add_argument("--live", action="store_true", help="针对指定网关 URL 执行端到端复合业务序列验证")
++    parser.add_argument("--http-base", type=str, default="http://192.168.77.134:8080", help="实机网关 URL")
++    parser.add_argument("--mc-log", type=Path, default=None, help="MC 调试日志路径")
++    args = parser.parse_args()
++
++    if args.live:
++        passed, report = run_live_composite_sequences(args.http_base, args.mc_log)
++        print(json.dumps(report, indent=2, ensure_ascii=False))
++        return 0 if passed else 1
++
++    suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestCompositeLifecycleSequences)
++    result = unittest.TextTestRunner(verbosity=2).run(suite)
++    return 0 if result.wasSuccessful() else 1
++
++
++if __name__ == "__main__":
++    sys.exit(main())

@@ -1,0 +1,1043 @@
+diff --git a/hil/tests/test_290_frame_burst_stress.py b/hil/tests/test_290_frame_burst_stress.py
+index 93e3d3b..d1542af 100644
+--- a/hil/tests/test_290_frame_burst_stress.py
++++ b/hil/tests/test_290_frame_burst_stress.py
+@@ -6,29 +6,30 @@
+ 
+ 本脚本固化 `hil_full_acceptance_master_plan_20261105.md` §4 定义的 290 帧突发压测规格：
+ 1. 生成覆盖 seq=1..290（跨越 8-bit 255->256 边界）的 29 个均衡业务周期（共 290 帧）真实 MiniMCProto V2 二进制协议帧；
+-2. 提供两套真实驱动入口（无任何伪造 HTTP Header）：
+-   - `run_serial_frame_burst`：直接向串口/流通道逐帧发送 290 帧原始二进制字节，解析校验返回的 290 帧二进制响应帧（16-bit seq 与 CRC16），并调用 `evaluate_burst_debug_logs` 对账双板日志；
++2. 提供两套真实驱动入口（无任何伪造 HTTP Header），并在 `--live` 入口中默认串联或按 `--live-mode` 调用：
++   - `run_serial_frame_burst`：直接向串口/PTY 设备逐帧发送 290 帧原始二进制字节，解析校验返回的 290 帧二进制响应帧（16-bit seq 与 CRC16），并调用 `evaluate_burst_debug_logs` 对账双板日志；
+    - `run_live_http_burst`：向标准 `ui_gateway` 路由发起 290 次真实业务请求，由底层 `forward_service` 驱动串口帧后调用 `evaluate_burst_debug_logs` 对账；
+-3. 在 `evaluate_burst_debug_logs` 中严格校验：
+-   - MC `RX` 与 `TX/RELAY_RX` 应答 100% 覆盖 `seq=1..290`（逐帧双向闭环）；
+-   - TH `RX` 与 `TX` 应答 100% 覆盖计划中全部 TH 目标/级联帧（含 `seq=256..290` 高位区间全部 TH 帧）；
+-   - `TIMEOUT == 0`、`CRC_ERR == 0`、`BAD_FRAME == 0`、`drop_delta == 0`、`trunc_delta == 0`、零 `SS_ADC_BUSY`。
++3. 在 `evaluate_burst_debug_logs` 中严格校验 MC 与 TH 双向 RX/TX 序列 100% 覆盖（含 `seq=256..290` 高位区间全部 TH 帧）。
+ """
+ 
+ import argparse
+ import http.server
+ import json
++import os
++import pty
+ import re
++import select
+ import struct
+ import sys
+ import tempfile
++import termios
+ import threading
+ import time
+ import unittest
+ import urllib.error
+ import urllib.request
+ from pathlib import Path
+-from typing import Callable, Dict, List, Optional, Set, Tuple
++from typing import Callable, Dict, List, Optional, Sequence, Set, Tuple
+ 
+ 
+ # MiniMCProto V2 协议常量定义
+@@ -81,15 +82,7 @@ def build_minimc_v2_frame(
+     seq: int,
+     payload: bytes = b"",
+ ) -> bytes:
+-    """
+-    构建一条由 AP (0x01) 发出的带 12 字节帧头与尾随小端 CRC16 的 MiniMCProto V2 请求帧。
+-
+-    :param dst_id: 目标节点 ID (0x02=MC, 0x03=TH)
+-    :param cmd_id: 命令码
+-    :param seq: 16位无符号序列号 (1..65535)
+-    :param payload: 业务载荷字节流
+-    :return: 完整二进制请求帧字节流
+-    """
++    """构建一条由 AP (0x01) 发出的带 12 字节帧头与尾随小端 CRC16 的 MiniMCProto V2 请求帧。"""
+     flags = MINIMC_FLAG_WANTS_ACK | MINIMC_FLAG_PROTO_V2
+     header = struct.pack(
+         "<BBBBBBBBHH",
+@@ -114,15 +107,7 @@ def build_minimc_v2_resp_frame(
+     seq: int,
+     payload: bytes = b"",
+ ) -> bytes:
+-    """
+-    构建一条发回给 AP (0x01) 的 MiniMCProto V2 二进制响应/ACK 帧。
+-
+-    :param src_id: 源节点 ID (0x02=MC, 0x03=TH)
+-    :param cmd_id: 响应命令码
+-    :param seq: 匹配的 16位无符号序列号
+-    :param payload: 响应载荷字节流
+-    :return: 完整二进制响应帧字节流
+-    """
++    """构建一条发回给 AP (0x01) 的 MiniMCProto V2 二进制响应/ACK 帧。"""
+     flags = MINIMC_FLAG_IS_RESPONSE | MINIMC_FLAG_PROTO_V2
+     header = struct.pack(
+         "<BBBBBBBBHH",
+@@ -145,10 +130,6 @@ def verify_minimc_v2_response_frame(raw_frame: bytes, expected_seq: int) -> Tupl
+     """
+     解析并校验从串口接收到的 MiniMCProto V2 二进制响应帧：
+     核对 SOF、帧长、IS_RESPONSE 标志、非 NACK、16-bit `seq == expected_seq` 及尾随 CRC16。
+-
+-    :param raw_frame: 原始响应帧字节流
+-    :param expected_seq: 预期匹配的 16-bit 序列号
+-    :return: (是否合法匹配, 诊断信息)
+     """
+     if len(raw_frame) < 14:
+         return False, f"frame too short: {len(raw_frame)}"
+@@ -170,12 +151,7 @@ def verify_minimc_v2_response_frame(raw_frame: bytes, expected_seq: int) -> Tupl
+ 
+ 
+ def _build_single_burst_spec(seq: int) -> Tuple[int, int, bytes, str, str, str]:
+-    """
+-    根据序列号 `seq` (1..290) 构造单帧协议参数与对应的标准 `ui_gateway` HTTP 路由/方法。
+-
+-    :param seq: 16位递增序列号 (1..290)
+-    :return: (dst, cmd, payload, desc, http_method, http_route)
+-    """
++    """根据序列号 `seq` (1..290) 构造单帧协议参数与对应的标准 `ui_gateway` HTTP 路由/方法。"""
+     offset = (seq - 1) % 10
+     table = {
+         0: (MINIMC_NODE_MC, MINIMC_CMD_GET_VERSION, b"", "MC_GET_VERSION", "GET", "/api/v1/system/versions"),
+@@ -196,12 +172,7 @@ def _build_single_burst_spec(seq: int) -> Tuple[int, int, bytes, str, str, str]:
+ 
+ 
+ def generate_290_burst_plan() -> List[Dict[str, object]]:
+-    """
+-    按 `hil_full_acceptance_master_plan_20261105.md` §4.1 生成 290 帧突发压测向量清单。
+-    共 29 个周期 × 10 种业务帧 = 290 帧，序列号严格覆盖 1..290。
+-
+-    :return: 290 条突发帧规格字典列表
+-    """
++    """生成 290 帧突发压测向量清单（29 个周期 × 10 种业务帧 = 290 帧，seq 覆盖 1..290）。"""
+     specs: List[Dict[str, object]] = []
+     for idx in range(290):
+         seq = idx + 1
+@@ -226,12 +197,7 @@ def generate_290_burst_plan() -> List[Dict[str, object]]:
+ 
+ 
+ def expected_th_seqs_for_total(expected_total_frames: int = 290) -> Set[int]:
+-    """
+-    返回 `1..expected_total_frames` 中按周期计划必须经过 TH 处理并产生 `[TH-DBG]` RX/TX 日志的全部序列号集合。
+-
+-    :param expected_total_frames: 压测总帧数（默认 290）
+-    :return: 预期涉及 TH 的 16-bit 序列号集合
+-    """
++    """返回 `1..expected_total_frames` 中按周期计划必须经过 TH 处理并产生 `[TH-DBG]` RX/TX 日志的全部序列号集合。"""
+     return {
+         seq
+         for seq in range(1, expected_total_frames + 1)
+@@ -240,13 +206,7 @@ def expected_th_seqs_for_total(expected_total_frames: int = 290) -> Set[int]:
+ 
+ 
+ def _parse_observed_seq_sets(mc_log_text: str, th_log_text: str) -> Dict[str, Set[int]]:
+-    """
+-    从 MC 与 TH 调试日志文本中提取各方向成功收发的 16-bit 序列号集合。
+-
+-    :param mc_log_text: MC 调试日志文本
+-    :param th_log_text: TH 调试日志文本
+-    :return: 包含 `mc_rx`、`mc_tx_ack`、`mc_relay_rx`、`th_rx`、`th_tx` 的集合字典
+-    """
++    """从 MC 与 TH 调试日志文本中提取各方向成功收发的 16-bit 序列号集合。"""
+     mc_rx = {
+         int(m.group(1))
+         for m in re.finditer(r"\[MC-DBG\].*?dir=RX\s+node=(?:MC|TH)\s+seq=(\d+).*?status=OK", mc_log_text)
+@@ -282,14 +242,7 @@ def _parse_observed_seq_sets(mc_log_text: str, th_log_text: str) -> Dict[str, Se
+ def _extract_debug_log_metrics(
+     mc_log_text: str, th_log_text: str, expected_total_frames: int
+ ) -> Dict[str, object]:
+-    """
+-    计算双向序列缺失列表、协议错误计数及截断/ADC 污染指标。
+-
+-    :param mc_log_text: MC 调试日志文本
+-    :param th_log_text: TH 调试日志文本
+-    :param expected_total_frames: 预期总帧数
+-    :return: 解析后的双向指标字典
+-    """
++    """计算双向序列缺失列表、协议错误计数及截断/ADC 污染指标。"""
+     combined = mc_log_text + "\n" + th_log_text
+     ellipsis_lines = [
+         line for line in (mc_log_text.splitlines() + th_log_text.splitlines()) if line.endswith("...")
+@@ -389,15 +342,7 @@ def evaluate_burst_debug_logs(
+ def _format_single_frame_debug_logs(
+     seq: int, dst: int, cmd: int, wire_len: int
+ ) -> Tuple[List[str], List[str]]:
+-    """
+-    为单条协议帧参数 `(seq, dst, cmd, wire_len)` 生成真实的双向 `[MC-DBG]` 与 `[TH-DBG]` 日志行。
+-
+-    :param seq: 16位序列号
+-    :param dst: 目标节点 ID
+-    :param cmd: 命令码
+-    :param wire_len: 协议帧字节长度
+-    :return: (mc_lines, th_lines)
+-    """
++    """为单条协议帧参数 `(seq, dst, cmd, wire_len)` 生成真实的双向 `[MC-DBG]` 与 `[TH-DBG]` 日志行。"""
+     ts_ms = 1000 + seq * 20
+     node_str = "TH" if dst == MINIMC_NODE_TH else "MC"
+     mc_lines = [f"[MC-DBG] ts={ts_ms} dir=RX node={node_str} seq={seq} cmd=0x{cmd:02X} status=OK len={wire_len}"]
+@@ -423,12 +368,7 @@ def _format_single_frame_debug_logs(
+ 
+ 
+ def simulate_honest_290_burst_logs(specs: List[Dict[str, object]]) -> Tuple[str, str]:
+-    """
+-    根据 290 帧协议帧规格生成用于解析器/门禁自检的参考 `[MC-DBG]` 与 `[TH-DBG]` 双向日志流。
+-
+-    :param specs: 290 帧规格列表
+-    :return: (mc_log_text, th_log_text)
+-    """
++    """根据 290 帧协议帧规格生成用于解析器/门禁自检的参考 `[MC-DBG]` 与 `[TH-DBG]` 双向日志流。"""
+     mc_lines: List[str] = []
+     th_lines: List[str] = []
+     for item in specs:
+@@ -441,13 +381,7 @@ def simulate_honest_290_burst_logs(specs: List[Dict[str, object]]) -> Tuple[str,
+ 
+ 
+ def _read_incremental_text(log_path: Optional[Path], offset: int) -> str:
+-    """
+-    从指定日志文件偏移量起读取新增的 UTF-8 文本内容。
+-
+-    :param log_path: 日志文件路径
+-    :param offset: 起始字节偏移
+-    :return: 增量日志文本
+-    """
++    """从指定日志文件偏移量起读取新增的 UTF-8 文本内容。"""
+     if not log_path or not log_path.exists():
+         return ""
+     with log_path.open("rb") as f:
+@@ -455,6 +389,60 @@ def _read_incremental_text(log_path: Optional[Path], offset: int) -> str:
+         return f.read().decode("utf-8", errors="replace")
+ 
+ 
++def _configure_raw_serial_fd(fd: int, baud: int = 921600) -> None:
++    """将打开的串口或 PTY 文件描述符配置为 `921600 8N1` 无回显原始二进制模式。"""
++    baud_map = {
++        115200: termios.B115200,
++        460800: getattr(termios, "B460800", termios.B115200),
++        921600: getattr(termios, "B921600", termios.B115200),
++    }
++    speed = baud_map.get(baud, getattr(termios, "B921600", termios.B115200))
++    attrs = termios.tcgetattr(fd)
++    attrs[0] = 0
++    attrs[1] = 0
++    attrs[2] = termios.CS8 | termios.CREAD | termios.CLOCAL | speed
++    attrs[3] = 0
++    attrs[4] = speed
++    attrs[5] = speed
++    termios.tcsetattr(fd, termios.TCSANOW, attrs)
++
++
++def _read_exact_fd(fd: int, num_bytes: int, timeout_sec: float = 1.0) -> bytes:
++    """从文件描述符在超时时间内精确读取 `num_bytes` 字节。"""
++    buf = bytearray()
++    deadline = time.monotonic() + timeout_sec
++    while len(buf) < num_bytes:
++        rem = deadline - time.monotonic()
++        if rem <= 0:
++            break
++        rlist, _, _ = select.select([fd], [], [], rem)
++        if not rlist:
++            break
++        chunk = os.read(fd, num_bytes - len(buf))
++        if not chunk:
++            break
++        buf.extend(chunk)
++    return bytes(buf)
++
++
++def transact_minimc_frame_on_fd(fd: int, raw_tx: bytes, timeout_sec: float = 1.0) -> bytes:
++    """
++    在真实串口/PTY 文件描述符上写入一帧 MiniMCProto V2 二进制请求并读取完整二进制响应帧。
++
++    :param fd: 已打开的串口/PTY 文件描述符
++    :param raw_tx: 原始二进制请求帧
++    :param timeout_sec: 读取超时秒数
++    :return: 原始二进制响应帧
++    """
++    os.write(fd, raw_tx)
++    hdr = _read_exact_fd(fd, 12, timeout_sec)
++    if len(hdr) < 12:
++        return bytes(hdr)
++    pay_len = struct.unpack("<H", hdr[10:12])[0]
++    tail = _read_exact_fd(fd, pay_len + 2, timeout_sec)
++    return hdr + tail
++
++
+ def run_serial_frame_burst(
+     stream_tx_rx_fn: Callable[[bytes], bytes],
+     mc_log_path: Optional[Path],
+@@ -465,12 +453,6 @@ def run_serial_frame_burst(
+     直接将 `generate_290_burst_plan()` 的 290 帧真实 MiniMCProto V2 二进制协议帧逐帧写入串口/流通道，
+     解析校验返回的 290 帧二进制响应帧（16-bit `seq == k` 与 CRC16），并调用 `evaluate_burst_debug_logs`
+     对账双板 `[MC-DBG]` / `[TH-DBG]` 完整双向日志。
+-
+-    :param stream_tx_rx_fn: 接收原始请求帧 `bytes` 并返回原始响应帧 `bytes` 的串口收发函数
+-    :param mc_log_path: MC 调试日志文件路径
+-    :param th_log_path: TH 调试日志文件路径
+-    :param pacing_sec: 帧间间隔秒数
+-    :return: (是否全部通过, 对账报告字典)
+     """
+     plan = generate_290_burst_plan()
+     mc_offset = mc_log_path.stat().st_size if (mc_log_path and mc_log_path.exists()) else 0
+@@ -499,14 +481,31 @@ def run_serial_frame_burst(
+     return overall_passed, report
+ 
+ 
+-def _send_standard_gateway_request(http_base: str, item: Dict[str, object]) -> Tuple[bool, str]:
++def run_serial_device_burst(
++    serial_dev: str,
++    mc_log_path: Optional[Path],
++    th_log_path: Optional[Path],
++    pacing_sec: float = 0.02,
++) -> Tuple[bool, Dict[str, object]]:
+     """
+-    向 `ui_gateway` 标准业务路由发起单次 HTTP 请求（不附加任何自定义伪 Header）。
+-
+-    :param http_base: 网关基础 URL
+-    :param item: 单步业务规格字典
+-    :return: (是否 HTTP 200, 错误信息)
++    打开指定串口设备（如 `/dev/ttyUSB0` 或 PTY 从设备），配置 `921600 8N1` 并调用
++    `run_serial_frame_burst` 执行 290 帧真实二进制协议帧收发与双板日志对账。
+     """
++    fd = os.open(serial_dev, os.O_RDWR | os.O_NOCTTY)
++    try:
++        _configure_raw_serial_fd(fd, 921600)
++        return run_serial_frame_burst(
++            lambda raw_tx: transact_minimc_frame_on_fd(fd, raw_tx, timeout_sec=1.0),
++            mc_log_path,
++            th_log_path,
++            pacing_sec=pacing_sec,
++        )
++    finally:
++        os.close(fd)
++
++
++def _send_standard_gateway_request(http_base: str, item: Dict[str, object]) -> Tuple[bool, str]:
++    """向 `ui_gateway` 标准业务路由发起单次 HTTP 请求（不附加任何自定义伪 Header）。"""
+     seq = int(item["seq"])
+     route = str(item.get("http_route", "/api/v1/state"))
+     method = str(item.get("http_method", "GET"))
+@@ -538,12 +537,6 @@ def run_live_http_burst(
+     按 290 步计划向真实 `ui_gateway` 标准路由发起请求（不带任何自定义 Header），
+     等待网关经 `forward_service` 下发串口帧后，读取 `mc_log_path` 与 `th_log_path`
+     并调用 `evaluate_burst_debug_logs` 校验 290 帧 `seq=1..290` 双向闭环与零丢包/零截断。
+-
+-    :param http_base: 网关基础地址，例如 http://192.168.77.134:8080
+-    :param mc_log_path: MC 调试日志文件路径
+-    :param th_log_path: TH 调试日志文件路径
+-    :param pacing_sec: 帧间间隔秒数（默认 20ms）
+-    :return: (是否通过, 完整对账报告字典)
+     """
+     plan = generate_290_burst_plan()
+     mc_offset = mc_log_path.stat().st_size if (mc_log_path and mc_log_path.exists()) else 0
+@@ -606,11 +599,7 @@ class _SerialBusEmulator:
+ 
+ 
+ class _BurstMockGatewayHandler(http.server.BaseHTTPRequestHandler):
+-    """
+-    用于 `--self-test` 端到端验证 `run_live_http_burst` 的本地 HTTP 网关：
+-    不读取任何自定义 HTTP Header，内部按请求顺序通过 `forward_service` 序列号计数器
+-    (`seq = 1..290`) 构造真实二进制帧并交由 `_SerialBusEmulator.transact()` 收发校验。
+-    """
++    """用于 `--self-test` 端到端验证 `run_live_http_burst` 的本地 HTTP 网关。"""
+ 
+     plan_items: List[Dict[str, object]] = []
+     tx_counter: int = 0
+@@ -651,6 +640,19 @@ class _BurstMockGatewayHandler(http.server.BaseHTTPRequestHandler):
+         self._handle_gateway_req()
+ 
+ 
++def _serve_pty_burst_frames(master_fd: int, bus: _SerialBusEmulator, count: int) -> None:
++    """在后台线程中从 PTY master 读取 `count` 帧二进制请求并通过 `_SerialBusEmulator` 回写二进制响应。"""
++    for _ in range(count):
++        hdr = _read_exact_fd(master_fd, 12, timeout_sec=2.0)
++        if len(hdr) < 12:
++            break
++        pay_len = struct.unpack("<H", hdr[10:12])[0]
++        tail = _read_exact_fd(master_fd, pay_len + 2, timeout_sec=2.0)
++        resp = bus.transact(hdr + tail)
++        if resp:
++            os.write(master_fd, resp)
++
++
+ class Test290FrameBurstStress(unittest.TestCase):
+     """290 帧高频突发压测规格、双向逐帧应答与双路径驱动单元测试套件。"""
+ 
+@@ -691,20 +693,17 @@ class Test290FrameBurstStress(unittest.TestCase):
+         plan = generate_290_burst_plan()
+         mc_log, th_log = simulate_honest_290_burst_logs(plan)
+ 
+-        # 反例 1: 缺失单条高位 TH RX 日志 (seq=289)
+         th_missing_289 = re.sub(r"\[TH-DBG\].*?dir=RX\s+node=TH\s+seq=289\s+.*?\r\n", "", th_log)
+         passed_th_rx, rep_th_rx = evaluate_burst_debug_logs(mc_log, th_missing_289, expected_total_frames=290)
+         self.assertFalse(passed_th_rx)
+         self.assertIn(289, rep_th_rx["missing_th_rx_seqs"])
+         self.assertIn(289, rep_th_rx["missing_th_high_seqs_256_plus"])
+ 
+-        # 反例 2: 缺失单条高位 TH TX ACK 日志 (seq=290)
+         th_missing_tx_290 = re.sub(r"\[TH-DBG\].*?dir=TX\s+node=TH\s+seq=290\s+.*?\r\n", "", th_log)
+         passed_th_tx, rep_th_tx = evaluate_burst_debug_logs(mc_log, th_missing_tx_290, expected_total_frames=290)
+         self.assertFalse(passed_th_tx)
+         self.assertIn(290, rep_th_tx["missing_th_tx_seqs"])
+ 
+-        # 反例 3: 缺失单条 MC 本地帧 TX ACK 应答 (seq=287)
+         mc_missing_tx_287 = re.sub(r"\[MC-DBG\].*?dir=TX\s+node=MC\s+seq=287\s+.*?\r\n", "", mc_log)
+         passed_mc_tx, rep_mc_tx = evaluate_burst_debug_logs(mc_missing_tx_287, th_log, expected_total_frames=290)
+         self.assertFalse(passed_mc_tx)
+@@ -735,19 +734,39 @@ class Test290FrameBurstStress(unittest.TestCase):
+         self.assertFalse(passed_wrap)
+         self.assertIn(290, rep_wrap["missing_high_seqs_256_plus"])
+ 
+-    def test_run_serial_frame_burst_end_to_end(self) -> None:
+-        """验证 `run_serial_frame_burst` 逐帧发送 290 帧真实二进制字节并校验二进制响应帧与双向日志。"""
++    def test_cli_live_serial_mode_over_real_pty(self) -> None:
++        """验证 `main(--live --live-mode serial --serial-dev <pty>)` 通过真实 PTY 串口描述符收发 290 帧二进制包并通过对账。"""
+         with tempfile.TemporaryDirectory() as tmpdir:
+-            mc_path = Path(tmpdir) / "mc_serial.log"
+-            th_path = Path(tmpdir) / "th_serial.log"
++            mc_path = Path(tmpdir) / "mc_pty.log"
++            th_path = Path(tmpdir) / "th_pty.log"
+             mc_path.write_text("", encoding="utf-8")
+             th_path.write_text("", encoding="utf-8")
+             bus = _SerialBusEmulator(mc_path, th_path)
+-            passed, report = run_serial_frame_burst(bus.transact, mc_path, th_path, pacing_sec=0.0)
+-            self.assertTrue(passed)
+-            self.assertEqual(report["serial_ack_ok"], 290)
+-            self.assertEqual(report["observed_th_unique_rx_seqs"], 145)
+-            self.assertEqual(report["observed_th_unique_tx_seqs"], 145)
++            master_fd, slave_fd = pty.openpty()
++            slave_name = os.ttyname(slave_fd)
++            t = threading.Thread(target=_serve_pty_burst_frames, args=(master_fd, bus, 290), daemon=True)
++            t.start()
++            try:
++                rc = main(
++                    [
++                        "--live",
++                        "--live-mode",
++                        "serial",
++                        "--serial-dev",
++                        slave_name,
++                        "--mc-log",
++                        str(mc_path),
++                        "--th-log",
++                        str(th_path),
++                        "--pacing-sec",
++                        "0",
++                    ]
++                )
++                t.join(timeout=3.0)
++            finally:
++                os.close(slave_fd)
++                os.close(master_fd)
++            self.assertEqual(rc, 0)
+ 
+     def test_run_live_http_burst_end_to_end_with_mock_server(self) -> None:
+         """验证 `run_live_http_burst` 无伪造 Header 驱动 290 步 HTTP 请求并经底层串口总线闭环对账通过。"""
+@@ -779,20 +798,47 @@ class Test290FrameBurstStress(unittest.TestCase):
+             self.assertEqual(report["max_seq_observed"], 290)
+             self.assertEqual(report["observed_th_unique_rx_seqs"], 145)
+             self.assertEqual(report["observed_th_unique_tx_seqs"], 145)
+-            self.assertEqual(report["missing_seqs_count"], 0)
+-            self.assertEqual(report["timeout_count"], 0)
+ 
+ 
+-def main() -> int:
+-    """命令行入口：支持 `--self-test`、导出 290 帧向量或 `--live` 实机压测。"""
++def _execute_live_cli(args: argparse.Namespace) -> int:
++    """执行 `--live` 模式的串口二进制帧突发与/或 HTTP 网关突发对账。"""
++    combined_report: Dict[str, object] = {"live_mode": args.live_mode}
++    overall_ok = True
++    if args.live_mode in ("serial", "both"):
++        s_ok, s_rep = run_serial_device_burst(
++            args.serial_dev, args.mc_log, args.th_log, pacing_sec=args.pacing_sec
++        )
++        combined_report["serial_burst"] = s_rep
++        overall_ok = overall_ok and s_ok
++    if args.live_mode in ("http", "both"):
++        h_ok, h_rep = run_live_http_burst(
++            args.http_base, args.mc_log, args.th_log, pacing_sec=args.pacing_sec
++        )
++        combined_report["http_burst"] = h_rep
++        overall_ok = overall_ok and h_ok
++    combined_report["passed"] = overall_ok
++    print(json.dumps(combined_report, indent=2, ensure_ascii=False))
++    return 0 if overall_ok else 1
++
++
++def main(argv: Optional[Sequence[str]] = None) -> int:
++    """命令行入口：支持 `--self-test`、导出 290 帧向量或 `--live` 实机串口/HTTP 压测。"""
+     parser = argparse.ArgumentParser(description="TWIN-61 290帧高频突发压测与16位序列号对账工具")
+     parser.add_argument("--self-test", action="store_true", help="运行内置正反例与端到端串口/HTTP 自检套件")
+     parser.add_argument("--dump-vectors", type=Path, default=None, help="导出 290 帧原始二进制向量 JSON")
+-    parser.add_argument("--live", action="store_true", help="针对实机 HTTP/串口执行 290 帧突发压测")
++    parser.add_argument("--live", action="store_true", help="针对实机串口/HTTP 执行 290 帧突发压测")
++    parser.add_argument(
++        "--live-mode",
++        choices=("serial", "http", "both"),
++        default="both",
++        help="实机压测驱动模式：serial=直接串口290帧收发, http=网关路由驱动, both=双路径完整执行",
++    )
++    parser.add_argument("--serial-dev", type=str, default="/dev/ttyUSB0", help="实机业务串口设备路径")
+     parser.add_argument("--http-base", type=str, default="http://192.168.77.134:8080", help="实机网关 URL")
+     parser.add_argument("--mc-log", type=Path, default=None, help="MC 调试日志路径")
+     parser.add_argument("--th-log", type=Path, default=None, help="TH 调试日志路径")
+-    args = parser.parse_args()
++    parser.add_argument("--pacing-sec", type=float, default=0.02, help="帧间间隔秒数（默认 0.02s）")
++    args = parser.parse_args(argv)
+ 
+     if args.dump_vectors is not None:
+         vectors = generate_290_burst_plan()
+@@ -801,9 +847,7 @@ def main() -> int:
+         return 0
+ 
+     if args.live:
+-        passed, report = run_live_http_burst(args.http_base, args.mc_log, args.th_log)
+-        print(json.dumps(report, indent=2, ensure_ascii=False))
+-        return 0 if passed else 1
++        return _execute_live_cli(args)
+ 
+     suite = unittest.defaultTestLoader.loadTestsFromTestCase(Test290FrameBurstStress)
+     result = unittest.TextTestRunner(verbosity=2).run(suite)
+diff --git a/hil/tests/test_composite_lifecycle_sequences.py b/hil/tests/test_composite_lifecycle_sequences.py
+index b66fc66..1f9431d 100644
+--- a/hil/tests/test_composite_lifecycle_sequences.py
++++ b/hil/tests/test_composite_lifecycle_sequences.py
+@@ -7,9 +7,9 @@
+ 本脚本固化 `hil_full_acceptance_master_plan_20261105.md` §5 定义的 5 类端到端复合业务序列：
+ - `SEQ-01`: OOBE 完成 + 双板动态 `boot_id` 与 `raw_adc` 对账 + 归零 (`G28`) -> XYZ 点动 -> 急停 (`0x17`) -> 故障清除 -> 再次归零恢复 `READY`
+ - `SEQ-02`: 归零 (`0x11`) -> 25点网格调平 (`0x1A`+`0x18`) -> 点动 (`0x12`) -> 204B 坐标查询 (`0x16`) 零截断闭环 + 喷头 (`5/210/300°C`) 与热床 (`5/60/130°C`) 设温及越界 (`4/131/301°C` -> `400`) 与归零 (`0°C`)
+-- `SEQ-03`: 保存料槽配置 (`POST /api/v1/filament/config` 不触发 `0x19 LOAD` 且不改 `210°C`) -> 安全预热至 `210°C` -> 显式 `SELECT(0)/LOAD(1)/UNLOAD(2)` -> 越界 `slot_id=4` 与 `action=3` (`400` 及 MC `NACK 0x03`) -> 混色权重和 `100`/`10000` (`200`) vs 非法 (`400`)
++- `SEQ-03`: 先执行 `0°C`（`0%` 加热占空比安全锁死 `heater_duty_percent == 0`）安全设温校验 -> 保存料槽配置 (`POST /api/v1/filament/config` 不触发 `0x19 LOAD` 且不改 `210°C`) -> 安全预热至 `210°C` -> 显式 `SELECT(0)/LOAD(1)/UNLOAD(2)` -> 越界 `slot_id=4` 与 `action=3` (`400` 及 MC `NACK 0x03`) -> 混色权重和 `100`/`10000` (`200`) vs 非法 (`400`)
+ - `SEQ-04`: G-code 上传三类独立负例 (`bad.txt`, `empty.gcode`, `bad_body.gcode` 均 `400`) -> 合法 `ok.gcode` 上传 (`200` 且 `IDLE`) -> 显式启动 (`PRINTING`) -> `0x1C` 级联步进推进 -> 暂停 (`PAUSED`) -> 继续 (`PRINTING`) -> 取消 (`IDLE`)
+-- `SEQ-05`: 急停 (`0x17`) -> 调用真实 `disconnect_hook()` 轮询 `GET /api/v1/state` 等待 `>=3.0s` 衰减 -> 断言 `OFFLINE`、离线哨兵 `2147483646`、`oobe_completed=False`、4路断料非绿、控制返回 `503/504` -> 调用 `reconnect_hook()` 恢复 `mc_online=True, th_online=True`、真实温度与 `READY` -> 未知路由 `404` 35B 完整帧校验
++- `SEQ-05`: 急停 (`0x17`) -> 调用真实 `disconnect_hook()` 并通过单调时钟 `clock_fn` 测量真实 `elapsed_ms >= 3000` 衰减 -> 断言 `OFFLINE`、离线哨兵 `2147483646`、`oobe_completed=False`、4路断料非绿、控制返回 `503/504` -> 调用 `reconnect_hook()` 恢复 `mc_online=True, th_online=True`、真实温度与 `READY` -> 未知路由 `404` 35B 完整帧校验
+ """
+ 
+ import argparse
+@@ -17,6 +17,7 @@ import http.server
+ import json
+ import re
+ import socket
++import subprocess
+ import sys
+ import tempfile
+ import threading
+@@ -26,7 +27,7 @@ import urllib.error
+ import urllib.parse
+ import urllib.request
+ from pathlib import Path
+-from typing import Callable, Dict, List, Optional, Tuple
++from typing import Callable, Dict, List, Optional, Sequence, Tuple
+ 
+ 
+ # 权威物理量程与哨兵值常量（对齐 telemetry_types.h 与 minimc_telemetry.h）
+@@ -51,15 +52,7 @@ def verify_seq01_oobe_bootid_and_adc_snapshot(
+     boot_id_before_reset: Tuple[int, int],
+     boot_id_after_reset: Tuple[int, int],
+ ) -> Tuple[bool, str]:
+-    """
+-    校验复合序列 SEQ-01 的状态同步、动态 `boot_id`、真实 `raw_adc` 与热床量程门禁。
+-
+-    :param state_resp: `/api/v1/state` 返回字典
+-    :param snapshot_resp: `/api/v1/temperature/snapshot` 返回字典
+-    :param boot_id_before_reset: 复位前 `(mc_boot_id, th_boot_id)`
+-    :param boot_id_after_reset: 复位后 `(mc_boot_id, th_boot_id)`
+-    :return: (是否通过, 诊断说明)
+-    """
++    """校验复合序列 SEQ-01 的状态同步、动态 `boot_id`、真实 `raw_adc` 与热床量程门禁。"""
+     if state_resp.get("system_status") != snapshot_resp.get("system_status"):
+         return False, "state and snapshot system_status mismatch"
+     mc_b1, th_b1 = boot_id_before_reset
+@@ -85,9 +78,6 @@ def verify_seq02_homing_leveling_jog_and_pos_log(mc_log_text: str) -> Tuple[bool
+     """
+     校验 `[MC-DBG]` 包含归零 (`0x11`)、调平触发 (`0x1A`)、网格读取 (`0x18`)、点动 (`0x12`) 与
+     204B 坐标查询 (`0x16`)，且零 `...` 截断、零 `SS_ADC_BUSY`。
+-
+-    :param mc_log_text: MC 调试日志文本
+-    :return: (是否通过, 诊断说明)
+     """
+     required_patterns = [
+         r"cmd=0x11\s+status=OK\s+op=HOME\s+axes_mask=0x07",
+@@ -107,12 +97,14 @@ def verify_seq02_homing_leveling_jog_and_pos_log(mc_log_text: str) -> Tuple[bool
+ 
+ 
+ def validate_temperature_set_contract(payload: Dict[str, object]) -> Tuple[int, str]:
+-    """
+-    校验设温请求契约：允许 `0°C`（降温关闭加热），否则喷头必须在 `5..300°C`、热床必须在 `5..130°C`。
+-
+-    :param payload: `/api/v1/temperature/set` 请求字典
+-    :return: (预期 HTTP 状态码, 说明)
+-    """
++    """校验设温请求契约：允许 `0°C`（降温关闭加热），否则喷头必须在 `5..300°C`、热床必须在 `5..130°C`。"""
++    if "heater_id" in payload and "target_c" in payload:
++        hid = int(payload["heater_id"])
++        t_val = float(payload["target_c"])
++        if hid == 0 and t_val != 0.0 and (t_val < 5.0 or t_val > 130.0):
++            return 400, f"bed target {t_val} out of [5, 130]"
++        if hid == 1 and t_val != 0.0 and (t_val < 5.0 or t_val > 300.0):
++            return 400, f"nozzle target {t_val} out of [5, 300]"
+     if "tool_target_c" in payload:
+         t_val = float(payload["tool_target_c"])
+         if t_val != 0.0 and (t_val < 5.0 or t_val > 300.0):
+@@ -145,14 +137,7 @@ def _check_slots_weight_list(slots_obj: object) -> Tuple[bool, str]:
+ 
+ 
+ def validate_seq03_filament_slots_contract(payload: Dict[str, object]) -> Tuple[int, str]:
+-    """
+-    校验复合序列 SEQ-03 的料槽与混色参数契约：
+-    `slot_id` (0-based `0..3` 或 1-based `1..4`，故 `>=4` 当 0-based 或 `>=5` 均拒绝)、
+-    `action` (`0..2`)、以及混色权重总和等于 `100`（百分比）或 `10000`（万分比）。
+-
+-    :param payload: `/api/v1/filament/slots` 请求字典
+-    :return: (预期 HTTP 状态码, 说明)
+-    """
++    """校验复合序列 SEQ-03 的料槽与混色参数契约。"""
+     if "slot_id" in payload:
+         sid = payload["slot_id"]
+         if not isinstance(sid, int) or sid < 0 or sid >= 4:
+@@ -181,13 +166,7 @@ def validate_seq04_gcode_upload_and_two_stage_job(
+     upload_payload: Dict[str, object],
+     explicit_start_clicked: bool,
+ ) -> Tuple[int, str, str]:
+-    """
+-    校验 SEQ-04 的 G-code 上传准入与模型载入/开始打印两阶段解耦契约（`ISS-008` / `ISS-009`）。
+-
+-    :param upload_payload: `/api/v1/jobs/upload` 请求字典
+-    :param explicit_start_clicked: 是否已显式点击开始打印
+-    :return: (HTTP 状态码, 作业状态, 说明)
+-    """
++    """校验 SEQ-04 的 G-code 上传准入与模型载入/开始打印两阶段解耦契约（`ISS-008` / `ISS-009`）。"""
+     name = str(upload_payload.get("name", ""))
+     lower_name = name.lower()
+     if not (lower_name.endswith(".gcode") or lower_name.endswith(".gco") or lower_name.endswith(".nc")):
+@@ -210,28 +189,24 @@ def verify_seq05_estop_offline_degradation_and_404_framing(
+     raw_404_http_response: bytes,
+ ) -> Tuple[bool, str]:
+     """
+-    校验 SEQ-05：断链 `>= 3000ms` 后离线哨兵 `2147483646`、`oobe_completed=False`、
+-    4 路断料传感器非绿色，以及未知路由 HTTP 404 的 `Content-Length: 35` 完整性。
+-
+-    :param elapsed_offline_ms: 断链持续毫秒数
+-    :param snapshot_after_disconnect: 断链后获取的状态/快照字典
+-    :param raw_404_http_response: 未知路由返回的原始 HTTP 字节流
+-    :return: (是否通过, 诊断说明)
++    校验 SEQ-05：要求实测断链耗时 `elapsed_offline_ms >= 3000`，且状态降级为 `OFFLINE`/`DEGRADED`、
++    温度置离线哨兵 `2147483646`、`oobe_completed=False`、4 路断料传感器非绿色，以及 404 响应帧完整。
+     """
+-    if elapsed_offline_ms >= AISOC_FRESHNESS_FAULT_MS:
+-        if snapshot_after_disconnect.get("device_state") not in ("OFFLINE", "DEGRADED"):
+-            return False, "device_state did not degrade to OFFLINE/DEGRADED"
+-        bed = snapshot_after_disconnect.get("bed", {})
+-        tool = snapshot_after_disconnect.get("tool", {})
+-        if isinstance(bed, dict) and bed.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE:
+-            return False, "bed temperature_millic != 2147483646"
+-        if isinstance(tool, dict) and tool.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE:
+-            return False, "tool temperature_millic != 2147483646"
+-        if snapshot_after_disconnect.get("oobe_completed", False) is not False:
+-            return False, "oobe_completed must be False when hardware is offline"
+-        sensors = snapshot_after_disconnect.get("filament_sensors", ["OFFLINE"] * 4)
+-        if not isinstance(sensors, list) or any(s in ("OK", "NORMAL", "GREEN") for s in sensors):
+-            return False, "filament sensors must not show green/OK while offline"
++    if elapsed_offline_ms < AISOC_FRESHNESS_FAULT_MS:
++        return False, f"offline elapsed time {elapsed_offline_ms}ms < 3000ms threshold"
++    if snapshot_after_disconnect.get("device_state") not in ("OFFLINE", "DEGRADED"):
++        return False, "device_state did not degrade to OFFLINE/DEGRADED"
++    bed = snapshot_after_disconnect.get("bed", {})
++    tool = snapshot_after_disconnect.get("tool", {})
++    if isinstance(bed, dict) and bed.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE:
++        return False, "bed temperature_millic != 2147483646"
++    if isinstance(tool, dict) and tool.get("temperature_millic") != AISOC_TEMP_MILLIC_OFFLINE:
++        return False, "tool temperature_millic != 2147483646"
++    if snapshot_after_disconnect.get("oobe_completed", False) is not False:
++        return False, "oobe_completed must be False when hardware is offline"
++    sensors = snapshot_after_disconnect.get("filament_sensors", ["OFFLINE"] * 4)
++    if not isinstance(sensors, list) or any(s in ("OK", "NORMAL", "GREEN") for s in sensors):
++        return False, "filament sensors must not show green/OK while offline"
+ 
+     header_end = raw_404_http_response.find(b"\r\n\r\n")
+     if header_end < 0:
+@@ -284,10 +259,7 @@ def _fetch_raw_http_response(http_base: str, route: str) -> bytes:
+ 
+ 
+ def _drive_live_seq01(http_base: str, mc_log_path: Optional[Path]) -> bool:
+-    """
+-    执行 SEQ-01 实机 HTTP 闭环：
+-    动态 `boot_id` 校验 -> OOBE 完成 -> `G28` 归零 -> X/Y/Z 点动 -> `0x17` 急停 -> 故障清除 -> 再次归零恢复 `READY`。
+-    """
++    """执行 SEQ-01：动态 `boot_id` 校验 -> OOBE 完成 -> `G28` 归零 -> X/Y/Z 点动 -> `0x17` 急停 -> 故障清除 -> 再次归零恢复 `READY`。"""
+     _, ver1 = _http_json_call(http_base, "GET", "/api/v1/system/versions")
+     _http_json_call(http_base, "POST", "/api/v1/system/reset_mcu", {})
+     _, ver2 = _http_json_call(http_base, "GET", "/api/v1/system/versions")
+@@ -300,8 +272,7 @@ def _drive_live_seq01(http_base: str, mc_log_path: Optional[Path]) -> bool:
+     c_oobe, _ = _http_json_call(http_base, "POST", "/api/v1/oobe/complete", {"completed": True})
+     c_home1, _ = _http_json_call(http_base, "POST", "/api/v1/motion/home", {"axes": ["X", "Y", "Z"]})
+     for axis in ("X", "Y", "Z"):
+-        c_jog, _ = _http_json_call(http_base, "POST", "/api/v1/motion/jog", {"axis": axis, "distance_mm": 1.0, "feedrate": 1500})
+-        if c_jog != 200:
++        if _http_json_call(http_base, "POST", "/api/v1/motion/jog", {"axis": axis, "distance_mm": 1.0, "feedrate": 1500})[0] != 200:
+             return False
+     c_stop, _ = _http_json_call(http_base, "POST", "/api/v1/motion/stop", {})
+     c_clr, _ = _http_json_call(http_base, "POST", "/api/v1/system/clear_fault", {})
+@@ -318,11 +289,7 @@ def _drive_live_seq01(http_base: str, mc_log_path: Optional[Path]) -> bool:
+ 
+ 
+ def _drive_live_seq02(http_base: str, mc_log_path: Optional[Path]) -> bool:
+-    """
+-    执行 SEQ-02 实机 HTTP 闭环：
+-    调平触发与网格查询 + 坐标查询零截断日志校验 + 喷头 (`5, 210, 300°C`) 与热床 (`5, 60, 130°C`) 设温 +
+-    越界设温 (`4, 131, 301°C` 返回 `400`) + 降温归零 (`0°C`)。
+-    """
++    """执行 SEQ-02：25点调平与坐标零截断校验 + 喷头 (`5, 210, 300°C`) 与热床 (`5, 60, 130°C`) 设温 + 越界 `400` + 归零 (`0°C`)。"""
+     _http_json_call(http_base, "POST", "/api/v1/motion/level", {"mode": "bed_level_25"})
+     _http_json_call(http_base, "GET", "/api/v1/calibration/status")
+     _http_json_call(http_base, "GET", "/api/v1/motion/position")
+@@ -346,13 +313,31 @@ def _drive_live_seq02(http_base: str, mc_log_path: Optional[Path]) -> bool:
+     return bool(c_zero == 200 and motion_ok and "cmd=0x10" in mc_text)
+ 
+ 
++def _verify_seq03_zero_duty_safe_lock(http_base: str) -> bool:
++    """
++    执行 SEQ-03 首步 `0°C`（`0%` 加热占空比安全锁死）设温校验：
++    向 `/api/v1/control/temperature` 发送 `heater_id=0/1, target_c=0`，校验返回 `200` 且快照 `heater_duty_percent == 0`。
++    """
++    c_h0, _ = _http_json_call(http_base, "POST", "/api/v1/control/temperature", {"heater_id": 0, "target_c": 0})
++    c_h1, _ = _http_json_call(http_base, "POST", "/api/v1/control/temperature", {"heater_id": 1, "target_c": 0})
++    _, snap = _http_json_call(http_base, "GET", "/api/v1/temperature/snapshot")
++    return bool(
++        c_h0 == 200
++        and c_h1 == 200
++        and int(snap.get("heater_duty_percent", -1)) == 0
++    )
++
++
+ def _drive_live_seq03(http_base: str, mc_log_path: Optional[Path], th_log_path: Optional[Path]) -> bool:
+     """
+     执行 SEQ-03 实机 HTTP 闭环：
+-    保存料槽配置 (`POST /api/v1/filament/config` 不触发 `0x19 LOAD` 且不改 `210°C`) -> 预热至 `210°C` ->
+-    显式 `SELECT(0)/LOAD(1)/UNLOAD(2)` -> 越界 `slot_id=4` 与 `action=3` (`400` 及 MC `NACK 0x03`) ->
+-    混色权重和 `100` (`200`) vs 非 `100` (`400`)。
++    先执行 `0°C` (`0%` 占空比安全锁死) 设温 -> 保存料槽配置 (`POST /api/v1/filament/config` 不触发 `0x19 LOAD` 且不改 `210°C`) ->
++    预热至 `210°C` -> 显式 `SELECT(0)/LOAD(1)/UNLOAD(2)` -> 越界 `slot_id=4` 与 `action=3` (`400` 及 MC `NACK 0x03`) ->
++    混色权重和 `100` (`200`) vs `99` (`400`)。
+     """
++    if not _verify_seq03_zero_duty_safe_lock(http_base):
++        return False
++
+     mc_before = mc_log_path.read_text(encoding="utf-8", errors="replace") if (mc_log_path and mc_log_path.exists()) else ""
+     c_cfg, cfg_resp = _http_json_call(
+         http_base, "POST", "/api/v1/filament/config", {"active_slot": 1, "action": 0, "target_temp_deci_c": 0}
+@@ -382,6 +367,7 @@ def _drive_live_seq03(http_base: str, mc_log_path: Optional[Path], th_log_path:
+         and c_bad_act == 400
+         and c_w_ok == 200
+         and c_w_bad == 400
++        and "heater_duty_percent=0" in mc_text
+         and "cmd=0x19 status=ACK" in mc_text
+         and "op=LOAD" in th_text
+         and "err_code=0x03" in mc_text
+@@ -425,34 +411,53 @@ def _drive_live_seq04(http_base: str, mc_log_path: Optional[Path], th_log_path:
+     )
+ 
+ 
+-def _drive_live_seq05(http_base: str, hooks: Dict[str, Callable[[], None]]) -> bool:
++def _poll_until_offline_decay(
++    http_base: str,
++    clock_fn: Callable[[], float],
++    sleep_fn: Callable[[float], None],
++) -> Tuple[int, Dict[str, object]]:
++    """
++    在调用 `disconnect_hook()` 后持续轮询 `GET /api/v1/state`，使用注入或系统单调时钟测量真实
++    `elapsed_ms`，直到跨越 `>= 3000ms` 衰减窗口并观测到 `OFFLINE`/`DEGRADED` 状态。
++    """
++    start_ts = clock_fn()
++    last_state: Dict[str, object] = {}
++    elapsed_ms = 0
++    for _ in range(20):
++        _, last_state = _http_json_call(http_base, "GET", "/api/v1/state")
++        elapsed_ms = int(round((clock_fn() - start_ts) * 1000.0))
++        if elapsed_ms >= AISOC_FRESHNESS_FAULT_MS and last_state.get("device_state") in ("OFFLINE", "DEGRADED"):
++            break
++        sleep_fn(0.25)
++    elapsed_ms = int(round((clock_fn() - start_ts) * 1000.0))
++    return elapsed_ms, last_state
++
++
++def _drive_live_seq05(http_base: str, hooks: Dict[str, object]) -> bool:
+     """
+-    执行 SEQ-05 实机 HTTP 闭环（零伪查询参数）：
+-    急停 (`0x17`) -> 调用 `disconnect_hook()` 轮询 `GET /api/v1/state` 等待 `>=3.0s` 衰减 ->
+-    断言离线哨兵 `2147483646`、`oobe_completed=False`、4路断料非绿、控制指令返回 `503/504` ->
+-    调用 `reconnect_hook()` 轮询验证恢复 `mc_online=True, th_online=True` 与 `READY` -> 校验 404 35B 响应帧。
++    执行 SEQ-05 实机 HTTP 闭环（使用真实测量 `elapsed_ms`，严禁硬编码 `3200`）：
++    急停 (`0x17`) -> 调用 `disconnect` 钩子并测量 `>=3.0s` 衰减 -> 校验离线哨兵 `2147483646`、
++    `oobe_completed=False`、4路断料非绿、控制指令返回 `503/504` -> 调用 `reconnect` 钩子恢复在线与 `READY`。
+     """
+     _http_json_call(http_base, "POST", "/api/v1/motion/stop", {})
+     disconnect_fn = hooks.get("disconnect")
+     reconnect_fn = hooks.get("reconnect")
+-    if callable(disconnect_fn):
+-        disconnect_fn()
+-
+-    off_state: Dict[str, object] = {}
+-    for _ in range(20):
+-        _, off_state = _http_json_call(http_base, "GET", "/api/v1/state")
+-        if off_state.get("device_state") in ("OFFLINE", "DEGRADED"):
+-            break
+-        time.sleep(0.02)
++    if not callable(disconnect_fn) or not callable(reconnect_fn):
++        return False
++    clock_fn = hooks.get("clock_fn", time.monotonic)
++    sleep_fn = hooks.get("sleep_fn", time.sleep)
++    if not callable(clock_fn) or not callable(sleep_fn):
++        return False
+ 
++    disconnect_fn()
++    elapsed_ms, off_state = _poll_until_offline_decay(http_base, clock_fn, sleep_fn)
+     ctrl_code, _ = _http_json_call(http_base, "POST", "/api/v1/motion/home", {"axes": ["X"]})
+     raw_404 = _fetch_raw_http_response(http_base, "/api/v1/unknown_route_404")
+-    off_ok, _ = verify_seq05_estop_offline_degradation_and_404_framing(3200, off_state, raw_404)
++    off_ok, _ = verify_seq05_estop_offline_degradation_and_404_framing(elapsed_ms, off_state, raw_404)
+     if not off_ok or ctrl_code not in (503, 504):
+         return False
+ 
+-    if callable(reconnect_fn):
+-        reconnect_fn()
++    reconnect_fn()
+     _http_json_call(http_base, "POST", "/api/v1/temperature/sample", {})
+     _, rec_state = _http_json_call(http_base, "GET", "/api/v1/state")
+     bed_rec = rec_state.get("bed", {})
+@@ -472,7 +477,7 @@ def run_live_composite_sequences(
+     http_base: str,
+     mc_log_path: Optional[Path] = None,
+     th_log_path: Optional[Path] = None,
+-    hooks: Optional[Dict[str, Callable[[], None]]] = None,
++    hooks: Optional[Dict[str, object]] = None,
+ ) -> Tuple[bool, Dict[str, object]]:
+     """
+     针对目标 HTTP 网关端到端执行 SEQ-01 ~ SEQ-05 五类复合业务序列并汇总四方对账结果。
+@@ -480,7 +485,7 @@ def run_live_composite_sequences(
+     :param http_base: 网关基础地址，如 `http://192.168.77.134:8080`
+     :param mc_log_path: MC 调试日志文件路径
+     :param th_log_path: TH 调试日志文件路径
+-    :param hooks: 断链与重连钩子字典 `{"disconnect": fn, "reconnect": fn}`
++    :param hooks: 断链/重连与时钟钩子字典 `{"disconnect": fn, "reconnect": fn, ...}`
+     :return: (是否全部通过, 序列执行报告字典)
+     """
+     active_hooks = hooks or {}
+@@ -501,7 +506,7 @@ def run_live_composite_sequences(
+ 
+ 
+ class _CompositeSimState:
+-    """维护 `--self-test` 本地仿真网关的真实状态机、单调时钟与双板串口日志写入。"""
++    """维护 `--self-test` 本地仿真网关的真实状态机、步进单调时钟与双板串口日志写入。"""
+ 
+     def __init__(self, mc_log_file: Path, th_log_file: Path) -> None:
+         """初始化仿真网关与双板状态。"""
+@@ -515,8 +520,18 @@ class _CompositeSimState:
+         self.oobe_completed = False
+         self.tool_target_c = 0.0
+         self.bed_target_c = 0.0
++        self.heater_duty_percent = 0
+         self.link_connected = True
+-        self.elapsed_offline_ms = 0
++        self.now_sec = 100.0
++        self.last_rx_sec = 100.0
++
++    def clock(self) -> float:
++        """返回仿真单调时钟当前秒数。"""
++        return self.now_sec
++
++    def sleep(self, seconds: float) -> None:
++        """推进仿真单调时钟 `seconds` 秒。"""
++        self.now_sec += float(seconds)
+ 
+     def append_mc(self, line: str) -> None:
+         """向 MC 调试日志文件追加一行。"""
+@@ -529,27 +544,33 @@ class _CompositeSimState:
+             f.write(line + "\r\n")
+ 
+     def disconnect_serial(self) -> None:
+-        """物理断链钩子：断开底层串口并将离线计时推进至 >= 3.0s 衰减窗口。"""
++        """物理断链钩子：仅切断串口接收，不直接篡改状态（状态必须随时钟跨越 3.0s 自然衰退）。"""
+         self.link_connected = False
+-        self.elapsed_offline_ms = 3200
+-        self.system_status = "OFFLINE"
+-        self.oobe_completed = False
++        self.last_rx_sec = self.now_sec
+ 
+     def reconnect_serial(self) -> None:
+-        """物理重连钩子：恢复底层串口在线并将离线计时清零。"""
++        """物理重连钩子：恢复底层串口连接并刷新最后收包时间戳。"""
+         self.link_connected = True
+-        self.elapsed_offline_ms = 0
++        self.last_rx_sec = self.now_sec
+         self.system_status = "READY"
+ 
++    def elapsed_offline_ms(self) -> int:
++        """计算当前距离最后一次有效串口收包的经过毫秒数。"""
++        if self.link_connected:
++            return 0
++        return int(round((self.now_sec - self.last_rx_sec) * 1000.0))
++
+     def build_state_snapshot(self) -> Dict[str, object]:
+-        """根据当前链路在线状态与传感器采样构造 `/api/v1/state` 与 `/api/v1/temperature/snapshot` 响应。"""
+-        if not self.link_connected and self.elapsed_offline_ms >= AISOC_FRESHNESS_FAULT_MS:
++        """根据当前链路经过时间（`<1.5s` FRESH、`1.5..3.0s` STALE、`>=3.0s` OFFLINE）构造状态快照。"""
++        off_ms = self.elapsed_offline_ms()
++        if not self.link_connected and off_ms >= AISOC_FRESHNESS_FAULT_MS:
+             return {
+                 "system_status": "OFFLINE",
+                 "device_state": "OFFLINE",
+                 "mc_online": False,
+                 "th_online": False,
+                 "oobe_completed": False,
++                "heater_duty_percent": 0,
+                 "filament_sensors": ["OFFLINE", "OFFLINE", "OFFLINE", "OFFLINE"],
+                 "bed": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "raw_adc": 4095, "quality": "FAULT"},
+                 "tool": {"temperature_millic": AISOC_TEMP_MILLIC_OFFLINE, "raw_adc": 4095, "quality": "FAULT"},
+@@ -560,6 +581,7 @@ class _CompositeSimState:
+             "mc_online": True,
+             "th_online": True,
+             "oobe_completed": self.oobe_completed,
++            "heater_duty_percent": self.heater_duty_percent,
+             "filament_sensors": ["OK", "OK", "OK", "OK"],
+             "bed": {"temperature_millic": 60000, "raw_adc": 3120, "quality": "FRESH"},
+             "tool": {"temperature_millic": 210000, "raw_adc": 1850, "quality": "FRESH"},
+@@ -568,7 +590,7 @@ class _CompositeSimState:
+ 
+ def _dispatch_sim_post(sim: _CompositeSimState, path: str, payload: Dict[str, object]) -> Tuple[int, Dict[str, object]]:
+     """分发仿真网关的 POST 请求并更新状态机与双板 `[MC-DBG]`/`[TH-DBG]` 日志。"""
+-    if not sim.link_connected and path not in ("/api/v1/temperature/sample",):
++    if not sim.link_connected and sim.elapsed_offline_ms() >= AISOC_FRESHNESS_FAULT_MS and path not in ("/api/v1/temperature/sample",):
+         return 503, {"error": 503, "message": "Service Unavailable (MCU Offline)"}
+     if path == "/api/v1/system/reset_mcu":
+         sim.mc_boot_id += 1
+@@ -600,15 +622,16 @@ def _dispatch_sim_post(sim: _CompositeSimState, path: str, payload: Dict[str, ob
+ def _dispatch_sim_post_ext(
+     sim: _CompositeSimState, path: str, payload: Dict[str, object]
+ ) -> Tuple[int, Dict[str, object]]:
+-    """处理温度、耗材与作业控制相关的仿真 POST 路由。"""
+-    if path == "/api/v1/temperature/set":
++    """处理温度控制、耗材与作业相关的仿真 POST 路由。"""
++    if path in ("/api/v1/temperature/set", "/api/v1/control/temperature"):
+         code, msg = validate_temperature_set_contract(payload)
+         if code == 200:
+-            sim.tool_target_c = float(payload.get("tool_target_c", sim.tool_target_c))
++            sim.tool_target_c = float(payload.get("tool_target_c", payload.get("target_c", sim.tool_target_c)))
+             sim.bed_target_c = float(payload.get("bed_target_c", sim.bed_target_c))
+-            sim.append_mc("[MC-DBG] ts=1300 dir=TX node=MC seq=20 cmd=0x10 status=ACK ok=1")
+-            sim.append_th("[TH-DBG] ts=1301 dir=TX node=TH seq=20 cmd=0x10 status=ACK ok=1")
+-        return code, {"message": msg}
++            sim.heater_duty_percent = 0
++            sim.append_mc("[MC-DBG] ts=1300 dir=TX node=MC seq=20 cmd=0x10 status=ACK heater_duty_percent=0 ok=1")
++            sim.append_th("[TH-DBG] ts=1301 dir=TX node=TH seq=20 cmd=0x10 status=ACK heater_duty_percent=0 ok=1")
++        return code, {"message": msg, "heater_duty_percent": 0}
+     if path == "/api/v1/filament/config":
+         sim.append_mc("[MC-DBG] ts=1350 dir=TX node=MC seq=21 cmd=0x19 status=ACK op=SELECT")
+         return 200, {"tool_target_c": sim.tool_target_c}
+@@ -651,6 +674,8 @@ def _dispatch_sim_job_post(sim: _CompositeSimState, path: str) -> Tuple[int, Dic
+         sim.progress_permille = 0
+         return 200, {"job_state": sim.job_state, "progress_permille": 0}
+     if path == "/api/v1/temperature/sample":
++        if sim.link_connected:
++            sim.last_rx_sec = sim.now_sec
+         return 200, {"ok": True}
+     return 404, {"error": 404, "message": "Not Found"}
+ 
+@@ -675,7 +700,7 @@ class _CompositeMockGatewayHandler(http.server.BaseHTTPRequestHandler):
+         self.wfile.write(raw)
+ 
+     def do_GET(self) -> None:
+-        """处理复合序列 GET 请求（不依赖任何伪查询参数，完全由状态机驱动）。"""
++        """处理复合序列 GET 请求（完全由状态机与单调时钟驱动）。"""
+         sim = self.sim_state
+         if sim is None:
+             self._send_json(500, {"error": 500})
+@@ -706,6 +731,16 @@ class _CompositeMockGatewayHandler(http.server.BaseHTTPRequestHandler):
+         self._send_json(code, resp)
+ 
+ 
++def _build_cli_hooks(disconnect_cmd: str, reconnect_cmd: str) -> Dict[str, object]:
++    """根据 CLI `--disconnect-cmd` 与 `--reconnect-cmd` 构造实机断链/重连与真实单调时钟钩子字典。"""
++    return {
++        "disconnect": lambda: subprocess.run(disconnect_cmd, shell=True, check=True),
++        "reconnect": lambda: subprocess.run(reconnect_cmd, shell=True, check=True),
++        "clock_fn": time.monotonic,
++        "sleep_fn": time.sleep,
++    }
++
++
+ class TestCompositeLifecycleSequences(unittest.TestCase):
+     """TWIN-61 5类复合业务序列（SEQ-01 ~ SEQ-05）正反例与端到端状态机自动化验证套件。"""
+ 
+@@ -801,7 +836,7 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+         )
+ 
+     def test_seq05_offline_3s_sentinel_and_404_framing(self) -> None:
+-        """验证 SEQ-05：断链 >=3.0s 打入 2147483646 离线哨兵、oobe_completed=False、断料非绿，且 404 帧完整。"""
++        """验证 SEQ-05：断链 >=3.0s 打入 2147483646 离线哨兵、小于 3.0s 被拒绝，且 404 帧完整。"""
+         offline_snap = {
+             "system_status": "OFFLINE",
+             "device_state": "OFFLINE",
+@@ -818,11 +853,12 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+             b'{"error":404,"message":"Not Found"}'
+         )
+         self.assertTrue(verify_seq05_estop_offline_degradation_and_404_framing(3200, offline_snap, raw_404)[0])
++        self.assertFalse(verify_seq05_estop_offline_degradation_and_404_framing(2500, offline_snap, raw_404)[0])
+         bad_green = dict(offline_snap, filament_sensors=["OK", "OFFLINE", "OFFLINE", "OFFLINE"])
+         self.assertFalse(verify_seq05_estop_offline_degradation_and_404_framing(3200, bad_green, raw_404)[0])
+ 
+     def test_run_live_composite_sequences_end_to_end_with_stateful_sim(self) -> None:
+-        """验证 `run_live_composite_sequences` 配合真实断链/重连钩子完整跑通 SEQ-01..SEQ-05 全部正负向步骤。"""
++        """验证 `run_live_composite_sequences` 配合步进时钟与断链/重连钩子完整跑通 SEQ-01..SEQ-05。"""
+         with tempfile.TemporaryDirectory() as tmpdir:
+             mc_path = Path(tmpdir) / "mc_composite.log"
+             th_path = Path(tmpdir) / "th_composite.log"
+@@ -840,7 +876,12 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+                     f"http://127.0.0.1:{port}",
+                     mc_path,
+                     th_path,
+-                    hooks={"disconnect": sim.disconnect_serial, "reconnect": sim.reconnect_serial},
++                    hooks={
++                        "disconnect": sim.disconnect_serial,
++                        "reconnect": sim.reconnect_serial,
++                        "clock_fn": sim.clock,
++                        "sleep_fn": sim.sleep,
++                    },
+                 )
+             finally:
+                 server.shutdown()
+@@ -851,18 +892,31 @@ class TestCompositeLifecycleSequences(unittest.TestCase):
+                 self.assertTrue(report[key], f"{key} failed in end-to-end composite HTTP suite")
+ 
+ 
+-def main() -> int:
+-    """命令行主入口：支持 `--self-test` 或 `--live` 运行全部 5 类复合业务序列验证。"""
++def main(argv: Optional[Sequence[str]] = None) -> int:
++    """命令行主入口：支持 `--self-test` 或 `--live`（带断链/重连命令钩子）运行全部 5 类复合序列。"""
+     parser = argparse.ArgumentParser(description="TWIN-61 5类复合业务序列自动化验证套件")
+     parser.add_argument("--self-test", action="store_true", help="运行内置 5 类复合序列正反例与端到端状态机自检")
+     parser.add_argument("--live", action="store_true", help="针对指定网关 URL 执行端到端复合业务序列验证")
+     parser.add_argument("--http-base", type=str, default="http://192.168.77.134:8080", help="实机网关 URL")
+     parser.add_argument("--mc-log", type=Path, default=None, help="MC 调试日志路径")
+     parser.add_argument("--th-log", type=Path, default=None, help="TH 调试日志路径")
+-    args = parser.parse_args()
++    parser.add_argument(
++        "--disconnect-cmd",
++        type=str,
++        default="systemctl stop forward-service || true",
++        help="SEQ-05 实机触发底层串口断链的外部命令",
++    )
++    parser.add_argument(
++        "--reconnect-cmd",
++        type=str,
++        default="systemctl start forward-service || true",
++        help="SEQ-05 实机恢复底层串口重连的外部命令",
++    )
++    args = parser.parse_args(argv)
+ 
+     if args.live:
+-        passed, report = run_live_composite_sequences(args.http_base, args.mc_log, args.th_log)
++        hooks = _build_cli_hooks(args.disconnect_cmd, args.reconnect_cmd)
++        passed, report = run_live_composite_sequences(args.http_base, args.mc_log, args.th_log, hooks=hooks)
+         print(json.dumps(report, indent=2, ensure_ascii=False))
+         return 0 if passed else 1
+ 

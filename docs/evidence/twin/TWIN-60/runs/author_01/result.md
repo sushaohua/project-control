@@ -7,7 +7,7 @@ predecessor_session_id: 484ac302-bd54-4e1b-be9f-0227e1475d5d
 date: 2026-11-05
 repository: mcu-p3
 branch: feat/soc-debug
-candidate_commit: 191e355a4227268a472bafd6862d4a8c854e0544
+candidate_commit: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
 status: READY_FOR_QA
 ---
 
@@ -20,7 +20,7 @@ status: READY_FOR_QA
 - `project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-60.md`
 
 ## 2. 交付范围与代码变更摘要
-- **候选提交**：`mcu-p3@191e355a4227268a472bafd6862d4a8c854e0544`（分支 `feat/soc-debug`）
+- **候选提交**：`mcu-p3@57674d8b07d6c75a4d20b3fcd52c23df964aa7a7`（分支 `feat/soc-debug`）
 - **核心修复与实现**：
   1. **ISS-20261105-010（MC `0x19` 槽位/动作越界校验）**：在 `motion-controller-mcu/project/src/minimc_proto.c` 中对 `slot_id > 3` 或 `action > 2` 严格返回 `0x06 CMD_NACK (MINIMC_ERR_INVALID_PARAM = 0x03)`，拒绝非法参数入队。
   2. **ISS-20261105-011 & ISS-20261105-012（MC 热床真实 ADC `g_last_bed_adc_raw` 透传与 `5~130°C` 量程/超界 `0x7FFF` 哨兵判定）**：在 `thermistor.c` 与 `minimc_proto.c` 中采集并透传热床通道真实 12-bit ADC 原始值 `g_last_bed_adc_raw`，对超出 `5.0°C ~ 130.0°C`（`50 ~ 1300 deci-°C`）或 ADC 开路/短路的异常采样立即置故障状态码并打入 `0x7FFF` 哨兵值，同时强制关闭加热器 PWM（0%）。

@@ -1,0 +1,18 @@
+{
+  "task_id": "TWIN-61",
+  "task_revision": 1,
+  "candidate_commit": "9f3918a2f9fc79a683ce218436b005e593a7109b",
+  "role": "ARCH",
+  "decision": "REJECTED",
+  "summary": "锁定 bundle、运行证据及主测试计划的哈希均匹配。定向源码已证实 290 帧实机路径未验证验收要求的序列号与日志丢弃/截断指标，复合序列脚本也未实现计划要求的端到端场景执行；因此不符合接受范围。冻结验证命令另在 unittest 加载阶段失败，无法提供要求的回归通过证据。",
+  "findings": [
+    "阻断：接受条款要求 290 帧突发按 seq=1..290 执行并核对 16-bit 序列号、TIMEOUT、drop 和 trunc。test_290_frame_burst_stress.py 的实机路径只交替请求温度采样与状态查询，并仅以 HTTP 成功数、裸 ADC 文本、CRC_ERR 和 BAD_FRAME 判定通过；没有按生成向量发送业务帧，也没有检查序列号、TIMEOUT、drop_delta 或 trunc_delta（函数 run_live_http_burst，候选源码第 317–351 行）。",
+    "阻断：接受条款及主计划要求固化 5 类复合业务序列自动化测试。test_composite_lifecycle_sequences.py 的测试仅将预置快照、日志字符串和 HTTP 响应字节交给本地校验函数；未执行 OOBE、运动、料槽、作业生命周期、断链与恢复等场景，也未驱动或采集实际端到端请求和硬件响应（TestCompositeLifecycleSequences，第 716–870 行）。",
+    "阻断：接受范围要求指定单元/契约回归及两项脚本自测通过。已校验的 runtime.log 显示冻结命令在 unittest 加载阶段以 ValueError: Empty module name 退出，exit code 为 1；后续测试与自测均未运行，不能作为通过证据。"
+  ],
+  "accepted_scope": "审查 TWIN-61 revision 1：完整 HIL 主测试计划、test_harness/hil 下 290 帧脚本与 5 类复合序列脚本、project-control/tools Batch PC-1 中文注释。project-control 的 Batch PC-1 按接受范围给定的 5686e193..c1d2c461 变更范围核对；候选锁定差异中仅 test_harness 有两项新增脚本。实体 HIL 台架执行及 intake scan 属于排除项。",
+  "unexecuted": [
+    "冻结验证命令未完成：7 项 project-control 单元/契约回归、debug_reconciliation_probe 自测、290 帧脚本自测、复合序列脚本自测均未执行完成。",
+    "范围内代码注释标准的完整自动检查未完成；冻结验证命令未能运行至该检查。"
+  ]
+}

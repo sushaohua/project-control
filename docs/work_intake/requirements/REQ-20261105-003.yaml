@@ -1,6 +1,6 @@
 schema_version: 1
 id: REQ-20261105-003
-revision: 5
+revision: 6
 kind: requirement
 enabled: true
 title: 你继续作为唯一 COORD，先组织专业角色形成 MiniMCProto v2.0 双 MCU 统一升级完整方案，交我确认后才能进行实现任务拆分、依赖登记和开发派发。
@@ -216,10 +216,10 @@ source_refs:
   common_constraints_sha256: b061a2944b82cfd2a4884540db161cbaa0b2c0f8fffbefb9a2ffaa1a3a171070
 demand_ref:
   demand_id: DEM-20261105-006
-  confirmation_id: null
-  confirmation_revision: null
-  confirmation_path: null
-  confirmation_sha256: null
+  confirmation_id: CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106
+  confirmation_revision: 1
+  confirmation_path: project-control/docs/work_intake/confirmations/CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106.yaml
+  confirmation_sha256: 200c2e484f8e8bf67303aab66b2591550512653b84845f16826b0b7c6a17b0d5
 reported_by:
   actor_type: HUMAN
   actor_id: human_markdown_author
@@ -234,7 +234,11 @@ authorization_refs:
 - path: project-control/docs/work_intake/submissions/20261105_minimc_v2_upgrade_coord_planning_prompt.md
   revision: 3
   sha256: 4699feade73d9e621b5ead2bade96ba195c488446de6e215bbb9b5276dcfcc80
-approval_refs: []
+approval_refs:
+- approval_id: APPR-20261106-001
+  revision: 1
+  path: project-control/docs/work_intake/approvals/APPR-20261106-001.yaml
+  sha256: ce4aeb8689a3a109951db0f8496b3668b8e0a5fb0358134a64fe7c94f8daadec
 requested_action: plan
 priority_hint: P2
 related_ids:
@@ -242,6 +246,12 @@ related_ids:
   - TWIN-26
   - TWIN-27
   - TWIN-28
+  - TWIN-62
+  - TWIN-63
+  - TWIN-64
+  - TWIN-65
+  - TWIN-66
+  - TWIN-67
   product_decisions:
   - U-D05
   product_features:
@@ -258,6 +268,10 @@ related_ids:
     revision: Rev 2.0.3
     path: project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md
     sha256: 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54
+  - id: SPEC-PROTO-20261106-093000
+    revision: Rev 2.0.4
+    path: project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md
+    sha256: ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c
   historical_designs:
   - path: project-control/docs/analysis/mcu_firmware_upgrade_design_20261031.md
     revision: 1
@@ -269,7 +283,8 @@ related_ids:
     path: project-control/docs/planning/minimc_v2_upgrade_arch_audit_receipt_20261105.md
     revision: 2
     sha256: 05308b35432bb483c2600130133b6105922159f3e3e763646d6468af15d9a6c0
-  - role: ENG-FWD / ENG-STATE / ENG-MC / ENG-TH / ENG_BOOT_MC / ENG_BOOT_TH / INTEGRATOR / ENG-UI / ENG-NET
+  - role: ENG-FWD / ENG-STATE / ENG-MC / ENG-TH / ENG_BOOT_MC / ENG_BOOT_TH / INTEGRATOR
+      / ENG-UI / ENG-NET
     session_id: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
     path: project-control/docs/planning/minimc_v2_upgrade_engineering_inputs_20261105.md
     revision: 1
@@ -290,9 +305,9 @@ related_ids:
     session_id: 3a7ad206-fef7-4d28-b3c8-1ee5bce395a5
     document_id: ARCH-MASTER-MINIMC-V2-UNIFIED-MCU-UPGRADE-20261105
     path: project-control/docs/architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md
-    revision: 1
-    sha256: 6c0e672c50bc526d8b4e662c2c354114ef5c8c0180d4a3dd5563908726584c7a
-    status: pending-user-confirmation
+    revision: 2
+    sha256: b2b6d047500180c9f4d67d72c94794cbe5080caa52901ba262aa089bc1543223
+    status: approved-by-user
   deduplication_note: Linked to U-D05 / PM:FEAT-OTA-001 and frozen historical tasks
     TWIN-26 (Done/Blocked), TWIN-27 (Backlog/Blocked), TWIN-28 (Backlog/Blocked).
     Historical signatures and freeze status preserved; no task unblocked and no implementation

@@ -1,0 +1,23 @@
+=== Docker Container Inspect: 588f33df73f7 ===
+{
+  "id": "588f33df73f7419dc90ec755bf72273562226cb6dbe694e5e558e1330f67680f",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-05T11:34:41.713662451Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-57_run_193422_20261105_113422",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) cmake -S . -B /tmp/build_twin57 -G Ninja && cmake --build /tmp/build_twin57 && ctest --test-dir /tmp/build_twin57 --output-on-failure && rm -rf /tmp/build_twin57 -> 1
+-- Configuring incomplete, errors occurred!
+
+CMake Error: CMake was unable to find a build program corresponding to "Ninja".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
+CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage

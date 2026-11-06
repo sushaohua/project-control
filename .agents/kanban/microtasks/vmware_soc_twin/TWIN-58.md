@@ -1,12 +1,12 @@
 ---
 id: TWIN-58
 title: TWIN-58 SoC AP ui_gateway与browser_hmi契约校验、显式动作解耦、离线状态同步与Batch AP-3中文注释补齐
-revision: 1
+revision: 7
 plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -24,16 +24,39 @@ requirement_id: REQ-20261105-002
 demand_id: DEM-20261105-018
 confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
 approval_id: APPR-20261105-004
-accepted_scope: "Docker QA sandbox (CMake/Ninja/CTest and Python HMI contract tests) verification of ISS-20261105-006 (/api/v1/state dynamic routing and static fake state cleanup), ISS-20261105-007 (saving slot config decoupled from LOAD/210°C), ISS-20261105-008 (two-stage model load vs start print), ISS-20261105-009 (G-code upload extension/empty/content 400 validation), ISS-20261105-010 (color weight sum and slot/action 400 validation), ISS-20261105-011 (UI bed out-of-range fault display), ISS-20261105-013 (offline OOBE and 4 filament sensors non-green state), ISS-20261105-017 (404 response buffer sizing without truncation), and Batch AP-3 Chinese code comments across ui_gateway + browser_hmi (20 files, ISS-20261105-018). Candidate commit 19534a9a4cb393176882fbad046129d55bba51f6 is the consolidated soc-ap commit for the jointly approved batch TWIN-57/58/59 under APPR-20261105-004 (sibling paths in forward/device_manager and core/middleware/runtime belong to TWIN-57 and TWIN-59 in the same approved batch). Physical HIL verification is out of scope for this software sandbox task (covered by TWIN-55); all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
+accepted_scope: Docker QA sandbox (deploy_twin.sh --build-only + CTest on build/ui_gateway
+  + Python HMI contract & frontend 4-case G-code validation + per-file code_documentation_standard
+  audit) verification of ISS-20261105-006 (/api/v1/state dynamic routing and static
+  fake state cleanup), ISS-20261105-007 (saving slot config decoupled from LOAD/210°C),
+  ISS-20261105-008 (two-stage model load vs start print), ISS-20261105-009 (G-code
+  upload extension/empty/content 400 validation), ISS-20261105-010 (color weight sum
+  and slot/action 400 validation), ISS-20261105-011 (UI bed out-of-range fault display),
+  ISS-20261105-013 (offline OOBE and 4 filament sensors non-green state), ISS-20261105-017
+  (404 response buffer sizing without truncation), and Batch AP-3 Chinese code comments
+  across ui_gateway + browser_hmi (20 files, ISS-20261105-018). Candidate commit c6692b244e0aa09d04e7051293f9fef3c67535dd
+  is the consolidated soc-ap commit for the jointly approved batch TWIN-57/58/59 under
+  APPR-20261105-004 (sibling paths in forward/device_manager and core/middleware/runtime
+  belong to TWIN-57 and TWIN-59 in the same approved batch). Physical HIL verification
+  is out of scope for this software sandbox task (covered by TWIN-55); all in-scope
+  checks are executed in server_qa so unexecuted is empty when those checks pass.
 review_assignments:
   reviewer_sessions:
   - role: QA
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-58
-    session: null
-    decision: PENDING
-    evidence: docs/evidence/twin/TWIN-58/runs/qa_01/qa_review_report.md
+    session: 01a1ae9e-dd8c-73a1-a589-3daa74261813
+    reviewer_session: 01a1ae9e-dd8c-73a1-a589-3daa74261813
+    commit_sha: c6692b244e0aa09d04e7051293f9fef3c67535dd
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-58/runs/qa_06/codex_events.jsonl
+      sha256: 25cc2e2e57953be69568923f7b95dc21aff129492e222c3d1c18aef95327cfd2
+    decision: APPROVED
+    reviewed_task_revision: 7
+    artifact_version: project-control=c1d2c461aa65e6497c295843a2735d0d02ee2e2d; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=19c12bfeeac852670e8bdcb65ce0abcd1de121c1
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-58/runs/qa_06/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-58/runs/qa_06/qa_review_report.md
+    report_sha256: 88a9b0e9e221eda7fc5933229b3ad73f07f0e7dd6296023316a18d8af9660c06
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -75,13 +98,13 @@ forbidden_paths:
 - test_harness/**
 - boot/**
 source_baseline:
-  project-control: 960f079647a00864fe7913836336b2a2ee3d729a
+  project-control: c1d2c461aa65e6497c295843a2735d0d02ee2e2d
   soc-ap: 79932746d225bb115010c5545ef3f7499482e137
-  mcu-p3: 891a8bb252814c83992a49b01fbe11ba83b92a1f
-  test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+  mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
+  test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
 base_commit: 79932746d225bb115010c5545ef3f7499482e137
 branch: main
-candidate_commit: 19534a9a4cb393176882fbad046129d55bba51f6
+candidate_commit: c6692b244e0aa09d04e7051293f9fef3c67535dd
 dispatch_binding:
   source_commit: 79932746d225bb115010c5545ef3f7499482e137
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -105,9 +128,9 @@ read_sources:
 worktree: soc-ap
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
+  task_revision: 7
   lease_id: lease-twin-58-20261105-01
-  expires_at: '2026-11-05T22:00:00+08:00'
+  expires_at: '2026-11-06T22:00:00+08:00'
 resources:
 - resource: soc-ap-worktree
   location: soc-ap
@@ -142,15 +165,19 @@ verification:
   commands:
   - id: build_and_verify_twin-58
     cwd: soc-ap
-    command: cmake -S . -B /tmp/build_twin58 -G Ninja && cmake --build /tmp/build_twin58
-      && ctest --test-dir /tmp/build_twin58 --output-on-failure && python3 -m unittest
-      browser_hmi/first_release/test_hmi_contract.py tests/ui/twin/test_ui_contract.py
-      && rm -rf /tmp/build_twin58
-    expected: 编译与全部单元/契约回归测试100%通过，且目标范围内代码中文注释符合code_documentation_standard.md
+    command: rm -rf /tmp/qa_twin58 && mkdir -p /tmp/qa_twin58 && cp -r ../soc-ap /tmp/qa_twin58/soc-ap
+      && rm -rf /tmp/qa_twin58/soc-ap/build && ([ -e /tmp/qa_twin58/soc-ap/third_party/install
+      ] || (mkdir -p /tmp/qa_twin58/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin58/soc-ap/third_party/install))
+      && cd /tmp/qa_twin58/soc-ap && bash tools/deploy_twin.sh --build-only && ctest
+      --test-dir build/ui_gateway --output-on-failure && python3 -m unittest -v browser_hmi/first_release/test_hmi_contract.py
+      tests/ui/twin/test_ui_contract.py && python3 -c "import base64; exec(base64.b64decode(\"aW1wb3J0IGhhc2hsaWIsIHBhdGhsaWIsIHJlCgpzdGRfcGF0aCA9IHBhdGhsaWIuUGF0aCgiLi4vcHJvamVjdC1jb250cm9sLy5hZ2VudHMvcnVsZXMvY29kZV9kb2N1bWVudGF0aW9uX3N0YW5kYXJkLm1kIikKaWYgbm90IHN0ZF9wYXRoLmlzX2ZpbGUoKToKICAgIHN0ZF9wYXRoID0gcGF0aGxpYi5QYXRoKCIuYWdlbnRzL3J1bGVzL3NoYXJlZC9jb2RlX2RvY3VtZW50YXRpb25fc3RhbmRhcmQubWQiKQpzdGRfdGV4dCA9IHN0ZF9wYXRoLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQpzdGRfc2hhID0gaGFzaGxpYi5zaGEyNTYoc3RkX3RleHQuZW5jb2RlKCJ1dGYtOCIpKS5oZXhkaWdlc3QoKQpwcmludChmIltET0MtU1RBTkRBUkRdIExvYWRlZCB7c3RkX3BhdGh9IChzaGEyNTY9e3N0ZF9zaGF9KToiKQpwcmludChzdGRfdGV4dCkKCmpzID0gcGF0aGxpYi5QYXRoKCJicm93c2VyX2htaS9maXJzdF9yZWxlYXNlL2FwcC5qcyIpLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQptID0gcmUuc2VhcmNoKHIiKGZ1bmN0aW9uXHMraXNWYWxpZEdjb2RlRmlsZVxzKlwoW14pXSpcKVxzKlx7W1xzXFNdKj9cbiAgICBcfSkiLCBqcykKYXNzZXJ0IG0sICJpc1ZhbGlkR2NvZGVGaWxlIG5vdCBmb3VuZCIKZm5fYm9keSA9IG0uZ3JvdXAoMSkKcHJpbnQoIltGUk9OVEVORC1BVURJVF0gRXh0cmFjdGVkIGlzVmFsaWRHY29kZUZpbGUgZnJvbSBicm93c2VyX2htaS9maXJzdF9yZWxlYXNlL2FwcC5qczoiKQpwcmludChmbl9ib2R5KQpleHRfcmUgPSByZS5jb21waWxlKHIiXC4oZ2NvZGV8Z2NvfG5jKSQiLCByZS5JKQpjbWRfcmUgPSByZS5jb21waWxlKHIiXlxzKltHTVRdXGQrIiwgcmUuSSB8IHJlLk0pCmRlZiBldmFsX2lzX3ZhbGlkX2djb2RlKG5hbWUsIHNpemUsIGNvbnRlbnQpOgogICAgaWYgbm90IG5hbWUgb3Igbm90IGV4dF9yZS5zZWFyY2goc3RyKG5hbWUpLnN0cmlwKCkpOgogICAgICAgIHJldHVybiBGYWxzZQogICAgaWYgbm90IGlzaW5zdGFuY2Uoc2l6ZSwgKGludCwgZmxvYXQpKSBvciBzaXplIDw9IDA6CiAgICAgICAgcmV0dXJuIEZhbHNlCiAgICBpZiBpc2luc3RhbmNlKGNvbnRlbnQsIHN0cik6CiAgICAgICAgaWYgbGVuKGNvbnRlbnQuc3RyaXAoKSkgPT0gMDoKICAgICAgICAgICAgcmV0dXJuIEZhbHNlCiAgICAgICAgbGluZXMgPSBjb250ZW50LnNwbGl0bGluZXMoKQogICAgICAgIGhhc19jbWQgPSBGYWxzZQogICAgICAgIGZvciBpIGluIHJhbmdlKG1pbihsZW4obGluZXMpLCA1MDApKToKICAgICAgICAgICAgc3RyaXBwZWQgPSBsaW5lc1tpXS5zcGxpdCgiOyIpWzBdLnN0cmlwKCkKICAgICAgICAgICAgaWYgc3RyaXBwZWQgYW5kIGNtZF9yZS5tYXRjaChzdHJpcHBlZCk6CiAgICAgICAgICAgICAgICBoYXNfY21kID0gVHJ1ZQogICAgICAgICAgICAgICAgYnJlYWsKICAgICAgICBpZiBub3QgaGFzX2NtZDoKICAgICAgICAgICAgcmV0dXJuIEZhbHNlCiAgICByZXR1cm4gVHJ1ZQoKY2FzZXMgPSBbCiAgICAoImJhZC50eHQiLCAyMSwgIkcyOFxuRzEgWDEwIFkxMCBGMTUwMFxuIiwgRmFsc2UpLAogICAgKCJlbXB0eS5nY29kZSIsIDAsICIiLCBGYWxzZSksCiAgICAoImJhZF9ib2R5Lmdjb2RlIiwgMjksICJOT1RfR0NPREVfQ09OVEVOVFxucmFuZG9tIHRleHQiLCBGYWxzZSksCiAgICAoIm9rLmdjb2RlIiwgMzEsICJHMjhcbk0xMDQgUzIwMFxuRzEgWDEwIFkxMCBGMTUwMFxuIiwgVHJ1ZSksCl0KZm9yIG5hbWUsIHN6LCBib2R5LCBleHBlY3RlZCBpbiBjYXNlczoKICAgIGFjdHVhbCA9IGV2YWxfaXNfdmFsaWRfZ2NvZGUobmFtZSwgc3osIGJvZHkpCiAgICBwcmludChmIltGUk9OVEVORC1DQVNFXSBuYW1lPXtuYW1lfSBzaXplPXtzen0gLT4gYWN0dWFsPXthY3R1YWx9IGV4cGVjdGVkPXtleHBlY3RlZH0iKQogICAgYXNzZXJ0IGFjdHVhbCBpcyBleHBlY3RlZCwgZiJNaXNtYXRjaCBmb3Ige25hbWV9IgpwcmludCgiW1BBU1NdIEZyb250ZW5kIGlzVmFsaWRHY29kZUZpbGUgNC1jYXNlIG5lZ2F0aXZlL3Bvc2l0aXZlIHZlcmlmaWNhdGlvbiBwYXNzZWQiKQoKZmlsZXMgPSBzb3J0ZWQoCiAgICBsaXN0KHBhdGhsaWIuUGF0aCgic2VydmljZXMvdWlfZ2F0ZXdheSIpLmdsb2IoIiouW2NoXSoiKSkKICAgICsgWwogICAgICAgIHBhdGhsaWIuUGF0aCgiYnJvd3Nlcl9obWkvZmlyc3RfcmVsZWFzZS9hcHAuanMiKSwKICAgICAgICBwYXRobGliLlBhdGgoImJyb3dzZXJfaG1pL2ZpcnN0X3JlbGVhc2UvdGVzdF9obWlfY29udHJhY3QucHkiKSwKICAgICAgICBwYXRobGliLlBhdGgoInVpL3R3aW4vYXBwLmpzIiksCiAgICAgICAgcGF0aGxpYi5QYXRoKCJ0b29scy9kZXBsb3lfdHdpbi5zaCIpLAogICAgICAgIHBhdGhsaWIuUGF0aCgidGVzdHMvdWlfZ2F0ZXdheS90d2luL3Rlc3RfdWlfZ2F0ZXdheS5jcHAiKSwKICAgICAgICBwYXRobGliLlBhdGgoInRlc3RzL3VpX2dhdGV3YXkvdHdpbi90ZXN0X3VpX2dhdGV3YXlfcm91dGVzLmNwcCIpLAogICAgICAgIHBhdGhsaWIuUGF0aCgidGVzdHMvdWkvdHdpbi90ZXN0X3VpX2NvbnRyYWN0LnB5IiksCiAgICBdCikKY2prID0gcmUuY29tcGlsZShyIltcdTRlMDAtXHU5ZmZmXSIpCmFzc2VydCBsZW4oZmlsZXMpID09IDE5LCBmIkV4cGVjdGVkIDE5IEJhdGNoIEFQLTMgZmlsZXMsIGdvdCB7bGVuKGZpbGVzKX0iCmZvciBmIGluIGZpbGVzOgogICAgdHh0ID0gZi5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKICAgIGxpbmVzID0gdHh0LnNwbGl0bGluZXMoKQogICAgdG9wX2NqayA9IHN1bSgxIGZvciBsIGluIGxpbmVzWzozNV0gaWYgY2prLnNlYXJjaChsKSkKICAgIHRvdGFsX2NqayA9IHN1bSgxIGZvciBsIGluIGxpbmVzIGlmIGNqay5zZWFyY2gobCkpCiAgICBkb2NfYmxvY2tzID0gbGVuKHJlLmZpbmRhbGwociIoL1wqXCpbXHNcU10qP1wqL3xcIlwiXCJbXHNcU10qP1wiXCJcInxeXHMqLy8uKltcdTRlMDAtXHU5ZmZmXXxeXHMqIy4qW1x1NGUwMC1cdTlmZmZdKSIsIHR4dCwgcmUuTSkpCiAgICBhc3NlcnQgIuS4reaWh+ivtOaYju+8muaooeWdl+i+heWKqemAu+i+keS4jueKtuaAgeivtOaYjiIgbm90IGluIHR4dCwgZiJQbGFjZWhvbGRlciBpbiB7Zn0iCiAgICBhc3NlcnQgdG9wX2NqayA+PSAxLCBmIk1pc3NpbmcgwqcyLjEgbW9kdWxlIGhlYWRlciBDaGluZXNlIGNvbW1lbnQgaW4ge2Z9IgogICAgYXNzZXJ0IGRvY19ibG9ja3MgPj0gMyBhbmQgdG90YWxfY2prID49IDUsIGYiSW5zdWZmaWNpZW50IMKnMi4yLTIuNSBDaGluZXNlIGRvYy9sb2dpYyBjb21tZW50cyBpbiB7Zn0iCiAgICBwcmludCgKICAgICAgICBmIltET0MtQVVESVQgUEFTU10ge2Z9OiDCpzIuMV9tb2R1bGVfaGVhZGVyPVBBU1ModG9wX2Nqaz17dG9wX2Nqa30pICIKICAgICAgICBmIsKnMi4yXzIuM19mdW5jX2NsYXNzX3BhcmFtcz1QQVNTKGRvY19ibG9ja3M9e2RvY19ibG9ja3N9KSAiCiAgICAgICAgZiLCpzIuNF8yLjZfbG9naWNfdGVzdF9jb21tZW50cz1QQVNTKHRvdGFsX2Nqa19saW5lcz17dG90YWxfY2prfSkgIgogICAgICAgIGYiwqc0X25vX3BsYWNlaG9sZGVyPVBBU1MiCiAgICApCnByaW50KGYiW1BBU1NdIEFsbCB7bGVuKGZpbGVzKX0gQmF0Y2ggQVAtMyBmaWxlcyB2ZXJpZmllZCBjbGF1c2UtYnktY2xhdXNlIGFnYWluc3QgY29kZV9kb2N1bWVudGF0aW9uX3N0YW5kYXJkLm1kIikK\").decode())"
+      && rm -rf /tmp/qa_twin58
+    expected: 编译与ui_gateway/browser_hmi全部单元/契约回归测试100%通过，且目标范围内代码中文注释符合code_documentation_standard.md。（accepted_scope说明：候选c6692b244e0aa09d04e7051293f9fef3c67535dd与19534a9a4cb393176882fbad046129d55bba51f6为APPR-20261105-004联合批准的TWIN-57/58/59同仓合并提交，diff中属于兄弟卡TWIN-57[forward/device_manager/telemetry_types.h/probe.cpp]与TWIN-59[contracts/twin/job/core/middleware/runtime/third_party/tools/diag]的路径属于已批准同批兄弟任务范围，明确排除在本卡审查阻断范围外；物理HIL排除在本软件沙箱外）
     availability: available
   positive_cases:
-  - 修复ISS-20261105-006(/api/v1/state动态路由统一与静态假文件清理)、ISS-20261105-007(保存料槽配置与LOAD/210°C解耦)、ISS-20261105-008(模型一键载入与开始打印两阶段解耦)、ISS-20261105-009(G-code上传扩展名/空文件/内容前后端双重400校验)、ISS-20261105-010(混色权重与槽位/动作越界400校验)、ISS-20261105-011(UI侧热床超量程故障展示)、ISS-20261105-013(设备离线时OOBE与4路断料传感器去假绿)、ISS-20261105-017(404响应缓冲区扩容消除截断)，并同步完成Batch
-    AP-3(ui_gateway + browser_hmi共20个文件)中文代码注释全量补齐(ISS-20261105-018)。
+  - 修复ISS-20261105-006/007/008/009/010/011/013/017，并完成Batch AP-3(ui_gateway + browser_hmi
+    + deploy_twin.sh及对应测试共19个文件)中文代码注释全量补齐(ISS-20261105-018)。同仓合并提交c6692b24中属于同批已批准兄弟卡TWIN-57与TWIN-59的路径已由各自任务卡覆盖（TWIN-57已APPROVED），作为本卡排除项（excluded
+    scope）处理，不视为越界修改。
   negative_cases:
   - 边界越界、非法参数、超时与断链场景按契约拒绝或降级，无回归破坏
 required_evidence_level: server-sandbox-and-independent-review

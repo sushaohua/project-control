@@ -1,0 +1,18 @@
+{
+  "task_id": "TWIN-57",
+  "task_revision": 2,
+  "candidate_commit": "19534a9a4cb393176882fbad046129d55bba51f6",
+  "role": "QA",
+  "decision": "REJECTED",
+  "summary": "发现已接受注释规范不符合项。Runner 冻结证据中的构建及 forward/device_manager CTest 均通过；另有验收场景缺少明确回归证据。评审说明见 findings；只读环境无法将说明和 JSON 分别保存为文件。",
+  "findings": [
+    "阻断：本轮修改的 tests/protocol/probe.cpp 保留英文说明注释，并附加通用占位式中文文字，例如 handle_crc 中关于 CRC-16 的说明以及 Mode B 注释（差异约 13738–13807 行）。这不符合接受范围引用的 code_documentation_standard.md 第 1 节“修改的说明性注释必须使用中文”要求，属于已证实的源码不符合项。",
+    "证据缺口：当前测试证据没有明确覆盖热床和喷头各自 5°C/130°C、5°C/300°C 边界及其越界拒绝。测试源码可见热床 300°C 越界用例，但不能据此核实其余通道边界行为符合 ISS-20261105-011。",
+    "证据缺口：断链用例核实了离线哨兵值 2147483646，但未见断链后重连并收到新鲜采样、状态恢复的回归断言；无法核实 ISS-20261105-014 的恢复路径。"
+  ],
+  "accepted_scope": "审阅 TWIN-57 revision 2，锁定候选 soc-ap commit 19534a9a4cb393176882fbad046129d55bba51f6：ISS-20261105-011 热床/喷头物理量程门禁、ISS-20261105-012 raw_adc 到快照 JSON 的映射、ISS-20261105-014 3 秒断链衰退及离线哨兵、Batch AP-2 指定 25 个文件的中文代码注释，以及 runner 执行的构建和 forward/device_manager 回归。接受范围排除物理 HIL（TWIN-55）及任务契约明确归属 TWIN-58/59 的同批变更；未声称硬件验证通过。bundle、request、server_verdict、runtime_log 及差异补丁哈希与索引一致；source_report 为空，无报告需核对。",
+  "unexecuted": [
+    "增加或提供覆盖热床和喷头各自有效量程上下边界及越界情况的回归证据。",
+    "增加或提供断链后重连并由新鲜采样恢复状态的回归证据。"
+  ]
+}

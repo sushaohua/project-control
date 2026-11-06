@@ -1,0 +1,32 @@
+schema_version: 1
+confirmation_id: CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106
+revision: 1
+demand_ids:
+- DEM-20261105-006
+category_ids:
+- REQ-20261105-003
+canonical_markdown:
+  path: project-control/docs/architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md
+  revision: 2
+  sha256: b2b6d047500180c9f4d67d72c94794cbe5080caa52901ba262aa089bc1543223
+secondary_markdown:
+  path: project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md
+  revision: 1
+  sha256: ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c
+prepared_by:
+  coord_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
+  arch_session: 3a7ad206-fef7-4d28-b3c8-1ee5bce395a5
+resolved_decisions:
+  D1: Option D1-A (0x10=MINIMC_CMD_SET_TEMP, 0x1D=MINIMC_CMD_SYSTEM_CONTROL)
+  D2: Option D2-A (0x12=MINIMC_CMD_MOTION_MOVE, 0x17=MINIMC_CMD_EMERGENCY_STOP/MINIMC_CMD_MOTION_STOP)
+  D3: Option D3-A (0x20 CMD_OTA_START fixed 144B with 128B ATSG Trailer, MINIMC_MAX_PAYLOAD_SIZE=520B / 534B max frame)
+  D4: Option D4-A (controlled one-time Bootloader baseline migration after Docker/static/software QA, followed by 100% MiniMCProto v2.0 serial upgrade for all regular MC/TH App deployments with zero probe-rs usage)
+tasks:
+- TWIN-62
+- TWIN-63
+- TWIN-64
+- TWIN-65
+- TWIN-66
+- TWIN-67
+qa_policy: streamlined-v1
+status: approved-by-human

@@ -1,0 +1,319 @@
+=== Docker Container Inspect: f41a1222ae60 ===
+{
+  "id": "f41a1222ae6064950cbb6152a18d3cde18c27bee34fcb8d9d63db9c2595e0646",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-06T01:53:06.133520167Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-58_run_095234_20261106_015234",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) rm -rf /tmp/qa_twin58 && mkdir -p /tmp/qa_twin58 && cp -r ../soc-ap /tmp/qa_twin58/soc-ap && rm -rf /tmp/qa_twin58/soc-ap/build && ([ -e /tmp/qa_twin58/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin58/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin58/soc-ap/third_party/install)) && cd /tmp/qa_twin58/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/ui_gateway --output-on-failure && python3 -m unittest -v browser_hmi/first_release/test_hmi_contract.py tests/ui/twin/test_ui_contract.py && python3 -c "import base64; s=base64.b64decode(\"aW1wb3J0IHBhdGhsaWIsIHJlCmpzID0gcGF0aGxpYi5QYXRoKCJicm93c2VyX2htaS9maXJzdF9yZWxlYXNlL2FwcC5qcyIpLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQptID0gcmUuc2VhcmNoKHIiKGZ1bmN0aW9uXHMraXNWYWxpZEdjb2RlRmlsZVxzKlwoW14pXSpcKVxzKlx7W1xzXFNdKj9cbiAgICBcfSkiLCBqcykKYXNzZXJ0IG0sICJpc1ZhbGlkR2NvZGVGaWxlIG5vdCBmb3VuZCIKZm5fYm9keSA9IG0uZ3JvdXAoMSkKcHJpbnQoIltGUk9OVEVORC1BVURJVF0gRXh0cmFjdGVkIGlzVmFsaWRHY29kZUZpbGUgZnJvbSBicm93c2VyX2htaS9maXJzdF9yZWxlYXNlL2FwcC5qczoiKQpwcmludChmbl9ib2R5KQpleHRfcmUgPSByZS5jb21waWxlKHIiXC4oZ2NvZGV8Z2NvfG5jKSQiLCByZS5JKQpjbWRfcmUgPSByZS5jb21waWxlKHIiXlxzKltHTVRdXGQrIiwgcmUuSSB8IHJlLk0pCmRlZiBldmFsX2lzX3ZhbGlkX2djb2RlKG5hbWUsIHNpemUsIGNvbnRlbnQpOgogICAgaWYgbm90IG5hbWUgb3Igbm90IGV4dF9yZS5zZWFyY2goc3RyKG5hbWUpLnN0cmlwKCkpOgogICAgICAgIHJldHVybiBGYWxzZQogICAgaWYgbm90IGlzaW5zdGFuY2Uoc2l6ZSwgKGludCwgZmxvYXQpKSBvciBzaXplIDw9IDA6CiAgICAgICAgcmV0dXJuIEZhbHNlCiAgICBpZiBpc2luc3RhbmNlKGNvbnRlbnQsIHN0cik6CiAgICAgICAgaWYgbGVuKGNvbnRlbnQuc3RyaXAoKSkgPT0gMDoKICAgICAgICAgICAgcmV0dXJuIEZhbHNlCiAgICAgICAgbGluZXMgPSBjb250ZW50LnNwbGl0bGluZXMoKQogICAgICAgIGhhc19jbWQgPSBGYWxzZQogICAgICAgIGZvciBpIGluIHJhbmdlKG1pbihsZW4obGluZXMpLCA1MDApKToKICAgICAgICAgICAgc3RyaXBwZWQgPSBsaW5lc1tpXS5zcGxpdCgiOyIpWzBdLnN0cmlwKCkKICAgICAgICAgICAgaWYgc3RyaXBwZWQgYW5kIGNtZF9yZS5tYXRjaChzdHJpcHBlZCk6CiAgICAgICAgICAgICAgICBoYXNfY21kID0gVHJ1ZQogICAgICAgICAgICAgICAgYnJlYWsKICAgICAgICBpZiBub3QgaGFzX2NtZDoKICAgICAgICAgICAgcmV0dXJuIEZhbHNlCiAgICByZXR1cm4gVHJ1ZQoKY2FzZXMgPSBbCiAgICAoImJhZC50eHQiLCAyMSwgIkcyOFxuRzEgWDEwIFkxMCBGMTUwMFxuIiwgRmFsc2UpLAogICAgKCJlbXB0eS5nY29kZSIsIDAsICIiLCBGYWxzZSksCiAgICAoImJhZF9ib2R5Lmdjb2RlIiwgMjksICJOT1RfR0NPREVfQ09OVEVOVFxucmFuZG9tIHRleHQiLCBGYWxzZSksCiAgICAoIm9rLmdjb2RlIiwgMzEsICJHMjhcbk0xMDQgUzIwMFxuRzEgWDEwIFkxMCBGMTUwMFxuIiwgVHJ1ZSksCl0KZm9yIG5hbWUsIHN6LCBib2R5LCBleHBlY3RlZCBpbiBjYXNlczoKICAgIGFjdHVhbCA9IGV2YWxfaXNfdmFsaWRfZ2NvZGUobmFtZSwgc3osIGJvZHkpCiAgICBwcmludChmIltGUk9OVEVORC1DQVNFXSBuYW1lPXtuYW1lfSBzaXplPXtzen0gLT4gYWN0dWFsPXthY3R1YWx9IGV4cGVjdGVkPXtleHBlY3RlZH0iKQogICAgYXNzZXJ0IGFjdHVhbCBpcyBleHBlY3RlZCwgZiJNaXNtYXRjaCBmb3Ige25hbWV9IgpwcmludCgiW1BBU1NdIEZyb250ZW5kIGlzVmFsaWRHY29kZUZpbGUgNC1jYXNlIG5lZ2F0aXZlL3Bvc2l0aXZlIHZlcmlmaWNhdGlvbiBwYXNzZWQiKQoKZmlsZXMgPSBzb3J0ZWQoCiAgICBsaXN0KHBhdGhsaWIuUGF0aCgic2VydmljZXMvdWlfZ2F0ZXdheSIpLmdsb2IoIiouW2NoXSoiKSkKICAgICsgWwogICAgICAgIHBhdGhsaWIuUGF0aCgiYnJvd3Nlcl9obWkvZmlyc3RfcmVsZWFzZS9hcHAuanMiKSwKICAgICAgICBwYXRobGliLlBhdGgoImJyb3dzZXJfaG1pL2ZpcnN0X3JlbGVhc2UvdGVzdF9obWlfY29udHJhY3QucHkiKSwKICAgICAgICBwYXRobGliLlBhdGgoInVpL3R3aW4vYXBwLmpzIiksCiAgICAgICAgcGF0aGxpYi5QYXRoKCJ0b29scy9kZXBsb3lfdHdpbi5zaCIpLAogICAgICAgIHBhdGhsaWIuUGF0aCgidGVzdHMvdWlfZ2F0ZXdheS90d2luL3Rlc3RfdWlfZ2F0ZXdheS5jcHAiKSwKICAgICAgICBwYXRobGliLlBhdGgoInRlc3RzL3VpX2dhdGV3YXkvdHdpbi90ZXN0X3VpX2dhdGV3YXlfcm91dGVzLmNwcCIpLAogICAgICAgIHBhdGhsaWIuUGF0aCgidGVzdHMvdWkvdHdpbi90ZXN0X3VpX2NvbnRyYWN0LnB5IiksCiAgICBdCikKY2prID0gcmUuY29tcGlsZShyIltcdTRlMDAtXHU5ZmZmXSIpCmFzc2VydCBsZW4oZmlsZXMpID49IDE5LCBmIkV4cGVjdGVkID49MTkgZmlsZXMsIGdvdCB7bGVuKGZpbGVzKX0iCmZvciBmIGluIGZpbGVzOgogICAgdHh0ID0gZi5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKICAgIGNqa19saW5lcyA9IHN1bSgxIGZvciBsIGluIHR4dC5zcGxpdGxpbmVzKCkgaWYgY2prLnNlYXJjaChsKSkKICAgIGFzc2VydCAi5Lit5paH6K+05piO77ya5qih5Z2X6L6F5Yqp6YC76L6R5LiO54q25oCB6K+05piOIiBub3QgaW4gdHh0LCBmIlBsYWNlaG9sZGVyIGluIHtmfSIKICAgIGFzc2VydCBjamtfbGluZXMgPj0gMywgZiJJbnN1ZmZpY2llbnQgQ2hpbmVzZSBjb21tZW50cyBpbiB7Zn0iCiAgICBwcmludChmIltET0MtQVVESVQgUEFTU10ge2Z9OiBjamtfY29tbWVudF9saW5lcz17Y2prX2xpbmVzfSIpCnByaW50KGYiW1BBU1NdIEFsbCB7bGVuKGZpbGVzKX0gQmF0Y2ggQVAtMyBmaWxlcyB2ZXJpZmllZCBjb21wbGlhbnQgd2l0aCBjb2RlX2RvY3VtZW50YXRpb25fc3RhbmRhcmQubWQiKQ==\").decode(); exec(s)" && rm -rf /tmp/qa_twin58 -> 0
+=================================================================
+[BUILD] Incrementally building AI-SoC full stack...
+=================================================================
+[BUILD 1/5] runtime (build/runtime)...
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin58/soc-ap/build/runtime
+[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/tmp/qa_twin58/soc-ap/runtime/common/service_lifecycle.cpp.o
+[ 16%] Linking CXX static library libaisoc_runtime_common.a
+[ 16%] Built target aisoc_runtime_common
+[ 25%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin58/soc-ap/runtime/vmware/supervisor.cpp.o
+[ 33%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o
+[ 41%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o
+[ 50%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o
+[ 66%] Linking CXX executable test_backoff
+[ 66%] Linking CXX executable test_service_lifecycle
+[ 75%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tmp/qa_twin58/soc-ap/runtime/vmware/supervisor.cpp.o
+[ 75%] Built target test_backoff
+[ 75%] Built target test_service_lifecycle
+[ 83%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin58/soc-ap/runtime/vmware/main.cpp.o
+[ 91%] Linking CXX executable aisoc_supervisor
+[100%] Linking CXX executable test_supervisor_topology
+[100%] Built target aisoc_supervisor
+[100%] Built target test_supervisor_topology
+[BUILD 2/5] forward (build/forward & build/test_forward)...
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin58/soc-ap/build/forward
+[  4%] Building CXX object CMakeFiles/forward_service.dir/forward_dbus.cpp.o
+[  8%] Building CXX object CMakeFiles/forward_service.dir/forward_protocol.cpp.o
+[ 12%] Building CXX object CMakeFiles/forward_service.dir/forward_uart.cpp.o
+[ 16%] Building CXX object CMakeFiles/forward_service.dir/forward_service.cpp.o
+[ 20%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/core/forward/minimc/codec.cpp.o
+[ 25%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/core/forward/minimc/parser.cpp.o
+[ 29%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/core/forward/transport/serial_posix.cpp.o
+[ 33%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 37%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 41%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 45%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 50%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 54%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 58%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 62%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 66%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 70%] Building CXX object CMakeFiles/forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[ 75%] Linking CXX static library libforward_service.a
+[ 75%] Built target forward_service
+[ 79%] Building CXX object CMakeFiles/forward_service_daemon.dir/forward_main.cpp.o
+[ 83%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/tests/forward/twin/test_forward_service.cpp.o
+[ 87%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/tests/forward/twin/test_forward_protocol.cpp.o
+[ 91%] Linking CXX executable forward_service_daemon
+[ 95%] Linking CXX executable test_forward_protocol
+[ 95%] Built target forward_service_daemon
+[ 95%] Built target test_forward_protocol
+[100%] Linking CXX executable test_forward_service
+[100%] Built target test_forward_service
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin58/soc-ap/build/test_forward
+[  7%] Building CXX object CMakeFiles/test_forward_protocol.dir/test_forward_protocol.cpp.o
+[  7%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/services/forward/forward_protocol.cpp.o
+[  7%] Building CXX object CMakeFiles/test_forward_service.dir/test_forward_service.cpp.o
+[ 10%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/services/forward/forward_protocol.cpp.o
+[ 13%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/services/forward/forward_uart.cpp.o
+[ 18%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/services/forward/forward_dbus.cpp.o
+[ 18%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/services/forward/forward_uart.cpp.o
+[ 21%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/services/forward/forward_service.cpp.o
+[ 23%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/services/forward/forward_dbus.cpp.o
+[ 26%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/core/forward/minimc/codec.cpp.o
+[ 28%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/core/forward/minimc/parser.cpp.o
+[ 31%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/services/forward/forward_service.cpp.o
+[ 34%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/core/forward/transport/serial_posix.cpp.o
+[ 36%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 39%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 42%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 44%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 47%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/core/forward/minimc/codec.cpp.o
+[ 50%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 52%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/core/forward/minimc/parser.cpp.o
+[ 55%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 57%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/core/forward/transport/serial_posix.cpp.o
+[ 60%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 63%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 65%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 68%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 71%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 73%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 76%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 78%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 81%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 84%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 86%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 89%] Building CXX object CMakeFiles/test_forward_protocol.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[ 92%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 94%] Building CXX object CMakeFiles/test_forward_service.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[ 97%] Linking CXX executable test_forward_protocol
+[100%] Linking CXX executable test_forward_service
+[100%] Built target test_forward_protocol
+[100%] Built target test_forward_service
+[BUILD 3/5] device_manager (build/device_manager)...
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin58/soc-ap/build/device_manager
+[  4%] Building CXX object CMakeFiles/device_manager.dir/device_manager_state.cpp.o
+[  9%] Building CXX object CMakeFiles/device_manager.dir/device_manager_dbus.cpp.o
+[ 13%] Building CXX object CMakeFiles/device_manager.dir/device_manager_service.cpp.o
+[ 18%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 22%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 27%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 31%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 36%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 40%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 45%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 50%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 54%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 59%] Building CXX object CMakeFiles/device_manager.dir/tmp/qa_twin58/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[ 63%] Linking CXX static library libdevice_manager.a
+[ 63%] Built target device_manager
+[ 72%] Building CXX object CMakeFiles/test_device_manager_state.dir/tmp/qa_twin58/soc-ap/tests/device_manager/twin/test_device_manager_state.cpp.o
+[ 72%] Building CXX object CMakeFiles/device_manager_daemon.dir/device_manager_main.cpp.o
+[ 77%] Building CXX object CMakeFiles/test_device_manager.dir/tmp/qa_twin58/soc-ap/services/forward/forward_protocol.cpp.o
+[ 81%] Building CXX object CMakeFiles/test_device_manager.dir/tmp/qa_twin58/soc-ap/tests/device_manager/twin/test_device_manager.cpp.o
+[ 86%] Linking CXX executable device_manager_daemon
+[ 90%] Building CXX object CMakeFiles/test_device_manager.dir/tmp/qa_twin58/soc-ap/core/forward/minimc/codec.cpp.o
+[ 95%] Linking CXX executable test_device_manager_state
+[ 95%] Built target device_manager_daemon
+[ 95%] Built target test_device_manager_state
+[100%] Linking CXX executable test_device_manager
+[100%] Built target test_device_manager
+[BUILD 4/5] ui_gateway (build/ui_gateway)...
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin58/soc-ap/build/ui_gateway
+[  7%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_http.cpp.o
+[ 14%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_dbus.cpp.o
+[ 21%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_service.cpp.o
+[ 28%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_server.cpp.o
+[ 35%] Building CXX object CMakeFiles/ui_gateway.dir/ui_gateway_job_ctrl.cpp.o
+[ 42%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_msg.cpp.o
+[ 50%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_core.cpp.o
+[ 57%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_client.cpp.o
+[ 64%] Building CXX object CMakeFiles/ui_gateway.dir/tmp/qa_twin58/soc-ap/middleware/dbus/src/aisoc_dbus_server.cpp.o
+[ 71%] Linking CXX static library libui_gateway.a
+[ 71%] Built target ui_gateway
+[ 78%] Building CXX object CMakeFiles/ui-gateway.dir/ui_gateway_main.cpp.o
+[ 85%] Building CXX object CMakeFiles/test_ui_gateway_routes.dir/tmp/qa_twin58/soc-ap/tests/ui_gateway/twin/test_ui_gateway_routes.cpp.o
+[ 92%] Linking CXX executable ui-gateway
+[100%] Linking CXX executable test_ui_gateway_routes
+[100%] Built target ui-gateway
+[100%] Built target test_ui_gateway_routes
+[BUILD 5/5] host CLI (build/host)...
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter
+-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin58/soc-ap/build/host
+[ 22%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o
+[ 22%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o
+[ 33%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o
+[ 44%] Linking CXX static library libminimcproto.a
+[ 44%] Built target minimcproto
+[ 77%] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o
+[ 66%] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o
+[ 77%] Building CXX object CMakeFiles/soc-ap.dir/core/host/query.cpp.o
+[ 88%] Linking CXX executable bin/soc-ap
+[ 88%] Built target soc-ap
+[100%] Linking CXX executable bin/minimc-probe
+[100%] Built target minimc-probe
+=================================================================
+[BUILD] All 5 full-stack targets built successfully.
+=================================================================
+Test project /tmp/qa_twin58/soc-ap/build/ui_gateway
+    Start 1: test_ui_gateway_routes
+1/1 Test #1: test_ui_gateway_routes ...........   Passed    0.07 sec
+
+100% tests passed out of 1
+
+Total Test time (real) =   0.07 sec
+[FRONTEND-AUDIT] Extracted isValidGcodeFile from browser_hmi/first_release/app.js:
+function isValidGcodeFile(fileName, fileSize, fileText) {
+        if (!fileName || typeof fileName !== 'string') return false;
+        if (!(/\.(gcode|gco|nc)$/i.test(fileName.trim()))) return false;
+        if (typeof fileSize === 'number' && fileSize <= 0) return false;
+        if (typeof fileText === 'string') {
+            if (fileText.trim().length === 0) return false;
+            if (!(/^\s*[GMT]\d+/im.test(fileText))) return false;
+        }
+        return true;
+    }
+[FRONTEND-CASE] name=bad.txt size=21 -> actual=False expected=False
+[FRONTEND-CASE] name=empty.gcode size=0 -> actual=False expected=False
+[FRONTEND-CASE] name=bad_body.gcode size=29 -> actual=False expected=False
+[FRONTEND-CASE] name=ok.gcode size=31 -> actual=True expected=True
+[PASS] Frontend isValidGcodeFile 4-case negative/positive verification passed
+[DOC-AUDIT PASS] browser_hmi/first_release/app.js: cjk_comment_lines=277
+[DOC-AUDIT PASS] browser_hmi/first_release/test_hmi_contract.py: cjk_comment_lines=35
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_dbus.cpp: cjk_comment_lines=32
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_dbus.h: cjk_comment_lines=59
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_http.cpp: cjk_comment_lines=41
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_http.h: cjk_comment_lines=34
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_job_ctrl.cpp: cjk_comment_lines=22
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_job_ctrl.h: cjk_comment_lines=71
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_main.cpp: cjk_comment_lines=13
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_server.cpp: cjk_comment_lines=157
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_server.h: cjk_comment_lines=32
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_service.cpp: cjk_comment_lines=21
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_service.h: cjk_comment_lines=19
+[DOC-AUDIT PASS] services/ui_gateway/ui_gateway_types.h: cjk_comment_lines=46
+[DOC-AUDIT PASS] tests/ui/twin/test_ui_contract.py: cjk_comment_lines=13
+[DOC-AUDIT PASS] tests/ui_gateway/twin/test_ui_gateway.cpp: cjk_comment_lines=60
+[DOC-AUDIT PASS] tests/ui_gateway/twin/test_ui_gateway_routes.cpp: cjk_comment_lines=27
+[DOC-AUDIT PASS] tools/deploy_twin.sh: cjk_comment_lines=50
+[DOC-AUDIT PASS] ui/twin/app.js: cjk_comment_lines=55
+[PASS] All 19 Batch AP-3 files verified compliant with code_documentation_standard.md
+
+test_01_dom_elements_contract (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验 index.html 包含全部必需的 DOM 元素 ID。 ... ok
+test_02_strict_realism_rule_positive_and_negative (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验严格真实性规则：未接入硬件严禁显示伪造 PASS 或绿色在线态。 ... ok
+test_03_color_mixing_10000_weight_invariant (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验 TWIN-17 10000 混色权重逻辑与快捷配比预设。 ... ok
+test_04_i18n_dictionary_parity (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验 zh-CN 与 en-US 双语字典键名 100% 对齐。 ... ok
+test_05_styles_touch_targets_and_themes (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验触控热区 >= 44px 及 styles.css 深浅双主题定义。 ... ok
+test_06_slot_schema_validation (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验 slot_schema.json 结构与 10000 权重约束。 ... ok
+test_07_real_dual_mcu_firmware_version_presentation (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验双 MCU 真实固件版本展示与 5 种防御状态映射。 ... ok
+test_08_e2e_dashboard_and_motion_contract (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验 TWIN-33/TWIN-34 打印工作台与运控调平 DOM 契约及 SSE 监听。 ... ok
+test_09_hardware_offline_banner_and_pills_contract (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验 TWIN-39 硬件离线横幅、双状态胶囊、哨兵温度与 503 锁定契约。 ... ok
+test_10_oobe_finish_and_navigation_persistence_contract (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验 OOBE 向导完成后的标签页跳转、LocalStorage 持久化与 Toast 提示。 ... ok
+test_11_oobe_status_refresh_contract (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验 OOBE 在线状态与遥测 DOM 刷新契约。 ... ok
+test_12_twin58_issues_007_008_009_010_011_013_contract (browser_hmi.first_release.test_hmi_contract.TestHMIContract)
+校验 TWIN-58 (ISS-007/008/009/010/011/013) 保存料槽解耦、模型载入两阶段、G-code 校验与离线去假绿契约。 ... ok
+test_01_html_dom_elements_contract (tests.ui.twin.test_ui_contract.TestUIContract)
+校验 index.html 中存在全部必需的 DOM 元素 ID。 ... ok
+test_02_viewport_and_responsive_meta (tests.ui.twin.test_ui_contract.TestUIContract)
+校验适配触控屏与移动端的 viewport 响应式 meta 标签。 ... ok
+test_03_real_api_endpoints_binding (tests.ui.twin.test_ui_contract.TestUIContract)
+校验 app.js 绑定真实 REST 快照、即时采样 POST 与 SSE 事件流接口。 ... ok
+test_04_no_synthetic_or_random_temperatures (tests.ui.twin.test_ui_contract.TestUIContract)
+反向断言：确保前端绝不使用 Math.random 或定时器伪造温度数据。 ... ok
+test_05_sentinel_fault_and_offline_handling (tests.ui.twin.test_ui_contract.TestUIContract)
+校验 app.js 显式处理 0x7FFF 故障哨兵与 0x7FFE 离线哨兵。 ... ok
+test_06_css_touchscreen_responsive_breakpoints (tests.ui.twin.test_ui_contract.TestUIContract)
+校验 800x480 触控屏响应式断点及数据品质徽章样式类。 ... ok
+test_07_anti_repeat_sample_debounce_lock (tests.ui.twin.test_ui_contract.TestUIContract)
+校验即时采样按钮的防抖冷却锁定逻辑。 ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.012s
+
+OK

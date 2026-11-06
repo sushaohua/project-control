@@ -1,0 +1,63 @@
+{
+  "task_id": "TWIN-61",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "5df1a7952829",
+    "id": "TWIN-61_run_195015_20261105_115015",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-61_run_195015_20261105_115015",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "5df1a795282976351e3b6bdcabbe49f11ee8ed3bcc4d2c3a04cd37f37adeed87",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-05T11:50:32.824484998Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-61_run_195015_20261105_115015",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "/tmp/qa_TWIN-61_dojm_91e/evidence/server_lock.json",
+    "sha256": "665582f1cdd7cbc191f1b665eff0140cb7fd26900e17e821cc0192142740c197"
+  },
+  "checkout_log": {
+    "path": "/tmp/qa_TWIN-61_dojm_91e/evidence/checkout.log",
+    "sha256": "9668a3e4e898f26f55ec61dc51d2855552059e384bac676af1ae8e58146e1322"
+  },
+  "runtime_log": {
+    "path": "/tmp/qa_TWIN-61_dojm_91e/evidence/runtime.log",
+    "sha256": "0266d1e4057465b3c14aaa43082acb6d00f13c2f7771d363c22e6283dbb08ec5"
+  },
+  "server_verdict": {
+    "path": "/tmp/qa_TWIN-61_dojm_91e/evidence/server_verdict.json",
+    "sha256": "0dff1a4ec23b738c81c40664b4eb991233c1a9f953d7157173e1d610dec3663b"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "python3 -m unittest ../project-control/tools/test_check_task_graph.py ../project-control/tools/test_delivery_checks.py ../project-control/tools/test_qa_runner.py ../project-control/tools/test_qa_pipeline.py ../project-control/tools/test_review_policy.py ../project-control/tools/test_coord_recovery.py ../project-control/tools/test_coord_systemd_service.py && python3 hil/tools/debug_reconciliation_probe.py --self-test && python3 hil/tests/test_290_frame_burst_stress.py --self-test && python3 hil/tests/test_composite_lifecycle_sequences.py --self-test",
+      "exit_code": "1",
+      "subpath": "test_harness",
+      "duration": "0.14s",
+      "output": "Traceback (most recent call last):\n  File \"/usr/lib/python3.8/runpy.py\", line 194, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.8/runpy.py\", line 87, in _run_code\n    exec(code, run_globals)\n  File \"/usr/lib/python3.8/unittest/__main__.py\", line 18, in <module>\n    main(module=None)\n  File \"/usr/lib/python3.8/unittest/main.py\", line 100, in __init__\n    self.parseArgs(argv)\n  File \"/usr/lib/python3.8/unittest/main.py\", line 147, in parseArgs\n    self.createTests()\n  File \"/usr/lib/python3.8/unittest/main.py\", line 158, in createTests\n    self.test = self.testLoader.loadTestsFromNames(self.testNames,\n  File \"/usr/lib/python3.8/unittest/loader.py\", line 220, in loadTestsFromNames\n    suites = [self.loadTestsFromName(name, module) for name in names]\n  File \"/usr/lib/python3.8/unittest/loader.py\", line 220, in <listcomp>\n    suites = [self.loadTestsFromName(name, module) for name in names]\n  File \"/usr/lib/python3.8/unittest/loader.py\", line 154, in loadTestsFromName\n    module = __import__(module_name)\nValueError: Empty module name"
+    }
+  ],
+  "passed": false,
+  "timestamp": "2026-11-05T11:50:35.662492+00:00"
+}

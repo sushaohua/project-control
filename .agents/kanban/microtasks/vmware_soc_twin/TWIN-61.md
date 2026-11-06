@@ -1,7 +1,7 @@
 ---
 id: TWIN-61
 title: TWIN-61 全量HIL主测试计划与290帧/5类复合脚本固化(ISS-005)及project-control/tools Batch PC-1中文注释补齐(ISS-018)
-revision: 1
+revision: 5
 plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
@@ -25,7 +25,7 @@ requirement_id: REQ-20261105-002
 demand_id: DEM-20261105-018
 confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
 approval_id: APPR-20261105-004
-accepted_scope: "Docker QA sandbox verification and independent non-author review (QA + ARCH) of ISS-20261105-005 full HIL acceptance master plan (project-control/docs/planning/hil_full_acceptance_master_plan_20261105.md), test_harness/hil/tests/test_290_frame_burst_stress.py & test_composite_lifecycle_sequences.py (test_harness candidate 9f3918a2f9fc79a683ce218436b005e593a7109b), and ISS-20261105-018 Batch PC-1 Chinese code comments across project-control/tools/** (41 files, committed in project-control at c1d2c461aa65e6497c295843a2735d0d02ee2e2d, diffable via git -C ../project-control diff 5686e1931123650bb2251045353c18c8baa00f65..c1d2c461aa65e6497c295843a2735d0d02ee2e2d). Live workspace intake scan of 20261105_twin55_codex_hil_issues.md (which intentionally preserves reported_by.actor_type: MODEL per its line 17 constraint) and physical HIL bench execution (covered by TWIN-55) are out of scope for this software sandbox run; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
+accepted_scope: "Docker QA sandbox verification and independent non-author review (QA + ARCH) of ISS-20261105-005 full HIL acceptance master plan (project-control/docs/planning/hil_full_acceptance_master_plan_20261105.md), test_harness/hil/tests/test_290_frame_burst_stress.py & test_composite_lifecycle_sequences.py (test_harness candidate ef657531b845557b6f1d0cc64786b783635446ab), and ISS-20261105-018 Batch PC-1 Chinese code comments across project-control/tools/** (41 files, committed in project-control at c1d2c461aa65e6497c295843a2735d0d02ee2e2d, diffable via git -C ../project-control diff 5686e1931123650bb2251045353c18c8baa00f65..c1d2c461aa65e6497c295843a2735d0d02ee2e2d). Live workspace intake scan of 20261105_twin55_codex_hil_issues.md (which intentionally preserves reported_by.actor_type: MODEL per its line 17 constraint) and physical HIL bench execution (covered by TWIN-55) are out of scope for this software sandbox run; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
@@ -34,14 +34,14 @@ review_assignments:
     planned_session_alias: planned-qa-twin-61
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-61/runs/qa_01/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-61/runs/qa_05/qa_review_report.md
   - role: ARCH
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-arch-twin-61
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-61/runs/qa_01/arch_review_report.md
+    evidence: docs/evidence/twin/TWIN-61/runs/qa_05/arch_review_report.md
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -49,13 +49,13 @@ related_work_packages:
 - TASK-007
 - TASK-010
 depends_on:
-- TWIN-56
+- TWIN-60
 dependency_conditions:
-- task: TWIN-56
-  accepted_version: project-control=99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0; soc-ap=79932746d225bb115010c5545ef3f7499482e137;
-    mcu-p3=891a8bb252814c83992a49b01fbe11ba83b92a1f; test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60
-  acceptance_evidence: docs/evidence/twin/TWIN-56/runs/qa_03/qa_review_report.md
-  required: 继承TWIN-56 16-bit seq日志与三仓锁定基线
+- task: TWIN-60
+  accepted_version: project-control=960f079647a00864fe7913836336b2a2ee3d729a; soc-ap=79932746d225bb115010c5545ef3f7499482e137;
+    mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+  acceptance_evidence: docs/evidence/twin/TWIN-60/runs/qa_02/qa_review_report.md
+  required: 继承TWIN-60锁定基线
 scope_status: mapped
 allowed_repositories:
 - test_harness
@@ -78,12 +78,12 @@ forbidden_paths:
 - boot/**
 source_baseline:
   project-control: c1d2c461aa65e6497c295843a2735d0d02ee2e2d
-  soc-ap: 19534a9a4cb393176882fbad046129d55bba51f6
-  mcu-p3: 191e355a4227268a472bafd6862d4a8c854e0544
+  soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
+  mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 branch: main
-candidate_commit: 9f3918a2f9fc79a683ce218436b005e593a7109b
+candidate_commit: ef657531b845557b6f1d0cc64786b783635446ab
 dispatch_binding:
   source_commit: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -107,9 +107,9 @@ read_sources:
 worktree: test_harness
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
+  task_revision: 5
   lease_id: lease-twin-61-20261105-01
-  expires_at: '2026-11-05T22:00:00+08:00'
+  expires_at: '2026-11-06T22:00:00+08:00'
 resources:
 - resource: test_harness-worktree
   location: test_harness
@@ -141,7 +141,7 @@ verification:
   commands:
   - id: verify_twin-61
     cwd: test_harness
-    command: python3 -m unittest ../project-control/tools/test_check_task_graph.py ../project-control/tools/test_delivery_checks.py ../project-control/tools/test_qa_runner.py ../project-control/tools/test_qa_pipeline.py ../project-control/tools/test_review_policy.py ../project-control/tools/test_coord_recovery.py ../project-control/tools/test_coord_systemd_service.py && python3 hil/tools/debug_reconciliation_probe.py --self-test && python3 hil/tests/test_290_frame_burst_stress.py --self-test && python3 hil/tests/test_composite_lifecycle_sequences.py --self-test
+    command: '(cd ../project-control/tools && python3 -m unittest test_check_task_graph.py test_delivery_checks.py test_qa_runner.py test_qa_pipeline.py test_review_policy.py test_coord_recovery.py test_coord_systemd_service.py) && python3 hil/tools/debug_reconciliation_probe.py --self-test && python3 hil/tests/test_290_frame_burst_stress.py --self-test && python3 hil/tests/test_composite_lifecycle_sequences.py --self-test && ! grep -rn "中文说明：模块辅助逻辑与状态说明" hil/ ../project-control/tools/ && echo "[PASS] code_documentation_standard.md check passed"'
     expected: 编译与全部单元/契约回归测试及290帧/5类复合序列自测100%通过，且目标范围内代码中文注释符合code_documentation_standard.md
     availability: available
   positive_cases:

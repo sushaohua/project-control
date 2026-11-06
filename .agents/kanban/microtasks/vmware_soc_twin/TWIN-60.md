@@ -1,12 +1,12 @@
 ---
 id: TWIN-60
 title: TWIN-60 双MCU固件热床量程/ADC透传、[MC-DBG]消截断去裸打印、动态boot_id/版本绑定及feat/soc-debug中文注释补齐
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -24,16 +24,25 @@ requirement_id: REQ-20261105-002
 demand_id: DEM-20261105-018
 confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
 approval_id: APPR-20261105-004
-accepted_scope: "C unit-test verification in Docker QA sandbox (gcc) on mcu-p3 (feat/soc-debug, candidate 191e355a4227268a472bafd6862d4a8c854e0544) of ISS-20261105-010 (MC 0x19 slot/action out-of-range NACK 0x03), ISS-20261105-011/012 (MC bed g_last_bed_adc_raw passthrough and 5~130°C/ADC out-of-range 0x7FFF fault sentinel), ISS-20261105-015 (removal of thermistor.c bare printf(\"adc SS_ADC_BUSY\") and expansion of MC_DBG_LINE_MAX_LEN to 256U / RING_CAPACITY to 4096U), ISS-20261105-016 (MC/TH dynamic boot_id generation and FW_GIT_COMMIT_SHORT binding), and Batch MCU-MC & MCU-TH Chinese code comments across the 26 modified files (ISS-20261105-018). Cross-compiler ELF build and physical MCU HIL are not applicable in qa-sandbox:20261029 (host arm-none-eabi-gcc build is verified in author_01 and physical HIL in TWIN-55); all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
+accepted_scope: "C unit-test verification in Docker QA sandbox (gcc + code_documentation_standard check) on mcu-p3 (feat/soc-debug, candidate 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7) of ISS-20261105-010 (MC 0x19 slot>3 or action>2 out-of-range NACK 0x03), ISS-20261105-011/012 (MC bed g_last_bed_adc_raw passthrough and 5~130°C/ADC out-of-range 0x7FFF fault sentinel), ISS-20261105-015 (removal of thermistor.c bare printf(\"adc SS_ADC_BUSY\") and expansion of MC_DBG_LINE_MAX_LEN to 256U / RING_CAPACITY to 4096U), ISS-20261105-016 (MC/TH dynamic boot_id generation and FW_GIT_COMMIT_SHORT binding), and Batch MCU-MC & MCU-TH Chinese code comments across the 26 modified files (ISS-20261105-018). Cross-compiler ELF build and physical MCU HIL are not applicable in qa-sandbox:20261029 (host arm-none-eabi-gcc build is verified in author_01 and physical HIL in TWIN-55); all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-60
-    session: null
-    decision: PENDING
-    evidence: docs/evidence/twin/TWIN-60/runs/qa_01/qa_review_report.md
+    session: 01a1ae7c-900c-7ee1-9922-9beb207b594d
+    reviewer_session: 01a1ae7c-900c-7ee1-9922-9beb207b594d
+    commit_sha: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-60/runs/qa_02/codex_events.jsonl
+      sha256: c27b5b3b8ce4699fb0ec9bc11a9233822f9f5e25ecbb7575ebeaac8d006e3c0d
+    decision: APPROVED
+    reviewed_task_revision: 2
+    artifact_version: project-control=960f079647a00864fe7913836336b2a2ee3d729a; soc-ap=79932746d225bb115010c5545ef3f7499482e137; mcu-p3=57674d8b07d6c75a4d20b3fcd52c23df964aa7a7; test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-60/runs/qa_02/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-60/runs/qa_02/qa_review_report.md
+    report_sha256: 23c750fbf11f7a80440b7cddc1d21d26af47d7442bf659e10393d6469c9ed51e
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -73,7 +82,7 @@ source_baseline:
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: 891a8bb252814c83992a49b01fbe11ba83b92a1f
 branch: feat/soc-debug
-candidate_commit: 191e355a4227268a472bafd6862d4a8c854e0544
+candidate_commit: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
 dispatch_binding:
   source_commit: 891a8bb252814c83992a49b01fbe11ba83b92a1f
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -97,9 +106,9 @@ read_sources:
 worktree: mcu-p3
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
+  task_revision: 2
   lease_id: lease-twin-60-20261105-01
-  expires_at: '2026-11-05T22:00:00+08:00'
+  expires_at: '2026-11-06T22:00:00+08:00'
 resources:
 - resource: mcu-p3-worktree
   location: mcu-p3
@@ -168,7 +177,7 @@ verification:
       -I color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support -I color-engine-mcu/io_toggle/libraries/drivers/inc
       color-engine-mcu/io_toggle/src/bsp/usart.c color-engine-mcu/io_toggle/src/app/minimc_proto.c
       color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c -o /tmp/test_twin60_th
-      && /tmp/test_twin60_th && rm -f /tmp/test_twin60_th
+      && /tmp/test_twin60_th && rm -f /tmp/test_twin60_th && ! grep -rn "中文说明：模块辅助逻辑与状态说明" motion-controller-mcu/project/ color-engine-mcu/io_toggle/ && echo "[PASS] code_documentation_standard.md check passed"
     expected: 编译与全部单元/契约回归测试100%通过，且目标范围内代码中文注释符合code_documentation_standard.md
     availability: available
   positive_cases:

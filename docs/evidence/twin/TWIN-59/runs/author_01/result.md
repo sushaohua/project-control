@@ -7,7 +7,7 @@ predecessor_session_id: 484ac302-bd54-4e1b-be9f-0227e1475d5d
 date: 2026-11-05
 repository: soc-ap
 branch: main
-candidate_commit: 19534a9a4cb393176882fbad046129d55bba51f6
+candidate_commit: c6692b244e0aa09d04e7051293f9fef3c67535dd
 status: READY_FOR_QA
 ---
 
@@ -20,7 +20,7 @@ status: READY_FOR_QA
 - `project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-59.md`
 
 ## 2. 交付范围与代码变更摘要
-- **候选提交**：`soc-ap@19534a9a4cb393176882fbad046129d55bba51f6`
+- **候选提交**：`soc-ap@c6692b244e0aa09d04e7051293f9fef3c67535dd`
 - **核心交付内容（ISS-20261105-018 Batch AP-1 共 44 个文件中文注释全量补齐）**：
   - 覆盖 `contracts/twin/job/**`、`core/**`（`codec`、`crc16`、`parser`、`serial_port`、`temp_Validator`）、`middleware/**`（`dbus`、`fastdds`）、`runtime/**`、`third_party/build.sh`、`tools/twin_build/**`、`tools/diag/**`、`tools/run_print_dryrun.sh` 及全部对应测试文件；
   - 严格遵循 `code_documentation_standard.md`，为全部文件头、结构体、公开接口、内部辅助函数与关键协议分支补充准确的中文说明与 docstring，保持**零业务逻辑变更**。

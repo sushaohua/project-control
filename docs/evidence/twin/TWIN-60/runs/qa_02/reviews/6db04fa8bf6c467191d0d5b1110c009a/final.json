@@ -1,0 +1,11 @@
+{
+  "task_id": "TWIN-60",
+  "task_revision": 2,
+  "candidate_commit": "57674d8b07d6c75a4d20b3fcd52c23df964aa7a7",
+  "role": "QA",
+  "decision": "APPROVED",
+  "summary": "复验通过。上一轮 QA 报告（SHA256 与提供值匹配）因 MC 0x19 的 action=3 被接受而拒绝本轮前一候选；本轮增量补丁已将合法动作限制为 0..2，并增加 action=3 和 slot=4 的 NACK 0x03 检查。候选源码与补丁一致，冻结的 MC/TH 回归及文档检查通过。",
+  "findings": [],
+  "accepted_scope": "复核 TWIN-60 revision 2 的 mcu-p3 锁定候选，重点审阅从 191e355a4227268a472bafd6862d4a8c854e0544 到本候选的定向差异，并核查 MC 0x19 动作与槽位边界、ISS-011/012 热床 ADC 与故障哨兵、ISS-015 缓冲区和输出调整、ISS-016 动态 boot_id、ISS-018 中文注释，以及 MC/TH 正向、负向、恢复和必要回归证据。已校验 bundle、上一轮报告、增量补丁及冻结运行证据的 SHA256。跨编译器 ELF 构建和实体 MCU HIL 属于排除项；不声明其通过。",
+  "unexecuted": []
+}

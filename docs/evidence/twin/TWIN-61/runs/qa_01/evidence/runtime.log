@@ -1,0 +1,40 @@
+=== Docker Container Inspect: 5df1a7952829 ===
+{
+  "id": "5df1a795282976351e3b6bdcabbe49f11ee8ed3bcc4d2c3a04cd37f37adeed87",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-05T11:50:32.824484998Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-61_run_195015_20261105_115015",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (test_harness) python3 -m unittest ../project-control/tools/test_check_task_graph.py ../project-control/tools/test_delivery_checks.py ../project-control/tools/test_qa_runner.py ../project-control/tools/test_qa_pipeline.py ../project-control/tools/test_review_policy.py ../project-control/tools/test_coord_recovery.py ../project-control/tools/test_coord_systemd_service.py && python3 hil/tools/debug_reconciliation_probe.py --self-test && python3 hil/tests/test_290_frame_burst_stress.py --self-test && python3 hil/tests/test_composite_lifecycle_sequences.py --self-test -> 1
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/usr/lib/python3.8/unittest/__main__.py", line 18, in <module>
+    main(module=None)
+  File "/usr/lib/python3.8/unittest/main.py", line 100, in __init__
+    self.parseArgs(argv)
+  File "/usr/lib/python3.8/unittest/main.py", line 147, in parseArgs
+    self.createTests()
+  File "/usr/lib/python3.8/unittest/main.py", line 158, in createTests
+    self.test = self.testLoader.loadTestsFromNames(self.testNames,
+  File "/usr/lib/python3.8/unittest/loader.py", line 220, in loadTestsFromNames
+    suites = [self.loadTestsFromName(name, module) for name in names]
+  File "/usr/lib/python3.8/unittest/loader.py", line 220, in <listcomp>
+    suites = [self.loadTestsFromName(name, module) for name in names]
+  File "/usr/lib/python3.8/unittest/loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+ValueError: Empty module name

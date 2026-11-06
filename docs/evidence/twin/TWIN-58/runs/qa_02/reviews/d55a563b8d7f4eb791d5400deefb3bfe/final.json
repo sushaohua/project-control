@@ -1,0 +1,17 @@
+{
+  "task_id": "TWIN-58",
+  "task_revision": 3,
+  "candidate_commit": "c6692b244e0aa09d04e7051293f9fef3c67535dd",
+  "role": "QA",
+  "decision": "BLOCKED",
+  "summary": "复验核对了上一轮 QA 报告及其 SHA256、本轮定向差异和冻结 Runner 证据。后端现有独立负例及构建、测试证据已核查；仍有接受范围内的前端负例执行情况和 AP-3 注释规范符合性无法确认。",
+  "findings": [
+    "阻断：ISS-20261105-009 要求前端拒绝有效扩展名但内容非法的 G-code。本轮测试仅在 `node` 可用时执行四种输入断言；冻结日志未记录 Node 是否可用或该断言是否实际执行，故前端负例证据无法核实。",
+    "阻断：AP-3 注释验收要求符合 code_documentation_standard.md。冻结命令仅搜索特定占位注释文本，不能证明符合该规范的文档要求；Runner 将此结果标为规范检查通过不足以闭合上一轮阻断。"
+  ],
+  "accepted_scope": "复验 TWIN-58 接受范围内的 ISS-20261105-006/007/008/009/010/011/013/017、AP-3 注释要求及相关必要回归；核对本轮从 19534a9a4cb393176882fbad046129d55bba51f6 到候选提交的差异。物理 HIL 不属于本次软件沙箱验收范围。评审说明与最终 JSON 未能分开写入文件：当前工作区权限为只读。",
+  "unexecuted": [
+    "确认冻结 Runner 是否实际执行了前端非法 G-code 内容负例。",
+    "独立核实接受范围内 AP-3 注释符合 code_documentation_standard.md。"
+  ]
+}

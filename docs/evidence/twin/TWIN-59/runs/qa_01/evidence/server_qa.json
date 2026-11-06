@@ -1,0 +1,63 @@
+{
+  "task_id": "TWIN-59",
+  "task_revision": 2,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "75194d224c04",
+    "id": "TWIN-59_run_194513_20261105_114513",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-59_run_194513_20261105_114513",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "75194d224c04dfb47c5773bf1b0082682f87e38774cb29d07b585f95e43e0b8c",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-05T11:45:28.630252709Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-59_run_194513_20261105_114513",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "/tmp/qa_TWIN-59_bkup0lo3/evidence/server_lock.json",
+    "sha256": "813d350c5e769f7bee81319633be6e5e7da26c6c89d97ea63b804fd513ccad50"
+  },
+  "checkout_log": {
+    "path": "/tmp/qa_TWIN-59_bkup0lo3/evidence/checkout.log",
+    "sha256": "1570bc9f284c5c28139e05132a8b992918d2142777ffca5db9c6b8d3ebb269d1"
+  },
+  "runtime_log": {
+    "path": "/tmp/qa_TWIN-59_bkup0lo3/evidence/runtime.log",
+    "sha256": "67630002dd8a8bb9aadc47a155fe6dd09c1800e284c9228fe2474ce9047fcc9c"
+  },
+  "server_verdict": {
+    "path": "/tmp/qa_TWIN-59_bkup0lo3/evidence/server_verdict.json",
+    "sha256": "409ebebf5ff89157ab8f7ef4057e36eee36c8d2d564f3ece817e3ccacd2dce07"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "rm -rf /tmp/qa_twin59 && mkdir -p /tmp/qa_twin59 && cp -r ../soc-ap /tmp/qa_twin59/soc-ap && ([ -e /tmp/qa_twin59/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin59/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin59/soc-ap/third_party/install)) && cd /tmp/qa_twin59/soc-ap && cmake -S runtime/build -B /tmp/qa_twin59/build_rt -DCMAKE_BUILD_TYPE=Release && cmake --build /tmp/qa_twin59/build_rt --parallel && ctest --test-dir /tmp/qa_twin59/build_rt --output-on-failure && cmake -S middleware/dds/tests -B /tmp/qa_twin59/build_dds && cmake --build /tmp/qa_twin59/build_dds --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dds --output-on-failure && cmake -S middleware/dbus/tests -B /tmp/qa_twin59/build_dbus && cmake --build /tmp/qa_twin59/build_dbus --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dbus --output-on-failure && rm -rf /tmp/qa_twin59",
+      "exit_code": "2",
+      "subpath": "soc-ap",
+      "duration": "0.72s",
+      "output": "-- The C compiler identification is GNU 9.4.0\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin59/build_rt\n[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/tmp/qa_twin59/soc-ap/runtime/common/service_lifecycle.cpp.o\n[ 16%] Linking CXX static library libaisoc_runtime_common.a\n[ 16%] Built target aisoc_runtime_common\n[ 25%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin59/soc-ap/runtime/vmware/main.cpp.o\n[ 33%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tmp/qa_twin59/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 41%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o\n[ 50%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin59/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 58%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o\n[ 66%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o\n[ 75%] Linking CXX executable test_backoff\n[ 75%] Built target test_backoff\n[ 83%] Linking CXX executable aisoc_supervisor\n[ 83%] Built target aisoc_supervisor\n\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp: In function \u2018void test_state_transitions()\u2019:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:82:29: error: unused variable \u2018ctx\u2019 [-Werror=unused-variable]\n   82 |     service_lifecycle_ctx_t ctx;\n      |                             ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:90:36: error: variable \u2018param\u2019 set but not used [-Werror=unused-but-set-variable]\n   90 |     service_lifecycle_init_param_t param;\n      |                                    ^~~~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp: In function \u2018void test_health_check()\u2019:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:130:29: error: unused variable \u2018ctx\u2019 [-Werror=unused-variable]\n  130 |     service_lifecycle_ctx_t ctx;\n      |                             ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:136:27: error: unused variable \u2018res\u2019 [-Werror=unused-variable]\n  136 |     health_check_result_t res;\n      |                           ^~~\ncc1plus: all warnings being treated as errors\nmake[2]: *** [CMakeFiles/test_service_lifecycle.dir/build.make:79: CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o] Error 1\nmake[1]: *** [CMakeFiles/Makefile2:1087: CMakeFiles/test_service_lifecycle.dir/all] Error 2\nmake[1]: *** Waiting for unfinished jobs....\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function \u2018void test_default_services_registration()\u2019:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:20:18: error: unused variable \u2018sup\u2019 [-Werror=unused-variable]\n   20 |     supervisor_t sup;\n      |                  ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:28:14: error: unused variable \u2018idx\u2019 [-Werror=unused-variable]\n   28 |     uint32_t idx = 0U;\n      |              ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function \u2018void test_topological_sort_order()\u2019:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:69:14: error: unused variable \u2018s0\u2019 [-Werror=unused-variable]\n   69 |     uint32_t s0 = sup.topo_indices[0];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:70:14: error: unused variable \u2018s1\u2019 [-Werror=unused-variable]\n   70 |     uint32_t s1 = sup.topo_indices[1];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:71:14: error: unused variable \u2018s2\u2019 [-Werror=unused-variable]\n   71 |     uint32_t s2 = sup.topo_indices[2];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:72:14: error: unused variable \u2018s3\u2019 [-Werror=unused-variable]\n   72 |     uint32_t s3 = sup.topo_indices[3];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function \u2018void test_supervisor_start_and_stop()\u2019:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:132:18: error: unused variable \u2018s_idx\u2019 [-Werror=unused-variable]\n  132 |         uint32_t s_idx = sup.topo_indices[i];\n      |                  ^~~~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:141:18: error: unused variable \u2018s_idx\u2019 [-Werror=unused-variable]\n  141 |         uint32_t s_idx = sup.topo_indices[i];\n      |                  ^~~~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function \u2018void test_real_mode_missing_binary_rejection()\u2019:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:256:24: error: unused variable \u2018rc\u2019 [-Werror=unused-variable]\n  256 |     lifecycle_status_t rc = supervisor_start_all(&sup);\n      |                        ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:259:14: error: unused variable \u2018s0\u2019 [-Werror=unused-variable]\n  259 |     uint32_t s0 = sup.topo_indices[0];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function \u2018void test_real_mode_graceful_stop()\u2019:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:351:9: error: unused variable \u2018ret\u2019 [-Werror=unused-variable]\n  351 |     int ret = kill(spawned_pid, 0);\n      |         ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:343:11: error: \u2018sup.supervisor_t::services[0].supervisor_service_entry_t::child_pid\u2019 is used uninitialized in this function [-Werror=uninitialized]\n  343 |     pid_t spawned_pid = sup.services[0].child_pid;\n      |           ^~~~~~~~~~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function \u2018void test_real_mode_valid_binary_spawn()\u2019:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:294:11: error: \u2018sup.supervisor_t::services[0].supervisor_service_entry_t::child_pid\u2019 is used uninitialized in this function [-Werror=uninitialized]\n  294 |     pid_t spawned_pid = sup.services[0].child_pid;\n      |           ^~~~~~~~~~~\ncc1plus: all warnings being treated as errors\nmake[2]: *** [CMakeFiles/test_supervisor_topology.dir/build.make:79: CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o] Error 1\nmake[2]: *** Waiting for unfinished jobs....\nmake[1]: *** [CMakeFiles/Makefile2:1151: CMakeFiles/test_supervisor_topology.dir/all] Error 2\nmake: *** [Makefile:101: all] Error 2"
+    }
+  ],
+  "passed": false,
+  "timestamp": "2026-11-05T11:45:32.011700+00:00"
+}

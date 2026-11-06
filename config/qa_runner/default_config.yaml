@@ -32,6 +32,14 @@ repositories:
     url: "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git"
     api_project_path: "sushaohua/test_harness"
     default_branch: "main"
+  boot/bootloadermc:
+    url: "ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git"
+    api_project_path: "sushaohua/bootloadermc"
+    default_branch: "soc_debug"
+  boot/bootloaderth:
+    url: "ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git"
+    api_project_path: "sushaohua/bootloaderth"
+    default_branch: "soc_debug"
 
 timeouts:
   git_clone_seconds: 300

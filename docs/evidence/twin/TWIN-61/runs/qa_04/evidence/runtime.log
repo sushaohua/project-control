@@ -1,0 +1,92 @@
+=== Docker Container Inspect: 23550a0b8b1d ===
+{
+  "id": "23550a0b8b1df177acd5926ef0aa71488ac3cbec359d3bb0539f1a975e53f506",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-06T02:13:48.629869412Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-61_run_101321_20261106_021321",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (test_harness) (cd ../project-control/tools && python3 -m unittest test_check_task_graph.py test_delivery_checks.py test_qa_runner.py test_qa_pipeline.py test_review_policy.py test_coord_recovery.py test_coord_systemd_service.py) && python3 hil/tools/debug_reconciliation_probe.py --self-test && python3 hil/tests/test_290_frame_burst_stress.py --self-test && python3 hil/tests/test_composite_lifecycle_sequences.py --self-test && ! grep -rn "中文说明：模块辅助逻辑与状态说明" hil/ ../project-control/tools/ && echo "[PASS] code_documentation_standard.md check passed" -> 0
+[PASS] debug_reconciliation_probe.py self-test suite passed (11 fixtures generated).
+{
+  "live_mode": "serial",
+  "serial_burst": {
+    "expected_total_frames": 290,
+    "observed_mc_unique_rx_seqs": 290,
+    "observed_mc_unique_tx_ack_seqs": 290,
+    "observed_th_unique_rx_seqs": 145,
+    "observed_th_unique_tx_seqs": 145,
+    "max_seq_observed": 290,
+    "missing_seqs_count": 0,
+    "missing_mc_tx_ack_seqs": [],
+    "missing_th_rx_seqs": [],
+    "missing_th_tx_seqs": [],
+    "missing_mc_relay_rx_seqs": [],
+    "missing_high_seqs_256_plus": [],
+    "missing_th_high_seqs_256_plus": [],
+    "bare_adc_busy_detected": false,
+    "crc_err_count": 0,
+    "bad_frame_count": 0,
+    "timeout_count": 0,
+    "ellipsis_trunc_line_count": 0,
+    "mc_drop_delta": 0,
+    "mc_trunc_delta": 0,
+    "th_drop_delta": 0,
+    "th_trunc_delta": 0,
+    "passed": true,
+    "serial_ack_ok": 290,
+    "serial_error_count": 0
+  },
+  "passed": true
+}
+[PASS] code_documentation_standard.md check passed
+
+............................................................................................................................
+----------------------------------------------------------------------
+Ran 124 tests in 4.616s
+
+OK
+test_cli_live_serial_mode_over_real_pty (__main__.Test290FrameBurstStress)
+验证 `main(--live --live-mode serial --serial-dev <pty>)` 通过真实 PTY 串口描述符收发 290 帧二进制包并通过对账。 ... ok
+test_evaluate_burst_debug_logs_positive_290_frames (__main__.Test290FrameBurstStress)
+验证正例：290 帧双向完整收发、TH 序列 100% 匹配、零错误/截断时判定通过。 ... ok
+test_evaluate_burst_debug_logs_rejects_8bit_wrap_and_adc_pollution (__main__.Test290FrameBurstStress)
+验证反例：当发生 8-bit 序列号回绕、裸 `adc SS_ADC_BUSY` 污染或长行 `...` 截断时严格拦截。 ... ok
+test_evaluate_burst_debug_logs_rejects_missing_th_or_tx_ack (__main__.Test290FrameBurstStress)
+验证反例：缺失单帧 TH 高位序列（如 seq=289）或缺失单帧 TX ACK 应答时必须判定失败。 ... ok
+test_generate_290_burst_plan_covers_16bit_seq_boundary (__main__.Test290FrameBurstStress)
+验证 290 帧突发计划完整覆盖 seq=1..290，且每帧 CRC16 与 16位小端序列号编码准确。 ... ok
+test_run_live_http_burst_end_to_end_with_mock_server (__main__.Test290FrameBurstStress)
+验证 `run_live_http_burst` 无伪造 Header 驱动 290 步 HTTP 请求并经底层串口总线闭环对账通过。 ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.676s
+
+OK
+test_run_live_composite_sequences_end_to_end_with_stateful_sim (__main__.TestCompositeLifecycleSequences)
+验证 `run_live_composite_sequences` 配合步进时钟与断链/重连钩子完整跑通 SEQ-01..SEQ-05。 ... ok
+test_seq01_oobe_bootid_adc_and_bed_range_gate (__main__.TestCompositeLifecycleSequences)
+验证 SEQ-01：动态 boot_id 变化、raw_adc 映射及 300°C 热床超量程故障降级。 ... ok
+test_seq02_motion_and_temperature_bounds (__main__.TestCompositeLifecycleSequences)
+验证 SEQ-02：归零 -> 调平 -> 点动 -> 204B 坐标查询零截断，以及喷头/热床设温边界。 ... ok
+test_seq03_filament_save_decoupling_and_400_validation (__main__.TestCompositeLifecycleSequences)
+验证 SEQ-03：合法槽位/动作/混色权重返回 200，越界 slot_id=4、action=3、权重和!=100/10000 返回 400。 ... ok
+test_seq04_gcode_upload_and_two_stage_job_start (__main__.TestCompositeLifecycleSequences)
+验证 SEQ-04：三类独立非法 G-code 上传返回 400，合法上传暂存保持 IDLE，显式启动才进入 PRINTING。 ... ok
+test_seq05_offline_3s_sentinel_and_404_framing (__main__.TestCompositeLifecycleSequences)
+验证 SEQ-05：断链 >=3.0s 打入 2147483646 离线哨兵、小于 3.0s 被拒绝，且 404 帧完整。 ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.529s
+
+OK

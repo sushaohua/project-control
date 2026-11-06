@@ -7,7 +7,7 @@ predecessor_session_id: 484ac302-bd54-4e1b-be9f-0227e1475d5d
 date: 2026-11-05
 repository: soc-ap
 branch: main
-candidate_commit: 19534a9a4cb393176882fbad046129d55bba51f6
+candidate_commit: c6692b244e0aa09d04e7051293f9fef3c67535dd
 status: READY_FOR_QA
 ---
 
@@ -21,7 +21,7 @@ status: READY_FOR_QA
 - `project-control/.agents/kanban/microtasks/vmware_soc_twin/TWIN-58.md`
 
 ## 2. 交付范围与代码变更摘要
-- **候选提交**：`soc-ap@19534a9a4cb393176882fbad046129d55bba51f6`
+- **候选提交**：`soc-ap@c6692b244e0aa09d04e7051293f9fef3c67535dd`
 - **核心修复与实现**：
   1. **ISS-20261105-006（`/api/v1/state` 动态路由统一与静态假文件清理）**：移除静态假状态文件干扰，统一由 `ui_gateway_server.cpp` 动态权威快照驱动响应。
   2. **ISS-20261105-007（保存料槽配置与 `LOAD`/210°C 动作解耦）**：保存槽位材质/颜色仅更新配置或发送 `SELECT (action=0)`，不再隐式触发 `210°C` 加热与进丝动作。

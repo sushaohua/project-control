@@ -3,20 +3,29 @@ id: ARCH-MASTER-MINIMC-V2-UNIFIED-MCU-UPGRADE-20261105
 title: MiniMCProto v2.0 双 MCU（MC/TH）统一固件升级完整主架构方案
 demand_id: DEM-20261105-006
 requirement_id: REQ-20261105-003
-revision: 1
-date: 2026-11-05
+revision: 2
+date: 2026-11-06
 author_role: ARCH
 author_session: 3a7ad206-fef7-4d28-b3c8-1ee5bce395a5
 predecessor_arch_session: ef428595-f4d6-46a7-9d12-07e1fd215641
 qa_policy: streamlined-v1
-status: arch_master_plan_r1_ready_for_user_review_not_approved_for_implementation
+status: approved-by-user
+user_approval_timestamp: 2026-11-06T09:15:30+08:00
+user_approved_decisions:
+  D1: Option D1-A (0x10=SET_TEMP[4B], 0x1D=CMD_SYSTEM_CONTROL[4B], Rev 2.0.4)
+  D2: Option D2-A (0x12=MOTION_MOVE[16B], 0x17=EMERGENCY_STOP/MOTION_STOP, clean 0x05/0x15 dead macros)
+  D3: Option D3-A (0x20 OTA_START=144B [16B+128B ATSG Trailer], MINIMC_MAX_PAYLOAD_SIZE=520B [534B frame])
+  D4: Option D4-A (Dedicated one-time Boot migration approval after Docker S01-S04 & software QA; zero probe-rs for routine App deployment)
+protocol_spec_rev_2_0_4_path: project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md
+protocol_spec_rev_2_0_4_sha256: ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c
 ---
 
 # MiniMCProto v2.0 双 MCU（MC/TH）统一固件升级完整主架构方案（`REQ-20261105-003`）
 
 | 修订版本 | 日期 | 牵头角色与会话 ID | 修订摘要与状态 |
 | :--- | :--- | :--- | :--- |
-| `revision: 1` | 2026-11-05 | `ARCH` (`3a7ad206-fef7-4d28-b3c8-1ee5bce395a5`，接力 Phase A 会话 `ef428595-f4d6-46a7-9d12-07e1fd215641`) | 汇总 `ARCH` 跨仓协议对账回执 (`r2`)、多端工程专项技术输入 (`07a1f6dc`, `r1`) 与独立 Codex `QA` 规划输入 (`01a1aafd` / `01a1ab34`, `r2`)，形成版本化主方案。**当前状态：待用户审阅确认；未经确认前严禁拆卡、改码、编译或执行烧录**。 |
+| `revision: 1` | 2026-11-05 | `ARCH` (`3a7ad206-fef7-4d28-b3c8-1ee5bce395a5`，接力 Phase A 会话 `ef428595-f4d6-46a7-9d12-07e1fd215641`) | 汇总 `ARCH` 跨仓协议对账回执 (`r2`)、多端工程专项技术输入 (`07a1f6dc`, `r1`) 与独立 Codex `QA` 规划输入 (`01a1aafd` / `01a1ab34`, `r2`)，形成版本化主方案（`sha256: 6c0e672c50bc526d8b4e662c2c354114ef5c8c0180d4a3dd5563908726584c7a`）。 |
+| `revision: 2` | 2026-11-06 | `ARCH` (`3a7ad206-fef7-4d28-b3c8-1ee5bce395a5`) | **用户正式确认（`2026-11-06T09:15:30+08:00`, `status: approved-by-user`）**：<br>1. 固化用户对第 9 章 `D1 = Option D1-A`、`D2 = Option D2-A`、`D3 = Option D3-A`、`D4 = Option D4-A` 的正式拍板结论；<br>2. 保持历史 `Rev 2.0.3` 规范文件（`9f8d4f96...`）原位只读不改以保护历史任务卡哈希，将正式升级版 `Rev 2.0.4` 权威协议规范落盘至新路径 [ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md)（`sha256: ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c`）；<br>3. **新增第 10 章《正式实施任务拆分、依赖拓扑、接口契约、源码基线与允许路径（`TWIN-62 ~ TWIN-67`）》**，供 `COORD` 登记正式任务卡并按序派发。 |
 
 ---
 
@@ -321,13 +330,200 @@ flowchart LR
 
 ---
 
-## 9. 实质待决事项汇总表（供用户一次性确认）
+## 9. 实质待决事项用户正式确认记录（`2026-11-06T09:15:30+08:00` 已全部拍板锁定）
 
-前文第 1.1 节列出的 8 项用户已定边界（VMware 目录文件升级、统一 MiniMCProto v2.0、保留 MC U盘能力、MC Boot 不路由 TH、TH Boot $\le 16\text{KB}$、TH 净 App $\le 236\text{KB}$、先确认方案再拆卡、常规部署禁用 `probe-rs`）已 100% 刚性锁定，不再重复提问。**仅以下 4 项跨源契约冲突与前置迁移授权需请用户一次性拍板确认**：
+前文第 1.1 节列出的 8 项刚性边界与以下 4 项跨源契约及迁移授权裁决项，已于 `2026-11-06T09:15:30+08:00` 获用户一次性正式确认拍板，作为后续全链路实现与独立 QA 验收的唯一冻结契约：
 
-| 裁决编号 | 待确认的实质问题 | 候选方案对比 | `ARCH` 与工程团队推荐选项及理由 |
+| 裁决编号 | 实质裁决事项 | 用户正式拍板结论（`APPROVED`） | 生效契约与落地约束 |
 | :--- | :--- | :--- | :--- |
-| **`D1`** | **`0x10` 命令码冲突裁定**<br>（主规范 `Rev 2.0.3` `SYSTEM_CONTROL [3B]` vs 现已验收业务实现 `SET_TEMP [4B]`） | - **`Option D1-A`（推荐）**：保持 **`0x10 = MINIMC_CMD_SET_TEMP (4B)`** 不变；将系统复位/跳入 Bootloader 指令分配至新命令码 **`0x1D = CMD_SYSTEM_CONTROL (4B: action, target_component, delay_ms)`**，并同步发布主规范 `Rev 2.0.4`。<br>- **`Option D1-B`（备选）**：恢复 `0x10 = CMD_SYSTEM_CONTROL`，将 `SET_TEMP` 迁移至 `0x1D`。 | **强烈推荐 `Option D1-A`**：<br>1. 彻底消除 `telemetry_types.h` 中 `0x10` 同值异义碰撞；<br>2. 对已通过真机 HIL 验收的 `0x10 -> 0x15` 温控闭环与 Web UI **零破坏**，避免过渡期混版本把设温误判为重启进入 Boot。 |
-| **`D2`** | **`0x12` / `0x17` 急停与运动命令冲突裁定**<br>（主规范 `Rev 2.0.3` `0x12 = EMERGENCY_STOP` vs 现实现 `0x12 = MOTION_MOVE [16B]`、`0x17 = MOTION_STOP`） | - **`Option D2-A`（推荐）**：在 `Rev 2.0.4` 中正式锁定 **`0x12 = MINIMC_CMD_MOTION_MOVE (16B)`**，并将唯一急停命令码统一锁定为 **`0x17 = MINIMC_CMD_EMERGENCY_STOP`（同义别名 `MOTION_STOP`）**，同时支持单播显式 ACK 急停（`Flags=0x15/0x05`）与全网特权广播急停（`DST=0xFF, Flags=0x14`）；同步清理 `0x05 ESTOP_ACK` 死宏与 `0x15 FILAMENT_CONTROL` 残留宏。<br>- **`Option D2-B`（备选）**：恢复 `0x12 = EMERGENCY_STOP`，将 `MOTION_MOVE` 迁至 `0x1E`。 | **强烈推荐 `Option D2-A`**：<br>1. 根除“发 `0x12` 急停却进入 `MOTION_MOVE` 分支”的安全隐患；<br>2. 兼顾 `AGENTS.md` §7 单播控制显式 ACK 门禁与广播急停能力，且保护存量运动控制基线。 |
-| **`D3`** | **`0x20 CMD_OTA_START` 擦除前 Trailer 绑定与共同 MTU 上限**<br>（主规范 `0x20 [16B]` / `1024B MTU` vs 擦除前 `128B ATSG Trailer` 准入与 MCU RAM 约束） | - **`Option D3-A`（推荐）**：将 `0x20 CMD_OTA_START` 定为 **`144B`（`16B 标准头 + 128B ATSG Trailer`）** 原子准入帧（收到单帧完成全量 Trailer 校验后才擦除 Flash）；将嵌入式端点共同最大载荷定为 **`MINIMC_MAX_PAYLOAD_SIZE = 520B`（整帧 `534B` = `8B OTA_DATA 头 + 512B 最大块`，默认发送 `256B` 块）**。<br>- **`Option D3-B`（备选）**：保持 `0x20` 为 `16B` 不擦除，另分帧传 Trailer；或要求 MCU 扩容至 `1024B` 载荷。 | **强烈推荐 `Option D3-A`**：<br>1. 单帧原子完成擦除前 `128B ATSG Trailer` 准入，失败零擦除；<br>2. `520B` 载荷完美匹配 `bootloaderth` 既有 `s_chunk0_buf[512]` 与 `s_rx_ctx.payload[520]`，TH Boot 仅增 `14B` BSS、MC App 仅增 `2.31KB` SRAM。 |
-| **`D4`** | **首次将新版双 Bootloader 部署上板的专项迁移授权方式**<br>（板卡当前旧 Boot 不支持 MiniMCProto v2.0，且运行期禁 Boot 自升级） | - **`Option D4-A`（推荐）**：当新版 `bootloadermc` 与 `bootloaderth` 完成代码开发并通过独立 Docker 编译、16KB/236KB 静态门禁（`S01~S04`）及软件集成验证后，由 `COORD` 提交专项前置 Boot 迁移申请（附上准确候选 commit 与二进制 SHA-256），经用户批准后执行**一次性受控 Boot 迁移烧录**；此后一切常规 MC/TH App 部署 100% 走 MiniMCProto v2.0 升级流程（严禁再用 `probe-rs` 刷 App）。 | **推荐 `Option D4-A`**：<br>将“一次性基础设施 Boot 迁移”与“后续常规 App 升级部署”在权限和审计台账上严格物理隔离。 |
+| **`D1`** | **`0x10` 命令码冲突裁定**<br>（主规范 `SYSTEM_CONTROL` vs 现已验收 `SET_TEMP`） | **已确认：`Option D1-A`** | 保持 **`0x10 = MINIMC_CMD_SET_TEMP (4B)`** 不变；新增 **`0x1D = CMD_SYSTEM_CONTROL (4B: action, target_component, delay_ms)`** 专职系统复位与跳入 Bootloader；主规范已升级至 `Rev 2.0.4`（`sha256: ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c`）。 |
+| **`D2`** | **`0x12` / `0x17` 急停与运动命令冲突裁定** | **已确认：`Option D2-A`** | 锁定 **`0x12 = MINIMC_CMD_MOTION_MOVE (16B)`**；唯一急停命令码统一为 **`0x17 = MINIMC_CMD_EMERGENCY_STOP`（同义别名 `MINIMC_CMD_MOTION_STOP`）**，支持单播显式 ACK 急停（`Flags=0x15/0x05`）与全网特权广播急停（`DST=0xFF, Flags=0x14`，黄金向量 `V04` CRC 更新为 `6C 9E`）；彻底清理 `0x05 ESTOP_ACK` 死宏与 `0x15 FILAMENT_CONTROL` 冲突宏。 |
+| **`D3`** | **`0x20 CMD_OTA_START` 擦除前 Trailer 绑定与共同 MTU 上限** | **已确认：`Option D3-A`** | 锁定 **`0x20 CMD_OTA_START` 为固定 `144B`（`16B 标准头 + 128B ATSG Trailer`）** 擦除前原子准入帧（校验失败零擦除）；锁定嵌入式端点共同最大载荷为 **`MINIMC_MAX_PAYLOAD_SIZE = 520B`（整帧 `534B` = `8B OTA_DATA 头 + 512B 最大块`，默认发送 `256B` 块）**。 |
+| **`D4`** | **首次将新版双 Bootloader 部署上板的专项迁移授权方式** | **已确认：`Option D4-A`** | 当新版 `bootloadermc` (`TWIN-63`) 与 `bootloaderth` (`TWIN-62`) 完成开发并通过独立 Docker 编译、16KB/236KB 静态门禁（`S01~S04`）及软件集成验证（`TWIN-66`）后，由 `COORD` 提交专项前置 Boot 迁移申请（附上准确候选 commit 与二进制 SHA-256），经用户批准后执行**一次性受控 Boot 迁移烧录**；此后一切常规 MC/TH App 部署 100% 走 MiniMCProto v2.0 升级流程（严禁再用 `probe-rs` 刷 App）。 |
+
+---
+
+## 10. 正式实施任务拆分、依赖拓扑、接口契约、源码基线与允许路径（`TWIN-62 ~ TWIN-67`）
+
+### 10.1 任务依赖拓扑图（DAG）与全套公共输入引用基线
+
+```mermaid
+flowchart LR
+    T56["前置已完成: TWIN-56"] --> T62["TWIN-62: ENG_BOOT_TH (boot/bootloaderth@soc_debug)"]
+    T56 --> T63["TWIN-63: ENG_BOOT_MC (boot/bootloadermc@soc_debug)"]
+    T60["前置已完成: TWIN-60"] --> T64["TWIN-64: ENG-MC / ENG-TH (mcu-p3@feat/soc-debug)"]
+    T57_59["前置已完成: TWIN-57, 58, 59"] --> T65["TWIN-65: ENG-FWD / ENG-STATE / ENG-UI (soc-ap@main)"]
+    T61["前置已完成: TWIN-61"] --> T66["TWIN-66: QA / INTEGRATOR (test_harness@main)<br>Reviewer: [QA, ARCH]"]
+    T62 --> T66
+    T63 --> T66
+    T64 --> T66
+    T65 --> T66
+    T66 --> D4Gate{"D4-A: 用户专项批准<br>一次性双 Boot 实板迁移"}
+    D4Gate --> T67["TWIN-67: INTEGRATOR (project-control & HIL 台架)<br>Reviewer: [QA]"]
+```
+
+- **全任务强制绑定的权威契约输入清单（`inputs` + `sha256`）**：
+  1. **本主架构方案（`revision: 2`）**：`project-control/docs/architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md`（任务卡登记本文件 `revision: 2` 落盘 SHA-256）；
+  2. **权威协议主规范（`Rev 2.0.4`）**：[project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md)（`sha256: ec874cab3f8f98fec6412b2da2b4f1fa52bfd8a33601da21e908b0ffaeb0522c`；历史 `Rev 2.0.3` 原件 [ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/specs/ap_mc_formal_protocol_v2_0_multidevice_routing_draft_20261015.md) 保持 `sha256: 9f8d4f9607cb3e76cc30b9ee2f971b23c3e0d936611188466a71f4aa15f3ce54` 只读锁定）；
+  3. **多端工程专项技术输入（`revision: 1`）**：[project-control/docs/planning/minimc_v2_upgrade_engineering_inputs_20261105.md](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/planning/minimc_v2_upgrade_engineering_inputs_20261105.md)（`sha256: c79477a0b9bfa2b18d1451b91b2a6188aa4b50f72bc742a8640aa0a696a1610b`）；
+  4. **独立 Codex QA 规划输入（`revision: 2`）**：[project-control/docs/planning/minimc_v2_upgrade_qa_planning_input_20261105.md](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/planning/minimc_v2_upgrade_qa_planning_input_20261105.md)（`sha256: f41d27c2214cacd1113397f20eb50038a404df94781f4bfdb18239d5d6f246d9`）；
+  5. **升级操作与 HIL 部署说明书草案（`revision: 1`）**：[project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md)（`sha256: 87b0b859e3e7e4cf7e8733ac88d90d1e0fd94f3b3e2117abfea9af3b14d4e6a9`）；
+  6. **仓库共享规则基线**：`project-control/.agents/rules/repository_rule_sources.json`（`source_commit: 17e0887da07ceb3b017623b791b6a6999e837c79`）。
+
+---
+
+### 10.2 `TWIN-62 ~ TWIN-67` 逐卡完整技术规格表
+
+#### (1) `TWIN-62`：TH Bootloader 16KB 预算内 MiniMCProto v2.0 最小升级子集与 236KB 对齐
+- **目标仓库与分支**：`worktree: boot/bootloaderth`，分支 `soc_debug`（严禁切 `main`）
+- **精确源码基线 Commit**：`769fccbe52464ad7ceb856c5e89cb0d25abbbf87`
+- **执行角色与审阅策略**：`owner_role: ENG_BOOT_TH`，`reviewer: [QA]`，`qa_policy: streamlined-v1`
+- **前置依赖 (`depends_on`)**：`[TWIN-56]`
+- **允许修改路径 (`allowed_paths`)**：
+  - `boot/bootloaderth/inc/iap.h`
+  - `boot/bootloaderth/inc/flash.h`
+  - `boot/bootloaderth/inc/usart.h`
+  - `boot/bootloaderth/src/iap.c`
+  - `boot/bootloaderth/src/flash.c`
+  - `boot/bootloaderth/src/main.c`
+  - `boot/bootloaderth/src/usart.c`
+  - `boot/bootloaderth/tools/pack_firmware.py`
+  - `boot/bootloaderth/Makefile`
+  - `boot/bootloaderth/tests/`（宿主机/Docker 可运行的 Boot 协议状态机与 Flash 仿真单测）
+- **禁止修改路径 (`forbidden_paths`)**：`soc-ap/`、`mcu-p3/`、`boot/bootloadermc/`、`test_harness/`、`boot/bootloaderth/.repo-rules/`、`boot/bootloaderth/ldscripts/AT32A423xC_FLASH.ld`（保持 `FLASH LENGTH = 16K` 硬约束不扩大）
+- **核心接口契约与实现职责**：
+  1. 彻底移除 `0x5A 0xA5` 私有帧头、`CMD_TH_HELLO (0x10)` ~ `ACK_TH_FINISH (0x93)` 及累加和，在 `USART1 (PA9/PA10 @ 921600 8N1)` 上实现 `DST == 0x03` 的 MiniMCProto v2.0 最小 7 命令子集：`0x01 GET_VERSION` $\to$ `0x02 VERSION_REPORT (16B, capability_flags=0xE0080423U, 动态 boot_id)`、`0x03 PING` $\to$ `0x04 PONG (12B)`、`0x1D CMD_SYSTEM_CONTROL (4B)`、`0x20 CMD_OTA_START (144B)`、`0x21 CMD_OTA_DATA (8B + 1..512B, MINIMC_MAX_PAYLOAD_SIZE=520U)`、`0x23 CMD_OTA_STATUS (8B)`、`0x22 CMD_OTA_FINISH (8B)` 及标准 `0x00 CMD_ACK (4B)` / `0x06 CMD_NACK (3B)`；
+  2. `0x20 (144B)` 擦除前强制校验 `target_device==0x03`、`target_component==1`、`magic==0x41545347U`、`struct_version==0x00010000U`、`board_id==0x42300001U`、`0 < payload_len <= 241664U (236KB)`（超限回 `NACK 0x14`）及 `trailer_crc32`；任一失败**零 Flash 擦除**；
+  3. 保持首块 `offset < 512` 缓存在 `s_chunk0_buf[512]`（此时 `0x23` 的 `cached_chunk0_bytes=512, bytes_written=0`），`offset >= 512` 写 Flash 并逐字节回读比对后累加 `bytes_written`，支持重传块幂等 ACK；`0x22` 联合 `s_chunk0_buf` 与 Flash 计算全量 IEEE CRC32，通过后先写 `0x0803F800` Anchor 再写 `0x08004000` 首块 512B；修复 `flash_verify_app_integrity()` 在无有效 Anchor 时的回退漏洞；
+  4. 将 `iap_send_frame()` 栈缓冲缩至 `tx_buf[32]`；将 `tools/pack_firmware.py#L18,L33` 与 `inc/iap.h#L58` 的 `240KB` 修正为 `236KB (241,664B)`。
+- **可验证命令与验收判据**：
+  - `make -C boot/bootloaderth clean all && arm-none-eabi-size -A boot/bootloaderth/build/bootloaderth.elf`：验证 `.isr_vector + .text + .rodata + .ARM.exidx + .data(LMA) <= 16,384 Bytes` 且生成的 `.bin` 文件大小 $\le 16,384\text{B}$（`S01`），SRAM 占用与 `0x20008000` 魔数区无冲突（`S02`），`pack_firmware.py` 拦截 `241,665B` 包（`S03`）；自研函数 100% 满足 $\le 50$ 行、$\le 4$ 参、零动态堆分配与中文注释（`S04`）。
+
+---
+
+#### (2) `TWIN-63`：MC Bootloader 原生 `USART2` MiniMCProto v2.0 本机升级与 U盘完整能力共存
+- **目标仓库与分支**：`worktree: boot/bootloadermc`，分支 `soc_debug`（严禁切 `main`）
+- **精确源码基线 Commit**：`4fc171ea61912561949b9a0cfc1da8975e4c39ba`
+- **执行角色与审阅策略**：`owner_role: ENG_BOOT_MC`，`reviewer: [QA]`，`qa_policy: streamlined-v1`
+- **前置依赖 (`depends_on`)**：`[TWIN-56]`
+- **允许修改路径 (`allowed_paths`)**：
+  - `boot/bootloadermc/bootloader/inc/`
+  - `boot/bootloadermc/bootloader/src/`
+  - `boot/bootloadermc/scripts/pack_firmware.py`
+  - `boot/bootloadermc/app_test/inc/th_upgrade_mgr.h`（修正遗留 `240U * 1024U -> 236U * 1024U`）
+  - `boot/bootloadermc/bootloader/cmake/` 或 `CMakeLists.txt` / `Makefile`
+  - `boot/bootloadermc/tests/`（宿主机/Docker 可运行的 MC Boot 协议、U盘/串口互斥与 Trailer 校验单测）
+- **禁止修改路径 (`forbidden_paths`)**：`soc-ap/`、`mcu-p3/`、`boot/bootloaderth/`、`test_harness/`、`boot/bootloadermc/.repo-rules/`
+- **核心接口契约与实现职责**：
+  1. **100% 保留既有 USB Host U盘升级完整闭环**（`0:/firmwaremc.bin` / `0:/fw_mc.bin` 识别、擦除前 `128B ATSG Trailer` 校验、`0x08020000` 擦写回读、硬件/IEEE CRC32 终验、`.cur/.err` 原子改名与重挂载 FS Check），并**补齐 `verify_trailer_struct()` 对 `trailer.trailer_crc32`（前 124B IEEE CRC32）的实际校验**，统一按精确 `payload_len` 计算 IEEE 802.3 CRC32；
+  2. 新增 `USART2 (PA2/PA3 @ 921600 8N1)` 中断环形缓冲（`1024B`）与 `DST == 0x02` 的 MiniMCProto v2.0 本机升级协议栈（`MINIMC_MAX_PAYLOAD_SIZE = 520U`，支持 `0x01/0x02 [capability_flags=0xC0080435U]`、`0x03/0x04`、`0x1D`、`0x20 [144B, board_id=0x43500001U, payload_len<=917504B]`、`0x21`、`0x23`、`0x22` 及 `0x00/0x06`）；**严禁初始化 `USART6` 或转发任何 `DST == 0x03` 帧**；
+  3. 实现跨软复位升级魔数 `0x55504732UL ("UPG2")` 检测（命中有魔数或 `0x08020000` App 无效时持续驻留 Boot 监听 U盘与 `USART2`）及冷启动 `2000ms` 并发探测窗口下的**单一写入所有者互斥锁**（U盘与 `USART2` 先激活者锁定写入权，拒绝另一入口并发擦写）；
+  4. 在 `jump_to_app(0x08020000)` 中补齐 `USART2` `USART_TDC_FLAG` 排空、去能与 `CRM_USART2_PERIPH_RESET` 外设复位。
+- **可验证命令与验收判据**：
+  - Docker 内完成 `bootloadermc` 交叉编译产出 `bootloadermc.elf/.bin` 及宿主机单测通过，验证 `0x20 (144B)` 准入、错板/坏 `trailer_crc32` 零擦除拒绝、串口与 U盘互斥锁及函数 $\le 50$ 行/$\le 4$ 参门禁。
+
+---
+
+#### (3) `TWIN-64`：MC/TH App 520B 载荷扩容、`0x1D` 受控进 Boot、MC 维护透明路由与 `th_upgrade_mgr.c` 同构迁移
+- **目标仓库与分支**：`worktree: mcu-p3`，分支 `feat/soc-debug`
+- **精确源码基线 Commit**：`191e355a4227268a472bafd6862d4a8c854e0544`
+- **执行角色与审阅策略**：`owner_role: ENG-MC / ENG-TH`，`reviewer: [QA]`，`qa_policy: streamlined-v1`
+- **前置依赖 (`depends_on`)**：`[TWIN-60]`
+- **允许修改路径 (`allowed_paths`)**：
+  - `mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h`
+  - `mcu-p3/motion-controller-mcu/project/src/minimc_proto.c`
+  - `mcu-p3/motion-controller-mcu/project/inc/wk_dma.h`
+  - `mcu-p3/motion-controller-mcu/project/src/wk_usart.c`
+  - `mcu-p3/motion-controller-mcu/project/inc/th_upgrade_mgr.h`
+  - `mcu-p3/motion-controller-mcu/project/marlin/marlin_module/th_upgrade_mgr.c`
+  - `mcu-p3/motion-controller-mcu/tests/`
+  - `mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h`
+  - `mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c`
+  - `mcu-p3/color-engine-mcu/io_toggle/src/app/mycontrol.c`
+  - `mcu-p3/color-engine-mcu/io_toggle/libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld`
+  - `mcu-p3/color-engine-mcu/tests/`
+- **禁止修改路径 (`forbidden_paths`)**：`soc-ap/`、`boot/`、`test_harness/`、`mcu-p3/.repo-rules/`、以及 `mcu-p3` 中无关的 Marlin 运动规划核心文件（严守最小修改预算）
+- **核心接口契约与实现职责**：
+  1. **协议宏对齐 `Rev 2.0.4`（`D1-A / D2-A / D3-A`）**：在 MC/TH `minimc_proto.h` 中保持 `MINIMC_CMD_SET_TEMP = 0x10U`、`MINIMC_CMD_MOTION_MOVE = 0x12U`、`MINIMC_CMD_MOTION_STOP = 0x17U`（新增同义宏 `MINIMC_CMD_EMERGENCY_STOP = 0x17U`，支持单播回 4B `0x00 CMD_ACK` 与广播 `0xFF, Flags=0x14` 无 ACK 急停）；将残留 `#define MINIMC_CMD_FILAMENT_CONTROL 0x15U` 修正为 `0x19U`；新增 `#define MINIMC_CMD_SYSTEM_CONTROL 0x1DU` 及 `0x20~0x23` 宏定义；
+  2. **MC App 缓冲区扩容与 `DST=0x03` 维护透明路由（`ENG-MC`）**：将 MC `MINIMC_MAX_PAYLOAD_SIZE` 升至 `520U`（`MINIMC_MAX_FRAME_SIZE = 534U`）、`AP_RING_CAPACITY = 1024U`、`FORWARD_UART_TX/RX_BUF_SIZE = 600U`；修复 `drain_th_rx()` 局部 `th_buf[64]` 截断缺陷；在维护路由态下暂停向 TH 发送 `0x1C` G-code 行，允许 `forward_uart_send_raw()` 透明转发 `DST=0x03` 的 `0x01/0x03/0x1D/0x20/0x21/0x22/0x23` 帧（校验 CRC16 $\to$ `hop_limit - 1` $\to$ `route_ctrl |= 0x04` $\to$ 重算 CRC16）及反向回传 TH 响应；
+  3. **MC/TH App 响应 `0x1D CMD_SYSTEM_CONTROL (action=2 JumpToBootloader)` 安全停机与软复位**：校验非忙安全态（否则回 `NACK 0x05`），立即将热床/热端 PWM 0% 锁死、步进电机去能，**先回发标准 4B `0x00 CMD_ACK`（严禁在业务串口发裸 ASCII `"ok2/M997"`）并带超时计数器轮询 `USART_TDC_FLAG` 排空**，随后写入跨复位魔数（MC 写 `0x55504732UL "UPG2"`，TH 写 `0x20008000UL = 0x55504744UL "UPGD"`），延时 `delay_ms` 后调用 `NVIC_SystemReset()`；将 TH App 静态 `TH_BOOT_ID` 改为每次启动动态变化的非零 `boot_id`；
+  4. **MC App U盘升 TH (`th_upgrade_mgr.c`) 同构迁移至 MiniMCProto v2.0**：将 `th_upgrade_mgr.c` 中的 `"M997 S0"` 与 `0x10~0x13` 私有 `5A A5` 帧调用统一替换为 MiniMCProto v2.0 的 `0x1D -> 0x01/0x02 -> 0x20 (144B) -> 0x21 (8B+512B) -> 0x22 (8B)`，删除 `wk_usart.c` 中 `forward_uart_send_frame/recv_frame` (`5A A5`) 死代码；将 `th_upgrade_mgr.h#L21` 与 `AT32F423xC_FLASH.ld#L34` 的 `240KB` 修正为 `236KB (241,664B)`。
+- **可验证命令与验收判据**：
+  - 在 Docker 中完成 MC App 与 TH App 交叉构建（验证 TH App 链接脚本 `LENGTH = 236K` 生效）并运行 `test_mc_proto_v2` 与 `test_th_proto_v2` 宿主机单测全绿，覆盖 `534B` 大帧路由、`0x1D` 停机回 ACK 置魔数、`0x17` 单播/广播急停及 `th_upgrade_mgr` v2.0 状态机。
+
+---
+
+#### (4) `TWIN-65`：SoC AP 协议栈对齐 `Rev 2.0.4`、`/var/update` 原子封存、维护互斥与四阶段升级编排服务
+- **目标仓库与分支**：`worktree: soc-ap`，分支 `main`
+- **精确源码基线 Commit**：`19534a9a4cb393176882fbad046129d55bba51f6`
+- **执行角色与审阅策略**：`owner_role: ENG-FWD / ENG-STATE / ENG-UI`，`reviewer: [QA]`，`qa_policy: streamlined-v1`
+- **前置依赖 (`depends_on`)**：`[TWIN-57, TWIN-58, TWIN-59]`
+- **允许修改路径 (`allowed_paths`)**：
+  - `soc-ap/contracts/twin/telemetry_types.h`
+  - `soc-ap/services/forward/forward_protocol.h`
+  - `soc-ap/services/forward/forward_protocol.cpp`
+  - `soc-ap/services/forward/forward_service.h`
+  - `soc-ap/services/forward/forward_service.cpp`
+  - `soc-ap/services/device_manager/device_manager_state.h`
+  - `soc-ap/services/device_manager/device_manager_state.cpp`
+  - `soc-ap/services/device_manager/firmware_updater.h` *(新增)*
+  - `soc-ap/services/device_manager/firmware_updater.cpp` *(新增)*
+  - `soc-ap/services/ui_gateway/ui_gateway_server.h`
+  - `soc-ap/services/ui_gateway/ui_gateway_server.cpp`
+  - `soc-ap/tests/`
+  - `soc-ap/CMakeLists.txt`
+- **禁止修改路径 (`forbidden_paths`)**：`mcu-p3/`、`boot/`、`test_harness/`、`soc-ap/.agents/rules/`
+- **核心接口契约与实现职责**：
+  1. **头文件契约对齐 `Rev 2.0.4`**：在 `telemetry_types.h` 中删除悬空宏 `#define MINIMC_CMD_ESTOP_ACK 0x05U`，将 `MINIMC_CMD_SYSTEM_CONTROL` 从 `0x10U` 改为 `0x1DU`（消除与 `MINIMC_CMD_SET_TEMP 0x10U` 的碰撞），定义 `minimc_payload_sys_ctrl_t (4B)`、`minimc_fw_trailer_t (128B)`、`minimc_payload_ota_start_t (144B)`、`minimc_payload_ota_data_hdr_t (8B)`、`minimc_payload_ota_finish_t (8B)`、`minimc_payload_ota_status_t (8B)` 及 `static_assert` 尺寸断言；将 `fwd_ctrl_rx_t` 与发送缓冲扩容至支持 `520B` 载荷（`534B` 整帧）；
+  2. **`/var/update` 原子就绪、只读封存与离线预检（`firmware_updater`）**：忽略 `.part` 临时文件，发现完整 `.bin` 仅置为 `PACKAGE_STAGED_PENDING_CONFIRM`；用户确认后复制到 `/var/update/sealed/<run_id>/<pkg>.bin`（`0444`），离线校验文件总长 `== payload_len + 128`、`magic == 0x41545347U`、`struct_version == 0x00010000U`、`board_id`（MC=`0x43500001U`, TH=`0x42300001U`）、净荷上限（TH $\le 241,664\text{B}$, MC $\le 917,504\text{B}$）、`trailer_crc32`、`payload_sha256` 与 `fw_crc32`；
+  3. **4 项硬安全准入与 `UPGRADING_MAINTENANCE` 互斥状态机（`ENG-STATE`）**：核验作业 `IDLE`、运动静止 `mc_state==0`、双板温度有效新鲜、热床/喷头目标温度为 `0` 且 `heater_duty_percent==0%`；升级期间暂停周期 `0x14/0x16/0x01` 轮询，抑制预期软复位窗口的 `1.5s STALE / 3.0s OFFLINE -> FAULT` 误报，对外明确标识 `UPGRADING_MAINTENANCE`（严禁显示为业务健康通过），拦截普通控制请求并返回 HTTP 409/503；
+  4. **分阶段停等状态机与 Stage 1~4 确认硬隔离（`ENG-FWD / ENG-UI`）**：按先 TH (`0x03`) 后 MC (`0x02`) 顺序（MC App 不可用时先恢复 MC），执行 `0x1D -> 0x01/0x02 (核实 Bit31==1 BOOT_MODE) -> 0x20 (144B) -> 0x21 (默认 256B 块) -> 0x23 -> 0x22 (8B)`，严格区分展示 `Stage 1 (CHUNK0_CACHED_RAM, bytes_written=0)`、`Stage 2 (FLASH_WRITTEN)`、`Stage 3 (IMAGE_VERIFIED_COMMITTED)` 与 `Stage 4 (NEW_APP_ONLINE_VERIFIED)`——**唯有收到新 App 的 `0x02 (Bit31==0, boot_id != old_boot_id, git_commit 匹配)` 且 `0x14->0x15` 恢复新鲜有效温度后，才允许宣称 `100% SUCCEEDED`**；提供 CLI/HTTP 受控升级触发与状态查询入口。
+- **可验证命令与验收判据**：
+  - `cmake -B soc-ap/build -S soc-ap && cmake --build soc-ap/build && ctest --test-dir soc-ap/build --output-on-failure`：全部既有单测与新增 `test_firmware_updater` / `test_forward_ota_protocol` 单测 100% 通过。
+
+---
+
+#### (5) `TWIN-66`：5 端契约静态门禁、`G01~G25` 黄金向量、Docker 软件 OTA 集成测试套件与自动化部署工具
+- **目标仓库与分支**：`worktree: test_harness`，分支 `main`
+- **精确源码基线 Commit**：`9f3918a2f9fc79a683ce218436b005e593a7109b`
+- **执行角色与审阅策略**：`owner_role: QA / INTEGRATOR`，`reviewer: [QA, ARCH]`（**强制要求：由未参与作者工作的独立 Codex 会话承担非作者 `ARCH` 复核**），`qa_policy: streamlined-v1`
+- **前置依赖 (`depends_on`)**：`[TWIN-61, TWIN-62, TWIN-63, TWIN-64, TWIN-65]`
+- **允许修改路径 (`allowed_paths`)**：
+  - `test_harness/static_checks/minimcproto/check_opcode_alignment.py`
+  - `test_harness/static_checks/minimcproto/reference_vectors.py`
+  - `test_harness/static_checks/minimcproto/run_codec_cases.py`
+  - `test_harness/static_checks/minimcproto/run_ota_software_suite.py` *(新增)*
+  - `test_harness/hil/tools/hil_deploy_via_minimc_ota.py` *(新增)*
+  - `test_harness/hil/twin_capture/twin_capture_analyzer.py`
+  - `test_harness/hil/tools/debug_reconciliation_probe.py`
+  - `test_harness/hil/tests/test_mcu_firmware_upgrade.py` *(新增)*
+- **禁止修改路径 (`forbidden_paths`)**：`soc-ap/`、`mcu-p3/`、`boot/bootloadermc/`、`boot/bootloaderth/`、`test_harness/.agents/rules/`
+- **核心接口契约与实现职责**：
+  1. **升级 5 端 `check_opcode_alignment.py`（`S04`）**：扫描 `soc-ap/contracts/twin/telemetry_types.h`、`mcu-p3` MC/TH `minimc_proto.h`、`boot/bootloadermc` 与 `boot/bootloaderth` 协议头文件共 **5 个端点**，校验 `Rev 2.0.4` 全量命令集（含 `0x10=SET_TEMP`、`0x12=MOTION_MOVE`、`0x14=TEMP_QUERY`、`0x17=EMERGENCY_STOP`、`0x1D=SYSTEM_CONTROL`、`0x20~0x23=OTA_*`）、**反向数值唯一性断言**（除白名单同义别名外，严禁两个不同业务宏共享同一数值，注入冲突宏负例必须报错退出）及 `MINIMC_MAX_PAYLOAD_SIZE == 520U`；
+  2. **更新 `reference_vectors.py` 与 `G01~G25` 黄金字节向量**：按 `D1-A / D2-A / D3-A` 裁定更新 `V04` (`Cmd=0x17`, CRC `6C 9E`) 及 `G01~G25` 固定正负字节向量（含 `0x1D [4B]`、`0x20 [144B]`、`520B` 最大块、`241,665B` 超限 `NACK 0x14`、内块 CRC 失败 `NACK 0x06`、伪 `0x05` ACK 拒绝、`1025B` 超限头立即拒收恢复）；
+  3. **实现 Docker 软件集成与故障注入测试套件（`S01~S04, D01~D08, C01~C09, M01~M08, N01~N10`）**：在独立 Docker 沙箱内串联真实 AP 升级服务、MC App 路由模型与 MC/TH Bootloader 状态机 + Flash 仿真层，完整验证 `.part -> .bin -> sealed` 封存、TH 首块缓存 `bytes_written=0`、错板/超限 `erase_count==0`、丢 ACK 幂等重传、断电驻留 Boot 重传恢复、MC App 不可用时先恢复 MC 再恢复 TH；
+  4. **实现 `hil_deploy_via_minimc_ota.py` 自动化升级部署工具**：提供常规测试/HIL 部署唯一入口，完成后自动核验新 App `boot_id` 刷新与 `git_commit_short` 并生成标准 `hil_deployment_receipt.json`（彻底替代 `probe-rs download`）。
+- **可验证命令与验收判据**：
+  - `python3 test_harness/static_checks/minimcproto/check_opcode_alignment.py && python3 test_harness/static_checks/minimcproto/run_codec_cases.py && python3 test_harness/static_checks/minimcproto/run_ota_software_suite.py`：在独立 Docker 沙箱内 100% 通过，且测试工具/向量经非作者独立 Codex 会话完成 `ARCH` 复核并签署 `APPROVED`。
+
+---
+
+#### (6) `TWIN-67`：真实物理 HIL 全链路升级验收、MC U盘完整回归与《升级操作与 HIL 部署说明书》非实现者实操验证
+- **目标仓库与分支**：`worktree: project-control`（配合唯一 VMware AP + 真实双 MCU 物理 HIL 台架排他租约），分支 `main`
+- **精确源码基线 Commit**：绑定 `TWIN-62 ~ TWIN-66` 已通过独立 Docker 软件 QA 的服务器锁定候选 Commit 组合
+- **执行角色与审阅策略**：`owner_role: INTEGRATOR`，`reviewer: [QA]`（宿主机独立 Codex 只读审阅四方客观物证），`qa_policy: streamlined-v1`
+- **前置依赖 (`depends_on`)**：`[TWIN-66]` **+ `D4-A` 用户专项批准的一次性新版双 Bootloader (`bootloadermc` & `bootloaderth`) 实板迁移完成记录**
+- **允许修改路径 (`allowed_paths`)**：
+  - `project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md`（升级至 `revision: 2`, `status: executable-validated`）
+  - `project-control/docs/qa/evidence/` 或本轮 run 对应的 HIL 证据归档目录与 `hil_deployment_receipt.json`
+- **禁止修改路径 (`forbidden_paths`)**：`soc-ap/`、`mcu-p3/`、`boot/bootloadermc/`、`boot/bootloaderth/`、`test_harness/`（严禁在 HIL 验收阶段偷偷修改业务或测试源码）
+- **核心接口契约与实现职责**：
+  1. **前置核查（`H01`）**：核实 `D4-A` 一次性双 Boot 实板迁移授权与完成记录，通过 `0x01 -> 0x02` 只读确认双板 Boot 支持 MiniMCProto v2.0（`Bit 31=1`），锁定 `/dev/ttyUSB*` 业务口（`921600`）与双板独立 Debug 口（`115200`）采集器；
+  2. **真实物理 HIL 正常、异常恢复与热拔线全链路执行（`H02 ~ H05`, `N05/N07/N08`）**：
+     - 将已封存的真实 `firmwareth.bin` / `firmwaremc.bin` 投放至 VMware `/var/update/incoming/`，验证安全准入（强电加热 0% 锁死、电机去能、真实新鲜温度）；
+     - 执行 **先 TH (`0x03`, AP $\to$ MC App $\to$ TH Boot) 后 MC (`0x02`, AP $\to$ MC Boot)** 串行升级，采集双段原始双向串口 Hex、`[MC-DBG]`/`[TH-DBG]` 与 Flash 校验证据；核实双板新 App 启动后 `Bit 31==0`、动态 `boot_id` 刷新、`git_commit_short` 匹配本轮候选且 `0x14->0x15` 真实新鲜温度恢复；
+     - 执行真机错板/超限 `241,665B` 零擦除拒绝（`N05`）、传输中断/复位驻留 Boot 重新完整刷写恢复（`N08`）、拔除 `/dev/ttyUSB*` 后 AP CPU $\le 2\%$ 且 3s 内置哨兵值返回 HTTP 503/504（`N07`）；
+  3. **MC 原有 U盘升级独立完整物理回归（`U01 ~ U08`）**：在真实物理 MC 板上完成 FAT32 U盘 `0:/firmwaremc.bin` 升级、`.cur/.err` 持久改名防重刷验证、串口与 U盘互斥验证，以及 U盘提供 `0:/fw_th.bin` 时由 MC App 通过新 MiniMCProto v2.0 (`0x1D/0x20/0x21/0x22`) 升级 TH Boot 的完整回归（`U08`）；
+  4. **补齐《升级操作与 HIL 部署说明书》并完成非实现者独立实操验证（`H06`）**：`INTEGRATOR` 补齐说明书第 2~8 节全部真实命令、路径、退出码与恢复步骤；安排**非实现者**仅按说明书独立完成一次受控双板升级与台架部署，产出 `hil_deployment_receipt.json`；经独立 Codex `QA` 对照同轮四方物证审阅通过后，将说明书切换为 `executable-validated`。
+- **可验证命令与验收判据**：
+  - 独立 Codex `QA` 只读核验同轮绑定的四方物证（① 入口结果与 `hil_deployment_receipt.json`；② 带毫秒时戳的原始双向串口 Hex 流；③ 双板 Boot/App Debug 原始日志；④ Flash 校验摘要、U盘 `.cur` 快照、新 App 动态 `boot_id` 变化与真实温度测量记录）100% 闭环一致并签署 `APPROVED`。

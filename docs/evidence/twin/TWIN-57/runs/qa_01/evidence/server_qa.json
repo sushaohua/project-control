@@ -1,0 +1,63 @@
+{
+  "task_id": "TWIN-57",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "588f33df73f7",
+    "id": "TWIN-57_run_193422_20261105_113422",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-57_run_193422_20261105_113422",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "588f33df73f7419dc90ec755bf72273562226cb6dbe694e5e558e1330f67680f",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-05T11:34:41.713662451Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-57_run_193422_20261105_113422",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "/tmp/qa_TWIN-57_j4uyga6h/evidence/server_lock.json",
+    "sha256": "813d350c5e769f7bee81319633be6e5e7da26c6c89d97ea63b804fd513ccad50"
+  },
+  "checkout_log": {
+    "path": "/tmp/qa_TWIN-57_j4uyga6h/evidence/checkout.log",
+    "sha256": "1570bc9f284c5c28139e05132a8b992918d2142777ffca5db9c6b8d3ebb269d1"
+  },
+  "runtime_log": {
+    "path": "/tmp/qa_TWIN-57_j4uyga6h/evidence/runtime.log",
+    "sha256": "7c7f778705e4ee9390e275401034cca4bfcb04a12ec405694906e5296acb32d3"
+  },
+  "server_verdict": {
+    "path": "/tmp/qa_TWIN-57_j4uyga6h/evidence/server_verdict.json",
+    "sha256": "62f71ede41a0ee244d46d1e58e4fbd5c2282aee7863a01e909ce076d4bdefa5e"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "cmake -S . -B /tmp/build_twin57 -G Ninja && cmake --build /tmp/build_twin57 && ctest --test-dir /tmp/build_twin57 --output-on-failure && rm -rf /tmp/build_twin57",
+      "exit_code": "1",
+      "subpath": "soc-ap",
+      "duration": "0.19s",
+      "output": "-- Configuring incomplete, errors occurred!\n\nCMake Error: CMake was unable to find a build program corresponding to \"Ninja\".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.\nCMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage"
+    }
+  ],
+  "passed": false,
+  "timestamp": "2026-11-05T11:34:45.587938+00:00"
+}

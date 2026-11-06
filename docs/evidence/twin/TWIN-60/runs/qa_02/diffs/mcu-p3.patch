@@ -1,0 +1,4310 @@
+diff --git a/color-engine-mcu/io_toggle/Makefile b/color-engine-mcu/io_toggle/Makefile
+index e03430b..840f47d 100644
+--- a/color-engine-mcu/io_toggle/Makefile
++++ b/color-engine-mcu/io_toggle/Makefile
+@@ -19,11 +19,18 @@ FPU = -mfpu=fpv4-sp-d16
+ FLOAT-ABI = -mfloat-abi=hard
+ MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
+ 
++# 提取当前仓库 8 位十六进制 Git 短提交哈希并注入构建宏 FW_GIT_COMMIT_SHORT
++GIT_COMMIT_SHORT_HEX := $(shell git rev-parse --short=8 HEAD 2>/dev/null)
++ifeq ($(GIT_COMMIT_SHORT_HEX),)
++GIT_COMMIT_SHORT_HEX := 6356C05A
++endif
++
+ # Macros
+ C_DEFS = \
+ -DAT32F423CCT7 \
+ -DUSE_STDPERIPH_DRIVER \
+--DAT_START_F423_V1
++-DAT_START_F423_V1 \
++-DFW_GIT_COMMIT_SHORT=0x$(GIT_COMMIT_SHORT_HEX)U
+ 
+ # Includes
+ C_INCLUDES = \
+diff --git a/color-engine-mcu/io_toggle/inc/minimc_proto.h b/color-engine-mcu/io_toggle/inc/minimc_proto.h
+index 8561145..f7f7ede 100644
+--- a/color-engine-mcu/io_toggle/inc/minimc_proto.h
++++ b/color-engine-mcu/io_toggle/inc/minimc_proto.h
+@@ -1,3 +1,7 @@
++/**
++ * @file minimc_proto.h
++ * @brief TH 工具头板 MiniMCProto V2 级联通信协议、数据结构与控制桥接接口声明
++ */
+ #ifndef MINIMC_PROTO_H
+ #define MINIMC_PROTO_H
+ 
+@@ -55,6 +59,9 @@ extern "C" {
+ #define MINIMC_MAX_FRAME_SIZE     (MINIMC_HEADER_SIZE + MINIMC_MAX_PAYLOAD_SIZE + MINIMC_CRC_SIZE)
+ 
+ #pragma pack(push, 1)
++/**
++ * @brief MiniMCProto V2 12 字节帧头结构
++ */
+ typedef struct {
+     uint8_t  sof_1;
+     uint8_t  sof_2;
+@@ -68,6 +75,9 @@ typedef struct {
+     uint16_t payload_len;
+ } minimc_header_t;
+ 
++/**
++ * @brief 0x02 版本与运行实例上报载荷（16 字节紧凑对齐）
++ */
+ typedef struct {
+     uint16_t proto_ver;
+     uint16_t firmware_ver;
+@@ -76,6 +86,9 @@ typedef struct {
+     uint32_t capability_flags;
+ } minimc_version_report_payload_t;
+ 
++/**
++ * @brief 0x04 心跳 PONG 响应载荷（12 字节紧凑对齐）
++ */
+ typedef struct {
+     uint32_t t_originate_ms;
+     uint32_t t_receive_ms;
+@@ -84,17 +97,26 @@ typedef struct {
+     uint16_t reserved;
+ } minimc_pong_payload_t;
+ 
++/**
++ * @brief 0x10 设定温度控制请求载荷
++ */
+ typedef struct {
+     int16_t  nozzle_target_deci_c;  /* 喷嘴目标温度 (0.1℃), <0 表示不修改 */
+     int16_t  bed_target_deci_c;     /* 热床目标温度 (0.1℃), <0 表示不修改 */
+ } minimc_set_temp_req_t;
+ 
++/**
++ * @brief 0x19 耗材槽位切换与进退丝请求载荷
++ */
+ typedef struct {
+     uint8_t  slot_id;               /* 目标槽位 0~3 */
+     uint8_t  action;                /* 0=SELECT(切换通道), 1=LOAD(进丝), 2=UNLOAD(退丝) */
+     uint16_t length_mm;             /* 进退丝长度 (mm) */
+ } minimc_filament_req_t;
+ 
++/**
++ * @brief 0x19 耗材槽位切换与进退丝响应载荷
++ */
+ typedef struct {
+     uint8_t  active_slot;           /* 当前激活槽位 0~3 */
+     uint8_t  present_mask;          /* 在位传感器掩码 bit0~bit3 (0x00~0x0F) */
+@@ -102,12 +124,18 @@ typedef struct {
+     uint8_t  status_code;           /* 0=OK, >0=故障码 */
+ } minimc_filament_resp_t;
+ 
++/**
++ * @brief 0x1C G-code 在线执行请求载荷
++ */
+ typedef struct {
+     uint8_t  line_len;              /* G-code 字符串有效字节数 (1~60) */
+     uint8_t  exec_flags;            /* bit0=1: 同步等待入队确认, bit1=1: 紧急插队 */
+     char     gcode[60];             /* ASCII G-code 文本 (不含 '\n', 剩余字节填 0) */
+ } minimc_gcode_req_t;
+ 
++/**
++ * @brief 0x1C G-code 在线执行响应载荷
++ */
+ typedef struct {
+     uint8_t  status;                /* 0=OK(已入队/执行), 1=QUEUE_FULL, 2=PARSE_ERR */
+     uint8_t  queue_free;            /* 剩余队列槽位数 */
+@@ -129,17 +157,27 @@ _Static_assert(sizeof(minimc_gcode_req_t) == 62, "gcode_req size mismatch");
+ _Static_assert(sizeof(minimc_gcode_resp_t) == 4, "gcode_resp size mismatch");
+ #endif
+ 
++/* 初始化 TH 板 MiniMCProto 协议状态机与动态运行 boot_id */
+ void minimc_proto_init(void);
++/* 主循环轮询解析 USART1 接收到的二进制协议帧并响应 */
+ void minimc_proto_poll(void);
++/* 计算 MiniMCProto V2 帧的 CRC-16/CCITT-FALSE 校验值 */
+ uint16_t minimc_crc16(const uint8_t *data, uint16_t len);
+ 
+ /* TH 控制命令队列与温控桥接接口 (TWIN-48) */
++/* 将 G-code 字符串推入 TH 控制命令队列或紧急插队槽位 */
+ bool th_control_enqueue_gcode(const char *line, uint8_t len, bool is_instant);
++/* 轮询执行一次 TH 控制命令队列中的 G-code 指令 */
+ void th_control_poll_once(void);
++/* 获取 TH 控制命令队列当前空闲槽位数 */
+ uint8_t th_control_get_queue_free(void);
++/* 获取最近一次入队执行的 G-code 文本 */
+ const char *th_control_get_last_gcode(void);
++/* 获取累计成功入队的 G-code 指令计数 */
+ uint32_t th_control_get_enqueued_count(void);
++/* 设置 TH 喷嘴目标温度（单位 0.1℃） */
+ void thermistor_set_target_deci_c(int16_t target_deci_c);
++/* 获取 TH 喷嘴当前设定目标温度（单位 0.1℃） */
+ int16_t thermistor_get_target_deci_c(void);
+ 
+ #ifdef __cplusplus
+diff --git a/color-engine-mcu/io_toggle/inc/minimc_telemetry.h b/color-engine-mcu/io_toggle/inc/minimc_telemetry.h
+index 8816856..5b34e9a 100644
+--- a/color-engine-mcu/io_toggle/inc/minimc_telemetry.h
++++ b/color-engine-mcu/io_toggle/inc/minimc_telemetry.h
+@@ -1,3 +1,7 @@
++/**
++ * @file minimc_telemetry.h
++ * @brief TH 工具头板 MiniMCProto V2 温度遥测帧（0x14）数据结构、状态码与故障哨兵值定义
++ */
+ #ifndef MINIMC_TELEMETRY_H
+ #define MINIMC_TELEMETRY_H
+ 
+@@ -8,21 +12,28 @@ extern "C" {
+ #include <stdint.h>
+ #include <stdbool.h>
+ 
++/* 0x14 温度查询与上报指令字 */
+ #define MINIMC_CMD_GET_TEMP              0x14U
+ #define MINIMC_CMD_TEMP_REPORT           0x14U
+ 
++/* 温度传感器状态码枚举定义 */
+ #define MINIMC_TEMP_STATUS_OK            0x00U
+ #define MINIMC_TEMP_STATUS_OPEN_CIRCUIT  0x01U
+ #define MINIMC_TEMP_STATUS_SHORT_CIRCUIT 0x02U
+ #define MINIMC_TEMP_STATUS_TIMEOUT       0x03U
+ 
++/* 温度传感器故障与离线哨兵值（单位 0.1℃） */
+ #define MINIMC_TEMP_SENTINEL_FAULT       ((int16_t)0x7FFF)
+ #define MINIMC_TEMP_SENTINEL_OFFLINE     ((int16_t)0x7FFE)
+ #define MINIMC_TEMP_FAULT_VALUE_DECI_C   MINIMC_TEMP_SENTINEL_FAULT
+ 
++/* 0x14 温度遥测固定载荷字节长度 */
+ #define MINIMC_TEMP_REPORT_PAYLOAD_SIZE  16U
+ 
+ #pragma pack(push, 1)
++/**
++ * @brief 0x14 温度遥测响应载荷（16 字节紧凑对齐）
++ */
+ typedef struct {
+     int16_t  current_temp_deci_c;  /* 当前温度 (0.1℃)，例如 245 表示 24.5℃；故障置 0x7FFF，超时置 0x7FFE */
+     int16_t  target_temp_deci_c;   /* 设定温度 (0.1℃)，只读增量固定填 0 */
+diff --git a/color-engine-mcu/io_toggle/inc/thermistor_adc.h b/color-engine-mcu/io_toggle/inc/thermistor_adc.h
+index 3bf9c4b..e25971b 100644
+--- a/color-engine-mcu/io_toggle/inc/thermistor_adc.h
++++ b/color-engine-mcu/io_toggle/inc/thermistor_adc.h
+@@ -1,3 +1,7 @@
++/**
++ * @file thermistor_adc.h
++ * @brief TH 工具头板喷嘴 NTC 热敏电阻 ADC 采样、开短路故障门禁与遥测接口声明
++ */
+ #ifndef THERMISTOR_ADC_H
+ #define THERMISTOR_ADC_H
+ 
+@@ -10,13 +14,18 @@ extern "C" {
+ #include "at32f423_adc.h"
+ #include "minimc_telemetry.h"
+ 
++/* ADC 轮询等待超时上限与开短路故障判定阈值 */
+ #define ADC_POLL_TIMEOUT_CYCLES     10000U
+ #define ADC_OPEN_CIRCUIT_THRESHOLD  4075U
+ #define ADC_SHORT_CIRCUIT_THRESHOLD 20U
+ 
++/* 初始化 TH 喷嘴热敏电阻 ADC 外设与通道配置 */
+ void thermistor_adcConfig(void);
++/* 执行单次 ADC 转换并带超时保护返回原始采样值 */
+ uint16_t adc_single_conversion_get(adc_type *adc_x, adc_channel_select_type channel);
++/* 采集并组装 TH 喷嘴 0x14 温度遥测载荷（含开路/短路哨兵保护） */
+ bool thermistor_adc_get_telemetry(minimc_temp_report_payload_t *report);
++/* 强制切断加热器 PWM 输出并进入热安全锁定状态 */
+ void thermistor_safety_lock(void);
+ 
+ #ifdef __cplusplus
+diff --git a/color-engine-mcu/io_toggle/inc/usart.h b/color-engine-mcu/io_toggle/inc/usart.h
+index b15fa72..ca3792f 100644
+--- a/color-engine-mcu/io_toggle/inc/usart.h
++++ b/color-engine-mcu/io_toggle/inc/usart.h
+@@ -1,3 +1,7 @@
++/**
++ * @file usart.h
++ * @brief TH 工具头板 USART1 级联通信与 USART3 [TH-DBG] 非阻塞调试串口驱动接口声明
++ */
+ #ifndef __USART_H__
+ #define __USART_H__
+ 
+@@ -104,9 +108,13 @@ int  USART1_dma_free(void);
+ void reset_dma_usart1(void);
+ 
+ void USART1_send_string(char *string);
++/* 通过 USART1 发送原始二进制帧并同步观测 TX [TH-DBG] 日志 */
+ void usart1_send_raw(const uint8_t *data, uint16_t len);
++/* 从 USART1 接收缓冲区弹出一个原始字节并驱动 RX [TH-DBG] 旁路解析 */
+ bool usart1_rx_pop_raw_byte(uint8_t *out_byte);
++/* 将非二进制协议文本字节压入 USART1 文本兼容环形缓冲 */
+ void usart1_push_text_byte(uint8_t c);
++/* 执行 USART1 硬件回环自检测试 */
+ void USART1_loopback_test(void);
+ void send_quick(char *str);
+ 
+@@ -150,15 +158,23 @@ void     USART3_forward_service(void);
+ uint32_t USART3_get_forward_drop_count(void);
+ 
+ /* TH Debug 非阻塞结构化日志接口 (TWIN-45) */
++/* 设置 [TH-DBG] 调试输出开关状态 */
+ void     th_debug_set_enabled(bool enabled);
++/* 查询 [TH-DBG] 调试输出是否启用 */
+ bool     th_debug_is_enabled(void);
++/* 将格式化后的 [TH-DBG] 调试文本写入 USART3 非阻塞环形缓冲 */
+ bool     th_debug_write(const char *buf, uint16_t len);
++/* 获取 USART3 调试发送环形缓冲满溢丢弃计数 */
+ uint32_t USART3_get_tx_drop_count(void);
++/* 获取 USART3 调试超长行截断计数 */
+ uint32_t USART3_get_tx_trunc_count(void);
+ #define  usart3_get_tx_drop_count  USART3_get_tx_drop_count
+ #define  usart3_get_tx_trunc_count USART3_get_tx_trunc_count
++/* 周期输出 [TH-DBG] 节点运行状态遥测日志 */
+ void     th_debug_log_periodic_state(uint32_t now_ms);
++/* 通知调试状态机记录耗材操作并输出 [TH-DBG] 日志 */
+ void     th_debug_notify_filament(const char *op, uint8_t slot, uint8_t present_mask, const char *step_state);
++/* 轮询推进 USART3 非阻塞环形缓冲排空与周期状态输出 */
+ void     th_debug_poll_drain(void);
+ 
+ #ifdef __cplusplus
+diff --git a/color-engine-mcu/io_toggle/src/app/minimc_proto.c b/color-engine-mcu/io_toggle/src/app/minimc_proto.c
+index e3e2344..af4a174 100644
+--- a/color-engine-mcu/io_toggle/src/app/minimc_proto.c
++++ b/color-engine-mcu/io_toggle/src/app/minimc_proto.c
+@@ -1,3 +1,9 @@
++/**
++ * @file minimc_proto.c
++ * @brief TH 工具头板 MiniMCProto V2 级联命令解析、状态同步与响应报文构建实现。
++ * 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md 规范。
++ */
++
+ #include "minimc_proto.h"
+ #include "minimc_telemetry.h"
+ #include "thermistor_adc.h"
+@@ -23,15 +29,27 @@ _Static_assert(sizeof(minimc_version_report_payload_t) == 16, "version payload s
+ _Static_assert(sizeof(minimc_pong_payload_t) == 12, "pong payload size must be 12");
+ _Static_assert(sizeof(minimc_temp_report_payload_t) == 16, "temp payload size must be 16");
+ 
+-#define TH_BOOT_ID           0x8877AA55U
+-#define TH_GIT_COMMIT        0x6356C05AU
++#ifndef FW_GIT_COMMIT_SHORT
++#define FW_GIT_COMMIT_SHORT  0x6356C05AU
++#endif
++#define TH_GIT_COMMIT        ((uint32_t)FW_GIT_COMMIT_SHORT)
+ #define TH_CAPABILITY_FLAGS  0x00000007U
+ 
++static uint32_t s_th_boot_epoch_counter = 0U;
++static uint32_t s_th_runtime_boot_id = 0x8877AA55U;
++#if defined(__ARM_ARCH) || defined(__ARM_EABI__)
++static uint32_t s_th_noinit_boot_magic __attribute__((section(".noinit")));
++static uint32_t s_th_noinit_boot_seq __attribute__((section(".noinit")));
++#endif
++
+ extern uint8_t Board_getFilamentStatus(void);
+ extern char load_filament_Flag;
+ extern uint8_t active_extruder;
+ extern void quickStop(void);
+ 
++/**
++ * @brief MiniMCProto V2 字节流接收状态机枚举
++ */
+ typedef enum {
+     PARSER_STATE_IDLE = 0,
+     PARSER_STATE_SOF2,
+@@ -155,6 +173,12 @@ __attribute__((weak)) void th_control_reset_queue(void)
+     s_weak_enqueued_count = 0U;
+ }
+ 
++/**
++ * @brief 计算 MiniMCProto V2 帧的 CRC-16/CCITT-FALSE 校验值
++ * @param data 待校验字节缓冲区指针
++ * @param len  待校验字节长度
++ * @return 16-bit CRC 校验结果
++ */
+ uint16_t minimc_crc16(const uint8_t *data, uint16_t len)
+ {
+     if (data == NULL)
+@@ -174,6 +198,13 @@ uint16_t minimc_crc16(const uint8_t *data, uint16_t len)
+     return crc;
+ }
+ 
++/**
++ * @brief 构建 TH 节点 0x02 版本与运行实例上报响应帧
++ * @param dst_id  目标节点 ID
++ * @param seq     请求帧序列号
++ * @param out_buf 输出帧缓冲区指针
++ * @return 组装后的完整帧字节数
++ */
+ static uint16_t build_version_resp(uint8_t dst_id, uint16_t seq, uint8_t *out_buf)
+ {
+     if (out_buf == NULL)
+@@ -198,10 +229,10 @@ static uint16_t build_version_resp(uint8_t dst_id, uint16_t seq, uint8_t *out_bu
+     out_buf[14] = (uint8_t)FW_VERSION_MAJOR;
+     out_buf[15] = (uint8_t)FW_VERSION_MINOR;
+ 
+-    out_buf[16] = (uint8_t)(TH_BOOT_ID & 0xFFU);
+-    out_buf[17] = (uint8_t)((TH_BOOT_ID >> 8U) & 0xFFU);
+-    out_buf[18] = (uint8_t)((TH_BOOT_ID >> 16U) & 0xFFU);
+-    out_buf[19] = (uint8_t)((TH_BOOT_ID >> 24U) & 0xFFU);
++    out_buf[16] = (uint8_t)(s_th_runtime_boot_id & 0xFFU);
++    out_buf[17] = (uint8_t)((s_th_runtime_boot_id >> 8U) & 0xFFU);
++    out_buf[18] = (uint8_t)((s_th_runtime_boot_id >> 16U) & 0xFFU);
++    out_buf[19] = (uint8_t)((s_th_runtime_boot_id >> 24U) & 0xFFU);
+ 
+     out_buf[20] = (uint8_t)(TH_GIT_COMMIT & 0xFFU);
+     out_buf[21] = (uint8_t)((TH_GIT_COMMIT >> 8U) & 0xFFU);
+@@ -219,6 +250,14 @@ static uint16_t build_version_resp(uint8_t dst_id, uint16_t seq, uint8_t *out_bu
+     return 30U;
+ }
+ 
++/**
++ * @brief 构建 TH 节点 0x04 心跳 PONG 响应帧
++ * @param dst_id  目标节点 ID
++ * @param seq     请求帧序列号
++ * @param payload 接收到的 PING 原始载荷指针
++ * @param out_buf 输出帧缓冲区指针
++ * @return 组装后的完整帧字节数
++ */
+ static uint16_t build_pong_resp(uint8_t dst_id, uint16_t seq, const uint8_t *payload, uint8_t *out_buf)
+ {
+     if (out_buf == NULL)
+@@ -266,6 +305,14 @@ static uint16_t build_pong_resp(uint8_t dst_id, uint16_t seq, const uint8_t *pay
+     return 26U;
+ }
+ 
++/**
++ * @brief 构建 TH 节点 0x06 NACK 拒绝响应帧（3 字节载荷：错误码 + 16-bit 序列号）
++ * @param dst_id   目标节点 ID
++ * @param seq      原请求帧序列号
++ * @param err_code NACK 错误码
++ * @param out_buf  输出帧缓冲区指针
++ * @return 组装后的完整帧字节数
++ */
+ static uint16_t build_nack_resp(uint8_t dst_id, uint16_t seq, uint8_t err_code, uint8_t *out_buf)
+ {
+     if (out_buf == NULL)
+@@ -606,6 +653,10 @@ static void minimc_proto_handle_frame(const uint8_t *frame, uint16_t len)
+     }
+ }
+ 
++/**
++ * @brief 处理接收状态机 SOF1/SOF2 帧头字节识别与非协议文本分流
++ * @param byte 接收到的单个字节
++ */
+ static void parser_step_sof(uint8_t byte)
+ {
+     if (s_parser_state == PARSER_STATE_IDLE)
+@@ -645,6 +696,10 @@ static void parser_step_sof(uint8_t byte)
+     }
+ }
+ 
++/**
++ * @brief 处理接收状态机帧头、载荷与 CRC16 校验阶段
++ * @param byte 接收到的单个字节
++ */
+ static void parser_step_body(uint8_t byte)
+ {
+     s_rx_frame[s_rx_index] = byte;
+@@ -689,6 +744,10 @@ static void parser_step_body(uint8_t byte)
+     }
+ }
+ 
++/**
++ * @brief 检查接收半帧超时并复位解析器状态机
++ * @param now 当前毫秒级单调时钟滴答
++ */
+ static void parser_check_timeout(uint32_t now)
+ {
+     if (s_parser_state == PARSER_STATE_IDLE)
+@@ -707,6 +766,9 @@ static void parser_check_timeout(uint32_t now)
+     }
+ }
+ 
++/**
++ * @brief 按单轮 64 字节预算轮询消费 USART1 接收字节并推进 TH 协议状态机
++ */
+ void minimc_proto_poll(void)
+ {
+     const uint32_t now = get_tick_count();
+@@ -729,6 +791,38 @@ void minimc_proto_poll(void)
+     }
+ }
+ 
++/**
++ * @brief 生成非零且每次复位/初始化必变化的 TH 32-bit 动态 boot_id（ISS-016）
++ */
++static void th_refresh_runtime_boot_id(void)
++{
++    s_th_boot_epoch_counter++;
++    uint32_t seq_seed = s_th_boot_epoch_counter;
++    uint32_t hw_entropy = (get_tick_count() << 8U);
++#if defined(__ARM_ARCH) || defined(__ARM_EABI__)
++    if (s_th_noinit_boot_magic != 0x5AA5C396U)
++    {
++        s_th_noinit_boot_magic = 0x5AA5C396U;
++        s_th_noinit_boot_seq = 1U;
++    }
++    else
++    {
++        s_th_noinit_boot_seq++;
++    }
++    seq_seed += s_th_noinit_boot_seq;
++    const volatile uint32_t *uid_ptr = (const volatile uint32_t *)0x1FFFF7E8UL;
++    hw_entropy ^= uid_ptr[0] ^ (uint32_t)SysTick->VAL ^ (uint32_t)ADC1->odt;
++#endif
++    uint32_t mixed = (seq_seed * 0x9E3779B9UL) ^ hw_entropy ^ 0x54480000UL;
++    mixed ^= (mixed >> 16U);
++    mixed *= 0x85EBCA6BUL;
++    mixed ^= (mixed >> 13U);
++    s_th_runtime_boot_id = (mixed != 0U) ? mixed : (0x8877AA55UL + seq_seed);
++}
++
++/**
++ * @brief 初始化 TH 节点 MiniMCProto 解析器、控制队列、安全温度与动态 boot_id
++ */
+ void minimc_proto_init(void)
+ {
+     s_parser_state = PARSER_STATE_IDLE;
+@@ -738,4 +832,5 @@ void minimc_proto_init(void)
+     s_weak_target_deci_c = 0;
+     th_control_reset_queue();
+     thermistor_set_target_deci_c(0);
++    th_refresh_runtime_boot_id();
+ }
+diff --git a/color-engine-mcu/io_toggle/src/app/mycontrol.c b/color-engine-mcu/io_toggle/src/app/mycontrol.c
+index fa6f884..5d014d5 100644
+--- a/color-engine-mcu/io_toggle/src/app/mycontrol.c
++++ b/color-engine-mcu/io_toggle/src/app/mycontrol.c
+@@ -1779,6 +1779,7 @@ void process_commands(void)
+ 		case 42:
+ 			break;
+ 		case 104: // M104
++			/* 解析 M104 S 参数并限制喷嘴目标温度在 0~300℃，同步更新热敏电阻遥测目标值 */
+ 			if (setTargetedHotend(104))
+ 			{
+ 				break;
+diff --git a/color-engine-mcu/io_toggle/src/app/stepper.c b/color-engine-mcu/io_toggle/src/app/stepper.c
+index 05e7756..94c2ef2 100644
+--- a/color-engine-mcu/io_toggle/src/app/stepper.c
++++ b/color-engine-mcu/io_toggle/src/app/stepper.c
+@@ -1,7 +1,7 @@
+ /**
+   **************************************************************************
+   * @file     stepper.c
+-  * @brief    stepper motor driver
++  * @brief    TH 工具头四进一挤出步进电机驱动与阻塞运动期间协议/调试同步维护实现
+   **************************************************************************
+   *
+   * Copyright (c) 2025, Artery Technology, All rights reserved.
+diff --git a/color-engine-mcu/io_toggle/src/app/thermistor_adc.c b/color-engine-mcu/io_toggle/src/app/thermistor_adc.c
+index bee73f2..9f58ebe 100644
+--- a/color-engine-mcu/io_toggle/src/app/thermistor_adc.c
++++ b/color-engine-mcu/io_toggle/src/app/thermistor_adc.c
+@@ -1,3 +1,7 @@
++/**
++ * @file thermistor_adc.c
++ * @brief TH 工具头板喷嘴 NTC 热敏电阻 ADC1_IN5 采样、分段线性插值与热安全锁定实现
++ */
+ #include "thermistor_adc.h"
+ #include "at32f423_board.h"
+ #include "at32f423_clock.h"
+@@ -10,6 +14,9 @@ extern uint32_t get_tick_count(void);
+ 
+ static int16_t s_target_temp_deci_c = 0;
+ 
++/**
++ * @brief NTC 温度分度表条目结构（ADC 原始值 -> 0.1℃ 温度值）
++ */
+ typedef struct {
+     uint16_t adc;
+     int16_t  temp_deci_c;
+@@ -45,6 +52,9 @@ static const ntc_entry_t s_ntc_table[] = {
+     {4081U, -250}
+ };
+ 
++/**
++ * @brief 配置 ADC1 与 PA5 模拟输入引脚硬件参数
++ */
+ static void adc_hw_init(void)
+ {
+     crm_periph_clock_enable(CRM_ADC1_PERIPH_CLOCK, TRUE);
+@@ -73,6 +83,9 @@ static void adc_hw_init(void)
+     adc_ordinary_conversion_trigger_set(ADC1, ADC_ORDINARY_TRIG_SOFTWARE, TRUE);
+ }
+ 
++/**
++ * @brief 使能 ADC1 并执行带超时保护的硬件自校准
++ */
+ static void adc_calibrate_with_timeout(void)
+ {
+     adc_enable(ADC1, TRUE);
+@@ -151,6 +164,12 @@ void thermistor_adcConfig(void)
+     adc_calibrate_with_timeout();
+ }
+ 
++/**
++ * @brief 触发单次 ADC 转换并带超时保护读取原始转换值
++ * @param adc_x   ADC 外设实例指针
++ * @param out_val 输出原始 ADC 读数指针
++ * @return true 转换成功，false 参数为空或转换超时
++ */
+ static bool adc_read_single_raw(adc_type *adc_x, uint16_t *out_val)
+ {
+     if (adc_x == NULL || out_val == NULL)
+@@ -172,6 +191,12 @@ static bool adc_read_single_raw(adc_type *adc_x, uint16_t *out_val)
+     return true;
+ }
+ 
++/**
++ * @brief 对指定 ADC 通道连续执行 16 次转换并返回累加值
++ * @param adc_x   ADC 外设实例指针
++ * @param channel ADC 通道编号
++ * @return 16 次采样累加值，失败或超时返回 0
++ */
+ uint16_t adc_single_conversion_get(adc_type *adc_x, adc_channel_select_type channel)
+ {
+     if (adc_x == NULL)
+@@ -192,6 +217,11 @@ uint16_t adc_single_conversion_get(adc_type *adc_x, adc_channel_select_type chan
+     return (uint16_t)sum;
+ }
+ 
++/**
++ * @brief 对 ADC1_IN5 连续采样 16 次并计算均值
++ * @param out_avg 输出 16 次采样均值（0~4095）
++ * @return true 采样成功，false 超时或参数为空
++ */
+ static bool sample_adc_average(uint16_t *out_avg)
+ {
+     if (out_avg == NULL)
+@@ -214,6 +244,11 @@ static bool sample_adc_average(uint16_t *out_avg)
+     return true;
+ }
+ 
++/**
++ * @brief 将原始 ADC 采样值通过 NTC 分度表分段线性插值转换为温度（0.1℃）
++ * @param adc 原始 12-bit ADC 均值
++ * @return 换算后的温度值（单位 0.1℃）
++ */
+ static int16_t ntc_adc_to_deci_c(uint16_t adc)
+ {
+     if (adc <= s_ntc_table[0].adc)
+diff --git a/color-engine-mcu/io_toggle/src/bsp/usart.c b/color-engine-mcu/io_toggle/src/bsp/usart.c
+index 2fce6d1..329b370 100644
+--- a/color-engine-mcu/io_toggle/src/bsp/usart.c
++++ b/color-engine-mcu/io_toggle/src/bsp/usart.c
+@@ -1,3 +1,7 @@
++/**
++ * @file usart.c
++ * @brief TH 工具头板 USART1 921600 级联通信与 USART3 115200 [TH-DBG] 非阻塞调试环形缓冲实现
++ */
+ #include "usart.h"
+ #include "minimc_proto.h"
+ #include "minimc_telemetry.h"
+@@ -40,6 +44,9 @@ extern uint8_t Board_getFilamentStatus(void);
+ extern char load_filament_Flag;
+ extern uint8_t active_extruder;
+ 
++/**
++ * @brief TH 调试旁路二进制帧解析状态机枚举
++ */
+ typedef enum {
+     TH_DBG_PARSE_IDLE = 0,
+     TH_DBG_PARSE_SOF2,
+@@ -48,6 +55,9 @@ typedef enum {
+     TH_DBG_PARSE_CRC
+ } th_dbg_parse_state_t;
+ 
++/**
++ * @brief TH 调试旁路接收解析上下文结构
++ */
+ typedef struct {
+     uint8_t buf[MINIMC_MAX_FRAME_SIZE];
+     uint16_t idx;
+@@ -56,6 +66,9 @@ typedef struct {
+     th_dbg_parse_state_t state;
+ } th_dbg_rx_parser_t;
+ 
++/**
++ * @brief [TH-DBG] 结构化日志行公共元数据
++ */
+ typedef struct {
+     const char *dir;
+     const char *node;
+@@ -64,6 +77,9 @@ typedef struct {
+     const char *status;
+ } th_dbg_meta_t;
+ 
++/**
++ * @brief TH 节点实时温度与耗材运行状态快照
++ */
+ typedef struct {
+     int16_t nozzle_ddC;
+     int16_t nozzle_set_ddC;
+@@ -115,6 +131,9 @@ static th_dbg_state_t s_th_dbg_state = {
+     0, 0, 0U, 0U, 0U, 0U, 0U, 0U, 0U, "NONE", "IDLE"
+ };
+ 
++/**
++ * @brief 从 ADC 温控模块与断料检测模块同步 TH 实时运行状态
++ */
+ static void th_dbg_sync_runtime_state(void)
+ {
+   minimc_temp_report_payload_t report;
+@@ -144,6 +163,9 @@ static void th_dbg_sync_runtime_state(void)
+   }
+ }
+ 
++/**
++ * @brief 复位 TH 调试旁路接收状态机
++ */
+ static void th_dbg_rx_reset(void)
+ {
+   s_dbg_rx.idx = 0U;
+@@ -151,6 +173,11 @@ static void th_dbg_rx_reset(void)
+   s_dbg_rx.state = TH_DBG_PARSE_IDLE;
+ }
+ 
++/**
++ * @brief 将协议节点 ID 映射为节点名称字符串
++ * @param node_id 协议节点 ID
++ * @return 节点名称字符串（"MC" 或 "TH"）
++ */
+ static const char *th_dbg_node_name(uint8_t node_id)
+ {
+   if (node_id == MINIMC_NODE_MC)
+@@ -160,26 +187,46 @@ static const char *th_dbg_node_name(uint8_t node_id)
+   return "TH";
+ }
+ 
++/**
++ * @brief 设置 [TH-DBG] 调试输出使能状态
++ * @param enabled true 开启，false 关闭
++ */
+ void th_debug_set_enabled(bool enabled)
+ {
+   s_th_dbg_enabled = enabled;
+ }
+ 
++/**
++ * @brief 查询 [TH-DBG] 调试输出是否使能
++ * @return true 已使能，false 已关闭
++ */
+ bool th_debug_is_enabled(void)
+ {
+   return s_th_dbg_enabled;
+ }
+ 
++/**
++ * @brief 获取 USART3 调试环形缓冲满溢丢弃计数
++ * @return 累计丢弃次数
++ */
+ uint32_t USART3_get_tx_drop_count(void)
+ {
+   return usart3_tx_drop_count;
+ }
+ 
++/**
++ * @brief 获取 USART3 调试超长行截断计数
++ * @return 累计截断次数
++ */
+ uint32_t USART3_get_tx_trunc_count(void)
+ {
+   return usart3_tx_trunc_count;
+ }
+ 
++/**
++ * @brief 计算 USART3 发送环形缓冲区当前剩余可写字节数
++ * @return 剩余空闲字节数
++ */
+ static uint16_t usart3_tx_free_space(void)
+ {
+   const uint16_t head = usart3_tx_head;
+@@ -191,6 +238,12 @@ static uint16_t usart3_tx_free_space(void)
+   return (uint16_t)((tail - head) - 1U);
+ }
+ 
++/**
++ * @brief 将 [TH-DBG] 日志文本非阻塞写入 USART3 环形缓冲（含超长截断与满溢丢弃统计）
++ * @param buf 日志字符串指针
++ * @param len 日志字节长度
++ * @return true 写入成功，false 被丢弃或未启用
++ */
+ bool th_debug_write(const char *buf, uint16_t len)
+ {
+   if ((buf == NULL) || (len == 0U) || (!s_th_dbg_enabled))
+@@ -215,6 +268,11 @@ bool th_debug_write(const char *buf, uint16_t len)
+   return (USART3_write((const uint8_t *)trunc_buf, TH_DBG_LINE_MAX_LEN) == (int)TH_DBG_LINE_MAX_LEN);
+ }
+ 
++/**
++ * @brief 组装并输出标准格式的 [TH-DBG] 调试日志行
++ * @param meta   日志行公共元数据指针
++ * @param kv_str 扩展键值对字符串
++ */
+ static void th_dbg_emit(const th_dbg_meta_t *meta, const char *kv_str)
+ {
+   if ((meta == NULL) || (!s_th_dbg_enabled))
+@@ -245,6 +303,11 @@ static void th_dbg_emit(const th_dbg_meta_t *meta, const char *kv_str)
+   }
+ }
+ 
++/**
++ * @brief 格式化 TH 温度遥测键值对字符串
++ * @param out_kv 输出字符串缓冲区
++ * @param cap    缓冲区字节容量
++ */
+ static void th_dbg_format_temp_kv(char *out_kv, size_t cap)
+ {
+   if ((out_kv == NULL) || (cap == 0U))
+@@ -262,6 +325,11 @@ static void th_dbg_format_temp_kv(char *out_kv, size_t cap)
+       (int)s_th_dbg_state.nozzle_set_ddC);
+ }
+ 
++/**
++ * @brief 格式化 TH 耗材与槽位状态键值对字符串
++ * @param out_kv 输出字符串缓冲区
++ * @param cap    缓冲区字节容量
++ */
+ static void th_dbg_format_filament_kv(char *out_kv, size_t cap)
+ {
+   if ((out_kv == NULL) || (cap == 0U))
+@@ -279,6 +347,12 @@ static void th_dbg_format_filament_kv(char *out_kv, size_t cap)
+       s_th_dbg_state.step_str);
+ }
+ 
++/**
++ * @brief 记录协议帧错误（CRC_ERR/BAD_FRAME/TX_ERR）并输出 [TH-DBG] 日志
++ * @param hdr        协议帧头指针
++ * @param status_str 故障状态描述字符串
++ * @param err_code   故障错误码
++ */
+ static void th_dbg_log_frame_err(const uint8_t *hdr, const char *status_str, uint8_t err_code)
+ {
+   if ((hdr == NULL) || (status_str == NULL))
+@@ -299,6 +373,13 @@ static void th_dbg_log_frame_err(const uint8_t *hdr, const char *status_str, uin
+   th_dbg_emit(&meta, kv);
+ }
+ 
++/**
++ * @brief 更新 TH 耗材操作状态并立即输出一条 STATE [TH-DBG] 日志
++ * @param op           耗材动作字符串（SELECT/LOAD/UNLOAD）
++ * @param slot         目标槽位号（0~3）
++ * @param present_mask 耗材在位传感器掩码
++ * @param step_state   步骤状态字符串
++ */
+ void th_debug_notify_filament(const char *op, uint8_t slot, uint8_t present_mask, const char *step_state)
+ {
+   if ((op == NULL) || (step_state == NULL))
+@@ -375,6 +456,11 @@ static void th_dbg_format_rx_kv(const uint8_t *frame, uint16_t len, char *rx_kv,
+   }
+ }
+ 
++/**
++ * @brief 校验通过 CRC 的接收帧头合法性并输出 RX [TH-DBG] 日志
++ * @param frame 完整接收帧缓冲区指针
++ * @param len   完整接收帧字节长度
++ */
+ static void th_dbg_handle_valid_rx_frame(const uint8_t *frame, uint16_t len)
+ {
+   if ((frame == NULL) || (len < MINIMC_HEADER_SIZE))
+@@ -399,6 +485,11 @@ static void th_dbg_handle_valid_rx_frame(const uint8_t *frame, uint16_t len)
+   th_dbg_emit(&rx_meta, rx_kv);
+ }
+ 
++/**
++ * @brief 推进 TH 调试旁路解析器的 SOF1/SOF2 同步头识别阶段
++ * @param byte 接收到的单个字节
++ * @return true 尚处于 SOF 同步头阶段，false 已进入帧体接收阶段
++ */
+ static bool th_dbg_rx_step_sof(uint8_t byte)
+ {
+   if (s_dbg_rx.state == TH_DBG_PARSE_IDLE)
+@@ -428,6 +519,9 @@ static bool th_dbg_rx_step_sof(uint8_t byte)
+   return false;
+ }
+ 
++/**
++ * @brief 完成 TH 调试旁路解析器的 CRC16 校验并分发合法帧或记录 CRC_ERR
++ */
+ static void th_dbg_finish_rx_crc(void)
+ {
+   const uint16_t body_len = (uint16_t)(s_dbg_rx.expected_len - MINIMC_CRC_SIZE);
+@@ -445,6 +539,10 @@ static void th_dbg_finish_rx_crc(void)
+   th_dbg_rx_reset();
+ }
+ 
++/**
++ * @brief 旁路观测 USART1 接收到的每个字节并驱动 [TH-DBG] RX/ERR 日志输出
++ * @param byte 接收到的单个原始字节
++ */
+ static void th_dbg_observe_rx_byte(uint8_t byte)
+ {
+   const uint32_t now_ms = get_tick_count();
+@@ -484,6 +582,12 @@ static void th_dbg_observe_rx_byte(uint8_t byte)
+   }
+ }
+ 
++/**
++ * @brief 提取 0x14/0x15 发送帧中的温度遥测字段并输出 STATE 与 TX [TH-DBG] 日志
++ * @param data   发送帧数据指针
++ * @param seq    协议帧序列号
++ * @param cmd_id 协议命令字
++ */
+ static void th_dbg_log_tx_temp_report(const uint8_t *data, uint16_t seq, uint8_t cmd_id)
+ {
+   char kv[128];
+@@ -530,6 +634,11 @@ static bool th_dbg_log_tx_control_resp(const uint8_t *data, uint16_t len, uint8_
+   return false;
+ }
+ 
++/**
++ * @brief 旁路观测 USART1 发送成功的二进制协议帧并输出 TX/STATE/ERR [TH-DBG] 日志
++ * @param data 发送帧数据指针
++ * @param len  发送帧字节长度
++ */
+ static void th_dbg_observe_tx_frame(const uint8_t *data, uint16_t len)
+ {
+   if ((data == NULL) || (len < MINIMC_HEADER_SIZE))
+@@ -549,9 +658,20 @@ static void th_dbg_observe_tx_frame(const uint8_t *data, uint16_t len)
+     return;
+   }
+   char kv[96];
+-  if ((cmd_id == MINIMC_CMD_VERSION_REPORT) && (len >= 16U))
+-  {
+-    (void)snprintf(kv, sizeof(kv), "fw=%u.%u", (unsigned int)data[14], (unsigned int)data[15]);
++  if ((cmd_id == MINIMC_CMD_VERSION_REPORT) && (len >= 24U))
++  {
++    const uint32_t boot_id = (uint32_t)data[16] | ((uint32_t)data[17] << 8U) |
++                             ((uint32_t)data[18] << 16U) | ((uint32_t)data[19] << 24U);
++    const uint32_t git_commit = (uint32_t)data[20] | ((uint32_t)data[21] << 8U) |
++                                ((uint32_t)data[22] << 16U) | ((uint32_t)data[23] << 24U);
++    (void)snprintf(
++        kv,
++        sizeof(kv),
++        "fw=%u.%u boot_id=0x%08lX commit=0x%08lX",
++        (unsigned int)data[14],
++        (unsigned int)data[15],
++        (unsigned long)boot_id,
++        (unsigned long)git_commit);
+     const th_dbg_meta_t tx_meta = { "TX", "TH", seq, cmd_id, "ACK" };
+     th_dbg_emit(&tx_meta, kv);
+     return;
+@@ -577,6 +697,10 @@ static void th_dbg_observe_tx_frame(const uint8_t *data, uint16_t len)
+   th_dbg_emit(&tx_meta, kv);
+ }
+ 
++/**
++ * @brief 按 500ms 周期同步并输出 TH 节点实时温度与耗材状态 [TH-DBG] 日志
++ * @param now_ms 当前毫秒级单调时钟滴答
++ */
+ void th_debug_log_periodic_state(uint32_t now_ms)
+ {
+   if (!s_th_dbg_enabled)
+@@ -601,6 +725,9 @@ void th_debug_log_periodic_state(uint32_t now_ms)
+   th_dbg_emit(&fil_meta, kv);
+ }
+ 
++/**
++ * @brief 根据 DMA1 剩余传输计数刷新 USART1 接收环形缓冲写指针
++ */
+ static void USART1_dma_rx_index_update(void)
+ {
+   dma1_store_index = USART1_RXBUFF_SIZE - dma_data_number_get(USART1_RX_DMA_CHANNEL);
+@@ -610,6 +737,9 @@ static void USART1_dma_rx_index_update(void)
+   }
+ }
+ 
++/**
++ * @brief 初始化 USART1 RX 循环 DMA 通道配置
++ */
+ static void USART1_dma_rx_init(void)
+ {
+   dma_init_type dma_init_struct;
+@@ -640,6 +770,9 @@ static void USART1_dma_rx_init(void)
+   dma_channel_enable(USART1_RX_DMA_CHANNEL, TRUE);
+ }
+ 
++/**
++ * @brief 初始化 USART1 TX DMA 通道配置
++ */
+ static void USART1_dma_tx_init(void)
+ {
+   dma_init_type dma_init_struct;
+@@ -666,6 +799,9 @@ static void USART1_dma_tx_init(void)
+   usart_dma_transmitter_enable(USART1, TRUE);
+ }
+ 
++/**
++ * @brief 初始化 USART1 921600 级联串口、GPIO 引脚复用与收发 DMA
++ */
+ void MY_USART1_Init(void)
+ {
+   gpio_init_type gpio_init_struct;
+@@ -696,6 +832,10 @@ void MY_USART1_Init(void)
+   th_dbg_rx_reset();
+ }
+ 
++/**
++ * @brief 带超时保护等待 USART1 发送完成标志（TDC）
++ * @return true 发送完成，false 等待超时
++ */
+ static bool usart1_wait_tdc_with_timeout(void)
+ {
+   uint32_t timeout = USART_TX_WAIT_TIMEOUT;
+@@ -706,6 +846,12 @@ static bool usart1_wait_tdc_with_timeout(void)
+   return (timeout > 0U);
+ }
+ 
++/**
++ * @brief 通过 USART1 TX DMA 阻塞式发送指定字节流并带超时保护
++ * @param buf 待发送字节缓冲区
++ * @param len 待发送字节长度
++ * @return true DMA 与串口发送均成功完成，false 参数非法、DMA 错误或超时
++ */
+ static bool usart1_dma_transmit_blocking(const uint8_t *buf, uint16_t len)
+ {
+   if ((buf == NULL) || (len == 0U))
+@@ -754,6 +900,10 @@ void th_debug_poll_drain(void)
+   USART3_forward_service();
+ }
+ 
++/**
++ * @brief 将非二进制协议文本字节压入 USART1 文本兼容环形缓冲
++ * @param c 待压入的 ASCII 字符
++ */
+ void usart1_push_text_byte(uint8_t c)
+ {
+   uint16_t next = (uint16_t)(s_text_head + 1U);
+@@ -768,6 +918,11 @@ void usart1_push_text_byte(uint8_t c)
+   }
+ }
+ 
++/**
++ * @brief 从 USART1 DMA 接收环形缓冲弹出一个原始字节并驱动 [TH-DBG] 旁路观测
++ * @param out_byte 输出单字节指针
++ * @return true 成功读取一个字节，false 无新字节或参数为空
++ */
+ bool usart1_rx_pop_raw_byte(uint8_t *out_byte)
+ {
+   if (out_byte == NULL)
+@@ -792,6 +947,11 @@ bool usart1_rx_pop_raw_byte(uint8_t *out_byte)
+   return true;
+ }
+ 
++/**
++ * @brief 通过 USART1 发送原始二进制协议帧并同步触发 [TH-DBG] TX/ERR 观测日志
++ * @param data 待发送帧缓冲区
++ * @param len  待发送帧字节长度
++ */
+ void usart1_send_raw(const uint8_t *data, uint16_t len)
+ {
+   if ((data == NULL) || (len == 0U))
+@@ -816,12 +976,20 @@ void usart1_send_raw(const uint8_t *data, uint16_t len)
+   }
+ }
+ 
++/**
++ * @brief 查询 USART1 文本环形缓冲是否有可读字符（先推进二进制协议轮询）
++ * @return 1 有可读字符，0 缓冲区为空
++ */
+ char USART1_has_byte(void)
+ {
+   minimc_proto_poll();
+   return (s_text_head != s_text_tail) ? 1 : 0;
+ }
+ 
++/**
++ * @brief 从 USART1 文本环形缓冲读取一个字符
++ * @param data 输出字符指针
++ */
+ void USART1_get_byte(unsigned char *data)
+ {
+   if (data == NULL)
+@@ -841,6 +1009,10 @@ void USART1_get_byte(unsigned char *data)
+   }
+ }
+ 
++/**
++ * @brief 计算 USART1 RX DMA 环形缓冲当前剩余空闲字节数
++ * @return 剩余可用字节数
++ */
+ int USART1_dma_free(void)
+ {
+   USART1_dma_rx_index_update();
+@@ -848,6 +1020,9 @@ int USART1_dma_free(void)
+   return USART1_RXBUFF_SIZE - used;
+ }
+ 
++/**
++ * @brief 复位 USART1 RX DMA 通道及内部协议/文本状态机
++ */
+ void reset_dma_usart1(void)
+ {
+   dma_channel_enable(USART1_RX_DMA_CHANNEL, FALSE);
+@@ -860,6 +1035,10 @@ void reset_dma_usart1(void)
+   dma_channel_enable(USART1_RX_DMA_CHANNEL, TRUE);
+ }
+ 
++/**
++ * @brief 兼容接口：向 USART1 发送字符串（内部转发至静默保护 send_quick）
++ * @param string 字符串指针
++ */
+ void USART1_send_string(char *string)
+ {
+   if (string == NULL)
+@@ -869,6 +1048,9 @@ void USART1_send_string(char *string)
+   send_quick(string);
+ }
+ 
++/**
++ * @brief 执行 USART1 硬件回环测试：将接收到的文本字节原样回传
++ */
+ void USART1_loopback_test(void)
+ {
+   unsigned char data = 0U;
+@@ -880,11 +1062,17 @@ void USART1_loopback_test(void)
+   }
+ }
+ 
++/**
++ * @brief 兼容初始化入口：调用 MY_USART1_Init 完成 USART1 初始化
++ */
+ void MX_USART1_UART_Init(void)
+ {
+   MY_USART1_Init();
+ }
+ 
++/**
++ * @brief 将 USART1 接收到的单个文本字节透传至 USART3
++ */
+ void USART1GetDataToUsart3(void)
+ {
+   unsigned char data = 0U;
+@@ -895,6 +1083,9 @@ void USART1GetDataToUsart3(void)
+   }
+ }
+ 
++/**
++ * @brief 通过 USART3 输出 USART1 DMA 水位与丢包诊断摘要报告
++ */
+ void USART1_diagnose_report(void)
+ {
+   char buf[128];
+@@ -910,11 +1101,18 @@ void USART1_diagnose_report(void)
+   USART3_send_string(buf);
+ }
+ 
++/**
++ * @brief 获取 USART1 DMA 接收溢出累计计数
++ * @return 溢出计数
++ */
+ uint32_t USART1_get_dma_overflow_count(void)
+ {
+   return usart1_dma_overflow_count;
+ }
+ 
++/**
++ * @brief 检查 USART1 RX 缓冲区高/低水位并更新流控状态标志
++ */
+ void usart1_flow_control_check(void)
+ {
+   USART1_dma_rx_index_update();
+@@ -933,6 +1131,11 @@ void usart1_flow_control_check(void)
+   }
+ }
+ 
++/**
++ * @brief 在临界区内拷贝当前 USART1 RX 环形缓冲区快照
++ * @param out_snapshot 输出快照缓冲区指针
++ * @return 快照有效字节数
++ */
+ static uint16_t usart1_snapshot_rx_ring(uint8_t *out_snapshot)
+ {
+   if (out_snapshot == NULL)
+@@ -960,6 +1163,11 @@ static uint16_t usart1_snapshot_rx_ring(uint8_t *out_snapshot)
+   return rx_len;
+ }
+ 
++/**
++ * @brief 检查 USART1 RX 环形缓冲中是否包含目标响应子串
++ * @param target_str 待检索的目标字符串
++ * @return 1 匹配成功，0 未匹配
++ */
+ uint8_t usart1_check_response(const char *target_str)
+ {
+   if (target_str == NULL)
+@@ -987,6 +1195,9 @@ uint8_t usart1_check_response(const char *target_str)
+   return 0U;
+ }
+ 
++/**
++ * @brief 通过 USART1 发送软件流控 XON 恢复字符
++ */
+ void usart1_send_xon(void)
+ {
+   if (flow_control_state == FLOW_CONTROL_DISABLED)
+@@ -998,6 +1209,9 @@ void usart1_send_xon(void)
+   xoff_sent = 0U;
+ }
+ 
++/**
++ * @brief 通过 USART1 发送软件流控 XOFF 暂停字符
++ */
+ void usart1_send_xoff(void)
+ {
+   if ((flow_control_state == FLOW_CONTROL_DISABLED) || (xoff_sent != 0U))
+@@ -1009,6 +1223,10 @@ void usart1_send_xoff(void)
+   xoff_sent = 1U;
+ }
+ 
++/**
++ * @brief 检查 USART1 RX 环形缓冲中是否存在包含 SOH/EOT 的完整帧
++ * @return 1 存在完整帧，0 未收齐
++ */
+ uint8_t usart1_check_frame_complete(void)
+ {
+   USART1_dma_rx_index_update();
+@@ -1034,6 +1252,14 @@ uint8_t usart1_check_frame_complete(void)
+   return 0U;
+ }
+ 
++/**
++ * @brief 从 USART1 RX 环形缓冲区提取 SOH/EOT 帧有效载荷并消费已读字节
++ * @param end_idx  EOT 所在相对偏移
++ * @param data_len 有效载荷字节长度
++ * @param buffer   输出载荷缓冲区
++ * @param max_len  输出缓冲区最大容量
++ * @return 提取的有效载荷字节数
++ */
+ static int usart1_extract_frame_payload(uint16_t end_idx, int data_len, unsigned char *buffer, int max_len)
+ {
+   for (int j = 0; (j < data_len) && (j < max_len); j++)
+@@ -1049,6 +1275,12 @@ static int usart1_extract_frame_payload(uint16_t end_idx, int data_len, unsigned
+   return data_len;
+ }
+ 
++/**
++ * @brief 解析并提取 USART1 RX 环形缓冲区中的一帧 SOH/EOT 协议数据
++ * @param buffer  输出载荷缓冲区指针
++ * @param max_len 输出缓冲区最大容量
++ * @return >0 成功提取的字节数，0 无完整帧，-1 参数非法
++ */
+ int usart1_parse_frame(unsigned char *buffer, int max_len)
+ {
+   if ((buffer == NULL) || (max_len <= 0))
+@@ -1084,6 +1316,9 @@ int usart1_parse_frame(unsigned char *buffer, int max_len)
+   return 0;
+ }
+ 
++/**
++ * @brief 根据 DMA1 剩余传输计数刷新 USART3 接收环形缓冲写指针
++ */
+ static void USART3_dma_rx_index_update(void)
+ {
+   usart3_store_index = USART3_RXBUFF_SIZE - dma_data_number_get(USART3_RX_DMA_CHANNEL);
+@@ -1093,6 +1328,9 @@ static void USART3_dma_rx_index_update(void)
+   }
+ }
+ 
++/**
++ * @brief 初始化 USART3 RX 循环 DMA 通道配置
++ */
+ static void USART3_dma_rx_init(void)
+ {
+   dma_init_type dma_init_struct;
+@@ -1122,6 +1360,9 @@ static void USART3_dma_rx_init(void)
+   dma_channel_enable(USART3_RX_DMA_CHANNEL, TRUE);
+ }
+ 
++/**
++ * @brief 初始化 USART3 TX DMA 通道及传输完成中断配置
++ */
+ static void USART3_dma_tx_init(void)
+ {
+   dma_init_type dma_init_struct;
+@@ -1151,6 +1392,9 @@ static void USART3_dma_tx_init(void)
+   usart_dma_transmitter_enable(USART3, TRUE);
+ }
+ 
++/**
++ * @brief 初始化 USART3 115200 调试串口、环形缓冲状态机与收发 DMA
++ */
+ void MY_USART3_Init(void)
+ {
+   gpio_init_type gpio_init_struct;
+@@ -1195,6 +1439,9 @@ void MY_USART3_Init(void)
+   USART3_dma_tx_init();
+ }
+ 
++/**
++ * @brief 若 USART3 TX DMA 空闲且环形缓冲非空，启动下一段连续内存块的 DMA 发送
++ */
+ static void usart3_dma_tx_kick(void)
+ {
+   if (usart3_tx_busy != 0U)
+@@ -1220,6 +1467,11 @@ static void usart3_dma_tx_kick(void)
+   dma_channel_enable(USART3_TX_DMA_CHANNEL, TRUE);
+ }
+ 
++/**
++ * @brief 将指定长度字节拷贝进 USART3 发送环形缓冲并触发 DMA 发送
++ * @param data      待写入字节数组
++ * @param write_len 写入字节长度
++ */
+ static void usart3_ring_push_bytes(const uint8_t *data, uint16_t write_len)
+ {
+   const uint16_t head = usart3_tx_head;
+@@ -1239,6 +1491,12 @@ static void usart3_ring_push_bytes(const uint8_t *data, uint16_t write_len)
+   usart3_dma_tx_kick();
+ }
+ 
++/**
++ * @brief 将字节流非阻塞写入 USART3 发送环形缓冲
++ * @param data 待写入字节指针
++ * @param len  待写入字节长度
++ * @return 实际成功写入的字节数
++ */
+ int USART3_write(const uint8_t *data, uint16_t len)
+ {
+   if ((data == NULL) || (len == 0U))
+@@ -1261,11 +1519,18 @@ int USART3_write(const uint8_t *data, uint16_t len)
+   return (int)write_len;
+ }
+ 
++/**
++ * @brief 向 USART3 非阻塞发送单个字节
++ * @param data 待发送单字节
++ */
+ void USART3_send_byte(unsigned char data)
+ {
+   (void)USART3_write((const uint8_t *)&data, 1U);
+ }
+ 
++/**
++ * @brief 带超时保护等待 USART3 发送环形缓冲排空及硬件发送完成
++ */
+ void USART3_flush(void)
+ {
+   uint32_t timeout = USART_TX_WAIT_TIMEOUT;
+@@ -1281,6 +1546,9 @@ void USART3_flush(void)
+   }
+ }
+ 
++/**
++ * @brief USART3 TX DMA 传输完成与错误中断服务处理函数
++ */
+ void USART3_dma_tx_isr_handler(void)
+ {
+   if (dma_flag_get(USART3_TX_DMA_FDT_FLAG) != RESET)
+@@ -1302,12 +1570,20 @@ void USART3_dma_tx_isr_handler(void)
+   }
+ }
+ 
++/**
++ * @brief 查询 USART3 RX DMA 环形缓冲是否有可读字节
++ * @return 1 有可读字节，0 无数据
++ */
+ char USART3_has_byte(void)
+ {
+   USART3_dma_rx_index_update();
+   return (usart3_read_index != usart3_store_index) ? 1 : 0;
+ }
+ 
++/**
++ * @brief 从 USART3 RX DMA 环形缓冲读取一个字节
++ * @param data 输出字节指针
++ */
+ void USART3_get_byte(unsigned char *data)
+ {
+   if (data == NULL)
+@@ -1327,6 +1603,10 @@ void USART3_get_byte(unsigned char *data)
+   }
+ }
+ 
++/**
++ * @brief 计算 USART3 RX DMA 环形缓冲当前剩余空闲字节数
++ * @return 剩余可用字节数
++ */
+ int USART3_dma_free(void)
+ {
+   USART3_dma_rx_index_update();
+@@ -1334,6 +1614,9 @@ int USART3_dma_free(void)
+   return USART3_RXBUFF_SIZE - used;
+ }
+ 
++/**
++ * @brief 复位 USART3 RX DMA 通道及读指针
++ */
+ void reset_dma_usart3(void)
+ {
+   dma_channel_enable(USART3_RX_DMA_CHANNEL, FALSE);
+@@ -1342,6 +1625,10 @@ void reset_dma_usart3(void)
+   dma_channel_enable(USART3_RX_DMA_CHANNEL, TRUE);
+ }
+ 
++/**
++ * @brief 向 USART3 非阻塞发送以 '\0' 结尾的字符串
++ * @param str 字符串指针
++ */
+ void USART3_send_string(const char *str)
+ {
+   if (str == NULL)
+@@ -1351,6 +1638,12 @@ void USART3_send_string(const char *str)
+   (void)USART3_write((const uint8_t *)str, (uint16_t)strlen(str));
+ }
+ 
++/**
++ * @brief 从 USART3 RX 环形缓冲提取以 '\n' 结尾的一整行文本（未满一行时回滚读指针）
++ * @param line_buf 输出行缓冲区
++ * @param max_len  缓冲区最大容量
++ * @return 提取的行字节长度，无完整行时返回 0
++ */
+ int USART3_get_line(char *line_buf, int max_len)
+ {
+   if ((line_buf == NULL) || (max_len <= 0))
+@@ -1387,6 +1680,12 @@ int USART3_get_line(char *line_buf, int max_len)
+   return 0;
+ }
+ 
++/**
++ * @brief 从 USART3 读取一行并将其原样回写至 USART3 发送队列
++ * @param tx_buf  行工作缓冲区
++ * @param max_len 缓冲区最大容量
++ * @return 1 成功读取并回写一行，0 无完整行
++ */
+ uint8_t USART3_receive_line_and_forward(char *tx_buf, int max_len)
+ {
+   if ((tx_buf == NULL) || (max_len <= 0))
+@@ -1402,6 +1701,9 @@ uint8_t USART3_receive_line_and_forward(char *tx_buf, int max_len)
+   return 1U;
+ }
+ 
++/**
++ * @brief 轮询检查并启动空闲状态下的 USART3 TX DMA 环形缓冲发送
++ */
+ void USART3_forward_service(void)
+ {
+   usart_enter_critical();
+@@ -1412,6 +1714,12 @@ void USART3_forward_service(void)
+   usart_exit_critical();
+ }
+ 
++/**
++ * @brief 将一条命令文本追加换行符后非阻塞写入 USART3 发送队列
++ * @param cmd 命令字符串指针
++ * @param len 命令字节长度
++ * @return 1 写入成功，0 参数非法
++ */
+ uint8_t USART3_forward_command(const char *cmd, int len)
+ {
+   if ((cmd == NULL) || (len <= 0))
+@@ -1423,6 +1731,10 @@ uint8_t USART3_forward_command(const char *cmd, int len)
+   return 1U;
+ }
+ 
++/**
++ * @brief 获取 USART3 转发队列累计丢弃字节/行计数
++ * @return 累计丢弃计数
++ */
+ uint32_t USART3_get_forward_drop_count(void)
+ {
+   return usart3_tx_drop_count;
+diff --git a/color-engine-mcu/io_toggle/src/user/main.c b/color-engine-mcu/io_toggle/src/user/main.c
+index 4031ec1..68e874f 100644
+--- a/color-engine-mcu/io_toggle/src/user/main.c
++++ b/color-engine-mcu/io_toggle/src/user/main.c
+@@ -1,3 +1,7 @@
++/**
++ * @file main.c
++ * @brief TH 工具头主程序入口：初始化外设并在主循环中非阻塞轮询 MiniMCProto V2、控制队列与 [TH-DBG] 日志排空。
++ */
+ #include "at32f423_board.h"
+ #include "at32f423_clock.h"
+ #include "motor_control.h"
+@@ -54,6 +58,10 @@ static void th_app_init_peripherals(void)
+   wk_exint_config();
+ }
+ 
++/**
++ * @brief TH 工具头固件主函数入口
++ * @return 正常情况下在主循环中持续运行不返回
++ */
+ int main(void)
+ {
+   th_app_init_peripherals();
+diff --git a/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c b/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
+index 3f75e04..2bd9c45 100644
+--- a/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
++++ b/color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c
+@@ -1,8 +1,7 @@
+ /**
+  * @file test_twin45_th_debug.c
+- * @brief Independent verification test suite for TWIN-45 (TH USART3 Non-Blocking [TH-DBG] Logger).
+- * Task ID: TWIN-45
+- * Role: ENG-TH
++ * @brief TWIN-45 / TWIN-48 / TWIN-60 TH 工具头协议级联与 [TH-DBG] 环形缓冲独立验证套件。
++ * 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md 规范。
+  */
+ 
+ #define _DEFAULT_SOURCE
+@@ -18,7 +17,7 @@
+ #include "minimc_telemetry.h"
+ #include "thermistor_adc.h"
+ 
+-/* Mock globals referenced by usart.c and thermistor_adc.c */
++/* 模拟 usart.c 与 thermistor_adc.c 依赖的全局状态变量 */
+ volatile uint32_t cmdbuf_full_skip_count = 0U;
+ char load_filament_Flag = 0;
+ uint8_t active_extruder = 0U;
+@@ -42,17 +41,32 @@ static size_t s_usart3_capture_len = 0U;
+ static uint8_t s_usart1_last_tx[128];
+ static uint16_t s_usart1_last_tx_len = 0U;
+ 
++/**
++ * @brief 返回模拟的毫秒级系统时基计数
++ * @return 当前模拟毫秒计数
++ */
+ uint32_t get_tick_count(void)
+ {
+     return s_mock_tick_ms;
+ }
+ 
++/**
++ * @brief 返回模拟的断料检测状态
++ * @return 0 表示有耗材，非 0 表示缺料
++ */
+ uint8_t Board_getFilamentStatus(void)
+ {
+     return s_mock_filament_err;
+ }
+ 
+-/* Mock AT32F423 TMR & ADC stdperiph driver functions for real thermistor_adc.c */
++/* 模拟 AT32F423 TMR 与 ADC 底层标准外设库驱动函数 */
++
++/**
++ * @brief 模拟设置定时器通道捕获/比较寄存器值
++ * @param tmr_x 定时器外设指针
++ * @param tmr_channel 通道选择
++ * @param tmr_channel_value 占空比计数值
++ */
+ void tmr_channel_value_set(tmr_type *tmr_x, tmr_channel_select_type tmr_channel, uint32_t tmr_channel_value)
+ {
+     (void)tmr_x;
+@@ -62,11 +76,19 @@ void tmr_channel_value_set(tmr_type *tmr_x, tmr_channel_select_type tmr_channel,
+     }
+ }
+ 
++/**
++ * @brief 模拟配置 ADC 公共时钟分频
++ * @param adc_common_struct ADC 公共配置结构体指针
++ */
+ void adc_common_config(adc_common_config_type *adc_common_struct)
+ {
+     (void)adc_common_struct;
+ }
+ 
++/**
++ * @brief 模拟初始化 ADC 基础配置结构体默认值
++ * @param adc_base_struct ADC 基础配置结构体指针
++ */
+ void adc_base_default_para_init(adc_base_config_type *adc_base_struct)
+ {
+     if (adc_base_struct != NULL)
+@@ -75,12 +97,24 @@ void adc_base_default_para_init(adc_base_config_type *adc_base_struct)
+     }
+ }
+ 
++/**
++ * @brief 模拟应用 ADC 基础配置
++ * @param adc_x ADC 外设指针
++ * @param adc_base_struct ADC 基础配置结构体指针
++ */
+ void adc_base_config(adc_type *adc_x, adc_base_config_type *adc_base_struct)
+ {
+     (void)adc_x;
+     (void)adc_base_struct;
+ }
+ 
++/**
++ * @brief 模拟配置 ADC 常规转换通道与采样周期
++ * @param adc_x ADC 外设指针
++ * @param adc_channel 通道编号
++ * @param adc_sequence 转换序号
++ * @param adc_sampletime 采样时间枚举
++ */
+ void adc_ordinary_channel_set(adc_type *adc_x, adc_channel_select_type adc_channel,
+                               uint8_t adc_sequence, adc_sampletime_select_type adc_sampletime)
+ {
+@@ -90,6 +124,12 @@ void adc_ordinary_channel_set(adc_type *adc_x, adc_channel_select_type adc_chann
+     (void)adc_sampletime;
+ }
+ 
++/**
++ * @brief 模拟配置 ADC 常规通道触发源
++ * @param adc_x ADC 外设指针
++ * @param adc_ordinary_trig 触发源选择
++ * @param adc_ordinary_trig_edge 触发沿选择
++ */
+ void adc_ordinary_conversion_trigger_set(adc_type *adc_x, adc_ordinary_trig_select_type adc_ordinary_trig,
+                                          adc_ordinary_trig_edge_type adc_ordinary_trig_edge)
+ {
+@@ -98,12 +138,23 @@ void adc_ordinary_conversion_trigger_set(adc_type *adc_x, adc_ordinary_trig_sele
+     (void)adc_ordinary_trig_edge;
+ }
+ 
++/**
++ * @brief 模拟使能或禁能 ADC 外设
++ * @param adc_x ADC 外设指针
++ * @param new_state 使能状态
++ */
+ void adc_enable(adc_type *adc_x, confirm_state new_state)
+ {
+     (void)adc_x;
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 模拟读取 ADC 状态标志位
++ * @param adc_x ADC 外设指针
++ * @param adc_flag 标志位掩码
++ * @return 模拟标志位状态
++ */
+ flag_status adc_flag_get(adc_type *adc_x, uint8_t adc_flag)
+ {
+     (void)adc_x;
+@@ -114,40 +165,73 @@ flag_status adc_flag_get(adc_type *adc_x, uint8_t adc_flag)
+     return SET;
+ }
+ 
++/**
++ * @brief 模拟清除 ADC 状态标志位
++ * @param adc_x ADC 外设指针
++ * @param adc_flag 标志位掩码
++ */
+ void adc_flag_clear(adc_type *adc_x, uint32_t adc_flag)
+ {
+     (void)adc_x;
+     (void)adc_flag;
+ }
+ 
++/**
++ * @brief 模拟初始化 ADC 校准流程
++ * @param adc_x ADC 外设指针
++ */
+ void adc_calibration_init(adc_type *adc_x)
+ {
+     (void)adc_x;
+ }
+ 
++/**
++ * @brief 模拟读取 ADC 校准初始化状态
++ * @param adc_x ADC 外设指针
++ * @return RESET 表示校准初始化完成
++ */
+ flag_status adc_calibration_init_status_get(adc_type *adc_x)
+ {
+     (void)adc_x;
+     return RESET;
+ }
+ 
++/**
++ * @brief 模拟启动 ADC 校准
++ * @param adc_x ADC 外设指针
++ */
+ void adc_calibration_start(adc_type *adc_x)
+ {
+     (void)adc_x;
+ }
+ 
++/**
++ * @brief 模拟读取 ADC 校准完成状态
++ * @param adc_x ADC 外设指针
++ * @return RESET 表示校准已完成
++ */
+ flag_status adc_calibration_status_get(adc_type *adc_x)
+ {
+     (void)adc_x;
+     return RESET;
+ }
+ 
++/**
++ * @brief 模拟启动 ADC 常规通道软件触发转换
++ * @param adc_x ADC 外设指针
++ * @param new_state 触发状态
++ */
+ void adc_ordinary_software_trigger_enable(adc_type *adc_x, confirm_state new_state)
+ {
+     (void)adc_x;
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 返回模拟的 12位 ADC 采样原始值
++ * @param adc_x ADC 外设指针
++ * @return 模拟 ADC 采样值
++ */
+ uint16_t adc_ordinary_conversion_data_get(adc_type *adc_x)
+ {
+     (void)adc_x;
+@@ -159,13 +243,23 @@ uint16_t adc_ordinary_conversion_data_get(adc_type *adc_x)
+ #define TH_HOST_UNIT_TEST 1
+ #include "../app/mycontrol.c"
+ 
+-/* Mock AT32F423 stdperiph driver functions */
++/* 模拟 AT32F423 时钟、GPIO、USART 与 DMA 标准外设库函数 */
++
++/**
++ * @brief 模拟开启或关闭外设时钟
++ * @param value 外设时钟枚举
++ * @param new_state 使能状态
++ */
+ void crm_periph_clock_enable(crm_periph_clock_type value, confirm_state new_state)
+ {
+     (void)value;
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 模拟初始化 GPIO 配置结构体默认值
++ * @param init_struct GPIO 初始化结构体指针
++ */
+ void gpio_default_para_init(gpio_init_type *init_struct)
+ {
+     if (init_struct != NULL)
+@@ -174,12 +268,23 @@ void gpio_default_para_init(gpio_init_type *init_struct)
+     }
+ }
+ 
++/**
++ * @brief 模拟配置 GPIO 端口引脚模式
++ * @param gpio_x GPIO 端口指针
++ * @param init_struct GPIO 初始化结构体指针
++ */
+ void gpio_init(gpio_type *gpio_x, gpio_init_type *init_struct)
+ {
+     (void)gpio_x;
+     (void)init_struct;
+ }
+ 
++/**
++ * @brief 模拟配置 GPIO 引脚复用映射
++ * @param gpio_x GPIO 端口指针
++ * @param gpio_pin_source 引脚源编号
++ * @param gpio_mux 复用功能选择
++ */
+ void gpio_pin_mux_config(gpio_type *gpio_x, gpio_pins_source_type gpio_pin_source, gpio_mux_sel_type gpio_mux)
+ {
+     (void)gpio_x;
+@@ -187,6 +292,13 @@ void gpio_pin_mux_config(gpio_type *gpio_x, gpio_pins_source_type gpio_pin_sourc
+     (void)gpio_mux;
+ }
+ 
++/**
++ * @brief 模拟初始化 USART 外设波特率与帧格式
++ * @param usart_x USART 外设指针
++ * @param baud_rate 波特率
++ * @param data_bit 数据位枚举
++ * @param stop_bit 停止位枚举
++ */
+ void usart_init(usart_type *usart_x, uint32_t baud_rate,
+                 usart_data_bit_num_type data_bit, usart_stop_bit_num_type stop_bit)
+ {
+@@ -202,42 +314,78 @@ void usart_init(usart_type *usart_x, uint32_t baud_rate,
+     }
+ }
+ 
++/**
++ * @brief 模拟配置 USART 奇偶校验位
++ * @param usart_x USART 外设指针
++ * @param parity 奇偶校验枚举
++ */
+ void usart_parity_selection_config(usart_type *usart_x, usart_parity_selection_type parity)
+ {
+     (void)usart_x;
+     (void)parity;
+ }
+ 
++/**
++ * @brief 模拟使能 USART 接收器
++ * @param usart_x USART 外设指针
++ * @param new_state 使能状态
++ */
+ void usart_receiver_enable(usart_type *usart_x, confirm_state new_state)
+ {
+     (void)usart_x;
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 模拟使能 USART 发送器
++ * @param usart_x USART 外设指针
++ * @param new_state 使能状态
++ */
+ void usart_transmitter_enable(usart_type *usart_x, confirm_state new_state)
+ {
+     (void)usart_x;
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 模拟使能 USART 外设
++ * @param usart_x USART 外设指针
++ * @param new_state 使能状态
++ */
+ void usart_enable(usart_type *usart_x, confirm_state new_state)
+ {
+     (void)usart_x;
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 模拟使能 USART DMA 接收请求
++ * @param usart_x USART 外设指针
++ * @param new_state 使能状态
++ */
+ void usart_dma_receiver_enable(usart_type *usart_x, confirm_state new_state)
+ {
+     (void)usart_x;
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 模拟使能 USART DMA 发送请求
++ * @param usart_x USART 外设指针
++ * @param new_state 使能状态
++ */
+ void usart_dma_transmitter_enable(usart_type *usart_x, confirm_state new_state)
+ {
+     (void)usart_x;
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 模拟读取 USART 状态标志
++ * @param usart_x USART 外设指针
++ * @param flag 状态标志掩码
++ * @return SET
++ */
+ flag_status usart_flag_get(usart_type *usart_x, uint32_t flag)
+ {
+     (void)usart_x;
+@@ -245,17 +393,30 @@ flag_status usart_flag_get(usart_type *usart_x, uint32_t flag)
+     return SET;
+ }
+ 
++/**
++ * @brief 模拟向 USART 数据寄存器写入单字节
++ * @param usart_x USART 外设指针
++ * @param data 待发字节
++ */
+ void usart_data_transmit(usart_type *usart_x, uint16_t data)
+ {
+     (void)usart_x;
+     (void)data;
+ }
+ 
++/**
++ * @brief 模拟复位 DMA 通道
++ * @param dmax_channely DMA 通道指针
++ */
+ void dma_reset(dma_channel_type *dmax_channely)
+ {
+     (void)dmax_channely;
+ }
+ 
++/**
++ * @brief 模拟初始化 DMA 配置结构体默认值
++ * @param init_struct DMA 配置结构体指针
++ */
+ void dma_default_para_init(dma_init_type *init_struct)
+ {
+     if (init_struct != NULL)
+@@ -264,6 +425,11 @@ void dma_default_para_init(dma_init_type *init_struct)
+     }
+ }
+ 
++/**
++ * @brief 模拟初始化 DMA 通道参数
++ * @param dmax_channely DMA 通道指针
++ * @param init_struct DMA 配置结构体指针
++ */
+ void dma_init(dma_channel_type *dmax_channely, dma_init_type *init_struct)
+ {
+     (void)init_struct;
+@@ -273,6 +439,12 @@ void dma_init(dma_channel_type *dmax_channely, dma_init_type *init_struct)
+     }
+ }
+ 
++/**
++ * @brief 模拟配置 DMAMUX 通道请求映射
++ * @param dma_x DMA 控制器指针
++ * @param dmamux_channelx DMAMUX 通道指针
++ * @param req_id 请求源 ID
++ */
+ void dma_flexible_config(dma_type *dma_x, dmamux_channel_type *dmamux_channelx, dmamux_requst_id_sel_type req_id)
+ {
+     (void)dma_x;
+@@ -280,6 +452,12 @@ void dma_flexible_config(dma_type *dma_x, dmamux_channel_type *dmamux_channelx,
+     (void)req_id;
+ }
+ 
++/**
++ * @brief 模拟使能 DMA 通道中断
++ * @param dmax_channely DMA 通道指针
++ * @param dma_int 中断类型掩码
++ * @param new_state 使能状态
++ */
+ void dma_interrupt_enable(dma_channel_type *dmax_channely, uint32_t dma_int, confirm_state new_state)
+ {
+     (void)dmax_channely;
+@@ -287,6 +465,12 @@ void dma_interrupt_enable(dma_channel_type *dmax_channely, uint32_t dma_int, con
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 模拟使能 NVIC 中断通道与优先级
++ * @param irqn 中断号
++ * @param preempt_priority 抢占优先级
++ * @param sub_priority 子优先级
++ */
+ void nvic_irq_enable(IRQn_Type irqn, uint32_t preempt_priority, uint32_t sub_priority)
+ {
+     (void)irqn;
+@@ -294,11 +478,20 @@ void nvic_irq_enable(IRQn_Type irqn, uint32_t preempt_priority, uint32_t sub_pri
+     (void)sub_priority;
+ }
+ 
++/**
++ * @brief 模拟清除 DMA 中断与状态标志
++ * @param dmax_flag DMA 标志掩码
++ */
+ void dma_flag_clear(uint32_t dmax_flag)
+ {
+     (void)dmax_flag;
+ }
+ 
++/**
++ * @brief 模拟读取 DMA 传输完成或错误标志位
++ * @param dmax_flag DMA 标志掩码
++ * @return 模拟标志位状态
++ */
+ flag_status dma_flag_get(uint32_t dmax_flag)
+ {
+     if (dmax_flag == DMA1_FDT5_FLAG)
+@@ -319,6 +512,11 @@ flag_status dma_flag_get(uint32_t dmax_flag)
+ static uint16_t s_dma_ch4_len = 0U;
+ static uint16_t s_dma_ch5_len = 0U;
+ 
++/**
++ * @brief 模拟设置 DMA 通道传输字节计数
++ * @param dmax_channely DMA 通道指针
++ * @param data_number 传输字节数
++ */
+ void dma_data_number_set(dma_channel_type *dmax_channely, uint16_t data_number)
+ {
+     if (dmax_channely == DMA1_CHANNEL4)
+@@ -335,6 +533,11 @@ void dma_data_number_set(dma_channel_type *dmax_channely, uint16_t data_number)
+     }
+ }
+ 
++/**
++ * @brief 模拟读取 DMA 通道剩余未传输字节计数
++ * @param dmax_channely DMA 通道指针
++ * @return 剩余字节数
++ */
+ uint16_t dma_data_number_get(dma_channel_type *dmax_channely)
+ {
+     if (dmax_channely == DMA1_CHANNEL2)
+@@ -344,13 +547,19 @@ uint16_t dma_data_number_get(dma_channel_type *dmax_channely)
+     return USART3_RXBUFF_SIZE;
+ }
+ 
++/**
++ * @brief 模拟使能 DMA 通道并捕获 USART1 协议发送帧与 USART3 [TH-DBG] 文本
++ * @param dmax_channely DMA 通道指针
++ * @param new_state 使能状态
++ */
+ void dma_channel_enable(dma_channel_type *dmax_channely, confirm_state new_state)
+ {
++    const uintptr_t high_bits = ((uintptr_t)s_usart1_last_tx) & ~(uintptr_t)0xFFFFFFFFULL;
+     if ((dmax_channely == DMA1_CHANNEL4) && (new_state == TRUE) && (s_dma_ch4_len > 0U))
+     {
+         if (!s_usart1_tx_fail)
+         {
+-            const uint8_t *src = (const uint8_t *)(uintptr_t)DMA1_CHANNEL4->maddr;
++            const uint8_t *src = (const uint8_t *)(high_bits | (uintptr_t)DMA1_CHANNEL4->maddr);
+             const uint16_t copy_n = (s_dma_ch4_len <= sizeof(s_usart1_last_tx))
+                                         ? s_dma_ch4_len
+                                         : (uint16_t)sizeof(s_usart1_last_tx);
+@@ -360,7 +569,7 @@ void dma_channel_enable(dma_channel_type *dmax_channely, confirm_state new_state
+     }
+     else if ((dmax_channely == DMA1_CHANNEL5) && (new_state == TRUE) && (s_dma_ch5_len > 0U))
+     {
+-        const char *src = (const char *)(uintptr_t)DMA1_CHANNEL5->maddr;
++        const char *src = (const char *)(high_bits | (uintptr_t)DMA1_CHANNEL5->maddr);
+         if ((s_usart3_capture_len + s_dma_ch5_len + 1U) < sizeof(s_usart3_capture))
+         {
+             memcpy(&s_usart3_capture[s_usart3_capture_len], src, s_dma_ch5_len);
+@@ -370,6 +579,9 @@ void dma_channel_enable(dma_channel_type *dmax_channely, confirm_state new_state
+     }
+ }
+ 
++/**
++ * @brief 触发模拟的 USART3 DMA 发送完成中断以排空调试环形队列
++ */
+ static void drain_usart3_dma(void)
+ {
+     s_usart3_fdt_flag = SET;
+@@ -379,6 +591,9 @@ static void drain_usart3_dma(void)
+     }
+ }
+ 
++/**
++ * @brief 清空 USART3 调试输出与 USART1 响应帧捕获缓冲
++ */
+ static void clear_capture(void)
+ {
+     s_usart3_capture_len = 0U;
+@@ -386,6 +601,10 @@ static void clear_capture(void)
+     s_usart1_last_tx_len = 0U;
+ }
+ 
++/**
++ * @brief 复位宿主机单测模拟运行环境状态
++ * @param start_tick_ms 起始模拟毫秒计数
++ */
+ static void reset_mock_runtime(uint32_t start_tick_ms)
+ {
+     s_mock_tick_ms = start_tick_ms;
+@@ -402,6 +621,11 @@ static void reset_mock_runtime(uint32_t start_tick_ms)
+     s_usart3_auto_drain = true;
+ }
+ 
++/**
++ * @brief 将测试字节压入模拟的 USART1 DMA 接收环形缓冲
++ * @param bytes 待压入字节指针
++ * @param len 字节长度
++ */
+ static void push_usart1_rx_bytes(const uint8_t *bytes, uint16_t len)
+ {
+     if (bytes == NULL)
+@@ -415,6 +639,13 @@ static void push_usart1_rx_bytes(const uint8_t *bytes, uint16_t len)
+     }
+ }
+ 
++/**
++ * @brief 组装并向 TH USART1 注入一条 MC 转发的 MiniMCProto V2 请求帧
++ * @param seq 16位序列号
++ * @param cmd 命令码
++ * @param payload 载荷数据指针
++ * @param plen 载荷长度
++ */
+ static void inject_minimc_req(uint16_t seq, uint8_t cmd, const uint8_t *payload, uint16_t plen)
+ {
+     uint8_t frame[MINIMC_MAX_FRAME_SIZE];
+@@ -446,6 +677,9 @@ static void inject_minimc_req(uint16_t seq, uint8_t cmd, const uint8_t *payload,
+     }
+ }
+ 
++/**
++ * @brief 验证 USART1 921600 级联波特率与 USART3 115200 调试串口初始化
++ */
+ static void test_usart1_921600_and_usart3_115200_init(void)
+ {
+     printf("[RUN ] test_usart1_921600_and_usart3_115200_init\n");
+@@ -476,6 +710,9 @@ static void test_usart1_921600_and_usart3_115200_init(void)
+     printf("[PASS] test_usart1_921600_and_usart3_115200_init\n");
+ }
+ 
++/**
++ * @brief 验证级联请求接收、响应发送、[TH-DBG] 日志及 ISS-016 动态 boot_id
++ */
+ static void test_cascade_rx_and_tx_logging(void)
+ {
+     printf("[RUN ] test_cascade_rx_and_tx_logging\n");
+@@ -485,10 +722,21 @@ static void test_cascade_rx_and_tx_logging(void)
+     minimc_proto_init();
+     clear_capture();
+ 
+-    /* 1. GET_VERSION (0x01) -> VERSION_REPORT (0x02) */
++    /* 1. GET_VERSION (0x01) -> VERSION_REPORT (0x02) + ISS-016 动态 boot_id */
+     inject_minimc_req(1U, MINIMC_CMD_GET_VERSION, NULL, 0U);
+     assert(strstr(s_usart3_capture, "[TH-DBG] ts=1000 dir=RX node=TH seq=1 cmd=0x01 status=OK len=14") != NULL);
+-    assert(strstr(s_usart3_capture, "[TH-DBG] ts=1000 dir=TX node=TH seq=1 cmd=0x02 status=ACK fw=2.0") != NULL);
++    assert(strstr(s_usart3_capture, "[TH-DBG] ts=1000 dir=TX node=TH seq=1 cmd=0x02 status=ACK fw=2.0 boot_id=0x") != NULL);
++    const uint32_t th_boot_id_1 = (uint32_t)s_usart1_last_tx[16] |
++                                  ((uint32_t)s_usart1_last_tx[17] << 8U) |
++                                  ((uint32_t)s_usart1_last_tx[18] << 16U) |
++                                  ((uint32_t)s_usart1_last_tx[19] << 24U);
++    minimc_proto_init();
++    inject_minimc_req(1U, MINIMC_CMD_GET_VERSION, NULL, 0U);
++    const uint32_t th_boot_id_2 = (uint32_t)s_usart1_last_tx[16] |
++                                  ((uint32_t)s_usart1_last_tx[17] << 8U) |
++                                  ((uint32_t)s_usart1_last_tx[18] << 16U) |
++                                  ((uint32_t)s_usart1_last_tx[19] << 24U);
++    assert((th_boot_id_1 != 0U) && (th_boot_id_2 != 0U) && (th_boot_id_1 != th_boot_id_2));
+ 
+     /* 2. PING (0x03) -> PONG (0x04) */
+     const uint8_t ping_pay[4] = { 0x78U, 0x56U, 0x34U, 0x12U };
+@@ -502,7 +750,7 @@ static void test_cascade_rx_and_tx_logging(void)
+     assert(strstr(s_usart3_capture, "dir=STATE node=TH seq=3 cmd=0x14 status=OK nozzle_ddC=245 adc_raw=3911 pullup_sel=0 fault=0") != NULL);
+     assert(strstr(s_usart3_capture, "dir=TX node=TH seq=3 cmd=0x14 status=ACK nozzle_ddC=245 adc_raw=3911 pullup_sel=0 fault=0") != NULL);
+ 
+-    /* 4. Short payload SET_TEMP (0x10) / FILAMENT_CONTROL (0x15) -> RX + NACK (err_code=0x02), unknown 0xFE -> 0x04 */
++    /* 4. 短载荷 SET_TEMP (0x10) / FILAMENT_CONTROL (0x15) -> RX + NACK (err_code=0x02)，未知命令 0xFE -> 0x04 */
+     const uint8_t set_temp_pay[2] = { 0x66U, 0x08U };
+     inject_minimc_req(4U, MINIMC_CMD_SET_TEMP, set_temp_pay, 2U);
+     assert(strstr(s_usart3_capture, "dir=RX node=TH seq=4 cmd=0x10 status=OK len=16 nozzle_set=2150") != NULL);
+@@ -516,7 +764,7 @@ static void test_cascade_rx_and_tx_logging(void)
+     inject_minimc_req(5U, 0xFEU, NULL, 0U);
+     assert(strstr(s_usart3_capture, "dir=TX node=TH seq=5 cmd=0x06 status=NACK err_code=0x04") != NULL);
+ 
+-    /* 5. Non-intrusive filament/slot state notifications */
++    /* 5. 非侵入式进退料/选槽状态通知验证 */
+     th_debug_notify_filament("LOAD", 2U, 0x0FU, "DONE");
+     th_debug_notify_filament("SELECT", 3U, 0x0FU, "DONE");
+     drain_usart3_dma();
+@@ -525,6 +773,9 @@ static void test_cascade_rx_and_tx_logging(void)
+     printf("[PASS] test_cascade_rx_and_tx_logging\n");
+ }
+ 
++/**
++ * @brief 验证 2Hz 周期性状态心跳及传感器/断料动态同步
++ */
+ static void test_periodic_state_and_dynamic_sync(void)
+ {
+     printf("[RUN ] test_periodic_state_and_dynamic_sync\n");
+@@ -534,14 +785,14 @@ static void test_periodic_state_and_dynamic_sync(void)
+     minimc_proto_init();
+     clear_capture();
+ 
+-    /* Advance +1000ms (t=2000ms) and trigger via minimc_proto_poll() -> usart1_rx_pop_raw_byte() */
++    /* 推进 +1000ms (t=2000ms) 并通过 minimc_proto_poll() 触发周期心跳 */
+     s_mock_tick_ms = 2000U;
+     minimc_proto_poll();
+     drain_usart3_dma();
+     assert(strstr(s_usart3_capture, "ts=2000 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=245 adc_raw=3911 pullup_sel=0 fault=0") != NULL);
+     assert(strstr(s_usart3_capture, "ts=2000 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=0 active_slot=0 filament_present_mask=0x0F step_state=IDLE") != NULL);
+ 
+-    /* Within 500ms (<2Hz limit): must not emit any new logs */
++    /* 500ms 窗口内 (<2Hz 限制)：严禁输出新的心跳日志 */
+     clear_capture();
+     s_mock_tick_ms = 2250U;
+     minimc_proto_poll();
+@@ -550,7 +801,7 @@ static void test_periodic_state_and_dynamic_sync(void)
+     drain_usart3_dma();
+     assert(s_usart3_capture_len == 0U);
+ 
+-    /* Update live sensor & filament state and verify dynamic synchronization at +500ms (t=2500ms) */
++    /* 更新实时 ADC 与耗材状态并验证 +500ms (t=2500ms) 动态同步 */
+     s_mock_adc_raw = 493U;
+     s_mock_filament_err = 1U;
+     load_filament_Flag = 1;
+@@ -561,7 +812,7 @@ static void test_periodic_state_and_dynamic_sync(void)
+     assert(strstr(s_usart3_capture, "ts=2500 dir=STATE node=TH seq=0 cmd=0x14 status=OK nozzle_ddC=2100 adc_raw=493 pullup_sel=1 fault=0") != NULL);
+     assert(strstr(s_usart3_capture, "ts=2500 dir=STATE node=TH seq=0 cmd=0x15 status=OK op=LOAD slot=1 active_slot=1 filament_present_mask=0x00 step_state=FEEDING") != NULL);
+ 
+-    /* Simulate open-circuit fault & filament retract at +500ms (t=3000ms) */
++    /* 模拟 +500ms (t=3000ms) 开路故障与退料状态 */
+     clear_capture();
+     s_mock_adc_raw = 4095U;
+     load_filament_Flag = 2;
+@@ -573,6 +824,9 @@ static void test_periodic_state_and_dynamic_sync(void)
+     printf("[PASS] test_periodic_state_and_dynamic_sync\n");
+ }
+ 
++/**
++ * @brief 验证 CRC_ERR、BAD_FRAME 负例与后续级联恢复
++ */
+ static void test_negative_crc_err_bad_frame_and_recovery(void)
+ {
+     printf("[RUN ] test_negative_crc_err_bad_frame_and_recovery\n");
+@@ -582,7 +836,7 @@ static void test_negative_crc_err_bad_frame_and_recovery(void)
+     minimc_proto_init();
+     clear_capture();
+ 
+-    /* 1. CRC error frame (seq=517 / 0x0205) -> dir=ERR status=CRC_ERR */
++    /* 1. CRC 错误帧 (seq=517 / 0x0205) -> dir=ERR status=CRC_ERR */
+     const uint8_t bad_crc_frame[14] = {
+         0x55U, 0xAAU, 0x02U, 0x03U, 0x05U, 0x14U, 0x03U, 0x04U,
+         0x05U, 0x02U, 0x00U, 0x00U, 0xDEU, 0xADU
+@@ -593,7 +847,7 @@ static void test_negative_crc_err_bad_frame_and_recovery(void)
+     assert(s_usart1_last_tx_len == 0U);
+     assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=517 cmd=0x14 status=CRC_ERR err_code=0x01") != NULL);
+ 
+-    /* 2. Malformed frame (seq=518 / 0x0206) with payload_len=100 (>64) -> dir=ERR status=BAD_FRAME */
++    /* 2. 畸形帧 (seq=518 / 0x0206) payload_len=100 (>64) -> dir=ERR status=BAD_FRAME */
+     const uint8_t bad_len_hdr[12] = {
+         0x55U, 0xAAU, 0x02U, 0x03U, 0x05U, 0x14U, 0x03U, 0x04U,
+         0x06U, 0x02U, 100U,  0x00U
+@@ -603,7 +857,7 @@ static void test_negative_crc_err_bad_frame_and_recovery(void)
+     drain_usart3_dma();
+     assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=518 cmd=0x14 status=BAD_FRAME err_code=0x02") != NULL);
+ 
+-    /* 3. Unknown cmd 0xFE (seq=518) -> NACK 0x04, then USART1 cascade recovery (seq=519) */
++    /* 3. 未知命令 0xFE (seq=518) -> NACK 0x04，随后 USART1 级联恢复 (seq=519) */
+     clear_capture();
+     inject_minimc_req(518U, 0xFEU, NULL, 0U);
+     assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=518 cmd=0x06 status=BAD_FRAME err_code=0x04") != NULL);
+@@ -615,6 +869,9 @@ static void test_negative_crc_err_bad_frame_and_recovery(void)
+     printf("[PASS] test_negative_crc_err_bad_frame_and_recovery\n");
+ }
+ 
++/**
++ * @brief 验证 usart1_send_raw 发送失败时记录 TX_ERR 且恢复后正常工作
++ */
+ static void test_negative_usart1_send_raw_fail_and_recovery(void)
+ {
+     printf("[RUN ] test_negative_usart1_send_raw_fail_and_recovery\n");
+@@ -624,7 +881,7 @@ static void test_negative_usart1_send_raw_fail_and_recovery(void)
+     minimc_proto_init();
+     clear_capture();
+ 
+-    /* 1. Invalid len=0 or oversized len=100 to usart1_send_raw -> no DMA TX, no false ACK */
++    /* 1. 非法 len=0 或超长 len=100 传入 usart1_send_raw -> 不启动 DMA TX，不产生假 ACK */
+     uint8_t oversize_frame[100];
+     memset(oversize_frame, 0, sizeof(oversize_frame));
+     oversize_frame[0] = MINIMC_SOF_1;
+@@ -644,7 +901,7 @@ static void test_negative_usart1_send_raw_fail_and_recovery(void)
+     assert(strstr(s_usart3_capture, "dir=TX") == NULL);
+     assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=13 cmd=0x14 status=TX_ERR err_code=0x06") != NULL);
+ 
+-    /* 2. Simulate USART1 DMA TX failure on ACK and NACK paths -> logs TX_ERR, no false TX log */
++    /* 2. 模拟 ACK 与 NACK 路径上的 USART1 DMA TX 失败 -> 记录 TX_ERR，无假 TX 日志 */
+     clear_capture();
+     s_usart1_tx_fail = true;
+     inject_minimc_req(14U, MINIMC_CMD_GET_TEMP, NULL, 0U);
+@@ -655,7 +912,7 @@ static void test_negative_usart1_send_raw_fail_and_recovery(void)
+     assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=14 cmd=0x14 status=TX_ERR err_code=0x06") != NULL);
+     assert(strstr(s_usart3_capture, "dir=ERR node=TH seq=15 cmd=0x06 status=TX_ERR err_code=0x06") != NULL);
+ 
+-    /* 3. Restore USART1 DMA TX and verify immediate recovery */
++    /* 3. 恢复 USART1 DMA TX 并验证立即恢复 */
+     clear_capture();
+     s_usart1_tx_fail = false;
+     inject_minimc_req(16U, MINIMC_CMD_GET_TEMP, NULL, 0U);
+@@ -664,6 +921,9 @@ static void test_negative_usart1_send_raw_fail_and_recovery(void)
+     printf("[PASS] test_negative_usart1_send_raw_fail_and_recovery\n");
+ }
+ 
++/**
++ * @brief 验证 USART3 超 192B 行截断统计与后续正常行恢复
++ */
+ static void test_negative_usart3_trunc_and_recovery(void)
+ {
+     printf("[RUN ] test_negative_usart3_trunc_and_recovery\n");
+@@ -673,7 +933,7 @@ static void test_negative_usart3_trunc_and_recovery(void)
+     minimc_proto_init();
+     clear_capture();
+ 
+-    /* Test >192B line truncation followed by normal line recovery */
++    /* 测试 >192B 超长行截断及后续正常行恢复 */
+     char long_line[220];
+     memset(long_line, 'X', sizeof(long_line));
+     assert(th_debug_write(long_line, 210U) == true);
+@@ -689,6 +949,9 @@ static void test_negative_usart3_trunc_and_recovery(void)
+     printf("[PASS] test_negative_usart3_trunc_and_recovery\n");
+ }
+ 
++/**
++ * @brief 验证 USART3 环形队列写满丢弃时不阻塞 USART1 业务响应及排空后恢复
++ */
+ static void test_negative_usart3_ring_full_drop_and_recovery(void)
+ {
+     printf("[RUN ] test_negative_usart3_ring_full_drop_and_recovery\n");
+@@ -702,14 +965,14 @@ static void test_negative_usart3_ring_full_drop_and_recovery(void)
+     assert(th_debug_write(block, 160U) == false);
+     assert(usart3_get_tx_drop_count() >= 1U);
+ 
+-    /* While USART3 ring buffer is full, USART1 cascade response must NOT block */
++    /* 当 USART3 环形缓冲满时，USART1 级联业务响应严禁被阻塞 */
+     s_usart1_last_tx_len = 0U;
+     const uint8_t ping_pay[4] = { 0x01U, 0x02U, 0x03U, 0x04U };
+     inject_minimc_req(20U, MINIMC_CMD_PING, ping_pay, 4U);
+     assert(s_usart1_last_tx_len == 26U);
+     assert(s_usart1_last_tx[5] == MINIMC_CMD_PONG);
+ 
+-    /* Drain USART3 DMA and verify new logs succeed without incrementing drop_count */
++    /* 排空 USART3 DMA 并验证新日志成功写入且 drop_count 不再增加 */
+     s_usart3_auto_drain = true;
+     drain_usart3_dma();
+     clear_capture();
+@@ -855,6 +1118,10 @@ static void test_twin48_gcode_queue_and_send_quick(void)
+     printf("[PASS] test_twin48_gcode_queue_and_send_quick\n");
+ }
+ 
++/**
++ * @brief TWIN-45 / TWIN-48 / TWIN-60 TH 宿主机独立单测主入口
++ * @return 0 表示全部测试通过，非 0 表示异常退出
++ */
+ int main(void)
+ {
+     void *p1 = mmap((void *)0x40000000, 0x30000, PROT_READ | PROT_WRITE,
+diff --git a/motion-controller-mcu/CMakeLists.txt b/motion-controller-mcu/CMakeLists.txt
+index 42e92c1..4a5b01c 100644
+--- a/motion-controller-mcu/CMakeLists.txt
++++ b/motion-controller-mcu/CMakeLists.txt
+@@ -65,9 +65,22 @@ add_custom_command(
+ )
+ target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version_autogen.h)
+ 
++# 提取当前仓库 8 位十六进制 Git 短提交哈希并注入构建宏 FW_GIT_COMMIT_SHORT
++execute_process(
++    COMMAND git rev-parse --short=8 HEAD
++    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
++    OUTPUT_VARIABLE GIT_COMMIT_SHORT_HEX
++    OUTPUT_STRIP_TRAILING_WHITESPACE
++    ERROR_QUIET
++)
++if(NOT GIT_COMMIT_SHORT_HEX)
++    set(GIT_COMMIT_SHORT_HEX "4D433434")
++endif()
++
+ # Add project symbols (macros)
+ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+     # Add user defined symbols
++    FW_GIT_COMMIT_SHORT=0x${GIT_COMMIT_SHORT_HEX}U
+ )
+ 
+ # Add linked libraries
+diff --git a/motion-controller-mcu/project/inc/minimc_proto.h b/motion-controller-mcu/project/inc/minimc_proto.h
+index b7a4ed0..ea5ba6c 100644
+--- a/motion-controller-mcu/project/inc/minimc_proto.h
++++ b/motion-controller-mcu/project/inc/minimc_proto.h
+@@ -1,3 +1,9 @@
++/**
++ * @file minimc_proto.h
++ * @brief MC 运动控制板 MiniMCProto V2 通信协议与 [MC-DBG] 环形缓冲日志公共接口声明。
++ * 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md 规范。
++ */
++
+ #ifndef MINIMC_PROTO_H
+ #define MINIMC_PROTO_H
+ 
+@@ -21,9 +27,14 @@ extern "C" {
+ #define MINIMC_TEMP_STATUS_DISCONNECTED MINIMC_TEMP_STATUS_OPEN_CIRCUIT
+ #endif
+ 
+-#define MC_DBG_RING_CAPACITY     2048U
+-#define MC_DBG_LINE_MAX_LEN      192U
+-#define MC_DBG_DRAIN_BUDGET      64U
++#ifndef MINIMC_TEMP_STATUS_SHORT
++#define MINIMC_TEMP_STATUS_SHORT        MINIMC_TEMP_STATUS_SHORT_CIRCUIT
++#endif
++
++/* ISS-015: 扩容调试环形缓冲区至 4096B、单行上限至 256B（消除 204B POS_QUERY 截断）、单轮排空预算至 128B */
++#define MC_DBG_RING_CAPACITY     4096U
++#define MC_DBG_LINE_MAX_LEN      256U
++#define MC_DBG_DRAIN_BUDGET      128U
+ #define MC_DBG_STATE_INTERVAL_MS 500U
+ #define MC_RELAY_TIMEOUT_MS      200U
+ 
+@@ -93,6 +104,9 @@ extern "C" {
+ #define MINIMC_POS_REPORT_PAYLOAD_SIZE 20U
+ 
+ #pragma pack(push, 1)
++/**
++ * @brief 0x16 运动位置遥测响应载荷（20 字节紧凑对齐）
++ */
+ typedef struct {
+     union {
+         int32_t pos_x_um;
+@@ -132,6 +146,9 @@ _Static_assert(sizeof(minimc_pos_report_payload_t) == 20, "pos report payload mu
+ #define MINIMC_LEVEL_GRID_FRAME_SIZE 66U
+ 
+ #pragma pack(push, 1)
++/**
++ * @brief 0x18 5x5 自动调平高度网格遥测响应载荷（52 字节紧凑对齐）
++ */
+ typedef struct {
+     uint8_t  grid_points_x;      /* 固定为 5 */
+     uint8_t  grid_points_y;      /* 固定为 5 */
+@@ -146,17 +163,26 @@ _Static_assert(sizeof(minimc_level_grid_payload_t) == 52, "level grid payload si
+ #endif
+ 
+ #pragma pack(push, 1)
++/**
++ * @brief 0x10 设定温度控制请求载荷
++ */
+ typedef struct {
+     int16_t  nozzle_target_deci_c;  /* 喷嘴目标温度 (0.1℃), <0 表示不修改该路 */
+     int16_t  bed_target_deci_c;     /* 热床目标温度 (0.1℃), <0 表示不修改该路 */
+ } minimc_set_temp_req_t;
+ 
++/**
++ * @brief 0x11 归零控制请求载荷
++ */
+ typedef struct {
+     uint8_t  axes_mask;             /* bit0=X, bit1=Y, bit2=Z; 0x00 或 0x07 表示全轴归零 */
+     uint8_t  reserved;              /* 对齐填充，填 0 */
+     uint16_t feedrate_mm_s;         /* 归零进给率 (mm/min 或 mm/s, 0 表示采用固件默认速率) */
+ } minimc_home_req_t;
+ 
++/**
++ * @brief 0x12 点动/坐标移动控制请求载荷
++ */
+ typedef struct {
+     uint8_t  axes_mask;             /* bit0=X, bit1=Y, bit2=Z, bit3=E */
+     uint8_t  is_relative;           /* 0=绝对坐标移动 (G90), 1=相对增量移动 (G91) */
+@@ -166,12 +192,18 @@ typedef struct {
+     int32_t  z_um;                  /* Z 位移/目标 (微米) */
+ } minimc_move_req_t;
+ 
++/**
++ * @brief 0x19 耗材槽位切换与进退丝请求载荷
++ */
+ typedef struct {
+     uint8_t  slot_id;               /* 目标槽位 0~3 */
+     uint8_t  action;                /* 0=SELECT(切换通道), 1=LOAD(进丝), 2=UNLOAD(退丝) */
+     uint16_t length_mm;             /* 进退丝长度 (mm, 默认 50mm) */
+ } minimc_filament_req_t;
+ 
++/**
++ * @brief 0x19 耗材槽位切换与进退丝响应载荷
++ */
+ typedef struct {
+     uint8_t  active_slot;           /* 当前激活槽位 0~3 */
+     uint8_t  present_mask;          /* 在位传感器掩码 bit0~bit3 (0x00~0x0F) */
+@@ -179,12 +211,18 @@ typedef struct {
+     uint8_t  status_code;           /* 0=OK, >0=故障码 */
+ } minimc_filament_resp_t;
+ 
++/**
++ * @brief 0x13 作业状态机控制请求载荷
++ */
+ typedef struct {
+     uint8_t  job_op;                /* 0=CANCEL/IDLE, 1=START, 2=PAUSE, 3=RESUME, 4=STEP_LINE */
+     uint8_t  reserved;              /* 对齐填充，填 0 */
+     uint16_t total_lines;           /* START 时传入作业总行数; STEP_LINE 时传入本批完成行数增量 */
+ } minimc_job_req_t;
+ 
++/**
++ * @brief 0x13 作业状态机控制响应载荷
++ */
+ typedef struct {
+     uint8_t  job_state;             /* 0=IDLE, 1=PRINTING, 2=PAUSED, 3=COMPLETED, 4=CANCELLED, 5=ERROR */
+     uint8_t  ack_seq;               /* 硬件确认的指令序号 */
+@@ -193,12 +231,18 @@ typedef struct {
+     uint16_t total_lines;           /* 硬件登记的总行数 */
+ } minimc_job_resp_t;
+ 
++/**
++ * @brief 0x1C G-code 在线执行请求载荷
++ */
+ typedef struct {
+     uint8_t  line_len;              /* G-code 字符串有效字节数 (1~60) */
+     uint8_t  exec_flags;            /* bit0=1: 同步等待入队确认, bit1=1: 紧急插队 */
+     char     gcode[60];             /* ASCII G-code 文本 (不含 '\n', 剩余字节填 0) */
+ } minimc_gcode_req_t;
+ 
++/**
++ * @brief 0x1C G-code 在线执行响应载荷
++ */
+ typedef struct {
+     uint8_t  status;                /* 0=OK(已入队/执行), 1=QUEUE_FULL, 2=PARSE_ERR */
+     uint8_t  queue_free;            /* 剩余队列槽位数 */
+@@ -236,28 +280,50 @@ _Static_assert(sizeof(minimc_gcode_resp_t) == 4, "gcode_resp size mismatch");
+ #define MINIMC_MAX_PAYLOAD_SIZE  64U
+ #define MINIMC_MAX_FRAME_SIZE    (MINIMC_HEADER_SIZE + MINIMC_MAX_PAYLOAD_SIZE + MINIMC_CRC_SIZE)
+ 
++/* 初始化 MiniMCProto 协议状态机与环形缓冲 */
+ void minimc_proto_init(void);
++/* 将 USART2 接收到的 AP 字节流压入非阻塞协议接收环形队列 */
+ void minimc_proto_push_ap_rx(const uint8_t *data, uint16_t len);
++/* 解析并立即处理一段 AP 侧协议字节流 */
+ void minimc_proto_process_rx(const uint8_t *data, uint16_t len);
++/* 主循环轮询处理 AP/TH 协议帧、级联超时与 [MC-DBG] 环形缓冲排空 */
+ void minimc_proto_poll(void);
++/* 通过 USART2 向 AP 发送完整 MiniMCProto 协议帧 */
+ bool minimc_proto_send(const uint8_t *data, uint16_t len);
++/* 将 G-code 行封装为 0x1C 二进制协议帧并发送至 TH 板 */
+ bool minimc_proto_send_th_gcode(const char *line, uint16_t len, uint8_t exec_flags);
++/* 查询当前是否有来自 AP 协议层的控制指令正在入队 */
+ bool minimc_proto_is_ap_cmd_active(void);
++/* 消费并清除当前 Marlin 队列槽位的 AP 协议指令标记 */
+ bool minimc_proto_consume_ap_enqueued(void);
++/* 计算 MiniMCProto V2 帧的 CRC-16/CCITT-FALSE 校验值 */
+ uint16_t minimc_crc16(const uint8_t *data, uint16_t len);
++/* 组装 0x16 运动位置遥测响应帧 */
+ void build_pos_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len);
++/* 组装 0x18 5x5 自动调平高度网格遥测响应帧 */
+ void build_level_grid_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len);
+ 
++/* 设置 [MC-DBG] 调试输出开关状态 */
+ void mc_debug_set_enabled(bool enabled);
++/* 查询 [MC-DBG] 调试输出是否启用 */
+ bool mc_debug_is_enabled(void);
++/* 将格式化后的 [MC-DBG] 调试文本写入非阻塞环形缓冲 */
+ bool mc_debug_write(const char *buf, uint16_t len);
++/* 按单轮字节预算将 [MC-DBG] 环形缓冲数据排空至 USART1 */
+ void mc_debug_poll_drain(void);
++/* 获取 [MC-DBG] 环形缓冲满溢丢弃计数 */
+ uint32_t mc_debug_get_drop_count(void);
++/* 获取 [MC-DBG] 超长行截断计数 */
+ uint32_t mc_debug_get_trunc_count(void);
++/* 周期输出 [MC-DBG] 节点运行状态遥测日志 */
+ void mc_debug_log_periodic_state(uint32_t now_ms);
++/* 通知调试状态机更新喷嘴与热床设定温度 */
+ void mc_debug_notify_temp_target(int16_t nozzle_set_ddC, int16_t bed_set_ddC);
++/* 通知调试状态机记录运动控制指令并输出 [MC-DBG] 日志 */
+ void mc_debug_notify_motion(const char *op, uint8_t axes_mask, uint16_t feed);
++/* 通知调试状态机记录耗材操作并输出 [MC-DBG] 日志 */
+ void mc_debug_notify_filament(const char *op, uint8_t slot, uint8_t present_mask, const char *step_state);
++/* 通知调试状态机记录作业状态变更并输出 [MC-DBG] 日志 */
+ void mc_debug_notify_job(uint8_t job_state_id, uint16_t progress_permille, uint16_t ack_seq);
+ 
+ #ifdef __cplusplus
+diff --git a/motion-controller-mcu/project/inc/minimc_telemetry.h b/motion-controller-mcu/project/inc/minimc_telemetry.h
+index 8816856..00f97d8 100644
+--- a/motion-controller-mcu/project/inc/minimc_telemetry.h
++++ b/motion-controller-mcu/project/inc/minimc_telemetry.h
+@@ -1,3 +1,7 @@
++/**
++ * @file minimc_telemetry.h
++ * @brief MiniMCProto V2 温度遥测帧（0x14）数据结构、状态码与故障哨兵值定义
++ */
+ #ifndef MINIMC_TELEMETRY_H
+ #define MINIMC_TELEMETRY_H
+ 
+@@ -8,21 +12,28 @@ extern "C" {
+ #include <stdint.h>
+ #include <stdbool.h>
+ 
++/* 0x14 温度查询与上报指令字 */
+ #define MINIMC_CMD_GET_TEMP              0x14U
+ #define MINIMC_CMD_TEMP_REPORT           0x14U
+ 
++/* 温度传感器状态码枚举定义 */
+ #define MINIMC_TEMP_STATUS_OK            0x00U
+ #define MINIMC_TEMP_STATUS_OPEN_CIRCUIT  0x01U
+ #define MINIMC_TEMP_STATUS_SHORT_CIRCUIT 0x02U
+ #define MINIMC_TEMP_STATUS_TIMEOUT       0x03U
+ 
++/* 温度传感器故障与离线哨兵值（单位 0.1℃） */
+ #define MINIMC_TEMP_SENTINEL_FAULT       ((int16_t)0x7FFF)
+ #define MINIMC_TEMP_SENTINEL_OFFLINE     ((int16_t)0x7FFE)
+ #define MINIMC_TEMP_FAULT_VALUE_DECI_C   MINIMC_TEMP_SENTINEL_FAULT
+ 
++/* 0x14 温度遥测固定载荷字节长度 */
+ #define MINIMC_TEMP_REPORT_PAYLOAD_SIZE  16U
+ 
+ #pragma pack(push, 1)
++/**
++ * @brief 0x14 温度遥测响应载荷（16 字节紧凑对齐）
++ */
+ typedef struct {
+     int16_t  current_temp_deci_c;  /* 当前温度 (0.1℃)，例如 245 表示 24.5℃；故障置 0x7FFF，超时置 0x7FFE */
+     int16_t  target_temp_deci_c;   /* 设定温度 (0.1℃)，只读增量固定填 0 */
+diff --git a/motion-controller-mcu/project/inc/wk_usart.h b/motion-controller-mcu/project/inc/wk_usart.h
+index ee77411..221178c 100644
+--- a/motion-controller-mcu/project/inc/wk_usart.h
++++ b/motion-controller-mcu/project/inc/wk_usart.h
+@@ -52,6 +52,7 @@ typedef enum {
+ 
+ /* exported constants --------------------------------------------------------*/
+ /* add user code begin exported constants */
++/* TH Bootloader IAP 帧同步头与指令字常量定义 */
+ #define TH_IAP_SYNC_SOF_1     0x5AU
+ #define TH_IAP_SYNC_SOF_2     0xA5U
+ #define TH_IAP_CMD_HELLO      0x10U
+@@ -88,12 +89,14 @@ void mc_debug_printf(const char *fmt, ...);
+ void forward_uart_send_line(const char *line, uint16_t len);
+ uint8_t forward_uart_rx_poll(void);
+ uint16_t forward_uart_rx_read(uint8_t *dst, uint16_t max);
++/* 读取 USART6 接收到的 0x55 0xAA MiniMCProto 二进制协议帧数据 */
+ uint16_t forward_uart_proto_rx_read(uint8_t *dst, uint16_t max);
+ 
+ /* 板间模式控制与二进制帧通道 (Step 3) */
+ void forward_uart_mode_set(forward_uart_mode_t mode);
+ forward_uart_mode_t forward_uart_mode_get(void);
+ bool forward_uart_send_frame(uint8_t cmd, const uint8_t *payload, uint16_t len);
++/* 通过 USART6 DMA 通道向 TH 板发送原始二进制帧数据 */
+ bool forward_uart_send_raw(const uint8_t *data, uint16_t len);
+ bool forward_uart_recv_frame(uint8_t *cmd, uint8_t *payload, uint16_t *len, uint16_t max_len);
+ void mc_th_usart_perf_test(uint32_t count);
+diff --git a/motion-controller-mcu/project/marlin/configure.h b/motion-controller-mcu/project/marlin/configure.h
+index f74cc12..86d3c56 100644
+--- a/motion-controller-mcu/project/marlin/configure.h
++++ b/motion-controller-mcu/project/marlin/configure.h
+@@ -31,6 +31,7 @@ extern uint32_t wk_timebase_get(void);
+ #include "version_autogen.h"
+ #define version FW_VERSION_STR
+ #else
++/* 默认固件版本号对齐至 V2.0.1 */
+ #define version "V2.0.1"
+ #endif
+ #if 1
+diff --git a/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c b/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c
+index c200790..a8d5bc0 100644
+--- a/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c
++++ b/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c
+@@ -1,3 +1,7 @@
++/**
++ * @file Marlin_main.c
++ * @brief Marlin 运动控制器核心主循环、G-code 队列调度与 MiniMCProto V2 非阻塞轮询集成实现。
++ */
+ /* -*- c++ -*- */
+ 
+ /*
+diff --git a/motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c b/motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c
+index 85b8140..80a7b55 100644
+--- a/motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c
++++ b/motion-controller-mcu/project/marlin/marlin_lcd/dgus_t300spro.c
+@@ -1,3 +1,7 @@
++/**
++ * @file dgus_t300spro.c
++ * @brief DGUS T300SPRO 串口屏 CRC 校验与报文收发辅助模块（AP↔MC 模式下已安全旁路）。
++ */
+ /*
+ *	DGUS类型触摸屏，型号T300SPRO
+ */
+diff --git a/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c b/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
+index 52ffcae..0e6085e 100644
+--- a/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
++++ b/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c
+@@ -1,3 +1,7 @@
++/**
++ * @file memu_gui.c
++ * @brief 迪文触摸屏 GUI 页面状态机与耗材/打印交互模块（AP↔MC 模式下已隔离串口冲突）。
++ */
+ #include "memu_gui.h"
+ #include "gui_cmd_list.h"
+ #include "minimc_proto.h"
+diff --git a/motion-controller-mcu/project/marlin/marlin_module/thermistor.c b/motion-controller-mcu/project/marlin/marlin_module/thermistor.c
+index 4b83dde..43229f0 100644
+--- a/motion-controller-mcu/project/marlin/marlin_module/thermistor.c
++++ b/motion-controller-mcu/project/marlin/marlin_module/thermistor.c
+@@ -22,6 +22,9 @@ volatile int16_t current_temperature_ex1 = 0;
+ volatile int16_t current_temperature_ex2 = 0;
+ volatile int16_t current_temperature_botbox = 0;    //底部机箱温度
+ volatile int16_t current_temperature_box = 0;    //机箱温度
++/* 去极值均值滤波后的热床与喷嘴原始 ADC 采样值（0~4095），供 MiniMC 0x14 遥测读取 */
++volatile uint16_t g_last_bed_adc_raw = 0U;
++volatile uint16_t g_last_ex1_adc_raw = 0U;
+ 
+ 
+ 
+@@ -126,7 +129,7 @@ SensorState Thermistor_Update(void)
+ 
+     if(i>=20000)
+     {
+-		printf("adc SS_ADC_BUSY \r\n");
++        /* 静音裸 printf，防止未加前缀的杂散输出污染 USART1 [MC-DBG] 遥测流 */
+         return SS_ADC_BUSY;
+     }
+     dma_trans_complete_flag = false;
+@@ -183,6 +186,10 @@ SensorState Thermistor_Update(void)
+     avg_botbox = cumulative_botbox >> 2;    //底部机箱温度采样数据平均值
+     avg_box = cumulative_box >> 2;    //机箱温度采样数据平均值
+ 
++    /* 导出滤波后的原始 ADC 均值，供 MiniMC 协议层进行开路/短路哨兵判定与真实 ADC 透传 */
++    g_last_ex1_adc_raw = (uint16_t)((avg < 0) ? 0 : avg);
++    g_last_bed_adc_raw = (uint16_t)((avg1 < 0) ? 0 : avg1);
++
+     current_temperature_ex1 = TempReadtoCelsius(avg, MAX_TEMP);
+     //current_temperature_ex2 = TempReadtoCelsius(avg_ex2, MAX_TEMP);
+     current_temperature_bed = TempReadtoCelsius(avg1, MAX_TEMP);
+diff --git a/motion-controller-mcu/project/marlin/marlin_module/thermistor.h b/motion-controller-mcu/project/marlin/marlin_module/thermistor.h
+index 9c992d6..456d1f0 100644
+--- a/motion-controller-mcu/project/marlin/marlin_module/thermistor.h
++++ b/motion-controller-mcu/project/marlin/marlin_module/thermistor.h
+@@ -40,6 +40,10 @@ extern volatile int16_t current_temperature_ex1;
+ extern volatile int16_t current_temperature_botbox;
+ extern volatile int16_t current_temperature_box;
+ 
++/* 去极值均值滤波后的最新热床与喷嘴原始 ADC 采样值（0~4095），供 MiniMC 温度遥测与故障判定读取 */
++extern volatile uint16_t g_last_bed_adc_raw;
++extern volatile uint16_t g_last_ex1_adc_raw;
++
+ /* Exported functions ------------------------------------------------------- */
+ void Thermistor_Init(void);
+ SensorState Thermistor_Update(void);
+diff --git a/motion-controller-mcu/project/src/main.c b/motion-controller-mcu/project/src/main.c
+index 10e4fd1..3c91523 100644
+--- a/motion-controller-mcu/project/src/main.c
++++ b/motion-controller-mcu/project/src/main.c
+@@ -182,6 +182,7 @@ int main(void)
+ 
+ 	/* init dma1 channel6: 迪文屏 USART2_RX 循环接收(配合 IDLE 中断判帧) */
+ 	wk_dma1_channel6_init();
++	/* 初始化 MiniMCProto V2 协议栈与环形缓冲状态机 */
+ 	minimc_proto_init();
+ 
+ 	/* init usb_otgfs1 function. */
+@@ -255,6 +256,7 @@ int main(void)
+ 		/* add user code begin 3 */
+ 		usbh_loop_handler(&otg_core_struct.host);
+ 		th_upgrade_mgr_poll(wk_timebase_get());
++		/* 主循环轮询处理 SoC 与 TH 板的 MiniMCProto 协议帧及非阻塞调试输出 */
+ 		minimc_proto_poll();
+ 
+ 		poweroff_setup_handler(); 	// 断电设置处理
+diff --git a/motion-controller-mcu/project/src/minimc_proto.c b/motion-controller-mcu/project/src/minimc_proto.c
+index 12cdac8..472914a 100644
+--- a/motion-controller-mcu/project/src/minimc_proto.c
++++ b/motion-controller-mcu/project/src/minimc_proto.c
+@@ -1,3 +1,9 @@
++/**
++ * @file minimc_proto.c
++ * @brief MC 运动控制板 MiniMCProto V2 协议编解码、AP↔MC↔TH 级联路由及 [MC-DBG] 异步环形日志实现。
++ * 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md 规范。
++ */
++
+ #include "minimc_proto.h"
+ #include "wk_dma.h"
+ #include "wk_usart.h"
+@@ -23,6 +29,10 @@
+ #define FW_VERSION_PATCH 1U
+ #endif
+ 
++#ifndef FW_GIT_COMMIT_SHORT
++#define FW_GIT_COMMIT_SHORT 0x891A8BB2U
++#endif
++
+ extern volatile float current_position[NUM_AXIS];
+ extern uint8_t is_paused;
+ #ifndef AUTO_BED_LEVELING_GRID_POINTS
+@@ -31,6 +41,9 @@ extern uint8_t is_paused;
+ extern float bed_level[AUTO_BED_LEVELING_GRID_POINTS][AUTO_BED_LEVELING_GRID_POINTS];
+ 
+ #if !defined(__ARM_ARCH) && !defined(__ARM_EABI__)
++/**
++ * @brief 宿主机单元测试环境下的加热器状态桩结构体
++ */
+ typedef struct {
+     int16_t target_temperature;
+     int16_t current_temperature;
+@@ -38,10 +51,15 @@ typedef struct {
+ 
+ __attribute__((weak)) volatile int16_t current_temperature_bed = 25;
+ __attribute__((weak)) volatile int16_t current_temperature_ex1 = 25;
++__attribute__((weak)) volatile uint16_t g_last_bed_adc_raw = 3200U;
++__attribute__((weak)) volatile uint16_t g_last_ex1_adc_raw = 3200U;
+ __attribute__((weak)) mc_host_heater_t Extruder_One = { 0, 25 };
+ __attribute__((weak)) mc_host_heater_t Platform = { 0, 25 };
+ __attribute__((weak)) uint8_t active_extruder = 0U;
+ 
++/**
++ * @brief 弱符号桩函数：设置宿主机模拟加热器目标温度
++ */
+ __attribute__((weak)) void Heater_set_target_temperature(mc_host_heater_t *heater, int16_t target_temp)
+ {
+     if (heater != NULL)
+@@ -50,26 +68,41 @@ __attribute__((weak)) void Heater_set_target_temperature(mc_host_heater_t *heate
+     }
+ }
+ 
++/**
++ * @brief 弱符号桩函数：宿主机模拟 Marlin 常规指令入队
++ */
+ __attribute__((weak)) void enquecommand(const char *cmd)
+ {
+     (void)cmd;
+ }
+ 
++/**
++ * @brief 弱符号桩函数：宿主机模拟 Marlin 常量指令入队
++ */
+ __attribute__((weak)) void enquecommand_P(const char *cmd)
+ {
+     (void)cmd;
+ }
+ 
++/**
++ * @brief 弱符号桩函数：宿主机模拟步进电机紧急停止
++ */
+ __attribute__((weak)) void quickStop(void)
+ {
+ }
+ 
++/**
++ * @brief 弱符号桩函数：宿主机模拟 USART 外设使能控制
++ */
+ __attribute__((weak)) void usart_enable(usart_type *usart_x, confirm_state new_state)
+ {
+     (void)usart_x;
+     (void)new_state;
+ }
+ 
++/**
++ * @brief 弱符号桩函数：宿主机模拟 USART 波特率与帧格式初始化
++ */
+ __attribute__((weak)) void usart_init(usart_type *usart_x, uint32_t baud_rate,
+                                       usart_data_bit_num_type data_bit, usart_stop_bit_num_type stop_bit)
+ {
+@@ -79,6 +112,9 @@ __attribute__((weak)) void usart_init(usart_type *usart_x, uint32_t baud_rate,
+     (void)stop_bit;
+ }
+ 
++/**
++ * @brief 弱符号桩函数：宿主机模拟查询 USART 状态标志位
++ */
+ __attribute__((weak)) flag_status usart_flag_get(usart_type *usart_x, uint32_t flag)
+ {
+     (void)usart_x;
+@@ -86,6 +122,9 @@ __attribute__((weak)) flag_status usart_flag_get(usart_type *usart_x, uint32_t f
+     return SET;
+ }
+ 
++/**
++ * @brief 弱符号桩函数：宿主机模拟向 USART 数据寄存器写入单字节
++ */
+ __attribute__((weak)) void usart_data_transmit(usart_type *usart_x, uint16_t data)
+ {
+     (void)usart_x;
+@@ -95,6 +134,9 @@ __attribute__((weak)) void usart_data_transmit(usart_type *usart_x, uint16_t dat
+ 
+ #define AP_RING_CAPACITY 256U
+ 
++/**
++ * @brief MiniMCProto V2 流式协议帧解析状态枚举
++ */
+ typedef enum {
+     PARSER_STATE_WAIT_SOF1 = 0,
+     PARSER_STATE_WAIT_SOF2,
+@@ -103,6 +145,9 @@ typedef enum {
+     PARSER_STATE_READ_CRC
+ } parser_state_t;
+ 
++/**
++ * @brief MiniMCProto V2 流式协议帧解析上下文结构体
++ */
+ typedef struct {
+     uint8_t buf[MINIMC_MAX_FRAME_SIZE];
+     uint16_t idx;
+@@ -110,12 +155,18 @@ typedef struct {
+     parser_state_t state;
+ } stream_parser_t;
+ 
++/**
++ * @brief AP 侧串口字节流非阻塞接收环形缓冲区结构体
++ */
+ typedef struct {
+     uint8_t buf[AP_RING_CAPACITY];
+     uint16_t head;
+     uint16_t tail;
+ } ring_buf_t;
+ 
++/**
++ * @brief [MC-DBG] 结构化日志行公共元数据结构体
++ */
+ typedef struct {
+     const char *dir;
+     const char *node;
+@@ -124,6 +175,9 @@ typedef struct {
+     const char *status;
+ } mc_dbg_meta_t;
+ 
++/**
++ * @brief MC 节点温度、运动、耗材与作业实时调试状态快照结构体
++ */
+ typedef struct {
+     int16_t nozzle_ddC;
+     int16_t nozzle_set_ddC;
+@@ -164,10 +218,49 @@ static uint16_t s_job_total_lines = 0U;
+ static uint16_t s_mc_th_seq = 0x0100U;
+ static uint8_t s_ap_enqueued_count = 0U;
+ static bool s_ap_cmd_active = false;
++static uint32_t s_boot_epoch_counter = 0U;
++static uint32_t s_runtime_boot_id = 0x01020304U;
++#if defined(__ARM_ARCH) || defined(__ARM_EABI__)
++static uint32_t s_noinit_boot_magic __attribute__((section(".noinit")));
++static uint32_t s_noinit_boot_seq __attribute__((section(".noinit")));
++#endif
+ static mc_dbg_state_t s_dbg_state = {
+     245, 0, 245, 0, 0U, 0x07U, 1500U, 0U, 0x0FU, 0U, 0U, 0U
+ };
+ 
++/**
++ * @brief 生成非零且每次复位/初始化必变化的 32-bit 动态 boot_id（ISS-016）
++ */
++static void mc_refresh_runtime_boot_id(void)
++{
++    s_boot_epoch_counter++;
++    uint32_t seq_seed = s_boot_epoch_counter;
++    uint32_t hw_entropy = (wk_timebase_get() << 8U) ^ (uint32_t)g_last_bed_adc_raw;
++#if defined(__ARM_ARCH) || defined(__ARM_EABI__)
++    if (s_noinit_boot_magic != 0xA55A3C69U)
++    {
++        s_noinit_boot_magic = 0xA55A3C69U;
++        s_noinit_boot_seq = 1U;
++    }
++    else
++    {
++        s_noinit_boot_seq++;
++    }
++    seq_seed += s_noinit_boot_seq;
++    const volatile uint32_t *uid_ptr = (const volatile uint32_t *)0x1FFFF7E8UL;
++    hw_entropy ^= uid_ptr[0] ^ (uint32_t)SysTick->VAL ^ (uint32_t)ADC1->odt;
++#endif
++    uint32_t mixed = (seq_seed * 0x9E3779B9UL) ^ hw_entropy ^ 0x4D430000UL;
++    mixed ^= (mixed >> 16U);
++    mixed *= 0x85EBCA6BUL;
++    mixed ^= (mixed >> 13U);
++    s_runtime_boot_id = (mixed != 0U) ? mixed : (0x01020304UL + seq_seed);
++}
++
++/**
++ * @brief 计算 [MC-DBG] 异步环形缓冲区当前剩余可写字节数
++ * @return 剩余空闲字节数
++ */
+ static uint16_t mc_dbg_ring_free_space(void)
+ {
+     uint16_t used;
+@@ -182,6 +275,11 @@ static uint16_t mc_dbg_ring_free_space(void)
+     return (uint16_t)((MC_DBG_RING_CAPACITY - 1U) - used);
+ }
+ 
++/**
++ * @brief 将指定字节流压入 [MC-DBG] 异步环形缓冲区
++ * @param src   源字符数组指针
++ * @param count 写入字节数
++ */
+ static void mc_dbg_ring_push_bytes(const char *src, uint16_t count)
+ {
+     if ((src == NULL) || (count == 0U))
+@@ -195,26 +293,48 @@ static void mc_dbg_ring_push_bytes(const char *src, uint16_t count)
+     }
+ }
+ 
++/**
++ * @brief 设置 [MC-DBG] 调试输出开关状态
++ * @param enabled true 启用，false 禁用
++ */
+ void mc_debug_set_enabled(bool enabled)
+ {
+     s_mc_dbg_enabled = enabled;
+ }
+ 
++/**
++ * @brief 查询 [MC-DBG] 调试输出是否启用
++ * @return true 已启用，false 已禁用
++ */
+ bool mc_debug_is_enabled(void)
+ {
+     return s_mc_dbg_enabled;
+ }
+ 
++/**
++ * @brief 获取 [MC-DBG] 环形缓冲满溢丢弃累计计数
++ * @return 累计丢弃次数
++ */
+ uint32_t mc_debug_get_drop_count(void)
+ {
+     return s_mc_dbg_drop_count;
+ }
+ 
++/**
++ * @brief 获取 [MC-DBG] 超长行截断累计计数
++ * @return 累计截断次数
++ */
+ uint32_t mc_debug_get_trunc_count(void)
+ {
+     return s_mc_dbg_trunc_count;
+ }
+ 
++/**
++ * @brief 将 [MC-DBG] 日志文本非阻塞写入环形缓冲（含超长截断与满溢丢弃统计）
++ * @param buf 日志文本缓冲区
++ * @param len 日志字节长度
++ * @return true 写入成功，false 满溢丢弃或未启用
++ */
+ bool mc_debug_write(const char *buf, uint16_t len)
+ {
+     if ((buf == NULL) || (len == 0U) || (!s_mc_dbg_enabled))
+@@ -239,6 +359,9 @@ bool mc_debug_write(const char *buf, uint16_t len)
+     return true;
+ }
+ 
++/**
++ * @brief 按单轮字节预算将 [MC-DBG] 环形缓冲数据非阻塞排空至 USART1
++ */
+ void mc_debug_poll_drain(void)
+ {
+     uint16_t budget = MC_DBG_DRAIN_BUDGET;
+@@ -255,6 +378,11 @@ void mc_debug_poll_drain(void)
+     }
+ }
+ 
++/**
++ * @brief 组装并输出标准格式的 [MC-DBG] 结构化日志行
++ * @param meta   日志公共元数据指针
++ * @param kv_str 扩展键值对字符串
++ */
+ static void mc_dbg_emit(const mc_dbg_meta_t *meta, const char *kv_str)
+ {
+     if ((meta == NULL) || (!s_mc_dbg_enabled))
+@@ -285,6 +413,11 @@ static void mc_dbg_emit(const mc_dbg_meta_t *meta, const char *kv_str)
+     }
+ }
+ 
++/**
++ * @brief 将协议节点 ID 映射为节点名称字符串
++ * @param node_id 协议节点 ID
++ * @return 节点名称（"AP"、"TH" 或 "MC"）
++ */
+ static const char *mc_dbg_node_name(uint8_t node_id)
+ {
+     if (node_id == MINIMC_NODE_AP)
+@@ -298,6 +431,11 @@ static const char *mc_dbg_node_name(uint8_t node_id)
+     return "MC";
+ }
+ 
++/**
++ * @brief 将 MC 运动状态枚举映射为可读字符串
++ * @param state 运动状态码
++ * @return 状态名称字符串
++ */
+ static const char *mc_dbg_motion_state_str(uint8_t state)
+ {
+     if (state == MINIMC_MOTION_STATE_HOMING)
+@@ -315,6 +453,11 @@ static const char *mc_dbg_motion_state_str(uint8_t state)
+     return "IDLE";
+ }
+ 
++/**
++ * @brief 将 MC 作业状态码映射为可读字符串
++ * @param state_id 作业状态码
++ * @return 作业状态字符串
++ */
+ static const char *mc_dbg_job_state_str(uint8_t state_id)
+ {
+     if (is_paused != 0U)
+@@ -348,6 +491,12 @@ static const char *mc_dbg_job_state_str(uint8_t state_id)
+     return "IDLE";
+ }
+ 
++/**
++ * @brief 计算 MiniMCProto V2 帧的 CRC-16/CCITT-FALSE 校验值
++ * @param data 待校验字节数组指针
++ * @param len  待校验字节长度
++ * @return 16-bit CRC 校验结果
++ */
+ uint16_t minimc_crc16(const uint8_t *data, uint16_t len)
+ {
+     if (data == NULL)
+@@ -373,6 +522,10 @@ uint16_t minimc_crc16(const uint8_t *data, uint16_t len)
+     return crc;
+ }
+ 
++/**
++ * @brief 初始化 AP 侧接收环形缓冲区读写指针
++ * @param r 环形缓冲区指针
++ */
+ static void ring_init(ring_buf_t *r)
+ {
+     if (r == NULL)
+@@ -383,6 +536,12 @@ static void ring_init(ring_buf_t *r)
+     r->tail = 0U;
+ }
+ 
++/**
++ * @brief 向 AP 侧接收环形缓冲区压入字节流
++ * @param r    环形缓冲区指针
++ * @param data 待压入字节数组
++ * @param len  字节长度
++ */
+ static void ring_push(ring_buf_t *r, const uint8_t *data, uint16_t len)
+ {
+     if ((r == NULL) || (data == NULL) || (len == 0U))
+@@ -401,6 +560,12 @@ static void ring_push(ring_buf_t *r, const uint8_t *data, uint16_t len)
+     }
+ }
+ 
++/**
++ * @brief 从 AP 侧接收环形缓冲区弹出单个字节
++ * @param r        环形缓冲区指针
++ * @param out_byte 输出字节指针
++ * @return true 成功弹出一个字节，false 缓冲区为空或参数非法
++ */
+ static bool ring_pop(ring_buf_t *r, uint8_t *out_byte)
+ {
+     if ((r == NULL) || (out_byte == NULL) || (r->head == r->tail))
+@@ -412,6 +577,10 @@ static bool ring_pop(ring_buf_t *r, uint8_t *out_byte)
+     return true;
+ }
+ 
++/**
++ * @brief 初始化流式协议解析器状态机
++ * @param p 解析器上下文指针
++ */
+ static void parser_init(stream_parser_t *p)
+ {
+     if (p == NULL)
+@@ -423,6 +592,10 @@ static void parser_init(stream_parser_t *p)
+     p->expected_payload_len = 0U;
+ }
+ 
++/**
++ * @brief 复位流式协议解析器状态机至初始等待 SOF1 状态
++ * @param p 解析器上下文指针
++ */
+ static void parser_reset(stream_parser_t *p)
+ {
+     if (p == NULL)
+@@ -434,6 +607,11 @@ static void parser_reset(stream_parser_t *p)
+     p->expected_payload_len = 0U;
+ }
+ 
++/**
++ * @brief 校验流式解析器已收齐的 12 字节帧头协议标志与载荷长度上界
++ * @param p 解析器上下文指针
++ * @return true 帧头合法，false 帧头非法
++ */
+ static bool parser_check_header(stream_parser_t *p)
+ {
+     if (p == NULL)
+@@ -455,6 +633,12 @@ static bool parser_check_header(stream_parser_t *p)
+     return true;
+ }
+ 
++/**
++ * @brief 推进流式解析器的 SOF1/SOF2 帧同步头识别阶段
++ * @param p    解析器上下文指针
++ * @param byte 当前接收字节
++ * @return true 尚处于 SOF 同步头阶段，false 已进入帧体接收阶段
++ */
+ static bool parser_step_sof(stream_parser_t *p, uint8_t byte)
+ {
+     if (p->state == PARSER_STATE_WAIT_SOF1)
+@@ -484,6 +668,12 @@ static bool parser_step_sof(stream_parser_t *p, uint8_t byte)
+     return false;
+ }
+ 
++/**
++ * @brief 记录协议帧错误（CRC_ERR/BAD_FRAME）并输出 [MC-DBG] ERR 日志
++ * @param hdr        协议帧头指针
++ * @param status_str 错误状态字符串
++ * @param err_code   错误码
++ */
+ static void mc_dbg_log_frame_err(const uint8_t *hdr, const char *status_str, uint8_t err_code)
+ {
+     if ((hdr == NULL) || (status_str == NULL))
+@@ -503,6 +693,13 @@ static void mc_dbg_log_frame_err(const uint8_t *hdr, const char *status_str, uin
+     mc_dbg_emit(&meta, kv);
+ }
+ 
++/**
++ * @brief 单字节推进流式协议解析器并在完整帧通过 CRC 校验时置位 out_ready
++ * @param p         解析器上下文指针
++ * @param byte      当前接收字节
++ * @param out_ready 输出完整有效帧就绪标志指针
++ * @return true 推进成功，false 参数为空
++ */
+ static bool parser_step(stream_parser_t *p, uint8_t byte, bool *out_ready)
+ {
+     if ((p == NULL) || (out_ready == NULL))
+@@ -551,6 +748,12 @@ static bool parser_step(stream_parser_t *p, uint8_t byte, bool *out_ready)
+     return true;
+ }
+ 
++/**
++ * @brief 组装 MC 节点 0x02 版本与运行实例上报响应帧
++ * @param seq     请求帧序列号
++ * @param out_buf 输出帧缓冲区指针
++ * @param out_len 输出完整帧字节长度指针
++ */
+ static void build_version_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+ {
+     if ((out_buf == NULL) || (out_len == NULL))
+@@ -573,14 +776,16 @@ static void build_version_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len
+     out_buf[13] = 0U;
+     out_buf[14] = (uint8_t)FW_VERSION_MAJOR;
+     out_buf[15] = (uint8_t)FW_VERSION_MINOR;
+-    out_buf[16] = 0x04U;
+-    out_buf[17] = 0x03U;
+-    out_buf[18] = 0x02U;
+-    out_buf[19] = 0x01U;
+-    out_buf[20] = 0x32U;
+-    out_buf[21] = 0x13U;
+-    out_buf[22] = 0x79U;
+-    out_buf[23] = 0xA6U;
++    /* ISS-016: 填入动态 s_runtime_boot_id (LE) 与构建期 FW_GIT_COMMIT_SHORT (LE) */
++    out_buf[16] = (uint8_t)(s_runtime_boot_id & 0xFFU);
++    out_buf[17] = (uint8_t)((s_runtime_boot_id >> 8U) & 0xFFU);
++    out_buf[18] = (uint8_t)((s_runtime_boot_id >> 16U) & 0xFFU);
++    out_buf[19] = (uint8_t)((s_runtime_boot_id >> 24U) & 0xFFU);
++    const uint32_t git_commit = (uint32_t)FW_GIT_COMMIT_SHORT;
++    out_buf[20] = (uint8_t)(git_commit & 0xFFU);
++    out_buf[21] = (uint8_t)((git_commit >> 8U) & 0xFFU);
++    out_buf[22] = (uint8_t)((git_commit >> 16U) & 0xFFU);
++    out_buf[23] = (uint8_t)((git_commit >> 24U) & 0xFFU);
+     out_buf[24] = 0x03U;
+     out_buf[25] = 0x00U;
+     out_buf[26] = 0x00U;
+@@ -591,6 +796,13 @@ static void build_version_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len
+     *out_len = 30U;
+ }
+ 
++/**
++ * @brief 组装 MC 节点 0x04 心跳 PONG 响应帧
++ * @param seq         请求帧序列号
++ * @param req_payload 请求帧 PING 载荷指针
++ * @param out_buf     输出帧缓冲区指针
++ * @param out_len     输出完整帧字节长度指针
++ */
+ static void build_pong_resp(uint16_t seq, const uint8_t *req_payload, uint8_t *out_buf, uint16_t *out_len)
+ {
+     if ((out_buf == NULL) || (out_len == NULL))
+@@ -634,6 +846,13 @@ static void build_pong_resp(uint16_t seq, const uint8_t *req_payload, uint8_t *o
+     *out_len = 26U;
+ }
+ 
++/**
++ * @brief 组装 MC 节点 0x06 NACK 拒绝响应帧（3 字节载荷：错误码 + 16-bit 序列号）
++ * @param seq      原请求帧序列号
++ * @param err_code NACK 错误码
++ * @param out_buf  输出帧缓冲区指针
++ * @param out_len  输出完整帧字节长度指针
++ */
+ static void build_nack_resp(uint16_t seq, uint8_t err_code, uint8_t *out_buf, uint16_t *out_len)
+ {
+     if ((out_buf == NULL) || (out_len == NULL))
+@@ -661,18 +880,31 @@ static void build_nack_resp(uint16_t seq, uint8_t err_code, uint8_t *out_buf, ui
+     *out_len = 17U;
+ }
+ 
++/**
++ * @brief 同步 MC 运行时温度与传感器状态（含热床 5~130℃ 与 ADC 70~4081 量程故障门禁）
++ */
+ static void mc_dbg_sync_runtime_state(void)
+ {
+     const int16_t raw_ex1 = current_temperature_ex1;
+     const int16_t raw_bed = current_temperature_bed;
++    const uint16_t bed_adc = g_last_bed_adc_raw;
+     const bool ex1_fault = (raw_ex1 == (int16_t)BAD_TEMPERATURE) || (raw_ex1 < -200);
+-    const bool bed_fault = (raw_bed == (int16_t)BAD_TEMPERATURE) || (raw_bed < -200);
++    /* ISS-011/012: 热床物理量程 5~130°C 与原始 ADC 70~4081 越界时均判定为传感器故障 */
++    const bool bed_temp_fault = (raw_bed == (int16_t)BAD_TEMPERATURE) || (raw_bed < 5) || (raw_bed > 130);
++    const bool bed_adc_fault = (bed_adc > 4081U) || (bed_adc < 70U);
++    const bool bed_fault = bed_temp_fault || bed_adc_fault;
+ 
+     s_dbg_state.heater_fault = (ex1_fault || bed_fault) ? 1U : 0U;
+     s_dbg_state.nozzle_ddC = ex1_fault ? MINIMC_TEMP_SENTINEL_FAULT : (int16_t)(raw_ex1 * 10);
+     s_dbg_state.bed_ddC = bed_fault ? MINIMC_TEMP_SENTINEL_FAULT : (int16_t)(raw_bed * 10);
+ }
+ 
++/**
++ * @brief 组装 MC 节点 0x15 温度遥测响应帧（透传真实热床 ADC 读数与开短路状态）
++ * @param seq     请求帧序列号
++ * @param out_buf 输出帧缓冲区指针
++ * @param out_len 输出完整帧字节长度指针
++ */
+ static void build_temp_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+ {
+     if ((out_buf == NULL) || (out_len == NULL))
+@@ -693,14 +925,23 @@ static void build_temp_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     out_buf[10] = (uint8_t)(MINIMC_TEMP_REPORT_PAYLOAD_SIZE & 0xFFU);
+     out_buf[11] = 0x00U;
+ 
++    const bool is_bed_fault = (s_dbg_state.bed_ddC == MINIMC_TEMP_SENTINEL_FAULT);
++    const uint16_t bed_adc = g_last_bed_adc_raw;
+     minimc_temp_report_payload_t payload;
+     payload.current_temp_deci_c = s_dbg_state.bed_ddC;
+     payload.target_temp_deci_c = s_dbg_state.bed_set_ddC;
+-    payload.raw_adc_value = (s_dbg_state.heater_fault != 0U) ? 4095U : 3200U;
+-    payload.sensor_status = (s_dbg_state.heater_fault != 0U)
+-                                ? MINIMC_TEMP_STATUS_DISCONNECTED
+-                                : MINIMC_TEMP_STATUS_OK;
+-    payload.heater_duty_percent = (s_dbg_state.bed_set_ddC > s_dbg_state.bed_ddC) ? 50U : 0U;
++    payload.raw_adc_value = bed_adc;
++    if (is_bed_fault)
++    {
++        payload.sensor_status = (bed_adc < 70U)
++                                    ? MINIMC_TEMP_STATUS_SHORT
++                                    : MINIMC_TEMP_STATUS_DISCONNECTED;
++    }
++    else
++    {
++        payload.sensor_status = MINIMC_TEMP_STATUS_OK;
++    }
++    payload.heater_duty_percent = ((!is_bed_fault) && (s_dbg_state.bed_set_ddC > s_dbg_state.bed_ddC)) ? 50U : 0U;
+     payload.sample_timestamp_ms = wk_timebase_get();
+     payload.reserved = 0U;
+ 
+@@ -716,6 +957,11 @@ static void build_temp_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     *out_len = (uint16_t)(frame_body_len + MINIMC_CRC_SIZE);
+ }
+ 
++/**
++ * @brief 将浮点毫米坐标四舍五入转换为微米（um）整数
++ * @param mm 毫米坐标值
++ * @return 微米整数坐标值
++ */
+ static int32_t pos_mm_to_um(float mm)
+ {
+     const float um = mm * 1000.0f;
+@@ -726,6 +972,11 @@ static int32_t pos_mm_to_um(float mm)
+     return (int32_t)(um - 0.5f);
+ }
+ 
++/**
++ * @brief 将调平网格毫米偏差四舍五入并钳位转换为 int16 微米偏差
++ * @param mm 毫米偏差值
++ * @return 钳位后的微米偏差（-32768~32767）
++ */
+ static int16_t level_mm_to_um(float mm)
+ {
+     const float um_f = mm * 1000.0f;
+@@ -749,6 +1000,10 @@ static int16_t level_mm_to_um(float mm)
+     return (int16_t)um;
+ }
+ 
++/**
++ * @brief 查询当前 X/Y/Z 三轴归零完成位掩码
++ * @return 归零掩码（bit0=X, bit1=Y, bit2=Z）
++ */
+ static uint8_t query_homed_mask(void)
+ {
+     uint8_t mask = 0U;
+@@ -767,6 +1022,10 @@ static uint8_t query_homed_mask(void)
+     return mask;
+ }
+ 
++/**
++ * @brief 查询当前 Marlin 规划器运动状态码
++ * @return 运动状态码（IDLE/MOVING/PAUSED）
++ */
+ static uint8_t query_motion_state(void)
+ {
+     if (is_paused != 0U)
+@@ -780,6 +1039,12 @@ static uint8_t query_motion_state(void)
+     return MINIMC_MOTION_STATE_IDLE;
+ }
+ 
++/**
++ * @brief 组装 MC 节点 0x16 运动位置遥测响应帧
++ * @param seq     请求帧序列号
++ * @param out_buf 输出帧缓冲区指针
++ * @param out_len 输出完整帧字节长度指针
++ */
+ void build_pos_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+ {
+     if ((out_buf == NULL) || (out_len == NULL))
+@@ -820,6 +1085,12 @@ void build_pos_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     *out_len = (uint16_t)(frame_body_len + MINIMC_CRC_SIZE);
+ }
+ 
++/**
++ * @brief 组装 MC 节点 0x18 5x5 自动调平高度网格遥测响应帧
++ * @param seq     请求帧序列号
++ * @param out_buf 输出帧缓冲区指针
++ * @param out_len 输出完整帧字节长度指针
++ */
+ void build_level_grid_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+ {
+     if ((out_buf == NULL) || (out_len == NULL))
+@@ -862,6 +1133,11 @@ void build_level_grid_resp(uint16_t seq, uint8_t *out_buf, uint16_t *out_len)
+     *out_len = (uint16_t)(frame_body_len + MINIMC_CRC_SIZE);
+ }
+ 
++/**
++ * @brief 格式化 MC 节点温度遥测键值对字符串
++ * @param out_kv 输出字符串缓冲区
++ * @param cap    缓冲区字节容量
++ */
+ static void mc_dbg_format_temp_kv(char *out_kv, size_t cap)
+ {
+     if ((out_kv == NULL) || (cap == 0U))
+@@ -880,6 +1156,12 @@ static void mc_dbg_format_temp_kv(char *out_kv, size_t cap)
+         (unsigned int)s_dbg_state.heater_fault);
+ }
+ 
++/**
++ * @brief 格式化 MC 节点运动坐标与状态键值对字符串
++ * @param op_str 动作名称字符串
++ * @param out_kv 输出字符串缓冲区
++ * @param cap    缓冲区字节容量
++ */
+ static void mc_dbg_format_motion_kv(const char *op_str, char *out_kv, size_t cap)
+ {
+     if ((op_str == NULL) || (out_kv == NULL) || (cap == 0U))
+@@ -905,6 +1187,13 @@ static void mc_dbg_format_motion_kv(const char *op_str, char *out_kv, size_t cap
+         m_state);
+ }
+ 
++/**
++ * @brief 格式化 MC 节点调平网格采样点键值对字符串
++ * @param op_str    动作名称字符串
++ * @param probe_idx 网格采样点索引（0~24）
++ * @param out_kv    输出字符串缓冲区
++ * @param cap       缓冲区字节容量
++ */
+ static void mc_dbg_format_level_kv(const char *op_str, uint8_t probe_idx, char *out_kv, size_t cap)
+ {
+     if ((op_str == NULL) || (out_kv == NULL) || (cap == 0U))
+@@ -924,6 +1213,13 @@ static void mc_dbg_format_level_kv(const char *op_str, uint8_t probe_idx, char *
+         (long)z_um);
+ }
+ 
++/**
++ * @brief 格式化 MC 节点耗材与槽位状态键值对字符串
++ * @param op_str   耗材动作字符串
++ * @param slot     目标槽位号
++ * @param step_str 步骤状态字符串
++ * @param out_kv   输出字符串缓冲区
++ */
+ static void mc_dbg_format_filament_kv(const char *op_str, uint8_t slot, const char *step_str, char *out_kv)
+ {
+     if ((op_str == NULL) || (step_str == NULL) || (out_kv == NULL))
+@@ -941,6 +1237,11 @@ static void mc_dbg_format_filament_kv(const char *op_str, uint8_t slot, const ch
+         step_str);
+ }
+ 
++/**
++ * @brief 格式化 MC 节点打印作业状态与进度键值对字符串
++ * @param out_kv 输出字符串缓冲区
++ * @param cap    缓冲区字节容量
++ */
+ static void mc_dbg_format_job_kv(char *out_kv, size_t cap)
+ {
+     if ((out_kv == NULL) || (cap == 0U))
+@@ -957,6 +1258,12 @@ static void mc_dbg_format_job_kv(char *out_kv, size_t cap)
+         (unsigned int)s_dbg_state.ack_seq);
+ }
+ 
++/**
++ * @brief 输出串口发送失败的 [MC-DBG] ERR TX_ERR 日志
++ * @param node_str 目标节点名称字符串
++ * @param seq      协议帧序列号
++ * @param cmd_id   协议命令字
++ */
+ static void mc_dbg_log_tx_err(const char *node_str, uint16_t seq, uint8_t cmd_id)
+ {
+     if (node_str == NULL)
+@@ -967,6 +1274,12 @@ static void mc_dbg_log_tx_err(const char *node_str, uint16_t seq, uint8_t cmd_id
+     mc_dbg_emit(&err_meta, "err_code=0x06");
+ }
+ 
++/**
++ * @brief 根据串口发送结果输出 [MC-DBG] TX 日志或 TX_ERR 错误日志
++ * @param tx_meta 发送日志元数据指针
++ * @param kv      扩展键值对字符串
++ * @param tx_ok   底层串口发送是否成功
++ */
+ static void mc_dbg_emit_tx_or_err(const mc_dbg_meta_t *tx_meta, const char *kv, bool tx_ok)
+ {
+     if (tx_meta == NULL)
+@@ -982,6 +1295,13 @@ static void mc_dbg_emit_tx_or_err(const mc_dbg_meta_t *tx_meta, const char *kv,
+     mc_dbg_emit(tx_meta, kv);
+ }
+ 
++/**
++ * @brief 在发送成功时连续输出 STATE 与 TX 两条 [MC-DBG] 日志，失败时输出 TX_ERR
++ * @param seq    协议帧序列号
++ * @param cmd_id 协议命令字
++ * @param kv     扩展键值对字符串
++ * @param tx_ok  底层串口发送是否成功
++ */
+ static void mc_dbg_emit_state_and_tx(uint16_t seq, uint8_t cmd_id, const char *kv, bool tx_ok)
+ {
+     if (!tx_ok)
+@@ -997,6 +1317,12 @@ static void mc_dbg_emit_state_and_tx(uint16_t seq, uint8_t cmd_id, const char *k
+     mc_dbg_emit(&tx_meta, kv);
+ }
+ 
++/**
++ * @brief 对跨板级联转发帧执行 hop_limit 递减、置位路由标志并重算 CRC16
++ * @param frame   输入原始协议帧指针
++ * @param len     协议帧总字节数
++ * @param out_buf 输出重打包后的协议帧缓冲区
++ */
+ static void relay_frame(const uint8_t *frame, uint16_t len, uint8_t *out_buf)
+ {
+     if ((frame == NULL) || (out_buf == NULL) || (len < 14U))
+@@ -1014,6 +1340,11 @@ static void relay_frame(const uint8_t *frame, uint16_t len, uint8_t *out_buf)
+     out_buf[len - 1U] = (uint8_t)((new_crc >> 8U) & 0xFFU);
+ }
+ 
++/**
++ * @brief 更新喷嘴与热床设定目标温度并输出 STATE [MC-DBG] 日志
++ * @param nozzle_set_ddC 喷嘴设定温度（0.1℃）
++ * @param bed_set_ddC    热床设定温度（0.1℃）
++ */
+ void mc_debug_notify_temp_target(int16_t nozzle_set_ddC, int16_t bed_set_ddC)
+ {
+     s_dbg_state.nozzle_set_ddC = nozzle_set_ddC;
+@@ -1025,6 +1356,12 @@ void mc_debug_notify_temp_target(int16_t nozzle_set_ddC, int16_t bed_set_ddC)
+     mc_dbg_emit(&state_meta, kv);
+ }
+ 
++/**
++ * @brief 更新运动操作与进给率状态并输出 STATE [MC-DBG] 日志
++ * @param op        运动操作名称字符串
++ * @param axes_mask 涉及的运动轴掩码
++ * @param feed      进给速率（mm/min）
++ */
+ void mc_debug_notify_motion(const char *op, uint8_t axes_mask, uint16_t feed)
+ {
+     if (op == NULL)
+@@ -1039,6 +1376,13 @@ void mc_debug_notify_motion(const char *op, uint8_t axes_mask, uint16_t feed)
+     mc_dbg_emit(&state_meta, kv);
+ }
+ 
++/**
++ * @brief 更新耗材槽位与在位传感器状态并输出 STATE [MC-DBG] 日志
++ * @param op           耗材操作字符串
++ * @param slot         槽位编号（0~3）
++ * @param present_mask 耗材在位掩码
++ * @param step_state   步骤状态字符串
++ */
+ void mc_debug_notify_filament(const char *op, uint8_t slot, uint8_t present_mask, const char *step_state)
+ {
+     if ((op == NULL) || (step_state == NULL))
+@@ -1054,6 +1398,12 @@ void mc_debug_notify_filament(const char *op, uint8_t slot, uint8_t present_mask
+     mc_dbg_emit(&state_meta, kv);
+ }
+ 
++/**
++ * @brief 更新打印作业状态、千分比进度与确认序号并输出 STATE [MC-DBG] 日志
++ * @param job_state_id      作业状态码
++ * @param progress_permille 作业进度（0~1000‰）
++ * @param ack_seq           确认序列号
++ */
+ void mc_debug_notify_job(uint8_t job_state_id, uint16_t progress_permille, uint16_t ack_seq)
+ {
+     s_dbg_state.job_state_id = (uint8_t)(job_state_id % 7U);
+@@ -1555,7 +1905,13 @@ static void handle_mc_filament(uint8_t cmd_id, uint16_t seq, const uint8_t *fram
+     }
+     minimc_filament_req_t req;
+     (void)memcpy(&req, frame + MINIMC_HEADER_SIZE, sizeof(req));
+-    const uint8_t safe_slot = (uint8_t)(req.slot_id & 0x03U);
++    /* ISS-010(MC): 严禁使用 & 0x03U 掩盖越界槽位，槽位 >3 或动作 >2（仅 0=SELECT, 1=LOAD, 2=UNLOAD 合法）必须返回 NACK 0x03 */
++    if ((req.slot_id > 3U) || (req.action > 2U))
++    {
++        send_mc_nack(frame, seq, 0x03U);
++        return;
++    }
++    const uint8_t safe_slot = req.slot_id;
+     const char *op_str = "SELECT";
+     if (req.action == 1U)
+     {
+@@ -1646,6 +2002,14 @@ static void handle_mc_gcode_exec(uint16_t seq, const uint8_t *frame, uint16_t pl
+     }
+ }
+ 
++/**
++ * @brief 处理 MC 核心查询命令 (0x01 版本、0x03 PING、0x15 温度查询)
++ * @param cmd_id 命令码
++ * @param seq 16位序列号
++ * @param frame 完整请求帧指针
++ * @param resp 响应帧缓冲区指针
++ * @return true 已匹配处理，false 未匹配
++ */
+ static bool handle_mc_core_queries(uint8_t cmd_id, uint16_t seq, const uint8_t *frame, uint8_t *resp)
+ {
+     uint16_t resp_len = 0U;
+@@ -1655,7 +2019,14 @@ static bool handle_mc_core_queries(uint8_t cmd_id, uint16_t seq, const uint8_t *
+     {
+         build_version_resp(seq, resp, &resp_len);
+         const bool tx_ok = minimc_proto_send(resp, resp_len);
+-        (void)snprintf(kv, sizeof(kv), "fw=%u.%u", (unsigned int)FW_VERSION_MAJOR, (unsigned int)FW_VERSION_MINOR);
++        (void)snprintf(
++            kv,
++            sizeof(kv),
++            "fw=%u.%u boot_id=0x%08lX commit=0x%08lX",
++            (unsigned int)FW_VERSION_MAJOR,
++            (unsigned int)FW_VERSION_MINOR,
++            (unsigned long)s_runtime_boot_id,
++            (unsigned long)FW_GIT_COMMIT_SHORT);
+         const mc_dbg_meta_t tx_meta = { "TX", "MC", seq, MINIMC_CMD_VERSION_REPORT, "ACK" };
+         mc_dbg_emit_tx_or_err(&tx_meta, kv, tx_ok);
+         return true;
+@@ -1679,6 +2050,14 @@ static bool handle_mc_core_queries(uint8_t cmd_id, uint16_t seq, const uint8_t *
+     return false;
+ }
+ 
++/**
++ * @brief 处理 MC 运动与调平类命令 (0x1B, 0x16, 0x12, 0x13, 0x10, 0x1A)
++ * @param cmd_id 命令码
++ * @param seq 16位序列号
++ * @param frame 完整请求帧指针
++ * @param resp 响应帧缓冲区指针
++ * @return true 已匹配处理，false 未匹配
++ */
+ static bool handle_mc_motion_and_level(uint8_t cmd_id, uint16_t seq, const uint8_t *frame, uint8_t *resp)
+ {
+     uint16_t resp_len = 0U;
+@@ -1757,6 +2136,11 @@ static bool handle_mc_control_cmds(uint8_t cmd_id, uint16_t seq, const uint8_t *
+     return false;
+ }
+ 
++/**
++ * @brief 分发处理目标为 MC (dst=0x02 或 0xFF) 的协议请求帧
++ * @param frame 完整请求帧指针
++ * @param len 帧总长度
++ */
+ static void handle_mc_query(const uint8_t *frame, uint16_t len)
+ {
+     if ((frame == NULL) || (len < 14U))
+@@ -1818,6 +2202,11 @@ static void handle_th_relay_req(const uint8_t *frame, uint16_t len)
+     mc_dbg_emit(&rtx_meta, "timeout_ms=200");
+ }
+ 
++/**
++ * @brief 处理从 AP (USART2) 接收并通过 CRC16 校验的完整协议帧
++ * @param frame 完整请求帧指针
++ * @param len 帧总长度
++ */
+ static void handle_ap_frame(const uint8_t *frame, uint16_t len)
+ {
+     if ((frame == NULL) || (len < 14U))
+@@ -1843,6 +2232,13 @@ static void handle_ap_frame(const uint8_t *frame, uint16_t len)
+     }
+ }
+ 
++/**
++ * @brief 校验 TH 返回的响应命令码是否与在途请求命令码匹配
++ * @param req_cmd 在途请求命令码
++ * @param resp_cmd TH 响应命令码
++ * @param plen 响应载荷长度
++ * @return true 命令映射合法，false 不匹配
++ */
+ static bool is_valid_th_relay_cmd(uint8_t req_cmd, uint8_t resp_cmd, uint16_t plen)
+ {
+     if (resp_cmd == MINIMC_CMD_NACK)
+@@ -1878,6 +2274,12 @@ static bool is_valid_th_relay_cmd(uint8_t req_cmd, uint8_t resp_cmd, uint16_t pl
+     return (resp_cmd == req_cmd);
+ }
+ 
++/**
++ * @brief 校验 TH 级联响应帧的源/宿节点、响应标志、序列号与跳数合法性
++ * @param frame TH 响应帧指针
++ * @param out_err_code 输出错误码指针
++ * @return true 校验通过，false 校验失败
++ */
+ static bool validate_th_relay_resp(const uint8_t *frame, uint8_t *out_err_code)
+ {
+     if ((frame == NULL) || (out_err_code == NULL))
+@@ -2000,6 +2402,11 @@ static void sync_th_filament_resp_state(const uint8_t *frame, uint16_t seq)
+     mc_debug_notify_filament("SELECT", active_slot, present_mask, step_str);
+ }
+ 
++/**
++ * @brief 处理从 TH (USART6) 接收并通过 CRC16 校验的级联响应帧并回传 AP
++ * @param frame TH 响应帧指针
++ * @param len 帧总长度
++ */
+ static void handle_th_frame(const uint8_t *frame, uint16_t len)
+ {
+     if ((frame == NULL) || (len < 14U))
+@@ -2134,6 +2541,10 @@ bool minimc_proto_send_th_gcode(const char *line, uint16_t len, uint8_t exec_fla
+     return true;
+ }
+ 
++/**
++ * @brief 检查在途 TH 级联请求是否超过 200ms 窗口并输出结构化超时日志
++ * @param now_ms 当前系统毫秒计数
++ */
+ static void check_th_relay_timeout(uint32_t now_ms)
+ {
+     if (!s_relay_pending)
+@@ -2155,6 +2566,10 @@ static void check_th_relay_timeout(uint32_t now_ms)
+     mc_dbg_emit(&err_meta, kv);
+ }
+ 
++/**
++ * @brief 按 1Hz 周期输出温度与作业状态心跳 [MC-DBG] 日志
++ * @param now_ms 当前系统毫秒计数
++ */
+ void mc_debug_log_periodic_state(uint32_t now_ms)
+ {
+     if (!s_mc_dbg_enabled)
+@@ -2179,6 +2594,9 @@ void mc_debug_log_periodic_state(uint32_t now_ms)
+     mc_dbg_emit(&job_meta, kv);
+ }
+ 
++/**
++ * @brief 从 AP 接收环形队列按 64B 预算拉取字节并推进流式帧解析器
++ */
+ static void drain_ap_rx(void)
+ {
+     uint8_t byte = 0U;
+@@ -2196,6 +2614,9 @@ static void drain_ap_rx(void)
+     }
+ }
+ 
++/**
++ * @brief 从 USART6 (MC↔TH 级联链路) 读取接收字节并推进流式帧解析器
++ */
+ static void drain_th_rx(void)
+ {
+     if (forward_uart_rx_poll() != 0U)
+@@ -2215,6 +2636,9 @@ static void drain_th_rx(void)
+     }
+ }
+ 
++/**
++ * @brief 主循环非阻塞协议与调试排空轮询入口
++ */
+ void minimc_proto_poll(void)
+ {
+     const uint32_t now_ms = wk_timebase_get();
+@@ -2225,6 +2649,11 @@ void minimc_proto_poll(void)
+     mc_debug_poll_drain();
+ }
+ 
++/**
++ * @brief 将 USART2 DMA/IDLE 中断接收的原始字节压入主循环无锁环形队列
++ * @param data 接收字节流指针
++ * @param len 字节数
++ */
+ void minimc_proto_push_ap_rx(const uint8_t *data, uint16_t len)
+ {
+     if ((data == NULL) || (len == 0U))
+@@ -2234,6 +2663,11 @@ void minimc_proto_push_ap_rx(const uint8_t *data, uint16_t len)
+     ring_push(&s_ap_ring, data, len);
+ }
+ 
++/**
++ * @brief 兼容处理 AP 接收数据的公开包装接口
++ * @param data 接收字节流指针
++ * @param len 字节数
++ */
+ void minimc_proto_process_rx(const uint8_t *data, uint16_t len)
+ {
+     if ((data == NULL) || (len == 0U))
+@@ -2243,6 +2677,12 @@ void minimc_proto_process_rx(const uint8_t *data, uint16_t len)
+     minimc_proto_push_ap_rx(data, len);
+ }
+ 
++/**
++ * @brief 通过 USART2 DMA1_CHANNEL2 向 AP 发送完整协议帧（含超时防死锁保护）
++ * @param data 待发送协议帧指针
++ * @param len 协议帧字节长度
++ * @return true 发送启动成功，false 参数越界或 DMA 忙超时
++ */
+ bool minimc_proto_send(const uint8_t *data, uint16_t len)
+ {
+     if ((data == NULL) || (len == 0U) || (len > MINIMC_MAX_FRAME_SIZE))
+@@ -2270,6 +2710,9 @@ bool minimc_proto_send(const uint8_t *data, uint16_t len)
+     return true;
+ }
+ 
++/**
++ * @brief 初始化 MC 侧 MiniMCProto V2 协议栈、USART2 921600 波特率及 [MC-DBG] 环形缓冲
++ */
+ void minimc_proto_init(void)
+ {
+     /* 步骤 1: 安全重配 USART2 (PA2/PA3, AP↔MC 业务链路) 波特率为 AP_USART_BAUDRATE (921600U) */
+@@ -2304,5 +2747,6 @@ void minimc_proto_init(void)
+     s_dbg_state.progress_permille = 0U;
+     s_dbg_state.ack_seq = 0U;
+     s_dbg_state.job_state_id = 0U;
++    mc_refresh_runtime_boot_id();
+     mc_dbg_sync_runtime_state();
+ }
+diff --git a/motion-controller-mcu/project/src/test_twin44_mc_debug.c b/motion-controller-mcu/project/src/test_twin44_mc_debug.c
+index 5751867..982c614 100644
+--- a/motion-controller-mcu/project/src/test_twin44_mc_debug.c
++++ b/motion-controller-mcu/project/src/test_twin44_mc_debug.c
+@@ -1,8 +1,7 @@
+ /**
+  * @file test_twin44_mc_debug.c
+- * @brief Independent verification test suite for TWIN-44 (USART2 921600 & USART1 [MC-DBG] Ring Buffer).
+- * Task ID: TWIN-44
+- * Role: ENG-MC
++ * @brief TWIN-44 / TWIN-47 / TWIN-60 MC 运动控制板协议、级联路由与 [MC-DBG] 环形缓冲独立验证套件。
++ * 遵循 project-control/.agents/rules/c_cpp_coding_standard.md 与 code_documentation_standard.md 规范。
+  */
+ 
+ #define _GNU_SOURCE
+@@ -17,21 +16,27 @@
+ #include "planner.h"
+ #include "thermistor.h"
+ 
+-/* Mock Marlin globals */
++/* 模拟 Marlin 全局状态变量 */
+ volatile float current_position[NUM_AXIS];
+ volatile bool axis_known_position[3];
+ volatile int16_t current_temperature_bed = 25;
+ volatile int16_t current_temperature_ex1 = 25;
++volatile uint16_t g_last_bed_adc_raw = 3200U;
++volatile uint16_t g_last_ex1_adc_raw = 3200U;
+ uint8_t is_paused = 0U;
+ float bed_level[AUTO_BED_LEVELING_GRID_POINTS][AUTO_BED_LEVELING_GRID_POINTS];
+ static uint8_t s_mock_moves_planned = 0U;
+ 
++/**
++ * @brief 返回模拟的 Marlin 规划队列步进块数量
++ * @return 当前规划队列长度
++ */
+ uint8_t movesplanned(void)
+ {
+     return s_mock_moves_planned;
+ }
+ 
+-/* Mock hardware state */
++/* 模拟底层硬件外设与测试捕获状态 */
+ volatile uint8_t usart2_tx_busy = 0U;
+ static bool s_dma_auto_clear_busy = true;
+ static bool s_forward_send_ok = true;
+@@ -51,12 +56,18 @@ static uint8_t s_last_forward_tx_frame[MINIMC_MAX_FRAME_SIZE];
+ static uint16_t s_last_forward_tx_len = 0U;
+ static uint16_t s_test_seq = 0U;
+ 
++/**
++ * @brief 模拟 AT32F435 DMA 通道使能并在 USART2 发送时捕获发送帧
++ * @param dma_channel DMA 通道寄存器指针
++ * @param new_state 使能状态
++ */
+ void dma_channel_enable(dma_channel_type *dma_channel, confirm_state new_state)
+ {
+     if ((dma_channel == DMA1_CHANNEL2) && (new_state == TRUE))
+     {
+         const uint16_t len = (uint16_t)DMA1_CHANNEL2->dtcnt;
+-        const uint8_t *src = (const uint8_t *)(uintptr_t)DMA1_CHANNEL2->maddr;
++        const uintptr_t high_bits = ((uintptr_t)s_last_ap_tx_frame) & ~(uintptr_t)0xFFFFFFFFULL;
++        const uint8_t *src = (const uint8_t *)(high_bits | (uintptr_t)DMA1_CHANNEL2->maddr);
+         if ((src != NULL) && (len > 0U) && (len <= MINIMC_MAX_FRAME_SIZE))
+         {
+             memcpy(s_last_ap_tx_frame, src, len);
+@@ -70,6 +81,11 @@ void dma_channel_enable(dma_channel_type *dma_channel, confirm_state new_state)
+     }
+ }
+ 
++/**
++ * @brief 模拟 AT32F435 USART 外设使能控制并统计 USART2 重配序列
++ * @param usart_x USART 外设指针
++ * @param new_state 使能状态
++ */
+ void usart_enable(usart_type *usart_x, confirm_state new_state)
+ {
+     if (usart_x == USART2)
+@@ -85,6 +101,13 @@ void usart_enable(usart_type *usart_x, confirm_state new_state)
+     }
+ }
+ 
++/**
++ * @brief 模拟 AT32F435 USART 波特率与帧格式初始化
++ * @param usart_x USART 外设指针
++ * @param baud_rate 波特率
++ * @param data_bit 数据位配置
++ * @param stop_bit 停止位配置
++ */
+ void usart_init(usart_type *usart_x, uint32_t baud_rate,
+                 usart_data_bit_num_type data_bit, usart_stop_bit_num_type stop_bit)
+ {
+@@ -96,6 +119,12 @@ void usart_init(usart_type *usart_x, uint32_t baud_rate,
+     }
+ }
+ 
++/**
++ * @brief 模拟获取 USART 硬件状态标志位
++ * @param usart_x USART 外设指针
++ * @param flag 状态标志掩码
++ * @return 模拟的标志位状态
++ */
+ flag_status usart_flag_get(usart_type *usart_x, uint32_t flag)
+ {
+     (void)usart_x;
+@@ -103,6 +132,11 @@ flag_status usart_flag_get(usart_type *usart_x, uint32_t flag)
+     return s_usart1_tdbe;
+ }
+ 
++/**
++ * @brief 模拟向 USART 发送单字节并捕获 USART1 调试输出文本
++ * @param usart_x USART 外设指针
++ * @param data 待发送字节
++ */
+ void usart_data_transmit(usart_type *usart_x, uint16_t data)
+ {
+     if ((usart_x == USART1) && (s_usart1_tx_len + 1U < sizeof(s_usart1_tx_capture)))
+@@ -113,11 +147,21 @@ void usart_data_transmit(usart_type *usart_x, uint16_t data)
+     }
+ }
+ 
++/**
++ * @brief 模拟轮询 USART6 (MC↔TH) 是否有待读取字节
++ * @return 1 表示有数据，0 表示无数据
++ */
+ uint8_t forward_uart_rx_poll(void)
+ {
+     return (s_mock_th_rx_len > 0U) ? 1U : 0U;
+ }
+ 
++/**
++ * @brief 模拟从 USART6 接收缓冲读取 TH 响应帧字节
++ * @param buf 目标接收缓冲区指针
++ * @param max_len 最大读取长度
++ * @return 实际读取字节数
++ */
+ uint16_t forward_uart_proto_rx_read(uint8_t *buf, uint16_t max_len)
+ {
+     if ((buf == NULL) || (s_mock_th_rx_len == 0U))
+@@ -130,6 +174,12 @@ uint16_t forward_uart_proto_rx_read(uint8_t *buf, uint16_t max_len)
+     return n;
+ }
+ 
++/**
++ * @brief 模拟通过 USART6 向 TH 发送级联二进制帧
++ * @param data 待发送数据指针
++ * @param len 字节长度
++ * @return true 发送成功，false 模拟发送失败
++ */
+ bool forward_uart_send_raw(const uint8_t *data, uint16_t len)
+ {
+     if ((data == NULL) || (len == 0U))
+@@ -144,11 +194,18 @@ bool forward_uart_send_raw(const uint8_t *data, uint16_t len)
+     return s_forward_send_ok;
+ }
+ 
++/**
++ * @brief 返回模拟的毫秒级系统时基计数
++ * @return 当前模拟毫秒时间戳
++ */
+ uint32_t wk_timebase_get(void)
+ {
+     return s_mock_tick_ms;
+ }
+ 
++/**
++ * @brief 排空 USART1 [MC-DBG] 环形缓冲中的所有待发日志
++ */
+ static void drain_all_usart1(void)
+ {
+     s_usart1_tdbe = SET;
+@@ -158,12 +215,22 @@ static void drain_all_usart1(void)
+     }
+ }
+ 
++/**
++ * @brief 清空 USART1 调试日志捕获缓冲区
++ */
+ static void clear_usart1_capture(void)
+ {
+     s_usart1_tx_len = 0U;
+     s_usart1_tx_capture[0] = '\0';
+ }
+ 
++/**
++ * @brief 构造并注入一条 AP 发往指定节点的 MiniMCProto V2 测试请求帧
++ * @param dst 目标节点 ID
++ * @param cmd 命令码
++ * @param pay 载荷数据指针
++ * @param plen 载荷长度
++ */
+ static void send_test_frame(uint8_t dst, uint8_t cmd, const uint8_t *pay, uint16_t plen)
+ {
+     s_test_seq++;
+@@ -192,6 +259,13 @@ static void send_test_frame(uint8_t dst, uint8_t cmd, const uint8_t *pay, uint16
+     drain_all_usart1();
+ }
+ 
++/**
++ * @brief 构造并向 USART6 接收缓冲注入一条模拟的 TH 响应帧
++ * @param cmd 响应命令码
++ * @param seq 16位序列号
++ * @param pay 响应载荷指针
++ * @param plen 响应载荷长度
++ */
+ static void inject_th_custom_frame(uint8_t cmd, uint16_t seq, const uint8_t *pay, uint16_t plen)
+ {
+     s_mock_th_rx_buf[0] = MINIMC_SOF_1;
+@@ -218,11 +292,19 @@ static void inject_th_custom_frame(uint8_t cmd, uint16_t seq, const uint8_t *pay
+     drain_all_usart1();
+ }
+ 
++/**
++ * @brief 注入一条无载荷的 TH 响应帧
++ * @param cmd 响应命令码
++ * @param seq 16位序列号
++ */
+ static void inject_th_response_frame(uint8_t cmd, uint16_t seq)
+ {
+     inject_th_custom_frame(cmd, seq, NULL, 0U);
+ }
+ 
++/**
++ * @brief 验证 minimc_proto_init 安全重配 USART2 为 921600 波特率
++ */
+ static void test_usart2_921600_reconfig(void)
+ {
+     printf("[RUN ] test_usart2_921600_reconfig\n");
+@@ -237,15 +319,28 @@ static void test_usart2_921600_reconfig(void)
+     printf("[PASS] test_usart2_921600_reconfig\n");
+ }
+ 
++/**
++ * @brief 验证 [MC-DBG] 256B 单行上限、4096B 环形队列截断/丢弃统计与恢复能力
++ */
+ static void test_ring_buffer_trunc_drop_and_recovery(void)
+ {
+     printf("[RUN ] test_ring_buffer_trunc_drop_and_recovery\n");
+     minimc_proto_init();
+     clear_usart1_capture();
+ 
+-    char long_line[220];
++    /* ISS-015: 210B 长行 (<=256B) 严禁发生截断 */
++    char line_210[212];
++    memset(line_210, 'P', 208U);
++    memcpy(&line_210[208], "\r\n", 2U);
++    assert(mc_debug_write(line_210, 210U) == true);
++    assert(mc_debug_get_trunc_count() == 0U);
++    drain_all_usart1();
++    assert(s_usart1_tx_len == 210U);
++    clear_usart1_capture();
++
++    char long_line[280];
+     memset(long_line, 'A', sizeof(long_line));
+-    assert(mc_debug_write(long_line, 210U) == true);
++    assert(mc_debug_write(long_line, 270U) == true);
+     assert(mc_debug_get_trunc_count() == 1U);
+ 
+     s_usart1_tdbe = RESET;
+@@ -254,22 +349,22 @@ static void test_ring_buffer_trunc_drop_and_recovery(void)
+ 
+     s_usart1_tdbe = SET;
+     mc_debug_poll_drain();
+-    assert(s_usart1_tx_len == 64U);
++    assert(s_usart1_tx_len == 128U);
+     drain_all_usart1();
+-    assert(s_usart1_tx_len == 192U);
+-    assert(memcmp(&s_usart1_tx_capture[187], "...\r\n", 5U) == 0);
++    assert(s_usart1_tx_len == 256U);
++    assert(memcmp(&s_usart1_tx_capture[251], "...\r\n", 5U) == 0);
+ 
+     s_usart1_tdbe = RESET;
+     char chunk[160];
+     memset(chunk, 'B', sizeof(chunk));
+-    for (int i = 0; i < 12; ++i)
++    for (int i = 0; i < 25; ++i)
+     {
+         assert(mc_debug_write(chunk, 160U) == true);
+     }
+     assert(mc_debug_write(chunk, 160U) == false);
+     assert(mc_debug_get_drop_count() == 1U);
+ 
+-    /* Recovery A: Drain full ring buffer, write new log & high 16-bit seq=521 (0x0209) frame, verify accepted without drop */
++    /* 恢复测试: 排空满队列后写入新日志与 16位 seq=521 帧，验证零丢弃恢复 */
+     drain_all_usart1();
+     clear_usart1_capture();
+     const char *rec_msg = "[MC-DBG] RING_RECOVERY_OK\r\n";
+@@ -282,6 +377,9 @@ static void test_ring_buffer_trunc_drop_and_recovery(void)
+     printf("[PASS] test_ring_buffer_trunc_drop_and_recovery\n");
+ }
+ 
++/**
++ * @brief 验证 MiniMCProto V2 核心查询 (0x01/0x03/0x14/0x16/0x18) 与未知命令 NACK (0x04)
++ */
+ static void test_honest_minimc_v2_queries_and_nack(void)
+ {
+     printf("[RUN ] test_honest_minimc_v2_queries_and_nack\n");
+@@ -321,7 +419,7 @@ static void test_honest_minimc_v2_queries_and_nack(void)
+     assert(strstr(s_usart1_tx_capture, "dir=STATE node=MC seq=5 cmd=0x18 status=OK op=GRID_READ probe_idx=7 z_offset_um=-42 grid_valid=1 status=DONE") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=TX node=MC seq=5 cmd=0x18 status=ACK op=GRID_READ probe_idx=7 z_offset_um=-42 grid_valid=1 status=DONE") != NULL);
+ 
+-    /* Unimplemented opcode (0xFE) MUST honestly return NACK (0x06) with err_code=0x04 */
++    /* 未知命令码 (0xFE) 必须如实返回 NACK (0x06) 且 err_code=0x04 */
+     const uint8_t unimpl_pay[4] = { 0x98U, 0x08U, 0x8AU, 0x02U };
+     send_test_frame(MINIMC_NODE_MC, 0xFEU, unimpl_pay, 4U);
+     assert(s_last_ap_tx_frame[5] == MINIMC_CMD_NACK);
+@@ -331,6 +429,9 @@ static void test_honest_minimc_v2_queries_and_nack(void)
+     printf("[PASS] test_honest_minimc_v2_queries_and_nack\n");
+ }
+ 
++/**
++ * @brief 验证非侵入式状态通知与热敏故障哨兵同步
++ */
+ static void test_non_intrusive_notify_and_fault_sync(void)
+ {
+     printf("[RUN ] test_non_intrusive_notify_and_fault_sync\n");
+@@ -346,7 +447,7 @@ static void test_non_intrusive_notify_and_fault_sync(void)
+     assert(strstr(s_usart1_tx_capture, "op=UNLOAD slot=2 active_slot=2 filament_present_mask=0x0B step_state=DONE") != NULL);
+     assert(strstr(s_usart1_tx_capture, "job_state=PRINTING progress_permille=625 ack_seq=10") != NULL);
+ 
+-    /* Simulate thermistor fault + pause, verify sentinel and recovery */
++    /* 模拟热敏电阻故障 + 暂停，验证哨兵值与恢复 */
+     current_temperature_ex1 = 200;
+     current_temperature_bed = BAD_TEMPERATURE;
+     is_paused = 1U;
+@@ -366,11 +467,14 @@ static void test_non_intrusive_notify_and_fault_sync(void)
+     printf("[PASS] test_non_intrusive_notify_and_fault_sync\n");
+ }
+ 
++/**
++ * @brief 验证 TH 级联响应及 NACK 在 USART2 发送忙失败时的 TX_ERR 记录与恢复
++ */
+ static void test_th_resp_and_nack_tx_fail_recovery(void)
+ {
+     s_mock_tick_ms = 3500U;
+     s_test_seq = 70U;
+-    /* 3. Valid TH response arrives while AP USART2 TX is busy -> logs TX_ERR, no false TX ACK */
++    /* 3. TH 响应到达时 AP USART2 TX 忙：记录 TX_ERR，严禁伪造 TX ACK */
+     clear_usart1_capture();
+     send_test_frame(MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, NULL, 0U);
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_TX node=TH seq=71 cmd=0x01 status=EXEC") != NULL);
+@@ -384,7 +488,7 @@ static void test_th_resp_and_nack_tx_fail_recovery(void)
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=71 cmd=0x02 status=ACK elapsed_ms=12") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=ERR node=TH seq=71 cmd=0x02 status=TX_ERR err_code=0x06") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=TX node=TH seq=71") == NULL);
+-    /* Recovery B3: Clear USART2 busy, next TH relay request + response forwards to AP with TX ACK */
++    /* 恢复 B3: 解除 USART2 忙状态后下一条 TH 级联响应正常转发 */
+     s_dma_auto_clear_busy = true;
+     usart2_tx_busy = 0U;
+     clear_usart1_capture();
+@@ -394,7 +498,7 @@ static void test_th_resp_and_nack_tx_fail_recovery(void)
+     assert(s_ap_tx_count == tx_before + 1U);
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=72 cmd=0x02 status=ACK elapsed_ms=15") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=TX node=TH seq=72 cmd=0x02 status=ACK elapsed_ms=15") != NULL);
+-    /* 4. Unimplemented cmd NACK path when USART2 TX fails -> logs TX_ERR, no false TX NACK, then recovers */
++    /* 4. 未知命令 NACK 在 USART2 TX 失败时记录 TX_ERR，恢复后正常发送 NACK */
+     const uint8_t unimpl_pay[4] = { 0U, 0U, 0U, 0U };
+     s_dma_auto_clear_busy = false;
+     usart2_tx_busy = 1U;
+@@ -409,6 +513,9 @@ static void test_th_resp_and_nack_tx_fail_recovery(void)
+     assert(strstr(s_usart1_tx_capture, "dir=TX node=MC seq=74 cmd=0x06 status=NACK err_code=0x04") != NULL);
+ }
+ 
++/**
++ * @brief 验证发送失败时抑制虚假 ACK 日志并在恢复后正常发送
++ */
+ static void test_tx_fail_suppresses_ack_and_recovers(void)
+ {
+     printf("[RUN ] test_tx_fail_suppresses_ack_and_recovers\n");
+@@ -416,7 +523,7 @@ static void test_tx_fail_suppresses_ack_and_recovers(void)
+     clear_usart1_capture();
+     s_mock_tick_ms = 3000U;
+     s_test_seq = 20U;
+-    /* 1. Simulate USART2 DMA TX busy timeout -> minimc_proto_send returns false */
++    /* 1. 模拟 USART2 DMA TX 忙超时 -> minimc_proto_send 返回 false */
+     const uint32_t tx_before = s_ap_tx_count;
+     s_dma_auto_clear_busy = false;
+     usart2_tx_busy = 1U;
+@@ -425,7 +532,7 @@ static void test_tx_fail_suppresses_ack_and_recovers(void)
+     assert(strstr(s_usart1_tx_capture, "dir=TX node=MC seq=21 cmd=0x14 status=ACK") == NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=STATE node=MC seq=21 cmd=0x14 status=OK") == NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=ERR node=MC seq=21 cmd=0x14 status=TX_ERR err_code=0x06") != NULL);
+-    /* Recovery B1: Clear busy state, send next query, verify wire frame & TX status=ACK */
++    /* 恢复 B1: 解除忙状态，发送下一条查询并验证响应帧与 TX status=ACK */
+     s_dma_auto_clear_busy = true;
+     usart2_tx_busy = 0U;
+     clear_usart1_capture();
+@@ -434,7 +541,7 @@ static void test_tx_fail_suppresses_ack_and_recovers(void)
+     assert(s_last_ap_tx_frame[5] == MINIMC_CMD_TEMP_REPORT);
+     assert(strstr(s_usart1_tx_capture, "dir=STATE node=MC seq=22 cmd=0x14 status=OK") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=TX node=MC seq=22 cmd=0x14 status=ACK") != NULL);
+-    /* 2. Simulate forward_uart_send_raw failure -> logs TX_ERR, does NOT set pending or RELAY_TX */
++    /* 2. 模拟 forward_uart_send_raw 失败 -> 记录 TX_ERR，不置 pending 或 RELAY_TX */
+     clear_usart1_capture();
+     s_forward_send_ok = false;
+     send_test_frame(MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, NULL, 0U);
+@@ -444,7 +551,7 @@ static void test_tx_fail_suppresses_ack_and_recovers(void)
+     minimc_proto_poll();
+     drain_all_usart1();
+     assert(strstr(s_usart1_tx_capture, "status=TIMEOUT") == NULL);
+-    /* Recovery B2: Restore forward_uart_send_raw, verify next TH relay + ACK succeeds */
++    /* 恢复 B2: 恢复 forward_uart_send_raw，验证下一条 TH 级联 + ACK 成功 */
+     s_forward_send_ok = true;
+     clear_usart1_capture();
+     send_test_frame(MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, NULL, 0U);
+@@ -457,6 +564,9 @@ static void test_tx_fail_suppresses_ack_and_recovers(void)
+     printf("[PASS] test_tx_fail_suppresses_ack_and_recovers\n");
+ }
+ 
++/**
++ * @brief 验证 TH 级联超时 (200ms)、CRC_ERR 负例与后续恢复
++ */
+ static void test_relay_timeout_crc_err_and_recovery(void)
+ {
+     printf("[RUN ] test_relay_timeout_crc_err_and_recovery\n");
+@@ -465,7 +575,7 @@ static void test_relay_timeout_crc_err_and_recovery(void)
+     s_mock_tick_ms = 4000U;
+     s_test_seq = 30U;
+ 
+-    /* 1. Relay to TH and simulate TH timeout after 250ms (seq=31) */
++    /* 1. 转发至 TH 并模拟 250ms 超时 (seq=31) */
+     send_test_frame(MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, NULL, 0U);
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_TX node=TH seq=31 cmd=0x01 status=EXEC timeout_ms=200") != NULL);
+     s_mock_tick_ms = 4250U;
+@@ -474,7 +584,7 @@ static void test_relay_timeout_crc_err_and_recovery(void)
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=31 cmd=0x01 status=TIMEOUT elapsed_ms=250") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=ERR node=TH seq=31 cmd=0x01 status=TIMEOUT") != NULL);
+ 
+-    /* Recovery C: Subsequent TH relay request (seq=32) + valid TH response after 15ms succeeds */
++    /* 恢复 C: 后续 TH 级联请求 (seq=32) + 15ms 后有效响应成功 */
+     clear_usart1_capture();
+     send_test_frame(MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, NULL, 0U);
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_TX node=TH seq=32 cmd=0x01 status=EXEC timeout_ms=200") != NULL);
+@@ -484,7 +594,7 @@ static void test_relay_timeout_crc_err_and_recovery(void)
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=32 cmd=0x02 status=ACK elapsed_ms=15") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=TX node=TH seq=32 cmd=0x02 status=ACK elapsed_ms=15") != NULL);
+ 
+-    /* 2. Corrupted CRC frame (seq=517 / 0x0205) -> CRC_ERR, unknown cmd 0xFE (seq=518) -> NACK, then PING (seq=519) recovery */
++    /* 2. 损坏 CRC 帧 (seq=517) -> CRC_ERR，未知命令 0xFE (seq=518) -> NACK，随后 PING (seq=519) 恢复 */
+     uint8_t bad_crc[14] = { 0x55U, 0xAAU, 0x01U, 0x02U, 0x05U, 0x01U, 0x04U, 0x00U, 0x05U, 0x02U, 0x00U, 0x00U, 0xFFU, 0xFFU };
+     minimc_proto_push_ap_rx(bad_crc, sizeof(bad_crc));
+     minimc_proto_poll();
+@@ -501,6 +611,9 @@ static void test_relay_timeout_crc_err_and_recovery(void)
+     printf("[PASS] test_relay_timeout_crc_err_and_recovery\n");
+ }
+ 
++/**
++ * @brief 验证 TH 级联响应的序列号/命令码强相关性校验及 NACK 透传
++ */
+ static void test_th_relay_correlation_and_nack(void)
+ {
+     printf("[RUN ] test_th_relay_correlation_and_nack\n");
+@@ -509,12 +622,12 @@ static void test_th_relay_correlation_and_nack(void)
+     s_mock_tick_ms = 5000U;
+     s_test_seq = 50U;
+     const uint32_t tx_base = s_ap_tx_count;
+-    /* 1. Unsolicited TH frame with no pending relay -> rejected as BAD_FRAME (0x07), not forwarded */
++    /* 1. 无在途请求时收到的非预期 TH 帧 -> 作为 BAD_FRAME (0x07) 拒绝且不转发 */
+     inject_th_response_frame(MINIMC_CMD_VERSION_REPORT, 50U);
+     assert(s_ap_tx_count == tx_base);
+     assert(strstr(s_usart1_tx_capture, "dir=ERR node=TH seq=50 cmd=0x02 status=BAD_FRAME err_code=0x07") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX") == NULL);
+-    /* 2. Pending relay (seq=51, cmd=0x01): mismatched seq (99) & mismatched cmd (0x04) do NOT clear pending */
++    /* 2. 在途请求 (seq=51, cmd=0x01): 不匹配的 seq (99) 与 cmd (0x04) 不清除 pending */
+     clear_usart1_capture();
+     send_test_frame(MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, NULL, 0U);
+     inject_th_response_frame(MINIMC_CMD_VERSION_REPORT, 99U);
+@@ -523,13 +636,13 @@ static void test_th_relay_correlation_and_nack(void)
+     assert(strstr(s_usart1_tx_capture, "dir=ERR node=TH seq=99 cmd=0x02 status=BAD_FRAME err_code=0x07") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=ERR node=TH seq=51 cmd=0x04 status=BAD_FRAME err_code=0x07") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH") == NULL);
+-    /* Valid matching TH response (seq=51, cmd=0x02) arrives at +20ms -> succeeds and clears pending */
++    /* 合法匹配的 TH 响应 (seq=51, cmd=0x02) 在 +20ms 到达 -> 成功转发并清除 pending */
+     s_mock_tick_ms = 5020U;
+     inject_th_response_frame(MINIMC_CMD_VERSION_REPORT, 51U);
+     assert(s_ap_tx_count == tx_base + 1U);
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=51 cmd=0x02 status=ACK elapsed_ms=20") != NULL);
+     assert(strstr(s_usart1_tx_capture, "dir=TX node=TH seq=51 cmd=0x02 status=ACK elapsed_ms=20") != NULL);
+-    /* 3. Pending relay (seq=52, cmd=0x01): mismatched seq (88) must NOT disarm timeout */
++    /* 3. 在途请求 (seq=52, cmd=0x01): 不匹配 seq (88) 严禁解除超时保护 */
+     clear_usart1_capture();
+     send_test_frame(MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, NULL, 0U);
+     inject_th_response_frame(MINIMC_CMD_VERSION_REPORT, 88U);
+@@ -537,7 +650,7 @@ static void test_th_relay_correlation_and_nack(void)
+     minimc_proto_poll();
+     drain_all_usart1();
+     assert(strstr(s_usart1_tx_capture, "dir=RELAY_RX node=TH seq=52 cmd=0x01 status=TIMEOUT elapsed_ms=250") != NULL);
+-    /* 4. Pending relay (seq=53, cmd=0x01): valid TH NACK (0x06, err_code=0x04) logs status=NACK */
++    /* 4. 在途请求 (seq=53, cmd=0x01): 合法 TH NACK (0x06, err_code=0x04) 记录 status=NACK */
+     clear_usart1_capture();
+     send_test_frame(MINIMC_NODE_TH, MINIMC_CMD_GET_VERSION, NULL, 0U);
+     const uint8_t nack_pay[3] = { 0x04U, 53U, 0U };
+@@ -690,6 +803,88 @@ static void test_twin47_job_filament_level_gcode(void)
+     printf("[PASS] test_twin47_job_filament_level_gcode\n");
+ }
+ 
++/**
++ * @brief 验证 0x19 耗材控制动作边界：action=0/1/2 返回 ACK，slot_id=4 或 action=3 返回 NACK 0x03 (ISS-20261105-010)
++ */
++static void verify_filament_action_and_slot_bounds(void)
++{
++    for (uint8_t act = 0U; act <= 2U; ++act)
++    {
++        const minimc_filament_req_t ok_req = { 0U, act, 10U };
++        send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_SLOT_SELECT, (const uint8_t *)&ok_req, sizeof(ok_req));
++        assert(s_last_ap_tx_frame[5] == MINIMC_CMD_SLOT_SELECT);
++    }
++    const minimc_filament_req_t bad_slot_req = { 4U, 0U, 0U };
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_SLOT_SELECT, (const uint8_t *)&bad_slot_req, sizeof(bad_slot_req));
++    assert(s_last_ap_tx_frame[5] == MINIMC_CMD_NACK);
++    assert(s_last_ap_tx_frame[12] == 0x03U);
++
++    const minimc_filament_req_t bad_action_req = { 0U, 3U, 0U };
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_SLOT_SELECT, (const uint8_t *)&bad_action_req, sizeof(bad_action_req));
++    assert(s_last_ap_tx_frame[5] == MINIMC_CMD_NACK);
++    assert(s_last_ap_tx_frame[12] == 0x03U);
++}
++
++/**
++ * @brief 验证 TWIN-60 热床真实 ADC 透传、5~130°C/ADC 越界故障哨兵、0x19 越界 NACK 0x03 及动态 boot_id（ISS-010/011/012/016）
++ */
++static void test_twin60_adc_range_filament_nack_and_boot_id(void)
++{
++    printf("[RUN ] test_twin60_adc_range_filament_nack_and_boot_id\n");
++    current_temperature_ex1 = 210;
++    current_temperature_bed = 60;
++    g_last_bed_adc_raw = 2850U;
++    minimc_proto_init();
++    s_test_seq = 400U;
++
++    /* 1. ISS-016: 连续两次复位/初始化生成的 boot_id 均非零且互不相同 */
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_GET_VERSION, NULL, 0U);
++    const uint32_t boot_id_1 = (uint32_t)s_last_ap_tx_frame[16] |
++                               ((uint32_t)s_last_ap_tx_frame[17] << 8U) |
++                               ((uint32_t)s_last_ap_tx_frame[18] << 16U) |
++                               ((uint32_t)s_last_ap_tx_frame[19] << 24U);
++    minimc_proto_init();
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_GET_VERSION, NULL, 0U);
++    const uint32_t boot_id_2 = (uint32_t)s_last_ap_tx_frame[16] |
++                               ((uint32_t)s_last_ap_tx_frame[17] << 8U) |
++                               ((uint32_t)s_last_ap_tx_frame[18] << 16U) |
++                               ((uint32_t)s_last_ap_tx_frame[19] << 24U);
++    assert((boot_id_1 != 0U) && (boot_id_2 != 0U) && (boot_id_1 != boot_id_2));
++
++    /* 2. ISS-012: 正常温度下 0x14 报告透传真实 g_last_bed_adc_raw (2850U) */
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_GET_TEMP, NULL, 0U);
++    minimc_temp_report_payload_t pay;
++    memcpy(&pay, &s_last_ap_tx_frame[12], sizeof(pay));
++    assert(pay.current_temp_deci_c == 600);
++    assert(pay.raw_adc_value == 2850U);
++    assert(pay.sensor_status == MINIMC_TEMP_STATUS_OK);
++
++    /* 3. ISS-011: 热床超量程 (>130°C 或 ADC > 4081 / < 70) 打入 0x7FFF 哨兵与开路/短路状态 */
++    current_temperature_bed = 135;
++    g_last_bed_adc_raw = 4090U;
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_GET_TEMP, NULL, 0U);
++    memcpy(&pay, &s_last_ap_tx_frame[12], sizeof(pay));
++    assert(pay.current_temp_deci_c == MINIMC_TEMP_SENTINEL_FAULT);
++    assert(pay.raw_adc_value == 4090U);
++    assert(pay.sensor_status == MINIMC_TEMP_STATUS_DISCONNECTED);
++
++    current_temperature_bed = 25;
++    g_last_bed_adc_raw = 30U;
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_GET_TEMP, NULL, 0U);
++    memcpy(&pay, &s_last_ap_tx_frame[12], sizeof(pay));
++    assert(pay.current_temp_deci_c == MINIMC_TEMP_SENTINEL_FAULT);
++    assert(pay.sensor_status == MINIMC_TEMP_STATUS_SHORT);
++    g_last_bed_adc_raw = 3200U;
++
++    /* 4. ISS-010(MC): 验证 0x19 槽位与动作边界 (action=0..2 合法，action=3/slot=4 返回 NACK 0x03) */
++    verify_filament_action_and_slot_bounds();
++    printf("[PASS] test_twin60_adc_range_filament_nack_and_boot_id\n");
++}
++
++/**
++ * @brief TWIN-44 / TWIN-47 / TWIN-60 宿主机独立单测主入口
++ * @return 0 表示全部测试通过，非 0 表示异常退出
++ */
+ int main(void)
+ {
+     void *p = mmap((void *)0x40020000, 0x10000, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0);
+@@ -710,8 +905,9 @@ int main(void)
+     test_th_relay_correlation_and_nack();
+     test_twin47_temp_home_move_stop();
+     test_twin47_job_filament_level_gcode();
++    test_twin60_adc_range_filament_nack_and_boot_id();
+     printf("------------------------------------------------------------------------\n");
+-    printf("All 9 TWIN-44/TWIN-47 test suites PASSED!\n");
++    printf("All 10 TWIN-44/TWIN-47/TWIN-60 test suites PASSED!\n");
+     printf("========================================================================\n");
+     return 0;
+ }
+diff --git a/motion-controller-mcu/project/src/wk_usart.c b/motion-controller-mcu/project/src/wk_usart.c
+index 0c225e6..9c3a6bb 100644
+--- a/motion-controller-mcu/project/src/wk_usart.c
++++ b/motion-controller-mcu/project/src/wk_usart.c
+@@ -349,6 +349,12 @@ void forward_uart_send_line(const char *line, uint16_t len)
+     (void)minimc_proto_send_th_gcode(line, len, 0x01U);
+ }
+ 
++/**
++ * @brief 通过转发串口 DMA 向 TH 板发送原始二进制帧数据
++ * @param data 待发送原始字节缓冲区指针
++ * @param len  待发送字节长度
++ * @return true 发送成功，false 参数越界或 DMA 发送超时
++ */
+ bool forward_uart_send_raw(const uint8_t *data, uint16_t len)
+ {
+     if (data == NULL || len == 0U || len > FORWARD_UART_TX_BUF_SIZE)
+@@ -497,6 +503,12 @@ uint16_t forward_uart_rx_read(uint8_t *dst, uint16_t max)
+ 	return rx_len;
+ }
+ 
++/**
++ * @brief 读取转发串口接收到的 MiniMCProto 二进制协议帧（0x55 0xAA 帧头）
++ * @param dst 输出缓冲区指针
++ * @param max 输出缓冲区最大容量
++ * @return 实际读取字节数，无完整协议帧时返回 0
++ */
+ uint16_t forward_uart_proto_rx_read(uint8_t *dst, uint16_t max)
+ {
+ 	if (dst == NULL || max == 0U || forward_uart_dma.forward_uart_rx_complete == 0)

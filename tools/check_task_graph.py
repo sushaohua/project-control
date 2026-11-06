@@ -22,7 +22,7 @@ except ImportError:
 
 # 任务生命周期合法状态集合与受控目标仓库名称集合
 STATES = {"Backlog", "Ready", "InProgress", "Review", "Verify", "Done"}
-REPOSITORIES = {"project-control", "soc-ap", "mcu-p3", "test_harness"}
+REPOSITORIES = {"project-control", "soc-ap", "mcu-p3", "test_harness", "boot/bootloadermc", "boot/bootloaderth"}
 HEX40_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 HEX64_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 

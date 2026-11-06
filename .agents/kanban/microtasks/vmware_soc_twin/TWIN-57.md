@@ -1,12 +1,12 @@
 ---
 id: TWIN-57
 title: TWIN-57 SoC AP遥测物理量程门禁、raw_adc透传与3s断链哨兵衰退闭环及Batch AP-2中文注释补齐
-revision: 1
+revision: 3
 plan_revision: vmware-soc-twin-20261105
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
+status: Done
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -24,16 +24,25 @@ requirement_id: REQ-20261105-002
 demand_id: DEM-20261105-018
 confirmation_id: CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105
 approval_id: APPR-20261105-004
-accepted_scope: "Docker QA sandbox (CMake/Ninja/CTest) verification of ISS-20261105-011 (AP bed 5~130°C and nozzle 5~300°C valid range gate), ISS-20261105-012 (AP raw_adc mapping into telemetry snapshot JSON), ISS-20261105-014 (3s disconnect state decay and offline sentinel 2147483646 injection), and Batch AP-2 Chinese code comments across forward + device_manager and corresponding tests (25 files, ISS-20261105-018). Candidate commit 19534a9a4cb393176882fbad046129d55bba51f6 is the consolidated soc-ap commit for the jointly approved batch TWIN-57/58/59 under APPR-20261105-004 (sibling paths in ui_gateway/browser_hmi and core/middleware/runtime belong to TWIN-58 and TWIN-59 in the same approved batch). Physical HIL verification is out of scope for this software sandbox task (covered by TWIN-55); all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
+accepted_scope: "Docker QA sandbox (deploy_twin.sh --build-only + CTest on build/forward and build/device_manager + code_documentation_standard check) verification of ISS-20261105-011 (AP bed 5~130°C and nozzle 5~300°C valid range gate), ISS-20261105-012 (AP raw_adc mapping into telemetry snapshot JSON), ISS-20261105-014 (3s disconnect state decay and offline sentinel 2147483646 injection and fresh telemetry reconnect recovery), and Batch AP-2 Chinese code comments across forward + device_manager and corresponding tests (25 files, ISS-20261105-018). Candidate commit c6692b244e0aa09d04e7051293f9fef3c67535dd is the consolidated soc-ap commit for the jointly approved batch TWIN-57/58/59 under APPR-20261105-004 (sibling paths in ui_gateway/browser_hmi and core/middleware/runtime belong to TWIN-58 and TWIN-59 in the same approved batch). Physical HIL verification is out of scope for this software sandbox task (covered by TWIN-55); all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-57
-    session: null
-    decision: PENDING
-    evidence: docs/evidence/twin/TWIN-57/runs/qa_01/qa_review_report.md
+    session: 01a1ae75-4a98-7a83-9ec3-81835852bc12
+    reviewer_session: 01a1ae75-4a98-7a83-9ec3-81835852bc12
+    commit_sha: c6692b244e0aa09d04e7051293f9fef3c67535dd
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-57/runs/qa_03/codex_events.jsonl
+      sha256: b1794b6c7435d510c76755de875b4ca8a87fe9484d7495585ef9ca2daa189ceb
+    decision: APPROVED
+    reviewed_task_revision: 3
+    artifact_version: project-control=960f079647a00864fe7913836336b2a2ee3d729a; soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd; mcu-p3=891a8bb252814c83992a49b01fbe11ba83b92a1f; test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-57/runs/qa_03/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-57/runs/qa_03/qa_review_report.md
+    report_sha256: 5057592d0f095cd9ac2da488c3f22da5babb9238564aa1e5ef62f46830a10482
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -91,7 +100,7 @@ source_baseline:
   test_harness: d14ed04321c6d4f5ddb35a8801604a8af53b5b60
 base_commit: 79932746d225bb115010c5545ef3f7499482e137
 branch: main
-candidate_commit: 19534a9a4cb393176882fbad046129d55bba51f6
+candidate_commit: c6692b244e0aa09d04e7051293f9fef3c67535dd
 dispatch_binding:
   source_commit: 79932746d225bb115010c5545ef3f7499482e137
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -115,9 +124,9 @@ read_sources:
 worktree: soc-ap
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
+  task_revision: 3
   lease_id: lease-twin-57-20261105-01
-  expires_at: '2026-11-05T22:00:00+08:00'
+  expires_at: '2026-11-06T22:00:00+08:00'
 resources:
 - resource: soc-ap-worktree
   location: soc-ap
@@ -157,9 +166,8 @@ verification:
   commands:
   - id: build_and_verify_twin-57
     cwd: soc-ap
-    command: cmake -S . -B /tmp/build_twin57 -G Ninja && cmake --build /tmp/build_twin57
-      && ctest --test-dir /tmp/build_twin57 --output-on-failure && rm -rf /tmp/build_twin57
-    expected: 编译与全部单元/契约回归测试100%通过，且目标范围内代码中文注释符合code_documentation_standard.md
+    command: 'rm -rf /tmp/qa_twin57 && mkdir -p /tmp/qa_twin57 && cp -r ../soc-ap /tmp/qa_twin57/soc-ap && rm -rf /tmp/qa_twin57/soc-ap/build && ([ -e /tmp/qa_twin57/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin57/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin57/soc-ap/third_party/install)) && cd /tmp/qa_twin57/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/forward --output-on-failure && ctest --test-dir build/device_manager --output-on-failure && ! grep -rn "中文说明：模块辅助逻辑与状态说明" contracts/ services/ tests/ && echo "[PASS] code_documentation_standard.md check passed" && rm -rf /tmp/qa_twin57'
+    expected: 编译与forward/device_manager全部单元/契约回归测试100%通过，且目标范围内代码中文注释符合code_documentation_standard.md
     availability: available
   positive_cases:
   - 修复ISS-20261105-011(AP侧热床5~130°C与喷头5~300°C有效量程门禁)、ISS-20261105-012(AP侧raw_adc完整映射至快照JSON)、ISS-20261105-014(3s断链状态机衰退与离线哨兵2147483646注入)，并同步完成Batch

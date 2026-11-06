@@ -1,0 +1,63 @@
+{
+  "task_id": "TWIN-61",
+  "task_revision": 2,
+  "source": "server-pinned-commits",
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "4ed2f483a3aa",
+    "id": "TWIN-61_run_093330_20261106_013330",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/TWIN-61_run_093330_20261106_013330",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "4ed2f483a3aaae08bc5b94a91bf367b305500cbb58afb8cb4a3cc6fe5de6675f",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-06T01:33:49.753616793Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/TWIN-61_run_093330_20261106_013330",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "/tmp/qa_TWIN-61_wou9ay1o/evidence/server_lock.json",
+    "sha256": "1b83c5e5666e4e7c5063dce88d269c03d318e79b601b4b5efc64d08edad4cacc"
+  },
+  "checkout_log": {
+    "path": "/tmp/qa_TWIN-61_wou9ay1o/evidence/checkout.log",
+    "sha256": "56e5bcf340f3c08edc7750b5bb6058c0811a4737e03dccde384696271c62a1ad"
+  },
+  "runtime_log": {
+    "path": "/tmp/qa_TWIN-61_wou9ay1o/evidence/runtime.log",
+    "sha256": "86563e1b40d74e9f161633eda8daf50318fbd1b79ed064025c0692f5571a48d9"
+  },
+  "server_verdict": {
+    "path": "/tmp/qa_TWIN-61_wou9ay1o/evidence/server_verdict.json",
+    "sha256": "8af5bf2c765ee283d7425f9935dcb7608083c8ed5311db899edf2556e0d610d3"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "(cd ../project-control/tools && python3 -m unittest test_check_task_graph.py test_delivery_checks.py test_qa_runner.py test_qa_pipeline.py test_review_policy.py test_coord_recovery.py test_coord_systemd_service.py) && python3 hil/tools/debug_reconciliation_probe.py --self-test && python3 hil/tests/test_290_frame_burst_stress.py --self-test && python3 hil/tests/test_composite_lifecycle_sequences.py --self-test && ! grep -rn \"\u4e2d\u6587\u8bf4\u660e\uff1a\u6a21\u5757\u8f85\u52a9\u903b\u8f91\u4e0e\u72b6\u6001\u8bf4\u660e\" hil/ ../project-control/tools/ && echo \"[PASS] code_documentation_standard.md check passed\"",
+      "exit_code": "0",
+      "subpath": "test_harness",
+      "duration": "6.10s",
+      "output": "[PASS] debug_reconciliation_probe.py self-test suite passed (11 fixtures generated).\n[PASS] code_documentation_standard.md check passed\n\n............................................................................................................................\n----------------------------------------------------------------------\nRan 124 tests in 4.601s\n\nOK\ntest_evaluate_burst_debug_logs_positive_290_frames (__main__.Test290FrameBurstStress)\n\u9a8c\u8bc1\u6b63\u4f8b\uff1a290 \u5e27\u5b8c\u6574\u6536\u53d1\u3001seq=256..290 \u539f\u6837\u8f93\u51fa\u3001\u96f6 CRC_ERR/BAD_FRAME/drop/trunc \u65f6\u5224\u5b9a\u901a\u8fc7\u3002 ... ok\ntest_evaluate_burst_debug_logs_rejects_8bit_wrap_and_adc_pollution (__main__.Test290FrameBurstStress)\n\u9a8c\u8bc1\u53cd\u4f8b\uff1a\u5f53\u53d1\u751f 8-bit \u5e8f\u5217\u53f7\u56de\u7ed5\u3001\u88f8 `adc SS_ADC_BUSY` \u6c61\u67d3\u3001TIMEOUT \u6216\u957f\u884c `...` \u622a\u65ad\u65f6\u4e25\u683c\u62e6\u622a\u3002 ... ok\ntest_generate_290_burst_plan_covers_16bit_seq_boundary (__main__.Test290FrameBurstStress)\n\u9a8c\u8bc1 290 \u5e27\u7a81\u53d1\u8ba1\u5212\u5b8c\u6574\u8986\u76d6 seq=1..290\uff0c\u4e14\u6bcf\u5e27 CRC16 \u4e0e 16\u4f4d\u5c0f\u7aef\u5e8f\u5217\u53f7\u7f16\u7801\u51c6\u786e\u3002 ... ok\ntest_run_live_http_burst_end_to_end_with_mock_server (__main__.Test290FrameBurstStress)\n\u9a8c\u8bc1 `run_live_http_burst` \u7aef\u5230\u7aef\u9a71\u52a8 290 \u5e27 HTTP \u5e8f\u5217\u5e76\u8c03\u7528 `evaluate_burst_debug_logs` \u6821\u9a8c\u901a\u8fc7\u3002 ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.617s\n\nOK\ntest_run_live_composite_sequences_end_to_end_with_mock_server (__main__.TestCompositeLifecycleSequences)\n\u9a8c\u8bc1 `run_live_composite_sequences` \u901a\u8fc7\u672c\u5730 Mock HTTP Server \u7aef\u5230\u7aef\u9a71\u52a8 SEQ-01..SEQ-05 \u95ed\u73af\u901a\u8fc7\u3002 ... ok\ntest_seq01_oobe_bootid_adc_and_bed_range_gate (__main__.TestCompositeLifecycleSequences)\n\u9a8c\u8bc1 SEQ-01\uff1a\u52a8\u6001 boot_id \u53d8\u5316\u3001raw_adc \u6620\u5c04\u53ca 300\u00b0C \u70ed\u5e8a\u8d85\u91cf\u7a0b\u6545\u969c\u964d\u7ea7\u3002 ... ok\ntest_seq02_motion_homing_leveling_jog_and_no_trunc (__main__.TestCompositeLifecycleSequences)\n\u9a8c\u8bc1 SEQ-02\uff1a\u5f52\u96f6 -> \u8c03\u5e73 -> \u70b9\u52a8 -> 204B \u5750\u6807\u67e5\u8be2\u96f6\u622a\u65ad\u95ed\u73af\u3002 ... ok\ntest_seq03_filament_save_decoupling_and_400_validation (__main__.TestCompositeLifecycleSequences)\n\u9a8c\u8bc1 SEQ-03\uff1a\u4fdd\u5b58\u914d\u7f6e\u56fa\u5b9a action=0/target=0\uff0c\u975e\u6cd5\u6743\u91cd/\u69fd\u4f4d/\u52a8\u4f5c\u8fd4\u56de 400\u3002 ... ok\ntest_seq04_gcode_upload_and_two_stage_job_start (__main__.TestCompositeLifecycleSequences)\n\u9a8c\u8bc1 SEQ-04\uff1a\u975e\u6cd5 G-code \u4e0a\u4f20\u8fd4\u56de 400\uff0c\u4e00\u952e\u8f7d\u5165\u4ec5\u6682\u5b58\u4e0d\u8fdb\u5165 PRINTING\u3002 ... ok\ntest_seq05_offline_3s_sentinel_and_404_framing (__main__.TestCompositeLifecycleSequences)\n\u9a8c\u8bc1 SEQ-05\uff1a\u65ad\u94fe >=3.0s \u6253\u5165 2147483646 \u79bb\u7ebf\u54e8\u5175\uff0c\u672a\u77e5\u8def\u7531 404 Content-Length \u5b8c\u6574\u3002 ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.509s\n\nOK"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-06T01:33:58.546550+00:00"
+}

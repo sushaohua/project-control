@@ -1,0 +1,116 @@
+=== Docker Container Inspect: 75194d224c04 ===
+{
+  "id": "75194d224c04dfb47c5773bf1b0082682f87e38774cb29d07b585f95e43e0b8c",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-05T11:45:28.630252709Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-59_run_194513_20261105_114513",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) rm -rf /tmp/qa_twin59 && mkdir -p /tmp/qa_twin59 && cp -r ../soc-ap /tmp/qa_twin59/soc-ap && ([ -e /tmp/qa_twin59/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin59/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin59/soc-ap/third_party/install)) && cd /tmp/qa_twin59/soc-ap && cmake -S runtime/build -B /tmp/qa_twin59/build_rt -DCMAKE_BUILD_TYPE=Release && cmake --build /tmp/qa_twin59/build_rt --parallel && ctest --test-dir /tmp/qa_twin59/build_rt --output-on-failure && cmake -S middleware/dds/tests -B /tmp/qa_twin59/build_dds && cmake --build /tmp/qa_twin59/build_dds --parallel && LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH:-}" ctest --test-dir /tmp/qa_twin59/build_dds --output-on-failure && cmake -S middleware/dbus/tests -B /tmp/qa_twin59/build_dbus && cmake --build /tmp/qa_twin59/build_dbus --parallel && LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH:-}" ctest --test-dir /tmp/qa_twin59/build_dbus --output-on-failure && rm -rf /tmp/qa_twin59 -> 2
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin59/build_rt
+[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/tmp/qa_twin59/soc-ap/runtime/common/service_lifecycle.cpp.o
+[ 16%] Linking CXX static library libaisoc_runtime_common.a
+[ 16%] Built target aisoc_runtime_common
+[ 25%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin59/soc-ap/runtime/vmware/main.cpp.o
+[ 33%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tmp/qa_twin59/soc-ap/runtime/vmware/supervisor.cpp.o
+[ 41%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o
+[ 50%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin59/soc-ap/runtime/vmware/supervisor.cpp.o
+[ 58%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o
+[ 66%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o
+[ 75%] Linking CXX executable test_backoff
+[ 75%] Built target test_backoff
+[ 83%] Linking CXX executable aisoc_supervisor
+[ 83%] Built target aisoc_supervisor
+
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp: In function ‘void test_state_transitions()’:
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:82:29: error: unused variable ‘ctx’ [-Werror=unused-variable]
+   82 |     service_lifecycle_ctx_t ctx;
+      |                             ^~~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:90:36: error: variable ‘param’ set but not used [-Werror=unused-but-set-variable]
+   90 |     service_lifecycle_init_param_t param;
+      |                                    ^~~~~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp: In function ‘void test_health_check()’:
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:130:29: error: unused variable ‘ctx’ [-Werror=unused-variable]
+  130 |     service_lifecycle_ctx_t ctx;
+      |                             ^~~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:136:27: error: unused variable ‘res’ [-Werror=unused-variable]
+  136 |     health_check_result_t res;
+      |                           ^~~
+cc1plus: all warnings being treated as errors
+make[2]: *** [CMakeFiles/test_service_lifecycle.dir/build.make:79: CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:1087: CMakeFiles/test_service_lifecycle.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_default_services_registration()’:
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:20:18: error: unused variable ‘sup’ [-Werror=unused-variable]
+   20 |     supervisor_t sup;
+      |                  ^~~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:28:14: error: unused variable ‘idx’ [-Werror=unused-variable]
+   28 |     uint32_t idx = 0U;
+      |              ^~~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_topological_sort_order()’:
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:69:14: error: unused variable ‘s0’ [-Werror=unused-variable]
+   69 |     uint32_t s0 = sup.topo_indices[0];
+      |              ^~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:70:14: error: unused variable ‘s1’ [-Werror=unused-variable]
+   70 |     uint32_t s1 = sup.topo_indices[1];
+      |              ^~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:71:14: error: unused variable ‘s2’ [-Werror=unused-variable]
+   71 |     uint32_t s2 = sup.topo_indices[2];
+      |              ^~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:72:14: error: unused variable ‘s3’ [-Werror=unused-variable]
+   72 |     uint32_t s3 = sup.topo_indices[3];
+      |              ^~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_supervisor_start_and_stop()’:
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:132:18: error: unused variable ‘s_idx’ [-Werror=unused-variable]
+  132 |         uint32_t s_idx = sup.topo_indices[i];
+      |                  ^~~~~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:141:18: error: unused variable ‘s_idx’ [-Werror=unused-variable]
+  141 |         uint32_t s_idx = sup.topo_indices[i];
+      |                  ^~~~~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_real_mode_missing_binary_rejection()’:
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:256:24: error: unused variable ‘rc’ [-Werror=unused-variable]
+  256 |     lifecycle_status_t rc = supervisor_start_all(&sup);
+      |                        ^~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:259:14: error: unused variable ‘s0’ [-Werror=unused-variable]
+  259 |     uint32_t s0 = sup.topo_indices[0];
+      |              ^~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_real_mode_graceful_stop()’:
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:351:9: error: unused variable ‘ret’ [-Werror=unused-variable]
+  351 |     int ret = kill(spawned_pid, 0);
+      |         ^~~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:343:11: error: ‘sup.supervisor_t::services[0].supervisor_service_entry_t::child_pid’ is used uninitialized in this function [-Werror=uninitialized]
+  343 |     pid_t spawned_pid = sup.services[0].child_pid;
+      |           ^~~~~~~~~~~
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_real_mode_valid_binary_spawn()’:
+/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:294:11: error: ‘sup.supervisor_t::services[0].supervisor_service_entry_t::child_pid’ is used uninitialized in this function [-Werror=uninitialized]
+  294 |     pid_t spawned_pid = sup.services[0].child_pid;
+      |           ^~~~~~~~~~~
+cc1plus: all warnings being treated as errors
+make[2]: *** [CMakeFiles/test_supervisor_topology.dir/build.make:79: CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [CMakeFiles/Makefile2:1151: CMakeFiles/test_supervisor_topology.dir/all] Error 2
+make: *** [Makefile:101: all] Error 2

@@ -89,7 +89,7 @@ def read_ref(ref: dict, workspace: Path) -> bytes:
         path = workspace / "project-control" / relative
     allowed = [workspace.resolve()]
     allowed.extend((workspace / repo).resolve() for repo in
-                   ["project-control", "soc-ap", "mcu-p3", "test_harness"])
+                   ["project-control", "soc-ap", "mcu-p3", "test_harness", "boot/bootloadermc", "boot/bootloaderth"])
     if not any(path.resolve() == root or root in path.resolve().parents for root in allowed):
         raise ValueError("evidence symlink escapes workspace repositories")
     data = path.read_bytes()

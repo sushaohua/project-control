@@ -1,14 +1,14 @@
 ---
-title: "TASK-009 实现真实通信交互界面与双环境显示"
+title: TASK-009 实现真实通信交互界面与双环境显示
 date: 2026-09-30
 id: TASK-009
 revision: 6
 status: Backlog
 blocked: false
 owner: null
-proposed_owner: "ENG-UI"
+proposed_owner: ENG-UI
 qa_review_policy: project-control/.agents/rules/codex_qa_review.md
-reviewer: "ENG-STATE"
+reviewer: ENG-STATE
 verifier: QA
 integrator: INTEGRATOR
 baseline: B0
@@ -19,7 +19,9 @@ base_commit: null
 candidate_commit: null
 merged_commit: null
 depends_on: []
-tags: [soc, task]
+tags:
+- soc
+- task
 updated: '2026-10-29T13:52:16+08:00'
 timezone: 北京时间（UTC+8）
 plan_revision: vmware-soc-twin-20261029
@@ -39,6 +41,12 @@ child_tasks:
 - TWIN-59
 - TWIN-60
 - TWIN-61
+- TWIN-62
+- TWIN-63
+- TWIN-64
+- TWIN-65
+- TWIN-66
+- TWIN-67
 planning_relations:
 - TASK-008
 related_tasks: []

@@ -1,0 +1,62 @@
+diff --git a/motion-controller-mcu/project/src/minimc_proto.c b/motion-controller-mcu/project/src/minimc_proto.c
+index e6c8f47..472914a 100644
+--- a/motion-controller-mcu/project/src/minimc_proto.c
++++ b/motion-controller-mcu/project/src/minimc_proto.c
+@@ -1905,8 +1905,8 @@ static void handle_mc_filament(uint8_t cmd_id, uint16_t seq, const uint8_t *fram
+     }
+     minimc_filament_req_t req;
+     (void)memcpy(&req, frame + MINIMC_HEADER_SIZE, sizeof(req));
+-    /* ISS-010(MC): 严禁使用 & 0x03U 掩盖越界槽位，槽位 >=4 或动作 >3 必须返回 NACK 0x03 */
+-    if ((req.slot_id >= 4U) || (req.action > 3U))
++    /* ISS-010(MC): 严禁使用 & 0x03U 掩盖越界槽位，槽位 >3 或动作 >2（仅 0=SELECT, 1=LOAD, 2=UNLOAD 合法）必须返回 NACK 0x03 */
++    if ((req.slot_id > 3U) || (req.action > 2U))
+     {
+         send_mc_nack(frame, seq, 0x03U);
+         return;
+diff --git a/motion-controller-mcu/project/src/test_twin44_mc_debug.c b/motion-controller-mcu/project/src/test_twin44_mc_debug.c
+index 37c2dd9..982c614 100644
+--- a/motion-controller-mcu/project/src/test_twin44_mc_debug.c
++++ b/motion-controller-mcu/project/src/test_twin44_mc_debug.c
+@@ -803,6 +803,28 @@ static void test_twin47_job_filament_level_gcode(void)
+     printf("[PASS] test_twin47_job_filament_level_gcode\n");
+ }
+ 
++/**
++ * @brief 验证 0x19 耗材控制动作边界：action=0/1/2 返回 ACK，slot_id=4 或 action=3 返回 NACK 0x03 (ISS-20261105-010)
++ */
++static void verify_filament_action_and_slot_bounds(void)
++{
++    for (uint8_t act = 0U; act <= 2U; ++act)
++    {
++        const minimc_filament_req_t ok_req = { 0U, act, 10U };
++        send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_SLOT_SELECT, (const uint8_t *)&ok_req, sizeof(ok_req));
++        assert(s_last_ap_tx_frame[5] == MINIMC_CMD_SLOT_SELECT);
++    }
++    const minimc_filament_req_t bad_slot_req = { 4U, 0U, 0U };
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_SLOT_SELECT, (const uint8_t *)&bad_slot_req, sizeof(bad_slot_req));
++    assert(s_last_ap_tx_frame[5] == MINIMC_CMD_NACK);
++    assert(s_last_ap_tx_frame[12] == 0x03U);
++
++    const minimc_filament_req_t bad_action_req = { 0U, 3U, 0U };
++    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_SLOT_SELECT, (const uint8_t *)&bad_action_req, sizeof(bad_action_req));
++    assert(s_last_ap_tx_frame[5] == MINIMC_CMD_NACK);
++    assert(s_last_ap_tx_frame[12] == 0x03U);
++}
++
+ /**
+  * @brief 验证 TWIN-60 热床真实 ADC 透传、5~130°C/ADC 越界故障哨兵、0x19 越界 NACK 0x03 及动态 boot_id（ISS-010/011/012/016）
+  */
+@@ -854,11 +876,8 @@ static void test_twin60_adc_range_filament_nack_and_boot_id(void)
+     assert(pay.sensor_status == MINIMC_TEMP_STATUS_SHORT);
+     g_last_bed_adc_raw = 3200U;
+ 
+-    /* 4. ISS-010(MC): 0x19 槽位越界 (slot_id=4) 或动作越界 (action=4) 返回 NACK 0x03 */
+-    const minimc_filament_req_t bad_slot_req = { 4U, 0U, 0U };
+-    send_test_frame(MINIMC_NODE_MC, MINIMC_CMD_SLOT_SELECT, (const uint8_t *)&bad_slot_req, sizeof(bad_slot_req));
+-    assert(s_last_ap_tx_frame[5] == MINIMC_CMD_NACK);
+-    assert(s_last_ap_tx_frame[12] == 0x03U);
++    /* 4. ISS-010(MC): 验证 0x19 槽位与动作边界 (action=0..2 合法，action=3/slot=4 返回 NACK 0x03) */
++    verify_filament_action_and_slot_bounds();
+     printf("[PASS] test_twin60_adc_range_filament_nack_and_boot_id\n");
+ }
+ 

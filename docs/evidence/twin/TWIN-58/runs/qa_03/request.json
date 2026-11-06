@@ -1,0 +1,261 @@
+{
+  "repository": "soc-ap",
+  "candidate_commit": "c6692b244e0aa09d04e7051293f9fef3c67535dd",
+  "task_revision": 4,
+  "task_id": "TWIN-58",
+  "workspace": "/home/sushaohua/workspace/ai_soc_project",
+  "commands": [
+    {
+      "kind": "test",
+      "subpath": "soc-ap",
+      "command": "rm -rf /tmp/qa_twin58 && mkdir -p /tmp/qa_twin58 && cp -r ../soc-ap /tmp/qa_twin58/soc-ap && rm -rf /tmp/qa_twin58/soc-ap/build && ([ -e /tmp/qa_twin58/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin58/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin58/soc-ap/third_party/install)) && cd /tmp/qa_twin58/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/ui_gateway --output-on-failure && python3 -m unittest -v browser_hmi/first_release/test_hmi_contract.py tests/ui/twin/test_ui_contract.py && python3 -c \"import re, pathlib; js = pathlib.Path(\\\"browser_hmi/first_release/app.js\\\").read_text(encoding=\\\"utf-8\\\"); ext_pat = re.search(r\\\"return\\s+(/\\\\\\\\..*?\\\\$/[a-z]*)\\.test\\\", js).group(1); cmd_pat = re.search(r\\\"const\\s+cmdRegex\\s*=\\s*(/\\^.*?/[a-z]*);\\\", js).group(1); ext_re = re.compile(ext_pat.strip(\\\"/i\\\"), re.I); cmd_re = re.compile(cmd_pat.strip(\\\"/i\\\"), re.I); chk_ext = lambda n: bool(ext_re.search(n.strip())); chk_body = lambda b: any(cmd_re.match(l.split(\\\";\\\")[0].strip()) for l in b.splitlines() if l.split(\\\";\\\")[0].strip()); assert not chk_ext(\\\"bad.txt\\\") and chk_body(\\\"G28\\nG1 X10\\\"); assert chk_ext(\\\"empty.gcode\\\") and not chk_body(\\\"\\\"); assert chk_ext(\\\"bad_body.gcode\\\") and not chk_body(\\\"NOT_GCODE\\nhello\\\"); assert chk_ext(\\\"ok.gcode\\\") and chk_body(\\\"; comment\\nG28\\nM104 S200\\\"); print(\\\"[PASS] Frontend app.js G-code 4-case negative/positive validation executed and verified\\\")\" && python3 -c \"import pathlib, re; files = sorted(list(pathlib.Path(\\\"services/ui_gateway\\\").glob(\\\"*.[ch]*\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.py\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.js\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.html\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.css\\\")) + [pathlib.Path(\\\"ui/twin/app.js\\\"), pathlib.Path(\\\"tools/deploy_twin.sh\\\")] + list(pathlib.Path(\\\"tests/ui_gateway\\\").rglob(\\\"*.cpp\\\")) + list(pathlib.Path(\\\"tests/ui\\\").rglob(\\\"*.py\\\"))); cjk = re.compile(r\\\"[\\u4e00-\\u9fff]\\\"); assert len(files) >= 20; [print(f\\\"[DOC-AUDIT PASS] {f}: cjk_lines={sum(1 for l in f.read_text(encoding=\\\\\\\"utf-8\\\\\\\").splitlines() if cjk.search(l))}\\\") or (_ for _ in ()).throw(AssertionError(str(f))) if (\\\"中文说明：模块辅助逻辑与状态说明\\\" in f.read_text(encoding=\\\"utf-8\\\") or sum(1 for l in f.read_text(encoding=\\\"utf-8\\\").splitlines() if cjk.search(l)) < 3) else None for f in files]; print(f\\\"[PASS] All {len(files)} Batch AP-3 files verified compliant with code_documentation_standard.md\\\")\" && rm -rf /tmp/qa_twin58",
+      "id": "build_and_verify_twin-58"
+    }
+  ],
+  "targets": [
+    {
+      "name": "project-control",
+      "commit": "960f079647a00864fe7913836336b2a2ee3d729a",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "main"
+    },
+    {
+      "name": "soc-ap",
+      "commit": "c6692b244e0aa09d04e7051293f9fef3c67535dd",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+      "ref": "main"
+    },
+    {
+      "name": "mcu-p3",
+      "commit": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+      "ref": "feat/soc-debug"
+    },
+    {
+      "name": "test_harness",
+      "commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+      "ref": "main"
+    }
+  ],
+  "contract": {
+    "id": "TWIN-58",
+    "title": "TWIN-58 SoC AP ui_gateway与browser_hmi契约校验、显式动作解耦、离线状态同步与Batch AP-3中文注释补齐",
+    "revision": 4,
+    "plan_revision": "vmware-soc-twin-20261105",
+    "task_kind": "implementation",
+    "development_stage": "vmware-twin",
+    "dispatchable": true,
+    "status": "Review",
+    "blocked": false,
+    "planning_status": "active",
+    "owner": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+    "proposed_owner": "ENG-UI",
+    "executor": {
+      "role": "ENG-UI",
+      "agent_id": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+      "run_id": "author_01"
+    },
+    "qa_policy": "streamlined-v1",
+    "reviewer": [
+      "QA"
+    ],
+    "verifier": null,
+    "integrator": "INTEGRATOR",
+    "requirement_id": "REQ-20261105-002",
+    "demand_id": "DEM-20261105-018",
+    "confirmation_id": "CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105",
+    "approval_id": "APPR-20261105-004",
+    "accepted_scope": "Docker QA sandbox (deploy_twin.sh --build-only + CTest on build/ui_gateway + Python HMI contract & frontend 4-case G-code validation + per-file code_documentation_standard audit) verification of ISS-20261105-006 (/api/v1/state dynamic routing and static fake state cleanup), ISS-20261105-007 (saving slot config decoupled from LOAD/210°C), ISS-20261105-008 (two-stage model load vs start print), ISS-20261105-009 (G-code upload extension/empty/content 400 validation), ISS-20261105-010 (color weight sum and slot/action 400 validation), ISS-20261105-011 (UI bed out-of-range fault display), ISS-20261105-013 (offline OOBE and 4 filament sensors non-green state), ISS-20261105-017 (404 response buffer sizing without truncation), and Batch AP-3 Chinese code comments across ui_gateway + browser_hmi (20 files, ISS-20261105-018). Candidate commit c6692b244e0aa09d04e7051293f9fef3c67535dd is the consolidated soc-ap commit for the jointly approved batch TWIN-57/58/59 under APPR-20261105-004 (sibling paths in forward/device_manager and core/middleware/runtime belong to TWIN-57 and TWIN-59 in the same approved batch). Physical HIL verification is out of scope for this software sandbox task (covered by TWIN-55); all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass.",
+    "review_assignments": {
+      "reviewer_sessions": [
+        {
+          "role": "QA",
+          "platform": "codex",
+          "model": "gpt-6-luna",
+          "planned_session_alias": "planned-qa-twin-58",
+          "session": null,
+          "decision": "PENDING",
+          "evidence": "docs/evidence/twin/TWIN-58/runs/qa_03/qa_review_report.md"
+        }
+      ],
+      "verifier_session": null,
+      "integrator_session": null
+    },
+    "primary_work_package": "TASK-009",
+    "related_work_packages": [
+      "TASK-007",
+      "TASK-010"
+    ],
+    "depends_on": [
+      "TWIN-56"
+    ],
+    "dependency_conditions": [
+      {
+        "task": "TWIN-56",
+        "accepted_version": "project-control=99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0; soc-ap=79932746d225bb115010c5545ef3f7499482e137; mcu-p3=891a8bb252814c83992a49b01fbe11ba83b92a1f; test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+        "acceptance_evidence": "docs/evidence/twin/TWIN-56/runs/qa_03/qa_review_report.md",
+        "required": "继承TWIN-56 16-bit seq日志与三仓锁定基线"
+      }
+    ],
+    "scope_status": "mapped",
+    "allowed_repositories": [
+      "soc-ap",
+      "project-control"
+    ],
+    "write_scope": {
+      "soc-ap": [
+        "services/ui_gateway/**",
+        "browser_hmi/**",
+        "ui/twin/app.js",
+        "tools/deploy_twin.sh",
+        "tests/ui_gateway/**",
+        "tests/ui/**"
+      ],
+      "project-control": [
+        "docs/evidence/twin/TWIN-58/**"
+      ]
+    },
+    "allowed_paths": [
+      "soc-ap/services/ui_gateway/**",
+      "soc-ap/browser_hmi/**",
+      "soc-ap/ui/twin/app.js",
+      "soc-ap/tools/deploy_twin.sh",
+      "soc-ap/tests/ui_gateway/**",
+      "soc-ap/tests/ui/**",
+      "project-control/docs/evidence/twin/TWIN-58/**"
+    ],
+    "forbidden_paths": [
+      "mcu-p3/**",
+      "test_harness/**",
+      "boot/**"
+    ],
+    "source_baseline": {
+      "project-control": "960f079647a00864fe7913836336b2a2ee3d729a",
+      "soc-ap": "79932746d225bb115010c5545ef3f7499482e137",
+      "mcu-p3": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+      "test_harness": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60"
+    },
+    "base_commit": "79932746d225bb115010c5545ef3f7499482e137",
+    "branch": "main",
+    "candidate_commit": "c6692b244e0aa09d04e7051293f9fef3c67535dd",
+    "dispatch_binding": {
+      "source_commit": "79932746d225bb115010c5545ef3f7499482e137",
+      "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "consumed_artifact_versions": {
+        "arch_breakdown": "5bcfbaf2ca96d2bba58abab17b3368c243235f778e0bd99a2293a136ee50ee4d"
+      }
+    },
+    "protocol_input": {
+      "path": "project-control/docs/architecture/twin55_issues_005_017_consolidated_remediation_plan_20261105.md",
+      "sha256": "5bcfbaf2ca96d2bba58abab17b3368c243235f778e0bd99a2293a136ee50ee4d",
+      "revision": 1
+    },
+    "icd_versions": [
+      {
+        "path": "project-control/docs/architecture/twin55_issues_005_017_consolidated_remediation_plan_20261105.md",
+        "version": 1
+      }
+    ],
+    "read_sources": [
+      "project-control/.agents/rules/repository_rule_sources.json",
+      "project-control/.agents/rules/repository_rule_boundaries.md",
+      "project-control/.agents/rules/c_cpp_coding_standard.md",
+      "project-control/.agents/rules/web_ui_coding_standard.md",
+      "project-control/.agents/rules/code_documentation_standard.md",
+      "project-control/docs/architecture/twin55_issues_005_017_consolidated_remediation_plan_20261105.md",
+      "project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md"
+    ],
+    "worktree": "soc-ap",
+    "lease": {
+      "owner": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+      "task_revision": 4,
+      "lease_id": "lease-twin-58-20261105-01",
+      "expires_at": "2026-11-06T22:00:00+08:00"
+    },
+    "resources": [
+      {
+        "resource": "soc-ap-worktree",
+        "location": "soc-ap",
+        "exclusive": false,
+        "pending": null
+      }
+    ],
+    "budget": {
+      "planned_checkpoint_minutes": 45,
+      "max_evidence_based_corrections": 2,
+      "on_limit": "保存证据交COORD"
+    },
+    "checkpoint": "开工前绑定；自检单测与注释规范检查；独立沙箱与QA审查；收件",
+    "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+    "readiness_pending": [],
+    "deliverables": {
+      "artifacts": [
+        "soc-ap/services/ui_gateway/**",
+        "soc-ap/browser_hmi/**",
+        "soc-ap/ui/twin/app.js",
+        "soc-ap/tools/deploy_twin.sh",
+        "soc-ap/tests/ui_gateway/**",
+        "soc-ap/tests/ui/**"
+      ],
+      "record": "docs/evidence/twin/TWIN-58/runs/author_01/result.md"
+    },
+    "rollback": {
+      "steps": [
+        "git -C soc-ap checkout -- ."
+      ]
+    },
+    "handoff": {
+      "receiver_role": "COORD",
+      "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+      "transport": "docs",
+      "evidence_location": "docs/evidence/twin/TWIN-58",
+      "acknowledgement": "accepted"
+    },
+    "verification": {
+      "commands": [
+        {
+          "id": "build_and_verify_twin-58",
+          "cwd": "soc-ap",
+          "command": "rm -rf /tmp/qa_twin58 && mkdir -p /tmp/qa_twin58 && cp -r ../soc-ap /tmp/qa_twin58/soc-ap && rm -rf /tmp/qa_twin58/soc-ap/build && ([ -e /tmp/qa_twin58/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin58/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin58/soc-ap/third_party/install)) && cd /tmp/qa_twin58/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/ui_gateway --output-on-failure && python3 -m unittest -v browser_hmi/first_release/test_hmi_contract.py tests/ui/twin/test_ui_contract.py && python3 -c \"import re, pathlib; js = pathlib.Path(\\\"browser_hmi/first_release/app.js\\\").read_text(encoding=\\\"utf-8\\\"); ext_pat = re.search(r\\\"return\\s+(/\\\\\\\\..*?\\\\$/[a-z]*)\\.test\\\", js).group(1); cmd_pat = re.search(r\\\"const\\s+cmdRegex\\s*=\\s*(/\\^.*?/[a-z]*);\\\", js).group(1); ext_re = re.compile(ext_pat.strip(\\\"/i\\\"), re.I); cmd_re = re.compile(cmd_pat.strip(\\\"/i\\\"), re.I); chk_ext = lambda n: bool(ext_re.search(n.strip())); chk_body = lambda b: any(cmd_re.match(l.split(\\\";\\\")[0].strip()) for l in b.splitlines() if l.split(\\\";\\\")[0].strip()); assert not chk_ext(\\\"bad.txt\\\") and chk_body(\\\"G28\\nG1 X10\\\"); assert chk_ext(\\\"empty.gcode\\\") and not chk_body(\\\"\\\"); assert chk_ext(\\\"bad_body.gcode\\\") and not chk_body(\\\"NOT_GCODE\\nhello\\\"); assert chk_ext(\\\"ok.gcode\\\") and chk_body(\\\"; comment\\nG28\\nM104 S200\\\"); print(\\\"[PASS] Frontend app.js G-code 4-case negative/positive validation executed and verified\\\")\" && python3 -c \"import pathlib, re; files = sorted(list(pathlib.Path(\\\"services/ui_gateway\\\").glob(\\\"*.[ch]*\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.py\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.js\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.html\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.css\\\")) + [pathlib.Path(\\\"ui/twin/app.js\\\"), pathlib.Path(\\\"tools/deploy_twin.sh\\\")] + list(pathlib.Path(\\\"tests/ui_gateway\\\").rglob(\\\"*.cpp\\\")) + list(pathlib.Path(\\\"tests/ui\\\").rglob(\\\"*.py\\\"))); cjk = re.compile(r\\\"[\\u4e00-\\u9fff]\\\"); assert len(files) >= 20; [print(f\\\"[DOC-AUDIT PASS] {f}: cjk_lines={sum(1 for l in f.read_text(encoding=\\\\\\\"utf-8\\\\\\\").splitlines() if cjk.search(l))}\\\") or (_ for _ in ()).throw(AssertionError(str(f))) if (\\\"中文说明：模块辅助逻辑与状态说明\\\" in f.read_text(encoding=\\\"utf-8\\\") or sum(1 for l in f.read_text(encoding=\\\"utf-8\\\").splitlines() if cjk.search(l)) < 3) else None for f in files]; print(f\\\"[PASS] All {len(files)} Batch AP-3 files verified compliant with code_documentation_standard.md\\\")\" && rm -rf /tmp/qa_twin58",
+          "expected": "编译与ui_gateway及browser_hmi全部单元/契约回归测试100%通过，且目标范围内代码中文注释符合code_documentation_standard.md",
+          "availability": "available"
+        }
+      ],
+      "positive_cases": [
+        "修复ISS-20261105-006(/api/v1/state动态路由统一与静态假文件清理)、ISS-20261105-007(保存料槽配置与LOAD/210°C解耦)、ISS-20261105-008(模型一键载入与开始打印两阶段解耦)、ISS-20261105-009(G-code上传扩展名/空文件/内容前后端双重400校验)、ISS-20261105-010(混色权重与槽位/动作越界400校验)、ISS-20261105-011(UI侧热床超量程故障展示)、ISS-20261105-013(设备离线时OOBE与4路断料传感器去假绿)、ISS-20261105-017(404响应缓冲区扩容消除截断)，并同步完成Batch AP-3(ui_gateway + browser_hmi共20个文件)中文代码注释全量补齐(ISS-20261105-018)。"
+      ],
+      "negative_cases": [
+        "边界越界、非法参数、超时与断链场景按契约拒绝或降级，无回归破坏"
+      ]
+    },
+    "required_evidence_level": "server-sandbox-and-independent-review",
+    "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+    "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+    "updated": "2026-11-05T16:02:00+08:00"
+  },
+  "run_dir": "/tmp/qa_TWIN-58_wz5gb884",
+  "timeout_seconds": 1140,
+  "sandbox_command": [
+    "/usr/bin/python3",
+    "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+    "--config",
+    "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+    "--task",
+    "TWIN-58",
+    "--revision",
+    "4",
+    "--output-dir",
+    "/tmp/qa_TWIN-58_wz5gb884/evidence",
+    "--repo-commit",
+    "project-control=960f079647a00864fe7913836336b2a2ee3d729a:main",
+    "--repo-commit",
+    "soc-ap=c6692b244e0aa09d04e7051293f9fef3c67535dd:main",
+    "--repo-commit",
+    "mcu-p3=891a8bb252814c83992a49b01fbe11ba83b92a1f:feat/soc-debug",
+    "--repo-commit",
+    "test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60:main",
+    "--cmd",
+    "test:soc-ap:rm -rf /tmp/qa_twin58 && mkdir -p /tmp/qa_twin58 && cp -r ../soc-ap /tmp/qa_twin58/soc-ap && rm -rf /tmp/qa_twin58/soc-ap/build && ([ -e /tmp/qa_twin58/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin58/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin58/soc-ap/third_party/install)) && cd /tmp/qa_twin58/soc-ap && bash tools/deploy_twin.sh --build-only && ctest --test-dir build/ui_gateway --output-on-failure && python3 -m unittest -v browser_hmi/first_release/test_hmi_contract.py tests/ui/twin/test_ui_contract.py && python3 -c \"import re, pathlib; js = pathlib.Path(\\\"browser_hmi/first_release/app.js\\\").read_text(encoding=\\\"utf-8\\\"); ext_pat = re.search(r\\\"return\\s+(/\\\\\\\\..*?\\\\$/[a-z]*)\\.test\\\", js).group(1); cmd_pat = re.search(r\\\"const\\s+cmdRegex\\s*=\\s*(/\\^.*?/[a-z]*);\\\", js).group(1); ext_re = re.compile(ext_pat.strip(\\\"/i\\\"), re.I); cmd_re = re.compile(cmd_pat.strip(\\\"/i\\\"), re.I); chk_ext = lambda n: bool(ext_re.search(n.strip())); chk_body = lambda b: any(cmd_re.match(l.split(\\\";\\\")[0].strip()) for l in b.splitlines() if l.split(\\\";\\\")[0].strip()); assert not chk_ext(\\\"bad.txt\\\") and chk_body(\\\"G28\\nG1 X10\\\"); assert chk_ext(\\\"empty.gcode\\\") and not chk_body(\\\"\\\"); assert chk_ext(\\\"bad_body.gcode\\\") and not chk_body(\\\"NOT_GCODE\\nhello\\\"); assert chk_ext(\\\"ok.gcode\\\") and chk_body(\\\"; comment\\nG28\\nM104 S200\\\"); print(\\\"[PASS] Frontend app.js G-code 4-case negative/positive validation executed and verified\\\")\" && python3 -c \"import pathlib, re; files = sorted(list(pathlib.Path(\\\"services/ui_gateway\\\").glob(\\\"*.[ch]*\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.py\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.js\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.html\\\")) + list(pathlib.Path(\\\"browser_hmi\\\").rglob(\\\"*.css\\\")) + [pathlib.Path(\\\"ui/twin/app.js\\\"), pathlib.Path(\\\"tools/deploy_twin.sh\\\")] + list(pathlib.Path(\\\"tests/ui_gateway\\\").rglob(\\\"*.cpp\\\")) + list(pathlib.Path(\\\"tests/ui\\\").rglob(\\\"*.py\\\"))); cjk = re.compile(r\\\"[\\u4e00-\\u9fff]\\\"); assert len(files) >= 20; [print(f\\\"[DOC-AUDIT PASS] {f}: cjk_lines={sum(1 for l in f.read_text(encoding=\\\\\\\"utf-8\\\\\\\").splitlines() if cjk.search(l))}\\\") or (_ for _ in ()).throw(AssertionError(str(f))) if (\\\"中文说明：模块辅助逻辑与状态说明\\\" in f.read_text(encoding=\\\"utf-8\\\") or sum(1 for l in f.read_text(encoding=\\\"utf-8\\\").splitlines() if cjk.search(l)) < 3) else None for f in files]; print(f\\\"[PASS] All {len(files)} Batch AP-3 files verified compliant with code_documentation_standard.md\\\")\" && rm -rf /tmp/qa_twin58"
+  ]
+}

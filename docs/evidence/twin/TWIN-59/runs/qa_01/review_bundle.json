@@ -1,0 +1,380 @@
+{
+  "request": {
+    "repository": "soc-ap",
+    "candidate_commit": "19534a9a4cb393176882fbad046129d55bba51f6",
+    "task_revision": 2,
+    "task_id": "TWIN-59",
+    "workspace": "/home/sushaohua/workspace/ai_soc_project",
+    "commands": [
+      {
+        "kind": "test",
+        "subpath": "soc-ap",
+        "command": "rm -rf /tmp/qa_twin59 && mkdir -p /tmp/qa_twin59 && cp -r ../soc-ap /tmp/qa_twin59/soc-ap && ([ -e /tmp/qa_twin59/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin59/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin59/soc-ap/third_party/install)) && cd /tmp/qa_twin59/soc-ap && cmake -S runtime/build -B /tmp/qa_twin59/build_rt -DCMAKE_BUILD_TYPE=Release && cmake --build /tmp/qa_twin59/build_rt --parallel && ctest --test-dir /tmp/qa_twin59/build_rt --output-on-failure && cmake -S middleware/dds/tests -B /tmp/qa_twin59/build_dds && cmake --build /tmp/qa_twin59/build_dds --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dds --output-on-failure && cmake -S middleware/dbus/tests -B /tmp/qa_twin59/build_dbus && cmake --build /tmp/qa_twin59/build_dbus --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dbus --output-on-failure && rm -rf /tmp/qa_twin59",
+        "id": "build_and_verify_twin-59"
+      }
+    ],
+    "targets": [
+      {
+        "name": "project-control",
+        "commit": "960f079647a00864fe7913836336b2a2ee3d729a",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+        "ref": "main"
+      },
+      {
+        "name": "soc-ap",
+        "commit": "19534a9a4cb393176882fbad046129d55bba51f6",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+        "ref": "main"
+      },
+      {
+        "name": "mcu-p3",
+        "commit": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+        "ref": "feat/soc-debug"
+      },
+      {
+        "name": "test_harness",
+        "commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+        "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+        "ref": "main"
+      }
+    ],
+    "contract": {
+      "id": "TWIN-59",
+      "title": "TWIN-59 SoC AP核心协议、中间件、运行时与构建脚本Batch AP-1中文注释规范化全量补齐",
+      "revision": 2,
+      "plan_revision": "vmware-soc-twin-20261105",
+      "task_kind": "implementation",
+      "development_stage": "vmware-twin",
+      "dispatchable": true,
+      "status": "Review",
+      "blocked": false,
+      "planning_status": "active",
+      "owner": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+      "proposed_owner": "ENG-SOC",
+      "executor": {
+        "role": "ENG-SOC",
+        "agent_id": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+        "run_id": "author_01"
+      },
+      "qa_policy": "streamlined-v1",
+      "reviewer": [
+        "QA"
+      ],
+      "verifier": null,
+      "integrator": "INTEGRATOR",
+      "requirement_id": "ISS-20261105-018",
+      "demand_id": "DEM-20261105-019",
+      "confirmation_id": "CONFIRM-TWIN55-REMEDIATION-AND-COMMENTS-20261105",
+      "approval_id": "APPR-20261105-004",
+      "accepted_scope": "Docker QA sandbox (CMake/CTest on runtime/build, middleware/dds/tests, middleware/dbus/tests) verification of Batch AP-1 Chinese code comments across soc-ap contracts/twin/job, core, middleware, runtime, third_party/build.sh, tools/twin_build, tools/diag, and tools/run_print_dryrun.sh (44 files, ISS-20261105-018) per code_documentation_standard.md with zero logic regressions and 100% unit test pass. Candidate commit 19534a9a4cb393176882fbad046129d55bba51f6 is the consolidated soc-ap commit for the jointly approved batch TWIN-57/58/59 under APPR-20261105-004 (sibling paths in forward/device_manager and ui_gateway/browser_hmi belong to TWIN-57 and TWIN-58 in the same approved batch). Physical HIL verification is out of scope for this software sandbox task; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass.",
+      "review_assignments": {
+        "reviewer_sessions": [
+          {
+            "role": "QA",
+            "platform": "codex",
+            "model": "gpt-6-luna",
+            "planned_session_alias": "planned-qa-twin-59",
+            "session": null,
+            "decision": "PENDING",
+            "evidence": "docs/evidence/twin/TWIN-59/runs/qa_01/qa_review_report.md"
+          }
+        ],
+        "verifier_session": null,
+        "integrator_session": null
+      },
+      "primary_work_package": "TASK-009",
+      "related_work_packages": [
+        "TASK-007",
+        "TASK-010"
+      ],
+      "depends_on": [
+        "TWIN-56"
+      ],
+      "dependency_conditions": [
+        {
+          "task": "TWIN-56",
+          "accepted_version": "project-control=99cd83bb40b4ecf53e8f9dd996ad61ecb653f6f0; soc-ap=79932746d225bb115010c5545ef3f7499482e137; mcu-p3=891a8bb252814c83992a49b01fbe11ba83b92a1f; test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+          "acceptance_evidence": "docs/evidence/twin/TWIN-56/runs/qa_03/qa_review_report.md",
+          "required": "继承TWIN-56 16-bit seq日志与三仓锁定基线"
+        }
+      ],
+      "scope_status": "mapped",
+      "allowed_repositories": [
+        "soc-ap",
+        "project-control"
+      ],
+      "write_scope": {
+        "soc-ap": [
+          "contracts/twin/job/**",
+          "core/**",
+          "middleware/**",
+          "runtime/**",
+          "third_party/build.sh",
+          "tools/twin_build/**",
+          "tools/diag/**",
+          "tools/run_print_dryrun.sh"
+        ],
+        "project-control": [
+          "docs/evidence/twin/TWIN-59/**"
+        ]
+      },
+      "allowed_paths": [
+        "soc-ap/contracts/twin/job/**",
+        "soc-ap/core/**",
+        "soc-ap/middleware/**",
+        "soc-ap/runtime/**",
+        "soc-ap/third_party/build.sh",
+        "soc-ap/tools/twin_build/**",
+        "soc-ap/tools/diag/**",
+        "soc-ap/tools/run_print_dryrun.sh",
+        "project-control/docs/evidence/twin/TWIN-59/**"
+      ],
+      "forbidden_paths": [
+        "mcu-p3/**",
+        "test_harness/**",
+        "boot/**"
+      ],
+      "source_baseline": {
+        "project-control": "960f079647a00864fe7913836336b2a2ee3d729a",
+        "soc-ap": "79932746d225bb115010c5545ef3f7499482e137",
+        "mcu-p3": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+        "test_harness": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60"
+      },
+      "base_commit": "79932746d225bb115010c5545ef3f7499482e137",
+      "branch": "main",
+      "candidate_commit": "19534a9a4cb393176882fbad046129d55bba51f6",
+      "dispatch_binding": {
+        "source_commit": "79932746d225bb115010c5545ef3f7499482e137",
+        "workspace_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "consumed_artifact_versions": {
+          "arch_breakdown": "5073d7e45aa8fbd5e8f8422a775df73ddc7970d8061363b715d673feec0ada94"
+        }
+      },
+      "protocol_input": {
+        "path": "project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md",
+        "sha256": "5073d7e45aa8fbd5e8f8422a775df73ddc7970d8061363b715d673feec0ada94",
+        "revision": 1
+      },
+      "icd_versions": [
+        {
+          "path": "project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md",
+          "version": 1
+        }
+      ],
+      "read_sources": [
+        "project-control/.agents/rules/repository_rule_sources.json",
+        "project-control/.agents/rules/repository_rule_boundaries.md",
+        "project-control/.agents/rules/c_cpp_coding_standard.md",
+        "project-control/.agents/rules/web_ui_coding_standard.md",
+        "project-control/.agents/rules/code_documentation_standard.md",
+        "project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md",
+        "project-control/docs/architecture/code_comments_remediation_arch_breakdown_20261105.md"
+      ],
+      "worktree": "soc-ap",
+      "lease": {
+        "owner": "07a1f6dc-f47c-45e5-bf00-37ec14e2dfda",
+        "task_revision": 2,
+        "lease_id": "lease-twin-59-20261105-01",
+        "expires_at": "2026-11-05T22:00:00+08:00"
+      },
+      "resources": [
+        {
+          "resource": "soc-ap-worktree",
+          "location": "soc-ap",
+          "exclusive": false,
+          "pending": null
+        }
+      ],
+      "budget": {
+        "planned_checkpoint_minutes": 45,
+        "max_evidence_based_corrections": 2,
+        "on_limit": "保存证据交COORD"
+      },
+      "checkpoint": "开工前绑定；自检单测与注释规范检查；独立沙箱与QA审查；收件",
+      "execution_contract": "project-control/docs/planning/vmware_soc_twin_task_execution_20261029.md",
+      "readiness_pending": [],
+      "deliverables": {
+        "artifacts": [
+          "soc-ap/contracts/twin/job/**",
+          "soc-ap/core/**",
+          "soc-ap/middleware/**",
+          "soc-ap/runtime/**",
+          "soc-ap/third_party/build.sh",
+          "soc-ap/tools/twin_build/**",
+          "soc-ap/tools/diag/**",
+          "soc-ap/tools/run_print_dryrun.sh"
+        ],
+        "record": "docs/evidence/twin/TWIN-59/runs/author_01/result.md"
+      },
+      "rollback": {
+        "steps": [
+          "git -C soc-ap checkout -- ."
+        ]
+      },
+      "handoff": {
+        "receiver_role": "COORD",
+        "receiver_session": "ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6",
+        "transport": "docs",
+        "evidence_location": "docs/evidence/twin/TWIN-59",
+        "acknowledgement": "accepted"
+      },
+      "verification": {
+        "commands": [
+          {
+            "id": "build_and_verify_twin-59",
+            "cwd": "soc-ap",
+            "command": "rm -rf /tmp/qa_twin59 && mkdir -p /tmp/qa_twin59 && cp -r ../soc-ap /tmp/qa_twin59/soc-ap && ([ -e /tmp/qa_twin59/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin59/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin59/soc-ap/third_party/install)) && cd /tmp/qa_twin59/soc-ap && cmake -S runtime/build -B /tmp/qa_twin59/build_rt -DCMAKE_BUILD_TYPE=Release && cmake --build /tmp/qa_twin59/build_rt --parallel && ctest --test-dir /tmp/qa_twin59/build_rt --output-on-failure && cmake -S middleware/dds/tests -B /tmp/qa_twin59/build_dds && cmake --build /tmp/qa_twin59/build_dds --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dds --output-on-failure && cmake -S middleware/dbus/tests -B /tmp/qa_twin59/build_dbus && cmake --build /tmp/qa_twin59/build_dbus --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dbus --output-on-failure && rm -rf /tmp/qa_twin59",
+            "expected": "编译与runtime/dds/dbus全部单元/契约回归测试100%通过，且目标范围内代码中文注释符合code_documentation_standard.md",
+            "availability": "available"
+          }
+        ],
+        "positive_cases": [
+          "依据code_documentation_standard.md与ARCH-BREAKDOWN-CODE-COMMENTS-20261105，对soc-ap仓库Batch AP-1(contracts/twin/job、core、middleware、runtime、third_party/build.sh、tools/twin_build、tools/diag、tools/run_print_dryrun.sh共44个文件)完成全量中文注释补齐(ISS-20261105-018)，保持零逻辑变更与100%单测通过。"
+        ],
+        "negative_cases": [
+          "边界越界、非法参数、超时与断链场景按契约拒绝或降级，无回归破坏"
+        ]
+      },
+      "required_evidence_level": "server-sandbox-and-independent-review",
+      "verification_environment": "docker-qa-sandbox-and-isolated-codex",
+      "qa_review_policy": "project-control/.agents/rules/codex_qa_review.md",
+      "updated": "2026-11-05T16:02:00+08:00"
+    },
+    "run_dir": "/tmp/qa_TWIN-59_bkup0lo3",
+    "timeout_seconds": 1140,
+    "sandbox_command": [
+      "/usr/bin/python3",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/tools/qa_runner/qa_runner.py",
+      "--config",
+      "/home/sushaohua/workspace/ai_soc_project/project-control/config/qa_runner/default_config.yaml",
+      "--task",
+      "TWIN-59",
+      "--revision",
+      "2",
+      "--output-dir",
+      "/tmp/qa_TWIN-59_bkup0lo3/evidence",
+      "--repo-commit",
+      "project-control=960f079647a00864fe7913836336b2a2ee3d729a:main",
+      "--repo-commit",
+      "soc-ap=19534a9a4cb393176882fbad046129d55bba51f6:main",
+      "--repo-commit",
+      "mcu-p3=891a8bb252814c83992a49b01fbe11ba83b92a1f:feat/soc-debug",
+      "--repo-commit",
+      "test_harness=d14ed04321c6d4f5ddb35a8801604a8af53b5b60:main",
+      "--cmd",
+      "test:soc-ap:rm -rf /tmp/qa_twin59 && mkdir -p /tmp/qa_twin59 && cp -r ../soc-ap /tmp/qa_twin59/soc-ap && ([ -e /tmp/qa_twin59/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin59/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin59/soc-ap/third_party/install)) && cd /tmp/qa_twin59/soc-ap && cmake -S runtime/build -B /tmp/qa_twin59/build_rt -DCMAKE_BUILD_TYPE=Release && cmake --build /tmp/qa_twin59/build_rt --parallel && ctest --test-dir /tmp/qa_twin59/build_rt --output-on-failure && cmake -S middleware/dds/tests -B /tmp/qa_twin59/build_dds && cmake --build /tmp/qa_twin59/build_dds --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dds --output-on-failure && cmake -S middleware/dbus/tests -B /tmp/qa_twin59/build_dbus && cmake --build /tmp/qa_twin59/build_dbus --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dbus --output-on-failure && rm -rf /tmp/qa_twin59"
+    ],
+    "request_ref": {
+      "path": "/tmp/qa_TWIN-59_bkup0lo3/request.json",
+      "sha256": "99ab6c474ff6fbd460dec823af64e3978dbe148821b69da5a92ddfd24509c66d"
+    }
+  },
+  "server_qa": {
+    "task_id": "TWIN-59",
+    "task_revision": 2,
+    "source": "server-pinned-commits",
+    "fresh_checkout": true,
+    "sandbox": {
+      "kind": "container",
+      "container_id": "75194d224c04",
+      "id": "TWIN-59_run_194513_20261105_114513",
+      "image": "qa-sandbox:20261029",
+      "path": "/tmp/qa_sandboxes/TWIN-59_run_194513_20261105_114513",
+      "developer_mounts": [],
+      "container_inspect": {
+        "id": "75194d224c04dfb47c5773bf1b0082682f87e38774cb29d07b585f95e43e0b8c",
+        "image": "qa-sandbox:20261029",
+        "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "created": "2026-11-05T11:45:28.630252709Z",
+        "state": "exited",
+        "mounts": [
+          {
+            "Type": "bind",
+            "Source": "/tmp/qa_sandboxes/TWIN-59_run_194513_20261105_114513",
+            "Destination": "/workspace",
+            "Mode": "ro",
+            "RW": false,
+            "Propagation": "rprivate"
+          }
+        ]
+      }
+    },
+    "server_lock": {
+      "path": "/tmp/qa_TWIN-59_bkup0lo3/evidence/server_lock.json",
+      "sha256": "813d350c5e769f7bee81319633be6e5e7da26c6c89d97ea63b804fd513ccad50"
+    },
+    "checkout_log": {
+      "path": "/tmp/qa_TWIN-59_bkup0lo3/evidence/checkout.log",
+      "sha256": "1570bc9f284c5c28139e05132a8b992918d2142777ffca5db9c6b8d3ebb269d1"
+    },
+    "runtime_log": {
+      "path": "/tmp/qa_TWIN-59_bkup0lo3/evidence/runtime.log",
+      "sha256": "67630002dd8a8bb9aadc47a155fe6dd09c1800e284c9228fe2474ce9047fcc9c"
+    },
+    "server_verdict": {
+      "path": "/tmp/qa_TWIN-59_bkup0lo3/evidence/server_verdict.json",
+      "sha256": "409ebebf5ff89157ab8f7ef4057e36eee36c8d2d564f3ece817e3ccacd2dce07"
+    },
+    "tool_versions": {
+      "git": "git version 2.25.1",
+      "python": "Python 3.8.10"
+    },
+    "build_results": [],
+    "test_results": [
+      {
+        "command": "rm -rf /tmp/qa_twin59 && mkdir -p /tmp/qa_twin59 && cp -r ../soc-ap /tmp/qa_twin59/soc-ap && ([ -e /tmp/qa_twin59/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin59/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin59/soc-ap/third_party/install)) && cd /tmp/qa_twin59/soc-ap && cmake -S runtime/build -B /tmp/qa_twin59/build_rt -DCMAKE_BUILD_TYPE=Release && cmake --build /tmp/qa_twin59/build_rt --parallel && ctest --test-dir /tmp/qa_twin59/build_rt --output-on-failure && cmake -S middleware/dds/tests -B /tmp/qa_twin59/build_dds && cmake --build /tmp/qa_twin59/build_dds --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dds --output-on-failure && cmake -S middleware/dbus/tests -B /tmp/qa_twin59/build_dbus && cmake --build /tmp/qa_twin59/build_dbus --parallel && LD_LIBRARY_PATH=\"/usr/local/lib:${LD_LIBRARY_PATH:-}\" ctest --test-dir /tmp/qa_twin59/build_dbus --output-on-failure && rm -rf /tmp/qa_twin59",
+        "exit_code": "2",
+        "subpath": "soc-ap",
+        "duration": "0.72s",
+        "output": "-- The C compiler identification is GNU 9.4.0\n-- The CXX compiler identification is GNU 9.4.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /tmp/qa_twin59/build_rt\n[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/tmp/qa_twin59/soc-ap/runtime/common/service_lifecycle.cpp.o\n[ 16%] Linking CXX static library libaisoc_runtime_common.a\n[ 16%] Built target aisoc_runtime_common\n[ 25%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin59/soc-ap/runtime/vmware/main.cpp.o\n[ 33%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tmp/qa_twin59/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 41%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o\n[ 50%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin59/soc-ap/runtime/vmware/supervisor.cpp.o\n[ 58%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o\n[ 66%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o\n[ 75%] Linking CXX executable test_backoff\n[ 75%] Built target test_backoff\n[ 83%] Linking CXX executable aisoc_supervisor\n[ 83%] Built target aisoc_supervisor\n\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp: In function ‘void test_state_transitions()’:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:82:29: error: unused variable ‘ctx’ [-Werror=unused-variable]\n   82 |     service_lifecycle_ctx_t ctx;\n      |                             ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:90:36: error: variable ‘param’ set but not used [-Werror=unused-but-set-variable]\n   90 |     service_lifecycle_init_param_t param;\n      |                                    ^~~~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp: In function ‘void test_health_check()’:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:130:29: error: unused variable ‘ctx’ [-Werror=unused-variable]\n  130 |     service_lifecycle_ctx_t ctx;\n      |                             ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_service_lifecycle.cpp:136:27: error: unused variable ‘res’ [-Werror=unused-variable]\n  136 |     health_check_result_t res;\n      |                           ^~~\ncc1plus: all warnings being treated as errors\nmake[2]: *** [CMakeFiles/test_service_lifecycle.dir/build.make:79: CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o] Error 1\nmake[1]: *** [CMakeFiles/Makefile2:1087: CMakeFiles/test_service_lifecycle.dir/all] Error 2\nmake[1]: *** Waiting for unfinished jobs....\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_default_services_registration()’:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:20:18: error: unused variable ‘sup’ [-Werror=unused-variable]\n   20 |     supervisor_t sup;\n      |                  ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:28:14: error: unused variable ‘idx’ [-Werror=unused-variable]\n   28 |     uint32_t idx = 0U;\n      |              ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_topological_sort_order()’:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:69:14: error: unused variable ‘s0’ [-Werror=unused-variable]\n   69 |     uint32_t s0 = sup.topo_indices[0];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:70:14: error: unused variable ‘s1’ [-Werror=unused-variable]\n   70 |     uint32_t s1 = sup.topo_indices[1];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:71:14: error: unused variable ‘s2’ [-Werror=unused-variable]\n   71 |     uint32_t s2 = sup.topo_indices[2];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:72:14: error: unused variable ‘s3’ [-Werror=unused-variable]\n   72 |     uint32_t s3 = sup.topo_indices[3];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_supervisor_start_and_stop()’:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:132:18: error: unused variable ‘s_idx’ [-Werror=unused-variable]\n  132 |         uint32_t s_idx = sup.topo_indices[i];\n      |                  ^~~~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:141:18: error: unused variable ‘s_idx’ [-Werror=unused-variable]\n  141 |         uint32_t s_idx = sup.topo_indices[i];\n      |                  ^~~~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_real_mode_missing_binary_rejection()’:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:256:24: error: unused variable ‘rc’ [-Werror=unused-variable]\n  256 |     lifecycle_status_t rc = supervisor_start_all(&sup);\n      |                        ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:259:14: error: unused variable ‘s0’ [-Werror=unused-variable]\n  259 |     uint32_t s0 = sup.topo_indices[0];\n      |              ^~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_real_mode_graceful_stop()’:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:351:9: error: unused variable ‘ret’ [-Werror=unused-variable]\n  351 |     int ret = kill(spawned_pid, 0);\n      |         ^~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:343:11: error: ‘sup.supervisor_t::services[0].supervisor_service_entry_t::child_pid’ is used uninitialized in this function [-Werror=uninitialized]\n  343 |     pid_t spawned_pid = sup.services[0].child_pid;\n      |           ^~~~~~~~~~~\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp: In function ‘void test_real_mode_valid_binary_spawn()’:\n/tmp/qa_twin59/soc-ap/runtime/build/tests/test_supervisor_topology.cpp:294:11: error: ‘sup.supervisor_t::services[0].supervisor_service_entry_t::child_pid’ is used uninitialized in this function [-Werror=uninitialized]\n  294 |     pid_t spawned_pid = sup.services[0].child_pid;\n      |           ^~~~~~~~~~~\ncc1plus: all warnings being treated as errors\nmake[2]: *** [CMakeFiles/test_supervisor_topology.dir/build.make:79: CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o] Error 1\nmake[2]: *** Waiting for unfinished jobs....\nmake[1]: *** [CMakeFiles/Makefile2:1151: CMakeFiles/test_supervisor_topology.dir/all] Error 2\nmake: *** [Makefile:101: all] Error 2"
+      }
+    ],
+    "passed": false,
+    "timestamp": "2026-11-05T11:45:32.011700+00:00",
+    "path": "/tmp/qa_TWIN-59_bkup0lo3/evidence/server_qa.json",
+    "sha256": "d875510de26875252e7f15baa50a457b36e64e1c4c72644f5460f55c92da7e02"
+  },
+  "diffs": [
+    {
+      "repository": "project-control",
+      "source": "/tmp/qa_sandboxes/TWIN-59_run_194513_20261105_114513/project-control",
+      "base_commit": "960f079647a00864fe7913836336b2a2ee3d729a",
+      "candidate_commit": "960f079647a00864fe7913836336b2a2ee3d729a",
+      "diff": {
+        "path": "/tmp/qa_TWIN-59_bkup0lo3/diffs/project-control.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "soc-ap",
+      "source": "/tmp/qa_sandboxes/TWIN-59_run_194513_20261105_114513/soc-ap",
+      "base_commit": "79932746d225bb115010c5545ef3f7499482e137",
+      "candidate_commit": "19534a9a4cb393176882fbad046129d55bba51f6",
+      "diff": {
+        "path": "/tmp/qa_TWIN-59_bkup0lo3/diffs/soc-ap.patch",
+        "sha256": "ab362781960fafa076729490548ecf7e00f146ff2a4bad51b861bbe4b1055aea"
+      }
+    },
+    {
+      "repository": "mcu-p3",
+      "source": "/tmp/qa_sandboxes/TWIN-59_run_194513_20261105_114513/mcu-p3",
+      "base_commit": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+      "candidate_commit": "891a8bb252814c83992a49b01fbe11ba83b92a1f",
+      "diff": {
+        "path": "/tmp/qa_TWIN-59_bkup0lo3/diffs/mcu-p3.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "repository": "test_harness",
+      "source": "/tmp/qa_sandboxes/TWIN-59_run_194513_20261105_114513/test_harness",
+      "base_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "candidate_commit": "d14ed04321c6d4f5ddb35a8801604a8af53b5b60",
+      "diff": {
+        "path": "/tmp/qa_TWIN-59_bkup0lo3/diffs/test_harness.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

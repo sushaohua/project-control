@@ -1,0 +1,15 @@
+{
+  "task_id": "TWIN-61",
+  "task_revision": 1,
+  "candidate_commit": "9f3918a2f9fc79a683ce218436b005e593a7109b",
+  "role": "QA",
+  "decision": "BLOCKED",
+  "summary": "冻结证据哈希与锁定候选匹配，但唯一范围内验证命令以 ValueError: Empty module name 失败，正向、负向及回归证据未能核实。",
+  "findings": [
+    "阻断：验收要求全部单元/契约回归及两个脚本自测通过；冻结 verdict 为 FAILED、exit code 1。runtime.log 显示 unittest 在加载测试前因 ValueError: Empty module name 退出，因此这些必需证据缺失，不能据此判定源码不符合条款。"
+  ],
+  "accepted_scope": "审阅范围包括 HIL 主测试计划、290 帧突发和 5 类复合序列脚本、project-control/tools/** 的 Batch PC-1 中文注释，以及验收条款要求的正向、负向和必要回归证据。实体硬件台架执行与 live workspace intake scan 按任务合同排除。",
+  "unexecuted": [
+    "验收命令 verify_twin-61：未完成全部指定单元/契约回归、debug_reconciliation_probe 自测、290 帧脚本自测及复合序列脚本自测；冻结运行在 unittest 加载阶段失败。"
+  ]
+}

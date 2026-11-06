@@ -1,0 +1,101 @@
+=== Docker Container Inspect: b1ca862a8908 ===
+{
+  "id": "b1ca862a8908e2fa62a64e1a170a8bbf90ef1abba24e6c0179223a7edba4050b",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-06T01:30:12.754305592Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-59_run_092949_20261106_012949",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (soc-ap) rm -rf /tmp/qa_twin59 && mkdir -p /tmp/qa_twin59 && cp -r ../soc-ap /tmp/qa_twin59/soc-ap && ([ -e /tmp/qa_twin59/soc-ap/third_party/install ] || (mkdir -p /tmp/qa_twin59/soc-ap/third_party && ln -s /usr/local /tmp/qa_twin59/soc-ap/third_party/install)) && cd /tmp/qa_twin59/soc-ap && cmake -S runtime/build -B /tmp/qa_twin59/build_rt -DCMAKE_BUILD_TYPE=Release && cmake --build /tmp/qa_twin59/build_rt --parallel && ctest --test-dir /tmp/qa_twin59/build_rt --output-on-failure && cmake -S middleware/dds/tests -B /tmp/qa_twin59/build_dds && cmake --build /tmp/qa_twin59/build_dds --parallel && LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH:-}" ctest --test-dir /tmp/qa_twin59/build_dds --output-on-failure && cmake -S middleware/dbus/tests -B /tmp/qa_twin59/build_dbus && cmake --build /tmp/qa_twin59/build_dbus --parallel && LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH:-}" ctest --test-dir /tmp/qa_twin59/build_dbus --output-on-failure && python3 tools/diag/test_diag_export.py && ! grep -rn "中文说明：模块辅助逻辑与状态说明" contracts/ core/ middleware/ runtime/ third_party/build.sh tools/ && echo "[PASS] code_documentation_standard.md check passed" && rm -rf /tmp/qa_twin59 -> 8
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin59/build_rt
+[  8%] Building CXX object CMakeFiles/aisoc_runtime_common.dir/tmp/qa_twin59/soc-ap/runtime/common/service_lifecycle.cpp.o
+[ 16%] Linking CXX static library libaisoc_runtime_common.a
+[ 16%] Built target aisoc_runtime_common
+[ 41%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tests/test_supervisor_topology.cpp.o
+[ 41%] Building CXX object CMakeFiles/test_backoff.dir/tests/test_backoff.cpp.o
+[ 41%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin59/soc-ap/runtime/vmware/supervisor.cpp.o
+[ 58%] Building CXX object CMakeFiles/test_supervisor_topology.dir/tmp/qa_twin59/soc-ap/runtime/vmware/supervisor.cpp.o
+[ 58%] Building CXX object CMakeFiles/aisoc_supervisor.dir/tmp/qa_twin59/soc-ap/runtime/vmware/main.cpp.o
+[ 66%] Building CXX object CMakeFiles/test_service_lifecycle.dir/tests/test_service_lifecycle.cpp.o
+[ 75%] Linking CXX executable test_backoff
+[ 83%] Linking CXX executable test_service_lifecycle
+[ 83%] Built target test_service_lifecycle
+[ 83%] Built target test_backoff
+[100%] Linking CXX executable test_supervisor_topology
+[100%] Linking CXX executable aisoc_supervisor
+[100%] Built target aisoc_supervisor
+[100%] Built target test_supervisor_topology
+Test project /tmp/qa_twin59/build_rt
+    Start 1: test_service_lifecycle
+1/3 Test #1: test_service_lifecycle ...........   Passed    0.00 sec
+    Start 2: test_backoff
+2/3 Test #2: test_backoff .....................   Passed    0.00 sec
+    Start 3: test_supervisor_topology
+3/3 Test #3: test_supervisor_topology .........   Passed    0.04 sec
+
+100% tests passed out of 3
+
+Total Test time (real) =   0.04 sec
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/qa_twin59/build_dds
+[ 12%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/test_fastcdr_optional.cpp.o
+[ 37%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin59/soc-ap/middleware/dds/src/aisoc_dds_participant.cpp.o
+[ 37%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin59/soc-ap/middleware/dds/src/aisoc_dds_common.cpp.o
+[ 50%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin59/soc-ap/middleware/dds/src/aisoc_dds_pub.cpp.o
+[ 62%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin59/soc-ap/middleware/dds/src/aisoc_dds_types.cpp.o
+[ 75%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin59/soc-ap/middleware/dds/src/aisoc_dds_sub.cpp.o
+[ 87%] Building CXX object CMakeFiles/test_fastcdr_optional.dir/tmp/qa_twin59/soc-ap/middleware/dds/src/aisoc_dds.cpp.o
+[100%] Linking CXX executable test_fastcdr_optional
+[100%] Built target test_fastcdr_optional
+Test project /tmp/qa_twin59/build_dds
+    Start 1: test_fastcdr_optional
+1/1 Test #1: test_fastcdr_optional ............Subprocess aborted***Exception:   0.01 sec
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+
+
+0% tests passed, 1 tests failed out of 1
+
+Total Test time (real) =   0.01 sec
+
+The following tests FAILED:
+	  1 - test_fastcdr_optional (Subprocess aborted)
+
+Errors while running CTest
