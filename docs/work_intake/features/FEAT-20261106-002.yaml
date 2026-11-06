@@ -1,0 +1,72 @@
+schema_version: 1
+id: FEAT-20261106-002
+revision: 1
+kind: feature
+enabled: true
+title: test_harness 自动化部署工具分块恢复 512B 默认值与说明书勘误
+objective: '【问题描述】
+
+  TH Bootloader 原型能力集 `capability_flags = 0xE0080423`（`Bits 16..23 = 0x08` 代表 512B
+  最大分块，宏定义 `CHUNK_MAX_SIZE = 512U`）。但在实测部署脚本中被写死为 `blk_size = 64`，造成 76,896 字节固件被切分为
+  1,202 包，交互频繁。
+
+
+  【处置要求】
+
+  1. 派单给 `INTEGRATOR`，更新 `test_harness/hil/tools/hil_deploy_via_minimc_ota.py`，将分块大小默认值调整为契约标准的
+  512 字节（约 150 包）。
+
+  2. 在 `project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md`
+  中勘误相关位图注释描述。'
+source_refs:
+  submission_id: 20261106_mc_relay_timeout_underflow
+  submission_revision: 1
+  instruction_anchor: instruction_2
+  submission_path: project-control/docs/work_intake/submissions/20261106_mc_relay_timeout_underflow.md
+  submission_sha256: eaa8703989e400e7a0ed22ac4afa631c78ed51ed863106bb0c05102667fb9765
+  instruction_sha256: da4ac5ce5bff3b77fcaf79ca7a8535d1782448a1fcc6e9d7c7c98af6cf27d406
+  verbatim_instruction: '【问题描述】
+
+    TH Bootloader 原型能力集 `capability_flags = 0xE0080423`（`Bits 16..23 = 0x08` 代表 512B
+    最大分块，宏定义 `CHUNK_MAX_SIZE = 512U`）。但在实测部署脚本中被写死为 `blk_size = 64`，造成 76,896 字节固件被切分为
+    1,202 包，交互频繁。
+
+
+    【处置要求】
+
+    1. 派单给 `INTEGRATOR`，更新 `test_harness/hil/tools/hil_deploy_via_minimc_ota.py`，将分块大小默认值调整为契约标准的
+    512 字节（约 150 包）。
+
+    2. 在 `project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md`
+    中勘误相关位图注释描述。'
+  common_constraints:
+  - 提交人及日期：sushaohua，2026-11-06；COORD 在 TWIN-67 物理 HIL 实测与串口日志对账过程中捕获整理。
+  - 涉及仓库：`mcu-p3`（固件实现）、`test_harness`（测试套件与部署工具）、`project-control`（部署说明书）。
+  - 约束要求：遵循 COORD 代码只读硬铁律，COORD 主会话不直接修改业务源码。本收件单待排程派单给 `ENG-MC` 与 `INTEGRATOR` 处理。
+  common_constraints_sha256: 3990bc1bfc402f033757dfb278d3cddbbdf5f1989f6f99c153cec8b5d6924bbc
+demand_ref:
+  demand_id: DEM-20261106-002
+  confirmation_id: null
+  confirmation_revision: null
+  confirmation_path: null
+  confirmation_sha256: null
+reported_by:
+  actor_type: HUMAN
+  actor_id: human_markdown_author
+  source_channel: markdown_submission
+authorization_refs:
+- path: project-control/docs/work_intake/submissions/20261106_mc_relay_timeout_underflow.md
+  revision: 1
+  sha256: eaa8703989e400e7a0ed22ac4afa631c78ed51ed863106bb0c05102667fb9765
+approval_refs: []
+requested_action: triage
+priority_hint: P2
+related_ids:
+  engineering_tasks: []
+triage_metadata:
+  root_cause_status: unknown
+  clarity_status: clear
+  proposed_owner_role: INTEGRATOR
+safety_flags:
+  shell_execution_disabled: true
+  contains_shell_like_text: true
