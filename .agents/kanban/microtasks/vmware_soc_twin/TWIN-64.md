@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Review
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -24,19 +24,14 @@ requirement_id: REQ-20261105-003
 demand_id: DEM-20261105-006
 confirmation_id: CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106
 approval_id: APPR-20261106-001
-accepted_scope: Docker QA sandbox verification of MC/TH App Rev 2.0.4 alignment (520B
-  max payload, 0x17 EMERGENCY_STOP, 0x19 FILAMENT_CONTROL, 0x1D SYSTEM_CONTROL, 0x20~0x23
-  OTA macros), MC App DST=0x03 maintenance transparent routing (600B UART buffers,
-  drain_th_rx 534B fix), 0x1D safe heater-off/stepper-disable + 4B CMD_ACK + magic
-  word + reset, dynamic TH boot_id, and th_upgrade_mgr.c migration to MiniMCProto
-  v2.0 with 236K linker limit.
+accepted_scope: "Docker QA sandbox (gcc + python3) verification of MC/TH App Rev 2.0.4 alignment (520B max payload, 0x17 EMERGENCY_STOP, 0x19 FILAMENT_CONTROL, 0x1D SYSTEM_CONTROL, 0x20~0x23 OTA macros), MC App DST=0x03 maintenance transparent routing (600B UART buffers, drain_th_rx 534B fix, proxy_active & 5000ms timeout recovery), 0x1D safe heater-off/stepper-disable + 4B CMD_ACK + magic word + reset, dynamic TH boot_id, th_upgrade_mgr.c migration to MiniMCProto v2.0 with 236K linker limit, TWIN-44/45/60 regressions, and S04 function length (<=50), params (<=4) & Chinese comment checks. Cross-compiler arm-none-eabi-gcc ELF/bin build and physical HIL verification (covered by TWIN-67) are out of scope for qa-sandbox:20261029; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-64
-    session: planned-qa-twin-64
+    session: null
     decision: PENDING
     evidence: docs/evidence/twin/TWIN-64/runs/qa_01/qa_review_report.md
   verifier_session: null
@@ -101,7 +96,7 @@ source_baseline:
   boot/bootloaderth: 769fccbe52464ad7ceb856c5e89cb0d25abbbf87
 base_commit: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
 branch: feat/soc-debug
-candidate_commit: null
+candidate_commit: 5c8aa04366231cbf8115ecf1c00db1ce43ecd664
 dispatch_binding:
   source_commit: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
