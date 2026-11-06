@@ -1,0 +1,40 @@
+{
+  "repositories": [
+    {
+      "name": "project-control",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
+      "ref": "main",
+      "commit": "ae198228401c0b021f5e14e05731ec660400e5aa"
+    },
+    {
+      "name": "soc-ap",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git",
+      "ref": "main",
+      "commit": "7184edfc796923e2f2c6e3e57ef3a9f791164b51"
+    },
+    {
+      "name": "mcu-p3",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git",
+      "ref": "feat/soc-debug",
+      "commit": "3f1cfa66c6d27422cf038936b29aca7e45edb511"
+    },
+    {
+      "name": "test_harness",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git",
+      "ref": "main",
+      "commit": "e01f63b1d0a695c5117a50f190762aa7e1fc16f9"
+    },
+    {
+      "name": "boot/bootloadermc",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git",
+      "ref": "soc_debug",
+      "commit": "faa2ed00dc9b6c8567dd44e875028f65073aab62"
+    },
+    {
+      "name": "boot/bootloaderth",
+      "url": "ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git",
+      "ref": "soc_debug",
+      "commit": "64b7100d3b0260ad1c24b627986475dcd45ad383"
+    }
+  ]
+}

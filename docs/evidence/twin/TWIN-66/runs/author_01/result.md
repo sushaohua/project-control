@@ -4,7 +4,7 @@
 - **执行角色**: `QA / INTEGRATOR` (`07a1f6dc-f47c-45e5-bf00-37ec14e2dfda`)
 - **目标仓库与分支**: `test_harness` (`main`)
 - **基线 Commit**: `f41d93b753cfd4496f8d5c82fe1c032d1a4d4803`
-- **候选 Commit**: `e01f63b1d0a695c5117a50f190762aa7e1fc16f9` (修复 `qa_01` 审阅阻断项、8 个 Python 文件中文 `#` 行内注释全覆盖及只读 Docker 沙箱 `third_party/install -> /usr/local` 兼容)
+- **候选 Commit**: `fbf6e1157a4e729b2ca2da9ecda3fc488409f839` (修复 `qa_01` 审阅阻断项、8 个 Python 文件中文 `#` 行内注释全覆盖及只读 Docker 沙箱 `third_party/install -> /usr/local` 与直接执行测试二进制兼容)
 
 ## 1. 规则入口与输入源显式读取登记 (`read_sources`)
 
