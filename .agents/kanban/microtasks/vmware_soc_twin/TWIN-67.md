@@ -6,7 +6,7 @@ plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: InProgress
+status: Review
 blocked: false
 planning_status: active
 owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
@@ -76,7 +76,7 @@ source_baseline:
   boot/bootloaderth: 64b7100d3b0260ad1c24b627986475dcd45ad383
 base_commit: 5e8def0aed1a66e4583b5d3e5aed89b86f5a13db
 branch: main
-candidate_commit: null
+candidate_commit: fb04c1bc049a86123628ee068822d35012f5c04e
 dispatch_binding:
   source_commit: 5e8def0aed1a66e4583b5d3e5aed89b86f5a13db
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
