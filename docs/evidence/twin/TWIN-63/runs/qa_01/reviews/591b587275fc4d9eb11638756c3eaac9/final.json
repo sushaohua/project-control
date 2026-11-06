@@ -1,0 +1,17 @@
+{
+  "task_id": "TWIN-63",
+  "task_revision": 1,
+  "candidate_commit": "77a3651d551e88978654f5bd14688ce2f71876d6",
+  "role": "QA",
+  "decision": "BLOCKED",
+  "summary": "已校验 review_bundle.json 的 SHA256 与预期一致；冻结日志显示必需的 QA 命令因 author_01/result.md 在沙箱检出中缺失而立即退出。范围内验证未能独立完成，无法确认验收结论。",
+  "findings": [
+    "阻断：验收要求的 Docker QA 命令退出码为 1，失败点是读取 ../../project-control/docs/evidence/twin/TWIN-63/runs/author_01/result.md 时文件不存在。之后的 USART6 耦合检查、打包边界检查、MiniMCProto 正向/负向/恢复与互斥单测、函数规模及中文注释门禁均未执行；对应冻结证据见 evidence/runtime.log 和 evidence/server_verdict.json。",
+    "阻断：接受范围要求保留 USB Host U 盘升级并验证 trailer_crc32，但冻结的测试清单没有成功执行结果；现有 author_01/result.md 仅为作者报告，不能替代本轮独立 QA 证据。"
+  ],
+  "accepted_scope": "MC Bootloader USART2 MiniMCProto v2.0 升级、USB Host U 盘升级保留及 trailer_crc32 校验、USB/USART2 单写者互斥、跳转前 USART2 复位、打包尺寸边界、正向/负向/恢复及必要回归证据、USART6 零耦合和函数/中文注释门禁。arm-none-eabi-gcc 交叉编译及实体 HIL 明确排除在本 Docker QA 范围外；未将其视为已通过。",
+  "unexecuted": [
+    "冻结 QA 命令未完成：USART6 零耦合检查、pack_firmware.py MC/TH 尺寸边界门禁、test_mc_boot_ota 正向/负向/恢复与互斥单测、函数规模/参数和中文注释门禁。",
+    "本轮缺少可核验的 USB Host U 盘升级保留及 trailer_crc32 回归结果。"
+  ]
+}

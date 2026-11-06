@@ -1,7 +1,7 @@
 ---
 id: TWIN-63
 title: TWIN-63 MC Bootloader原生USART2 MiniMCProto v2.0本机升级与U盘完整能力共存
-revision: 1
+revision: 2
 plan_revision: vmware-soc-twin-20261106
 task_kind: implementation
 development_stage: vmware-twin
@@ -33,7 +33,7 @@ review_assignments:
     planned_session_alias: planned-qa-twin-63
     session: null
     decision: PENDING
-    evidence: docs/evidence/twin/TWIN-63/runs/qa_01/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-63/runs/qa_02/qa_review_report.md
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -79,7 +79,7 @@ forbidden_paths:
 - test_harness/**
 - boot/bootloadermc/.repo-rules/**
 source_baseline:
-  project-control: c1d2c461aa65e6497c295843a2735d0d02ee2e2d
+  project-control: 5cd627395877b8f5eccd884a83c70e3a5d0cc73a
   soc-ap: c6692b244e0aa09d04e7051293f9fef3c67535dd
   mcu-p3: 57674d8b07d6c75a4d20b3fcd52c23df964aa7a7
   test_harness: 19c12bfeeac852670e8bdcb65ce0abcd1de121c1
@@ -117,7 +117,7 @@ read_sources:
 worktree: boot/bootloadermc
 lease:
   owner: 07a1f6dc-f47c-45e5-bf00-37ec14e2dfda
-  task_revision: 1
+  task_revision: 2
   lease_id: lease-twin-63-20261106-01
   expires_at: '2026-11-07T22:00:00+08:00'
 resources:
