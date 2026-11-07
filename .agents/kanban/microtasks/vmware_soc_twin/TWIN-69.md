@@ -91,7 +91,7 @@ forbidden_paths:
 - boot/**
 - test_harness/.agents/rules/**
 source_baseline:
-  project-control: 33de1d299452a09d90f7e1f568d740903429cb83
+  project-control: b764378b4d3232d1c7ce77fd4922f520dd31ef51
   soc-ap: 7184edfc796923e2f2c6e3e57ef3a9f791164b51
   mcu-p3: 97c1c2422e98357e72cc822d2b5293b9e0c2abc6
   test_harness: cf81195eca55bcd772ef2daa2fd4aa41634c1492
@@ -161,7 +161,7 @@ verification:
   commands:
   - id: verify_ota_deploy_tool_512b_and_manual
     cwd: test_harness
-    command: python3 hil/tools/hil_deploy_via_minimc_ota.py --self-test && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test && python3 static_checks/minimcproto/run_ota_software_suite.py
+    command: sh ../mcu-p3/motion-controller-mcu/tests/run_tests.sh && python3 hil/tools/hil_deploy_via_minimc_ota.py --self-test && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test && python3 -m unittest discover -s hil/tests -p "test_mcu_firmware_upgrade.py" -v && python3 static_checks/minimcproto/run_ota_software_suite.py && grep -q "revision: 5" ../project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md && grep -q "Bits 16..23=0x08 (Bit19=1)" ../project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md
     expected: hil_deploy_via_minimc_ota.py默认DEFAULT_OTA_CHUNK_SIZE=512（76,896B镜像精确切分151块）、能力位0xE0080423/0xC0080435解码512B校验、非法chunk_size拦截、test_mcu_firmware_upgrade.py与run_ota_software_suite.py全量PASS
     availability: available
   positive_cases:

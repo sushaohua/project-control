@@ -85,7 +85,7 @@ forbidden_paths:
 - mcu-p3/color-engine-mcu/**
 - mcu-p3/.repo-rules/**
 source_baseline:
-  project-control: 33de1d299452a09d90f7e1f568d740903429cb83
+  project-control: b764378b4d3232d1c7ce77fd4922f520dd31ef51
   soc-ap: 7184edfc796923e2f2c6e3e57ef3a9f791164b51
   mcu-p3: 3f1cfa66c6d27422cf038936b29aca7e45edb511
   test_harness: cf81195eca55bcd772ef2daa2fd4aa41634c1492
