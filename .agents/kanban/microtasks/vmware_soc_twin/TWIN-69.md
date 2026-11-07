@@ -6,8 +6,10 @@ plan_revision: vmware-soc-twin-20261107
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: In_Review
-blocked: false
+status: Review
+blocked: true
+blocker_reason: "前置依赖 TWIN-68 的受控 Docker QA 沙箱因宿主环境变量 GITLAB_TOKEN 过期（GitLab REST API v4 返回 HTTP 401 Token is expired）暂停待审。"
+unblock_condition: "待 GITLAB_TOKEN 刷新、TWIN-68 通过受控 Docker 沙箱与独立 Codex 审阅（Done）后，立即执行 TWIN-69 的受控 Docker 沙箱与独立 Codex 只读审阅。"
 planning_status: active
 owner: cc065151-7c24-4606-b449-e03a5e7c2eba
 proposed_owner: INTEGRATOR
@@ -161,7 +163,7 @@ verification:
   commands:
   - id: verify_ota_deploy_tool_512b_and_manual
     cwd: test_harness
-    command: sh ../mcu-p3/motion-controller-mcu/tests/run_tests.sh && python3 hil/tools/hil_deploy_via_minimc_ota.py --self-test && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test && python3 -m unittest discover -s hil/tests -p "test_mcu_firmware_upgrade.py" -v && python3 static_checks/minimcproto/run_ota_software_suite.py && grep -q "revision: 5" ../project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md && grep -q "Bits 16..23=0x08 (Bit19=1)" ../project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md
+    command: 'sh ../mcu-p3/motion-controller-mcu/tests/run_tests.sh && python3 hil/tools/hil_deploy_via_minimc_ota.py --self-test && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test && python3 -m unittest discover -s hil/tests -p "test_mcu_firmware_upgrade.py" -v && python3 static_checks/minimcproto/run_ota_software_suite.py && grep -q "revision: 5" ../project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md && grep -q "Bits 16..23=0x08 (Bit19=1)" ../project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md'
     expected: hil_deploy_via_minimc_ota.py默认DEFAULT_OTA_CHUNK_SIZE=512（76,896B镜像精确切分151块）、能力位0xE0080423/0xC0080435解码512B校验、非法chunk_size拦截、test_mcu_firmware_upgrade.py与run_ota_software_suite.py全量PASS
     availability: available
   positive_cases:

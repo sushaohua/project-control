@@ -6,8 +6,10 @@ plan_revision: vmware-soc-twin-20261107
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: In_Review
-blocked: false
+status: Review
+blocked: true
+blocker_reason: "qa_runner.py 在调用 GitLab REST API v4 (http://192.168.77.113/api/v4/projects/sushaohua%2Fproject-control/repository/commits/...) 核验服务端锁定提交时返回 HTTP 401: {\"error\":\"invalid_token\",\"error_description\":\"Token is expired. You can either do re-authorization or token refresh.\"}（当前 ~/.bashrc 中的 GITLAB_TOKEN 已于 2026-11-07 过期；证据保存在 docs/evidence/twin/TWIN-68/runs/qa_01/sandbox.stderr）。"
+unblock_condition: "请 Owner 在 GitLab (192.168.77.113) 刷新或重新签发具有 read_api/api 权限的 GITLAB_TOKEN 并更新环境变量（或 ~/.bashrc），随后 COORD 另建 qa_02 运行受控 Docker 沙箱与独立 Codex 只读审阅。"
 planning_status: active
 owner: 1e94997f-e120-4f43-b840-bceec750dc20
 proposed_owner: ENG-MC
