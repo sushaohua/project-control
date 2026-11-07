@@ -131,9 +131,23 @@ related_ids:
   engineering_tasks:
   - TWIN-51
 triage_metadata:
-  root_cause_status: unknown
+  root_cause_status: verified_already_fixed_in_main
   clarity_status: clear
-  proposed_owner_role: null
+  proposed_owner_role: INTEGRATOR
+  followup_verification_note: >-
+    ARCH (3ebc66f1-9ba1-40e8-b235-b6a30109b88a) audited soc-ap@main (7184edfc796923e2f2c6e3e57ef3a9f791164b51),
+    TWIN-51 (75f8a1a670edabb21c8d3dfc79243e06f73099af), and TWIN-59 (c6692b244e0aa09d04e7051293f9fef3c67535dd).
+    test_backoff.cpp (SHA-256 7270726a1482e27efbc6d431d7e36a972c01f781264cb67f06ae347065ef183d) in soc-ap@main
+    already explicitly zero-initializes all backoff_state_t and backoff_config_t stack variables. The error log
+    from /home/sushaohua/testaaa/ai_soc_project/soc-ap matches line numbers of pre-TWIN-51 commit 75f8a1a^
+    (test_backoff.cpp:9/14/18 and service_lifecycle.h:146). No code modification needed in soc-ap; external
+    checkout testaaa only requires git pull --ff-only origin main.
+arch_breakdown:
+  id: ARCH-BREAKDOWN-MINIMC-V2-RELAY-UNDERFLOW-AND-512B-CHUNK-20261107
+  revision: 1
+  path: project-control/docs/architecture/minimc_v2_relay_underflow_and_512b_chunk_arch_breakdown_20261107.md
+  sha256: b3c295be841195e34598f7f1eec91e6f02457ca9df0374e0147fe60be5344a76
+  author_session: 3ebc66f1-9ba1-40e8-b235-b6a30109b88a
 safety_flags:
   shell_execution_disabled: true
   contains_shell_like_text: true

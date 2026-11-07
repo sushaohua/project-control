@@ -46,10 +46,10 @@ source_refs:
   common_constraints_sha256: 3990bc1bfc402f033757dfb278d3cddbbdf5f1989f6f99c153cec8b5d6924bbc
 demand_ref:
   demand_id: DEM-20261106-002
-  confirmation_id: null
-  confirmation_revision: null
-  confirmation_path: null
-  confirmation_sha256: null
+  confirmation_id: CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106
+  confirmation_revision: 1
+  confirmation_path: project-control/docs/work_intake/confirmations/CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106.yaml
+  confirmation_sha256: 200c2e484f8e8bf67303aab66b2591550512653b84845f16826b0b7c6a17b0d5
 reported_by:
   actor_type: HUMAN
   actor_id: human_markdown_author
@@ -58,15 +58,26 @@ authorization_refs:
 - path: project-control/docs/work_intake/submissions/20261106_mc_relay_timeout_underflow.md
   revision: 1
   sha256: eaa8703989e400e7a0ed22ac4afa631c78ed51ed863106bb0c05102667fb9765
-approval_refs: []
-requested_action: triage
+approval_refs:
+- approval_id: APPR-20261106-001
+  revision: 1
+  path: project-control/docs/work_intake/approvals/APPR-20261106-001.yaml
+  sha256: ce4aeb8689a3a109951db0f8496b3668b8e0a5fb0358134a64fe7c94f8daadec
+requested_action: execute
 priority_hint: P2
 related_ids:
-  engineering_tasks: []
+  engineering_tasks:
+  - TWIN-69
 triage_metadata:
-  root_cause_status: unknown
+  root_cause_status: verified
   clarity_status: clear
   proposed_owner_role: INTEGRATOR
+arch_breakdown:
+  id: ARCH-BREAKDOWN-MINIMC-V2-RELAY-UNDERFLOW-AND-512B-CHUNK-20261107
+  revision: 1
+  path: project-control/docs/architecture/minimc_v2_relay_underflow_and_512b_chunk_arch_breakdown_20261107.md
+  sha256: b3c295be841195e34598f7f1eec91e6f02457ca9df0374e0147fe60be5344a76
+  author_session: 3ebc66f1-9ba1-40e8-b235-b6a30109b88a
 safety_flags:
   shell_execution_disabled: true
   contains_shell_like_text: true
