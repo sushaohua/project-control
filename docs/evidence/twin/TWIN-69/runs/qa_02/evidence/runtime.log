@@ -1,0 +1,168 @@
+=== Docker Container Inspect: 32a391cfc661 ===
+{
+  "id": "32a391cfc6610830c7e1eedf88ae32b40287abe8b5068774bfea67aa182a3208",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-07T02:11:43.918797322Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/TWIN-69_run_101104_20261107_021104",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (test_harness) sh ../mcu-p3/motion-controller-mcu/tests/run_tests.sh && python3 hil/tools/hil_deploy_via_minimc_ota.py --self-test && python3 hil/tests/test_mcu_firmware_upgrade.py --self-test && python3 -m unittest discover -s hil/tests -p "test_mcu_firmware_upgrade.py" -v && python3 static_checks/minimcproto/run_ota_software_suite.py && grep -q "revision: 5" ../project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md && grep -q "Bits 16..23=0x08 (Bit19=1)" ../project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md -> 0
+=== [1/3] Run TWIN-44/47/60 MC regression suite (test_twin44_mc_debug.c) ===
+========================================================================
+TWIN-44 & TWIN-47 MC USART2 921600, Control Cmds & 0x1C Verification
+========================================================================
+[RUN ] test_usart2_921600_reconfig
+[PASS] test_usart2_921600_reconfig
+[RUN ] test_ring_buffer_trunc_drop_and_recovery
+[PASS] test_ring_buffer_trunc_drop_and_recovery
+[RUN ] test_honest_minimc_v2_queries_and_nack
+[PASS] test_honest_minimc_v2_queries_and_nack
+[RUN ] test_non_intrusive_notify_and_fault_sync
+[PASS] test_non_intrusive_notify_and_fault_sync
+[RUN ] test_tx_fail_suppresses_ack_and_recovers
+[PASS] test_tx_fail_suppresses_ack_and_recovers
+[RUN ] test_relay_timeout_crc_err_and_recovery
+[PASS] test_relay_timeout_crc_err_and_recovery
+[RUN ] test_th_relay_correlation_and_nack
+[PASS] test_th_relay_correlation_and_nack
+[RUN ] test_twin47_temp_home_move_stop
+[PASS] test_twin47_temp_home_move_stop
+[RUN ] test_twin47_job_filament_level_gcode
+[PASS] test_twin47_job_filament_level_gcode
+[RUN ] test_twin60_adc_range_filament_nack_and_boot_id
+[PASS] test_twin60_adc_range_filament_nack_and_boot_id
+------------------------------------------------------------------------
+All 10 TWIN-44/TWIN-47/TWIN-60 test suites PASSED!
+========================================================================
+=== [2/3] Run TWIN-64 MC OTA, 0x1D magic (0x2005FFF0), 534B proxy & th_upgrade_mgr suite ===
+[PASS] test_mc_ota_and_relay: all TWIN-64/TWIN-68 MC App OTA, 534B relay & underflow tests passed!
+=== [3/3] Verify MC zero M997/5AA5 residue & S04 function/comment gates ===
+[PASS] MC S04 function length (<=50), params (<=4) and Chinese comments verified!
+[PASS] hil_deploy_via_minimc_ota.py self-test passed: chunk_size=512B, TH(76896B/151 chunks, 1.1->2.1) then MC(1.2->2.3).
+=== SEQ-06 MCU Firmware Upgrade Verification Suite (HIL-CASE-60~64) ===
+  [PASS] HIL-CASE-60 (TH Cascaded 4-Stage Upgrade): TH v1.1->v2.5 boot_id=0x2000b001->0x2010b002->0x2111b007
+  [PASS] HIL-CASE-61 (Ordered TH->MC Dual Upgrade): Ordered TH(v1.1->v2.1) -> MC(v1.2->v2.4) upgrade verified
+  [PASS] HIL-CASE-62 (Zero-Erase Gate & Interlocks): Zero-erase gate verified for wrong board_id and TH(236KB)/MC(896KB) oversize
+  [PASS] HIL-CASE-63 (Interruption & 95%/100% Gate): Mid-stream 0x08004000 protection, power-cycle retry recovery & Stage 3 (95%) cap verified
+  [PASS] HIL-CASE-64 (512B Default Chunk & 76896B 151-Chunk Stream): DEFAULT_OTA_CHUNK_SIZE=512, 0xE0080423/0xC0080435->512B, serial PTY(/dev/pts/0@921600) TH=151 chunks/76896B & invalid chunk_size rejected
+
+[SUMMARY] SEQ-06 Upgrade Suite: 5/5 passed.
+=== MiniMCProto v2.0 (Rev 2.0.4) OTA Software Verification Suite ===
+
+--- 1. Static & Compile-Time Gates (S01~S04) ---
+  [PASS] S01: 5-endpoint Rev 2.0.4 opcode table & reverse numeric uniqueness
+  [PASS] S02: Zero 0x05/0x15 legacy drift & >=520B payload / >=534B frame capacity
+  [PASS] S03: TH Bootloader 16KB (0x08000000..0x08003FFF) Flash budget & 0B .bss growth
+  [PASS] S04: Function <=50 lines, <=4 params, Chinese docstrings & inline '#' comments verified
+
+--- 2. Codec & Golden Byte Vectors (D01~D08) ---
+  [PASS] G01: status=OK len=14B
+  [PASS] G02: status=OK len=14B
+  [PASS] G03: status=OK len=26B
+  [PASS] G04: status=OK len=30B
+  [PASS] G05: status=OK len=18B
+  [PASS] G06: status=OK len=18B
+  [PASS] G07: status=OK len=15B
+  [PASS] G08: status=OK len=18B
+  [PASS] G09: status=ERR_FRAME_TOO_SHORT len=10B
+  [PASS] G10: status=ERR_BAD_SOF len=14B
+  [PASS] G11: status=ERR_BAD_VERSION len=14B
+  [PASS] G12: status=ERR_BAD_FLAGS_RESERVED len=14B
+  [PASS] G13: status=ERR_BAD_ROUTE_CTRL len=14B
+  [PASS] G14: status=ERR_MTU_EXCEEDED len=1039B
+  [PASS] G15: status=ERR_CRC_MISMATCH len=14B
+  [PASS] G16: status=OK len=158B
+  [PASS] G16a: status=OK len=158B
+  [PASS] G16b: status=OK len=86B
+  [PASS] G16c: status=OK len=534B
+  [PASS] G16d: status=OK len=59B
+  [PASS] G16e: status=OK len=1038B
+  [PASS] G16f: status=OK len=22B
+  [PASS] G16g: status=OK len=22B
+  [PASS] G16h: status=OK len=18B
+  [PASS] G17: status=OK len=17B
+  [PASS] G18: status=OK len=17B
+  [PASS] G19: status=OK len=17B
+  [PASS] G20: status=OK len=17B
+  [PASS] G21: status=OK len=17B
+  [PASS] G22: status=OK len=17B
+  [PASS] G23: status=OK len=17B
+  [PASS] G24: status=OK len=17B
+  [PASS] G25: status=OK len=17B
+  [PASS] V01_MC_BED_NORMAL_60C: status=OK len=30B
+  [PASS] V02_TH_NOZZLE_ROUTED_215C: status=OK len=30B
+  [PASS] V03_TH_SENSOR_OPEN_FAULT_SENTINEL: status=OK len=30B
+  [PASS] V04_AP_PRIORITY_ESTOP_CMD: status=OK len=15B
+  [PASS] D01: G01~G04 Ping/Pong/GetVersion/VersionReport(16B) round-trip
+  [PASS] D02: G05~G06 0x1D CMD_SYSTEM_CONTROL(4B) & 0x00 CMD_ACK(4B)
+  [PASS] D03: G07~G08 0x17 CMD_EMERGENCY_STOP(1B) & priority 0x00 CMD_ACK
+  [PASS] D04: G09~G15 Framing negative rejection (SHORT/SOF/VER/FLAGS/ROUTE/MTU/CRC)
+  [PASS] D05: G16a 0x20 CMD_OTA_START 144B payload (16B hdr + 128B ATSG Trailer)
+  [PASS] D06: G16b~G16e 0x21 CMD_OTA_DATA (64B/512B/37B tail/1016B max) & chunk_crc16
+  [PASS] D07: G16f~G16h 0x22 CMD_OTA_FINISH(8B), 0x23 STATUS(8B) & ABORT(4B)
+  [PASS] D08: G17~G25 0x06 CMD_NACK standard & OTA error codes (0x01~0x06, 0x10~0x14)
+
+--- 3. Single-Module Contracts & Host Unit Tests (C01~C09) ---
+  [PASS] C01: TH Bootloader 7-cmd subset, First-Chunk RAM & Anchor
+  [PASS] C02: MC Bootloader USART2 OTA, USB/UART mutex & Trailer
+  [PASS] C03: MC App 0x1D safe shutdown, UPG2 magic & 534B TH proxy
+  [PASS] C04: TH App 0x1D safe shutdown, UPGD magic & 0x19 filament
+  [PASS] C05: soc-ap forward UART_MODE_OTA_ROUTE (534B frame, 3000ms erase timeout)
+  [PASS] C06: soc-ap device_manager 0x02 version cache & PRINTING/HOMING upgrade lock
+  [PASS] C07: soc-ap firmware_updater 4-stage state machine & TH->MC order lock
+  [PASS] C08: soc-ap ui_gateway /api/v1/firmware/upload|start|status (400/409/502)
+  [PASS] C09: ATSG 128B Trailer packer & verifier cross-tool parity (OK)
+
+--- 4. End-to-End Virtual Dual-MCU Integration (M01~M08) ---
+  [PASS] M01: TH(0x03) 4-stage cascaded upgrade & boot_id transition
+  [PASS] M02: MC(0x02) 4-stage direct upgrade & boot_id transition
+  [PASS] M03: Strict TH-first then MC-second dual-MCU sequential closed loop
+  [PASS] M04: 0x21 chunk CRC16 corruption NACK(0x12) & retry recovery
+  [PASS] M05: TH power-loss after Chunk 0 -> stays in Boot & full retry recovery
+  [PASS] M06: TH power-loss after Chunk 1 -> Anchor/Chunk0 protected & retry recovery
+  [PASS] M07: 0x23 CMD_OTA_ABORT & MC 5000ms proxy timeout clean recovery
+  [PASS] M08: Stage 3 (95% cap on 0x22 ACK) vs Stage 4 (100% after new App 0x02) isolation
+
+--- 5. Negative & Fault-Injection Interception (N01~N10) ---
+  [PASS] N01: Bad ATSG magic (0x41545348) rejected with NACK 0x06 & 0 erases
+  [PASS] N02: Board ID mismatch (MC pkg to TH) rejected with NACK 0x06 & 0 erases
+  [PASS] N03: Tampered trailer_crc32 rejected with NACK 0x06 & 0 erases
+  [PASS] N04: Oversize image (TH 241,665B & MC 917,505B) rejected with NACK 0x14 & 0 erases
+  [PASS] N05: Invalid Cortex-M4 vector table (SP/PC Thumb bit0) rejected
+  [PASS] N06: Out-of-order 0x21 chunk offset rejected with NACK 0x13
+  [PASS] N07: Corrupted 0x22 Finish fw_crc32 rejected with NACK 0x12 & stays in Boot
+  [PASS] N08: Upgrade request during PRINTING/HEATING/WRITER_LOCK rejected (NACK 0x05)
+  [PASS] N09: Forged legacy 0x05 opcode & unexpected response intercepted & rejected
+  [PASS] N10: Post-Finish App boot failure stays at 95% and transitions to ERROR/ROLLBACK
+
+[SUMMARY] OTA Software Suite: 39 passed, 0 failed.
+
+[EXPECTED-REJECT] invalid --chunk-size=0 (must be 1..512)
+[EXPECTED-REJECT] invalid --chunk-size=513 (must be 1..512)
+test_case60_th_cascaded_upgrade (test_mcu_firmware_upgrade.TestMcuFirmwareUpgradeSuite)
+执行 HIL-CASE-60 TH 级联四阶段升级单测断言。 ... ok
+test_case61_ordered_th_then_mc_upgrade (test_mcu_firmware_upgrade.TestMcuFirmwareUpgradeSuite)
+执行 HIL-CASE-61 先 TH 后 MC 顺序四阶段升级单测断言。 ... ok
+test_case62_pre_erase_and_busy_interlocks (test_mcu_firmware_upgrade.TestMcuFirmwareUpgradeSuite)
+执行 HIL-CASE-62 擦除前零擦除门禁与忙状态互锁单测断言。 ... ok
+test_case63_interruption_and_stage4_isolation (test_mcu_firmware_upgrade.TestMcuFirmwareUpgradeSuite)
+执行 HIL-CASE-63 中途掉电首块保护重传与 Stage 3/4 隔离单测断言。 ... ok
+test_case64_default_512b_chunk_and_76896b_th_stream (test_mcu_firmware_upgrade.TestMcuFirmwareUpgradeSuite)
+执行 HIL-CASE-64 默认 512B 分块、76,896B TH 151 块流式升级与非法分块拒绝断言。 ... [EXPECTED-REJECT] invalid --chunk-size=0 (must be 1..512)
+[EXPECTED-REJECT] invalid --chunk-size=513 (must be 1..512)
+ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.366s
+
+OK

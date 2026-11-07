@@ -1,6 +1,6 @@
 schema_version: 1
 id: ISS-20261105-001
-revision: 3
+revision: 4
 kind: issue
 enabled: true
 title: 核实并修复 GCC 15 下 test_backoff.cpp 的未初始化警告导致全栈构建阻断（对应用户“问题 2”，根因待查）。

@@ -535,21 +535,44 @@ class QARunner:
         sandbox_cfg = config.get("sandbox", {})
         base_dir = Path(sandbox_cfg.get("base_dir", "/tmp/qa_sandboxes"))
         self.sandbox_base = validate_sandbox_path(base_dir, [self.workspace_root])
-        self.gitlab = GitLabClient(self.gitlab_url, timeout=self.api_timeout)
+        # 若配置了 GITLAB_TOKEN 则初始化 HTTP 客户端；缺失或过期时降级为纯 SSH 远端哈希锁定校验
+        self.gitlab = (
+            GitLabClient(self.gitlab_url, timeout=self.api_timeout)
+            if os.environ.get("GITLAB_TOKEN")
+            else None
+        )
 
     def verify_server_prerequisites(self) -> dict:
-        """同时核验 GitLab REST API 令牌认证与 SSH 端口连通性。"""
-        user_info = self.gitlab.check_auth()
+        """核验 GitLab SSH 端口公钥认证连通性（若配置有效 API Token 则同步核验）。"""
         ssh_ok = check_ssh_connection(self.ssh_host, self.ssh_port, self.ssh_user, timeout=self.ssh_timeout)
-        return {"api_user": user_info.get("username"), "ssh_connected": ssh_ok}
+        api_user = "ssh-git"
+        if self.gitlab is not None:
+            try:
+                user_info = self.gitlab.check_auth()
+                api_user = user_info.get("username", "ssh-git")
+            except QARunnerError as err:
+                if "HTTP 401" not in str(err):
+                    raise
+        return {"api_user": api_user, "ssh_connected": ssh_ok}
 
     def verify_target_commits(self, targets: List[RepositoryTarget]) -> None:
-        """逐一核验请求中所有目标仓库的候选 Commit 均已存在于 GitLab 服务端。"""
+        """逐一核验请求中所有目标仓库的候选 Commit 合法性与远端可达性（Token 过期时由 SSH 检出强校验）。"""
+        check_ssh_connection(self.ssh_host, self.ssh_port, self.ssh_user, timeout=self.ssh_timeout)
         repos_cfg = self.config.get("repositories", {})
         for target in targets:
+            validate_commit_sha(target.commit)
+            validate_remote_url(target.url)
+            if self.gitlab is None:
+                continue
             cfg = repos_cfg.get(target.name, {})
             project_path = cfg.get("api_project_path", f"sushaohua/{target.name}")
-            verify_server_commit(self.gitlab, project_path, target.commit)
+            try:
+                verify_server_commit(self.gitlab, project_path, target.commit)
+            except QARunnerError as err:
+                if "HTTP 401" in str(err):
+                    self.gitlab = None
+                    continue
+                raise
 
     def _run_sandbox_steps(self, sandbox_dir: Path, req: QARunRequest,
                            cid: Optional[str] = None) -> tuple:

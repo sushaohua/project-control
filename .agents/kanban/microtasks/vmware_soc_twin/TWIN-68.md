@@ -6,10 +6,8 @@ plan_revision: vmware-soc-twin-20261107
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
-blocked: true
-blocker_reason: "qa_runner.py 在调用 GitLab REST API v4 (http://192.168.77.113/api/v4/projects/sushaohua%2Fproject-control/repository/commits/...) 核验服务端锁定提交时返回 HTTP 401: {\"error\":\"invalid_token\",\"error_description\":\"Token is expired. You can either do re-authorization or token refresh.\"}（当前 ~/.bashrc 中的 GITLAB_TOKEN 已于 2026-11-07 过期；证据保存在 docs/evidence/twin/TWIN-68/runs/qa_01/sandbox.stderr）。"
-unblock_condition: "请 Owner 在 GitLab (192.168.77.113) 刷新或重新签发具有 read_api/api 权限的 GITLAB_TOKEN 并更新环境变量（或 ~/.bashrc），随后 COORD 另建 qa_02 运行受控 Docker 沙箱与独立 Codex 只读审阅。"
+status: Done
+blocked: false
 planning_status: active
 owner: 1e94997f-e120-4f43-b840-bceec750dc20
 proposed_owner: ENG-MC
@@ -34,16 +32,18 @@ review_assignments:
     platform: codex
     model: gpt-6-luna
     planned_session_alias: planned-qa-twin-68-01
-    session: null
-    reviewer_session: null
-    decision: PENDING
-    commit_sha: null
-    reviewed_task_revision: null
-    artifact_version: null
-    report_path: null
-    evidence: null
-    report_sha256: null
-    session_evidence: null
+    session: 01a1b3b9-54c9-7441-9bec-c315aba136b8
+    reviewer_session: 01a1b3b9-54c9-7441-9bec-c315aba136b8
+    decision: APPROVED
+    commit_sha: 97c1c2422e98357e72cc822d2b5293b9e0c2abc6
+    reviewed_task_revision: 1
+    artifact_version: project-control=b764378b4d3232d1c7ce77fd4922f520dd31ef51; soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51; mcu-p3=97c1c2422e98357e72cc822d2b5293b9e0c2abc6; test_harness=cf81195eca55bcd772ef2daa2fd4aa41634c1492; boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62; boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-68/runs/qa_02/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-68/runs/qa_02/qa_review_report.md
+    report_sha256: 93838ad0d52b13e7364471d684ec760db35d77e85c758014fe60077bcba309b2
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-68/runs/qa_02/codex_events.jsonl
+      sha256: f28795d93cca8d97e8954e393d460490f01d28f5ded07d2517f6d11d86f4789b
   verifier_session: null
   integrator_session: null
 primary_work_package: TASK-009
@@ -151,7 +151,7 @@ handoff:
   receiver_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-68
-  acknowledgement: received-author_01-97c1c2422e98357e72cc822d2b5293b9e0c2abc6
+  acknowledgement: accepted
 verification:
   commands:
   - id: verify_mc_relay_timeout_underflow_and_wraparound

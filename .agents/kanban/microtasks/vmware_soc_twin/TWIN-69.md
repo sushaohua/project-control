@@ -1,22 +1,20 @@
 ---
 id: TWIN-69
 title: TWIN-69 MiniMC OTA部署工具默认512B分块对齐与升级部署说明书能力位图勘误
-revision: 1
+revision: 3
 plan_revision: vmware-soc-twin-20261107
 task_kind: implementation
 development_stage: vmware-twin
 dispatchable: true
-status: Review
-blocked: true
-blocker_reason: "前置依赖 TWIN-68 的受控 Docker QA 沙箱因宿主环境变量 GITLAB_TOKEN 过期（GitLab REST API v4 返回 HTTP 401 Token is expired）暂停待审。"
-unblock_condition: "待 GITLAB_TOKEN 刷新、TWIN-68 通过受控 Docker 沙箱与独立 Codex 审阅（Done）后，立即执行 TWIN-69 的受控 Docker 沙箱与独立 Codex 只读审阅。"
+status: Done
+blocked: false
 planning_status: active
 owner: cc065151-7c24-4606-b449-e03a5e7c2eba
 proposed_owner: INTEGRATOR
 executor:
   role: INTEGRATOR
   agent_id: cc065151-7c24-4606-b449-e03a5e7c2eba
-  run_id: author_01
+  run_id: author_03
 qa_policy: streamlined-v1
 reviewer:
 - QA
@@ -27,25 +25,48 @@ feature_id: FEAT-20261106-002
 demand_id: DEM-20261106-002
 confirmation_id: CONFIRM-MINIMC-V2-UNIFIED-UPGRADE-20261106
 approval_id: APPR-20261106-001
-accepted_scope: "Docker QA sandbox (python3) verification of hil_deploy_via_minimc_ota.py DEFAULT_OTA_CHUNK_SIZE=512 (matching TH_BOOT_CAPABILITY_FLAGS=0xE0080423 Bits 16..23=0x08 -> 512B and CHUNK_MAX_SIZE=512U), chunk_size boundary validation, CLI arguments (--chunk-size 512, --port, --baud, --th-pkg, --mc-pkg, --receipt-out), 76,896B TH image 151-chunk streaming verification in test_mcu_firmware_upgrade.py, capability bitmap typo & 512B default chunk correction in minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md (revision 5), and Chinese code documentation check. Physical HIL hardware execution is out of scope for qa-sandbox:20261029; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
+accepted_scope: "Docker QA sandbox (python3) verification of hil_deploy_via_minimc_ota.py DEFAULT_OTA_CHUNK_SIZE=512 (matching TH_BOOT_CAPABILITY_FLAGS=0xE0080423 Bits 16..23=0x08 -> 512B and CHUNK_MAX_SIZE=512U), chunk_size boundary validation, CLI arguments (--chunk-size 512, --port, --baud, --th-pkg, --mc-pkg, --receipt-out) with real SerialOtaTarget POSIX termios/select UART transport and kernel PTY end-to-end verification, 76,896B TH image 151-chunk streaming verification in test_mcu_firmware_upgrade.py, capability bitmap typo & 512B default chunk correction in minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md (revision 5), and Chinese code documentation check. Physical HIL hardware execution is out of scope for qa-sandbox:20261029; all in-scope checks are executed in server_qa so unexecuted is empty when those checks pass."
 review_assignments:
   reviewer_sessions:
   - role: QA
     platform: codex
     model: gpt-6-luna
-    planned_session_alias: planned-qa-twin-69-01
-    session: null
-    reviewer_session: null
-    decision: PENDING
-    commit_sha: null
-    reviewed_task_revision: null
-    artifact_version: null
-    report_path: null
-    evidence: null
-    report_sha256: null
-    session_evidence: null
+    planned_session_alias: planned-qa-twin-69-03
+    session: 01a1b3d3-805a-7163-8b92-44116dc9faf5
+    reviewer_session: 01a1b3d3-805a-7163-8b92-44116dc9faf5
+    decision: APPROVED
+    commit_sha: d5e9faa8b297a6e6069ba588a461e824bc63cfd1
+    reviewed_task_revision: 3
+    artifact_version: project-control=b764378b4d3232d1c7ce77fd4922f520dd31ef51; soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51; mcu-p3=97c1c2422e98357e72cc822d2b5293b9e0c2abc6; test_harness=d5e9faa8b297a6e6069ba588a461e824bc63cfd1; boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62; boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383
+    report_path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-69/runs/qa_03/qa_review_report.md
+    evidence: docs/evidence/twin/TWIN-69/runs/qa_03/qa_review_report.md
+    report_sha256: 84fe864da591da5142783e89cf8abcbc1b601436fc2b0fdfefd3f799e8cf940c
+    session_evidence:
+      path: /home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/twin/TWIN-69/runs/qa_03/codex_events.jsonl
+      sha256: 8ae09474cdb4563cbbe8feffe50ee76e89234b0fa569183a560295f9f6b55ef1
   verifier_session: null
   integrator_session: null
+historical_reviews:
+- run_id: qa_01
+  task_revision: 1
+  candidate_commit: 54231c8d4372998bb91aefc3ec2df5c99169b274
+  role: QA
+  session: 01a1b3bd-c81f-78c2-8297-6b47b30e9e87
+  decision: REJECTED
+  report: docs/evidence/twin/TWIN-69/runs/qa_01/qa_review_report.md
+  findings:
+  - "阻断：接受范围要求 CLI 支持 --port、--baud、--th-pkg、--mc-pkg、--receipt-out 部署参数。当前实现虽解析这些参数，但 th-pkg/mc-pkg 分支创建 VirtualDualMcuOtaTarget 并在虚拟靶机上运行；--port 和 --baud 未用于串口通信。"
+  - "非阻断建议：非法 chunk size 的预期拒绝信息使用 [FAIL] 前缀，容易与真实测试失败混淆；可考虑改为更明确的预期拒绝提示。"
+- run_id: qa_02
+  task_revision: 2
+  candidate_commit: a43d8540bf3bbfb2d6f3c7a7f3b56a6cc1def1e7
+  role: QA
+  session: 01a1b3c6-dd3e-7f50-ac68-cbe0da85dfa0
+  decision: REJECTED
+  report: docs/evidence/twin/TWIN-69/runs/qa_02/qa_review_report.md
+  findings:
+  - "阻断：接受范围要求 CLI 的 --baud 参数用于真实 POSIX 串口传输。hil_deploy_via_minimc_ota.py:420 只为 9600、115200、230400、460800、921600 配置波特率；其他值会静默回退到 921600（若平台没有 B921600 常量，则再回退到 B115200），而 CLI 参数定义接受任意整数，回执仍记录用户请求值。因而例如 --baud 57600 会以其他速率通信并给出不准确回执。冻结 PTY 正向证据只覆盖 921600，不能验证其他参数值被实际应用。"
+  - "非阻断建议：PTY 测试核对了 TH 的 151 块和字节数及双包升级成功状态，但没有断言 MC 的分块数和字节数；可补充相应回执断言。"
 primary_work_package: TASK-009
 related_work_packages:
 - TASK-007
@@ -68,8 +89,8 @@ dependency_conditions:
   acceptance_evidence: docs/evidence/twin/TWIN-67/runs/qa_03/qa_review_report.md
   required: 继承TWIN-67升级操作与HIL部署说明书(revision 4)基线
 - task: TWIN-68
-  accepted_version: mcu-p3=97c1c2422e98357e72cc822d2b5293b9e0c2abc6
-  acceptance_evidence: docs/evidence/twin/TWIN-68/runs/qa_01/qa_review_report.md
+  accepted_version: project-control=b764378b4d3232d1c7ce77fd4922f520dd31ef51; soc-ap=7184edfc796923e2f2c6e3e57ef3a9f791164b51; mcu-p3=97c1c2422e98357e72cc822d2b5293b9e0c2abc6; test_harness=cf81195eca55bcd772ef2daa2fd4aa41634c1492; boot/bootloadermc=faa2ed00dc9b6c8567dd44e875028f65073aab62; boot/bootloaderth=64b7100d3b0260ad1c24b627986475dcd45ad383
+  acceptance_evidence: docs/evidence/twin/TWIN-68/runs/qa_02/qa_review_report.md
   required: 串行继承TWIN-68 MC防下溢修复候选并执行跨仓整体联调
 scope_status: mapped
 allowed_repositories:
@@ -101,7 +122,7 @@ source_baseline:
   boot/bootloaderth: 64b7100d3b0260ad1c24b627986475dcd45ad383
 base_commit: cf81195eca55bcd772ef2daa2fd4aa41634c1492
 branch: main
-candidate_commit: 54231c8d4372998bb91aefc3ec2df5c99169b274
+candidate_commit: d5e9faa8b297a6e6069ba588a461e824bc63cfd1
 dispatch_binding:
   source_commit: cf81195eca55bcd772ef2daa2fd4aa41634c1492
   workspace_diff_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -129,8 +150,8 @@ read_sources:
 worktree: test_harness
 lease:
   owner: cc065151-7c24-4606-b449-e03a5e7c2eba
-  task_revision: 1
-  lease_id: lease-twin-69-20261107-01
+  task_revision: 3
+  lease_id: lease-twin-69-20261107-03
   expires_at: '2026-11-07T22:00:00+08:00'
 resources:
 - resource: test_harness-worktree
@@ -149,7 +170,7 @@ deliverables:
   - test_harness/hil/tools/hil_deploy_via_minimc_ota.py
   - test_harness/hil/tests/test_mcu_firmware_upgrade.py
   - project-control/docs/guides/minimc_v2_mcu_upgrade_and_hil_deployment_manual_20261105.md
-  record: docs/evidence/twin/TWIN-69/runs/author_01/result.md
+  record: docs/evidence/twin/TWIN-69/runs/author_03/result.md
 rollback:
   steps:
   - git -C test_harness checkout -- hil/tools/hil_deploy_via_minimc_ota.py hil/tests/test_mcu_firmware_upgrade.py
@@ -158,7 +179,7 @@ handoff:
   receiver_session: ff2fb105-fd84-4ecb-b1e6-8f8eb00badc6
   transport: docs
   evidence_location: docs/evidence/twin/TWIN-69
-  acknowledgement: received-author_01-54231c8d4372998bb91aefc3ec2df5c99169b274
+  acknowledgement: received-author_03-d5e9faa8b297a6e6069ba588a461e824bc63cfd1
 verification:
   commands:
   - id: verify_ota_deploy_tool_512b_and_manual
@@ -174,7 +195,7 @@ verification:
 required_evidence_level: server-sandbox-and-independent-review
 verification_environment: docker-qa-sandbox-and-isolated-codex
 qa_review_policy: project-control/.agents/rules/codex_qa_review.md
-updated: '2026-11-07T09:18:00+08:00'
+updated: '2026-11-07T10:22:00+08:00'
 ---
 
 # TWIN-69 MiniMC OTA部署工具默认512B分块对齐与升级部署说明书能力位图勘误

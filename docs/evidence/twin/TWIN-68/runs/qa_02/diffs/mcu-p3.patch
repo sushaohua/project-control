@@ -1,0 +1,181 @@
+diff --git a/motion-controller-mcu/project/src/minimc_proto.c b/motion-controller-mcu/project/src/minimc_proto.c
+index 80de9c4..d41d279 100644
+--- a/motion-controller-mcu/project/src/minimc_proto.c
++++ b/motion-controller-mcu/project/src/minimc_proto.c
+@@ -2374,10 +2374,6 @@ static void handle_th_relay_req(const uint8_t *frame, uint16_t len)
+         s_th_proxy_last_ms = wk_timebase_get();
+         forward_uart_mode_set(FORWARD_UART_MODE_OTA_ROUTE);
+     }
+-    else if (s_th_proxy_active)
+-    {
+-        s_th_proxy_last_ms = wk_timebase_get();
+-    }
+     uint8_t relay_buf[MINIMC_MAX_FRAME_SIZE];
+     relay_frame(frame, len, relay_buf);
+     if (!forward_uart_send_raw(relay_buf, len))
+@@ -2391,6 +2387,7 @@ static void handle_th_relay_req(const uint8_t *frame, uint16_t len)
+     s_relay_seq16 = seq;
+     s_relay_cmd = cmd_id;
+     s_relay_start_ms = wk_timebase_get();
++    if (s_th_proxy_active) { s_th_proxy_last_ms = s_relay_start_ms; }
+     s_relay_timeout_ms = get_th_relay_timeout_ms(cmd_id);
+     const mc_dbg_meta_t rtx_meta = { "RELAY_TX", "TH", seq, cmd_id, "EXEC" };
+     mc_dbg_emit(&rtx_meta, "timeout_ms=200");
+@@ -2751,12 +2748,15 @@ bool minimc_proto_send_th_gcode(const char *line, uint16_t len, uint8_t exec_fla
+ }
+ 
+ /**
+- * @brief 检查在途 TH 级联请求超时与 5000ms 代理模式无活动自动恢复
++ * @brief 检查在途 TH 级联请求超时与 5000ms 代理模式无活动自动恢复（含 32 位模半空间防时基下溢保护）
+  * @param now_ms 当前系统毫秒计数
+  */
+ static void check_th_relay_timeout(uint32_t now_ms)
+ {
+-    if (s_th_proxy_active && ((uint32_t)(now_ms - s_th_proxy_last_ms) >= MC_TH_PROXY_TIMEOUT_MS))
++    /* 防御层二: 采用 < 0x80000000UL 半空间判据过滤 now_ms < start_ms 的无符号减法下溢 (0xFFFFFFFFU) */
++    const uint32_t proxy_elapsed = (uint32_t)(now_ms - s_th_proxy_last_ms);
++    if (s_th_proxy_active && (proxy_elapsed < 0x80000000UL) &&
++        (proxy_elapsed >= MC_TH_PROXY_TIMEOUT_MS))
+     {
+         s_th_proxy_active = false;
+         forward_uart_mode_set(FORWARD_UART_MODE_NORMAL);
+@@ -2766,7 +2766,7 @@ static void check_th_relay_timeout(uint32_t now_ms)
+         return;
+     }
+     const uint32_t elapsed = (uint32_t)(now_ms - s_relay_start_ms);
+-    if (elapsed < s_relay_timeout_ms)
++    if ((elapsed >= 0x80000000UL) || (elapsed < s_relay_timeout_ms))
+     {
+         return;
+     }
+@@ -2780,6 +2780,24 @@ static void check_th_relay_timeout(uint32_t now_ms)
+     mc_dbg_emit(&err_meta, kv);
+ }
+ 
++/**
++ * @brief 查询当前 MC 是否存在等待 TH 响应的在途级联请求
++ * @return true 存在在途级联请求，false 无在途级联请求
++ */
++bool minimc_proto_is_th_relay_pending(void)
++{
++    return s_relay_pending;
++}
++
++/**
++ * @brief 供宿主机单测显式触发指定毫秒时刻的 TH 级联超时与代理恢复检查
++ * @param now_ms 待检验的系统毫秒计数
++ */
++void minimc_proto_test_check_th_relay_timeout(uint32_t now_ms)
++{
++    check_th_relay_timeout(now_ms);
++}
++
+ /**
+  * @brief 按 1Hz 周期输出温度与作业状态心跳 [MC-DBG] 日志
+  * @param now_ms 当前系统毫秒计数
+@@ -2851,13 +2869,14 @@ static void drain_th_rx(void)
+ }
+ 
+ /**
+- * @brief 主循环非阻塞协议与调试排空轮询入口
++ * @brief 主循环非阻塞协议与调试排空轮询入口（先排空收发再采样时基以消除同轮跨毫秒下溢）
+  */
+ void minimc_proto_poll(void)
+ {
+-    const uint32_t now_ms = wk_timebase_get();
++    /* 防御层一: 先执行 AP/TH 收发排空，再采样当前毫秒时基，确保 now_ms 不早于同轮更新的起始时间戳 */
+     drain_ap_rx();
+     drain_th_rx();
++    const uint32_t now_ms = wk_timebase_get();
+     check_th_relay_timeout(now_ms);
+     mc_debug_log_periodic_state(now_ms);
+     mc_debug_poll_drain();
+diff --git a/motion-controller-mcu/tests/test_mc_ota_and_relay.c b/motion-controller-mcu/tests/test_mc_ota_and_relay.c
+index 749569d..4842cb6 100644
+--- a/motion-controller-mcu/tests/test_mc_ota_and_relay.c
++++ b/motion-controller-mcu/tests/test_mc_ota_and_relay.c
+@@ -43,7 +43,20 @@ volatile uint8_t usart2_tx_busy = 0U;
+ static uint8_t s_mock_moves = 0U;
+ static bool s_mock_busy_hook = false;
+ static uint32_t s_mock_tick_ms = 1000U;
++static uint32_t s_tick_advance_on_th_tx = 0U; /* 模拟 forward_uart_send_raw 发送期间 SysTick 推进毫秒数 */
+ static uint32_t s_mc_magic_word = 0U;
++
++extern bool minimc_proto_is_th_relay_pending(void);
++extern void minimc_proto_test_check_th_relay_timeout(uint32_t now_ms);
++
++/**
++ * @brief 宿主机单测包装：按指定时间戳直接调用 MC 侧 check_th_relay_timeout
++ * @param now_ms 待检验的系统毫秒计数
++ */
++static void check_th_relay_timeout(uint32_t now_ms)
++{
++    minimc_proto_test_check_th_relay_timeout(now_ms);
++}
+ static uint32_t s_mc_reset_count = 0U;
+ static uint16_t s_mc_last_delay_ms = 0U;
+ static bool s_mc_steppers_disabled = false;
+@@ -131,6 +144,10 @@ bool forward_uart_send_raw(const uint8_t *data, uint16_t len)
+     }
+     memcpy(s_last_th_tx, data, len);
+     s_last_th_tx_len = len;
++    if (s_tick_advance_on_th_tx > 0U)
++    {
++        s_mock_tick_ms += s_tick_advance_on_th_tx;
++    }
+     return true;
+ }
+ uint8_t forward_uart_rx_poll(void) { return (s_mock_th_rx_len > 0U) ? 1U : 0U; }
+@@ -415,6 +432,43 @@ static void test_th_upgrade_mgr_v2_flow(void)
+     require_true(s_last_th_tx[5] == MINIMC_CMD_OTA_FINISH && s_state == TH_UPG_STATE_SUCCESS, "0x22 sent -> SUCCESS");
+ }
+ 
++/**
++ * @brief 验证 TWIN-68 同轮跨毫秒 SysTick 下溢防护 (0xFFFFFFFFU) 与 32 位计数器回绕超时判定
++ */
++static void test_th_relay_timeout_underflow_and_wraparound(void)
++{
++    minimc_proto_init();
++    uint8_t ota_data_pay[520];
++    memset(ota_data_pay, 0xA5, sizeof(ota_data_pay));
++
++    /* 场景 A: 发送期间 SysTick +1ms 推进且显式校验 now_ms < s_relay_start_ms 下溢不误超时 */
++    s_mock_tick_ms = 1120280U;
++    s_tick_advance_on_th_tx = 1U;
++    send_ap_frame(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_OTA_DATA, ota_data_pay);
++    minimc_proto_poll();
++    check_th_relay_timeout(1120280U);
++    require_true(minimc_proto_is_th_relay_pending() && minimc_proto_is_th_proxy_active(), "no false timeout on underflow");
++
++    /* 2ms 后 TH 正常返回 0x00 CMD_ACK -> MC 正常透传回 AP，无 BAD_FRAME 0x07 */
++    s_tick_advance_on_th_tx = 0U;
++    s_mock_tick_ms = 1120283U;
++    const uint16_t rx_seq = (uint16_t)s_last_th_tx[8] | ((uint16_t)s_last_th_tx[9] << 8U);
++    inject_th_resp(MINIMC_NODE_AP, MINIMC_CMD_ACK, rx_seq, 4U);
++    s_last_ap_tx_len = 0U;
++    minimc_proto_poll();
++    require_true(s_last_ap_tx_len == 18U && s_last_ap_tx[5] == MINIMC_CMD_ACK, "ACK relayed without 0x07");
++
++    /* 场景 B: 32 位毫秒计数器跨 0xFFFFFFFFU -> 0x00000000U 正常回绕与超时释放 */
++    s_mock_tick_ms = 0xFFFFFFF0UL;
++    send_ap_frame(MINIMC_NODE_TH, 0x05U, MINIMC_CMD_OTA_DATA, ota_data_pay);
++    s_mock_tick_ms = 0x00000010UL;
++    minimc_proto_poll();
++    require_true(minimc_proto_is_th_relay_pending(), "32ms wraparound < 1500ms stays pending");
++    s_mock_tick_ms = 0x00000600UL;
++    minimc_proto_poll();
++    require_true(!minimc_proto_is_th_relay_pending(), "1552ms wraparound >= 1500ms triggers timeout");
++}
++
+ /**
+  * @brief 测试主入口
+  */
+@@ -427,6 +481,7 @@ int main(void)
+     test_mc_sys_ctrl_0x1d_gate_and_magic();
+     test_th_proxy_534b_relay_and_5000ms_recovery();
+     test_th_upgrade_mgr_v2_flow();
+-    printf("[PASS] test_mc_ota_and_relay: all TWIN-64 MC App OTA & 534B relay tests passed!\n");
++    test_th_relay_timeout_underflow_and_wraparound();
++    printf("[PASS] test_mc_ota_and_relay: all TWIN-64/TWIN-68 MC App OTA, 534B relay & underflow tests passed!\n");
+     return 0;
+ }

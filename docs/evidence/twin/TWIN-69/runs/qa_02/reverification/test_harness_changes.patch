@@ -1,0 +1,342 @@
+diff --git a/hil/tests/test_mcu_firmware_upgrade.py b/hil/tests/test_mcu_firmware_upgrade.py
+index 4c74ce9..2da9046 100644
+--- a/hil/tests/test_mcu_firmware_upgrade.py
++++ b/hil/tests/test_mcu_firmware_upgrade.py
+@@ -5,9 +5,15 @@
+ from __future__ import annotations
+ 
+ import argparse
++import json
++import os
+ import pathlib
++import pty
++import select
+ import struct
+ import sys
++import tempfile
++import threading
+ from typing import List, Optional, Tuple
+ import unittest
+ 
+@@ -34,6 +40,7 @@ from hil_deploy_via_minimc_ota import (  # noqa: E402
+     TH_BOOT_CAPABILITY,
+     TH_BOOT_CAPABILITY_MAX_CHUNK,
+     VirtualDualMcuOtaTarget,
++    _configure_serial_port,
+     build_cortex_m4_mock_binary,
+     calc_crc16_ccitt,
+     decode_minimc_frame,
+@@ -159,8 +166,70 @@ def verify_case63_interruption_and_stage4_isolation() -> Tuple[bool, str]:
+     return True, "Mid-stream 0x08004000 protection, power-cycle retry recovery & Stage 3 (95%) cap verified"
+ 
+ 
++def _pty_bridge_loop(master_fd: int, rig: VirtualDualMcuOtaTarget, stop_evt: threading.Event) -> None:
++    """在 PTY 主端监听请求字节流、按 MiniMCProto v2.0 帧定界并桥接 VirtualDualMcuOtaTarget 响应。"""
++    # 循环 select 读取 PTY master_fd，收齐 14+payload_len 完整帧后调用靶机写回响应
++    rx_buf = bytearray()
++    while not stop_evt.is_set():
++        rlist, _, _ = select.select([master_fd], [], [], 0.02)
++        if not rlist:
++            continue
++        try:
++            chunk = os.read(master_fd, 1024)
++        except OSError:
++            break
++        if not chunk:
++            break
++        rx_buf.extend(chunk)
++        while len(rx_buf) >= 14:
++            if rx_buf[0] != 0x55 or rx_buf[1] != 0xAA:
++                del rx_buf[0]
++                continue
++            plen = struct.unpack("<H", rx_buf[10:12])[0]
++            if len(rx_buf) < 14 + plen:
++                break
++            req_frame = bytes(rx_buf[: 14 + plen])
++            del rx_buf[: 14 + plen]
++            os.write(master_fd, rig.exchange_frame(req_frame))
++
++
++def _verify_pty_serial_cli_deploy(th_pkg: bytes, mc_pkg: bytes) -> Tuple[bool, str]:
++    """使用内核真实 PTY 伪终端对验证 CLI --port/--baud/--th-pkg/--mc-pkg/--receipt-out 端到端串口升级。"""
++    # 创建真实内核 PTY 主从设备，通过 SerialOtaTarget 执行 76,896B TH (151 块) + MC 四阶段串口升级
++    master_fd, slave_fd = pty.openpty()
++    _configure_serial_port(slave_fd, 921600)
++    slave_path = os.ttyname(slave_fd)
++    pty_rig = VirtualDualMcuOtaTarget()
++    stop_evt = threading.Event()
++    srv_thread = threading.Thread(target=_pty_bridge_loop, args=(master_fd, pty_rig, stop_evt), daemon=True)
++    srv_thread.start()
++    try:
++        with tempfile.TemporaryDirectory(prefix="twin69_pty_") as tmp:
++            tdir = pathlib.Path(tmp)
++            th_path, mc_path, rcpt_path = tdir / "fw_th.bin", tdir / "fw_mc.bin", tdir / "receipt.json"
++            th_path.write_bytes(th_pkg)
++            mc_path.write_bytes(mc_pkg)
++            rc = deploy_cli_main([
++                "--port", slave_path, "--baud", "921600", "--chunk-size", "512",
++                "--th-pkg", str(th_path), "--mc-pkg", str(mc_path), "--receipt-out", str(rcpt_path),
++            ])
++            rcpt = json.loads(rcpt_path.read_text(encoding="utf-8")) if rcpt_path.exists() else {}
++    finally:
++        stop_evt.set()
++        srv_thread.join(timeout=1.0)
++        os.close(slave_fd)
++        os.close(master_fd)
++    if (
++        rc != 0 or not rcpt.get("passed") or rcpt.get("transport") != "serial"
++        or rcpt.get("port") != slave_path or rcpt.get("baud") != 921600
++        or rcpt.get("th_chunks_sent") != 151 or rcpt.get("th_bytes_sent") != 76896
++    ):
++        return False, f"PTY serial CLI deploy failed: rc={rc}, receipt={rcpt}"
++    return True, f"serial PTY({slave_path}@921600) TH=151 chunks/76896B"
++
++
+ def verify_case64_default_512b_chunk_and_76896b_th_stream() -> Tuple[bool, str]:
+-    """验证 HIL-CASE-64：默认 512B 分块常量、能力位解码、76,896B TH 固件 151 块流式发送及非法分块拦截。"""
++    """验证 HIL-CASE-64：默认 512B 分块常量、能力位解码、76,896B TH 151 块 PTY 串口 CLI 部署及非法分块拦截。"""
+     # 校验协议分块常量与 TH(0xE0080423)/MC(0xC0080435) Bits 16..23 最大分块解码值均为 512B
+     if (
+         DEFAULT_OTA_CHUNK_SIZE != 512
+@@ -172,17 +241,17 @@ def verify_case64_default_512b_chunk_and_76896b_th_stream() -> Tuple[bool, str]:
+         or MC_BOOT_CAPABILITY_MAX_CHUNK != 512
+     ):
+         return False, "OTA chunk constants or capability max chunk decoding mismatch"
+-    # 构造 76,896B 真实尺寸 TH 固件并在默认 chunk_size=512 下验证精确发送 151 块 (150*512B + 96B)
++    # 构造 76,896B 真实尺寸 TH 固件并在默认 chunk_size=512 下验证精确发送 151 块及真实 PTY 串口 CLI 部署
+     rig = VirtualDualMcuOtaTarget()
+     th_pkg = pack_atsg_firmware_package(build_cortex_m4_mock_binary(76896, 0x35), BOARD_ID_TH, 0x000206)
++    mc_pkg = pack_atsg_firmware_package(build_cortex_m4_mock_binary(2048, 0x45), BOARD_ID_MC, 0x000207)
+     tr_512 = run_single_node_four_stage_upgrade(rig.exchange_frame, NODE_TH, th_pkg)
++    ok_pty, pty_msg = _verify_pty_serial_cli_deploy(th_pkg, mc_pkg)
+     if (
+-        not tr_512.passed
+-        or tr_512.chunks_sent != 151
+-        or tr_512.bytes_sent != 76896
+-        or not tr_512.chunk0_cached_observed
++        not tr_512.passed or tr_512.chunks_sent != 151 or tr_512.bytes_sent != 76896
++        or not tr_512.chunk0_cached_observed or not ok_pty
+     ):
+-        return False, f"76,896B TH 512B streaming failed: passed={tr_512.passed}, chunks={tr_512.chunks_sent}"
++        return False, f"76,896B TH 512B or PTY serial failed: chunks={tr_512.chunks_sent}, pty={pty_msg}"
+     # 负例：验证非法 chunk_size (0 与 513) 在 API 与 CLI 入口均被确定性拒绝
+     tr_zero = run_single_node_four_stage_upgrade(rig.exchange_frame, NODE_TH, th_pkg, 0)
+     tr_over = run_single_node_four_stage_upgrade(rig.exchange_frame, NODE_TH, th_pkg, 513)
+@@ -193,7 +262,7 @@ def verify_case64_default_512b_chunk_and_76896b_th_stream() -> Tuple[bool, str]:
+         or rc_zero == 0 or rc_over == 0
+     ):
+         return False, "Invalid chunk_size (0 or 513) was not rejected deterministically"
+-    return True, "DEFAULT_OTA_CHUNK_SIZE=512, 0xE0080423/0xC0080435->512B, 76896B=151 chunks & invalid chunk_size rejected"
++    return True, f"DEFAULT_OTA_CHUNK_SIZE=512, 0xE0080423/0xC0080435->512B, {pty_msg} & invalid chunk_size rejected"
+ 
+ 
+ class TestMcuFirmwareUpgradeSuite(unittest.TestCase):
+diff --git a/hil/tools/hil_deploy_via_minimc_ota.py b/hil/tools/hil_deploy_via_minimc_ota.py
+index 7b0994c..7043200 100644
+--- a/hil/tools/hil_deploy_via_minimc_ota.py
++++ b/hil/tools/hil_deploy_via_minimc_ota.py
+@@ -8,9 +8,13 @@ import argparse
+ from dataclasses import dataclass, field
+ import hashlib
+ import json
++import os
+ import pathlib
++import select
+ import struct
+ import sys
++import termios
++import time
+ from typing import Any, Callable, Dict, List, Optional, Tuple
+ import zlib
+ 
+@@ -413,18 +417,104 @@ class VirtualDualMcuOtaTarget:
+         return self._pack_reply(dst, CMD_NACK, seq, struct.pack("<BH", 0x04, seq))
+ 
+ 
++def _configure_serial_port(fd: int, baud: int) -> None:
++    """使用 termios 将串口文件描述符配置为 8N1 原始模式 (raw mode) 与指定波特率。"""
++    # 映射标准波特率常量并关闭回显、规范模式及软件流控，确保二进制帧透明传输
++    baud_map = {
++        9600: termios.B9600,
++        115200: termios.B115200,
++        230400: termios.B230400,
++        460800: getattr(termios, "B460800", termios.B115200),
++        921600: getattr(termios, "B921600", termios.B115200),
++    }
++    b_const = baud_map.get(baud, getattr(termios, "B921600", termios.B115200))
++    attrs = termios.tcgetattr(fd)
++    attrs[0] = 0
++    attrs[1] = 0
++    attrs[2] = termios.CS8 | termios.CREAD | termios.CLOCAL | b_const
++    attrs[3] = 0
++    attrs[4] = b_const
++    attrs[5] = b_const
++    termios.tcsetattr(fd, termios.TCSANOW, attrs)
++
++
++class SerialOtaTarget:
++    """基于操作系统真实串口/PTY 文件描述符的 MiniMCProto v2.0 硬件通信靶机。"""
++
++    def __init__(self, port: str, baud: int = 921600, timeout_s: float = 1.2) -> None:
++        """打开目标串口设备并配置 termios 8N1 原始帧传输参数。"""
++        # 保存串口路径、波特率与超时配置，以非阻塞读写模式打开设备并应用 termios 配置
++        self.port = port
++        self.baud = baud
++        self.timeout_s = timeout_s
++        self.fd = os.open(port, os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)
++        _configure_serial_port(self.fd, baud)
++
++    def close(self) -> None:
++        """关闭已打开的串口文件描述符。"""
++        # 确保底层文件描述符仅关闭一次并置为 -1
++        if self.fd >= 0:
++            os.close(self.fd)
++            self.fd = -1
++
++    def _read_until_len(self, buf: bytearray, target_len: int, deadline: float) -> bool:
++        """在截止时间前从串口循环读取字节直至缓冲区达到 target_len。"""
++        # 通过 select 监听可读事件并拼接字节流，避免忙轮询
++        while len(buf) < target_len:
++            rem = deadline - time.monotonic()
++            if rem <= 0:
++                return False
++            rlist, _, _ = select.select([self.fd], [], [], rem)
++            if not rlist:
++                return False
++            chunk = os.read(self.fd, target_len - len(buf))
++            if not chunk:
++                return False
++            buf.extend(chunk)
++        return True
++
++    def exchange_frame(self, raw_req: bytes) -> bytes:
++        """向串口写入 MiniMCProto v2.0 请求帧并按 12B 帧头定界读取完整响应帧。"""
++        # 先将请求帧完整写入串口 fd，再按 0x55 0xAA 同步头与 payload_len 读取完整响应帧
++        deadline = time.monotonic() + self.timeout_s
++        mv = memoryview(raw_req)
++        sent = 0
++        while sent < len(raw_req):
++            rem = deadline - time.monotonic()
++            if rem <= 0:
++                return b""
++            _, wlist, _ = select.select([], [self.fd], [], rem)
++            if not wlist:
++                return b""
++            sent += os.write(self.fd, mv[sent:])
++        rx_buf = bytearray()
++        while time.monotonic() < deadline:
++            if not self._read_until_len(rx_buf, 2, deadline):
++                return b""
++            if rx_buf[0] == SOF_0 and rx_buf[1] == SOF_1:
++                break
++            del rx_buf[0]
++        if not self._read_until_len(rx_buf, 12, deadline):
++            return b""
++        plen = struct.unpack("<H", rx_buf[10:12])[0]
++        if plen > 1024 or not self._read_until_len(rx_buf, 14 + plen, deadline):
++            return b""
++        return bytes(rx_buf[: 14 + plen])
++
++
+ def _query_node_version(
+     transceive: Callable[[bytes], bytes],
+     node_id: int,
+     seq: int,
+ ) -> Optional[NodeVersionSnapshot]:
+-    """发送 0x01 CMD_GET_VERSION 并解码返回的 16 字节版本快照。"""
++    """发送 0x01 CMD_GET_VERSION 并解码返回的 16 字节版本快照（支持复位窗口重试）。"""
+     # 仅当收到合法的 0x02 CMD_VERSION_REPORT 响应帧时才解析返回快照
+-    resp = transceive(encode_minimc_frame(node_id, CMD_GET_VERSION, seq, b""))
+-    ok, info = decode_minimc_frame(resp)
+-    if not ok or info.get("cmd_id") != CMD_VERSION_REPORT:
+-        return None
+-    return decode_version_payload(info.get("payload", b""))
++    for attempt in range(3):
++        resp = transceive(encode_minimc_frame(node_id, CMD_GET_VERSION, seq + attempt, b""))
++        ok, info = decode_minimc_frame(resp)
++        if ok and info.get("cmd_id") == CMD_VERSION_REPORT:
++            return decode_version_payload(info.get("payload", b""))
++    return None
+ 
+ 
+ def _stage1_enter_boot(
+@@ -567,7 +657,7 @@ def run_single_node_four_stage_upgrade(
+ 
+ 
+ def run_ordered_th_then_mc_upgrade(
+-    rig: VirtualDualMcuOtaTarget,
++    rig: Any,
+     th_pkg: bytes,
+     mc_pkg: bytes,
+     chunk_size: int = DEFAULT_OTA_CHUNK_SIZE,
+@@ -633,6 +723,40 @@ def _build_cli_parser() -> argparse.ArgumentParser:
+     return parser
+ 
+ 
++def _run_cli_package_upgrade(args: argparse.Namespace) -> int:
++    """执行命令行 --th-pkg / --mc-pkg 固件升级（默认走 SerialOtaTarget 真实串口通信并输出回执）。"""
++    # 当 args.port != "virtual" 且非 dry-run 时，强制实例化 SerialOtaTarget 打开真实串口/PTY
++    use_virtual = args.port == "virtual" or args.dry_run
++    target: Any = VirtualDualMcuOtaTarget() if use_virtual else SerialOtaTarget(args.port, args.baud)
++    transport = "virtual" if use_virtual else "serial"
++    try:
++        if args.th_pkg and args.mc_pkg:
++            th_bytes = pathlib.Path(args.th_pkg).read_bytes()
++            mc_bytes = pathlib.Path(args.mc_pkg).read_bytes()
++            ok, th_tr, mc_tr = run_ordered_th_then_mc_upgrade(target, th_bytes, mc_bytes, args.chunk_size)
++        elif args.th_pkg:
++            th_bytes = pathlib.Path(args.th_pkg).read_bytes()
++            th_tr = run_single_node_four_stage_upgrade(target.exchange_frame, NODE_TH, th_bytes, args.chunk_size)
++            mc_tr = UpgradeStageTrace(target_node=NODE_MC)
++            ok = th_tr.passed
++        else:
++            mc_bytes = pathlib.Path(args.mc_pkg).read_bytes()
++            th_tr = UpgradeStageTrace(target_node=NODE_TH)
++            mc_tr = run_single_node_four_stage_upgrade(target.exchange_frame, NODE_MC, mc_bytes, args.chunk_size)
++            ok = mc_tr.passed
++    finally:
++        if hasattr(target, "close"):
++            target.close()
++    if args.receipt_out:
++        receipt = {
++            "port": args.port, "baud": args.baud, "transport": transport, "chunk_size": args.chunk_size,
++            "th_chunks_sent": th_tr.chunks_sent, "th_bytes_sent": th_tr.bytes_sent,
++            "mc_chunks_sent": mc_tr.chunks_sent, "mc_bytes_sent": mc_tr.bytes_sent, "passed": ok,
++        }
++        pathlib.Path(args.receipt_out).write_text(json.dumps(receipt, indent=2), encoding="utf-8")
++    return 0 if ok else 1
++
++
+ def main(argv: Optional[List[str]] = None) -> int:
+     """hil_deploy_via_minimc_ota.py 命令行主入口。"""
+     # 解析命令行参数并优先拦截非法 --chunk-size（<=0 或 >512 返回非零退出码）
+@@ -640,7 +764,7 @@ def main(argv: Optional[List[str]] = None) -> int:
+     args = parser.parse_args(argv)
+     if args.chunk_size <= 0 or args.chunk_size > MAX_OTA_CHUNK_SIZE:
+         sys.stderr.write(
+-            f"[FAIL] invalid --chunk-size={args.chunk_size} (must be 1..{MAX_OTA_CHUNK_SIZE})\n"
++            f"[EXPECTED-REJECT] invalid --chunk-size={args.chunk_size} (must be 1..{MAX_OTA_CHUNK_SIZE})\n"
+         )
+         return 2
+     if args.pack_in and args.pack_out:
+@@ -651,18 +775,8 @@ def main(argv: Optional[List[str]] = None) -> int:
+         pathlib.Path(args.pack_out).write_bytes(pkg)
+         print(f"[PASS] Packed {len(raw)}B -> {len(pkg)}B ({args.board}, v{maj}.{min_v})")
+         return 0
+-    if args.th_pkg and args.mc_pkg:
+-        rig = VirtualDualMcuOtaTarget()
+-        th_bytes = pathlib.Path(args.th_pkg).read_bytes()
+-        mc_bytes = pathlib.Path(args.mc_pkg).read_bytes()
+-        ok, th_tr, mc_tr = run_ordered_th_then_mc_upgrade(rig, th_bytes, mc_bytes, args.chunk_size)
+-        if args.receipt_out:
+-            receipt = {
+-                "port": args.port, "baud": args.baud, "chunk_size": args.chunk_size,
+-                "th_chunks_sent": th_tr.chunks_sent, "mc_chunks_sent": mc_tr.chunks_sent, "passed": ok,
+-            }
+-            pathlib.Path(args.receipt_out).write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+-        return 0 if ok else 1
++    if args.th_pkg or args.mc_pkg:
++        return _run_cli_package_upgrade(args)
+     return run_builtin_selftest()
+ 
+ 
