@@ -61,8 +61,8 @@ repositories:
     observed_commit: 01bfda29b82f0576cb255d0b4196aeda1edb8d2e
     observation_status: local-and-remote-soc_debug-matched-20261103-no-build-or-hil
     local_inputs: [AGENTS.md, .agents, docs]
-    input_distribution: local-only-untracked-symlinks-user-confirmed-20261103
-    automatic_tooling: nested-repository-support-not-yet-integrated
+    input_distribution: external-agents-repo-relative-symlinks
+    automatic_tooling: workspace-py-nested-and-qa-runner-supported
   bootloaderth:
     url: ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git
     local_path: ~/workspace/ai_soc_project/boot/bootloaderth
@@ -74,8 +74,15 @@ repositories:
     observed_commit: 1e4f592feaf400e5d4a1932db5aa86e75e60832b
     observation_status: local-and-remote-soc_debug-matched-20261103-no-build-or-hil
     local_inputs: [AGENTS.md, .agents, docs]
-    input_distribution: local-only-untracked-symlinks-user-confirmed-20261103
-    automatic_tooling: nested-repository-support-not-yet-integrated
+    input_distribution: external-agents-repo-relative-symlinks
+    automatic_tooling: workspace-py-nested-and-qa-runner-supported
+  agents:
+    url: ssh://git@192.168.77.113:2222/sushaohua/agents.git
+    mirror_urls:
+      - git@github.com:sushaohua/agents.git
+    local_path: ~/workspace/ai_soc_project/agents
+    branch: main
+    status: active-repo-rules-and-skills
   test_harness:
     url: ssh://git@192.168.77.113:2222/sushaohua/test_harness.git
     local_path: ~/workspace/ai_soc_project/test_harness

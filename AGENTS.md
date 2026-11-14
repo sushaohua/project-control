@@ -9,7 +9,7 @@
 - 涉及派单/验收：`.agents/rules/delivery_and_coord_gate.md`、`.agents/rules/codex_qa_review.md`；按任务实际需要读取相关职责、模板及输入。
 - 涉及代码：`.agents/rules/code_documentation_standard.md` 及适用语言规范；`tools/` 的 Python Runner、检查器和脚本同样遵守中文注释要求。
 
-本仓 `.agents/rules/` 是项目公共规则的权威原件。各子仓的共享副本是有准确来源版本的分发快照，不人工双向修改；规则更新后明确重新分发的版本及影响范围，不把旧快照当作自动更新。
+本仓 `.agents/rules/` 是项目跨仓公共规则的唯一权威原件，不再向业务代码仓复制 `shared/` 或 `.repo-rules/` 快照。各业务仓专属的 `AGENTS.md`、`.agents/rules/` 与 `.agents/skills/` 统一独立存放在 `agents/` 仓库中。
 
 用户当前明确指令优先；已批准且范围未变的授权可复用。技术冲突交 ARCH/相应 Owner，授权及产品范围冲突交用户，不以晚读到的规则或简单“取最严”代替冲突裁决。
 

@@ -40,6 +40,20 @@ repositories:
     url: "ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git"
     api_project_path: "sushaohua/bootloaderth"
     default_branch: "soc_debug"
+  agents:
+    url: "ssh://git@192.168.77.113:2222/sushaohua/agents.git"
+    api_project_path: "sushaohua/agents"
+    default_branch: "main"
+
+rule_sources:
+  shared_rules_repo: "project-control"
+  agents_repo: "agents"
+  repo_subdirs:
+    soc-ap: "soc-ap"
+    mcu-p3: "mcu-p3"
+    test_harness: "test_harness"
+    boot/bootloadermc: "bootloadermc"
+    boot/bootloaderth: "bootloaderth"
 
 timeouts:
   git_clone_seconds: 300

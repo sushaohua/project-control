@@ -34,6 +34,7 @@ from qa_runner.qa_runner import (
     create_isolated_sandbox,
     parse_command_spec,
     parse_repo_target,
+    prepare_sandbox_rule_links,
     run_command_in_sandbox,
     sanitize_path_component,
     validate_commit_sha,
@@ -246,6 +247,33 @@ class HarnessRunnerTest(unittest.TestCase):
         self.assertTrue(res.passed)
         self.assertEqual(res.returncode, 0)
         self.assertEqual(res.output, "unit test")
+
+    def test_prepare_sandbox_rule_links(self):
+        """校验沙箱内同时存在 agents 与业务仓时正确生成相对规则软链接，且不覆盖已有文件。"""
+        with tempfile.TemporaryDirectory(prefix="qa_rule_links_") as td:
+            box = Path(td)
+            (box / "agents/bootloadermc/.agents/rules").mkdir(parents=True)
+            (box / "agents/bootloadermc/AGENTS.md").write_text("# boot mc\n", encoding="utf-8")
+            (box / "boot/bootloadermc").mkdir(parents=True)
+            (box / "soc-ap").mkdir(parents=True)
+            (box / "soc-ap/AGENTS.md").write_text("# keep existing\n", encoding="utf-8")
+            (box / "agents/soc-ap/.agents/rules").mkdir(parents=True)
+            (box / "agents/soc-ap/AGENTS.md").write_text("# from agents\n", encoding="utf-8")
+            cfg = {"rule_sources": {"repo_subdirs": {
+                "boot/bootloadermc": "bootloadermc",
+                "soc-ap": "soc-ap",
+            }}}
+            targets = [
+                RepositoryTarget("boot/bootloadermc", "ssh://example.invalid/b.git", "a" * 40, "soc_debug"),
+                RepositoryTarget("soc-ap", "ssh://example.invalid/s.git", "b" * 40, "main"),
+            ]
+            prepare_sandbox_rule_links(box, targets, cfg)
+            self.assertEqual(os.readlink(box / "boot/bootloadermc/AGENTS.md"),
+                             "../../agents/bootloadermc/AGENTS.md")
+            self.assertEqual(os.readlink(box / "boot/bootloadermc/.agents"),
+                             "../../agents/bootloadermc/.agents")
+            self.assertFalse((box / "soc-ap/AGENTS.md").is_symlink())
+            self.assertEqual(os.readlink(box / "soc-ap/.agents"), "../agents/soc-ap/.agents")
 
 
 class MethodologicalInvariantsTest(unittest.TestCase):

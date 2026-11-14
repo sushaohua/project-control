@@ -1,41 +1,35 @@
 ---
-title: PC 全局规则与 MCU/Boot 本机规则适用边界
-date: 2026-11-04
+title: PC 全局规则与分仓规则适用边界
+date: 2026-11-14
 status: current
-reviewed_pc_baseline: 7e826b89bdcfdd6048371205ce8cce1503f5e988
+reviewed_pc_baseline: 1489ab07c8cb408f231cf6f9a3d10ee51e840d35
 ---
 
-# PC 全局规则与 MCU/Boot 本机规则适用边界
+# PC 全局规则与分仓规则适用边界
 
-## 1. 规则分层
+## 1. 规则三层分离原则
 
-- Project Control（PC）规则定义跨项目职责、任务派发、审批、服务器候选和独立 QA 门禁；MCU/Boot 仓自己的 `AGENTS.md` 与 `.agents/rules/` 定义本仓源码、芯片和物理台架要求。两层并行适用，各自维护，不以复制替代原件。
-- 新增公共规则快照在各自 `SOURCE.json` 标记实际采用的完整 PC 来源提交；本文件头部是对账基线，不要求后续快照永远固定在该旧提交。本机旧 `AGENTS.md`/规则按原文保存到对应仓 `.repo-rules/`；不得借分发替换、改写或删除现有 `AGENTS.md`、`.agents/` 或文档链接。
-- 本机链接目标可作为当前本机任务的规则输入；未跟踪的本机链接内容不是服务器检出内容，也不能声称已进入服务器 QA 候选。服务器 QA 输入必须有候选仓库中可核验的版本来源。
-- `soc-ap/` 与 `test_harness/` 继续使用其正常根规则。本文件只解释 PC 与 MCU/Boot 本机规则边界，不为其他仓引入 MCU 规则。
+- **Project Control（PC）单源公共规则**：`project-control/.agents/rules/` 定义跨项目职责、任务派发、审批、编码规范、注释规范、服务器候选和独立 QA 门禁，是全局唯一权威原件，**不再向各业务代码仓复制 `shared/` 或 `.repo-rules/` 快照**。
+- **`agents` 仓分仓专属规则与技能**：独立仓库 `agents`（工作区位于 `agents/`，主拉取源为内网 GitLab 并双推 GitHub）按 `<repo>/AGENTS.md`、`<repo>/.agents/rules/` 与 `<repo>/.agents/skills/` 存放各业务仓的专属源码、芯片、模块边界与技能。
+- **业务代码仓纯净化**：`soc-ap/`、`test_harness/`、`mcu-p3/`、`boot/bootloadermc/`、`boot/bootloaderth/` 内仅保留纯代码、构建与测试；本地和沙箱环境通过 `.gitignore` 忽略的相对软链接（`../agents/<repo>/...` 或 `../../agents/<repo>/...`）挂载分仓入口与规则。
+- **服务器与独立 QA 来源绑定**：正式 QA 与沙箱运行不依赖未入 Git 的外部个人路径，而是由 `qa_runner` 按服务端锁定提交同时检出并只读挂载 `project-control@<commit>`（公共规则）与 `agents@<commit>`（分仓规则），由 `qa_runner` 自动衔接沙箱相对软链接。
 
 ## 2. 冲突处理与授权
 
-- 发现规则冲突时先确认各规则的来源、版本、目标仓、操作类型和适用环境，按较具体的硬件/源码保护要求与 PC 全局交付门禁分别满足；不要以“最后读到的文件”自动覆盖先前有效要求。
-- 明确且仍有效的用户指令优先于一般历史流程；已批准范围内的当前授权可以复用，不要求用户重复批准。超出授权范围、授权对象不明或规则间无法据此协调时暂停相关动作，把具体技术冲突交 ARCH 与对应 MCU/Boot Owner 裁定；审批范围问题交用户/Owner，不自行废弃硬件保护或扩大授权。
-- 只读检查、方案准备可按任务允许并行。任何工程写入派发前，COORD/执行角色须重新核对当前任务卡、准确批准范围、仓库 URL、分支、候选/工作区版本和所读规则版本；只读规划不等于写入授权。
-- 本机规则中的声明、实现、前检和验证步骤，可在已接受的有界任务内按阶段落实；不据此要求每个函数都新建任务或会话。多作者并行仍按各自白名单与资源安排，不共享未经隔离的写入范围。
+- 发现规则冲突时先确认各规则的来源（`project-control` vs `agents/<repo>`）、版本、目标仓、操作类型和适用环境，分别满足较具体的硬件/源码保护要求与 PC 全局交付门禁；不要以“最后读到的文件”自动覆盖先前有效要求。
+- 明确且仍有效的用户指令优先于一般历史流程；超出授权范围或规则间无法协调时暂停相关动作，技术冲突交 ARCH 与对应 Owner 裁定，审批范围冲突交用户/Owner。
+- `agents` 仓包含其他外部项目子目录时，本项目 Agent 仅允许读取和修改对应本项目仓库的子目录，严禁越界读写同仓内的其他项目目录。
 
 ## 3. 执行环境与硬件规则
 
-- MCU/Boot 本机旧规则中的 Windows venv、WSL Windows `.exe` 防挂起、`probe-rs`、MC `COM8`、TH `COM6` 与串口预热要求，适用于规则所描述的 Windows/WSL 物理台架及获批实机操作。不得把这些要求误套为 Linux Docker 软件 QA 的 Python、设备端口或探针要求；Docker 软件 QA 仍按 PC 服务器/独立沙箱规则执行，不因此获得物理设备访问权。
-- 若任务未说明执行环境或物理台架，先依据实际任务、Runner/容器身份和授权记录确认。不能凭历史参数把 `COM8/COM6` 改成 `/dev/ttyUSB*`、替换探针 ID、芯片参数或推断硬件已连接；缺少当前事实时保持未验证，并向 COORD/对应 Owner 核实。
-- 实机烧录、寄存器操作、复位、故障注入仍遵守本仓 `probe-rs`、芯片型号、探针选择、物理确认及硬件保护规则。PC 软件 QA 的通过不代替实机证据；本机提测材料也不代替 PC 要求的独立接受。
+- MCU/Boot 本仓规则中的 Windows venv、WSL 防挂起、`probe-rs`、物理串口与预热要求，仅适用于物理台架及获批实机操作；不得误套为 Linux Docker 软件 QA 的容器、端口或探针要求。
+- 实机烧录、寄存器操作、复位、故障注入仍遵守本仓 `probe-rs`、芯片型号、探针选择与物理保护规则。软件 QA 通过不代替实机证据。
 
 ## 4. 分支、QA 与接续
 
-- 当前 MCU App 工程使用 `mcu-p3` 的 `feat/soc-debug`；MC/TH Bootloader 各自在其独立仓 `soc_debug` 开发。旧规则或历史记录若提到 `main`、不同本机分支或旧工作流，不能静默推翻当前明确任务分支。实际分支不符时先停写并交 COORD/Owner 核对，不自动切换并覆盖工作区。
-- MCU/Boot 任务同样适用本项目独立 Codex QA 与批准的 `qa_policy`。按准确任务卡和 PC 当前生效版本执行：streamlined-v1 只有在切换已生效且该卡已迁移时采用单轮；未迁移卡保留 legacy 要求。QA 作者编写的用例、预期和工具须由非作者独立检查；streamlined-v1 不默认增加 QA 报告二次复核。历史已完成签名保留。
-- 方案归档、QA handoff 等本机过程材料按本仓规则执行；材料本身不替代服务器锁定候选、独立 Docker（适用的软件检查）和独立 Codex QA。不同环境结果分别标记，不互相冒充。
-- 后续交接应携带已批准的任务范围、准确仓库/分支/基线、现行 QA policy、需要的本机台架事实及未决项。有效授权沿用；只有实质范围变化或缺少必要证据时才升级澄清/批准，不重复索取已接受内容。
+- 当前 MCU App 使用 `mcu-p3` 的 `feat/soc-debug`；MC/TH Bootloader 各自在独立仓 `soc_debug` 开发；`soc-ap`、`test_harness`、`project-control`、`agents` 使用 `main`。
+- 正式 QA 按有效 `qa_policy`（`streamlined-v1` 或 `legacy`）、独立 Codex 会话和服务器锁定候选执行；接单回执与 `read_sources` 须登记实际消费的 `project-control` 与 `agents` 规则提交版本。
 
 ## 5. 查阅来源
 
-规则入口及分发方式见同目录 `repository_rule_sources.json`。仓内公共副本保留原文和来源版本；其中引用的过程文档、具体任务/契约不随本轮分发，由任务另供。执行者按本轮岗位与操作读取必要规则，不默认整份打印所有快照；缺少相关必需输入时明确阻塞，不假设兄弟仓或某台主机目录存在。
-
-本规则基于 PC 来源提交 `7e826b89bdcfdd6048371205ce8cce1503f5e988` 的项目职责、读写/QA、交付门禁和 Bootloader 边界规则，以及本机链接目标中的 MCU 与双 Bootloader `AGENTS.md` 和 `.agents/rules/`。本轮未核对物理台架连接或服务器端本机链接版本；不得据此声称它们可供远端 QA 使用。
+规则入口及映射关系见同目录 `repository_rule_sources.json`。

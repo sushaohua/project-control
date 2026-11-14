@@ -325,6 +325,31 @@ def checkout_remote_repository(sandbox_dir: Path, target: RepositoryTarget, time
     return "\n".join(logs)
 
 
+def _link_repo_rules(sandbox_dir: Path, repo_name: str, subdir: str) -> None:
+    """在沙箱内为指定业务仓补全指向 `agents/<subdir>` 的相对软链接（绝不覆盖已有文件）。"""
+    repo_dir = sandbox_dir / repo_name
+    agents_dir = sandbox_dir / "agents" / subdir
+    if not repo_dir.is_dir() or not agents_dir.is_dir():
+        return
+    for entry in ("AGENTS.md", ".agents"):
+        src = agents_dir / entry
+        dst = repo_dir / entry
+        if src.exists() and not dst.exists() and not dst.is_symlink():
+            dst.symlink_to(os.path.relpath(src, repo_dir), target_is_directory=src.is_dir())
+
+
+def prepare_sandbox_rule_links(sandbox_dir: Path, targets: List[RepositoryTarget],
+                               config: dict) -> None:
+    """当沙箱同时检出 `agents` 仓与业务仓时，衔接相对规则软链接供只读容器与审阅读取。"""
+    if not (sandbox_dir / "agents").is_dir():
+        return
+    mapping = (config.get("rule_sources") or {}).get("repo_subdirs") or {}
+    for target in targets:
+        subdir = mapping.get(target.name)
+        if subdir:
+            _link_repo_rules(sandbox_dir, target.name, subdir)
+
+
 # 单条沙箱构建或测试命令的默认超时秒数
 DEFAULT_CMD_TIMEOUT = 300
 
@@ -613,6 +638,7 @@ class QARunner:
         for target in req.targets:
             log = checkout_remote_repository(sandbox_dir, target, timeout=git_timeout)
             c_logs.append(log)
+        prepare_sandbox_rule_links(sandbox_dir, req.targets, self.config)
         # 2. 启动以只读模式挂载该沙箱快照的 Docker 容器执行构建与测试
         c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
         img = self.config.get("sandbox", {}).get("image", "qa-sandbox:20261029")
