@@ -42,6 +42,7 @@ canonical_commands:
 allowed_extra_macros:
   MINIMC_CMD_LOG_MESSAGE:      {group: "CMD_LOG_MESSAGE", code: 0x07}
   MINIMC_CMD_FILAMENT_LEGACY:  {group: "CMD_FILAMENT_LEGACY", code: 0x1B}
+  MINIMC_CMD_OTA_ABORT:        {group: "CMD_OTA_ABORT", code: 0x24}
   MINIMC_CMD_STREAM_CHUNK:     {group: "CMD_STREAM_CHUNK", code: 0x31}
   MINIMC_CMD_TELEMETRY_REPORT: {group: "CMD_TELEMETRY_REPORT", code: 0x40}
   MINIMC_CMD_ALARM_EVENT:      {group: "CMD_ALARM_EVENT", code: 0x50}
@@ -52,10 +53,10 @@ endpoints:
     headers: ["soc-ap/contracts/twin/telemetry_types.h", "soc-ap/core/forward/minimc/codec.h"]
   - name: "mcu-p3(MC)"
     full_app_table: true
-    headers: ["mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h"]
+    headers: ["mcu-p3/common/protocol/minimc_proto_defs.h", "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h"]
   - name: "mcu-p3(TH)"
     full_app_table: true
-    headers: ["mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h", "mcu-p3/color-engine-mcu/io_toggle/inc/usart.h"]
+    headers: ["mcu-p3/common/protocol/minimc_proto_defs.h", "mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h", "mcu-p3/color-engine-mcu/io_toggle/inc/usart.h"]
   - name: "boot/bootloadermc"
     full_app_table: false
     headers: ["boot/bootloadermc/bootloader/inc/boot_uart_ota.h", "boot/bootloadermc/project/inc/minimc_boot_proto.h"]
