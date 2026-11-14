@@ -1,129 +1,43 @@
 ---
-title: 独立 QA 统一使用 Codex 的执行规则
+title: V2 独立异构 Codex 双轴分级冷审与 HIL 物证审计规则
 status: current-rule
 owner: COORD
 effective_date: 2026-10-26
-updated: '2026-11-04'
-authorization: 用户本轮明确要求“把所有的qa都独立成codex审查”
+updated: '2026-11-14'
+plan_revision: v2-two-axis-graded-codex
 ---
 
-# 独立 QA 统一使用 Codex
+# 独立 QA 统一使用异构 Codex 双轴分级冷审
 
-> **切换补丁待接受：** 本文的 `streamlined-v1` 是候选策略定义，尚未正式发布。本次变更须先按 legacy 门禁接受，由 COORD 登记准确生效版本后启用；此前保持停机，旧任务按原门禁处理。切换与逐卡迁移见 `project-control/docs/planning/qa_streamline_cutover_20261103.md`。
+本规则定义 V2 垂直切片（`SLICE-XX`）的正式独立 QA 审阅标准，由 `project-control/tools/gates/codex_review.py` 与 `slice_gate.py` 机械执行。历史已完成报告保留原签署与原结论不改写。
 
-**2026-11-02 验收补充：**按[交付门禁§4.1～4.3](delivery_and_coord_gate.md#41-正常流程优先与正负成对验收2026-11-02)核对正常流程、正负配对、软件/真实HIL分别覆盖及批准范围；按[E2E与Issue流转规则](e2e_issue_verification_flow.md)记录缺陷并独立复验。缺少范围内必测正例或真实HIL证据时不得签发对应功能/整体验收APPROVED；离线提示正确只证明该负例。保留旧签署，新复验另建run；环境/来源不足按交付门禁§5.3记录阻塞，不虚构通过或反复要求作者改无关代码。
+## 1. 独立会话与物理隔离红线
 
-> **2026-10-29 新增要求（方案 1 规范标准做法）：**
-> 1. **分工明确**：被审阅源码的检出、构建与自动化测试套件必须在独立的 Docker 容器沙箱内执行，运行时记录并归档容器 Inspect 物证（Container ID、Image Digest、状态与挂载）至 `server_qa.json` 与 `runtime.log`；
-> 2. **独立审阅席位**：Codex Reviewer 作为独立的第三方审查席位，在宿主机上启动专属会话（具有唯一的 Session UUID、真实 Token 消耗与执行审计记录），对容器沙箱产出的锁定候选 Commit、`server_qa.json`、容器 Inspect 物证及交付文件进行独立审计与签署签发，规避 Docker 内部嵌套 Bubblewrap 的系统级命名空间冲突；
-> 3. **真实绑定与可核验性**：任务卡与审查报告中必须真实绑定候选服务器 Commit SHA、Docker 容器 ID 与 Image Digest、Codex Reviewer 独立会话标识、可用的会话运行记录及审查报告自身的 SHA256 校验和。可记录 token 用量，**不得记录或提交 API token、登录凭据或认证缓存**。按[连续调度与服务器沙箱QA门禁](delivery_and_coord_gate.md)执行，保存真实会话/沙箱/远端commit/job/日志绑定，QA 报告复核按下文策略区分；`streamlined-v1` 不默认二次复核，legacy 保持原要求。AUTO-01/02负责落地。
+1. **异构独立只读会话**：正式代码与物证审查必须通过本机 `/home/sushaohua/.local/bin/codex` 启动全新独立会话（默认模型 `gpt-6-luna`，强制参数 `--sandbox read-only -c approval_policy="never" --json --output-schema`），从 JSONL 事件流提取真实 `thread.started` 会话 UUID 与真实 Token 消耗。禁止使用同源 `invoke_subagent` 普通子 Agent 冒充独立 Codex QA，禁止记录或提交任何 API 密钥/凭据。
+2. **前置机械过滤原则**：只有当切片已通过 `fast_gate.py`（`<3s` 机械规范/契约/反假状态检查）及跨仓合龙、且具备客观构建测试证据（`qa_runner.py` 产出的 `server_qa.json`）后，才允许调用 Codex，杜绝用高成本冷审挑低级格式问题。
+3. **执行层与审计层解耦**：Docker 构建测试由 `qa_runner.py` 执行，真机 HIL 由受控台架脚本或 `INTEGRATOR` 执行并固化原始物证；Codex 审阅席位严禁依赖直连宿主机 USB 硬件，专注对锁定 Commit、Diff、契约真源与物证哈希链进行防伪审计。
 
-本规则是后续 QA 审查与验收的执行方式原件，适用于所有未完成任务和新建任务。已经完成的评审及原始报告保留原会话、版本、结论；重新检查时另建 run，不将历史签署改名为 Codex 签署。
+## 2. 双轴审查维度与三级判定标准（`BLOCKER / MINOR / NIT`）
 
-宿主机审阅者只读审查从容器受控导出的候选源码快照及证据，或者读取独立取得并核对为相同服务器提交的只读快照；记录来源与完整 commit、快照及证据哈希，核实与容器测试候选一致。不读取作者可写工作树或将其作为验收基线，不在宿主机执行被审源码的构建或自动化测试冒充沙箱结果。版本、快照或证据无法核实一致时不得批准。该分工是执行要求，不证明相关容器或会话已实际运行。
+单轮 Codex 审查同时覆盖以下两个正交审计轴，并对每条发现标注精确严重度：
 
-## 单轮 QA 策略与切换（2026-11-03）
+- **轴 1：Spec 覆盖与全链路防伪真实性（`spec_realism`）**
+  - 核对实现是否完整闭环切片声明的 `Consumes / Produces` 与正负验收判据；
+  - 严查内存假状态、开环本地定时器推进进度、篡改报文字节的测试桥（Shim）、`ctypes` 后门伪日志、中继私自降级转译 G-code 或 0 调用悬空函数。
+- **轴 2：嵌入式安全、通信闭环与 Diff Budget（`embedded_safety`）**
+  - 核查动态堆分配、指针越界/多重指针、无超时死循环轮询、指令下发无 ACK 超时冒泡、错误日志缺 `{target_node, seq_id, elapsed_ms, error_code}`、未验签擦除 Flash 及超出获批 **Diff Budget** 的无关重构。
 
-新建普通任务显式登记 `qa_policy: streamlined-v1`，执行：**作者实现与自检 → 锁定服务器准确候选 → 一轮独立 QA（代码 Review＋功能/必要回归测试）→ COORD 收件**。软件测试由受控 Runner 在独立 Docker 中执行一次，独立 Codex 对同一候选、Diff、必要上下文和客观证据只读审查。普通任务不默认追加 ARCH、不逐份二次复核 QA 报告、不为报告审阅重复同候选的 Docker 测试。
+### 严重度分级与放行刚性约束
 
-`tools/coord_runner/review_policy.py` 是调度和收件校验共用的策略原件。普通任务默认必需岗位为 QA；QA 作者交付的用例、独立预期或工具默认由非作者独立 ARCH 检查，不能由作者自证。任务 `reviewer` 中显式列出的额外岗位仍是必需接受，不由新策略静默删除。跨模块契约、协议、升级或硬件安全等特殊变更，开工时明确额外岗位、范围及原因；必要 Owner 接受保留。独立检查报告不递归增加下一层报告复核。
+| 级别 | 判定标准 | 门禁动作（由 `codex_review.py` 强制校验） |
+| :--- | :--- | :--- |
+| **`BLOCKER`** | 违反契约/验收条款、功能未闭环、存在假状态/Mock 作弊、内存/硬件/Flash 安全缺陷、通信无超时闭环或越界改动 | **一票否决（`decision = REJECTED`）**；退回原 `ENG-*` 保活会话定向修复（上限 2 轮，超限熔断） |
+| **`MINOR`** | 局部可维护性改进、非热路径冗余、不影响契约与安全的边界注释优化 | **不阻断放行（`0 BLOCKER` 即 `APPROVED`）**；自动摘录写入 `slices/ledger.md` 技术债表后续收敛 |
+| **`NIT`** | 纯命名风格或排版偏好 | 仅记录参考，不阻断、不计入返修轮次 |
+| **环境缺口** | 沙箱物证缺失、哈希不匹配或远端不可达导致无法核验 | 判定 **`BLOCKED`**，交 `COORD` 排查环境，不计入作者代码返修轮次 |
 
-没有 `qa_policy` 的旧任务继续 legacy 门禁，包含原必需岗位、QA 报告非作者复核及其独立沙箱证据；不识别的策略值必须阻断。未完成任务由 COORD 逐卡记录迁移依据、revision、候选、保留/取消的额外岗位与在途 run 处置，再采用新标记；不得仅改标记套用旧报告。历史 Done、原始报告及签署不批量修改。本次策略修改自身按 legacy 接受，正式收件并登记生效版本后才恢复新流程调度。
+## 3. 真机 HIL 物证链审计底线（HW-G5 / HW-G6 / HW-G7）
 
-同一候选的有效沙箱证据可在核验任务 revision、完整提交、测试计划、工具/配置/依赖及证据哈希一致后复用；来源或范围变化须新 run。需求验收、正常/相关异常与恢复、必要基础回归、独立会话、候选/结果机器校验及硬件功能真实 HIL 均保留。审批防伪、去重、CAS、崩溃恢复、异步并发按调度器专项验收，不机械加入无关业务任务。
-
-## 覆盖范围与职责
-
-分层接受、必需 HIL 和反假闭环判据统一按[交付门禁 §4.2](delivery_and_coord_gate.md#42-软件与真实hil双门禁及批准范围2026-11-02)执行。前置软件卡可使用标明边界的 Mock/PTY；最终硬件功能必须有同一候选、真实设备及请求/采样关联的四方证据。代码或日志内置的“成功”、ACK、逻辑坐标均不能单独证明物理效果；静态检查通过也不构成 HIL。环境/工具缺失保持相应范围阻塞，不通过缩减最终范围批准。
-
-- `reviewer_sessions` 中岗位为 QA 的过程审计、契约审查和结果验收，统一由独立 Codex 会话执行。
-- `verifier: QA` 的独立审阅与证据链审计，统一由独立 Codex 会话承担。硬件在环测试（HIL）由受控测试运行器（Runner）或集成工程师在真实物理硬件上执行并采集防篡改客观物证；独立 Codex 在宿主机只读沙箱中对该物证链（固件 SHA256、探针烧录校验、原始双向串口 Hex 报文与时戳、CDP 浏览器执行记录）进行独立审计。**Codex 审阅席位不要求且严禁依赖直连宿主机物理 USB 设备**；只要客观硬件凭证齐全、自洽且契约核对一致，即满足实测硬件通过条件，严禁以“审阅者处于只读沙箱无法物理直连硬件”为由签发 BLOCKED。
-- QA 作者交付的独立样例、独立预期和测试工具，由非作者独立 Codex 会话承担其 ARCH 检查；QA 执行报告在 `streamlined-v1` 中由独立 QA 签发并经程序校验，legacy 报告仍按原要求复核；岗位名称和其他必需工程师评审保留，不能以 Codex QA 替代 HUMAN 或真实 MCU Owner 的批准。
-- 原实现者、QA 作者及其已登记 owner/租约不因本规则自动更换。作者不得在同一会话切换岗位后自批；AGY 实现团队内部的自检不能替代本规则要求的独立 Codex 审查。
-- 工作包不直接派单，卡内引用本规则仅约束后续子任务的 QA 安排。
-
-## 登记方式
-
-每张适用任务卡引用 `qa_review_policy: project-control/.agents/rules/codex_qa_review.md`。Codex Reviewer 登记格式：
-
-默认模型统一为 `gpt-6-luna`，包括独立 QA、QA 作者产物的独立 ARCH 复核以及 QA Verifier。派单/启动独立 Codex 时显式使用该模型；任务卡记录计划模型，报告记录实际模型。只有 COORD 在任务卡 `model_policy.approved_overrides` 中登记角色、会话、实际模型、原因及批准证据后，才允许该任务临时覆盖默认值。该条约束项目任务调度，不代表已修改工作区外的用户级 Codex 配置。
-
-```yaml
-review_assignments:
-  reviewer_sessions:
-  - role: QA # QA 作者产物的复核保留原 ARCH 岗位
-    platform: codex
-    model: gpt-6-luna
-    planned_session_alias: codex-qa-<task-id>-review
-    session: null
-    decision: null
-    reviewed_task_revision: null
-    artifact_version: null
-    evidence: null
-    report_sha256: null
-```
-
-独立Verifier在`review_assignments`登记platform/计划别名、`verifier_model: gpt-6-luna`和空的`verifier_actual_model`；实际`verifier_session`落实后填写。提交时分别绑定`verifier_reviewed_task_revision`、`verifier_artifact_version`、`verifier_decision`、`verifier_evidence`、`verifier_report_sha256`及实际模型。模型例外必须引用`model_policy.approved_overrides`中含原因和COORD批准证据的对应记录。所有必需Reviewer逐项填写同等信息，单个报告不能默默覆盖其他岗位。
-
-`planned_session_alias` 只是计划名称，不代表会话已创建或通过 Ready。尚未落实的实际 `session` 保持 null；COORD 实际安排独立 Codex 会话后，填写可定位的会话标识。用户已指定的 `codex-qa-session-01` 保留为 V2-P01C 的会话别名，不能据此宣称已经审核。通过 CLI 执行时，从真实运行事件记录 CLI 会话 ID 及其与别名的对应关系，不编造 ID。
-
-## 硬件在环（HIL）零虚拟化与端到端协议原生审计铁律（HW-G5 / HW-G6）
-
-1. **真实硬件回环绝对性（Zero Virtualization in HIL）**：
-   凡任务定义中包含 `required_evidence_level: hardware-verified`、`verification_environment` 涉及真实物理板卡（如 `real-mcu-hil`、`/dev/ttyUSB0`）的，验收必须严格执行物理在环测试。**严禁以伪终端（PTY）、本地回环（Loopback）、Socket 模拟器或软件 Mock 代替物理单片机应答**。
-2. **物理回包有效性底线（零响应即否决）**：
-   正常物理查询必须验证真实双向闭环及目标响应关联。若仅收到线路噪声/旧外设报文，或符合正式契约的src/dst/flags/cmd/seq/精确载荷等有效关联响应为0，QA必须判定REJECTED并交COORD登记阻塞。失联、坏帧、超时等负例按事先接受的无响应/错误与恢复预期判断，不能把负例通过提升为正常闭环通过。**严禁以“AP 单向发包成功”或“AP 过滤了噪声未崩溃”等局部表现替代端到端成功**。
-3. **不可伪造的硬件对账凭证**：
-   HIL 验收证据必须包含物理串口设备路径、波特率设置、精确到毫秒的真实时戳，以及原始的双向收发十六进制报文（Raw Hex TX 与 Raw Hex RX 逐帧对账记录）。缺少物理硬件原始应答对账证据的，COORD 严禁采纳。
-4. **反作弊与虚假结论作废**：
-   QA 独立评审员严禁“替受测方写测试桩促成通过”。若发现任何使用 PTY/Mock 替身绕过物理硬件验证的行为，一律判定为严重违规，其签发的 `APPROVED` 结论自始无效，由唯一COORD追加撤回记录、保留历史签署，并在现有生命周期内修正状态、设置`blocked: true`与恢复条件；`REJECTED`是报告决定，不是任务status。
-
-5. **端到端协议原生一致性（严禁转译伪造与拆单遗漏, HW-G6）**：
-   凡规范定义为原生透明路由的链路，中继必须按正式协议识别路由头、校验完整帧，并处理Hop、ROUTE_IS_ROUTED与CRC；“零业务解析”不禁止这些帧级操作。**中继转发路径严禁解析cmd_id的业务语义、解包Payload、修改业务seq，严禁私自降级为G-code等旧文本或伪造下游应答**。本机业务及协议规定的本机广播消费按契约处理，与中继转发职责分开。跨节点工程必须落实“ARCH契约接受 → 各节点必要实现 → 工程联合调试 → 独立组合验收”，显式登记节点提供票及能力前置。单板微步按本票范围交付，不要求每张票产出双固件；最终MC＋TH组合必须锁定两端固件（fw_mc.bin＋fw_th.bin）及AP准确版本与实际部署证据。中间节点不得替未就绪的下游生成成功；缺少最终组合必需制品或物理证据时拒绝相应组合接受。
-
-6. **固件标识与 HIL 闭环对账门禁（HW-G7，2026-11-02修订）**：
-   - **适用节点按任务范围确定**：单板HIL仅对实际涉及的节点登记身份及物理证据；最终MC＋TH组合验收必须包含两端。未涉及节点注明不适用及依据，不强制单板票重复验证整机。
-   - **锁定源码、制品与现场身份的映射**：逐节点记录角色、芯片/板卡身份、`proto_version`和`firmware_version`，以及完整40位源码commit、构建配置/记录、固件文件SHA256和对应部署/烧录或已接受的读回核验记录。MC和TH分别匹配各自锁定候选，二者的版本号和提交值无须相同。
-   - **线上的短标识不得当完整Git提交**：若`git_commit`字段仅传输32位或短哈希，由ARCH与固件Owner在ICD中明确长度、字节序、截取/转换规则及与完整源码commit、固件SHA256的映射，并以构建记录核对。现有硬编码标识或两个相同常量只能说明字段相同，不能单独证明板上运行的是指定候选；禁止仅凭短标识MATCH签发固件身份通过。
-   - **启动代次能力须如实核对**：若契约以`boot_id`识别重启或隔离会话，必须明确生成、变化及碰撞处理规则，并实际验证冷启动/复位后的行为。旧固件中的固定`boot_id`不能证明该能力；未实现时登记Issue和适用限制，不得宣称已验证重启隔离。新增字段或动态代次能力由ARCH/Owner明确契约及关联任务，不借本规则自动授权修改Bootloader、烧录或扩大在途任务范围。
-   - **QA报告与原始证据分别绑定**：现场采集必须关联物理板卡、原始双向Hex、请求/响应及时间戳。RTT记录实际样本及测量口径，只有任务已有接受的时延指标时才据此判定性能。报告按实际节点填写以下对照表；所有值及结论均须来自本轮证据，以下占位不是实测或预置PASS：
-
-     | 节点/芯片及板卡身份 | 锁定完整源码commit | 固件SHA256 | 期望构建标识及映射依据 | 现场返回标识 | boot_id及能力/限制 | 实际RTT与样本引用 | 部署/收发证据引用 | 判定 |
-     | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-     | 待填写实际节点 | 待锁定 | 待计算 | 待核对 | 未采集 | 未验证 | 未测量 | 待采集 | 未执行 |
-
-   - **缺陷与环境阻塞分流**：已取得有效证据并确认现场版本不匹配、标识实现违反已接受契约等，针对该受测范围出具`REJECTED`，交COORD定位相应Owner处理。设备/权限/候选或来源证据无法取得、映射尚未明确时，按[交付门禁§5.3](delivery_and_coord_gate.md#53-qa-结果分流避免环境问题伪装成代码退修)记录`BLOCKED/INCONCLUSIVE`及解除条件，不增加代码返工次数；schema未支持此决定时保留待审并记录阻塞。任何必需身份/物理证据缺口都不得签发相应HIL范围`APPROVED`。
-   - **历史与新增要求分开处理**：适用于新建、未完成及后续复验的准确接受范围；新增能力需修订任务并通知相关Owner。历史报告保留原件，疑点另建复核并追加限制/撤回依据，不回填固件值、时延或签署。
-
-7. **执行与审计职责明确解耦（执行器物理直连 vs 审阅席位只读审计，2026-11-02 修订）**：
-   - **执行层（HIL Runner / Integrator / 台架执行器）**：负责物理操作（物理 U 盘、probe-rs 硬件探针烧录、/dev/ttyUSB* 真实串口双向交互、Chrome CDP 真实端到端操作），输出具有真实时戳、逐字节十六进制原始流、SHA256 完整哈希的不可篡改物证资产。
-   - **审计层（Codex Reviewer）**：处于宿主机只读安全沙箱中，**不具备也不需要物理接触硬件或直连 USB 设备的权限**；其核心职责为对物证链进行防伪与契约审计（核实构建是否源自锁定提交、固件 SHA256 是否与烧录日志一致、串口 Raw Hex 是否符合 ICD 契约字段与 CRC、是否存在 PTY/Mock 替身作弊）。只要客观物证链完备、无伪造且契约对账一致，即判定通过（APPROVED），不得将“审阅席位无法直连宿主机物理 USB”作为阻塞理由。
-
-### 报告格式与审阅内容
-
-Runner 自动审阅生成的 runtime 报告按实际 schema 使用 `summary`、`findings`、`accepted_scope`、`unexecuted` 表达审查结果，并由执行器绑定任务/revision、角色、完整候选、实际会话、交付物和服务器沙箱证据；该格式不生成 `content_audit` 的四个字段，不得补造四项 passed。记录式 canonical 报告仍按本模板填写 `content_audit.fact_sources`、`protocol_compatibility`、`claim_scope`、`architecture_completeness` 及实际依据。两种格式均须实质审阅事实来源、协议兼容、批准范围和架构/需求完整性，以及代码、正常/相关异常/恢复与必要回归证据；格式不同不减少审阅范围，未执行或证据不足不得批准。
-
-## 执行与签署
-
-按[交付门禁 §5.4](delivery_and_coord_gate.md#54-qa-效率纠偏2026-11-04)落实四项效率纠偏：有条款或实际风险证据才阻断；送审前程序校验机械条件；复验读取前次报告与本轮变化并聚焦整改和必要回归；首审尽量列全已知问题，读取材料按需展开。非阻断建议可随 `APPROVED` 保留，不新增决定值。输出格式或来源缺口保持待审/阻塞，不作代码退修；`unexecuted` 仅列范围内必需缺项，排除范围写入 `accepted_scope`/现有限制说明。
-
-1. 作者完成本票后向 COORD 提交准确任务 revision、候选 commit/diff/产物 SHA256、执行记录、原始日志和检查判据。
-2. COORD 安排新的 Codex 会话，或继续本票已登记且未参与写作的独立 Codex 审阅会话；不 resume/fork 实现会话，不复制实现者完整交互历史。传入任务卡、规则、正式输入与交付证据，由审阅者独立核查。
-3. 审阅者对业务源码只读；构建输出、测试执行与证据写入按本卡授权的隔离位置进行。发现问题交回作者，不能自行修业务代码促通过，也不能修改正式任务状态。
-4. 报告记录实际 Codex 会话/别名、任务与 revision、所审版本、过程审计、正常和异常判据、实际命令/cwd/退出码/日志、未执行项、问题与限制，并给出 `APPROVED` 或 `REJECTED`。证据不足不得签署 APPROVED。
-5. 报告与原始输出保存在本票 `docs/evidence/.../runs/<run-id>/` 的独立位置，COORD 核对报告 SHA256 和候选 SHA256。首次约定可使用 `qa_review_report.md`；同名文件已存在时另建审核 run，保留历史。
-6. CLI 退出码为 0、结构检查通过或报告文件存在，都不等于审核通过。调用失败、超时或报告缺失保持待审；REJECTED 交回作者修复，新候选重新审核，不沿用旧结论。
-7. 只有唯一 COORD 在准确版本获得所有必需接受结果、收件及适用的集成验证后，才能推进 Review → Verify → Done 并释放下一微步。
-
-本规则和卡内 `platform` 是调度要求，不能自行启动 Codex。当前结构检查工具不会调用审核服务；尚未接入实际调度脚本时，由 COORD 启动独立 Codex 会话或人工转交，不能声称后台自动审核已部署。
-
-
-## 模板、阶段与工具边界（2026-10-27）
-
-新建/修订任务使用[任务卡模板](templates/任务卡模板.md)、[派单提示词](templates/角色任务提示词.md)、[实际运行记录](../../docs/guides/templates/task_run_record.md)、[独立报告模板](templates/QA审查报告模板.md)。历史accepted等签署值按原版本保留，不批量改写；新报告decision使用APPROVED/REJECTED，未审为null。
-
-Ready核输入、实际作者/检查安排、授权范围、资源和有效租约，不要求本票尚未产生的候选/签署。Review/Verify/Done按同一准确候选核全部必需接受、适用运行/集成与收件；blocked或未满足的能力条件不能通过新建子票绕过。报告自身SHA256在文件写完后存卡片/交接清单，避免自引用。
-
-故障夹具/黄金预期也是受审产物；报告是否二次复核按上述策略执行。先检查工具目标绑定、写失败传播、原状态快照、异常恢复和读回，才能用于所授权台架。寄存器操作、模拟测试、真实链路、部署启动证据分别记录。
-
-本轮模板规范更新不表示`check_task_graph.py`的MCU任务发现、全生命周期、真实版本/报告、租约期限或范围交叠校验已经实现；这些项目仍需COORD人工核对，并在工具专项完成后另留验收证据。文件存在、exit0、CRC通过都不自动解除该责任。
+针对升级 `HIL-Verified` 的批次里程碑审计，Codex 必须逐节点核验：
+1. **真实固件身份链（HW-G7）**：各受测节点（AP / MC / TH / Bootloader）的 40 位源码 Commit、构建制品 SHA256、烧录/OTA 记录与现场协议读回版本自洽（禁止仅凭硬编码常量判通过）。
+2. **原始双向报文对账（HW-G5/G6）**：具备 `/dev/ttyUSB*` 真实波特率、毫秒级时间戳及逐帧 `Raw Hex TX / RX` 对账记录；有效协议关联回包数为 0 或以 PTY/Mock 替身采证的一律判 `REJECTED`。

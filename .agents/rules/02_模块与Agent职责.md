@@ -1,199 +1,47 @@
 ---
-title: SoC 全栈模块和 Agent 职责矩阵
-date: 2026-09-30
-status: current-plan
-tags: [soc, ownership, multi-agent]
-updated: '2026-11-03T02:08:59+00:00'
-timezone: 北京时间（UTC+8）
-plan_revision: marlin-r2
+title: AI SoC V2 仓级深模块 8 席角色与职责矩阵
+status: current-rule
+owner: COORD
+updated: '2026-11-14'
+plan_revision: v2-deep-module-8-roles
 ---
 
-# 模块与 Agent 职责
+# AI SoC V2 角色与模块职责矩阵
 
-> **通信模块代码维护：** 用户已明确D-Bus与Fast DDS均在当前项目维护独立模块与源码。ENG-DBUS、ENG-DDS分别负责SDK实现、依赖源码/版本/补丁、配置、生成和测试；业务模块只接项目公开接口。具体路径、共享构建Owner和服务器沙箱验收见[模块维护规范](../../docs/planning/communication_modules_ownership_20261029.md)。
+本规则为全工作区角色分配唯一权威真源（淘汰原 19 个水平切碎微角色，收敛为 **8 席仓级深模块闭环角色**；原 `PM`、`DES-UI` 降级为按需挂载的组合式 Skill）。
 
-> **2026-11-03 Bootloader 角色分离：** 用户新增 `ENG_BOOT_MC`、`ENG_BOOT_TH`，分别只负责独立仓库 `boot/bootloadermc/`、`boot/bootloaderth/`，开发分支均为 `soc_debug`，不得在主分支开发。`ENG-MC`、`ENG-TH` 保留 App 职责；当前只登记角色/仓库边界，首个目标稍后由 ARCH 明确并由 COORD 派单。规则和本机文档入口见[Bootloader 角色边界](bootloader_role_boundaries.md)。
+## 1. 8 席核心角色与物理写入硬边界
 
-> **2026-10-29 当前阶段口径：** 用户已确认VMware→SoC两阶段尽量1:1孪生。阶段一就运行已接受的真实模块/进程/管理/IPC和可见浏览器界面，阶段二复用源码、契约、界面并作平台适配及实板复验。历史“先同进程/CLI、首轮不等UI或总线”仅适用原MS/CR最小查询，不作为本轮出口。新职责/依赖/独立验收按[两阶段执行总表](../../docs/planning/vmware_soc_twin_task_execution_20261029.md)；最多两张实现票并行、唯一控制路径、真实HIL及独立检查要求保留。
+| 角色 ID | 唯一写入范围（Repo & 分支红线） | 端到端闭环职责（深模块包干边界） | 严禁越界行为 |
+| :--- | :--- | :--- | :--- |
+| **`COORD`** | 仅 `project-control/`（含 `slices/`、`docs/`）及获授权时更新根 `workspace.json`；**5 大业务仓 100% 只读** | 主持两阶段协议审批入口、启动 `run_workflow`（`tools/workflow/run_slice_batch.py`）批次巡航、维护 `slices/ledger.md`、排定 HIL 台架独占窗口与线性 `rebase` 发布 | 严禁手改任何业务仓代码、绕过门禁非 0 退出码或伪造 QA 物证 |
+| **`ARCH`** | 仅 `project-control/docs/planning/`、`docs/architecture/`、`contracts/`、`slices/`；**业务仓只读** | 执行 Phase 1 深度拆解：查询 `graphify` AST 图谱输出真实调用链取证表、维护 `contracts/*.yaml` 机器单一契约真源、对关键接缝执行 `Design-It-Twice`、原地迭代带实名修订履历与 **Diff Budget** 的垂直切片方案 | 严禁未查 AST 凭印象派票、严禁碎片化新建多份草稿 |
+| **`ENG-AP`** | 仅 `soc-ap/`（`main` 或受控切片分支） | **SoC-AP 全栈闭环包干**（原 `UI/NET/STATE/JOB/FWD/DBUS/DDS/MQTT/BSP` 9 合 1）：一人贯通 Web HMI ➔ `ui_gateway` ➔ D-Bus/DDS IPC ➔ `device_manager`/`job_engine` ➔ `forward_service_daemon` 物理串口收发 | 严禁在网关/状态层硬编码内存假状态或开环定时器自走推进 |
+| **`ENG-MCU`** | 仅 `mcu-p3/`（锁定开发分支 `feat/soc-debug`） | **双板应用固件闭环包干**（原 `ENG-MC` + `ENG-TH` + `ENG-COLOR` 合一）：负责 MC（AT32F435 + Marlin 运动温控核心 + `USART6` 原生透明中继，Marlin 存量严守 Minimal Diff Budget）与 TH（AT32F423 工具头）端到端闭环及真实 `[MC-DBG]`/`[TH-DBG]` 埋点 | 严禁跨写独立 Bootloader 仓、严禁中继层私自转译 G-code 或伪造下游 ACK、严禁 0 调用悬空钩子 |
+| **`ENG_BOOT_MC`** | 仅 `boot/bootloadermc/`（严格锁定 `soc_debug`，**禁写 `main`**） | MC 板 Bootloader 启动、VTOR `0x08020000` 跳转、128B ATSG Trailer 预验签、MiniMCProto v2 升级接收、扇区擦写与掉电恢复（详见 [Bootloader 角色边界](bootloader_role_boundaries.md)） | 严禁向 `main` 提交、严禁未验签擦除 Flash、严禁无授权探针刷写 |
+| **`ENG_BOOT_TH`** | 仅 `boot/bootloaderth/`（严格锁定 `soc_debug`，**禁写 `main`**） | TH 板 Bootloader 启动、VTOR `0x08004000` 跳转、级联升级接收、128B Trailer 预验签后擦写与防变砖自愈（详见 [Bootloader 角色边界](bootloader_role_boundaries.md)） | 严禁向 `main` 提交、严禁未验签擦除 Flash、严禁无授权探针刷写 |
+| **`INTEGRATOR`** | `test_harness/`（及切片显式授权的跨仓部署编排脚本） | 跨仓全进程零篡改合龙联调（真实守护进程群 ↔ 真实固件协议/业务核）、固件打包、清洁部署及 HIL 预检 | **严禁编写篡改报文字节的测试桥垫片（Shim）或 `ctypes` 伪日志注入器** |
+| **`QA`** | 仅 `project-control/docs/evidence/`；审阅进程强制 `--sandbox read-only` | 第 1 阶：受控 `qa_runner.py` 独立 Docker 干净构建与全链路测试；第 2 阶：独立异构 Codex（`gpt-6-luna`）双轴分级冷审；第 3 阶：业务域里程碑真机 HIL 正负配对审计 | 严禁作者自审、严禁以 PTY/Mock 冒充真实 HIL 通过 |
 
-2026-10-28 当前执行分工见[任务重排](../../docs/planning/workflow_replan_20261028.md)：COORD 可兼 INTEGRATOR 做组织与候选装配，AP/MC/TH 由各端 Owner 负责；ARCH 按需协调契约与责任，QA 保持独立。最多两张实现卡并行；台架登记一名操作者。长期岗位表不是必须同时运行的 Agent 清单，方案签署不能复用成各端实现验收。
+## 2. 全生命周期 RACI 责任矩阵
 
-## 1. 先分清：角色、工程师、模块、任务和 Agent
+*`R` = 执行主责，`A` = 最终拍板/准出负责，`C` = 协同输入，`I` = 知情*
 
-**“角色”就是岗位。产品经理、架构师、协调员，以及各类工程师，都是角色。“工程师”是其中一类岗位；Agent 是实际执行某次任务的 AI 会话或子 Agent。**
+| 阶段 | 人类用户 | `COORD` | `ARCH` | `ENG-*` / `ENG_BOOT_*` | `INTEGRATOR` | 独立 `QA` |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1. Phase 1 方案先行、AST 取证与契约定义** | **A**（Gate #1 一次审批） | C | **R**（原地迭代 SSoT） | — | — | — |
+| **2. Phase 2 单仓契约驱动并行 TDD 实现** | I | I（工作流托管） | C（契约仲裁） | **R / A**（严守 Diff Budget） | — | — |
+| **3. 秒级机械门禁（`fast_gate.py` `<3s`）** | — | **A**（脚本硬拦截） | — | **R**（不过当场自修） | — | — |
+| **4. 跨仓全进程零篡改合龙联调** | — | **A**（脚本硬拦截） | — | C（定责返修） | **R** | — |
+| **5. Docker 干净沙箱 + Codex 双轴冷审** | I（熔断时介入） | **A**（凭 `verdict.json` 收件） | — | C（仅 `BLOCKER` 返修≤2次） | — | **R** |
+| **6. 业务域真机 HIL 穿刺与线性 `rebase` 发布** | **A**（Gate #2 物理/发布授权） | C（排期与冲突熔断） | — | C（缺陷修复） | R（环境部署就绪） | **R**（独立实测审计） |
 
-| 名称 | 表示什么 | 例子 |
-| --- | --- | --- |
-| 角色 | 长期负责什么，边界在哪里 | ENG-FWD：负责 SoC 通信适配 |
-| 工程师 | 承担具体技术工作的角色类别 | FWD、BSP、SIM、QA、集成工程师 |
-| 模块 | 一块软件或系统能力 | forward 通信模块、BSP 板级支持、模拟环境 |
-| 任务卡 | 本轮具体完成什么、使用什么输入、如何验收 | MS-07：实现主控版本查询 |
-| Agent | 本轮实际执行任务的 AI | COORD 创建的某个子 Agent，以 ENG-FWD 身份执行 MS-07 |
+## 3. 物理硬件与通信红线门禁（HW-G1 ～ HW-G6）
 
-同一个岗位可以先后由不同 Agent 承担；一个 Agent 可以在不同任务中承担不同岗位。每轮必须明确身份和范围，作者与独立检查者分开。岗位长期保留，Agent 按任务启动，任务交接依靠准确记录。主 Agent 的协调身份不赋予所有模块的修改权。
-
-### 1.1 你与 AI 团队怎样分工
-
-你是 HUMAN（项目负责人），决定产品目标、优先级、取舍和授权，协调真实资料与人员。硬件和 MCU 的事实仍由原始资料或实际维护者确认；不因为你是项目负责人就默认你能修改全部固件。
-
-AI 团队的岗位分为四类：
-
-| 类别       | 包含的角色                                                                                                         | 负责什么                  |
-| -------- | ------------------------------------------------------------------------------------------------------------- | --------------------- |
-| 需求、设计与协调 | PM、ARCH、DES-UI、COORD                                                                                        | 定义做什么，端到端人机交互与体验设计，拆成怎样的任务，安排与跟踪工作 |
-| 模块实现     | ENG-FWD、ENG-BSP、ENG-JOB、ENG-STATE、ENG-UI、ENG-NET、ENG-MEDIA、ENG-DDS、ENG-DBUS、ENG-MQTT、ENG-SIM、ENG-MC、ENG-TH、ENG_BOOT_MC、ENG_BOOT_TH；ENG-COLOR 后续按需拆出 | 在各自模块及任务范围内实现         |
-| 独立检查     | QA                                                                                                            | 根据指定输入和版本检查行为、故障及证据   |
-| 集成与交付    | INTEGRATOR                                                                                                    | 组合准确版本、构建装配、合入和交付候选   |
-
-这张表分类岗位，不是运行名单或指挥层级。QA 和 INTEGRATOR 也属于工程岗位，下文各只有一个职责条目。MC/SCM 固件维护岗位须另行落实实际维护者和授权，不自动加入本轮 SoC 开发范围。
-
-### 1.2 需求、设计与协调岗位
-
-| 角色 ID | 岗位名称 | 负责的结果 | 不得自行决定 |
-| --- | --- | --- | --- |
-| PM | 产品经理 | 用户场景、需求、优先级、功能验收定义 | 总线、芯片、接口格式、所有工程师的路径授权 |
-| DES-UI | UI/UX 交互设计师 | 端到端用户旅程、信息架构、界面线框拓扑、交互状态机规范、易用性与设计系统标准 | 架构选型、后端接口契约、直接修改 C/C++ 代码、虚构硬件能力 |
-| ARCH | 软件架构师 | 模块边界、架构决定、接口约定、数据/状态归属、任务拆分 | 替产品加入功能、凭空确认硬件事实 |
-| COORD | 项目协调员 | 检查开工条件、安排执行者、收取交接、记录依赖与资源、维护权威看板 | 替作者完成独立 QA、直接越界修代码、扩大用户授权 |
-
-PM 解释“做什么、为什么、先做什么”；DES-UI 解释“用户端到端怎么用、界面与状态怎么流转、体验如何闭环”；ARCH 解释“由哪些模块、通过什么接口完成”；COORD 依据已接受任务安排执行；模块工程师实现；QA 检查；INTEGRATOR 合入与交付。
-
-PM、ARCH 的早期讨论可以在主对话中分阶段完成；但明确指定为 COORD 的主对话不能据此代替 ARCH 实际角色交付技术拆分。ARCH 负责技术任务拆分、依赖、接口、源码基线和允许路径；COORD 只登记引用、核对已声明前置产物并安排执行者、资源租约和排程，不自行探索业务源码推导技术结论。缺少 ARCH 交付或发现技术冲突时交 ARCH 补充/裁决；COORD 不为通过脚本改写技术字段，共享资源等待仍由 COORD 排程。
-
-### 1.3 岗位怎样对应实际 Agent
-
-派单时把三项连起来：**角色 ID → 准确任务卡 → 实际 Agent/会话与本轮标识**。
-
-例如，“子 Agent A，以 ENG-FWD 身份执行 MS-07 的准确 revision”。其中 A 只是说明用名称，不是当前已创建的执行者。细卡的建议主责是规划，owner 为空时尚未认领；不能把下面的岗位表当成现有 Agent 列表。
-
-具体五项派单内容和接单回执见 [[AI_SoC_协作方案/04_公共看板与读写协议#4.1 派单前必须明确的五项|派单五项]]；执行者和接收方按 [[AI_SoC_协作方案/templates/任务卡模板]] 登记。COORD 指定任务，并记录实际执行者；不用为每个长期岗位永久创建一个 Agent。
-
-## 2. 工程岗位职责（全部都是角色）
-
-下表目录是**建议的逻辑路径**，不是当前 Vault 或源码仓已存在的目录。进入实际工程后，ARCH 必须将其映射成仓库和精确文件白名单。模块是否同进程由ARCH在TWIN-01接受；本轮已选服务边界在VM阶段就实际运行，进程内库可作内部实现，不能替代跨进程出口。
-
-本表按岗位归属职责，不按 Agent 编号分人。多个模块可以暂由同一岗位负责；独立任务也可以由不同 Agent 先后执行。输出接口一列是设计与验收目录，真实名称、实现及版本仍须按本机源码和已接受契约核查，不能直接当成现有可调用 API。
-
-| 角色 ID 与岗位名称               | 模块与建议路径                                                                    | 范围／写入所有权                                                           | 输出接口和验收                                                     | 排除职责                                                 |
-| ------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------- | ---------------------------------------------------- |
-| ENG-FWD（SoC 通信工程师）        | `services/forward/`、`tests/forward/`                                       | SoC 的 Marlin 传输、响应解析、校验/重发（按实查能力）、流控和重连；运行/升级模式分开，SoC 侧有界接收/发送缓冲；MC/TH 的 DMA 和 ISR 由各固件 Owner 维护 | `TransportCommand`、`CommandResult`、`RawTelemetry`；首轮查询和异常测试 | G-code 文件处理、运动规划、生产 MCU 业务、模拟器、DTS、UI                |
-| ENG-BSP（板级支持工程师）          | `bsp/` 和登记过的 SDK 板级文件                                                      | U-Boot、Kernel、DTS、Pinmux、驱动、显示／触控／网络／摄像头底层、资源预留                    | 版本化 `HardwareCapability`、设备访问条件、Bring-up 证据                 | 上层业务、云 API、rootfs 全局装配、随意改原厂公共板型                     |
-| ENG-JOB（打印作业工程师）          | `services/job_engine/`、`tests/job_engine/`                                 | 预切片包流式解析、作业队列、JobState、打印／暂停／恢复／取消、确认后的执行位点                        | `JobCommand`、`JobState`；不接串口的模拟作业闭环                         | 电机脉冲、硬件 PID、协议帧细节、整机能力聚合                             |
-| ENG-STATE（整机状态工程师）        | `services/device_manager/`、`tests/device_manager/`                         | DeviceState、能力聚合、准备条件、请求仲裁、错误和联锁状态                                 | `DeviceState`、`CommandDecision`；UI／LAN 一致准入                 | JobState、串口直访、取代 MCU 本地物理保护                          |
-| ENG-UI（界面工程师）             | `ui/`、`tests/ui/`                                                          | 触控界面、向导、进度、错误展示、适配数据模型                                             | 仅依赖公开API；VM真实模块交互验收与SoC实屏验收分别记录                                     | 在 UI 中复制调度／混色逻辑、直接打开 UART／写 DTS                      |
-| ENG-NET（网络与文件接入工程师）       | `services/gateway/`、`services/storage/`、模块测试                               | HTTP／LAN 业务 API、业务认证授权、MQTT 业务映射、文件接入与配额、校验和、上传完成发布、可选云业务适配        | `ArtifactReady` 和控制请求；未完成文件不可启动                             | 重复实现 MQTT 连接、外部客户端直接向 UART 注入、绕开 DeviceState 准入、公开密钥 |
-| ENG-MEDIA（视频与视觉工程师，后续）    | `services/media/`、`algorithms/vision/`、模块测试                                | MBP／V4L2 用户态采集、编码预览、NPU 推理、视觉事件                                    | `MediaStatus`、`VisionEvent`；资源隔离和错误降级                       | 擅改 PMZ／驱动、直接暂停 MCU；视觉建议走统一控制入口                       |
-| INTEGRATOR（集成与交付工程师）      | `build/`、`runtime/`、`services/update/`、`tools/factory/`、CI                 | manifest、工具链锁定、rootfs 打包、服务启动、日志装配、AP OTA、MCU 更新编排、FCT             | 制品清单、兼容矩阵、恢复结果、release candidate                            | 和 FWD 同时占用 UART、自行扩大分区、合入未评审改动                       |
-| QA（独立测试工程师）               | `tests/contracts/`、`tests/fixtures/mcu/`、`tests/integration/`、`tests/hil/` | 独立黄金样例、预期断言、故障场景、系统测试、内存／CPU／磁盘长稳、协议互操作                            | 对指定 commit／镜像哈希和双模型版本给出通过或失败；独立日志                           | 为通过验收偷偷改业务或模拟器实现、借用未经批准的硬件资源                         |
-| ENG-DDS（DDS 通信工程师）        | `middleware/dds/`、`config/dds/`、`tests/dds/`                               | 复用 Fast DDS 的统一 SDK、发现／连接、发布订阅、序列化绑定、QoS、传输配置与监测                   | 跨进程互操作、晚加入订阅、服务重启、慢消费者、内存与延迟证据                              | 自行决定业务 Topic／schema、维护 JobState、重写业务动作               |
-| ENG-DBUS（D-Bus 通信工程师）     | `middleware/dbus/`、`config/dbus/`、`tests/dbus/`                            | 复用 D-Bus 的客户端／服务端封装、导出与调用、名称生命周期、异步回调、超时、总线权限配置                    | 方法／属性／信号绑定、服务重启与超时错误、权限验证                                   | 实现设置存盘／升级／业务动作本身、擅改方法契约、直接操作 UART                    |
-| ENG-MQTT（MQTT 通信工程师）      | `middleware/mqtt/`、`services/mqtt_agent/`、`config/mqtt/`、`tests/mqtt/`     | MQTT 客户端／Broker 适配、连接与会话、TLS、QoS、订阅、重连、遗嘱、保留消息和有界缓存                | 标准消息传递、断网恢复、传输身份与 Broker ACL、资源证据                           | 定义业务命令和业务权限、绕开 gateway／STATE 执行动作、重写 Broker          |
-| ENG-SIM（模拟环境工程师）          | `sim/` 中映射并授权的配置、主机适配与故障工具                                                 | 维护轻量 Python Mock、字节分段/延迟/丢弃工具与硬件故障 SOP；工具与真实 MCU 生命周期/证据分开         | 启停、覆盖差异、故障开关和可复现日志；QA 独立验收                                  | 重写 Marlin 规划器、擅改生产 MC/SCM 协议、修改 FWD 或 QA 断言来使模拟通过    |
-| ENG-COLOR（混色算法工程师，后续按需拆出） | `algorithms/mixing/`、`tests/mixing/`                                       | 混色比例、色彩延迟、校准、材料参数、切片语义                                             | 带单位和版本的混色计划；标定样本和效果证据                                       | 两个 Agent 同时修改 JOB 内部算法、假设模型一定物理正确                    |
-| ENG-MC（MC App 开发工程师） | `mcu-p3/motion-controller-mcu/`，分支 `feat/soc-debug` | MC Marlin App、本机业务和 App 侧中继/升级协作；Bootloader 变更提交对应 Owner | MC App 制品、构建/协议证据及与 Boot 的兼容契约 | 跨写 TH App 或独立 Boot 仓；绕过硬件门禁 |
-| ENG-TH（TH App 开发工程师） | `mcu-p3/color-engine-mcu/io_toggle/`，分支 `feat/soc-debug` | TH Color Engine App、App 侧升级触发和业务；Bootloader 变更提交对应 Owner | TH App 制品、构建/协议证据及与 Boot 的兼容契约 | 跨写 MC App 或独立 Boot 仓；绕过硬件门禁 |
-| ENG_BOOT_MC（MC Bootloader 开发工程师） | 独立仓 `boot/bootloadermc/`，分支 `soc_debug` | MC Bootloader 启动、App 校验/跳转、升级及恢复；遵循该仓 AGENTS.md、.agents、docs | Boot 制品/源码身份、构建和适用实机证据；与 MC App 的接受契约 | 在 main 开发；跨写 App、TH Boot 或 SoC；无具体授权擦写/复位 |
-| ENG_BOOT_TH（TH Bootloader 开发工程师） | 独立仓 `boot/bootloaderth/`，分支 `soc_debug` | TH Bootloader 启动、App 校验/跳转、升级及恢复；遵循该仓 AGENTS.md、.agents、docs | Boot 制品/源码身份、构建和适用实机证据；与 TH App 的接受契约 | 在 main 开发；跨写 App、MC Boot 或 SoC；无具体授权擦写/复位 |
-
-MC/TH App 共用一个 `mcu-p3` 仓库，分支、HEAD 和工作区状态是该仓级属性；两个 Bootloader 各有用户指定的独立 Git 仓及 `soc_debug`。App 的 `feat/soc-debug` 与 Boot 的 `soc_debug` 不同，任务须绑定准确仓库、URL、分支及路径，不能按板卡名混用。
-
-初期混色模块归 ENG-JOB，同一任务上下文维护；启用 ENG-COLOR 时先建立独立目录并完成所有权移交。存储和 HTTP／LAN 业务网关暂归 ENG-NET；DDS、D-Bus 和 MQTT 通信底座分别由三个专职工程师维护，边界见 [[AI_SoC_协作方案/06_通信工程师职责与接口边界]]。Mock 与故障工具由 ENG-SIM 维护；真实 MC/TH 业务由 ENG-MC/ENG-TH 实现，QA 独立验收，见 [[AI_SoC_协作方案/08_双MCU模拟器与联调验收]]。这些角色 ID 用于任务分工，不表示固定的 AI 编号，也不要求所有岗位同时运行。
-
-**ENG-MC 和 ENG-TH 已正式设立，有真实开发者承担**（详见 [[mc_th_env_summary_20261012_170811]]）。两个岗位的代码撰写、构建编译、probe-rs 烧录命令生成和串口日志分析均可由 AI 协助执行；以下 **6 类操作须硬性门禁，AI 与 QA 不得绕过**：
-
-| 门禁编号 | 操作类型 | 原因 | 规则 |
-| --- | --- | --- | --- |
-| HW-G1 | **物理 U 盘操作**（拷贝固件、插拔） | AI 无法物理接触硬件 | AI 生成 SOP 指引后，必须等用户明确回复"已插上"才触发验证脚本 |
-| HW-G2 | **首次烧录目标地址确认** | 地址错误会覆盖 Bootloader，物理变砖 | AI 生成完整 probe-rs 命令供人工复核后，方可执行；必须明确标注目标地址（MC: `0x08020000`，TH: `0x08004000`） |
-| HW-G3 | **硬件异常处理** | AI 无法感知冒烟、异响、温控失效 | 出现非预期串口输出或硬件行为，立即停止，由工程师判断后再继续 |
-| HW-G4 | **生产保护参数修改** | 直接影响物理安全（运动限位、过热阈值、PID 参数） | 仅由真人工程师审查并授权，AI 不得在未经审查的任务中自行调整 |
-| HW-G5 | **硬件在环（HIL）物理真实闭环与零虚拟化门禁** | 严防用 Mock/PTY 瞒报欺骗物理闭环 | 所有标记为 HIL 或端到端硬件验收的任务，**严禁使用伪终端(PTY)、软件Mock或本地回环代替真实物理单片机**。验收必须提供真实硬件串口（如 `/dev/ttyUSB0`）的双向原始 Hex 字节流（含高精时间戳）。若物理对端有效响应帧数为 0、或 CRC 错包导致业务未应答，QA 必须直接执行一票否决（REJECT），严禁协助受测方圆谎。 |
-| HW-G6 | **端到端协议原生一致性与跨节点拆解门禁** | 严防中间节点私自降级转译、伪造下游应答及任务拆解单边遗漏 | 凡规范定义为端到端透明路由的链路，**中间节点严禁解析 cmd_id、解包 payload 或私自转译为旧文本协议（如 G-code）；严禁中间节点伪造下游应答**。下游能力缺失必须对等派单补齐。跨多芯片节点的任务，架构与调度必须采用“ARCH契约冻结 → 双端并行开发 → 联合调试验收”三段式拓扑，严禁单边派发单板兜底。 |
-
-SoC 侧 AI 不得跨越 ENG-MC／ENG-TH 的代码边界直接修改 MCU 调度、PID 和保护阈值；MCU 相关的 DEPENDENCY_REQUEST 发给对应工程师，不由 SoC 侧自行补齐。
-
-## 3. 各项成果与资源由谁负责
-
-下表 Owner 使用岗位名称/角色 ID，说明职责归属；实际执行者另在任务卡登记。FWD、BSP、JOB、STATE、NET 等短写分别指 ENG-FWD、ENG-BSP、ENG-JOB、ENG-STATE、ENG-NET；STORAGE 当前属于 ENG-NET 的存储职责，不是另一位已启用的 Agent。只有实际任务授权的范围可写入或操作。作者、必需评审、独立运行验证、集成与收件按任务逐项安排；QA 作者不再机械加一层 QA，具体见 [[AI_SoC_协作方案/04_公共看板与读写协议#4.3 按任务类型安排检查]]。
-
-| 对象                                      | 唯一 Owner              | 其他角色如何使用                               |
-| --------------------------------------- | --------------------- | -------------------------------------- |
-| 产品需求／验收定义                               | PM，经 HUMAN 确认         | 提需求变更，不直接增加范围                          |
-| 公共 API、ICD、错误码、schema                   | ARCH，经受影响模块评审         | 提 RFC，版本批准后按契约实现                       |
-| DDS Topic、IDL、发布者、D-Bus 方法与 MQTT 业务消息契约 | ARCH，通信和业务 Owner 参与评审 | 通信工程师提实现方案，业务工程师提语义需求；批准后各自实现          |
-| DDS SDK 与配置源                            | ENG-DDS               | 业务模块依赖统一 SDK；生成绑定不可手改，配置与全局资源由 ARCH 评审 |
-| D-Bus SDK 与权限配置源                        | ENG-DBUS              | 业务服务实现 handler；系统装配由 INTEGRATOR 完成     |
-| MQTT 传输 SDK、会话与 Broker 配置源              | ENG-MQTT              | NET 实现业务消息映射和授权；STATE／JOB 实现动作         |
-| 打印作业状态 JobState                         | JOB                   | 查询／订阅；UI 和网关不自己推导“已暂停”                 |
-| 整机能力和准入 DeviceState                     | STATE                 | 查询／订阅；FWD 上报原始状态                       |
-| 物理 AP↔MC 串口                             | FWD                   | 通过接口访问；刷写时执行显式占用权转移                    |
-| 板级资源和 DTS                               | BSP                   | 提需求和证据，由 BSP 修改                        |
-| 包文件完成态、索引和删除                            | NET／STORAGE           | JOB 以不可变 Artifact ID 引用，不能边打印边删        |
-| 正式看板／任务版本／租约                            | COORD                 | 各角色提交事件，COORD 更新                       |
-| MC 固件（代码仓、制品、接口契约）                       | ENG-MC                | FWD 消费接口；ARCH 评审接口契约；QA 独立验收；AI 可协助代码与构建，4 类门禁见 §2 |
-| TH 固件（代码仓、制品、混色业务协议）                     | ENG-TH                | ENG-MC 通过 USART6 中继调用；ARCH 评审接口契约；AI 可协助代码与构建，4 类门禁见 §2 |
-| MC Bootloader 独立仓、制品及 Boot 端契约 | ENG_BOOT_MC | ENG-MC 提供 App 端接受；ARCH 定界；INTEGRATOR 锁定组合；QA 独立接受 |
-| TH Bootloader 独立仓、制品及 Boot 端契约 | ENG_BOOT_TH | ENG-TH 提供 App 端接受；ARCH 定界；INTEGRATOR 锁定组合；QA 独立接受 |
-| 固件装配／公共构建文件／合入                          | INTEGRATOR            | 各模块提交制品或 PR                            |
-
-## 4. 接口如何防止职责重叠
-
-以下是后续接口覆盖目录，不是全部开工前置。每轮只接受本轮功能实际使用的契约；调查/设计任务可以产出契约，首个查询状态试验不等待 Job、Update 或三类总线接口。模块分析报告中的同名 API 只是参考，不能直接注册为本机现有接口。
-
-1. `API-Control`：命令类型、权限、参数单位、合法范围、`command_id`、`job_id`、期望状态版本。
-2. `API-Result`：`ACCEPTED / EXECUTED / REJECTED / UNKNOWN`、错误码、关联请求、MCU 重启标识。**ACK 只证明约定的接收层级，不自动证明物理执行完成。**
-3. `API-Telemetry`：原始与聚合状态分别发布；单位、有效期、源时间、序号和发布者唯一。
-4. `API-Job`：作业格式版本、不可变文件哈希、宏支持表、队列容量、暂停边界、执行进度确认。
-5. `ICD-AP-MC-SCM`：MC Marlin 对接约定与既有主从协议分别登记；行/帧边界、实际校验、长度/缓存上限、流控、回复层级、超时/重试、状态与版本能力按真实实现核对，不默认二进制 CRC 或新增字段。
-6. `API-Update`：升级时静止／冷却条件、串口交接、跨固件兼容、回退条件。
-7. `ICD-Comms`：DDS Topic／发布者／QoS、D-Bus 服务／对象／方法／错误、MQTT Topic／消息 envelope／QoS／retain／过期，以及各入口如何调用同一业务 API；由 ARCH 冻结，三类通信工程师和业务 Owner 共同评审。
-
-重要参数要区分“厂商资料”“本机实测”“需求目标”。不要把 reference 的 `/dev/ttyS1`、1.5Mbps、M163／M164、特定 JSON Topic 自动当成本机已有能力。
-
-## 5. 越界修改实例
-
-承担 ENG-FWD 的执行者发现当前 UART 设备无法打开：先在任务证据里记录实际设备名、errno、运行镜像版本，按已登记反馈方式向实际 COORD 提交 `DEPENDENCY_REQUEST`。COORD 根据原因安排任务；板级问题由承担 ENG-BSP 的执行者核查，Mock 工具问题交 ENG-SIM，真实 MCU RX/代理缺口交 ENG-MC/ENG-TH，资源占用先协调，权限/镜像装配问题交对应 Owner。相应交付检查通过后，FWD 从获批版本继续实现。
-
-这是后续真实设备排障示例；当前 Ubuntu＋真实 MCU 查询按已接受端点开展。`DEPENDENCY_REQUEST` 是问题单类型，保存文件不自动唤醒 COORD。主子反馈与人工转交的区别遵从 [[AI_SoC_协作方案/04_公共看板与读写协议]]。
-
-FWD 不直接修改 DTS；BSP 不借这个任务顺手重写协议。若确需跨目录，ARCH 明确变更范围，COORD 在已有授权内更新任务版本和具体范围，相关 Owner 评审；超出现有授权时提交明确变更请求。
-
-## 6. 在真实源码中的映射原则
-
-已有笔记提到 `platform/kernel/aml-5.15/`、`platform/bootloader/uboot-repo/bl33/v2019/`、`linux/mbp/`、`sdk_demo/`、`release-tool/rootfs/minirootfs/` 和 `release-tool/env/include/kernel.mk`。这些只是历史路径，需要源码接入后复核。
-
-BSP 的内核配置变更若涉及 `kernel.mk`，由 BSP 提交明确参数请求，INTEGRATOR 按共享构建规则落实，双方评审；禁止两个 Agent 同时改同一全局文件。模块可以维护独立配置片段，最终装配由 INTEGRATOR 执行。
-
-验收链条保持 `REQ → ADR／ICD → TASK → PR／commit → 指定镜像 → 测试证据`，所有环节可追溯。
-
-## 7. 当前 Marlin 路线的职责补充
-
-ARCH 的 Marlin 对接工作是核查/接受本机接口，不是另一套生产 MCU 开发授权。SIM 不维护生产固件；ENG-MC/ENG-TH 在准确授权路径维护真实 MCU，接口/实现/构建微步分开。确需跨源码文件修改时先登记准确任务与 Owner，不靠角色名称获得全仓写权限。
-
-起步最多两个实现任务并行。当前先主控查询：MS-18 交 SoC 主机工程，MS-20 交主控候选，MS-11 验收；MS-12/13 调查和 MS-19 从控预期可提前，MS-14 从控实现等待 MS-11；MS-21/17 交双端候选并验收。MS-22 另验实际团队交接。DDS/DBUS/MQTT 岗位保留，不自动占用首轮实现名额。当前细卡见 [[AI_SoC_协作方案/03_实施步骤与首个闭环]]，所有建议路径进入 Ready 前映射。
-
-## 8. 通用编码规范与硬性门禁
-
-所有工程实现角色（`ENG-*` 及 `ENG_BOOT_MC`、`ENG_BOOT_TH`）在编写代码时，必须遵循 [C/C++ 编码规范](c_cpp_coding_standard.md) 及对应仓库主约束总纲：
-- **严禁编写超 50 行的自研非结构体函数**：复杂逻辑拆解为 `static` 辅助函数；
-- **严禁编写超 4 个入参的自研非结构体函数**：参数超额封装为配置/上下文结构体指针；
-- **自研模块 100% 严格执行门禁，存量代码遵循最小修改预算（Minimal Diff Budget）原则**；
-- **指针显式化**（严禁 `*dst++ = *src++`，指针解引用独立成行，深度 $\le 2$）；
-- **零动态堆内存分配**（严禁 `new`/`delete`/`malloc`/`free`/动态 STL）；
-- **禁用异常与 RTTI**，显式两阶段初始化，编译期 `static_assert` 结构体布局校验；
-- **硬件轮询等待强制超时保护**（严禁 `while (!FLAG);` 死等），寄存器读-改-写分步执行。
-
-## 当前接口缺口与外部交付职责
-
-| 对象 | 主责/权威 | 本轮任务与边界 |
-| --- | --- | --- |
-| MC 只读 RX/身份/温度、回复与日志分流 | ENG-MC | MS-03 调查、TASK-005 MCQ 微步实现/验收；MS-04/07/08 的 FWD 不改 MCU |
-| MC↔TH 双向代理 | ENG-MC 与 ENG-TH 分属各自代码 | MS-12/13 交接，MS-14 的 MC 实现与 TH 单独微步，MS-15 消费结果 |
-| 轴边界、时间域、断电 ISR、保护一致性 | 对应 MCU Owner，QA 独立核验 | GAP-02/03/04/08；SoC 侧提交依赖，不自行改 PID/保护参数 |
-| 真实位点、配置读回/保存、四通道恢复 | MC/TH 提供设备事实，JOB 编排作业 | GAP-07/09/10；编译/RAM/保存/恢复语义分开 |
-| 运行/升级串口模式 | FWD 管 AP 端，ENG-MC/TH 管设备端，INTEGRATOR 编排 | GAP-12；模式独占和失败退出独立验收 |
-| PC 切片/3MF 模型到路径、冲刷规划 | 外部切片维护者（实际人员待登记） | PM/ARCH 提需求、格式/样本/能力表，JOB 仅解释受支持作业 |
-| App、云/社区、AIGC、多机中心 | 外部产品/服务 Owner（待登记） | ENG-NET 管设备接口/映射，ENG-MQTT 管连接底座，不承担整套外部产品 |
-| 混色机构、供料舱、传感器与硬件急停 | 机械/电气/固件维护者（待登记） | 提实际机构/BOM/原理图、控制器与物理验证；不由 PM 数字推定已用 |
-
-统一 API 的 SoC 准入还需处理 DGUS 本地直接温控/TH 动作入口；保留、替换或限制本地控制由 HUMAN 选择并经 MCU Owner 落地。岗位表不证明实际人员已认领；已有微步/QA 文档继续保留，未部署控制只能记人工规则。
+所有工程与 QA 角色无条件遵守以下硬件与协议红线（详见 [C/C++ 编码规范](c_cpp_coding_standard.md) 与 [Codex QA 规则](codex_qa_review.md)）：
+- **HW-G1（物理 U 盘操作）**：AI 仅生成 SOP，须等人类确认物理插拔完成后再触发验证。
+- **HW-G2（探针烧录单次授权）**：常规固件部署统一走 MiniMCProto v2 协议升级；SWD/JTAG 探针仅限首次刷 Bootloader 或变砖救援，须明确目标地址（MC App `0x08020000`，TH App `0x08004000`）并获人类单次授权。
+- **HW-G3（物理异常熔断）**：串口或传感器出现异常立即停机保现场交人类判断。
+- **HW-G4（安全保护参数红线）**：运动限位、过热保护阈值、PID 核心保护参数仅限人类审查授权后调整。
+- **HW-G5（HIL 零虚拟化）**：凡要求 `HIL-Verified` 的验收严禁用 PTY/Loopback/Mock 替代物理单片机，必须留存 `/dev/ttyUSB*` 带毫秒时戳的双向 Raw Hex 报文对账物证。
+- **HW-G6（原生透明路由一致性）**：`AP ↔ MC ↔ TH` 透明路由帧严禁中继私自解析业务载荷、降级转译 G-code 或伪造下游应答。

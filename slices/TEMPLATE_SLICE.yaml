@@ -1,0 +1,25 @@
+# V2 垂直业务切片标准定义模板 (~25 行，最小结单闭环单元)
+slice_id: "SLICE-00"
+batch_id: "BATCH-TEMPLATE"
+title: "示例：端到端温度遥测查询与超时降级闭环"
+plan_ref: "docs/v2_governance_and_orchestration_implementationplan_20261114_152634.md"
+contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
+requires_hil_immediately: false
+
+subtasks:
+  - role: "ENG-AP"
+    repo: "soc-ap"
+    branch: "main"
+    allowed_paths: ["core/forward/**", "services/ui_gateway/**", "tests/**"]
+    diff_budget: {max_files: 6, protected_globs: [], max_protected_lines: 0}
+  - role: "ENG-MCU"
+    repo: "mcu-p3"
+    branch: "feat/soc-debug"
+    allowed_paths: ["motion-controller-mcu/project/**", "color-engine-mcu/io_toggle/**"]
+    diff_budget: {max_files: 6, protected_globs: ["**/Marlin_main.c"], max_protected_lines: 20}
+
+integration_cmd: "python3 test_harness/static_checks/minimcproto/check_opcode_alignment.py"
+qa_commands:
+  - {subpath: "test_harness", kind: "test", command: "python3 static_checks/minimcproto/check_opcode_alignment.py"}
+acceptance_criteria:
+  - "AP 与 MC/TH 全链路消费同一黄金字节向量，0 假状态、0 改包垫片"

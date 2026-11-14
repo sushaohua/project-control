@@ -11,11 +11,15 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 TOOLS_DIR = Path(__file__).resolve().parent
+LEGACY_DIR = TOOLS_DIR / "legacy"
 WORKSPACE_ROOT = TOOLS_DIR.parent.parent
 if str(WORKSPACE_ROOT) not in sys.path:
     sys.path.insert(0, str(WORKSPACE_ROOT))
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
+# 兼容引用归档至 tools/legacy/ 的旧证据对账辅助模块
+if str(LEGACY_DIR) not in sys.path:
+    sys.path.insert(0, str(LEGACY_DIR))
 
 import delivery_checks as gate
 from qa_runner.qa_runner import (

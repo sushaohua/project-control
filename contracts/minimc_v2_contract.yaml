@@ -1,0 +1,69 @@
+# MiniMCProto v2.0 跨五端机器可读单一协议契约真源 (Contract-as-Data SSoT)
+protocol: MiniMCProto v2.0
+revision: "2.0.4"
+framing:
+  sof_le_hex: "55AA"
+  header_bytes: 12
+  crc_bytes: 2
+  crc_algorithm: "CRC-16/CCITT-FALSE (poly=0x1021, init=0xFFFF, xorout=0x0000)"
+  min_max_payload_bytes: 520
+  min_max_frame_bytes: 534
+  ota_trailer_bytes: 128
+  ota_trailer_magic_ascii: "ATSG"
+forbidden:
+  opcodes: [0x05]
+  macros: ["MINIMC_CMD_ESTOP_ACK"]
+
+canonical_commands:
+  CMD_ACK:              {code: 0x00, aliases: ["MINIMC_CMD_ACK"], boot_required: true}
+  CMD_GET_VERSION:      {code: 0x01, aliases: ["MINIMC_CMD_GET_VERSION"], boot_required: true}
+  CMD_VERSION_REPORT:   {code: 0x02, aliases: ["MINIMC_CMD_VERSION_REPORT"], boot_required: true}
+  CMD_PING:             {code: 0x03, aliases: ["MINIMC_CMD_PING", "MINIMC_CMD_HEARTBEAT"], boot_required: true}
+  CMD_PONG:             {code: 0x04, aliases: ["MINIMC_CMD_PONG"], boot_required: true}
+  CMD_NACK:             {code: 0x06, aliases: ["MINIMC_CMD_NACK", "MINIMC_CMD_NACK_LEGACY"], boot_required: true}
+  CMD_SET_TEMP:         {code: 0x10, aliases: ["MINIMC_CMD_SET_TEMP"], boot_required: false}
+  CMD_MOTION_HOME:      {code: 0x11, aliases: ["MINIMC_CMD_MOTION_HOME"], boot_required: false}
+  CMD_MOTION_MOVE:      {code: 0x12, aliases: ["MINIMC_CMD_MOTION_MOVE"], boot_required: false}
+  CMD_JOB_CONTROL:      {code: 0x13, aliases: ["MINIMC_CMD_JOB_CONTROL"], boot_required: false}
+  CMD_TEMP_QUERY:       {code: 0x14, aliases: ["MINIMC_CMD_TEMP_QUERY", "MINIMC_CMD_GET_TEMP"], boot_required: false}
+  CMD_TEMP_REPORT:      {code: 0x15, aliases: ["MINIMC_CMD_TEMP_REPORT", "MINIMC_CMD_TEMP_REPORT_V2"], boot_required: false}
+  CMD_POS_QUERY:        {code: 0x16, aliases: ["MINIMC_CMD_POS_QUERY", "MINIMC_CMD_GET_POS"], boot_required: false}
+  CMD_EMERGENCY_STOP:   {code: 0x17, aliases: ["MINIMC_CMD_EMERGENCY_STOP", "MINIMC_CMD_MOTION_STOP"], boot_required: true}
+  CMD_LEVEL_GRID_QUERY: {code: 0x18, aliases: ["MINIMC_CMD_LEVEL_GRID_QUERY", "MINIMC_CMD_POS_REPORT"], boot_required: false}
+  CMD_FILAMENT_CONTROL: {code: 0x19, aliases: ["MINIMC_CMD_FILAMENT_CONTROL", "MINIMC_CMD_SLOT_SELECT", "MINIMC_CMD_FILAMENT_CTRL_V2"], boot_required: true}
+  CMD_LEVEL_TRIGGER:    {code: 0x1A, aliases: ["MINIMC_CMD_LEVEL_TRIGGER", "MINIMC_CMD_FILAMENT_STATUS"], boot_required: false}
+  CMD_GCODE_EXEC:       {code: 0x1C, aliases: ["MINIMC_CMD_GCODE_EXEC", "MINIMC_CMD_GCODE_LINE"], boot_required: false}
+  CMD_SYSTEM_CONTROL:   {code: 0x1D, aliases: ["MINIMC_CMD_SYSTEM_CONTROL"], boot_required: true}
+  CMD_OTA_START:        {code: 0x20, aliases: ["MINIMC_CMD_OTA_START"], boot_required: true}
+  CMD_OTA_DATA:         {code: 0x21, aliases: ["MINIMC_CMD_OTA_DATA"], boot_required: true}
+  CMD_OTA_FINISH:       {code: 0x22, aliases: ["MINIMC_CMD_OTA_FINISH"], boot_required: true}
+  CMD_OTA_STATUS:       {code: 0x23, aliases: ["MINIMC_CMD_OTA_STATUS"], boot_required: true}
+
+allowed_extra_macros:
+  MINIMC_CMD_LOG_MESSAGE:      {group: "CMD_LOG_MESSAGE", code: 0x07}
+  MINIMC_CMD_FILAMENT_LEGACY:  {group: "CMD_FILAMENT_LEGACY", code: 0x1B}
+  MINIMC_CMD_STREAM_CHUNK:     {group: "CMD_STREAM_CHUNK", code: 0x31}
+  MINIMC_CMD_TELEMETRY_REPORT: {group: "CMD_TELEMETRY_REPORT", code: 0x40}
+  MINIMC_CMD_ALARM_EVENT:      {group: "CMD_ALARM_EVENT", code: 0x50}
+
+endpoints:
+  - name: "soc-ap"
+    full_app_table: true
+    headers: ["soc-ap/contracts/twin/telemetry_types.h", "soc-ap/core/forward/minimc/codec.h"]
+  - name: "mcu-p3(MC)"
+    full_app_table: true
+    headers: ["mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h"]
+  - name: "mcu-p3(TH)"
+    full_app_table: true
+    headers: ["mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h", "mcu-p3/color-engine-mcu/io_toggle/inc/usart.h"]
+  - name: "boot/bootloadermc"
+    full_app_table: false
+    headers: ["boot/bootloadermc/bootloader/inc/boot_uart_ota.h", "boot/bootloadermc/project/inc/minimc_boot_proto.h"]
+  - name: "boot/bootloaderth"
+    full_app_table: false
+    headers: ["boot/bootloaderth/inc/iap.h", "boot/bootloaderth/project/inc/minimc_boot_proto.h"]
+
+golden_vectors:
+  path: "test_harness/static_checks/minimcproto/golden_vectors.json"
+  sha256: "022153520cbe91afa64f4af8b2889d5840fdb6bb86f06d9d462172e34af90039"
+  min_vector_count: 25
