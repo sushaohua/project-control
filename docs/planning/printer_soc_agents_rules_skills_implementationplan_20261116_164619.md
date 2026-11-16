@@ -1,6 +1,6 @@
 # printer-soc 专用 AGENTS、rules 与 skills 实施方案
 
-状态：**已按用户批准的 v1.0 完成七文件实施与约定核验**，结果见第 11 节。用户随后明确要求“先提交本轮治理成果”，按第 12 节本地归档并同步根版本锁；不推送远端，不修改业务代码、公共规则或原有软链接，不执行业务构建、独立 QA 或 HIL。
+状态：**已按用户批准的 v1.0 完成七文件实施与约定核验，并完成第 12 节本地归档**。用户随后明确要求“推送远端”，按第 13 节对齐并同步既有候选；不新增业务实现，不修改公共规则或原有软链接，不执行业务构建、独立 QA 或 HIL。
 
 ## 修订历史
 
@@ -10,6 +10,7 @@
 | v1.1 | 2026-11-16 17:12:41 | AI (Codex) | 登记用户对 v1.0 的明确批准，复核三仓基线、五个现有文件与两条软链接，开始七文件有界实施 | 已批准执行；核验完成后原地登记实际结果 |
 | v1.2 | 2026-11-16 17:24:10 | AI (Codex) | 完成五文件完善及两文件新增，落实 C++17/C ABI/资源并发与四技能交接；格式、元数据、双入口引用、命令、范围和预算核验通过，登记实际结果 | 本批治理实施完成；不含业务构建、独立 QA/HIL 或 Git 提交 |
 | v1.3 | 2026-11-16 17:36:37 | AI (Codex) | 按用户“先提交本轮治理成果”登记 agents 七文件与 PC 方案的本地提交，并授权同步根 workspace.json 中对应两仓提交指针；保持原验收范围 | 本地归档及根锁同步已批准；不含推送、业务准出或额外工程修改 |
+| v1.4 | 2026-11-16 17:51:16 | AI (Codex) | 按用户“推送远端”登记明确 URL/分支、依赖候选、agents 双推、fetch/rebase 与冲突停止；远端实查 MCU/双 Boot 已达锁，应用/测试候选仍需同步，根锁最后发布 | 远端同步已批准；不含新业务实现或 SW/HIL 准出 |
 
 ## 1. 背景、目标与完成条件
 
@@ -278,3 +279,33 @@ APG-01、APG-02、APG-03 均已完成，没有新增脚本、业务切片、流�
 子仓提交完成后检查根锁差异只涉及上述两仓，再提交根锁并真实执行 `python3 -B tools/workspace.py verify`，核对七仓及 57 项 SDK 输入一致性。此为版本组合核验，不代替业务构建或独立 QA/HIL；本轮不 fetch、rebase、push、发布或操作硬件。实际各提交 SHA 与最终结果以 Git 历史和本次执行回执为准。
 
 agents 已完成本地提交 `3abd7d260338f363b9b68e29cea23e7a94c23102`（`docs(printer-soc): define C++ application rules and skills`），仅含批准的七个文件，本项目范围工作树干净。暂存差异空白和四份技能元数据核对通过；提交后读取实际 Git 文件内容核对与工作树一致，常规 `git show --numstat` 合计新增 202、删除 41，仍在原预算内。PC 准确版本由包含本方案的提交界定，根锁及最终组合核验结果记入本次执行回执，不为自引用 SHA 制造额外修订提交。
+
+## 13. v1.4 已授权的远端同步
+
+用户明确要求“推送远端”，授权同步本轮治理成果及远端恢复所必需的既有锁定候选。第 12 节的本地归档已完成：agents `3abd7d260338f363b9b68e29cea23e7a94c23102`、PC `7681315d12e4d6891cb7e73ae273e034ecc0cf3a`、根 `7b7a8b8b4c8acb9f25a30a69d79de1623ff478a0`；七仓/57 SDK 版本核验通过，工作树干净。
+
+### 精确目标及远端实查
+
+GitLab 目标地址均为 `ssh://git@192.168.77.113:2222/sushaohua/<项目名>.git`，实际项目名与分支见下表。agents 另按已有 `mirror_urls` 推送 `git@github.com:sushaohua/agents.git` 的 `main`；不创建项目，不调用需要令牌的 GitLab API，不推送 SDK 厂商仓或历史 soc-ap。
+
+| 本地仓 / GitLab 项目名 | 分支 | 推送前 ls-remote 实查 |
+| --- | --- | --- |
+| `project-control` / `project-control` | `main` | 远端 `82b5643cde7637864982afddbf86239fee7301b1`，需同步治理候选与本记录 |
+| `agents` / `agents` | `main` | GitLab `8f7137f62161439563d43e6648acb36d15b7cb47`；GitHub `a2d929594c15eb70099fd627c6bc1c34dbb1cc51`，分别 fetch 核对祖先关系 |
+| `printer-soc` / `printer-soc` | `main` | 远端 `9db01b49b2ed6a7b16d423718dab2d746a1274ad`，需上传既有锁定 `d9278c5269af69d1a8b5159653ce68186e59cf1c` |
+| `test_harness` / `test_harness` | `main` | 远端 `c5f35334d4d165ef9d245539995d0d2b4bd1ff6c`，需上传既有锁定 `3eef26a98a0e785a35516c910ab971ce208c58b2` |
+| `mcu-p3` / `mcu-p3` | `feat/soc-debug` | 远端已为锁定 `b865222c5e7ec50cbe7d7174b8aa25f93ed16ae0`，只核对，不重复修改/推送 |
+| `boot/bootloadermc` / `bootloadermc` | `soc_debug` | 远端已为锁定 `3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4`，只核对 |
+| `boot/bootloaderth` / `bootloaderth` | `soc_debug` | 远端已为锁定 `c56ae6fa36d8ca034f4efc8c66c1c46442433748`，只核对 |
+| 根 / `ai-soc-workspace` | `main` | 远端 `b435d68bfc2a87792379614a942865121b006a3d`，在所有引用候选可取得后最后推送 |
+
+预检发现 agents 的 `origin` 实际为已登记的 GitHub 镜像，并非工作区的 GitLab 主目标；因此不能以 origin 名称认定服务端身份。后续使用上述明确 URL 和临时 fetch 结果核对，不改 origin 配置或凭据。最初清点脚本的 origin 必须等于主 URL 断言未成立，随后只读核实了上述真实配置，没有据此绕过工程或 QA 门禁。
+
+### 有序动作与写入预算
+
+1. 仅本方案增加推送授权记录并单独提交；不变更七份已接受的规则技能或既有业务代码。
+2. 由 ENG-AP、INTEGRATOR 分别在 printer-soc、test_harness 的准确分支 fetch/rebase；治理仓及根按各自 URL fetch/rebase。agents 核对 GitLab/GitHub 两端均可快进，禁止强推、合并或覆盖冲突。任何变基冲突立即停止保留现场，不自行解决。
+3. 对齐后如候选 SHA 改变，记录实际结果；只更新根 `workspace.json` 的受影响仓提交指针，其他字段与 SDK 锁保持原样。实质源码变化不因本次推送授权顺带修改或冒称已验证。
+4. 在全部对齐且版本组合核验通过后，顺序推送 printer-soc、test_harness、agents GitLab/GitHub、PC，逐个 `ls-remote` 核对分支 HEAD 与准确本地候选一致；根最后推送并复查。远端拒绝、认证或校验失败立即保留原始日志，报告已完成与未完成目标。
+
+本步工程文件预算为 **0**；允许编辑的版本化文件仅本方案和根 `workspace.json`。Git fetch/rebase/push 限上述分支；应用和测试仓由对应角色执行，不改 hooks、凭据或其他 agents 项目文件，不强推。推送的是开发候选与治理基线，不创建产品 release、tag 或 SW/HIL 准出；此前失败和 QA 暂缓结论保持原样。网络与工具限制按实际错误处理，沙箱网络阻断按工具机制申请所需执行权限。
