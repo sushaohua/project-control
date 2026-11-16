@@ -9,6 +9,12 @@ plan_revision: v2-two-axis-graded-codex
 
 # 独立 QA 统一使用异构 Codex 双轴分级冷审
 
+## C308L 候选与覆盖范围
+
+独立 QA 的输入包含 `printer-soc`、必要 SDK 项目/产品锁、PC、agents 和测试资产的准确候选；三种构建 profile 单独报告实际覆盖。正式 QA 由准确锁恢复 SDK，或消费完整来源可核验的受控只读 SDK 制品；禁止直接挂载开发者 SDK。ARM ELF 的交叉编译不能当成 x86 容器执行成功，系统镜像生成不能当成目标板启动成功。
+
+HIL 按被验证能力取证：真实入口可以是 Helix、IPC 或 API；UART 取板级描述，当前 C308L 为 `/dev/ttyS1`。身份查询不要求虚构运动证据；相机、存储、运动及 OTA 分别取相应物理事实。缺少环境不消耗作者代码返修轮次，未推送候选不能冒充服务端正式 QA 通过。
+
 本规则定义 V2 垂直切片（`SLICE-XX`）的正式独立 QA 审阅标准，由 `project-control/tools/gates/codex_review.py` 与 `slice_gate.py` 机械执行。历史已完成报告保留原签署与原结论不改写。
 
 ## 1. 独立会话与物理隔离红线
@@ -40,4 +46,4 @@ plan_revision: v2-two-axis-graded-codex
 
 针对升级 `HIL-Verified` 的批次里程碑审计，Codex 必须逐节点核验：
 1. **真实固件身份链（HW-G7）**：各受测节点（AP / MC / TH / Bootloader）的 40 位源码 Commit、构建制品 SHA256、烧录/OTA 记录与现场协议读回版本自洽（禁止仅凭硬编码常量判通过）。
-2. **原始双向报文对账（HW-G5/G6）**：具备 `/dev/ttyUSB*` 真实波特率、毫秒级时间戳及逐帧 `Raw Hex TX / RX` 对账记录；有效协议关联回包数为 0 或以 PTY/Mock 替身采证的一律判 `REJECTED`。
+2. **原始双向报文对账（HW-G5/G6）**：具备 板级描述指定的真实 UART（当前 `/dev/ttyS1`） 真实波特率、毫秒级时间戳及逐帧 `Raw Hex TX / RX` 对账记录；有效协议关联回包数为 0 或以 PTY/Mock 替身采证的一律判 `REJECTED`。

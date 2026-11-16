@@ -2,7 +2,7 @@ manifest_version: '1.0'
 timestamp: '2026-10-20T11:34:46+08:00'
 updated: '2026-11-03T02:08:59+00:00'
 coordinator: COORD
-status: task-contracts-mapped-not-dispatched
+status: c308l-workspace-migration-in-progress
 repositories:
   project-control:
     url: ssh://git@192.168.77.113:2222/sushaohua/project-control.git
@@ -11,12 +11,12 @@ repositories:
     base_commit: ba563026d2e5bcd35d5ccef7a420874e23dd9044
     commit_source: The containing Git commit identifies this control snapshot; use git rev-parse HEAD after checkout.
     status: active-canonical
-  soc-ap:
-    url: ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git
-    local_path: ~/workspace/ai_soc_project/soc-ap
-    commit: cf2dff40e8b9d7c94b41d01386f287be45afdb4d
+  printer-soc:
+    url: ssh://git@192.168.77.113:2222/sushaohua/printer-soc.git
+    local_path: ~/workspace/ai_soc_project/printer-soc
+    commit: d9278c5269af69d1a8b5159653ce68186e59cf1c
     branch: main
-    commit_status: local-host-build-and-smoke-verified-not-vmware-or-hil-validated
+    commit_status: c308l-product-inputs-pinned-pending-current-build-and-independent-qa
   mcu-p3:
     url: ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git
     local_path: ~/workspace/ai_soc_project/mcu-p3
@@ -92,12 +92,16 @@ hardware_environment:
   mc_chip: AT32F435VGT7
   th_chip: AT32F423CCT7
   flasher_tool: probe-rs 0.32.0
-  soc_runtime: VMware Ubuntu VM simulating SoC/AP
-  ssh_alias: vmware
-  ssh_access: ssh vmware (user-provided; connectivity not independently verified)
-  soc_serial_port: /dev/ttyUSB0
-  soc_serial_format: 115200 8N1
+  soc_runtime: C308L/AW419 Linux development board; no VMware dependency
+  ssh_access: hardware access requires task-specific authorization; not contacted in this migration
+  # 活动参数从准确应用提交取值；历史接线记录保留原值，不代表当前实板验收。
+  active_serial_source:
+    repository: printer-soc
+    commit: d9278c5269af69d1a8b5159653ce68186e59cf1c
+    path: boards/c308l-aw419/board.yaml
+    key: devices.mcu_uart
   serial_inputs: docs/baseline/serial_links.md
+  serial_links_scope: historical-user-input-20261020-not-current-c308l-configuration
   serial_links:
     ap_mc:
       source_status: user-confirmed-not-hil-validated
@@ -126,8 +130,8 @@ hardware_environment:
       parity: none
       stop_bits: 1
       hardware_flow_control: false
-  soc_serial_adapter: CH341 USB-to-UART (user-reported kernel attach)
-  soc_serial_kernel_log: '[92136.577564] usb 1-2.1: ch341-uart converter now attached to ttyUSB0'
+  historical_soc_serial_adapter: CH341 USB-to-UART (user-reported kernel attach)
+  historical_soc_serial_kernel_log: '[92136.577564] usb 1-2.1: ch341-uart converter now attached to ttyUSB0'
 verification_20261020:
   evidence_path: docs/evidence/20261020/
   ap_host_build: local WSL2 configure/build exit 0; host_runtime_smoke 1/1; serial_opened=false
@@ -163,3 +167,13 @@ task_orchestration:
     decision: null
     handoff_prompt: docs/handoff/MINIMC_V2_PLANNING_REVIEW.md
   status: mapped; all new cards Backlog; dispatch assignments/input bindings/leases pending
+
+active_architecture:
+  roles: 10
+  ap_repository: printer-soc
+  platform_role: ENG-PLATFORM
+  sdk_client: c308l
+  sdk_lock_source: printer-soc/boards/c308l-aw419/sdk/manifest.lock.xml
+  product_board_source: printer-soc/boards/c308l-aw419/board.yaml
+  validation_state: implementation-in-progress-no-new-hil
+  historical_ap: soc-ap (read-only; historical acceptance does not transfer)

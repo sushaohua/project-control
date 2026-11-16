@@ -24,16 +24,6 @@
       "preserve_existing_links": false,
       "read_receipt": "现有read_sources及接单回执；列规则路径、版本、适用环境和缺项"
     },
-    "soc-ap": {
-      "branch": "main",
-      "entry": "AGENTS.md -> ../agents/soc-ap/AGENTS.md",
-      "mode": "external-agents",
-      "agents_subdir": "soc-ap",
-      "rules": ".agents/rules -> ../agents/soc-ap/.agents/rules",
-      "shared_source": "project-control/.agents/rules",
-      "preserve_existing_links": true,
-      "read_receipt": "现有read_sources及接单回执；列 project-control 与 agents 规则版本"
-    },
     "test_harness": {
       "branch": "main",
       "entry": "AGENTS.md -> ../agents/test_harness/AGENTS.md",
@@ -73,6 +63,28 @@
       "shared_source": "project-control/.agents/rules",
       "preserve_existing_links": true,
       "read_receipt": "现有read_sources及接单回执；列 project-control 与 agents 规则版本"
+    },
+    "printer-soc": {
+      "branch": "main",
+      "entry": "AGENTS.md -> ../agents/printer-soc/AGENTS.md",
+      "mode": "external-agents",
+      "agents_subdir": "printer-soc",
+      "rules": ".agents/rules -> ../agents/printer-soc/.agents/rules",
+      "shared_source": "project-control/.agents/rules",
+      "preserve_existing_links": true,
+      "read_receipt": "现有read_sources及接单回执；列 project-control 与 agents 规则版本"
+    }
+  },
+  "repo_clients": {
+    "c308l": {
+      "path": "sdk/c308l",
+      "mode": "repo-client",
+      "entry": "AGENTS.md -> ../../agents/c308l-sdk/AGENTS.md",
+      "rules": ".agents/rules -> ../../agents/c308l-sdk/.agents/rules",
+      "agents_subdir": "c308l-sdk",
+      "shared_source": "project-control/.agents/rules",
+      "project_policy": "contracts/c308l_platform_contract.yaml",
+      "preserve_existing_links": true
     }
   }
 }

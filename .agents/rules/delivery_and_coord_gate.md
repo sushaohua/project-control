@@ -1,25 +1,37 @@
 ---
 id: RULE-COORD-DELIVERY-GATE-V2
-revision: 7
+revision: 8
 status: current-rule
 owner: COORD
-updated: '2026-11-14'
+updated: '2026-11-16'
 plan_revision: v2-slice-funnel
 ---
 
 # COORD V2 垂直切片编排、四阶漏斗门禁与双态准出规程
+
+## C308L 当前入口
+
+AP 使用 `printer-soc`，SDK 使用 `sdk/c308l` 独立 Repo 客户端，角色采用十席。COORD 对业务和平台源码只读；根工作区治理维护仅能写获批方案逐项列出的根路径，不因此取得应用或 SDK 写权。平台 project 的实现委派 `ENG-PLATFORM`，Helix 与打印业务委派 `ENG-AP`。
+
+切片声明 `revision`、`profile`（`host-software` / `c308l-app` / `c308l-system`）和完整候选；SDK 锁引用来自准确 printer-soc 提交。SDK 输入变化必须重验，账本同一 slice_id 的历史绿行不能跳过新输入。每次门禁明确检查子进程退出状态与真实 verdict，禁止根据“调用返回了字符串”准出。
+
+`run_workflow` 仅在运行时实际提供所需原语时启动。环境缺少运行时则报告该部分未演练，可继续由当前客户端按相同写边界委派相互独立的已授权任务；不得伪称自动巡航已运行。软件及应用交叉构建不触碰硬件；发布和物理操作仍按 Human Gate #2。
 
 本规则取代旧版 `coord_runner` 状态机与微票门禁（旧归档件封存于 `project-control/tools/legacy/` 与 `.agents/kanban/archive_v1/`，历史 `Done` 卡片与证据保持原样不改写）。新建与在途研发统一执行 **“两阶段 SSoT 协议 + 垂直切片连坐闭环 + 四阶无状态门禁漏斗”**。
 
 ## 1. 两阶段协议与单一真相源（SSoT）入口
 
 1. **Phase 1（实施方案先行，Human Gate #1）**：
+   - 流程为：用户表达想法 → `PM` 整理需求 ↔ `ARCH` 核对可行性 → 合成一份方案 → 用户批准 → `COORD` 组织实施。
+   - `PM` 使用 `product-requirements` 在本任务方案中明确目标、场景、优先级草案、范围、异常和可观察的完成条件；只问影响产品结果的关键问题，技术事实交 ARCH 核实。
+   - `ARCH` 提前反馈现有能力、缺口、依赖、风险及可选阶段范围，不静默更改产品目标；PM 统一与用户收敛产品取舍，双方按章节合成同一方案，不另建目标真源。
    - `ARCH` 基于本地 `graphify` AST 图谱取证与 `project-control/contracts/minimc_v2_contract.yaml` 契约真源，产出时间戳方案 `{summary}_implementationplan_{YYYYMMDD_HHMMSS}.md`。
    - 方案必须**原地迭代更新（In-place Update）**，头部维护实名修订履历（显式标注具体 AI 客户端/引擎实体，如 `AI (Antigravity-CLI)`、`AI (Codex)`），列明 AST 调用链核实表、软硬件契约推演、各子仓 **最小修改预算（Diff Budget）**、拓扑有序切片 `SLICE-XX` 及回滚预案。
+   - 产品定义、技术设计和目标/切片/验收映射复用一次实施方案审批；明确目标的小修沿既有授权处理，不增加固定 PM 签字环节。COORD 按获批方案接单，不把 PM/ARCH 放入工程 subtasks。
    - **未获人类明确批准（`Approved` / `批准执行`）前，严禁修改任何工程代码**；一经批准，即授予当前批次（2～3 个垂直切片）连续自动巡航授权。
 2. **Phase 2（`run_workflow` 有界自动巡航）**：
    - `COORD` 通过 `project-control/tools/workflow/run_slice_batch.py` 按序推进批次切片，以追加式账本 `project-control/slices/ledger.md` 实现幂等断点续跑，耗时 $>1\text{ min}$ 步骤通过 `phase()`/`log()` 实时输出进度。
-   - **`COORD` 业务仓只读硬铁律**：`COORD` 严禁直接修改 `soc-ap/`、`mcu-p3/`、`test_harness/`、`boot/bootloadermc/`、`boot/bootloaderth/`，所有代码变更必须委派对应 `ENG-*` / `ENG_BOOT_*` / `INTEGRATOR` 执行。
+   - **`COORD` 业务仓只读硬铁律**：`COORD` 严禁直接修改 `printer-soc/`、`mcu-p3/`、`test_harness/`、`boot/bootloadermc/`、`boot/bootloaderth/`，所有代码变更必须委派对应 `ENG-*` / `ENG_BOOT_*` / `INTEGRATOR` 执行。
 
 ## 2. 垂直切片连坐与四阶无状态漏斗门禁
 

@@ -1,0 +1,45 @@
+{
+  "author": "AI (Codex)",
+  "purpose": "C308L 工作区与治理架构评估；只拉取、检索和记录，不构建或操作设备",
+  "application": {
+    "url": "ssh://git@192.168.77.113:2222/sushaohua/printer-soc.git",
+    "branch": "main",
+    "commit": "9db01b49b2ed6a7b16d423718dab2d746a1274ad",
+    "checkout": "artifacts/c308l-assessment/printer-soc"
+  },
+  "sdk": {
+    "url": "ssh://git@192.168.77.113:2222/software/soc/amc308l/manifests.git",
+    "manifest_branch": "master",
+    "checkout": "artifacts/c308l-assessment/sdk",
+    "sync_command": "repo sync -j4 --fail-fast --no-clone-bundle --no-tags",
+    "sync_exit_code": 0,
+    "shallow_depth": 1
+  },
+  "limitations": [
+    "未编译 SDK 或应用",
+    "未访问开发板、串口、摄像头或探针",
+    "GitLab HTTP API 返回 401，远端源码通过 SSH 获取",
+    "旧 soc-ap 图谱落后于当前代码；新 printer-soc 未生成图谱",
+    "57 项 HEAD 与导出清单一致；三个父项目有 manifest 嵌套项目或链接对应的未跟踪条目，详见原始 inventory，不宣称全仓 porcelain 为空"
+  ],
+  "files": {
+    "sdk-source-manifest.xml": {
+      "sha256": "a17016a2f50467740f03f4682c1ec533c27db59c18ed1fd6902b0647de50d41a",
+      "bytes": 9625
+    },
+    "sdk-inventory.json": {
+      "sha256": "a5d656f6a8d70708ab2938c95257583c9414ce6942c0d19dcc85dec6f06d2fc1",
+      "bytes": 18913
+    },
+    "sdk-resolved.xml": {
+      "sha256": "4a46ffd8ff32df1dc80495918df3018e306f4fc8b5bbf306473a03399b060ce5",
+      "bytes": 12522,
+      "original_sha256": "204623f77b6333d6ebd4a14c43a80f2e3d80232ecc70a23ab401b9e0285b1e2d",
+      "normalization": "仅删除原始导出第4、6行各两个行尾空格；原始摘要仍对应正式产品锁及历史实测记录"
+    },
+    "repo-sync.log": {
+      "sha256": "8ee3a886dca3fdeb4cc90f7b34fe20b33b2e18d6875996cb206d933adf6acdd7",
+      "bytes": 711
+    }
+  }
+}

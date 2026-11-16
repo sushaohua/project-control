@@ -1,14 +1,17 @@
-# V2 垂直业务切片标准定义模板 (~25 行，最小结单闭环单元)
+# V2 垂直业务切片模板；实际执行前填写本切片的方案、候选和真实合龙命令。
 slice_id: "SLICE-00"
+revision: 1
 batch_id: "BATCH-TEMPLATE"
+profile: "host-software"
+input_repositories: ["project-control", "agents", "test_harness", "printer-soc"]
 title: "示例：端到端温度遥测查询与超时降级闭环"
-plan_ref: "docs/v2_governance_and_orchestration_implementationplan_20261114_152634.md"
+plan_ref: "project-control/docs/planning/c308l_workspace_and_governance_implementationplan_20261116_111055.md"
 contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
 requires_hil_immediately: false
 
 subtasks:
   - role: "ENG-AP"
-    repo: "soc-ap"
+    repo: "printer-soc"
     branch: "main"
     allowed_paths: ["core/forward/**", "services/ui_gateway/**", "tests/**"]
     diff_budget: {max_files: 6, protected_globs: [], max_protected_lines: 0}

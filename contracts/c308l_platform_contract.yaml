@@ -1,0 +1,88 @@
+# C308L 平台输入与项目职责契约；项目提交只由产品 SDK 锁保存。
+schema_version: 1
+target: c308l-aw419
+application:
+  repo: printer-soc
+  board_file: boards/c308l-aw419/board.yaml
+sdk_client: c308l
+abi:
+  arch: armv7l
+  float: hard
+  libc: glibc
+  libc_version: '2.33'
+  toolchain_triple: arm-none-linux-gnueabihf
+profiles:
+- host-software
+- c308l-app
+- c308l-system
+project_owners:
+  platform/bootloader/uboot-repo/fip: ENG-PLATFORM
+  platform/rtos/bl22: ENG-PLATFORM
+  craftdance/craftdance-kliper: READ_ONLY
+  platform/bootloader/uboot-repo/bl30/src_ao: ENG-PLATFORM
+  platform/bootloader/uboot-repo/bl2/bin: ENG-PLATFORM
+  platform/bootloader/uboot-repo/bl30/bin: ENG-PLATFORM
+  platform/bootloader/uboot-repo/bl31/bl31_1.0/bin: ENG-PLATFORM
+  platform/bootloader/uboot-repo/bl31/bl31_1.3/bin: ENG-PLATFORM
+  platform/bootloader/uboot-repo/bl32/bl32_2.4/bin: ENG-PLATFORM
+  platform/bootloader/uboot-repo/bl32/bl32_3.8/bin: ENG-PLATFORM
+  platform/bootloader/uboot-repo/bl40/bin: ENG-PLATFORM
+  platform/bootloader/uboot-repo/soc/templates: ENG-PLATFORM
+  platform/hardware/bluetooth: ENG-PLATFORM
+  craftdance/helixscreen: ENG-AP
+  platform/kernel/aml-5.15: ENG-PLATFORM
+  platform/kernel/aml-5.15/common_drivers: ENG-PLATFORM
+  craftdance/moonraker: READ_ONLY
+  platform/rtos/lib/isp: ENG-PLATFORM
+  platform/rtos/lib/adla: ENG-PLATFORM
+  platform/hardware/aml_bt_ct: ENG-PLATFORM
+  platform/rtos/lib/venc: ENG-PLATFORM
+  platform/hardware/media_modules: ENG-PLATFORM
+  platform/hardware/bluetooth/w1: ENG-PLATFORM
+  platform/hardware/bluetooth/w1u: ENG-PLATFORM
+  platform/hardware/w1: ENG-PLATFORM
+  platform/hardware/w1u: ENG-PLATFORM
+  platform/hardware/wifi_comm: ENG-PLATFORM
+  platform/hardware/broadcom/drivers/ap6xxx: ENG-PLATFORM
+  toolchain/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf: ENG-PLATFORM
+  toolchain/gcc/linux-x86/arm/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf: ENG-PLATFORM
+  platform/tools: ENG-PLATFORM
+  platform/rtos/arch/arm64: ENG-PLATFORM
+  platform/rtos/lib/audio/lib: ENG-PLATFORM
+  platform/rtos/lib/audio/drv: ENG-PLATFORM
+  platform/rtos/boards/arm64: ENG-PLATFORM
+  platform/rtos/build_system: ENG-PLATFORM
+  platform/rtos/lib/common_io: ENG-PLATFORM
+  platform/rtos/drivers: ENG-PLATFORM
+  platform/rtos/lib/fat: ENG-PLATFORM
+  platform/rtos/kernel/freertos: ENG-PLATFORM
+  platform/rtos/lib/posix: ENG-PLATFORM
+  platform/rtos/lib/libc: ENG-PLATFORM
+  platform/rtos/lib/osal: ENG-PLATFORM
+  platform/rtos/products/fastboot: ENG-PLATFORM
+  platform/rtos/scripts: ENG-PLATFORM
+  platform/rtos/soc/arm64: ENG-PLATFORM
+  platform/rtos/lib/backtrace: ENG-PLATFORM
+  platform/rtos/lib/ulog: ENG-PLATFORM
+  platform/rtos/lib/utilities: ENG-PLATFORM
+  platform/rtos/lib/vfs: ENG-PLATFORM
+  platform/bootloader/uboot-repo/bl33/v2019: ENG-PLATFORM
+  platform/vendor/aml_commonlib: ENG-PLATFORM
+  release-tool: ENG-PLATFORM
+  linux/mbp: ENG-PLATFORM
+  platform/rtos/lib/rtos_pipeline: ENG-PLATFORM
+  sdk_demo: ENG-PLATFORM
+  platform/vendor/tdk-3.8: ENG-PLATFORM
+resource_policy:
+  uart: board.devices.mcu_uart
+  exclusive:
+  - mcu_uart
+  - display
+  - touch
+  - camera
+  - data_volume
+  physical_operations_require_authorization: true
+validation_scope:
+  host-software: 宿主软件验证，不证明目标板或物理链路
+  c308l-app: 目标应用交叉构建、安装树与依赖，不证明HIL
+  c308l-system: SDK系统镜像构建及安装证据，不证明实机启动

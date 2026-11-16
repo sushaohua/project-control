@@ -6,14 +6,15 @@
 """
 
 import argparse
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import datetime
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
 import re
-import shutil
+import shlex
 import subprocess
 import sys
 from typing import Dict, List, Optional
@@ -47,6 +48,7 @@ class QARunRequest:
     task_revision: int
     targets: List[RepositoryTarget]
     commands: List[dict]
+    profile: str = "host-software"
 
 
 @dataclass
@@ -80,6 +82,8 @@ class QARunResult:
     container_id: str = ""
     container_image: str = "ubuntu:20.04"
     container_inspect: Dict[str, object] = field(default_factory=dict)
+    profile: str = "host-software"
+    platform_inputs: Dict[str, object] = field(default_factory=dict)
 
 
 def redact_token(text: str) -> str:
@@ -292,7 +296,7 @@ def checkout_remote_repository(sandbox_dir: Path, target: RepositoryTarget, time
     validate_remote_url(target.url)
     if not target.ref:
         raise QARunnerError(f"Missing remote ref for {target.name}")
-    repo_dir = sandbox_dir / target.name
+    repo_dir = validate_sandbox_subpath(sandbox_dir, target.name)
     repo_dir.mkdir(parents=True, exist_ok=True)
     logs = [f"=== Checkout repository '{target.name}' from {target.url} ==="]
     init_res = run_git_command(["git", "init"], cwd=repo_dir, timeout=timeout)
@@ -423,6 +427,7 @@ def build_server_verdict_data(run_result: QARunResult) -> dict:
         "verdict": "PASSED" if run_result.passed else "FAILED",
         "exit_code": 0 if run_result.passed else 1,
         "summary": run_result.summary,
+        "profile": run_result.profile,
         "build_count": len(run_result.build_results),
         "test_count": len(run_result.test_results),
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -437,6 +442,8 @@ def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str
         "task_id": run_result.task_id,
         "task_revision": run_result.task_revision,
         "source": "server-pinned-commits",
+        "profile": run_result.profile,
+        "platform_inputs": run_result.platform_inputs,
         "fresh_checkout": True,
         "sandbox": {
             "kind": "container",
@@ -498,12 +505,17 @@ def load_yaml_config(config_path: Path) -> dict:
 
 
 def start_docker_sandbox(name: str, image: str, mount_dir: Path, read_only: bool = True) -> str:
-    """启动挂载沙箱目录（默认只读 ro）的隔离 Docker 容器并返回 12 位容器 ID。"""
+    """以 name/image 启动容器；mount_dir 源码按 read_only 挂载，独立输出可写，返回容器 ID。"""
     mode = "ro" if read_only else "rw"
+    output_dir = mount_dir.with_name(mount_dir.name + "_output")
+    output_dir.mkdir(mode=0o700, exist_ok=False)
     cmd = [
         "docker", "run", "-d",
         "--name", name,
         "-v", f"{mount_dir.resolve()}:/workspace:{mode}",
+        "-v", f"{output_dir.resolve()}:/output:rw",
+        "-e", "QA_OUTPUT_DIR=/output",
+        "-e", "C308L_SDK_WORK_ROOT=/output/sdk-worktrees",
         "-w", "/workspace",
         image, "sleep", "3600",
     ]
@@ -541,6 +553,134 @@ def inspect_docker_sandbox(container_id: str) -> dict:
         except json.JSONDecodeError:
             pass
     return {"id": container_id, "status": "inspect-failed"}
+
+
+BUILD_PROFILES = ("host-software", "c308l-app", "c308l-system")
+
+
+def validate_profile_request(req: QARunRequest) -> None:
+    """核对 req 的软件验证范围与命令覆盖；缺少必需输入时抛 QARunnerError。"""
+    if req.profile not in BUILD_PROFILES:
+        raise QARunnerError("Unknown build profile: " + req.profile)
+    if not req.commands or not any(item.get("kind", "test") == "test" for item in req.commands):
+        raise QARunnerError("At least one accepted test command is required; zero checks cannot pass")
+    if req.profile == "host-software":
+        return
+    required = {"project-control", "agents", "test_harness", "printer-soc"}
+    if not required.issubset({target.name for target in req.targets}):
+        raise QARunnerError("C308L QA requires pinned application, control, rules and test repositories")
+    kinds = {item.get("kind", "test") for item in req.commands}
+    if not kinds.intersection({"build", "image"}):
+        raise QARunnerError("C308L QA requires an actual target build command")
+    if req.profile == "c308l-system" and "image" not in kinds:
+        raise QARunnerError("System profile requires an explicit image build and image verification test")
+
+
+def _import_input_tool(path: Path, name: str):
+    """以 name 加载受控 path 模块；调用方必须先确定其候选或运行器来源。"""
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _stage_profile_workspace(sandbox_dir: Path, req: QARunRequest, config: dict) -> dict:
+    """按 req/config 在 sandbox_dir 暂存工具和描述；摘要未获接受即拒绝，不执行候选代码。"""
+    clients = config.get("repo_clients")
+    if not isinstance(clients, list) or not clients:
+        raise QARunnerError("C308L QA requires configured Repo clients")
+    repositories = [{"path": target.name, "url": target.url, "commit": target.commit,
+                     "branch": target.ref[len("refs/heads/"):] if target.ref.startswith("refs/heads/")
+                     else target.ref} for target in req.targets]
+    data = {"schema_version": 2, "repositories": repositories, "repo_clients": clients}
+    trusted = Path(__file__).resolve().parents[3] / "tools/sdk_workspace.py"
+    raw = trusted.read_bytes()
+    accepted = (config.get("security") or {}).get("accepted_sdk_tool_sha256", "")
+    digest = compute_bytes_sha256(raw)
+    if not re.fullmatch(r"[0-9a-f]{64}", accepted or "") or accepted != digest:
+        raise QARunnerError("SDK input tool lacks an accepted matching SHA256")
+    # 先核对接受值，再写入同一字节串；不以复制后的自报摘要作为接受依据。
+    with (sandbox_dir / "workspace.json").open("x", encoding="utf-8") as output:
+        json.dump(data, output, ensure_ascii=False, indent=2)
+    destination = sandbox_dir / "tools/sdk_workspace.py"
+    destination.parent.mkdir(exist_ok=False)
+    with destination.open("xb") as output:
+        output.write(raw)
+    return {"workspace": data, "sdk_tool_sha256": digest}
+
+
+def prepare_profile_inputs(sandbox_dir: Path, req: QARunRequest, config: dict) -> dict:
+    """为 req 在隔离 sandbox_dir 重建锁定 SDK；config 只提供清单配置，不接受开发者目录挂载。"""
+    if req.profile == "host-software":
+        return {}
+    try:
+        staged = _stage_profile_workspace(sandbox_dir, req, config)
+        tool = _import_input_tool(sandbox_dir / "tools/sdk_workspace.py", "qa_sdk_workspace")
+        clients = []
+        for entry in staged["workspace"]["repo_clients"]:
+            sdk = tool.load_sdk_spec(sandbox_dir, entry)
+            tool.restore_sdk(sandbox_dir, sdk)
+            clients.append(tool.verify_sdk(sandbox_dir, sdk))
+        contract_path = sandbox_dir / "project-control/contracts/c308l_platform_contract.yaml"
+        return {"source": "server-reconstructed-sdk", "clients": clients,
+                "contract_sha256": compute_file_sha256(contract_path),
+                "sdk_tool_sha256": staged["sdk_tool_sha256"],
+                "validation": {"passed": False, "scope": "pending-container-check"}}
+    except (OSError, ValueError, KeyError, TypeError, ImportError,
+            subprocess.SubprocessError, yaml.YAMLError) as error:
+        raise QARunnerError("Platform input reconstruction failed: " + str(error)) from error
+
+
+def accepted_profile_image(req: QARunRequest, config: dict) -> str:
+    """根据 req 范围读取 config 接受的镜像；目标构建要求准确 SHA256，返回 Docker 镜像参数。"""
+    sandbox = config.get("sandbox") or {}
+    if req.profile == "host-software":
+        return sandbox.get("image", "qa-sandbox:20261029")
+    digest = sandbox.get("image_digest", "")
+    if not re.fullmatch(r"sha256:[0-9a-f]{64}", digest or ""):
+        raise QARunnerError("C308L QA requires an accepted exact container image digest")
+    return digest
+
+
+def run_profile_checks(sandbox_dir: Path, req: QARunRequest, cid: str, inputs: dict) -> CommandResult:
+    """在 cid 内检查 req 的 inputs；sandbox_dir 仅定位只读输入，返回真实命令结果并记录校验身份。"""
+    command = ("PYTHONDONTWRITEBYTECODE=1 python3 "
+               "test_harness/static_checks/platform/check_platform_inputs.py --workspace /workspace")
+    result = run_command_in_sandbox(sandbox_dir, command, "", cid)
+    try:
+        proof = json.loads(result.stdout)
+        valid = proof.get("passed") is True and proof.get("scope") == "software-inputs"
+    except (json.JSONDecodeError, AttributeError):
+        valid = False
+    inputs["validation"] = {"passed": result.returncode == 0 and valid,
+                            "container_id": cid, "command": command,
+                            "stdout_sha256": compute_bytes_sha256(result.stdout.encode())}
+    if result.returncode == 0 and not valid:
+        result.returncode = 1
+        result.stderr += "\nPlatform checker returned missing or invalid software-inputs evidence"
+    if result.returncode == 0 and req.profile == "c308l-system":
+        copied = copy_system_worktrees(sandbox_dir, cid, inputs)
+        copied.stdout = result.stdout + "\n" + copied.stdout
+        copied.stderr = result.stderr + "\n" + copied.stderr
+        result = copied
+    return result
+
+
+def copy_system_worktrees(sandbox_dir: Path, cid: str, inputs: dict) -> CommandResult:
+    """将 inputs 的受控 SDK 在 cid 内复制到独立可写输出；sandbox_dir 定位输入，返回复制结果。"""
+    commands = ["mkdir -p /output/sdk-worktrees"]
+    worktrees = {}
+    for client in inputs["clients"]:
+        source = "/workspace/" + client["path"]
+        destination = "/output/sdk-worktrees/" + client["id"]
+        commands.append("test ! -e " + shlex.quote(destination))
+        commands.append("cp -a -- " + shlex.quote(source) + " " + shlex.quote(destination))
+        worktrees[client["id"]] = destination
+    result = run_command_in_sandbox(sandbox_dir, " && ".join(commands), "", cid)
+    inputs["build_worktrees"] = worktrees if result.returncode == 0 else {}
+    inputs["validation"]["system_copy_passed"] = result.returncode == 0
+    return result
 
 
 class QARunner:
@@ -590,7 +730,9 @@ class QARunner:
             if self.gitlab is None:
                 continue
             cfg = repos_cfg.get(target.name, {})
-            project_path = cfg.get("api_project_path", f"sushaohua/{target.name}")
+            project_path = cfg.get("api_project_path")
+            if not project_path:
+                raise QARunnerError("GitLab project path must be configured: " + target.name)
             try:
                 verify_server_commit(self.gitlab, project_path, target.commit)
             except QARunnerError as err:
@@ -623,12 +765,13 @@ class QARunner:
             runtime_logs.append(c_res.stdout + "\n" + c_res.stderr)
             if c_res.returncode != 0:
                 overall_passed = False
+                break
         return runtime_logs, build_results, test_results, overall_passed
 
     def execute_run(self, req: QARunRequest) -> tuple:
         """在只读容器沙箱中执行完整的远端提交校验、全新检出与客观测试流程。"""
-        if not req.commands or not any(item.get("kind", "test") == "test" for item in req.commands):
-            raise QARunnerError("At least one accepted test command is required; zero checks cannot pass")
+        validate_profile_request(req)
+        img = accepted_profile_image(req, self.config)
         self.verify_target_commits(req.targets)
         run_id = f"run_{datetime.datetime.now().strftime('%H%M%S')}"
         sandbox_dir = create_isolated_sandbox(self.sandbox_base, req.task_id, run_id)
@@ -639,12 +782,13 @@ class QARunner:
             log = checkout_remote_repository(sandbox_dir, target, timeout=git_timeout)
             c_logs.append(log)
         prepare_sandbox_rule_links(sandbox_dir, req.targets, self.config)
+        platform_inputs = prepare_profile_inputs(sandbox_dir, req, self.config)
         # 2. 启动以只读模式挂载该沙箱快照的 Docker 容器执行构建与测试
         c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
-        img = self.config.get("sandbox", {}).get("image", "qa-sandbox:20261029")
         cid = start_docker_sandbox(c_name, img, sandbox_dir, read_only=True)
         try:
-            r_logs, b_res, t_res, ok = self._run_sandbox_steps(sandbox_dir, req, cid)
+            r_logs, b_res, t_res, ok = self._run_container_steps(
+                sandbox_dir, req, {"cid": cid, "inputs": platform_inputs})
         finally:
             stop_docker_sandbox(cid)
             inspect_data = inspect_docker_sandbox(cid)
@@ -655,8 +799,34 @@ class QARunner:
             container_id=cid, container_image=img, container_inspect=inspect_data, passed=ok,
             tool_versions=collect_tool_versions(), build_results=b_res, test_results=t_res,
             summary="All sandbox tests passed" if ok else "Sandbox QA execution failed",
+            profile=req.profile, platform_inputs=platform_inputs,
         )
         return res, sandbox_dir, c_logs, r_logs
+
+    def _run_container_steps(self, sandbox_dir: Path, req: QARunRequest, context: dict) -> tuple:
+        """按 req 在 context 容器内先校验平台再构建；sandbox_dir 定位输入，返回日志、构建、测试及结论。"""
+        cid = context["cid"]
+        if req.profile == "host-software":
+            return self._run_sandbox_steps(sandbox_dir, req, cid)
+        checked = run_profile_checks(sandbox_dir, req, cid, context["inputs"])
+        record = {"command": checked.command, "exit_code": str(checked.returncode),
+                  "subpath": "", "duration": f"{checked.duration_seconds:.2f}s",
+                  "output": checked.stdout + "\n" + checked.stderr}
+        logs = [f"$ {checked.command} -> {checked.returncode}", record["output"]]
+        if checked.returncode != 0:
+            return logs, [], [record], False
+        inputs = context["inputs"]
+        roots = {client["id"]: "/workspace/" + client["path"] for client in inputs["clients"]}
+        if req.profile == "c308l-system":
+            roots = inputs["build_worktrees"]
+        if "c308l" not in roots:
+            raise QARunnerError("C308L build workspace is missing")
+        # 每条命令继承明确 SDK 输入；系统构建只采用独立副本，源树仍为只读挂载。
+        prefix = "env C308L_SDK_ROOT=" + shlex.quote(roots["c308l"]) + " bash -c "
+        commands = [dict(item, command=prefix + shlex.quote(item["command"])) for item in req.commands]
+        runtime, builds, tests, passed = self._run_sandbox_steps(
+            sandbox_dir, replace(req, commands=commands), cid)
+        return logs + runtime, builds, [record] + tests, passed
 
 
 def create_cli_parser() -> argparse.ArgumentParser:
@@ -672,6 +842,8 @@ def create_cli_parser() -> argparse.ArgumentParser:
                         help="Command to run in format 'kind:subpath:command'")
     parser.add_argument("--output-dir", default="", help="Directory to save evidence output")
     parser.add_argument("--check-only", action="store_true", help="Only verify server credentials")
+    parser.add_argument("--profile", choices=BUILD_PROFILES, default="host-software",
+                        help="Explicit software build and verification scope")
     return parser
 
 
@@ -682,7 +854,9 @@ def parse_repo_target(raw: str, default_urls: dict, default_branches: dict = Non
         raise QARunnerError(f"Target format must be 'name=commit[:ref]', got: {raw}")
     commit, sep_ref, ref = rest.partition(":")
     validate_commit_sha(commit)
-    url = default_urls.get(name, f"ssh://git@192.168.77.113:2222/sushaohua/{name}.git")
+    if name not in default_urls or not default_urls[name]:
+        raise QARunnerError(f"Repository URL must be explicitly configured: {name}")
+    url = default_urls[name]
     if not sep_ref:
         ref = (default_branches or {}).get(name, "")
     if not ref:
@@ -713,10 +887,12 @@ def main() -> int:
         branches = {k: v.get("default_branch", "") for k, v in config.get("repositories", {}).items()}
         targets = [parse_repo_target(r, urls, branches) for r in args.repo_commit]
         commands = [parse_command_spec(c) for c in args.cmd]
-        req = QARunRequest(task_id=args.task, task_revision=args.revision, targets=targets, commands=commands)
+        req = QARunRequest(task_id=args.task, task_revision=args.revision, targets=targets,
+                           commands=commands, profile=args.profile)
         res, s_dir, c_logs, r_logs = runner.execute_run(req)
         out_dir = Path(args.output_dir) if args.output_dir else s_dir / "evidence"
         lock_data = build_server_lock_data(targets)
+        lock_data.update({"profile": res.profile, "platform_inputs": res.platform_inputs})
         logs = {"checkout": "\n".join(c_logs), "runtime": "\n".join(r_logs)}
         refs = write_evidence_bundle(out_dir, res, lock_data, logs)
         print(f"[QA VERDICT] {res.summary} | Evidence bundle saved to: {out_dir}")

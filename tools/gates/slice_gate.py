@@ -49,18 +49,45 @@ def _collect_locked_commits(workspace: Path, subtasks: List[dict]) -> Dict[str, 
     }
 
 
+def input_repositories(spec: dict) -> List[str]:
+    """返回 spec 的业务及只读输入仓路径；重复输入只保留一次。"""
+    names = [item["repo"] for item in spec["subtasks"]]
+    return list(dict.fromkeys(names + spec.get("input_repositories", [])))
+
+
+def input_fingerprint(workspace: Path, spec: dict) -> str:
+    """以 workspace 当前提交、spec 内容及工作区清单形成完整输入摘要。"""
+    targets = [{"repo": name} for name in input_repositories(spec)]
+    payload = {"spec": spec, "commits": _collect_locked_commits(workspace, targets)}
+    manifest = workspace / "workspace.json"
+    if manifest.is_file():
+        payload["workspace_manifest"] = hashlib.sha256(manifest.read_bytes()).hexdigest()
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+
+
+def _qa_command(workspace: Path, spec: dict, commits: dict, qa_dir: Path) -> list:
+    """按 Runner 的实际参数接口生成命令；四参数分别为工作区、切片、候选与证据目录。"""
+    command = [sys.executable, str(workspace / "project-control/tools/qa_runner/qa_runner.py"),
+               "--task", spec["slice_id"], "--revision", str(spec.get("revision", 1)),
+               "--profile", spec.get("profile", "host-software"), "--output-dir", str(qa_dir)]
+    branches = {item["repo"]: item["branch"] for item in spec["subtasks"]}
+    manifest = json.loads((workspace / "workspace.json").read_text())
+    branches.update({item["path"]: item["branch"] for item in manifest["repositories"]
+                     if item["path"] not in branches})
+    for name, commit in commits.items():
+        command.extend(["--repo-commit", f"{name}={commit}:refs/heads/{branches[name]}"])
+    for check in spec.get("qa_commands", []):
+        command.extend(["--cmd", f"{check['kind']}:{check['subpath']}:{check['command']}"])
+    return command
+
+
 def _run_docker_qa(workspace: Path, spec: dict, commits: Dict[str, str], out_dir: Path) -> dict:
     """调用 `qa_runner.py` 执行隔离容器干净构建测试并核验 `server_qa.json` 证据。"""
     qa_dir = out_dir / "docker_qa"
     qa_dir.mkdir(parents=True, exist_ok=True)
-    cmd = [sys.executable, str(workspace / "project-control/tools/qa_runner/qa_runner.py"), "--task-id", spec["slice_id"], "--task-revision", "1", "--output-dir", str(qa_dir)]
-    for repo_rel, sha in commits.items():
-        branch = next(s["branch"] for s in spec["subtasks"] if s["repo"] == repo_rel)
-        cmd.extend(["--repo", f"{repo_rel}={sha}:refs/heads/{branch}"])
-    for qc in spec.get("qa_commands", []):
-        cmd.extend(["--cmd", f"{qc['subpath']}:{qc['kind']}:{qc['command']}"])
+    cmd = _qa_command(workspace, spec, commits, qa_dir)
     proc = subprocess.run(cmd, cwd=str(workspace), text=True, capture_output=True, timeout=600)
-    proof_path = qa_dir / "evidence/server_qa.json"
+    proof_path = qa_dir / "server_qa.json"
     if proc.returncode != 0 or not proof_path.is_file():
         raise RuntimeError(f"Docker QA 沙箱未通过 (rc={proc.returncode}): {proc.stderr or proc.stdout}")
     proof = json.loads(proof_path.read_text(encoding="utf-8"))
@@ -83,9 +110,13 @@ def append_ledger_entry(ledger_path: Path, entry: dict) -> None:
     """将通过四阶漏斗的切片记录与 `MINOR` 技术债幂等追加写入 `slices/ledger.md`。"""
     text = ledger_path.read_text(encoding="utf-8") if ledger_path.is_file() else ""
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    row = f"| {now} | {entry['batch_id']} | {entry['slice_id']} | {entry['status']} | `{entry['commits_short']}` | `{entry['container_id']}` | `{entry['codex_session']}` | `{entry['verdict_sha256'][:16]}` |\n"
+    identity = entry.get("input_fingerprint", "")
+    commit_text = entry["commits_short"] + (f"; inputs={identity}" if identity else "")
+    row = f"| {now} | {entry['batch_id']} | {entry['slice_id']} | {entry['status']} | `{commit_text}` | `{entry['container_id']}` | `{entry['codex_session']}` | `{entry['verdict_sha256'][:16]}` |\n"
     marker = "## 2. 非阻断技术债登记表"
-    if f"| {entry['slice_id']} | {entry['status']} |" not in text:
+    duplicate = any(f"| {entry['slice_id']} | {entry['status']} |" in line and
+                    (f"inputs={identity}" in line if identity else True) for line in text.splitlines())
+    if not duplicate:
         text = text.replace(marker, row + "\n" + marker, 1) if marker in text else text + "\n" + row
     for item in entry.get("minors", []):
         debt = f"| {now} | {entry['slice_id']} | `{item['axis']}` | `{item['location']}` | {item['message']} |\n"
@@ -104,15 +135,19 @@ def execute_slice_funnel(workspace: Path, slice_path: Path, out_dir: Path, fast_
     rc_int, int_log = _run_shell_step(spec["integration_cmd"], workspace)
     if rc_int != 0 or fast_only:
         return {"stage": "integration", "passed": rc_int == 0, "errors": [] if rc_int == 0 else [int_log]}
-    commits = _collect_locked_commits(workspace, spec["subtasks"])
+    fingerprint = input_fingerprint(workspace, spec)
+    commits = _collect_locked_commits(workspace, [{"repo": name} for name in input_repositories(spec)])
     qa_proof = _run_docker_qa(workspace, spec, commits, out_dir)
     verdict = codex_review.run_codex_audit(_build_review_prompt(spec, commits, qa_proof), spec["slice_id"], workspace, out_dir / "codex")
-    doc = {"slice_id": spec["slice_id"], "batch_id": spec["batch_id"], "commits": commits, "decision": verdict.decision, "codex_session": verdict.session_id, "blocker_count": verdict.blocker_count, "findings": verdict.payload["findings"]}
+    doc = {"slice_id": spec["slice_id"], "batch_id": spec["batch_id"], "commits": commits,
+           "input_fingerprint": fingerprint, "profile": spec.get("profile", "host-software"),
+           "decision": verdict.decision, "codex_session": verdict.session_id,
+           "blocker_count": verdict.blocker_count, "findings": verdict.payload["findings"]}
     raw = json.dumps(doc, indent=2, ensure_ascii=False).encode("utf-8")
     v_sha = hashlib.sha256(raw).hexdigest()
     (out_dir / "verdict.json").write_bytes(raw)
     if verdict.decision == "APPROVED":
-        append_ledger_entry(workspace / "project-control/slices/ledger.md", {"batch_id": spec["batch_id"], "slice_id": spec["slice_id"], "status": "SW-Verified", "commits_short": ",".join(f"{k}:{v[:7]}" for k, v in commits.items()), "container_id": qa_proof.get("sandbox", {}).get("container_id", "n/a")[:12], "codex_session": verdict.session_id, "verdict_sha256": v_sha, "minors": verdict.minor_findings})
+        append_ledger_entry(workspace / "project-control/slices/ledger.md", {"batch_id": spec["batch_id"], "slice_id": spec["slice_id"], "status": "SW-Verified", "commits_short": ",".join(f"{k}:{v[:7]}" for k, v in commits.items()), "container_id": qa_proof.get("sandbox", {}).get("container_id", "n/a")[:12], "codex_session": verdict.session_id, "verdict_sha256": v_sha, "minors": verdict.minor_findings, "input_fingerprint": fingerprint})
     return {"stage": "codex", "passed": verdict.decision == "APPROVED", "verdict_sha256": v_sha, "verdict": doc}
 
 

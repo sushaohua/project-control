@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="origin" fetch="ssh://git@192.168.77.113:2222/software/soc/amc308l"/>
+
+  <default remote="origin" revision="master" sync-j="8"/>
+
+  <project name="amlogic-tools-fip" path="platform/bootloader/uboot-repo/fip" revision="f9279e891ed59558c4080c1050592eb87cefeb2a" upstream="openlinux/ipc_sdk" dest-branch="openlinux/ipc_sdk">
+    <copyfile src="mk" dest="platform/bootloader/uboot-repo/mk"/>
+  </project>
+  <project name="bootloader-secondary-core-loader" path="platform/rtos/bl22" revision="45dddacf5fd9622b760f27604bd95ebbb333e77e" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="craftdance-kliper" path="craftdance/craftdance-kliper" revision="ce7002bedf37e938bb483572949f3703ac6476cb" upstream="main" dest-branch="main"/>
+  <project name="firmware-aocpu" path="platform/bootloader/uboot-repo/bl30/src_ao" revision="1f6e079570d1a7bd8d08edd83d16f974b2f16704" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="firmware-bin-bl2" path="platform/bootloader/uboot-repo/bl2/bin" revision="06969a0d81f8f0fe1a128e6570732abd1deec4aa" upstream="amlogic-dev" dest-branch="amlogic-dev"/>
+  <project name="firmware-bin-bl30" path="platform/bootloader/uboot-repo/bl30/bin" revision="1c7fa9341c8b4fe3a3f13c559fb160ec1eb4dca8" upstream="amlogic-dev" dest-branch="amlogic-dev"/>
+  <project name="firmware-bin-bl31" path="platform/bootloader/uboot-repo/bl31/bl31_1.0/bin" revision="67b5cd8b17997ec2d6e5876079d06e919b05cd09" upstream="amlogic-dev" dest-branch="amlogic-dev"/>
+  <project name="firmware-bin-bl31" path="platform/bootloader/uboot-repo/bl31/bl31_1.3/bin" revision="67b5cd8b17997ec2d6e5876079d06e919b05cd09" upstream="amlogic-dev-1.3" dest-branch="amlogic-dev-1.3"/>
+  <project name="firmware-bin-bl32" path="platform/bootloader/uboot-repo/bl32/bl32_2.4/bin" revision="46fdfd0fc80358246e8cc1e5bce3efccd08cfcc7" upstream="amlogic-dev" dest-branch="amlogic-dev"/>
+  <project name="firmware-bin-bl32" path="platform/bootloader/uboot-repo/bl32/bl32_3.8/bin" revision="46fdfd0fc80358246e8cc1e5bce3efccd08cfcc7" upstream="amlogic-dev-3.8.0" dest-branch="amlogic-dev-3.8.0"/>
+  <project name="firmware-bin-bl40-dummy" path="platform/bootloader/uboot-repo/bl40/bin" revision="459bceaba164a3b61b17f485a94dcda070364eea" upstream="amlogic-dev" dest-branch="amlogic-dev"/>
+  <project name="firmware-bin-templates" path="platform/bootloader/uboot-repo/soc/templates" revision="53f8df140d3400baae6bafafc51248af62b62a82" upstream="amlogic-dev" dest-branch="amlogic-dev"/>
+  <project name="hardware-amlogic-bluetooth" path="platform/hardware/bluetooth" revision="2a5eb222eff8f0678292893ecb60a323deb6ae80" upstream="master" dest-branch="master"/>
+  <project name="helixscreen" path="craftdance/helixscreen" revision="910dba53c0ad2f833678bc226f6331242fb6bef0" upstream="main" dest-branch="main"/>
+  <project name="kernel-common" path="platform/kernel/aml-5.15" revision="083fce9cdb512e87ba770192c182633cb6151c28" upstream="openlinux/ipc_sdk" dest-branch="openlinux/ipc_sdk"/>
+  <project name="kernel-common_drivers" path="platform/kernel/aml-5.15/common_drivers" revision="6aef285d50e998cb39dd6a3d7e05f82bd4c0c31c" upstream="openlinux/ipc_sdk" dest-branch="openlinux/ipc_sdk"/>
+  <project name="moonraker" path="craftdance/moonraker" revision="1cfb0c41e468645951a371621f06d32777b6107c" upstream="master" dest-branch="master"/>
+  <project name="platform-hardware-aml-isp" path="platform/rtos/lib/isp" revision="311c8cc11dcdbc2cc0276255b46116ea6f88302d" upstream="freertos" dest-branch="freertos"/>
+  <project name="platform-hardware-amlogic-adla" path="platform/rtos/lib/adla" revision="6f1c700da5890c93557636ce144d27c0bd1d84a2" upstream="rtos" dest-branch="rtos"/>
+  <project name="platform-hardware-amlogic-amlbt" path="platform/hardware/aml_bt_ct" revision="bff510da282d0680986b3e7546428b02e6274006" upstream="master-buildroot" dest-branch="master-buildroot"/>
+  <project name="platform-hardware-amlogic-libencoder" path="platform/rtos/lib/venc" revision="880d83483767576c1897245f88e7a3df06282bb4" upstream="mini_encoder" dest-branch="mini_encoder"/>
+  <project name="platform-hardware-amlogic-media_modules" path="platform/hardware/media_modules" revision="660b2369d848d012ae3d4e947695ff3c4b9865a4" upstream="amlogic-5.15-dev" dest-branch="amlogic-5.15-dev"/>
+  <project name="platform-hardware-bluetooth-amlogic-drivers-w1" path="platform/hardware/bluetooth/w1" revision="88bee6a674f0470853b47b4b4e09233794456eb5" upstream="master" dest-branch="plt-linux-bt-w1-release"/>
+  <project name="platform-hardware-bluetooth-amlogic-drivers-w1u" path="platform/hardware/bluetooth/w1u" revision="908600c37ff4da642f6a45965852c1af1ed25b49" upstream="plt-linux-bt-w1u-release" dest-branch="plt-linux-bt-w1u-release"/>
+  <project name="platform-hardware-wifi-amlogic-drivers-w1" path="platform/hardware/w1" revision="906ae5da76063762823e96e480ae540de9b96527" upstream="plt-wifi-w1-release" dest-branch="plt-wifi-w1-release"/>
+  <project name="platform-hardware-wifi-amlogic-drivers-w1u" path="platform/hardware/w1u" revision="ea624921b7fb613bb91a8415eaed0ef5a9ed74c6" upstream="plt-wifi-w1u-release" dest-branch="plt-wifi-w1u-release"/>
+  <project name="platform-hardware-wifi-amlogic-drivers-wifi_comm" path="platform/hardware/wifi_comm" revision="e18114f281fc4894d90e7b09a5fbaefb87445f8e" upstream="r-amlogic" dest-branch="r-amlogic"/>
+  <project name="platform-hardware-wifi-broadcom-drivers-ap6xxx" path="platform/hardware/broadcom/drivers/ap6xxx" revision="8bb78b9ca1d6e18f703929e27b57f703d8d6d135" upstream="r-amlogic" dest-branch="r-amlogic"/>
+  <project name="platform-prebuilts-gcc-linux-x86-arm-gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf" path="toolchain/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf" revision="74adb09d9141cca818c343a24152ed83be6c8070" upstream="master" dest-branch="master"/>
+  <project name="platform-prebuilts-gcc-linux-x86-arm-gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf" path="toolchain/gcc/linux-x86/arm/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf" revision="3cccaf143248ccaa3b20420bbef1ae41f9adad18" upstream="master" dest-branch="master"/>
+  <project name="platform-tools" path="platform/tools" revision="821c4d8174ac0389763df03fabcdc8565bd03b0e" upstream="master" dest-branch="master"/>
+  <project name="rtos_sdk-arch-arm64" path="platform/rtos/arch/arm64" revision="4da0f97f7bdb83ad194b720ada43b2d3a63d0347" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-audio" path="platform/rtos/lib/audio/lib" revision="bab0cef328994d5253c48f2d9bcb57899d171d1e" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-audio_drv" path="platform/rtos/lib/audio/drv" revision="c4f2ff0f29f09c506ef07492b68a45f4c5fc277d" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-boards-arm64" path="platform/rtos/boards/arm64" revision="c4b1b89313dc87080df3c386c18934df3fc55a94" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-build" path="platform/rtos/build_system" revision="731dd884eabfd78d3d1cd0679b923ade50bafa15" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev">
+    <copyfile src="Makefile" dest="platform/rtos/Makefile"/>
+  </project>
+  <project name="rtos_sdk-common_io" path="platform/rtos/lib/common_io" revision="e12ae7c21af57f7bafe7bac9b9aa33d97329840d" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-drivers" path="platform/rtos/drivers" revision="64955266cdeaf5c8fdd71d59d2c7f997a1f9623c" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-fat" path="platform/rtos/lib/fat" revision="0e94f59465806d93c2f1faa18548723e95820537" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-freertos" path="platform/rtos/kernel/freertos" revision="8d1a53d05fc98b2ac19f533e7f6a1507acb42325" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-freertos_plus_posix" path="platform/rtos/lib/posix" revision="50e1e2bca0577275b37f347cdf92243e46d4d8ee" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-libc" path="platform/rtos/lib/libc" revision="fd44976ab8c6236bb05ce3f0c12bbaeb1ed1be19" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-osal" path="platform/rtos/lib/osal" revision="aad4e933ead98774061e035db6f095e66bc48fb9" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-product-fastboot" path="platform/rtos/products/fastboot" revision="4b7cb6284f9b9832db8980d1b26e47c578bc6d7d" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-scripts" path="platform/rtos/scripts" revision="a5cc115bcf3255971578a99510a736a85df15b68" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-soc-arm64" path="platform/rtos/soc/arm64" revision="c2008b867ab13d6f25dbde7b62f66f8cbed36ac7" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-stack_trace" path="platform/rtos/lib/backtrace" revision="53484a70d9bd0e3516936ff31ab49cd156b6df47" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-ulog" path="platform/rtos/lib/ulog" revision="0cb2b3837aa755e23c02c15bebfd7658c6d86cae" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-utilities" path="platform/rtos/lib/utilities" revision="768d27b754b94853a511711a9814711577195fc1" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="rtos_sdk-vfs" path="platform/rtos/lib/vfs" revision="bf3d22e8e30e2631586e4be16d882c195d3637cb" upstream="projects/amlogic-dev" dest-branch="projects/amlogic-dev"/>
+  <project name="uboot" path="platform/bootloader/uboot-repo/bl33/v2019" revision="99fbceaddfa1b590ea46eb03b2dcaf5db8cb42e6" upstream="openlinux/ipc_sdk_2019" dest-branch="openlinux/ipc_sdk_2019"/>
+  <project name="vendor-amlogic-aml_commonlib" path="platform/vendor/aml_commonlib" revision="701c2dcbc84984cf27eff2f63cc44469261f55a4" upstream="master" dest-branch="master"/>
+  <project name="vendor-amlogic-ipc-ipc-release-tool" path="release-tool" revision="21653a117c57f3d9a21baec7a86f5801a80146ec" upstream="ipc_sdk_release" dest-branch="ipc_sdk_release">
+    <linkfile src="env/include" dest="include"/>
+    <linkfile src="env/include/rules.mk" dest="rules.mk"/>
+    <linkfile src="rootfs" dest="platform/rootfs"/>
+    <linkfile src="env/mk/Makefile.platform" dest="platform/Makefile"/>
+    <linkfile src="env/mk/Makefile.bootloader" dest="platform/bootloader/Makefile"/>
+    <linkfile src="env/mk/Makefile.tool" dest="platform/tools/Makefile"/>
+    <linkfile src="env/mk/Makefile.kernel" dest="platform/kernel/Makefile"/>
+    <linkfile src="env/mk/Makefile.hardware" dest="platform/hardware/Makefile"/>
+    <linkfile src="env/mk/Makefile.vendor" dest="platform/vendor/Makefile"/>
+    <linkfile src="env/mk/Makefile.sdk" dest="Makefile"/>
+    <linkfile src="env/mk/Makefile.linux" dest="linux/Makefile"/>
+    <linkfile src="env/mk/Makefile.mbp" dest="linux/mbp/Makefile"/>
+    <linkfile src="env/mk/Makefile.mbd" dest="linux/mbp/mbd/Makefile"/>
+    <linkfile src="env/mk/Makefile.mbi" dest="linux/mbp/mbi/Makefile"/>
+    <linkfile src="env/mk/Makefile.osal" dest="linux/mbp/osal/Makefile"/>
+    <linkfile src="env/mk/Makefile.amllib" dest="platform/vendor/aml_commonlib/Makefile"/>
+    <linkfile src="env/mk/Config.mk" dest="Config.mk"/>
+  </project>
+  <project name="vendor-amlogic-ipc-mbp-prebuilt" path="linux/mbp" revision="498b21cb07224f65ec1ff4154ee04670ba883170" upstream="c3_sdk_rc7" dest-branch="c3_sdk_rc7"/>
+  <project name="vendor-amlogic-ipc-sdk_demo" path="platform/rtos/lib/rtos_pipeline" revision="1b1a0586bf49ed0ed95312e9b35abfd84d033e70" upstream="freertos" dest-branch="freertos"/>
+  <project name="vendor-amlogic-ipc-sdk_demo" path="sdk_demo" revision="1b1a0586bf49ed0ed95312e9b35abfd84d033e70" upstream="ipc_sdk" dest-branch="ipc_sdk"/>
+  <project name="vendor-amlogic-tdk_basic" path="platform/vendor/tdk-3.8" revision="6d9edfce24b6f904ec62ea4ea9a5fa82c7ae2ccd" upstream="refs/heads/tdk-v3.8" dest-branch="refs/heads/tdk-v3.8"/>
+</manifest>

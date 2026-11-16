@@ -1,67 +1,80 @@
 schema_version: 1
-
 server:
-  gitlab_url: "http://192.168.77.113"
-  ssh_host: "192.168.77.113"
+  gitlab_url: http://192.168.77.113
+  ssh_host: 192.168.77.113
   ssh_port: 2222
-  ssh_user: "git"
+  ssh_user: git
   api_timeout_seconds: 90
   ssh_timeout_seconds: 90
-
 sandbox:
-  base_dir: "/tmp/qa_sandboxes"
-  kind: "container"
-  image: "qa-sandbox:20261029"
+  base_dir: /tmp/qa_sandboxes
+  kind: container
+  image: qa-sandbox:20261029
+  # 目标 profile 必须填入独立接受的准确镜像 ID；未接受前保持空值并阻塞目标构建。
+  image_digest: null
   cleanup_after_run: false
   enforce_clean_checkout: true
-
 repositories:
   project-control:
-    url: "ssh://git@192.168.77.113:2222/sushaohua/project-control.git"
-    api_project_path: "sushaohua/project-control"
-    default_branch: "main"
-  soc-ap:
-    url: "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git"
-    api_project_path: "sushaohua/soc-ap"
-    default_branch: "main"
+    url: ssh://git@192.168.77.113:2222/sushaohua/project-control.git
+    api_project_path: sushaohua/project-control
+    default_branch: main
   mcu-p3:
-    url: "ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git"
-    api_project_path: "sushaohua/mcu-p3"
-    default_branch: "feat/soc-debug"
+    url: ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git
+    api_project_path: sushaohua/mcu-p3
+    default_branch: feat/soc-debug
   test_harness:
-    url: "ssh://git@192.168.77.113:2222/sushaohua/test_harness.git"
-    api_project_path: "sushaohua/test_harness"
-    default_branch: "main"
+    url: ssh://git@192.168.77.113:2222/sushaohua/test_harness.git
+    api_project_path: sushaohua/test_harness
+    default_branch: main
   boot/bootloadermc:
-    url: "ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git"
-    api_project_path: "sushaohua/bootloadermc"
-    default_branch: "soc_debug"
+    url: ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git
+    api_project_path: sushaohua/bootloadermc
+    default_branch: soc_debug
   boot/bootloaderth:
-    url: "ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git"
-    api_project_path: "sushaohua/bootloaderth"
-    default_branch: "soc_debug"
+    url: ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git
+    api_project_path: sushaohua/bootloaderth
+    default_branch: soc_debug
   agents:
-    url: "ssh://git@192.168.77.113:2222/sushaohua/agents.git"
-    api_project_path: "sushaohua/agents"
-    default_branch: "main"
-
+    url: ssh://git@192.168.77.113:2222/sushaohua/agents.git
+    api_project_path: sushaohua/agents
+    default_branch: main
+  printer-soc:
+    url: ssh://git@192.168.77.113:2222/sushaohua/printer-soc.git
+    api_project_path: sushaohua/printer-soc
+    default_branch: main
 rule_sources:
-  shared_rules_repo: "project-control"
-  agents_repo: "agents"
+  shared_rules_repo: project-control
+  agents_repo: agents
   repo_subdirs:
-    soc-ap: "soc-ap"
-    mcu-p3: "mcu-p3"
-    test_harness: "test_harness"
-    boot/bootloadermc: "bootloadermc"
-    boot/bootloaderth: "bootloaderth"
-
+    mcu-p3: mcu-p3
+    test_harness: test_harness
+    boot/bootloadermc: bootloadermc
+    boot/bootloaderth: bootloaderth
+    printer-soc: printer-soc
 timeouts:
   git_clone_seconds: 300
   build_seconds: 300
   test_seconds: 300
-
 security:
   disallow_local_worktrees: true
   disallow_developer_mounts: true
   disallow_sandbox_escape: true
   require_remote_hash_verification: true
+  # 根 SDK 工具先经审阅接受其摘要，再由运行器在宿主加载前核对；禁止自动填当前文件摘要。
+  accepted_sdk_tool_sha256: null
+repo_clients:
+- id: c308l
+  path: sdk/c308l
+  manifest_url: ssh://git@192.168.77.113:2222/software/soc/amc308l/manifests.git
+  manifest_commit: 0f37f765bdb963d129891e25dda549d6debd4931
+  manifest_branch: master
+  manifest_name: default.xml
+  lock_repo: printer-soc
+  lock_path: boards/c308l-aw419/sdk/manifest.lock.xml
+  lock_sha256: 204623f77b6333d6ebd4a14c43a80f2e3d80232ecc70a23ab401b9e0285b1e2d
+  agents_subdir: c308l-sdk
+profiles:
+- host-software
+- c308l-app
+- c308l-system

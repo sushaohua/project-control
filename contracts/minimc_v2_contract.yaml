@@ -48,9 +48,9 @@ allowed_extra_macros:
   MINIMC_CMD_ALARM_EVENT:      {group: "CMD_ALARM_EVENT", code: 0x50}
 
 endpoints:
-  - name: "soc-ap"
+  - name: "printer-soc"
     full_app_table: true
-    headers: ["soc-ap/contracts/twin/telemetry_types.h", "soc-ap/core/forward/minimc/codec.h"]
+    headers: ["printer-soc/contracts/twin/telemetry_types.h", "printer-soc/core/forward/minimc/codec.h"]
   - name: "mcu-p3(MC)"
     full_app_table: true
     headers: ["mcu-p3/common/protocol/minimc_proto_defs.h", "mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h"]

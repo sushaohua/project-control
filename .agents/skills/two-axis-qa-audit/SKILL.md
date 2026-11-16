@@ -24,3 +24,7 @@ description: "AI SoC V2 独立异构 QA 双轴分级冷审技能：面向 Codex 
 ## 三级判定铁律（`BLOCKER / MINOR / NIT`）
 - **`BLOCKER`**：仅限违反验收条款、功能断链、假状态/Mock 作弊、安全/死锁风险或越界修改 $\rightarrow$ 必须判 `REJECTED`。
 - **`MINOR` / `NIT`**：非阻断可维护性或注释优化 $\rightarrow$ `0 BLOCKER` 时必须判 `APPROVED`，由 `slice_gate.py` 自动记入 `slices/ledger.md` 技术债表，严禁因 `MINOR/NIT` 卡死批次巡航。
+
+## 目标平台审阅范围
+
+核对host-software/c308l-app/c308l-system的准确覆盖、SDK产品锁与PC/agents候选。ARM ABI、加载器和递归库依赖、安装树权限与来源、镜像内容均按实际交付核验。SDK从锁恢复或来自受控只读制品，禁止挂载开发者SDK。源码和平台配置只读审阅，不直接操作硬件；软件批准不能升级为HIL。
