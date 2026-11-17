@@ -15,8 +15,8 @@ authorization: 用户明确新增 ENG_BOOT_MC、ENG_BOOT_TH，指定独立仓库
 
 | 角色 | 唯一开发仓库/工作区 | 远端 URL | 开发分支 |
 | --- | --- | --- | --- |
-| `ENG_BOOT_MC` | `boot/bootloadermc/` | `ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git` | `soc_debug` |
-| `ENG_BOOT_TH` | `boot/bootloaderth/` | `ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git` | `soc_debug` |
+| `ENG_BOOT_MC` | `boot/bootloadermc/` | `ssh://git@192.168.77.79:2222/sushaohua/bootloadermc.git` | `soc_debug` |
+| `ENG_BOOT_TH` | `boot/bootloaderth/` | `ssh://git@192.168.77.79:2222/sushaohua/bootloaderth.git` | `soc_debug` |
 
 ENG_BOOT_MC 负责 MC Bootloader 的本地启动、App 校验/跳转、升级接收与 Flash/恢复逻辑及其构建/制品；ENG_BOOT_TH 负责 TH 对应能力。具体功能仍以已接受任务和本仓代码为准，不能把登记表视为这些能力均已实现。
 

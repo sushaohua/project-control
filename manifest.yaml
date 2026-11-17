@@ -5,20 +5,20 @@ coordinator: COORD
 status: c308l-workspace-migration-in-progress
 repositories:
   project-control:
-    url: ssh://git@192.168.77.113:2222/sushaohua/project-control.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/project-control.git
     local_path: ~/workspace/ai_soc_project/project-control
     branch: main
     base_commit: ba563026d2e5bcd35d5ccef7a420874e23dd9044
     commit_source: The containing Git commit identifies this control snapshot; use git rev-parse HEAD after checkout.
     status: active-canonical
   printer-soc:
-    url: ssh://git@192.168.77.113:2222/sushaohua/printer-soc.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/printer-soc.git
     local_path: ~/workspace/ai_soc_project/printer-soc
     commit: d9278c5269af69d1a8b5159653ce68186e59cf1c
     branch: main
     commit_status: c308l-product-inputs-pinned-pending-current-build-and-independent-qa
   mcu-p3:
-    url: ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/mcu-p3.git
     local_path: ~/workspace/ai_soc_project/mcu-p3
     commit: 14b8057b04030bd659744c874c73ff8f09f29979
     branch: feat/soc-debug
@@ -51,7 +51,7 @@ repositories:
         owner_role: ENG_BOOT_TH
     branch_scope: MC and TH applications share this repository and feat/soc-debug; Bootloaders develop in their separate repositories on soc_debug.
   bootloadermc:
-    url: ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/bootloadermc.git
     local_path: ~/workspace/ai_soc_project/boot/bootloadermc
     workspace_path: boot/bootloadermc
     branch: soc_debug
@@ -64,7 +64,7 @@ repositories:
     input_distribution: external-agents-repo-relative-symlinks
     automatic_tooling: workspace-py-nested-and-qa-runner-supported
   bootloaderth:
-    url: ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/bootloaderth.git
     local_path: ~/workspace/ai_soc_project/boot/bootloaderth
     workspace_path: boot/bootloaderth
     branch: soc_debug
@@ -77,14 +77,14 @@ repositories:
     input_distribution: external-agents-repo-relative-symlinks
     automatic_tooling: workspace-py-nested-and-qa-runner-supported
   agents:
-    url: ssh://git@192.168.77.113:2222/sushaohua/agents.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/agents.git
     mirror_urls:
       - git@github.com:sushaohua/agents.git
     local_path: ~/workspace/ai_soc_project/agents
     branch: main
     status: active-repo-rules-and-skills
   test_harness:
-    url: ssh://git@192.168.77.113:2222/sushaohua/test_harness.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/test_harness.git
     local_path: ~/workspace/ai_soc_project/test_harness
     commit: ad0398e20d3645dbfa37bfd0550ded0828d018b2
     branch: main

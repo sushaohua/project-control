@@ -691,8 +691,8 @@ class QARunner:
         self.config = config
         self.workspace_root = workspace_root or Path.cwd()
         server_cfg = config.get("server", {})
-        self.gitlab_url = server_cfg.get("gitlab_url", "http://192.168.77.113")
-        self.ssh_host = server_cfg.get("ssh_host", "192.168.77.113")
+        self.gitlab_url = server_cfg.get("gitlab_url", "http://192.168.77.79")
+        self.ssh_host = server_cfg.get("ssh_host", "192.168.77.79")
         self.ssh_port = server_cfg.get("ssh_port", 2222)
         self.ssh_user = server_cfg.get("ssh_user", "git")
         self.api_timeout = int(server_cfg.get("api_timeout_seconds", 60))

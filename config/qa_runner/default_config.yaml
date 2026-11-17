@@ -1,7 +1,7 @@
 schema_version: 1
 server:
-  gitlab_url: http://192.168.77.113
-  ssh_host: 192.168.77.113
+  gitlab_url: http://192.168.77.79
+  ssh_host: 192.168.77.79
   ssh_port: 2222
   ssh_user: git
   api_timeout_seconds: 90
@@ -16,31 +16,31 @@ sandbox:
   enforce_clean_checkout: true
 repositories:
   project-control:
-    url: ssh://git@192.168.77.113:2222/sushaohua/project-control.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/project-control.git
     api_project_path: sushaohua/project-control
     default_branch: main
   mcu-p3:
-    url: ssh://git@192.168.77.113:2222/sushaohua/mcu-p3.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/mcu-p3.git
     api_project_path: sushaohua/mcu-p3
     default_branch: feat/soc-debug
   test_harness:
-    url: ssh://git@192.168.77.113:2222/sushaohua/test_harness.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/test_harness.git
     api_project_path: sushaohua/test_harness
     default_branch: main
   boot/bootloadermc:
-    url: ssh://git@192.168.77.113:2222/sushaohua/bootloadermc.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/bootloadermc.git
     api_project_path: sushaohua/bootloadermc
     default_branch: soc_debug
   boot/bootloaderth:
-    url: ssh://git@192.168.77.113:2222/sushaohua/bootloaderth.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/bootloaderth.git
     api_project_path: sushaohua/bootloaderth
     default_branch: soc_debug
   agents:
-    url: ssh://git@192.168.77.113:2222/sushaohua/agents.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/agents.git
     api_project_path: sushaohua/agents
     default_branch: main
   printer-soc:
-    url: ssh://git@192.168.77.113:2222/sushaohua/printer-soc.git
+    url: ssh://git@192.168.77.79:2222/sushaohua/printer-soc.git
     api_project_path: sushaohua/printer-soc
     default_branch: main
 rule_sources:
@@ -66,7 +66,7 @@ security:
 repo_clients:
 - id: c308l
   path: sdk/c308l
-  manifest_url: ssh://git@192.168.77.113:2222/software/soc/amc308l/manifests.git
+  manifest_url: ssh://git@192.168.77.79:2222/software/soc/amc308l/manifests.git
   manifest_commit: 0f37f765bdb963d129891e25dda549d6debd4931
   manifest_branch: master
   manifest_name: default.xml

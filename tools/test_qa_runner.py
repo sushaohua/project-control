@@ -83,8 +83,8 @@ class CommitAndUrlValidationTest(unittest.TestCase):
     def test_validate_remote_url_positive(self):
         """接受受支持协议的无凭据远端 URL。"""
         urls = [
-            "ssh://git@192.168.77.113:2222/sushaohua/project-control.git",
-            "http://192.168.77.113/sushaohua/soc-ap.git",
+            "ssh://git@192.168.77.79:2222/sushaohua/project-control.git",
+            "http://192.168.77.79/sushaohua/soc-ap.git",
             "https://gitlab.example.com/team/repo.git",
         ]
         for u in urls:
@@ -95,8 +95,8 @@ class CommitAndUrlValidationTest(unittest.TestCase):
         bads = [
             "file:///home/user/workspace/repo",
             "/local/path/repo",
-            "https://user:pass@192.168.77.113/repo.git",
-            "ftp://192.168.77.113/repo.git",
+            "https://user:pass@192.168.77.79/repo.git",
+            "ftp://192.168.77.79/repo.git",
         ]
         for b in bads:
             with self.assertRaises(QARunnerError):
@@ -109,7 +109,7 @@ class ServerVerificationTest(unittest.TestCase):
         """没有令牌时拒绝初始化 GitLab HTTP 客户端。"""
         with patch.dict("os.environ", {}, clear=True):
             with self.assertRaises(QARunnerError):
-                GitLabClient("http://192.168.77.113")
+                GitLabClient("http://192.168.77.79")
 
     def test_verify_server_commit_positive(self):
         """服务端返回的提交必须与请求哈希完全一致。"""
@@ -132,7 +132,7 @@ class ServerVerificationTest(unittest.TestCase):
         """从受控 SSH 返回值识别 GitLab 认证结果。"""
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=0, stdout="Welcome to GitLab, @sushaohua!", stderr="")
-            ok = check_ssh_connection("192.168.77.113", 2222, "git")
+            ok = check_ssh_connection("192.168.77.79", 2222, "git")
             self.assertTrue(ok)
 
 
@@ -223,7 +223,7 @@ class CommandAndEvidenceTest(unittest.TestCase):
 
     def test_parse_helpers(self):
         """保持仓库候选和 kind:subpath:command 的准确解析。"""
-        urls = {"soc-ap": "ssh://git@192.168.77.113:2222/sushaohua/soc-ap.git"}
+        urls = {"soc-ap": "ssh://git@192.168.77.79:2222/sushaohua/soc-ap.git"}
         sha = "4445c8fedc21bafef5e6c971fcb54cec703f0e71"
         target = parse_repo_target(f"soc-ap={sha}:refs/heads/main", urls)
         self.assertEqual(target.name, "soc-ap")
@@ -249,7 +249,7 @@ class CommandAndEvidenceTest(unittest.TestCase):
     def test_evidence_bundle_delivery_checks_compatibility(self):
         """生成的证据包必须兼容既有收件检查器。"""
         sha = "a5e4b5e97439cae4a7093d1d0a29c5dc9b3c7819"
-        target = RepositoryTarget("project-control", "ssh://git@192.168.77.113:2222/sushaohua/project-control.git", sha, "refs/heads/main")
+        target = RepositoryTarget("project-control", "ssh://git@192.168.77.79:2222/sushaohua/project-control.git", sha, "refs/heads/main")
         targets = [target]
         lock_data = build_server_lock_data(targets)
         run_res = QARunResult(
