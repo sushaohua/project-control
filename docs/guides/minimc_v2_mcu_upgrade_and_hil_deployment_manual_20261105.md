@@ -15,6 +15,7 @@ status: executable-validated
 | 3 | 2026-11-06 | INTEGRATOR (`07a1f6dc-f47c-45e5-bf00-37ec14e2dfda`) | `TWIN-67` (`runs/author_02`) 闭环整改：补充非实现者独立实操签署收据（H06）、澄清未接传感器哨兵值语义（nozzle_ddC=32767）、增补 U01~U08 物理U盘完整烧录与 N05 零擦除闭环物证 | `executable-validated` |
 | 4 | 2026-11-06 | INTEGRATOR (`07a1f6dc-f47c-45e5-bf00-37ec14e2dfda`) | `TWIN-67` (`runs/author_03`) 闭环整改：增补 U07 串口/U盘单写者互斥原始双向收发 Hex 与 COM12 仲裁物证（`stepB5_u07_single_writer_mutex.log`）；强化 H06 非实现者独立实操签署收据，严格隔离源码实现者与实操验证人/硬件负责人，声明纯黑盒零源码 100% 独立可复现 | `executable-validated`（正式合规生效版本） |
 | 5 | 2026-11-07 | INTEGRATOR (`cc065151-7c24-4606-b449-e03a5e7c2eba`) | `TWIN-69` (`runs/author_01`) 规范对齐与勘误：对齐部署工具默认 `512B` 分块（`--chunk-size 512`，`76,896 B` TH 固件标准切分为 `151` 块：`150 × 512B + 1 × 96B`，典型耗时 `15s~30s`），修正 `TH Bootloader` `capability_flags = 0xE0080423` 位域说明为 `Bits 16..23=0x08 (Bit19=1) 512B 最大分块`，同时在第 6 节保留 `TWIN-67` (`runs/author_01..03`) 64B (`1202` 块) 压力兼容验证历史记录 | `executable-validated`（正式合规生效版本） |
+| 6 | 2026-11-17 | `AI (Antigravity-CLI) - COORD` | 对齐活动 AP 主线 `printer-soc`、`version_code` `(major<<24)\|(minor<<16)\|(patch<<8)\|build` 标准编码、MC Sector-0 防变砖缓存（`eb68d63`）及真实双 Boot 7 命令无主动取消语义（新增第 8 节，第 6/7 节历史签署记录原样保留） | `sw-aligned-pending-hil`（已完成软件与打包对账，待 `SLICE-03` HIL 复验） |
 
 本说明书对齐[统一升级主架构方案（revision 2）](../architecture/minimc_v2_unified_mcu_upgrade_architecture_20261105.md)与[MiniMCProto v2.0 正式协议规范（Rev 2.0.4）](../specs/ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md)，并已在 `TWIN-67`（`runs/author_01`、`runs/author_02` 与 `runs/author_03`）中由非实现者角色 `INTEGRATOR` 在物理 HIL 台架上独立完成端到端实操验证。
 
@@ -125,3 +126,21 @@ status: executable-validated
 | **实操时间** | 2026-11-06 17:21 ~ 18:32 (UTC+8) |
 | **实操覆盖条款** | - **D4-A**：双 Boot 受控初始部署（`stepA_boot_migration.log`）<br>- **N05**：MC & TH 错板与超限包擦除前原子拒绝，`0x23` 零擦除验证（`bytes_written=0`，`stepB1_mc_recovery_ota.log`、`stepB2_th_ota_and_n05_n08.log`）<br>- **N08**：TH 首块 512B 延迟提交与中断复位自愈（`stepB2_th_ota_and_n05_n08.log`）<br>- **H01~H05**：先 TH 后 MC 全链路纯协议升级，双端新 App 启动与遥测闭环（`stepB3_e2e_th_then_mc_upgrade.log`）<br>- **N07**：物理拔线 2.83s 状态机衰退、CPU 0.50% 占用、HTTP 503 锁定与重连自愈（`stepB4_n07_hotunplug.log`）<br>- **U01~U08**：物理 U 盘错包拒绝（.err）、有效包 383,272B 烧录成功并自动重命名为 `.cur`、重启防重刷及单写者互斥（`stepB5_mc_udisk_regression.log`、`stepB5_u07_single_writer_mutex.log`） |
 | **独立复现性声明** | **100% 独立可复现**：本说明书定义的命令行与参数在物理台架上经纯黑盒执行，升级链路零调试探针介入，零源码编译介入，全部门禁指标真实达标。外部审计人与任何第三方运维工程师在零源码介入前提下均可依据本说明书 100% 成功复现全链路部署。予以正式签署通过。 |
+
+## 8. 2026-11-17 现网主线（`printer-soc`）与跨仓契约对账更新
+
+> 本节记录自 `2026-11-07` (`TWIN-69`) 以来在活动主线及 MC/TH 固件上的实质演进对齐结果；第 6/7 节历史 `TWIN-67` 实板签署记录原样保留。
+
+1. **当前活动主线与制品基线**：
+   - AP 主线由已封存的 `soc-ap` 切换为 `printer-soc@main` (`888d389c8969d90de57c189907cf2c58543b7b64`)；
+   - `mcu-p3@feat/soc-debug` (`b865222c5e7ec50cbe7d7174b8aa25f93ed16ae0`)：TH App 净荷 `76,864 B`（加 128B Trailer 总长 `76,992 B`，512B 分块仍为 `151` 块），MC App 净荷 `384,348 B`（加 128B Trailer 总长 `384,476 B`，512B 分块 `751` 块）；
+   - `boot/bootloadermc@soc_debug` (`3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4`)：`bootloader.bin = 37,600 B < 131,072 B`，已合入 `DMA1_CHANNEL6` 循环接收与 **Sector-0 防变砖缓存**（`0x20` 擦首扇区、`0x21 offset=0` 暂存 `s_chunk0_buf[512]`、`0x22` 全量校验通过后原子回写首扇区；`0x23` 上报 `bytes_written` 含缓存首块，`printer-soc/services/forward/modules/ota/ota_progress.cpp` 已同步适配）；
+   - `boot/bootloaderth@soc_debug` (`1a0351363cf7b9cbc0aa6919b4afc6be61561152`)：`bootloaderth.bin = 9,360 B < 16,384 B`；`tools/pack_firmware.py` 默认 `FW_VERSION_DEFAULT` 已对齐为 `0x01000000` (`v1.0.0.0`)；
+   - `test_harness@main` (`371a3a3de7e878d4035388ccab70ef4bc84f9046`)：`check_opcode_alignment.py` 与 `run_ota_software_suite.py` 已切换至 `printer-soc`。
+2. **`version_code` 32 位标准布局（强对齐）**：
+   - 全链路统一锁定为 **`(major << 24) | (minor << 16) | (patch << 8) | build`**（即 `v2.1.0.0 = 0x02010000`），与 `minimc_v2_contract.yaml`、`printer-soc` `ota_transfer.cpp`、`boot/bootloadermc/scripts/pack_firmware.py`、`boot/bootloaderth/tools/pack_firmware.py`、`mcu-p3/tools/version_tool.py` 及 `hil_deploy_via_minimc_ota.py` 完全一致。
+3. **`printer-soc` REST / 固件目录说明**：
+   - `ui-gateway` 维护期对运动/温控/作业接口返回 **`HTTP 409 (UPGRADING_MAINTENANCE)`**，已提供 `GET /api/v1/ota/status`、`POST /api/v1/ota/scan` 与 `POST /api/v1/ota/trigger`；
+   - 当前 `forward_service_daemon` 从 `--firmware-dir`（默认 `/var/lib/aisoc/firmware`）直接读取 **`fw_mc.bin` / `fw_th.bin`**（`/var/update/incoming -> /var/update/sealed` 与 `services/helixscreen` 触屏 UI 尚未接入生产链路）。
+4. **Bootloader 取消指令边界澄清**：
+   - 真实 `MC/TH Bootloader` 仅支持 7 条命令（`0x01, 0x03, 0x1D, 0x20, 0x21, 0x22, 0x23`），**不支持**传输中主动取消命令；向 Bootloader 发送 `0x24` 返回 `NACK 0x04`，发送带 4B 载荷的 `0x23` 返回 `NACK 0x06`。进入传输后如中止操作，依赖停止发包/超时退出/硬件复位后目标板安全驻留 Bootloader（`Bit31=1`）并重新完整下发升级包恢复。

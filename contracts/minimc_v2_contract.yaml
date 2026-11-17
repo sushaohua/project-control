@@ -10,6 +10,7 @@ framing:
   min_max_frame_bytes: 534
   ota_trailer_bytes: 128
   ota_trailer_magic_ascii: "ATSG"
+  version_code_layout: "major[31:24], minor[23:16], patch[15:8], build[7:0]"
 forbidden:
   opcodes: [0x05]
   macros: ["MINIMC_CMD_ESTOP_ACK"]

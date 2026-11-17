@@ -1,0 +1,31 @@
+# V2 垂直切片 SLICE-03：Human Gate #2 物理 HIL 全链路穿刺与独立审计准出
+slice_id: "SLICE-03"
+revision: 1
+batch_id: "BATCH-OTA-ACCEPTANCE-01"
+profile: "host-software"
+depends_on: ["SLICE-01", "SLICE-02"]
+input_repositories: ["project-control", "agents", "test_harness", "printer-soc", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
+title: "物理 HIL 双板串口/U盘升降级正负穿刺实测与独立 QA 审计"
+plan_ref: "project-control/docs/planning/mc_th_upgrade_acceptance_implementationplan_20261117_174500.md"
+contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
+requires_hil_immediately: true
+
+subtasks:
+  - role: "INTEGRATOR"
+    repo: "test_harness"
+    branch: "main"
+    allowed_paths: ["hil/**"]
+    diff_budget: {max_files: 0, protected_globs: [], max_protected_lines: 0}
+
+integration_cmd: "echo 'Human Gate #2 required: exclusive physical HIL bench (/dev/ttyUSB0, Option A, [MC-DBG]/[TH-DBG], FAT32 U-disk)' && exit 2"
+
+qa_commands:
+  - {subpath: "test_harness", kind: "test", command: "python3 -m unittest discover -s hil/tests -p test_mcu_firmware_upgrade.py"}
+
+acceptance_criteria:
+  - "B1: 升级前双端 App 模式 (Bit31=0) 与基线读回正常，全程禁用 probe-rs/SWD 刷写 App"
+  - "B2: 先 TH 后 MC 串口全链路升级（含 CLI 与 printer-soc REST），boot_id 三态跃迁与双版本变化匹配"
+  - "B3: 错板与超限包在擦除前原子拒绝（bytes_written=0），原片上 App 完好可重启"
+  - "B4: 发送 0x24 回 NACK 0x04、4B 0x23 回 NACK 0x06；传输中断/复位后安全驻留 Bootloader (Bit31=1) 并可重刷恢复"
+  - "B5: MC FAT32 U 盘合法包写完重命名 .cur 且防重刷、错包重命名 .err、串口/U 盘单写者互斥有效"
+  - "B6: 双向 Raw Hex（带毫秒时戳）、Debug 串口日志与 SHA256 经独立 QA 审计后升级为 HIL-Verified"

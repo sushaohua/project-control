@@ -1,0 +1,44 @@
+# V2 垂直切片 SLICE-01：跨仓契约对齐、五端软件/PTY 回归与四阶漏斗闭环
+slice_id: "SLICE-01"
+revision: 1
+batch_id: "BATCH-OTA-ACCEPTANCE-01"
+profile: "host-software"
+input_repositories: ["project-control", "agents", "test_harness", "printer-soc", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
+title: "MC/TH 升级跨仓契约对齐、五端软件回归与 printer-soc REST/PTY 闭环验收"
+plan_ref: "project-control/docs/planning/mc_th_upgrade_acceptance_implementationplan_20261117_174500.md"
+contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
+requires_hil_immediately: false
+
+subtasks:
+  - role: "INTEGRATOR"
+    repo: "test_harness"
+    branch: "main"
+    allowed_paths:
+      - "static_checks/minimcproto/check_opcode_alignment.py"
+      - "static_checks/minimcproto/run_ota_software_suite.py"
+      - "hil/tools/hil_deploy_via_minimc_ota.py"
+      - "hil/tests/test_mcu_firmware_upgrade.py"
+    diff_budget: {max_files: 4, protected_globs: [], max_protected_lines: 0}
+  - role: "ENG_BOOT_TH"
+    repo: "boot/bootloaderth"
+    branch: "soc_debug"
+    allowed_paths:
+      - "tools/pack_firmware.py"
+    diff_budget: {max_files: 1, protected_globs: ["src/**", "inc/**", "ldscripts/**"], max_protected_lines: 0}
+
+integration_cmd: >-
+  python3 project-control/tools/sync_contracts.py --workspace . &&
+  python3 test_harness/static_checks/minimcproto/check_opcode_alignment.py &&
+  docker run --rm -v "$(pwd)":/workspace:ro -w /workspace qa-sandbox:20261029 python3 test_harness/static_checks/minimcproto/run_ota_software_suite.py &&
+  python3 -m unittest discover -s test_harness/hil/tests -p "test_mcu_firmware_upgrade.py"
+
+qa_commands:
+  - {subpath: "printer-soc", kind: "build", command: "cmake -S . -B /output/build_ps -DSOC_AP_BUILD_SERVICES=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps -j4"}
+  - {subpath: "printer-soc", kind: "test", command: "ctest --test-dir /output/build_ps --output-on-failure -R 'forward_ota_progress|test_forward_protocol|test_firmware_updater|test_ui_gateway_routes|ota_forward_gateway_pty'"}
+  - {subpath: "test_harness", kind: "test", command: "python3 static_checks/minimcproto/check_opcode_alignment.py && python3 static_checks/minimcproto/run_ota_software_suite.py && python3 -m unittest discover -s hil/tests -p test_mcu_firmware_upgrade.py"}
+
+acceptance_criteria:
+  - "五端 MiniMCProto v2.0 (Rev 2.0.4) 契约与 check_opcode_alignment.py (含 printer-soc) 对齐校验通过"
+  - "version_code 编码与解析在 printer-soc、boot/bootloadermc、boot/bootloaderth/tools/pack_firmware.py 与 test_harness 全链路统一为 (major<<24)|(minor<<16)|(patch<<8)|build"
+  - "清除 VirtualDualMcuOtaTarget 中虚构的 0x23 4B Abort 假阳性断言，对齐真机 Bootloader（0x24 回 NACK 0x04、4B 0x23 回 NACK 0x06，中止后驻留 Bootloader 并支持重刷恢复）"
+  - "printer-soc 服务 CTest（含 ota_forward_gateway_pty）与 test_harness 静态/软件矩阵/单测在隔离只读 Docker 沙箱内全部通过，且独立 Codex 双轴冷审 0 BLOCKER"

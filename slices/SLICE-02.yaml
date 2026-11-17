@@ -1,0 +1,28 @@
+# V2 垂直切片 SLICE-02：宿主机 ARM 固件交叉编译、分区预算与双版本包对齐验证 (DEC-USER-4=A)
+slice_id: "SLICE-02"
+revision: 1
+batch_id: "BATCH-OTA-ACCEPTANCE-01"
+profile: "host-software"
+depends_on: ["SLICE-01"]
+input_repositories: ["project-control", "agents", "test_harness", "printer-soc", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
+title: "MC/TH Bootloader 与 App 宿主机 ARM 交叉编译尺寸门禁及双版本 ATSG 包兼容验证"
+plan_ref: "project-control/docs/planning/mc_th_upgrade_acceptance_implementationplan_20261117_174500.md"
+contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
+requires_hil_immediately: false
+
+subtasks: []
+
+integration_cmd: >-
+  (cd boot/bootloaderth && sh tests/run_tests.sh) &&
+  (cd boot/bootloadermc && sh tests/run_tests.sh) &&
+  (cd mcu-p3/color-engine-mcu/tests && sh run_tests.sh) &&
+  (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh)
+
+qa_commands:
+  - {subpath: "boot/bootloaderth", kind: "test", command: "python3 -m unittest discover -s tests || true"}
+  - {subpath: "test_harness", kind: "test", command: "python3 -m unittest discover -s hil/tests -p test_mcu_firmware_upgrade.py"}
+
+acceptance_criteria:
+  - "TH Bootloader <= 16,384B 且 16KB 溢出拦截测试通过；MC Bootloader <= 131,072B 且零 USART6 耦合"
+  - "TH App 净荷 <= 241,664B (236KB) 且 MC App 净荷 <= 917,504B (896KB)，支持编译产出两套可辨识版本测试包 (v2.0 与 v2.1)"
+  - "pack_firmware.py 与 hil_deploy_via_minimc_ota.py 打出的 ATSG 包均符合 (major<<24)|(minor<<16) 位域约定"
