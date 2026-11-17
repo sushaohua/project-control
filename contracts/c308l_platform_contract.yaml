@@ -29,7 +29,6 @@ project_owners:
   platform/bootloader/uboot-repo/bl40/bin: ENG-PLATFORM
   platform/bootloader/uboot-repo/soc/templates: ENG-PLATFORM
   platform/hardware/bluetooth: ENG-PLATFORM
-  craftdance/helixscreen: ENG-AP
   platform/kernel/aml-5.15: ENG-PLATFORM
   platform/kernel/aml-5.15/common_drivers: ENG-PLATFORM
   craftdance/moonraker: READ_ONLY

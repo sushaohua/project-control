@@ -67,12 +67,12 @@ repo_clients:
 - id: c308l
   path: sdk/c308l
   manifest_url: ssh://git@192.168.77.79:2222/software/soc/amc308l/manifests.git
-  manifest_commit: 0f37f765bdb963d129891e25dda549d6debd4931
+  manifest_commit: eb5d0d5179a03b25ceb56ac4a41c6bd87b7e06ac
   manifest_branch: master
   manifest_name: default.xml
   lock_repo: printer-soc
   lock_path: boards/c308l-aw419/sdk/manifest.lock.xml
-  lock_sha256: 204623f77b6333d6ebd4a14c43a80f2e3d80232ecc70a23ab401b9e0285b1e2d
+  lock_sha256: ea8f4eec4425f1624af05a2cfc529c621006f2feb40b6b0bc1fa254b3312e13e
   agents_subdir: c308l-sdk
 profiles:
 - host-software
