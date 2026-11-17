@@ -26,7 +26,6 @@ from qa_runner.qa_runner import (
     _stage_profile_workspace,
     accepted_profile_image,
     CommandResult,
-    GitLabClient,
     QARunner,
     QARunnerError,
     QARunRequest,
@@ -53,7 +52,7 @@ from qa_runner.qa_runner import (
     validate_sandbox_subpath,
     validate_profile_request,
     verify_clean_worktree,
-    verify_server_commit,
+    verify_remote_ref,
     write_evidence_bundle,
 )
 from test_harness.runner import harness_runner
@@ -104,29 +103,37 @@ class CommitAndUrlValidationTest(unittest.TestCase):
 
 
 class ServerVerificationTest(unittest.TestCase):
-    """核验服务端提交存在性和 SSH 身份判断。"""
-    def test_gitlab_client_init_requires_token(self):
-        """没有令牌时拒绝初始化 GitLab HTTP 客户端。"""
-        with patch.dict("os.environ", {}, clear=True):
-            with self.assertRaises(QARunnerError):
-                GitLabClient("http://192.168.77.79")
-
-    def test_verify_server_commit_positive(self):
-        """服务端返回的提交必须与请求哈希完全一致。"""
-        client = MagicMock()
+    """核验纯 Git/SSH 直连认证与远端引用可达性（无 GitLab HTTP API 依赖）。"""
+    def test_verify_remote_ref_positive(self):
+        """原生 git ls-remote 成功返回远端分支与提交哈希。"""
         sha = "1246ea9cb441d074ea444f53320f5632fefcd503"
-        client.get_commit.return_value = {"id": sha, "title": "Commit title"}
-        res = verify_server_commit(client, "sushaohua/mcu-p3", sha)
-        self.assertEqual(res["id"], sha)
+        target = RepositoryTarget("mcu-p3", "ssh://git@192.168.77.79:2222/sushaohua/mcu-p3.git",
+                                  sha, "feat/soc-debug")
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=0, stdout=f"{sha}\trefs/heads/feat/soc-debug\n", stderr="")
+            self.assertEqual(verify_remote_ref(target), sha)
+            self.assertEqual(mock_run.call_args.args[0],
+                             ["git", "ls-remote", target.url, "refs/heads/feat/soc-debug"])
 
-    def test_verify_server_commit_unpushed_rejection(self):
-        """服务端没有该提交时拒绝正式候选。"""
-        client = MagicMock()
+    def test_verify_remote_ref_missing_rejection(self):
+        """远端仓库缺失或引用不存在时必须拒绝并保留原始错误。"""
         sha = "1246ea9cb441d074ea444f53320f5632fefcd503"
-        client.get_commit.side_effect = QARunnerError("GitLab API HTTP 404")
-        with self.assertRaises(QARunnerError) as ctx:
-            verify_server_commit(client, "sushaohua/mcu-p3", sha)
-        self.assertIn("unpushed or invalid", str(ctx.exception))
+        target = RepositoryTarget("mcu-p3", "ssh://git@192.168.77.79:2222/sushaohua/mcu-p3.git",
+                                  sha, "refs/heads/missing")
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
+            with self.assertRaisesRegex(QARunnerError, "ref not found"):
+                verify_remote_ref(target)
+
+    def test_verify_server_prerequisites_ssh_only(self):
+        """服务端前置检查仅执行 SSH 认证，不再依赖 GITLAB_TOKEN 或 HTTP API。"""
+        with tempfile.TemporaryDirectory(prefix="qa_ssh_only_") as directory:
+            runner = QARunner({"sandbox": {"base_dir": directory},
+                               "server": {"ssh_host": "192.168.77.79", "ssh_port": 2222}})
+            with patch("qa_runner.qa_runner.check_ssh_connection", return_value=True) as mock_ssh:
+                status = runner.verify_server_prerequisites()
+            self.assertEqual(status, {"auth_mode": "ssh-git", "ssh_connected": True})
+            mock_ssh.assert_called_once()
 
     def test_check_ssh_connection_parsing(self):
         """从受控 SSH 返回值识别 GitLab 认证结果。"""

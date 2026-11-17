@@ -18,9 +18,7 @@ import shlex
 import subprocess
 import sys
 from typing import Dict, List, Optional
-import urllib.error
 import urllib.parse
-import urllib.request
 
 import yaml
 
@@ -86,21 +84,6 @@ class QARunResult:
     platform_inputs: Dict[str, object] = field(default_factory=dict)
 
 
-def redact_token(text: str) -> str:
-    """将文本中可能包含的环境变量 GITLAB_TOKEN 敏感令牌脱敏替换。
-
-    Args:
-        text: 原始日志或异常消息字符串。
-
-    Returns:
-        str: 脱敏后的安全字符串。
-    """
-    token = os.environ.get("GITLAB_TOKEN")
-    if token and token in text:
-        return text.replace(token, "[REDACTED_GITLAB_TOKEN]")
-    return text
-
-
 def compute_bytes_sha256(data: bytes) -> str:
     """计算原始字节流的 64 位小写十六进制 SHA256 摘要。"""
     return hashlib.sha256(data).hexdigest()
@@ -145,53 +128,6 @@ def validate_remote_url(url: str) -> str:
     return url
 
 
-class GitLabClient:
-    """用于远端提交核验与鉴权检查的 GitLab REST API v4 客户端。"""
-
-    def __init__(self, base_url: str, token: Optional[str] = None, timeout: int = 30):
-        """初始化 GitLab 客户端并校验基础 URL 与访问令牌。"""
-        self.base_url = base_url.rstrip("/")
-        parsed = urllib.parse.urlsplit(self.base_url)
-        if parsed.scheme not in ("http", "https") or parsed.username or parsed.password:
-            raise QARunnerError("GITLAB_URL must be an HTTP(S) URL without credentials")
-        self.token = token or os.environ.get("GITLAB_TOKEN")
-        if not self.token:
-            raise QARunnerError("GITLAB_TOKEN environment variable is required")
-        self.timeout = timeout
-
-    def request(self, endpoint: str, method: str = "GET", payload: Optional[dict] = None) -> dict:
-        """向 GitLab API v4 端点发起带 PRIVATE-TOKEN 的 HTTP 请求并解析 JSON 响应。"""
-        url = f"{self.base_url}/api/v4{endpoint}"
-        body = json.dumps(payload).encode("utf-8") if payload is not None else None
-        req = urllib.request.Request(
-            url,
-            data=body,
-            headers={"PRIVATE-TOKEN": self.token, "Content-Type": "application/json"},
-            method=method,
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                data = resp.read()
-                return json.loads(data.decode("utf-8")) if data else {}
-        except urllib.error.HTTPError as err:
-            msg = f"GitLab API {endpoint} failed: HTTP {err.code}"
-            raise QARunnerError(msg) from err
-        except (urllib.error.URLError, OSError) as err:
-            msg = redact_token(f"GitLab connection failed: {err}")
-            raise QARunnerError(msg) from err
-
-    def check_auth(self) -> dict:
-        """验证当前 API Token 鉴权有效性并返回当前用户信息字典。"""
-        return self.request("/user")
-
-    def get_commit(self, project_path: str, commit_sha: str) -> dict:
-        """查询远端 GitLab 指定项目中的特定 Commit 元数据。"""
-        validate_commit_sha(commit_sha)
-        encoded = urllib.parse.quote(project_path, safe="")
-        endpoint = f"/projects/{encoded}/repository/commits/{commit_sha}"
-        return self.request(endpoint)
-
-
 def check_ssh_connection(host: str, port: int, user: str = "git", timeout: int = 90) -> bool:
     """通过非交互式 SSH 批处理模式验证 GitLab SSH 端口连通性与公钥认证。"""
     cmd = [
@@ -214,18 +150,23 @@ def check_ssh_connection(host: str, port: int, user: str = "git", timeout: int =
         raise QARunnerError(f"SSH invocation failed: {err}") from err
 
 
-def verify_server_commit(client: GitLabClient, project_path: str, commit: str) -> dict:
-    """断言候选 Commit 已真实存在于远端 GitLab 服务端，拒绝未推送的本地哈希。"""
-    validate_commit_sha(commit)
+def verify_remote_ref(target: RepositoryTarget, timeout: int = 60) -> str:
+    """通过原生 `git ls-remote` 直连核验远端仓库及分支引用可达，拒绝未建库或失效分支。"""
+    validate_commit_sha(target.commit)
+    url = validate_remote_url(target.url)
+    ref = target.ref or "HEAD"
+    if ref != "HEAD" and not ref.startswith("refs/"):
+        ref = f"refs/heads/{ref}"
+    cmd = ["git", "ls-remote", url, ref]
     try:
-        data = client.get_commit(project_path, commit)
-        if not data or data.get("id") != commit:
-            raise QARunnerError(f"Commit {commit} mismatch in server response: {data}")
-        return data
-    except QARunnerError as err:
-        if "HTTP 404" in str(err):
-            raise QARunnerError(f"Candidate commit {commit} not found on server (unpushed or invalid)")
-        raise
+        proc = subprocess.run(cmd, text=True, capture_output=True, timeout=timeout,
+                              env={**os.environ, "GIT_TERMINAL_PROMPT": "0"})
+    except (subprocess.TimeoutExpired, OSError) as err:
+        raise QARunnerError(f"Remote ls-remote failed for {target.name}: {err}") from err
+    if proc.returncode != 0 or not proc.stdout.strip():
+        detail = proc.stderr.strip() or f"ref not found: {ref}"
+        raise QARunnerError(f"Remote verification failed for {target.name}: {detail}")
+    return proc.stdout.splitlines()[0].split()[0]
 
 
 def sanitize_path_component(name: str) -> str:
@@ -687,59 +628,28 @@ class QARunner:
     """统筹远端提交核验、隔离沙箱检出与只读容器测试执行的 QA 核心运行器。"""
 
     def __init__(self, config: dict, workspace_root: Optional[Path] = None):
-        """初始化 QA 运行器，解析服务端地址、超时参数并校验沙箱根路径隔离性。"""
+        """初始化 QA 运行器，解析服务端 SSH 地址、超时参数并校验沙箱根路径隔离性。"""
         self.config = config
         self.workspace_root = workspace_root or Path.cwd()
         server_cfg = config.get("server", {})
-        self.gitlab_url = server_cfg.get("gitlab_url", "http://192.168.77.79")
         self.ssh_host = server_cfg.get("ssh_host", "192.168.77.79")
         self.ssh_port = server_cfg.get("ssh_port", 2222)
         self.ssh_user = server_cfg.get("ssh_user", "git")
-        self.api_timeout = int(server_cfg.get("api_timeout_seconds", 60))
         self.ssh_timeout = int(server_cfg.get("ssh_timeout_seconds", 30))
         sandbox_cfg = config.get("sandbox", {})
         base_dir = Path(sandbox_cfg.get("base_dir", "/tmp/qa_sandboxes"))
         self.sandbox_base = validate_sandbox_path(base_dir, [self.workspace_root])
-        # 若配置了 GITLAB_TOKEN 则初始化 HTTP 客户端；缺失或过期时降级为纯 SSH 远端哈希锁定校验
-        self.gitlab = (
-            GitLabClient(self.gitlab_url, timeout=self.api_timeout)
-            if os.environ.get("GITLAB_TOKEN")
-            else None
-        )
 
     def verify_server_prerequisites(self) -> dict:
-        """核验 GitLab SSH 端口公钥认证连通性（若配置有效 API Token 则同步核验）。"""
+        """核验 GitLab SSH 端口公钥认证连通性（纯 Git/SSH 直连，不依赖 HTTP API）。"""
         ssh_ok = check_ssh_connection(self.ssh_host, self.ssh_port, self.ssh_user, timeout=self.ssh_timeout)
-        api_user = "ssh-git"
-        if self.gitlab is not None:
-            try:
-                user_info = self.gitlab.check_auth()
-                api_user = user_info.get("username", "ssh-git")
-            except QARunnerError as err:
-                if "HTTP 401" not in str(err):
-                    raise
-        return {"api_user": api_user, "ssh_connected": ssh_ok}
+        return {"auth_mode": "ssh-git", "ssh_connected": ssh_ok}
 
     def verify_target_commits(self, targets: List[RepositoryTarget]) -> None:
-        """逐一核验请求中所有目标仓库的候选 Commit 合法性与远端可达性（Token 过期时由 SSH 检出强校验）。"""
+        """逐一通过 SSH 与 `git ls-remote` 核验候选仓与引用可达性，具体提交再由克隆强校验。"""
         check_ssh_connection(self.ssh_host, self.ssh_port, self.ssh_user, timeout=self.ssh_timeout)
-        repos_cfg = self.config.get("repositories", {})
         for target in targets:
-            validate_commit_sha(target.commit)
-            validate_remote_url(target.url)
-            if self.gitlab is None:
-                continue
-            cfg = repos_cfg.get(target.name, {})
-            project_path = cfg.get("api_project_path")
-            if not project_path:
-                raise QARunnerError("GitLab project path must be configured: " + target.name)
-            try:
-                verify_server_commit(self.gitlab, project_path, target.commit)
-            except QARunnerError as err:
-                if "HTTP 401" in str(err):
-                    self.gitlab = None
-                    continue
-                raise
+            verify_remote_ref(target, timeout=self.ssh_timeout)
 
     def _run_sandbox_steps(self, sandbox_dir: Path, req: QARunRequest,
                            cid: Optional[str] = None) -> tuple:
