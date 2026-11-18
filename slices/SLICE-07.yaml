@@ -55,3 +55,8 @@ acceptance_criteria:
   - "DEC-SCREEN-02=B：首版仅从固定固件目录扫描 fw_mc.bin / fw_th.bin（不含 TF 卡或 U 盘导入）"
   - "DEC-SCREEN-08=B：sign_mcu_firmware.py 与 ota_image.cpp:verify_image() 统一覆盖 trailer[0..52] ECDSA-P256 签名，覆盖合法签名包/未签名包/坏签名/缺失公钥 4 类验收，未通过返回 PACKAGE_SIGNATURE_INVALID 且 0 帧 0x1D/0x20；文档继续注明 MC FAT32 U 盘救援无 ECDSA 校验边界"
   - "DEC-SCREEN-03 有条件 A：补齐并发 OTA、维护互斥与急停联动验收，UI 明确区分 后台已锁定(BUSY) 与 设备已确认急停"
+
+eng_delivery_requirements:
+  - "1. 所有新增/非 protected_globs 文件（含 core/firmware/**、services/forward/**、services/device_manager/firmware_updater.cpp、services/helixscreen/{include,src}/aisoc/**、tools/*.py）严格遵守单函数<=50行、入参<=4个、全中文注释。"
+  - "2. 签发端 tools/sign_mcu_firmware.py 与验签端 ota_image.cpp / firmware_updater.cpp 统一 ECDSA-P256 对 trailer[0..52] 签名覆盖范围，并在 CMake(qa-sandbox -lcrypto) 与 C308L ARM(sdk openssl-1.1.1f libcrypto.a) 双端编通。"
+  - "3. 完成后执行 git -C printer-soc fetch origin main && rebase origin/main && push origin main 保持线性历史确保 GitLab 可检出 40 位 candidate_commit，写自检报告到 project-control/docs/evidence/SLICE-07/ENG-AP_selfcheck.md。"
