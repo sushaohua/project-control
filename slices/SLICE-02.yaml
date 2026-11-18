@@ -19,11 +19,14 @@ integration_cmd: >-
   (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh)
 
 qa_commands:
-  - {subpath: "boot/bootloaderth", kind: "test", command: "gcc -std=c11 -O2 -Wall -Wextra -Werror -DIAP_HOST_TEST -DDEBUG_LOG_ENABLE=0 -Iinc src/iap.c src/flash.c tests/test_th_boot_ota.c -o /output/test_th_boot_ota && /output/test_th_boot_ota"}
-  - {subpath: "boot/bootloadermc", kind: "test", command: "gcc -O2 -g3 -Wall -Wextra -Werror -DHOST_UNIT_TEST -Ibootloader/inc tests/test_mc_boot_ota.c -o /output/test_mc_boot_ota && /output/test_mc_boot_ota"}
+  - {subpath: "boot/bootloaderth", kind: "build", command: "gcc -std=c11 -O2 -Wall -Wextra -Werror -DIAP_HOST_TEST -DDEBUG_LOG_ENABLE=0 -Iinc src/iap.c src/flash.c tests/test_th_boot_ota.c -o /output/test_th_boot_ota"}
+  - {subpath: "boot/bootloaderth", kind: "test", command: "/output/test_th_boot_ota"}
+  - {subpath: "boot/bootloadermc", kind: "build", command: "gcc -O2 -g3 -Wall -Wextra -Werror -DHOST_UNIT_TEST -Ibootloader/inc tests/test_mc_boot_ota.c -o /output/test_mc_boot_ota"}
+  - {subpath: "boot/bootloadermc", kind: "test", command: "/output/test_mc_boot_ota"}
   - {subpath: "test_harness", kind: "test", command: "python3 -m unittest discover -s hil/tests -p test_mcu_firmware_upgrade.py"}
+  - {subpath: ".", kind: "test", command: "python3 -c 'import subprocess,sys,tempfile; from pathlib import Path; tmp=Path(tempfile.mkdtemp(dir=\"/output\")); th=tmp/\"th.bin\"; mc=tmp/\"mc.bin\"; th.write_bytes(b\"\\x5A\"*241664); mc.write_bytes(b\"\\xA5\"*917504); subprocess.run([sys.executable,\"boot/bootloaderth/tools/pack_firmware.py\",str(th),str(tmp/\"fw_th.bin\")],check=True); subprocess.run([sys.executable,\"boot/bootloadermc/scripts/pack_firmware.py\",\"-i\",str(mc),\"-b\",\"0x43500001\",\"-v\",\"0x02010000\",\"-o\",str(tmp/\"fw_mc.bin\")],check=True); over_th=tmp/\"oth.bin\"; over_th.write_bytes(b\"\\x5A\"*241665); assert subprocess.run([sys.executable,\"boot/bootloaderth/tools/pack_firmware.py\",str(over_th),str(tmp/\"o1.bin\")]).returncode!=0; over_mc=tmp/\"omc.bin\"; over_mc.write_bytes(b\"\\xA5\"*917505); assert subprocess.run([sys.executable,\"boot/bootloadermc/scripts/pack_firmware.py\",\"-i\",str(over_mc),\"-b\",\"0x43500001\",\"-o\",str(tmp/\"o2.bin\")]).returncode!=0; print(\"[PASS] Docker sandbox ATSG boundary & version_code packing checks OK\")'"}
 
 acceptance_criteria:
-  - "TH Bootloader <= 16,384B 且 16KB 溢出拦截测试通过；MC Bootloader <= 131,072B 且零 USART6 耦合"
-  - "TH App 净荷 <= 241,664B (236KB) 且 MC App 净荷 <= 917,504B (896KB)，支持编译产出两套可辨识版本测试包 (v2.0 与 v2.1)"
+  - "按 DEC-USER-4=A：宿主机 arm-none-eabi-gcc 交叉编译与尺寸/溢出/单测原始日志记录于 project-control/docs/evidence/SLICE-02/host_arm_build_and_tests.log（TH Bootloader <= 16,384B 且 >16KB 溢出拦截通过；MC Bootloader <= 131,072B 且零 USART6 耦合；TH App <= 241,664B；MC App <= 917,504B）"
+  - "双版本测试包 (v1.0/v2.0/v2.1) 打包与超限拦截原始日志记录于 project-control/docs/evidence/SLICE-02/dual_version_pack_verify.log，且在 qa-sandbox:20261029 容器内实测 Bootloader 宿主 C 单测构建运行、test_mcu_firmware_upgrade.py 与 236KB/896KB 打包边界通过"
   - "pack_firmware.py 与 hil_deploy_via_minimc_ota.py 打出的 ATSG 包均符合 (major<<24)|(minor<<16) 位域约定"

@@ -1,0 +1,87 @@
+{
+  "task_id": "SLICE-02",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "profile": "host-software",
+  "platform_inputs": {},
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "aff2d55721d8",
+    "id": "SLICE-02_run_094124_20261118_014124",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/SLICE-02_run_094124_20261118_014124",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "aff2d55721d8cfff2a5b0ae845506a62ac0d0ac07234e6835818f46bd887f1bc",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-18T01:41:50.07644017Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/SLICE-02_run_094124_20261118_014124",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/SLICE-02_run_094124_20261118_014124_output",
+          "Destination": "/output",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/SLICE-02/run_01/docker_qa/server_lock.json",
+    "sha256": "d0a81af2649001cfe96fb0ec72c7b0b3725ade947a447dab7afa86efcd3debd8"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/SLICE-02/run_01/docker_qa/checkout.log",
+    "sha256": "a1c37a59bf957632b42fd98f53c391e6f19a0f65496ccc8eef87fdd731b1819d"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/SLICE-02/run_01/docker_qa/runtime.log",
+    "sha256": "45bdcba506a2af88d96beb273a9a68094ff6f8d23493f00e1db71f072d741007"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/SLICE-02/run_01/docker_qa/server_verdict.json",
+    "sha256": "bce87e195fdb8993c6bca4d060c0bd99253bed5fb344fa4a85407f95bdb0e20c"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "gcc -std=c11 -O2 -Wall -Wextra -Werror -DIAP_HOST_TEST -DDEBUG_LOG_ENABLE=0 -Iinc src/iap.c src/flash.c tests/test_th_boot_ota.c -o /output/test_th_boot_ota && /output/test_th_boot_ota",
+      "exit_code": "0",
+      "subpath": "boot/bootloaderth",
+      "duration": "0.21s",
+      "output": "[PASS] test_th_boot_ota: all TH Bootloader MiniMCProto v2.0 tests passed!"
+    },
+    {
+      "command": "gcc -O2 -g3 -Wall -Wextra -Werror -DHOST_UNIT_TEST -Ibootloader/inc tests/test_mc_boot_ota.c -o /output/test_mc_boot_ota && /output/test_mc_boot_ota",
+      "exit_code": "0",
+      "subpath": "boot/bootloadermc",
+      "duration": "0.35s",
+      "output": "FAT32 File System initialized.\nSearching for upgrade package (fw_mc.bin)...\nFound: firmwaremc.bin, Size: 1152 bytes, Target: 0x08020000\nStarting firmware flash programming...\n[PRE-VERIFY] REJECTED: Trailer check failed (rc=-6, magic=0x41545347, board=0x43500001)\n[SECURITY GATE] Pre-verification FAILED. Flash erase ABORTED!\nUpgrade failed!\n[BOOT] FS Check PASSED: 0:/firmwaremc.bin -> 0:/firmwaremc.err verified (Size=1152 B).\nFAT32 File System initialized.\nSearching for upgrade package (fw_mc.bin)...\nFound: firmwaremc.bin, Size: 1152 bytes, Target: 0x08020000\nStarting firmware flash programming...\n[PRE-VERIFY] PASS: MC Firmware verified. Payload: 1024 B, Ver: 0x01020300\nErasing 1 sectors (2KB each) from 0x08020000...\nWriting image to Flash (1024 B)...\nCRC32 Check OK: 0x7C87C1A0\nUpgrade firmwaremc.bin successful!\n[BOOT] FS Check PASSED: 0:/firmwaremc.bin -> 0:/firmwaremc.cur verified (Size=1152 B).\nJumping to Application at 0x08020000...\nFAT32 File System initialized.\nSearching for upgrade package (fw_mc.bin)...\n[BOOT] UART2 OTA active, deferring USB U-disk upgrade.\nFAT32 File System initialized.\nSearching for upgrade package (fw_mc.bin)...\nFound: firmwaremc.bin, Size: 1152 bytes, Target: 0x08020000\nStarting firmware flash programming...\n[PRE-VERIFY] PASS: MC Firmware verified. Payload: 1024 B, Ver: 0x01020300\nErasing 1 sectors (2KB each) from 0x08020000...\nWriting image to Flash (1024 B)...\nCRC32 Check OK: 0x7C87C1A0\nUpgrade firmwaremc.bin successful!\n[BOOT] FS Check PASSED: 0:/firmwaremc.bin -> 0:/firmwaremc.cur verified (Size=1152 B).\nJumping to Application at 0x08020000...\n[PASS] test_mc_boot_ota: all MC Bootloader MiniMCProto v2.0 & USB Host tests passed!"
+    },
+    {
+      "command": "python3 -m unittest discover -s hil/tests -p test_mcu_firmware_upgrade.py",
+      "exit_code": "0",
+      "subpath": "test_harness",
+      "duration": "0.73s",
+      "output": "[PASS] Packed 1024B -> 1152B (TH, v2.1, 0x02010304)\n\n....[EXPECTED-REJECT] invalid --chunk-size=0 (must be 1..512)\n[EXPECTED-REJECT] invalid --chunk-size=513 (must be 1..512)\n[EXPECTED-REJECT] invalid --baud=12345: unsupported baud=12345 (allowed: (9600, 19200, 38400, 57600, 115200, 230400, 460800, 500000, 576000, 921600, 1000000, 1152000, 1500000, 2000000))\n..\n----------------------------------------------------------------------\nRan 6 tests in 0.589s\n\nOK"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-18T01:41:54.400285+00:00"
+}
