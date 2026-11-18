@@ -13,13 +13,14 @@ requires_hil_immediately: false
 subtasks: []
 
 integration_cmd: >-
-  (cd boot/bootloaderth && sh tests/run_tests.sh) &&
-  (cd boot/bootloadermc && sh tests/run_tests.sh) &&
+  (cd boot/bootloaderth && sh tests/run_tests.sh && make clean) &&
+  (cd boot/bootloadermc && sh tests/run_tests.sh && make clean) &&
   (cd mcu-p3/color-engine-mcu/tests && sh run_tests.sh) &&
   (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh)
 
 qa_commands:
-  - {subpath: "boot/bootloaderth", kind: "test", command: "python3 -m unittest discover -s tests || true"}
+  - {subpath: "boot/bootloaderth", kind: "test", command: "gcc -std=c11 -O2 -Wall -Wextra -Werror -DIAP_HOST_TEST -DDEBUG_LOG_ENABLE=0 -Iinc src/iap.c src/flash.c tests/test_th_boot_ota.c -o /output/test_th_boot_ota && /output/test_th_boot_ota"}
+  - {subpath: "boot/bootloadermc", kind: "test", command: "gcc -O2 -g3 -Wall -Wextra -Werror -DHOST_UNIT_TEST -Ibootloader/inc tests/test_mc_boot_ota.c -o /output/test_mc_boot_ota && /output/test_mc_boot_ota"}
   - {subpath: "test_harness", kind: "test", command: "python3 -m unittest discover -s hil/tests -p test_mcu_firmware_upgrade.py"}
 
 acceptance_criteria:
