@@ -107,8 +107,9 @@ def run_codex_audit(prompt: str, slice_id: str, workdir: Path, out_dir: Path) ->
         raise RuntimeError(f"独立 Codex CLI 不可用: {codex_bin}")
     (out_dir / "schema.json").write_text(json.dumps(v2_audit_schema()), encoding="utf-8")
     (out_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
+    timeout_sec = int(os.environ.get("CODEX_TIMEOUT_SEC", "420"))
     with (out_dir / "codex.jsonl").open("w", encoding="utf-8") as f_out, (out_dir / "codex.stderr").open("w", encoding="utf-8") as f_err:
-        proc = subprocess.run(_build_codex_cmd(codex_bin, model, workdir, out_dir), input=prompt, text=True, stdout=f_out, stderr=f_err, timeout=180)
+        proc = subprocess.run(_build_codex_cmd(codex_bin, model, workdir, out_dir), input=prompt, text=True, stdout=f_out, stderr=f_err, timeout=timeout_sec)
     if proc.returncode != 0:
         raise RuntimeError(f"Codex 审阅进程非零退出 ({proc.returncode}): {out_dir}")
     session_id, tokens = parse_codex_jsonl((out_dir / "codex.jsonl").read_text(encoding="utf-8"))
