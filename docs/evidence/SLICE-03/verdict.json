@@ -1,0 +1,47 @@
+{
+  "slice_id": "SLICE-03",
+  "batch_id": "BATCH-OTA-ACCEPTANCE-01",
+  "decision": "REJECTED",
+  "codex_session": "01a1ec7a-9b1e-7313-8847-81044852f917",
+  "blocker_count": 4,
+  "tokens_used": 205116,
+  "findings": [
+    {
+      "id": "SLICE03-B4-TH",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "hil_raw_hex.log:42-47; mcu-p3/motion-controller-mcu/project/src/minimc_proto.c:2487-2494,2596-2600; SLICE-03.yaml B4",
+      "message": "日志显示 TH 代理活跃时发往 dst=0x03 的 0x24 收到 src=0x02 的 NACK 0x05；等待代理超时后，同一命令才由 TH 返回预期 NACK 0x04。源码白名单仅放行 0x20..0x23，代理活跃时未放行的命令会被 MC 以 DEVICE_BUSY 拒绝。HIL-FINDING-01 的现象、定责及位置准确；B4 未通过，构成拒收条件。"
+    },
+    {
+      "id": "SLICE03-B4-MC",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "hil_raw_hex.log:402-418,421-424; boot/bootloadermc/bootloader/src/boot_uart_ota.c:52,206-223,833",
+      "message": "原始日志中 MC Bootloader 在 B3、B4 复位前后均报告 boot_id=0xC1E6CD05，符合 B4_MC 失败记录。源码显示静态 s_boot_salt 每次启动从零初始化后加固定常量，ID 再与固定 UID 和 CRM->ctrlsts 异或，支持所报 boot_id 不刷新的根因方向。CRM->ctrlsts 的 SWRESETF 位跨复位保持不变这一具体硬件前提未在所给源码或原始日志中直接取证，应视为 [UNVERIFIED]；不影响未满足 boot_id 刷新验收项的结论。"
+    },
+    {
+      "id": "SLICE03-B5-PENDING",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "SLICE-03.yaml acceptance_criteria B5; hil_deployment_receipt.json unverified_hardware; INTEGRATOR_hil_report.md §5",
+      "message": "B5 U 盘人工插拔及相关硬件验收未执行，回执和报告均明确列为 [UNVERIFIED]/PENDING。方案将 MC U 盘升级与恢复列为 P0 验收范围，当前不能据此准出完整升级验收切片。"
+    },
+    {
+      "id": "SLICE03-RECEIPT",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "SLICE-03.yaml integration_cmd; hil_deployment_receipt.json:10-17",
+      "message": "切片集成命令明确断言 receipt.passed is True，而回执为 false，命令不能通过。报告如实陈述失败，未伪报通过；按门禁和验收要求，本切片仍须 REJECTED。"
+    },
+    {
+      "id": "SLICE03-EVIDENCE-PROVENANCE",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "hil_deployment_receipt.json packages/raw_hex_log; hil_raw_hex.log:1-3",
+      "message": "Raw Hex 文件 SHA256 为 571025ec6e6aba426211d1f87e78f8f4dece3f848c8ebf8ea59055ac5495b2db，与回执一致；日志包含双向帧、毫秒时间戳以及 0x97C1C242 到 0xB865222C 的升级前后身份。时间戳是报告说明的目标机单调时钟映射值，固件 SHA256 仅见于回执及 OTA 元数据，所给证据中没有对应固件二进制供独立重算，也没有独立来源签名。因此可确认记录的内部一致性与文件哈希，无法仅凭这些文件独立证明物理来源及固件文件哈希真实性。"
+    }
+  ],
+  "axis_spec_realism": "BLOCKER：B4_TH 与 B4_MC 均有原始帧佐证的实测失败；切片集成命令要求回执 passed=true，但当前为 false。B5 物理 U 盘验收仍未执行，报告如实标记 [UNVERIFIED]，因此验收未闭环。Raw Hex 的本地 SHA256 与回执记录一致，升级前后 commit 也与日志相符；这能证明文件完整性和记录内部一致，不能单独证明日志来源或固件二进制来源。",
+  "axis_embedded_safety": "BLOCKER：TH 级联升级代理期间，0x24 被 MC App 以 NACK 0x05 拦截；MC Bootloader 软复位后 boot_id 未变化。两项均不满足 B4 验收要求。源码位置与日志现象支持缺陷定责；MC CRM->ctrlsts 的 SWRESETF 跨复位保持说法未由寄存器读数或权威硬件资料单独证实。"
+}

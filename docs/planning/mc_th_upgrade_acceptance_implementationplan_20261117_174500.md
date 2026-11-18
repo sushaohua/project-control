@@ -8,6 +8,8 @@
 | `v0.2` | `2026-11-17` | `AI (Antigravity-CLI) - PM` | 根据 ARCH 物理取证收敛需求范围、异常行为与待决取舍 | 待 ARCH 合成第 2 部分 |
 | `v1.0` | `2026-11-17` | `AI (Antigravity-CLI) - ARCH` | 合成第 2 部分技术取证、接缝比选、Diff Budget 与垂直切片规划 | 待用户审批 (Human Gate #1) |
 | `v1.1` | `2026-11-17` | `AI (Antigravity-CLI) - COORD` | 用户批准 Human Gate #1（确认 `DEC-USER-1=B, DEC-USER-2=A, DEC-USER-3=A, DEC-USER-4=A, DEC-USER-5=A`），落盘契约与切片并启动 Phase 2 执行 | 已批准执行 (Approved) |
+| `v1.2` | `2026-11-18` | `AI (Antigravity-CLI) - COORD` | 实探核实 VMware (`192.168.77.134`) 离线而 C308L (`192.168.1.101:/dev/ttyS1`) 在线接有真实 MC/TH 板卡，按用户更新 SSH 公钥及授权 2 转入 C308L `/dev/ttyS1` 执行 `SLICE-03` `B1~B4` 实测（标明未连接物理 U 盘与 COM12/13） | 执行中 (Stage B HIL) |
+| `v1.3` | `2026-11-18` | `AI (Antigravity-CLI) - COORD` | 完成 `SLICE-01/02` `SW-Verified` 准出与 `SLICE-03` C308L (`/dev/ttyS1`) 真机 HIL 穿刺实测（双板升级至 `mcu-p3@b865222c` 成功，定位 `HIL-FINDING-01/02` 两项真机缺陷） | 已完成首轮验收并待决缺陷修复 |
 
 ---
 
@@ -176,7 +178,7 @@ flowchart TD
 | **`DEC-USER-2`** | **`printer-soc` AP 入口验收范围** | - **选项 A（按现有 REST 闭环验收）**：验收 `printer-soc` 现有 `--firmware-dir`（`fw_mc.bin`/`fw_th.bin`）REST → D-Bus → `forward_ota` → DDS 全闭环；将 `/var/update/incoming -> sealed (0444)` 及 `services/helixscreen` 触屏 UI 明确列为后续接入切片。<br>- **选项 B（先补齐 `incoming/sealed` 再验收）**：要求本轮同步把 `firmware_updater.cpp` 的 `/var/update/incoming` 与 `/var/update/sealed`（`0444`）接入 `ota_image.cpp` 后再完成验收。 | **已确认选 A**（建议选 A） |
 | **`DEC-USER-3`** | **本轮协作检验的目标准出深度** | - **选项 A（两阶段闭环：`SW-Verified` → Gate #2 → `HIL-Verified`）**：先批复 Phase 1 完成 V2 切片与四阶漏斗门禁达到 `SW-Verified`，再请求 Human Gate #2 独占台架完成真机 `HIL-Verified`。<br>- **选项 B（仅软件门禁阶段 `SW-Verified`）**：本轮仅验证到软件沙箱与独立 Codex 冷审（`SW-Verified`），真机 HIL 延后。 | **已确认选 A**（建议选 A） |
 | **`DEC-USER-4`** | **ARM 交叉编译在 `SW-Verified` 阶段的验证方式** | - **选项 A（先宿主机交叉编译核验 + 沙箱跑 `host-software`）**：`host-software` 切片在 `qa-sandbox:20261029` 内运行 `printer-soc`、MCU/Boot 宿主单测与 `test_harness`；ARM 固件交叉编译暂在宿主机按固定工具链命令采集物证，不阻断本轮验证。<br>- **选项 B（先扩充 QA 沙箱镜像）**：先向 `qa-sandbox` 镜像补齐 `arm-none-eabi-gcc`/`ninja`/`pytest` 并发布新镜像基线，再在容器内执行 ARM 交叉编译。 | **已确认选 A**（建议选 A） |
-| **`DEC-USER-5`** | **Stage B 真机 HIL 验收载体选择** | - **选项 A（VMware `/dev/ttyUSB0` 台架）**：沿用既有已接通的 VMware + `/dev/ttyUSB0` + `COM12/COM13` Debug 口与物理 U 盘台架，快速完成现网双板升级复验。<br>- **选项 B（C308L 板端 `/dev/ttyS1`）**：先打通 `c308l-app` SDK 交叉编译部署，再在 C308L 实板上通过 `/dev/ttyS1` 首次实测 MC/TH OTA。 | **已确认选 A**（视现场台架定） |
+| **`DEC-USER-5`** | **Stage B 真机 HIL 验收载体选择** | - **选项 A（VMware `/dev/ttyUSB0` 台架）**：沿用既有已接通的 VMware + `/dev/ttyUSB0` + `COM12/COM13` Debug 口与物理 U 盘台架，快速完成现网双板升级复验。<br>- **选项 B（C308L 板端 `/dev/ttyS1`）**：先打通 `c308l-app` SDK 交叉编译部署，再在 C308L 实板上通过 `/dev/ttyS1` 首次实测 MC/TH OTA。 | **原拟选 A（视现场台架定）；2026-11-18 实探 VMware 离线且 C308L (`192.168.1.101:/dev/ttyS1`) 在线接有 MC/TH，经用户更新公钥授权后按 C308L `/dev/ttyS1` 执行串口 `B1~B4` 实测，未连硬件 U 盘与 COM12/13 如实记为未测** |
 
 ---
 

@@ -1,0 +1,13 @@
+独立只读双轴冷审切片: SLICE-03 (物理 HIL 实测审计 B6)
+契约: project-control/contracts/minimc_v2_contract.yaml
+切片定义: project-control/slices/SLICE-03.yaml
+方案: project-control/docs/planning/mc_th_upgrade_acceptance_implementationplan_20261117_174500.md
+物证文件:
+- project-control/docs/evidence/SLICE-03/hil_raw_hex.log
+- project-control/docs/evidence/SLICE-03/hil_deployment_receipt.json
+- project-control/docs/evidence/SLICE-03/INTEGRATOR_hil_report.md
+审查要求:
+1. 核验 Raw Hex 双向时间戳日志、固件 SHA256 与升级前后身份跃迁 (0x97C1C242 -> 0xB865222C) 的真实性与防伪一致性；
+2. 核验 B4_TH (HIL-FINDING-01: mcu-p3 minimc_proto.c:2487-2494 未放行 0x24) 与 B4_MC (HIL-FINDING-02: bootloadermc boot_uart_ota.c s_boot_salt 跨软复位未刷新 boot_id) 的缺陷定责与源码实证是否准确；
+3. 核验 INTEGRATOR 如实报告 passed=false 及未连接物理外设 [UNVERIFIED] 边界是否合规；
+4. 既然 B4 实测失败且 B5 未测，按验收标准严格输出 REJECTED 与 BLOCKER 定责发现（或如实分级）。

@@ -1,11 +1,11 @@
-# V2 垂直切片 SLICE-03：Human Gate #2 物理 HIL 全链路穿刺与独立审计准出
+# V2 垂直切片 SLICE-03：Human Gate #2 C308L (/dev/ttyS1) 物理 HIL 全链路穿刺与独立审计准出
 slice_id: "SLICE-03"
-revision: 1
+revision: 2
 batch_id: "BATCH-OTA-ACCEPTANCE-01"
 profile: "host-software"
 depends_on: ["SLICE-01", "SLICE-02"]
 input_repositories: ["project-control", "agents", "test_harness", "printer-soc", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
-title: "物理 HIL 双板串口/U盘升降级正负穿刺实测与独立 QA 审计"
+title: "C308L (/dev/ttyS1 @ 921600) 物理 HIL 双板串口升降级正负穿刺实测与独立 QA 审计"
 plan_ref: "project-control/docs/planning/mc_th_upgrade_acceptance_implementationplan_20261117_174500.md"
 contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
 requires_hil_immediately: true
@@ -17,15 +17,25 @@ subtasks:
     allowed_paths: ["hil/**"]
     diff_budget: {max_files: 0, protected_globs: [], max_protected_lines: 0}
 
-integration_cmd: "echo 'Human Gate #2 required: exclusive physical HIL bench (/dev/ttyUSB0, Option A, [MC-DBG]/[TH-DBG], FAT32 U-disk)' && exit 2"
+integration_cmd: >-
+  python3 -c 'import json, pathlib; p = pathlib.Path("project-control/docs/evidence/SLICE-03");
+  rec = json.loads((p / "hil_deployment_receipt.json").read_text(encoding="utf-8"));
+  assert rec.get("passed") is True and rec.get("port") == "/dev/ttyS1" and rec.get("baud") == 921600;
+  assert rec.get("probe_rs_used") is False and rec.get("heating_pwm_pct") == 0;
+  raw = (p / "hil_raw_hex.log").read_text(encoding="utf-8");
+  assert "TX " in raw and "RX " in raw and "B1_" in raw and "B2_" in raw and "B3_" in raw and "B4_" in raw;
+  rep = (p / "INTEGRATOR_hil_report.md").read_text(encoding="utf-8");
+  assert "HIL" in rep and "UNVERIFIED" in rep;
+  print("[PASS] SLICE-03 physical HIL evidence & receipt verified")'
 
 qa_commands:
   - {subpath: "test_harness", kind: "test", command: "python3 -m unittest discover -s hil/tests -p test_mcu_firmware_upgrade.py"}
+  - {subpath: "project-control", kind: "test", command: "python3 -c 'import json, pathlib; p = pathlib.Path(\"docs/evidence/SLICE-03\"); rec = json.loads((p / \"hil_deployment_receipt.json\").read_text()); assert rec.get(\"passed\") is True and rec.get(\"port\") == \"/dev/ttyS1\"; print(\"[PASS] Docker QA checked SLICE-03 receipt\")'"}
 
 acceptance_criteria:
-  - "B1: 升级前双端 App 模式 (Bit31=0) 与基线读回正常，全程禁用 probe-rs/SWD 刷写 App"
-  - "B2: 先 TH 后 MC 串口全链路升级（含 CLI 与 printer-soc REST），boot_id 三态跃迁与双版本变化匹配"
-  - "B3: 错板与超限包在擦除前原子拒绝（bytes_written=0），原片上 App 完好可重启"
-  - "B4: 发送 0x24 回 NACK 0x04、4B 0x23 回 NACK 0x06；传输中断/复位后安全驻留 Bootloader (Bit31=1) 并可重刷恢复"
-  - "B5: MC FAT32 U 盘合法包写完重命名 .cur 且防重刷、错包重命名 .err、串口/U 盘单写者互斥有效"
-  - "B6: 双向 Raw Hex（带毫秒时戳）、Debug 串口日志与 SHA256 经独立 QA 审计后升级为 HIL-Verified"
+  - "B1: C308L (/dev/ttyS1 @ 921600 8N1) 升级前双端 App 模式 (Bit31=0, 初始 commit=0x97C1C242) 与 Option A 加热 0% 核验通过，全程禁用 probe-rs/SWD 刷写 App"
+  - "B2: 先 TH (0x03 级联) 后 MC (0x02 直连) 512B 分块串口全链路升级 mcu-p3@b865222c 成功，boot_id 三态跃迁且 commit 更新为 0xB865222C，升级后双端 0x01/0x02 与 0x14/0x15 遥测恢复"
+  - "B3: TH 与 MC Bootloader 阶段错板 board_id (NACK 0x06) 与超限包 (NACK 0x14) 在擦除前原子拒绝（0x23 bytes_written=0），且重启确认原 App 完好可运行"
+  - "B4: 发送 0x24 回 NACK 0x04、4B 0x23 回 NACK 0x06；传输中断触发复位后安全驻留 Bootloader (Bit31=1, bytes_written=0) 并通过全量重刷恢复正常 App"
+  - "未连接物理外设诚实边界：VMware (192.168.77.134) 离线、本机无物理 FAT32 U 盘与独立 COM12/13 Debug 串口，B5 U 盘手动插拔 (HW-G1) 与 COM12/13 日志标注为 [UNVERIFIED / PENDING]"
+  - "B6: 双向 Raw Hex（带毫秒时戳）、SHA256 与结构化回执经独立 Codex 双轴冷审通过后记录至 ledger.md"

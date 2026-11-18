@@ -3,13 +3,13 @@
 - **关联任务**：验收现有 MC 与 TH 固件升级功能（`BATCH-OTA-ACCEPTANCE-01`，[实施方案](mc_th_upgrade_acceptance_implementationplan_20261117_174500.md)）
 - **记录角色**：`COORD`（`AI (Antigravity-CLI)`）
 - **日期**：`2026-11-18`
-- **当前阶段进度**：`SLICE-01` 已通过四阶漏斗准出 `SW-Verified`（`3116587`）；`SLICE-02` 在独立 Codex 冷审阶段完成证据闭环定位与整改；已探明真机台架已由离线 VMware 切换至 C308L 板端（`192.168.1.101:/dev/ttyS1`）并正在推进 `SLICE-03`。
+- **当前阶段进度**：`SLICE-01`（`3116587`）与 `SLICE-02`（`5525849`）均已通过四阶漏斗准出 `SW-Verified`；`SLICE-03` 已在 C308L 板端（`192.168.1.101:/dev/ttyS1`）完成真机 HIL 穿刺实测——双板串口真实升级 `0x97C1C242 -> 0xB865222C` 成功，并在 `B4` 真实定位出 2 项固件缺陷（`HIL-FINDING-01`/`02`），正在完成独立 Codex QA 审计归档。
 
 ---
 
 ## 一、本轮实战暴露的流程与工具链问题总览
 
-本任务作为 AI SoC V2“两阶段 SSoT 协议 + 10 席深模块角色 + 四阶无状态门禁漏斗”的首次实战检验，成功验证了 `PM ↔ ARCH → Gate #1 → COORD → ENG_BOOT_TH / INTEGRATOR → 独立 Codex QA` 的跨角色协作能力，同时也真实暴露出 **8 类流程规范与工程工具脱节问题**。
+本任务作为 AI SoC V2“两阶段 SSoT 协议 + 10 席深模块角色 + 四阶无状态门禁漏斗”的首次实战检验，成功验证了 `PM ↔ ARCH → Gate #1 → COORD → ENG_BOOT_TH / INTEGRATOR → 独立 Codex QA → 真机 HIL` 的跨角色闭环协作能力，同时也真实暴露出 **9 类流程规范、工具链与仿真脱节问题**。
 
 | 编号 | 问题名称 | 发生阶段 | 严重度 | 核心根因 |
 | :--- | :--- | :--- | :---: | :--- |
@@ -21,6 +21,7 @@
 | **P-06** | 活动主线迁移（`soc-ap` ➔ `printer-soc`）未联动 `test_harness` 与契约 | Phase 1 / `SLICE-01` | 高 | `sync_contracts.py` 仅查 C 宏，漏检测试脚本硬编码与 `version_code` 位域冲突 |
 | **P-07** | 虚拟靶机 M07 虚构 `0x23` 4B 主动取消语义形成假阳性 | Phase 1 / `SLICE-01` | 高 | 仿真靶机未与真实双 Bootloader（仅 7 条指令）同步收敛 |
 | **P-08** | 物理 HIL 载体变迁（VMware 离线 ➔ C308L `/dev/ttyS1`）未前置探测 | Phase 1 / `SLICE-03` | 中 | 历史手册绑定 VMware，未在 Phase 1 强制做非侵入物理连线实探 |
+| **P-09** | 虚拟靶机 `VirtualDualMcuOtaTarget` 未模拟级联代理白名单与跨软复位 `.bss` 清零语义 | `SLICE-03` 真机 HIL | 高 | `SW-Verified` 仿真全绿，但真机穿刺暴露 `MC App` 拦截 `0x24` 及 `MC Boot` `boot_id` 不刷新 |
 
 ---
 
@@ -67,11 +68,22 @@
 - **本轮应对**：经用户确认更新公钥后，已在 C308L `/dev/ttyS1` 实测收到真实 MC (`0x02`) 与 TH (`0x03`) 的 `0x01/0x02` 响应（均运行 `mcu-p3@97c1c242`），并据实规划在 C308L `/dev/ttyS1` 完成可执行的真机串口升降级穿刺验收、如实标记未连接硬件（物理 U 盘 / `COM12/13`）的未测边界。
 - **永久改进建议**：在 `ARCH` 的 `arch-deep-spec` 与 `COORD` 的 Phase 1 收口清单中新增“**非侵入物理台架连通性预探项**”（只读检查目标 IP/串口/外设存在性），避免规划阶段沿用过时台架假设。
 
+### P-09：软件仿真靶机与真实固件边界语义脱节（凸显强制 `HIL-Verified` 门禁价值）
+- **现象与影响**：`SLICE-01`/`SLICE-02` 在 `VirtualDualMcuOtaTarget` 仿真与宿主单测下全部绿灯通过 `SW-Verified`，但真机 `SLICE-03` 物理穿刺立刻在 `B4` 阶段抓出 **2 项真机专属固件缺陷**：
+  1. **`HIL-FINDING-01`（`mcu-p3`）**：`mcu-p3/motion-controller-mcu/project/src/minimc_proto.c:2487-2494, 2596-2600` 的 `is_ota_or_maint_cmd()` 仅放行 `0x20..0x23`，遗漏 `0x24`（`MINIMC_CMD_OTA_ABORT`），导致 TH 升级代理期下发 `0x24` 被 MC App 直接拦截回 `NACK 0x05 (DEVICE_BUSY)`，未透传至 TH Bootloader（仅在代理 5s 超时退出后才会透传回 `NACK 0x04`）。`VirtualDualMcuOtaTarget` 未模拟中间节点的代理拦截白名单，导致软件阶段未能暴露。
+  2. **`HIL-FINDING-02`（`boot/bootloadermc`）**：`boot/bootloadermc/bootloader/src/boot_uart_ota.c:52, 206-223` 中 `s_boot_salt` 位于 `.bss` 段且 `CRM->ctrlsts` 保留相同 `SWRESETF` 位，连续 `Bootloader -> Bootloader` 软复位（`NVIC_SystemReset()`）后产出完全一致的 `boot_id = 0xC1E6CD05`（宿主单测未重启清 `.bss`，而 `boot/bootloaderth` 使用了 `.noinit`/RTC 种子成功刷新）。
+- **本轮应对**：严格恪守 `HW-G5` 反假阳性原则，由 `INTEGRATOR` 如实标记 `SLICE-03` `passed: false`，拒绝用放宽断言或仅靠 `SW-Verified` 冒充硬件合格，并已完成源码级根因定责。
+- **永久改进建议**：
+  1. 坚决保留 V2 “`SW-Verified` 不可替代 `HIL-Verified`”的双态强制准出红线；
+  2. 后续修复 `HIL-FINDING-01` 后需补充“MC App 活跃 TH 代理期内对 `0x24` 透传”的真实链路 C 单测，并在 `boot/bootloadermc` 引入 `.noinit` 单调种子或定时器熵源彻底解决连续软复位 `boot_id` 撞码问题。
+
 ---
 
-## 三、待后续批次收敛的治理任务清单（建议）
+## 三、待后续批次收敛的治理与缺陷修复清单（建议）
 
-1. **[TECH-DEBT-01]** 修正 `printer-soc/contracts/twin/telemetry_types.h:410` 中过时的 `version_code` `(major<<8)|minor` 注释（来自 `SLICE-01` Codex `MINOR` 发现）。
-2. **[TECH-DEBT-02]** 清理 `test_harness/static_checks/minimcproto/golden_vectors.json:G16h` 与 `run_codec_cases.py:86-88` 的中性命名（来自 `SLICE-01` Codex `NIT` 发现）。
-3. **[GOVERNANCE-01]** 构建含 `arm-none-eabi-gcc` + `ninja` + `pytest` + FastDDS/D-Bus 的统一 `qa-sandbox` 镜像，并在 `slice_gate.py` 中自动保存 `integration.log` 供 Codex 审阅。
-4. **[GOVERNANCE-02]** 在 `qa_runner.py` 落地受控的 `local_pre_publish_gate` 本地只读快照预检模式。
+1. **[DEFECT-HIL-01]** 修复 `mcu-p3/motion-controller-mcu/project/src/minimc_proto.c:2487-2494` `is_ota_or_maint_cmd()` 遗漏 `0x24` 导致 TH 代理期误回 `NACK 0x05`（`ENG-MCU`）。
+2. **[DEFECT-HIL-02]** 修复 `boot/bootloadermc/bootloader/src/boot_uart_ota.c:52,206-223` `s_boot_salt` 置于 `.bss` 导致连续 Bootloader 软复位 `boot_id` 未刷新（`ENG_BOOT_MC`，须人工单独授权 Bootloader 刷写）。
+3. **[TECH-DEBT-01]** 修正 `printer-soc/contracts/twin/telemetry_types.h:410` 中过时的 `version_code` `(major<<8)|minor` 注释（来自 `SLICE-01` Codex `MINOR` 发现）。
+4. **[TECH-DEBT-02]** 清理 `test_harness/static_checks/minimcproto/golden_vectors.json:G16h` 与 `run_codec_cases.py:86-88` 的中性命名（来自 `SLICE-01` Codex `NIT` 发现）。
+5. **[GOVERNANCE-01]** 构建含 `arm-none-eabi-gcc` + `ninja` + `pytest` + FastDDS/D-Bus 的统一 `qa-sandbox` 镜像（本轮已先行在 [slice_gate.py](../../tools/gates/slice_gate.py) 落地 `integration.log` 持久化与传递）。
+6. **[GOVERNANCE-02]** 在 `qa_runner.py` 落地受控的 `local_pre_publish_gate` 本地只读快照预检模式。

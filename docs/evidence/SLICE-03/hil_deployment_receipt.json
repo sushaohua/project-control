@@ -1,0 +1,336 @@
+{
+  "slice_id": "SLICE-03",
+  "role": "INTEGRATOR",
+  "target_host": "root@192.168.1.101",
+  "target_arch": "C308L armv7l Linux 5.15.137",
+  "port": "/dev/ttyS1",
+  "baud": 921600,
+  "serial_config": "8N1 raw termios",
+  "probe_rs_used": false,
+  "heating_pwm_pct": 0,
+  "host_utc8_start": "2026-11-18T10:08:40+08:00",
+  "passed": false,
+  "verdict_summary": "B1, B3_TH, B2_TH, B3_MC, B2_MC and dual-node recovery passed on real hardware (both MC and TH upgraded from 0x97C1C242 to mcu-p3@b865222c 0xB865222C with 0 chunk retries across 902 chunks); overall passed=false because real hardware surfaced 2 genuine firmware defects in B4_TH (0x24 during active MC->TH proxy returned src=0x02 NACK 0x05 instead of NACK 0x04) and B4_MC (MC Bootloader boot_id=0xC1E6CD05 did not refresh across consecutive NVIC_SystemReset calls).",
+  "raw_hex_log": {
+    "path": "project-control/docs/evidence/SLICE-03/hil_raw_hex.log",
+    "sha256": "571025ec6e6aba426211d1f87e78f8f4dece3f848c8ebf8ea59055ac5495b2db",
+    "total_lines": 1952,
+    "tx_frames": 965,
+    "rx_valid_frames": 960,
+    "rx_timeout_polls": 5
+  },
+  "packages": {
+    "th": {
+      "filename": "fw_th_v2_0.bin",
+      "total_bytes": 76992,
+      "payload_bytes": 76864,
+      "chunks_512b": 151,
+      "fw_version": "0x02000100",
+      "fw_crc32": "0x67530BF9",
+      "file_sha256": "4822f98f91452e059211cb55fe725991edc068dd8661424fb53c65d22e1ccb47",
+      "payload_sha256": "a3512727423f7c9c5cd8310a43981f71fd92753809213084353f6483e2290128"
+    },
+    "mc": {
+      "filename": "fw_mc_v2_0.bin",
+      "total_bytes": 384476,
+      "payload_bytes": 384348,
+      "chunks_512b": 751,
+      "fw_version": "0x02000100",
+      "fw_crc32": "0xC7A65C3F",
+      "file_sha256": "7b0562809e8b2b4383971fe5507e4d0487fe1ff2202984996c7995bf0f677632",
+      "payload_sha256": "4f10f3b1fdbd81b4d7a31a930672c5aeb317845ad1add8b5ab5ee1fa6676ad74"
+    }
+  },
+  "identity_transitions": {
+    "mc": {
+      "before_app": {
+        "fw": "2.0",
+        "commit": "0x97C1C242",
+        "boot_id": "0xE8A86172",
+        "bit31": 0,
+        "capability_flags": "0x00000003"
+      },
+      "bootloader": {
+        "fw": "1.0",
+        "commit": "0x4FC171EA",
+        "boot_id_b3": "0xC1E6CD05",
+        "boot_id_b4_pre_reset": "0xC1E6CD05",
+        "boot_id_b4_post_reset": "0xC1E6CD05",
+        "bit31": 1,
+        "capability_flags": "0xC0080435"
+      },
+      "after_app": {
+        "fw": "2.0",
+        "commit": "0xB865222C",
+        "boot_id": "0x02789779",
+        "bit31": 0,
+        "capability_flags": "0x00000003"
+      }
+    },
+    "th": {
+      "before_app": {
+        "fw": "2.0",
+        "commit": "0x97C1C242",
+        "boot_id": "0xC441D04B",
+        "bit31": 0,
+        "capability_flags": "0x00000007"
+      },
+      "bootloader": {
+        "fw": "1.0",
+        "commit": "0x769FCCBE",
+        "boot_id_b3": "0x60DA4806",
+        "boot_id_b4_pre_reset": "0xBD4B3B68",
+        "boot_id_b4_post_reset": "0x1B7CB519",
+        "bit31": 1,
+        "capability_flags": "0xE0080423"
+      },
+      "after_app": {
+        "fw": "2.0",
+        "commit": "0xB865222C",
+        "boot_id": "0xC7076DA8",
+        "bit31": 0,
+        "capability_flags": "0x00000007"
+      }
+    }
+  },
+  "stages": {
+    "B1": {
+      "passed": true,
+      "mc_version": {
+        "fw": "2.0",
+        "boot_id": "0xE8A86172",
+        "commit": "0x97C1C242",
+        "capability_flags": "0x00000003",
+        "bit31": 0
+      },
+      "th_version": {
+        "fw": "2.0",
+        "boot_id": "0xC441D04B",
+        "commit": "0x97C1C242",
+        "capability_flags": "0x00000007",
+        "bit31": 0
+      },
+      "mc_temp": {
+        "current_temp_deci_c": 32767,
+        "target_temp_deci_c": 0,
+        "raw_adc_value": 4092,
+        "sensor_status": 1,
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 3767892
+      },
+      "th_temp": {
+        "current_temp_deci_c": 1222,
+        "target_temp_deci_c": 0,
+        "raw_adc_value": 2048,
+        "sensor_status": 0,
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 3769650
+      }
+    },
+    "B3_TH": {
+      "passed": true,
+      "th_boot_commit": "0x769FCCBE",
+      "th_boot_capability_flags": "0xE0080423",
+      "th_boot_id": "0x60DA4806",
+      "wrong_board_0x20_nack": "0x06",
+      "bytes_written_after_wrong_board": 0,
+      "oversize_0x20_nack": "0x14",
+      "bytes_written_after_oversize": 0,
+      "restored_app_commit": "0x97C1C242",
+      "restored_app_boot_id": "0x4A74CC81",
+      "restored_app_bit31": 0
+    },
+    "B4_TH": {
+      "passed": false,
+      "failure_reason": "During active MC->TH OTA proxy (<5s), 0x24 CMD_OTA_ABORT to dst=0x03 was intercepted by MC App (src=0x02) with NACK err=0x05 (DEVICE_BUSY) instead of reaching TH Bootloader (NACK 0x04), because mcu-p3 is_ota_or_maint_cmd() only permits 0x20..0x23 and omits 0x24.",
+      "boot_id_pre_reset": "0xBD4B3B68",
+      "status_after_chunk0": {
+        "ota_state": 2,
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 0
+      },
+      "abort_0x24_active_proxy_actual": {
+        "src_id": 2,
+        "cmd_id": 6,
+        "err_hex": "0x05",
+        "expected_seq": 18,
+        "passed": false
+      },
+      "abort_0x24_after_5s_proxy_idle_diag": {
+        "src_id": 3,
+        "cmd_id": 6,
+        "err_hex": "0x04",
+        "expected_seq": 19
+      },
+      "status_4b_0x23_nack": {
+        "src_id": 3,
+        "cmd_id": 6,
+        "err_hex": "0x06",
+        "expected_seq": 20,
+        "passed": true
+      },
+      "resident_boot_after_mid_reset": {
+        "bit31": 1,
+        "boot_id": "0x1B7CB519",
+        "boot_id_refreshed": true,
+        "ota_state": 0,
+        "cached_chunk0_bytes": 0,
+        "bytes_written": 0,
+        "passed": true
+      }
+    },
+    "B2_TH": {
+      "passed": true,
+      "chunks_sent": 151,
+      "bytes_sent": 76864,
+      "chunk_retries": 0,
+      "status_after_chunk0": {
+        "ota_state": 2,
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 0
+      },
+      "status_before_finish": {
+        "ota_state": 3,
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 76352
+      },
+      "after_version": {
+        "fw": "2.0",
+        "boot_id": "0xC7076DA8",
+        "commit": "0xB865222C",
+        "capability_flags": "0x00000007",
+        "bit31": 0
+      },
+      "post_temp": {
+        "current_temp_deci_c": 1223,
+        "target_temp_deci_c": 0,
+        "raw_adc_value": 2044,
+        "sensor_status": 0,
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 549
+      }
+    },
+    "B3_MC": {
+      "passed": true,
+      "mc_boot_commit": "0x4FC171EA",
+      "mc_boot_capability_flags": "0xC0080435",
+      "mc_boot_id": "0xC1E6CD05",
+      "wrong_board_0x20_nack": "0x06",
+      "bytes_written_after_wrong_board": 0,
+      "oversize_0x20_nack": "0x14",
+      "bytes_written_after_oversize": 0,
+      "restored_app_commit": "0x97C1C242",
+      "restored_app_boot_id": "0x8B139E59",
+      "restored_app_bit31": 0,
+      "app_polls_needed": 4
+    },
+    "B4_MC": {
+      "passed": false,
+      "failure_reason": "MC Bootloader (commit=0x4FC171EA) kept identical boot_id=0xC1E6CD05 across consecutive NVIC_SystemReset() resets (B3_MC -> B4_MC_BOOT_VER1 -> B4_MC_BOOT_VER2) because boot/bootloadermc derive_dynamic_boot_id() uses a .bss-zeroed s_boot_salt and sticky CRM->ctrlsts.",
+      "boot_id_pre_reset": "0xC1E6CD05",
+      "status_after_chunk0": {
+        "ota_state": 2,
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 512
+      },
+      "abort_0x24_nack": {
+        "src_id": 2,
+        "cmd_id": 6,
+        "err_hex": "0x04",
+        "expected_seq": 197,
+        "passed": true
+      },
+      "status_4b_0x23_nack": {
+        "src_id": 2,
+        "cmd_id": 6,
+        "err_hex": "0x06",
+        "expected_seq": 198,
+        "passed": true
+      },
+      "resident_boot_after_mid_reset": {
+        "bit31": 1,
+        "boot_id": "0xC1E6CD05",
+        "boot_id_refreshed": false,
+        "ota_state": 0,
+        "cached_chunk0_bytes": 0,
+        "bytes_written": 0
+      }
+    },
+    "B2_MC": {
+      "passed": true,
+      "chunks_sent": 751,
+      "bytes_sent": 384348,
+      "chunk_retries": 0,
+      "status_after_chunk0": {
+        "ota_state": 2,
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 512
+      },
+      "status_before_finish": {
+        "ota_state": 3,
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 384348
+      },
+      "after_version": {
+        "fw": "2.0",
+        "boot_id": "0x02789779",
+        "commit": "0xB865222C",
+        "capability_flags": "0x00000003",
+        "bit31": 0
+      },
+      "dual_node_recovery": {
+        "mc_version": {
+          "fw": "2.0",
+          "boot_id": "0x02789779",
+          "commit": "0xB865222C",
+          "bit31": 0
+        },
+        "th_version": {
+          "fw": "2.0",
+          "boot_id": "0xC7076DA8",
+          "commit": "0xB865222C",
+          "bit31": 0
+        },
+        "mc_temp": {
+          "current_temp_deci_c": 32767,
+          "target_temp_deci_c": 0,
+          "raw_adc_value": 0,
+          "sensor_status": 2,
+          "heater_duty_percent": 0,
+          "sample_timestamp_ms": 2851
+        },
+        "th_temp": {
+          "current_temp_deci_c": 1224,
+          "target_temp_deci_c": 0,
+          "raw_adc_value": 2042,
+          "sensor_status": 0,
+          "heater_duty_percent": 0,
+          "sample_timestamp_ms": 98601
+        }
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "HIL-FINDING-01",
+      "stage": "B4_TH",
+      "repo": "mcu-p3",
+      "location": "mcu-p3/motion-controller-mcu/project/src/minimc_proto.c:2487-2494,2596-2600",
+      "expected": "0x24 CMD_OTA_ABORT to TH (0x03) returns 0x06 NACK (err=0x04 UNKNOWN_CMD) from TH Bootloader",
+      "observed": "During active MC->TH proxy window (<5000ms), MC App intercepts 0x24 and returns src=0x02 0x06 NACK (err=0x05 DEVICE_BUSY). After >5000ms proxy idle timeout, MC relays 0x24 to TH Bootloader which returns src=0x03 0x06 NACK (err=0x04)."
+    },
+    {
+      "id": "HIL-FINDING-02",
+      "stage": "B4_MC",
+      "repo": "boot/bootloadermc",
+      "location": "boot/bootloadermc/bootloader/src/boot_uart_ota.c:52,206-223",
+      "expected": "MC Bootloader boot_id refreshes after NVIC_SystemReset() (B4_MC_BOOT_VER1 -> B4_MC_BOOT_VER2)",
+      "observed": "MC Bootloader returned identical boot_id=0xC1E6CD05 across B3_MC, B4_MC pre-reset, and B4_MC post-reset because s_boot_salt is zeroed in .bss on reset and CRM->ctrlsts retains the same SWRESETF bit."
+    }
+  ],
+  "unverified_hardware": [
+    "B5_UDISK_MANUAL_PLUG_HW_G1",
+    "COM12_COM13_DEBUG_UART",
+    "PRINTER_SOC_REST_ON_C308L"
+  ]
+}
