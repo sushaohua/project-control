@@ -1,0 +1,13 @@
+独立只读双轴冷审切片: SLICE-04
+契约: project-control/contracts/minimc_v2_contract.yaml
+方案: project-control/docs/planning/mc_th_upgrade_acceptance_implementationplan_20261117_174500.md
+锁定提交: {"mcu-p3": "7b623d9a4fff7cf460b53318b71d0b816635b733", "project-control": "c2dd08e2ba91d01e54e1d901e9e178ca4477bb63", "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb", "test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046", "printer-soc": "888d389c8969d90de57c189907cf2c58543b7b64", "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4", "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"}
+容器: 09f53545ed28
+当前沙箱产物: server_verdict=project-control/docs/evidence/SLICE-04/run_02/docker_qa/server_verdict.json runtime_log=project-control/docs/evidence/SLICE-04/run_02/docker_qa/runtime.log integration_log=project-control/docs/evidence/SLICE-04/run_02/integration.log
+验收判据:
+- 彻底删除 is_ota_or_maint_cmd、get_th_relay_timeout_ms、is_valid_th_relay_cmd 与 validate_th_relay_resp 四个 L7 代理反模式函数
+- 平面 A (DST != 0x02 && DST != 0xFF) 实现零 cmd_id/Payload/seq 解析的纯 L3 存储转发（AP<->TH 双向包括 0x24、0x14、未登记帧与 NACK 0x04 无条件透传；hop_limit<=1 按 §2.2 丢弃计数）；仅用与业务解耦的 5000ms L3 活跃租约切换 FORWARD_UART_MODE_OTA_ROUTE 互斥 USART6 文本 G-code
+- 平面 B (DST == 0x02 / 0xFF) 中 0x01/0x03/0x14/0x16/0x17/0x1D 不受 L3 租约阻断，保证 B2_TH->B2_MC <5s 衔接不误报 NACK 0x05；MC 本地级联 (0x10/0x19/0x1C) 独占 s_mc_local_relay_* (200ms) 且在 L3 租约期内让路回 NACK 0x05
+- 宿主机 ARM 交叉编译 Marlin_AT32.bin <= 917,504 B 且 BOOT_IPC == 4 B，打包产物校验记录于 project-control/docs/evidence/SLICE-04/host_mc_arm_build_and_pack.log
+- Docker 沙箱 C01~C09 + S/D/M/N (39/39) + printer-soc CTest + fast_gate (<3s) + 独立 Codex 双轴冷审 APPROVED (0 BLOCKER)
+请严格按 BLOCKER / MINOR / NIT 分级。
