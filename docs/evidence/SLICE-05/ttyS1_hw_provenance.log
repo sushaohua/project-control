@@ -1,0 +1,100 @@
+=== BEFORE: uname -a ===
+Linux (none) 5.15.137-g083fce9cdb51 #4 SMP PREEMPT Fri Nov 13 19:04:26 CST 2026 armv7l GNU/Linux
+=== BEFORE: python3 ===
+/usr/bin/python3
+Python 3.9.2
+=== BEFORE: /dev/ttyS1 device node ===
+crw-rw----    1 root     root      240,   1 Jan  1 03:45 /dev/ttyS1
+=== BEFORE: readlink -f /sys/class/tty/ttyS1/device ===
+/sys/devices/platform/soc/fe000000.apb4/fe080000.serial
+=== BEFORE: sysfs of_node/compatible ===
+amlogic,meson-uart
+=== BEFORE: /dev/ttyS1 occupancy check ===
+
+=== BEFORE: cat /proc/tty/driver/serial ===
+cat: can't open '/proc/tty/driver/serial': No such file or directory
+=== BEFORE: cat /proc/tty/driver/meson_uart ===
+serinfo:1.0 driver revision:
+0: uart:meson_uart mmio:0xFE07A000 irq:36 tx:504 rx:0 RTS|CTS|DTR
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:1430442 rx:181831 RTS|CTS|DTR
+=== BEFORE: cat /proc/interrupts ===
+           CPU0       CPU1       
+ 27:    1314721     959197     GIC-0  27 Level     arch_timer
+ 29:          0          0     GIC-0 265 Level     arm-pmu
+ 30:          0          0     GIC-0 266 Level     arm-pmu
+ 31:          0          0     GIC-0  62 Edge      fe020000.tsensor
+ 32:          0          0     GIC-0 209 Edge      fe08a000.sd
+ 33:          0          0     GIC-0 208 Edge      fe088000.sdio
+ 34:          0          0     GIC-0 194 Edge      fe06a000.i2c
+ 35:         41          0     GIC-0 195 Edge      fe06c000.i2c
+ 36:        138          0     GIC-0 201 Edge      ttyS0
+ 37:     199121          0     GIC-0 204 Edge      ttyS1
+ 38:          0          0     GIC-0  54 Edge      meson_ir
+ 40:       3811          0     GIC-0 106 Level     eth0
+ 49:          0          0     GIC-0 187 Edge      vi0
+ 50:          0          0     GIC-0 176 Edge      top0
+ 51:          0          0     GIC-0 191 Edge      vi1
+ 52:     811412          0     GIC-0 164 Edge      lcd0_vsync, osd-vsync, bl_vsync, vsync
+ 54:          0          0     GIC-0  94 Level     dmc_monitor
+ 55:          0          0     GIC-0 160 Level     adla
+ 58:          0          0     GIC-0 163 Edge      meson-rtc alarm
+ 59:          0          0     GIC-0 128 Edge      jpegenc-irq
+ 60:          0          0     GIC-0 165 Edge      CVE
+ 61:          0          0     GIC-0 249 Edge      ge2d
+ 62:          0          0     GIC-0 250 Edge      gdc
+ 64:          1          0     GIC-0 166 Edge      mixenc-irq
+ 67:          0          0  meson-gpio-irqchip  21 Edge      fe08a000.sd cd
+ 68:          3          0  meson-gpio-irqchip  39 Edge      gt911
+ 69:          2          0     GIC-0 107 Level     0.1:08
+IPI0:          0          0  CPU wakeup interrupts
+IPI1:     145778     130095  Timer broadcast interrupts
+IPI2:       2148       9346  Rescheduling interrupts
+IPI3:      32504      98500  Function call interrupts
+IPI4:          0          0  CPU stop interrupts
+IPI5:       5464       4634  IRQ work interrupts
+IPI6:          0          0  completion interrupts
+Err:          0
+irq_before=199121
+=== AFTER: cat /proc/tty/driver/meson_uart ===
+serinfo:1.0 driver revision:
+0: uart:meson_uart mmio:0xFE07A000 irq:36 tx:504 rx:0 RTS|CTS|DTR
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:2315730 rx:214138 RTS|CTS|DTR
+=== AFTER: cat /proc/interrupts ===
+           CPU0       CPU1       
+ 27:    1331741     972319     GIC-0  27 Level     arch_timer
+ 29:          0          0     GIC-0 265 Level     arm-pmu
+ 30:          0          0     GIC-0 266 Level     arm-pmu
+ 31:          0          0     GIC-0  62 Edge      fe020000.tsensor
+ 32:          0          0     GIC-0 209 Edge      fe08a000.sd
+ 33:          0          0     GIC-0 208 Edge      fe088000.sdio
+ 34:          0          0     GIC-0 194 Edge      fe06a000.i2c
+ 35:         41          0     GIC-0 195 Edge      fe06c000.i2c
+ 36:        138          0     GIC-0 201 Edge      ttyS0
+ 37:     247219          0     GIC-0 204 Edge      ttyS1
+ 38:          0          0     GIC-0  54 Edge      meson_ir
+ 40:       3814          0     GIC-0 106 Level     eth0
+ 49:          0          0     GIC-0 187 Edge      vi0
+ 50:          0          0     GIC-0 176 Edge      top0
+ 51:          0          0     GIC-0 191 Edge      vi1
+ 52:     817515          0     GIC-0 164 Edge      lcd0_vsync, osd-vsync, bl_vsync, vsync
+ 54:          0          0     GIC-0  94 Level     dmc_monitor
+ 55:          0          0     GIC-0 160 Level     adla
+ 58:          0          0     GIC-0 163 Edge      meson-rtc alarm
+ 59:          0          0     GIC-0 128 Edge      jpegenc-irq
+ 60:          0          0     GIC-0 165 Edge      CVE
+ 61:          0          0     GIC-0 249 Edge      ge2d
+ 62:          0          0     GIC-0 250 Edge      gdc
+ 64:          1          0     GIC-0 166 Edge      mixenc-irq
+ 67:          0          0  meson-gpio-irqchip  21 Edge      fe08a000.sd cd
+ 68:          3          0  meson-gpio-irqchip  39 Edge      gt911
+ 69:          2          0     GIC-0 107 Level     0.1:08
+IPI0:          0          0  CPU wakeup interrupts
+IPI1:     146006     130424  Timer broadcast interrupts
+IPI2:       2824       9368  Rescheduling interrupts
+IPI3:      35203     102361  Function call interrupts
+IPI4:          0          0  CPU stop interrupts
+IPI5:       7058       7099  IRQ work interrupts
+IPI6:          0          0  completion interrupts
+Err:          0
+irq_after=247219
+irq_delta=48098 (irq_after - irq_before)

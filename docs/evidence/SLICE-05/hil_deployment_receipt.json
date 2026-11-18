@@ -1,0 +1,477 @@
+{
+  "slice_id": "SLICE-05",
+  "role": "INTEGRATOR",
+  "target_host": "root@192.168.1.101",
+  "port": "/dev/ttyS1",
+  "baud": 921600,
+  "serial_config": "8N1 raw termios",
+  "probe_rs_used": false,
+  "heating_pwm_pct": 0,
+  "passed": true,
+  "raw_hex_log": {
+    "path": "project-control/docs/evidence/SLICE-05/hil_raw_hex.log",
+    "sha256": "05d19e3ad42f8c135973f2271253c273ce431aae50cd5d87236edd35b35225bb",
+    "total_lines": 3565,
+    "tx_frames": 1754,
+    "rx_valid_frames": 1754,
+    "rx_timeout_polls": 29
+  },
+  "packages": {
+    "th": {
+      "filename": "fw_th_v2_0.bin",
+      "total_bytes": 76992,
+      "payload_bytes": 76864,
+      "chunks_512b": 151,
+      "fw_version": "0x02000100",
+      "fw_crc32": "0x6E82DD49",
+      "file_sha256": "e448df1d52cd27ca3865586dce6c9d1310e0471a4a49f5bbb8f80b4db7dbc818",
+      "payload_sha256": "ac48de349be04c2a2a1f8de15cc965b8eca04517f66de625cedb8216ed52aeb7"
+    },
+    "mc": {
+      "filename": "fw_mc_v2_0_l3.bin",
+      "total_bytes": 384240,
+      "payload_bytes": 384112,
+      "chunks_512b": 751,
+      "fw_version": "0x02000100",
+      "fw_crc32": "0x8DC0DC33",
+      "file_sha256": "b32fdccbc74cfe3ac972d4d8254b5e6e2de4d674eb07985e767d5d8dd89e0fb8",
+      "payload_sha256": "4ec90793f6feb49c171668203da60dc0f6548d7bf5e3c328f866b84eed0b8ad8"
+    }
+  },
+  "stages": {
+    "B1": {
+      "passed": true,
+      "mc_version": {
+        "proto": "2.0",
+        "fw": "2.0",
+        "fw_major": 2,
+        "fw_minor": 0,
+        "boot_id": "0x29199E72",
+        "boot_id_int": 689544818,
+        "commit": "0x7B623D9A",
+        "commit_int": 2070035866,
+        "capability_flags": "0x00000003",
+        "capability_flags_int": 3,
+        "bit31": 0
+      },
+      "th_version": {
+        "proto": "2.0",
+        "fw": "2.0",
+        "fw_major": 2,
+        "fw_minor": 0,
+        "boot_id": "0x6532C5B6",
+        "boot_id_int": 1697826230,
+        "commit": "0x7B623D9A",
+        "commit_int": 2070035866,
+        "capability_flags": "0x00000007",
+        "capability_flags_int": 7,
+        "bit31": 0
+      },
+      "mc_temp": {
+        "current_temp_deci_c": 32767,
+        "target_temp_deci_c": 0,
+        "raw_adc_value": 4091,
+        "sensor_status": 1,
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 34271
+      },
+      "th_temp": {
+        "current_temp_deci_c": 1220,
+        "target_temp_deci_c": 0,
+        "raw_adc_value": 2051,
+        "sensor_status": 0,
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 75540
+      }
+    },
+    "B0_MC_ROLLOUT": {
+      "passed": true,
+      "chunks_sent": 751,
+      "bytes_sent": 384112,
+      "chunk_retries": 0,
+      "status_after_chunk0": {
+        "ota_state": 2,
+        "error_code": "0x00",
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 512
+      },
+      "status_before_finish": {
+        "ota_state": 3,
+        "error_code": "0x00",
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 384112
+      },
+      "after_version": {
+        "proto": "2.0",
+        "fw": "2.0",
+        "fw_major": 2,
+        "fw_minor": 0,
+        "boot_id": "0x11ED5521",
+        "boot_id_int": 300766497,
+        "commit": "0x7B623D9A",
+        "commit_int": 2070035866,
+        "capability_flags": "0x00000003",
+        "capability_flags_int": 3,
+        "bit31": 0
+      },
+      "boot_ver": {
+        "proto": "2.0",
+        "fw": "1.0",
+        "fw_major": 1,
+        "fw_minor": 0,
+        "boot_id": "0xC1E6CD05",
+        "boot_id_int": 3253128453,
+        "commit": "0x4FC171EA",
+        "commit_int": 1338077674,
+        "capability_flags": "0xC0080435",
+        "capability_flags_int": 3221750837,
+        "bit31": 1
+      }
+    },
+    "B3_TH": {
+      "passed": true,
+      "boot_entry_elapsed_sec": 0.1649,
+      "th_boot": {
+        "proto": "2.0",
+        "fw": "1.0",
+        "fw_major": 1,
+        "fw_minor": 0,
+        "boot_id": "0x4F0708F0",
+        "boot_id_int": 1325861104,
+        "commit": "0x769FCCBE",
+        "commit_int": 1990184126,
+        "capability_flags": "0xE0080423",
+        "capability_flags_int": 3758621731,
+        "bit31": 1
+      },
+      "wrong_board_0x20_nack": "0x06",
+      "bytes_written_after_wrong_board": 0,
+      "oversize_0x20_nack": "0x14",
+      "bytes_written_after_oversize": 0,
+      "quiet_wait_sec": 1.5024,
+      "restored_app": {
+        "proto": "2.0",
+        "fw": "2.0",
+        "fw_major": 2,
+        "fw_minor": 0,
+        "boot_id": "0x8FAE0198",
+        "boot_id_int": 2410545560,
+        "commit": "0x7B623D9A",
+        "commit_int": 2070035866,
+        "capability_flags": "0x00000007",
+        "capability_flags_int": 7,
+        "bit31": 0
+      }
+    },
+    "B4_TH": {
+      "passed": true,
+      "boot_id_pre_reset": "0x8B71FC52",
+      "status_after_chunk0": {
+        "ota_state": 2,
+        "error_code": "0x00",
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 0
+      },
+      "abort_0x24_active_lease": {
+        "src_id": 3,
+        "cmd_id": 6,
+        "err_hex": "0x04",
+        "elapsed_since_lease_ms": 2.34,
+        "passed": true
+      },
+      "status_4b_0x23_active_lease": {
+        "src_id": 3,
+        "cmd_id": 6,
+        "err_hex": "0x06",
+        "elapsed_since_lease_ms": 4.89,
+        "passed": true
+      },
+      "th_passthrough_checks": {
+        "cmd_0x01_src": 3,
+        "cmd_0x03_src": 3,
+        "cmd_0x14_src": 3,
+        "cmd_0x14_err_hex": "0x04",
+        "elapsed_since_lease_ms": 17.28,
+        "passed": true
+      },
+      "mc_local_nonblocking_checks": {
+        "cmd_0x01_commit": "0x7B623D9A",
+        "cmd_0x03_cmd": 4,
+        "cmd_0x14_duty_pct": 0,
+        "elapsed_since_lease_ms": 30.09,
+        "passed": true
+      },
+      "mc_local_cascade_yield_0x10": {
+        "src_id": 2,
+        "cmd_id": 6,
+        "err_hex": "0x05",
+        "elapsed_since_lease_ms": 32.76,
+        "passed": true
+      },
+      "resident_boot_after_mid_reset": {
+        "bit31": 1,
+        "boot_id": "0x69A97603",
+        "boot_id_refreshed": true,
+        "boot_entry_elapsed_sec": 0.158,
+        "ota_state": 0,
+        "cached_chunk0_bytes": 0,
+        "bytes_written": 0,
+        "passed": true
+      }
+    },
+    "B2_TH": {
+      "passed": true,
+      "chunks_sent": 151,
+      "bytes_sent": 76864,
+      "chunk_retries": 0,
+      "status_after_chunk0": {
+        "ota_state": 2,
+        "error_code": "0x00",
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 0
+      },
+      "status_before_finish": {
+        "ota_state": 3,
+        "error_code": "0x00",
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 76352
+      },
+      "after_version": {
+        "proto": "2.0",
+        "fw": "2.0",
+        "fw_major": 2,
+        "fw_minor": 0,
+        "boot_id": "0xF70B7161",
+        "boot_id_int": 4144722273,
+        "commit": "0x7B623D9A",
+        "commit_int": 2070035866,
+        "capability_flags": "0x00000007",
+        "capability_flags_int": 7,
+        "bit31": 0
+      },
+      "post_temp": {
+        "current_temp_deci_c": 1294,
+        "target_temp_deci_c": 0,
+        "raw_adc_value": 1859,
+        "sensor_status": 0,
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 158
+      }
+    },
+    "immediate_th_to_mc_transition": {
+      "passed": true,
+      "elapsed_since_th_sec": 0.0001,
+      "sys_ctrl_0x1d_ack": {
+        "src_id": 2,
+        "cmd_id": 0,
+        "passed": true
+      },
+      "boot_entry_elapsed_sec": 0.6984,
+      "polls": 5,
+      "mc_boot_ver": {
+        "proto": "2.0",
+        "fw": "1.0",
+        "fw_major": 1,
+        "fw_minor": 0,
+        "boot_id": "0xC1E6CD05",
+        "boot_id_int": 3253128453,
+        "commit": "0x4FC171EA",
+        "commit_int": 1338077674,
+        "capability_flags": "0xC0080435",
+        "capability_flags_int": 3221750837,
+        "bit31": 1
+      }
+    },
+    "B3_MC": {
+      "passed": true,
+      "mc_boot": {
+        "proto": "2.0",
+        "fw": "1.0",
+        "fw_major": 1,
+        "fw_minor": 0,
+        "boot_id": "0xC1E6CD05",
+        "boot_id_int": 3253128453,
+        "commit": "0x4FC171EA",
+        "commit_int": 1338077674,
+        "capability_flags": "0xC0080435",
+        "capability_flags_int": 3221750837,
+        "bit31": 1
+      },
+      "wrong_board_0x20_nack": "0x06",
+      "bytes_written_after_wrong_board": 0,
+      "oversize_0x20_nack": "0x14",
+      "bytes_written_after_oversize": 0,
+      "quiet_wait_sec": 3.3042,
+      "app_restore_poll_elapsed_sec": 2.1622,
+      "app_polls": 6,
+      "restored_app": {
+        "proto": "2.0",
+        "fw": "2.0",
+        "fw_major": 2,
+        "fw_minor": 0,
+        "boot_id": "0x5BFE57B1",
+        "boot_id_int": 1543395249,
+        "commit": "0x7B623D9A",
+        "commit_int": 2070035866,
+        "capability_flags": "0x00000003",
+        "capability_flags_int": 3,
+        "bit31": 0
+      }
+    },
+    "B4_MC": {
+      "passed": true,
+      "boot_id_pre_reset": "0xC1E6CD05",
+      "status_after_chunk0": {
+        "ota_state": 2,
+        "error_code": "0x00",
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 512
+      },
+      "abort_0x24_nack": {
+        "src_id": 2,
+        "cmd_id": 6,
+        "err_hex": "0x04",
+        "passed": true
+      },
+      "status_4b_0x23_nack": {
+        "src_id": 2,
+        "cmd_id": 6,
+        "err_hex": "0x06",
+        "passed": true
+      },
+      "resident_boot_after_mid_reset": {
+        "bit31": 1,
+        "boot_id": "0xC1E6CD05",
+        "boot_id_refreshed": false,
+        "ota_state": 0,
+        "cached_chunk0_bytes": 0,
+        "bytes_written": 0
+      },
+      "waived": true,
+      "hil_finding_02_waived": true,
+      "waive_note": "HIL-FINDING-02 accepted non-blocking debt per v1.5/ledger.md; CRM->ctrlsts register bits not directly probed [UNVERIFIED]"
+    },
+    "B2_MC": {
+      "passed": true,
+      "chunks_sent": 751,
+      "bytes_sent": 384112,
+      "chunk_retries": 0,
+      "status_after_chunk0": {
+        "ota_state": 2,
+        "error_code": "0x00",
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 512
+      },
+      "status_before_finish": {
+        "ota_state": 3,
+        "error_code": "0x00",
+        "cached_chunk0_bytes": 512,
+        "bytes_written": 384112
+      },
+      "after_version": {
+        "proto": "2.0",
+        "fw": "2.0",
+        "fw_major": 2,
+        "fw_minor": 0,
+        "boot_id": "0x8F1F2C60",
+        "boot_id_int": 2401184864,
+        "commit": "0x7B623D9A",
+        "commit_int": 2070035866,
+        "capability_flags": "0x00000003",
+        "capability_flags_int": 3,
+        "bit31": 0
+      }
+    },
+    "post_upgrade_recovery": {
+      "passed": true,
+      "quiet_wait_sec": 5.5064,
+      "set_temp_0x10_zero": {
+        "src_id": 2,
+        "cmd_id": 21,
+        "temp_report": {
+          "current_temp_deci_c": 32767,
+          "target_temp_deci_c": 0,
+          "raw_adc_value": 4094,
+          "sensor_status": 1,
+          "heater_duty_percent": 0,
+          "sample_timestamp_ms": 8227
+        },
+        "passed": true
+      },
+      "passive_listen_ms": 361.02,
+      "spurious_nack_count": 0,
+      "unexpected_frames_count": 0,
+      "final_mc_version": {
+        "proto": "2.0",
+        "fw": "2.0",
+        "fw_major": 2,
+        "fw_minor": 0,
+        "boot_id": "0x8F1F2C60",
+        "boot_id_int": 2401184864,
+        "commit": "0x7B623D9A",
+        "commit_int": 2070035866,
+        "capability_flags": "0x00000003",
+        "capability_flags_int": 3,
+        "bit31": 0
+      },
+      "final_mc_temp": {
+        "current_temp_deci_c": 32767,
+        "target_temp_deci_c": 0,
+        "raw_adc_value": 4094,
+        "sensor_status": 1,
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 8612
+      },
+      "final_mc_pos": {
+        "pos_x_um": 0,
+        "pos_y_um": 0,
+        "pos_z_um": 0,
+        "pos_e_um": 0,
+        "mc_state": 0,
+        "homed_mask": 0
+      },
+      "final_th_version": {
+        "proto": "2.0",
+        "fw": "2.0",
+        "fw_major": 2,
+        "fw_minor": 0,
+        "boot_id": "0xF70B7161",
+        "boot_id_int": 4144722273,
+        "commit": "0x7B623D9A",
+        "commit_int": 2070035866,
+        "capability_flags": "0x00000007",
+        "capability_flags_int": 7,
+        "bit31": 0
+      },
+      "final_th_temp": {
+        "current_temp_deci_c": 1221,
+        "target_temp_deci_c": 0,
+        "raw_adc_value": 2050,
+        "sensor_status": 0,
+        "heater_duty_percent": 0,
+        "sample_timestamp_ms": 51827
+      },
+      "final_th_pos_query": {
+        "src_id": 3,
+        "cmd_id": 6,
+        "err_hex": "0x04",
+        "note": "TH App does not implement 0x16 POS_QUERY; L3 transparent NACK 0x04 from TH verified"
+      }
+    }
+  },
+  "unverified_hardware": [
+    "B5_UDISK_MANUAL_PLUG_HW_G1",
+    "EXTERNAL_DEBUG_UART_USART1_USART3",
+    "PRINTER_SOC_REST_ON_C308L"
+  ],
+  "target_arch": "Linux (none) 5.15.137-g083fce9cdb51 #4 SMP PREEMPT Fri Nov 13 19:04:26 CST 2026 armv7l GNU/Linux",
+  "hw_provenance": {
+    "tty_device": "/dev/ttyS1",
+    "tty_sysfs_device": "/sys/devices/platform/soc/fe000000.apb4/fe080000.serial",
+    "tty_compatible": "amlogic,meson-uart",
+    "irq_line_name": "ttyS1",
+    "irq_before": 199121,
+    "irq_after": 247219,
+    "irq_delta": 48098
+  }
+}
