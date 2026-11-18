@@ -1,0 +1,46 @@
+{
+  "smoke_cases": [
+    {
+      "case": "fast_passed",
+      "exit_code": 0,
+      "status": "FAST-PASSED",
+      "stage": "integration",
+      "reason": "前两阶 Fast-Gate 与合龙预检通过 (--fast-only)",
+      "next_step": "运行完整四阶 slice_gate.py 完成容器 QA 与 Codex 准出",
+      "verdict_sha256": "075f41c55e3116e5bffa6009727bdcf03ef99091dfb00250d8c914565f8246e1",
+      "evidence_keys": [
+        "fast_gate_log",
+        "integration_log",
+        "verdict_json"
+      ]
+    },
+    {
+      "case": "stage2_failed",
+      "exit_code": 1,
+      "status": "FAILED",
+      "stage": "integration",
+      "reason": "合龙阶段退出码 1",
+      "next_step": "查阅 integration_log 修复合龙失败",
+      "verdict_sha256": "377d6784bd30a939e3043ddbd211a0d6dcac8f4cc8114f4c5af759a8cae1aa29",
+      "evidence_keys": [
+        "fast_gate_log",
+        "integration_log",
+        "verdict_json"
+      ]
+    },
+    {
+      "case": "stage3_blocked",
+      "exit_code": 2,
+      "status": "BLOCKED",
+      "stage": "docker_qa",
+      "reason": "采集锁定提交失败: Command '['git', '-C', 'nonexistent_repo_smoke', 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
+      "next_step": "检查子仓 Git 与 workspace.json（不扣返修）",
+      "verdict_sha256": "4d6aead433ede5cf449b66707af2d492c568805fee63b2faa0f4dbb9c17cbec3",
+      "evidence_keys": [
+        "fast_gate_log",
+        "integration_log",
+        "verdict_json"
+      ]
+    }
+  ]
+}

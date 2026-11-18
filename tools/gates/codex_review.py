@@ -9,10 +9,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import json
-import os
+import json, os, subprocess
 from pathlib import Path
-import subprocess
 from typing import List, Optional, Tuple
 
 DEFAULT_CODEX_BIN = Path("/home/sushaohua/.local/bin/codex")
@@ -28,6 +26,16 @@ class CodexVerdict:
     minor_findings: List[dict]
     tokens_used: int
     payload: dict
+
+
+class CodexGateBlockedError(RuntimeError):
+    """独立 Codex CLI 不可用、超时或非预期退出引发的环境阻塞异常。"""
+
+    def __init__(self, reason: str, out_dir: Path) -> None:
+        """保存环境阻塞原因与本次审阅日志目录路径。"""
+        super().__init__(reason)
+        self.reason = reason
+        self.out_dir = out_dir
 
 
 def v2_audit_schema() -> dict:
@@ -87,16 +95,9 @@ def validate_graded_verdict(payload: dict, expected_slice: str) -> Tuple[int, Li
         raise ValueError("0 BLOCKER 时严禁以 MINOR/NIT 拒单 REJECTED")
     return len(blockers), minors
 
-
 def _build_codex_cmd(codex_bin: Path, model: str, workdir: Path, out_dir: Path) -> List[str]:
     """构造带只读沙箱、禁止交互审批与 JSON Schema 约束的 Codex CLI 命令。"""
-    return [
-        str(codex_bin), "exec", "--skip-git-repo-check", "--sandbox", "read-only",
-        "-c", 'approval_policy="never"', "-m", model, "-C", str(workdir.resolve()), "--json",
-        "--output-schema", str(out_dir / "schema.json"),
-        "--output-last-message", str(out_dir / "final.json"), "-",
-    ]
-
+    return [str(codex_bin), "exec", "--skip-git-repo-check", "--sandbox", "read-only", "-c", 'approval_policy="never"', "-m", model, "-C", str(workdir.resolve()), "--json", "--output-schema", str(out_dir / "schema.json"), "--output-last-message", str(out_dir / "final.json"), "-"]
 
 def run_codex_audit(prompt: str, slice_id: str, workdir: Path, out_dir: Path) -> CodexVerdict:
     """启动全新只读独立 Codex 会话执行切片双轴审查并落盘审计物证。"""
@@ -104,17 +105,24 @@ def run_codex_audit(prompt: str, slice_id: str, workdir: Path, out_dir: Path) ->
     codex_bin = Path(os.environ.get("CODEX_BIN", str(DEFAULT_CODEX_BIN)))
     model = os.environ.get("CODEX_MODEL", DEFAULT_CODEX_MODEL)
     if not codex_bin.is_file() or not os.access(codex_bin, os.X_OK):
-        raise RuntimeError(f"独立 Codex CLI 不可用: {codex_bin}")
+        raise CodexGateBlockedError(f"独立 Codex CLI 不可用: {codex_bin}", out_dir)
     (out_dir / "schema.json").write_text(json.dumps(v2_audit_schema()), encoding="utf-8")
     (out_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
     timeout_sec = int(os.environ.get("CODEX_TIMEOUT_SEC", "420"))
-    with (out_dir / "codex.jsonl").open("w", encoding="utf-8") as f_out, (out_dir / "codex.stderr").open("w", encoding="utf-8") as f_err:
-        proc = subprocess.run(_build_codex_cmd(codex_bin, model, workdir, out_dir), input=prompt, text=True, stdout=f_out, stderr=f_err, timeout=timeout_sec)
+    try:
+        with (out_dir / "codex.jsonl").open("w", encoding="utf-8") as f_out, (out_dir / "codex.stderr").open("w", encoding="utf-8") as f_err:
+            proc = subprocess.run(_build_codex_cmd(codex_bin, model, workdir, out_dir), input=prompt, text=True, stdout=f_out, stderr=f_err, timeout=timeout_sec)
+    except (subprocess.TimeoutExpired, OSError) as err:
+        raise CodexGateBlockedError(f"Codex 审阅超时或启动失败: {err}", out_dir) from err
     if proc.returncode != 0:
-        raise RuntimeError(f"Codex 审阅进程非零退出 ({proc.returncode}): {out_dir}")
+        raise CodexGateBlockedError(f"Codex 审阅进程非零退出 ({proc.returncode})", out_dir)
     session_id, tokens = parse_codex_jsonl((out_dir / "codex.jsonl").read_text(encoding="utf-8"))
-    if not session_id:
-        raise RuntimeError("Codex 事件流缺失真实 thread.started 会话标识")
-    payload = json.loads((out_dir / "final.json").read_text(encoding="utf-8").strip())
+    final_path = out_dir / "final.json"
+    if not session_id or not final_path.is_file():
+        raise CodexGateBlockedError("Codex 事件流缺失真实 thread.started 会话标识或 final.json", out_dir)
+    try:
+        payload = json.loads(final_path.read_text(encoding="utf-8").strip())
+    except ValueError as err:
+        raise CodexGateBlockedError(f"Codex 输出 final.json 解析失败: {err}", out_dir) from err
     blocker_cnt, minors = validate_graded_verdict(payload, slice_id)
     return CodexVerdict(session_id, payload["decision"], blocker_cnt, minors, tokens, payload)

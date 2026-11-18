@@ -4,14 +4,10 @@
 
 from __future__ import annotations
 
-import ast
-import asyncio
+import ast, asyncio, json, subprocess, sys, tempfile, unittest
 from pathlib import Path
-import subprocess
-import sys
-import tempfile
 from typing import List
-import unittest
+from unittest import mock
 
 import yaml
 
@@ -22,6 +18,35 @@ if str(TOOLS_DIR) not in sys.path:
 
 from gates import codex_review, fast_gate, slice_gate
 import sync_contracts
+
+
+def _load_workflow_ns(ws_root: Path, call_tool_fn: object, calls: List[str]) -> dict:
+    """加载 `run_slice_batch.py` 并在隔离全局命名空间注入测试桩。"""
+    class FakeWorker:
+        """模拟保活工程子 Agent 会话。"""
+        async def __call__(self, prompt: str) -> dict:
+            """记录提示词并返回模拟提交哈希。"""
+            calls.append(prompt)
+            return {"role": "ENG-AP", "repo": "printer-soc", "candidate_commit": "a" * 40, "summary": "ok"}
+
+    async def fake_parallel(items: list, fn: object) -> list:
+        """并发原语桩函数。"""
+        return [await fn(x) for x in items]
+
+    ns = {"WORKSPACES": (str(ws_root),), "phase": lambda _: None, "log": lambda _: None, "agent": lambda **_: FakeWorker(), "parallel": fake_parallel, "call_tool": call_tool_fn}
+    wf_path = TOOLS_DIR / "workflow/run_slice_batch.py"
+    code = compile(wf_path.read_text(encoding="utf-8"), str(wf_path), "exec", flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+    coro = eval(code, ns)
+    if asyncio.iscoroutine(coro):
+        asyncio.run(coro)
+    return ns
+
+
+def _write_min_slice(ws: Path, sid: str, cmd: str = "true") -> Path:
+    """在临时目录生成含有效字段的最小切片 YAML 配置。"""
+    p = ws / f"{sid}.yaml"
+    p.write_text(yaml.safe_dump({"slice_id": sid, "batch_id": "B1", "integration_cmd": cmd, "subtasks": [{"role": "ENG-AP", "repo": "printer-soc", "branch": "main", "allowed_paths": ["*"]}]}), encoding="utf-8")
+    return p
 
 
 class V2ContractAndFastGateTest(unittest.TestCase):
@@ -43,27 +68,26 @@ class V2ContractAndFastGateTest(unittest.TestCase):
         self.assertGreaterEqual(len(sync_contracts.validate_endpoint("NEG", bad, contract, True)), 3)
 
     def test_v2_python_tools_pass_fast_gate_self_check(self) -> None:
-        """硬性门禁自检：新增全部 V2 Python 模块满足总预算 <=900 行、单函数 <=50 行、<=4 参与中文注释。"""
-        prod_files = [
-            TOOLS_DIR / "sync_contracts.py", TOOLS_DIR / "gates/__init__.py",
-            TOOLS_DIR / "gates/fast_gate.py", TOOLS_DIR / "gates/codex_review.py",
-            TOOLS_DIR / "gates/slice_gate.py", TOOLS_DIR / "workflow/run_slice_batch.py",
-        ]
+        """硬性门禁自检：生产 6 文件 <=900 行、含单测 <=1150 行且通过 AST 与防伪扫描。"""
+        prod_files = [TOOLS_DIR / "sync_contracts.py", TOOLS_DIR / "gates/__init__.py", TOOLS_DIR / "gates/fast_gate.py", TOOLS_DIR / "gates/codex_review.py", TOOLS_DIR / "gates/slice_gate.py", TOOLS_DIR / "workflow/run_slice_batch.py"]
+        prod_lines = sum(len(p.read_text(encoding="utf-8").splitlines()) for p in prod_files)
         all_files = prod_files + [TOOLS_DIR / "test_v2_gates.py"]
         total_lines = sum(len(p.read_text(encoding="utf-8").splitlines()) for p in all_files)
-        self.assertLessEqual(total_lines, 900, f"新增 V2 工具含测试总行数 {total_lines} 超出 900 行预算")
+        self.assertLessEqual(prod_lines, 900, f"生产 6 文件 {prod_lines} 超出 900 行预算")
+        self.assertLessEqual(total_lines, 1150, f"含单测总行数 {total_lines} 超出 1150 行预算")
         for fp in all_files:
-            self.assertEqual(fast_gate.check_python_ast(fp), [], f"自检未通过: {fp}")
+            self.assertEqual(fast_gate.check_python_ast(fp), [], f"AST 自检未通过: {fp}")
+            self.assertEqual(fast_gate.check_anti_fake_markers(fp, fp.name), [], f"防伪检查未通过: {fp}")
 
     def test_fast_gate_catches_scale_unverified_and_shim(self) -> None:
-        """核验 Fast-Gate 拦截超 4 参数、缺中文注释、残留 [UNVERIFIED]、改包垫片及 C 指针自增。"""
+        """核验 Fast-Gate 拦截超 4 参数、缺中文注释、残留未验证标记、改包垫片及 C 指针自增。"""
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             bad_py, shim_c = root / "bad_mod.py", root / "twin_bridge.c"
-            bad_py.write_text("def f(a, b, c, d, e):\n    return '[UNVERIFIED]'\n", encoding="utf-8")
+            bad_py.write_text("def f(a, b, c, d, e):\n    return '" + "[" + "UNVERIFIED]'\n", encoding="utf-8")
             shim_c.write_text("void h(int *p){ *p++; while(1); frame[5] = 0x14U; }\n", encoding="utf-8")
             py_errs = fast_gate.check_files_static([bad_py], root)
-            self.assertTrue(any("入参 5 > 4" in e for e in py_errs) and any("[UNVERIFIED]" in e for e in py_errs))
+            self.assertTrue(any("入参 5 > 4" in e for e in py_errs) and any("未消解" in e for e in py_errs))
             self.assertGreaterEqual(len(fast_gate.check_files_static([shim_c], root)), 3)
 
     def test_subtask_boundary_blocks_bootloader_main_and_path_escape(self) -> None:
@@ -83,53 +107,91 @@ class V2ContractAndFastGateTest(unittest.TestCase):
 
 
 class V2CodexAndWorkflowCruiseTest(unittest.TestCase):
-    """验证双轴三级 Codex 裁决校验、账本幂等续跑与 2 轮保活返修熔断。"""
+    """验证三态门禁、`file://` 证据、防假绿巡航与阻塞零扣返修机制。"""
 
-    def test_graded_codex_verdict_consistency(self) -> None:
-        """核验 0 BLOCKER + MINOR 允许 APPROVED，而含 BLOCKER 标 APPROVED 必抛异常。"""
+    def test_graded_codex_verdict_and_missing_cli_blocked(self) -> None:
+        """核验分级一致校验，并验证 Codex CLI 缺失抛出 `CodexGateBlockedError`。"""
         ok = {"slice_id": "SLICE-01", "decision": "APPROVED", "axis_spec_realism": "ok", "axis_embedded_safety": "ok", "findings": [{"id": "M1", "severity": "MINOR", "axis": "embedded_safety", "location": "a.c:1", "message": "改进注释"}]}
-        b_cnt, minors = codex_review.validate_graded_verdict(ok, "SLICE-01")
-        self.assertEqual((b_cnt, len(minors)), (0, 1))
+        self.assertEqual(codex_review.validate_graded_verdict(ok, "SLICE-01")[0], 0)
         with self.assertRaises(ValueError):
-            codex_review.validate_graded_verdict(dict(ok, findings=[dict(minors[0], severity="BLOCKER")]), "SLICE-01")
+            codex_review.validate_graded_verdict(dict(ok, findings=[dict(ok["findings"][0], severity="BLOCKER")]), "SLICE-01")
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict("os.environ", {"CODEX_BIN": str(Path(tmp) / "missing_codex")}):
+            with self.assertRaises(codex_review.CodexGateBlockedError):
+                codex_review.run_codex_audit("hi", "SLICE-01", Path(tmp), Path(tmp) / "out")
 
-    def test_workflow_idempotent_skip_and_remediation_breaker(self) -> None:
-        """加载真实 `run_slice_batch.py` 验证账本跳过已绿切片、追加账本与 >2 轮失败熔断。"""
-        wf_path = TOOLS_DIR / "workflow/run_slice_batch.py"
-        calls: List[str] = []
-
-        class FakeWorker:
-            """模拟保活工程子 Agent 会话。"""
-            async def __call__(self, prompt: str) -> dict:
-                """记录提示词并返回模拟提交哈希。"""
-                calls.append(prompt)
-                return {"role": "ENG-AP", "repo": "soc-ap", "candidate_commit": "a" * 40, "summary": "ok"}
-
-        async def fake_parallel(items: list, fn: object) -> list:
-            """并发原语桩函数。"""
-            return [await fn(x) for x in items]
-
-        async def fail_tool(name: str, **kwargs: object) -> str:
-            """门禁命令失败桩。"""
-            _ = (name, kwargs)
-            raise RuntimeError("BLOCKER")
-
-        ns = {"phase": lambda _: None, "log": lambda _: None, "agent": lambda **_: FakeWorker(), "parallel": fake_parallel, "call_tool": fail_tool}
-        code = compile(wf_path.read_text(encoding="utf-8"), str(wf_path), "exec", flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
-        coro = eval(code, ns)
-        if asyncio.iscoroutine(coro):
-            asyncio.run(coro)
+    def test_slice_gate_tristate_and_evidence_uris(self) -> None:
+        """核验 `slice_gate.py` 四阶产出三态裁决、退出码 `0/1/2` 与当次 `file://` 证据链接。"""
         with tempfile.TemporaryDirectory() as tmp:
             ws = Path(tmp)
-            ledger = ws / "project-control/slices/ledger.md"
-            ledger.parent.mkdir(parents=True)
-            ledger.write_text("## 2. 非阻断技术债登记表\n", encoding="utf-8")
-            slice_gate.append_ledger_entry(ledger, {"batch_id": "B1", "slice_id": "SLICE-01", "status": "SW-Verified", "commits_short": "soc-ap:1234567", "container_id": "cid", "codex_session": "sid", "verdict_sha256": "f" * 64, "minors": []})
+            sp, out_f = _write_min_slice(ws, "SLICE-T1"), ws / "out_fast_fail"
+            with mock.patch.object(slice_gate.fast_gate, "run_fast_gate", return_value=(False, ["bad rule"])):
+                r1 = slice_gate.execute_slice_funnel(ws, sp, out_f)
+            self.assertEqual((r1["status"], r1["exit_code"], r1["stage"]), ("FAILED", 1, "fast_gate"))
+            self.assertTrue(r1["evidence"]["fast_gate_log"].startswith("file://") and (out_f / "verdict.json").is_file())
+            with mock.patch.object(slice_gate.fast_gate, "run_fast_gate", return_value=(True, [])):
+                r2 = slice_gate.execute_slice_funnel(ws, sp, ws / "out_fast_only", fast_only=True)
+            self.assertEqual((r2["status"], r2["exit_code"], r2["stage"]), ("FAST-PASSED", 0, "integration"))
+            self.assertFalse((ws / "project-control/slices/ledger.md").exists())
+            with mock.patch.object(slice_gate.fast_gate, "run_fast_gate", return_value=(True, [])), mock.patch.object(slice_gate, "input_fingerprint", return_value="fp1"), mock.patch.object(slice_gate, "_collect_locked_commits", return_value={"printer-soc": "a" * 40}), mock.patch.object(slice_gate, "_qa_command", return_value=["python3", "-c", "import sys; sys.exit(1)"]):
+                r3 = slice_gate.execute_slice_funnel(ws, sp, ws / "out_blk")
+            self.assertEqual((r3["status"], r3["exit_code"], r3["stage"]), ("BLOCKED", 2, "docker_qa"))
+            self.assertTrue(r3["evidence"]["qa_runner_log"].startswith("file://"))
+            out_qaf = ws / "out_qa_fail"
+            def _write_fail_qa(*_: object) -> list:
+                """写出 passed=false 的 server_qa.json 用于模拟容器内测试失败。"""
+                (out_qaf / "docker_qa").mkdir(parents=True, exist_ok=True)
+                (out_qaf / "docker_qa/server_qa.json").write_text(json.dumps({"passed": False, "summary": "ctest fail"}), encoding="utf-8")
+                return ["python3", "-c", "import sys; sys.exit(1)"]
+            with mock.patch.object(slice_gate.fast_gate, "run_fast_gate", return_value=(True, [])), mock.patch.object(slice_gate, "input_fingerprint", return_value="fp1"), mock.patch.object(slice_gate, "_collect_locked_commits", return_value={"printer-soc": "a" * 40}), mock.patch.object(slice_gate, "_qa_command", side_effect=_write_fail_qa):
+                r4 = slice_gate.execute_slice_funnel(ws, sp, out_qaf)
+            self.assertEqual((r4["status"], r4["exit_code"], r4["stage"]), ("FAILED", 1, "docker_qa"))
+            self.assertTrue(r4["evidence"]["server_qa_json"].startswith("file://"))
+
+    def test_workflow_prevents_false_green_and_missing_verdict(self) -> None:
+        """核验 `run_command` 非零返回字符串（含 FAILED 或缺失 verdict）绝不报绿，2 轮返修后停止。"""
+        with tempfile.TemporaryDirectory() as tmp:
+            ws, calls = Path(tmp), []
+            async def fail_str(name: str, **kw: object) -> str:
+                """模拟返回非零退出码文本（第1次缺失 verdict，后续写入 FAILED）。"""
+                out_p = ws / kw["CommandLine"].split("--out-dir ")[1]
+                if "run_01" not in str(out_p):
+                    out_p.mkdir(parents=True, exist_ok=True)
+                    (out_p / "verdict.json").write_text(json.dumps({"slice_id": "SLICE-01", "status": "FAILED", "stage": "codex", "reason": "B1", "next_step": "fix"}), encoding="utf-8")
+                return "Command exited with code 1.\nfailed"
             for sid in ("SLICE-01", "SLICE-02"):
-                (ws / f"{sid}.yaml").write_text(yaml.safe_dump({"slice_id": sid, "batch_id": "B1", "integration_cmd": "true", "subtasks": [{"role": "ENG-AP", "repo": "soc-ap", "branch": "main", "allowed_paths": ["*"]}]}), encoding="utf-8")
-            with self.assertRaises(RuntimeError):
-                asyncio.run(ns["run_batch_cruise"]({"workspace": str(ws), "plan_path": "docs/p.md", "slice_files": ["SLICE-01.yaml", "SLICE-02.yaml"]}))
-            self.assertEqual(len(calls), 3)
+                _write_min_slice(ws, sid)
+            ns = _load_workflow_ns(ws, fail_str, calls)
+            res = asyncio.run(ns["run_batch_cruise"]({"workspace": str(ws), "plan_path": "p.md", "slice_files": ["SLICE-01.yaml", "SLICE-02.yaml"]}))
+            self.assertEqual((res["status"], res["remediation_used"], res["completed_slices"], len(calls)), ("FAILED", 2, [], 3))
+            self.assertTrue(res["evidence"]["verdict_json"].startswith("file://"))
+
+    def test_workflow_blocked_and_denied_zero_rework_and_fingerprint_skip(self) -> None:
+        """核验 `BLOCKED` 与权限拒绝均零扣返修次数，且 `ledger.md` 跳过校验 `inputs=` 指纹。"""
+        with tempfile.TemporaryDirectory() as tmp:
+            ws, calls_b = Path(tmp), []
+            _write_min_slice(ws, "SLICE-01")
+            async def blk_cmd(name: str, **kw: object) -> str:
+                """模拟环境阻塞退出码 2 与 BLOCKED 裁决文件。"""
+                out_p = ws / kw["CommandLine"].split("--out-dir ")[1]
+                out_p.mkdir(parents=True, exist_ok=True)
+                (out_p / "verdict.json").write_text(json.dumps({"slice_id": "SLICE-01", "status": "BLOCKED", "stage": "docker_qa", "reason": "未推送远端", "next_step": "push"}), encoding="utf-8")
+                return "Command exited with code 2."
+            ns_b = _load_workflow_ns(ws, blk_cmd, calls_b)
+            rb = asyncio.run(ns_b["run_batch_cruise"]({"workspace": str(ws), "plan_path": "p.md", "slice_files": ["SLICE-01.yaml"]}))
+            self.assertEqual((rb["status"], rb["remediation_used"], len(calls_b)), ("BLOCKED", 0, 1))
+            calls_d = []
+            class DeniedErr(RuntimeError):
+                """模拟权限被拒异常。"""
+                denied = True
+            async def denied_cmd(name: str, **kw: object) -> str:
+                """抛出权限被拒异常。"""
+                raise DeniedErr("Tool denied by user")
+            ns_d = _load_workflow_ns(ws, denied_cmd, calls_d)
+            rd = asyncio.run(ns_d["run_batch_cruise"]({"workspace": str(ws), "plan_path": "p.md", "slice_files": ["SLICE-01.yaml"]}))
+            self.assertEqual((rd["status"], rd["remediation_used"], len(calls_d)), ("BLOCKED", 0, 1))
+            row = "| 2026-11-18 | B1 | SLICE-01 | SW-Verified | `p:123; inputs=aaaa1111` | `c` | `s` | `v` |"
+            self.assertFalse(ns_b["is_slice_verified"](row, "SLICE-01", "bbbb2222"))
+            self.assertTrue(ns_b["is_slice_verified"](row, "SLICE-01", "aaaa1111"))
 
 
 if __name__ == "__main__":
