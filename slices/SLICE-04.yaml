@@ -1,6 +1,6 @@
 # V2 垂直切片 SLICE-04：MC 正交双平面 L3 透明路由重构与四阶软件/ARM 门禁闭环
 slice_id: "SLICE-04"
-revision: 1
+revision: 2
 batch_id: "BATCH-OTA-ACCEPTANCE-01"
 profile: "host-software"
 depends_on: ["SLICE-01", "SLICE-02"]
@@ -25,6 +25,7 @@ subtasks:
       max_protected_lines: 0
 
 integration_cmd: >-
+  python3 -c 'import subprocess, time; t0=time.monotonic(); r=subprocess.run(["python3", "project-control/tools/gates/fast_gate.py", "--workspace", ".", "--slice", "project-control/slices/SLICE-04.yaml"], capture_output=True, text=True); dt=time.monotonic()-t0; print((r.stdout + r.stderr).strip()); print(f"[PASS] fast_gate rc={r.returncode} elapsed_sec={dt:.3f} (<3.000s)"); assert r.returncode == 0 and dt < 3.0' &&
   python3 project-control/tools/sync_contracts.py --workspace . &&
   (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh) &&
   (cd boot/bootloadermc && sh tests/run_tests.sh && make clean) &&
