@@ -10,6 +10,8 @@
 | `v1.1` | `2026-11-17` | `AI (Antigravity-CLI) - COORD` | 用户批准 Human Gate #1（确认 `DEC-USER-1=B, DEC-USER-2=A, DEC-USER-3=A, DEC-USER-4=A, DEC-USER-5=A`），落盘契约与切片并启动 Phase 2 执行 | 已批准执行 (Approved) |
 | `v1.2` | `2026-11-18` | `AI (Antigravity-CLI) - COORD` | 实探核实 VMware (`192.168.77.134`) 离线而 C308L (`192.168.1.101:/dev/ttyS1`) 在线接有真实 MC/TH 板卡，按用户更新 SSH 公钥及授权 2 转入 C308L `/dev/ttyS1` 执行 `SLICE-03` `B1~B4` 实测（标明未连接物理 U 盘与 COM12/13） | 执行中 (Stage B HIL) |
 | `v1.3` | `2026-11-18` | `AI (Antigravity-CLI) - COORD` | 完成 `SLICE-01/02` `SW-Verified` 准出与 `SLICE-03` C308L (`/dev/ttyS1`) 真机 HIL 穿刺实测（双板升级至 `mcu-p3@b865222c` 成功，定位 `HIL-FINDING-01/02` 两项真机缺陷） | 已完成首轮验收并待决缺陷修复 |
+| `v1.4` | `2026-11-18` | `AI (Antigravity-CLI) - ARCH` | 针对 SLICE-03 真机暴露的 HIL-FINDING-01（MC 路由层违背 §2.2 零业务解析原则）与 HIL-FINDING-02（MC Bootloader .bss 盐值软复位归零及 _estack 栈顶隐患）补充第 3 部分穿透式架构整改方案、Diff Budget 与 SLICE-04/05 闭环规划 | 已由 v1.5 收敛替代 |
+| `v1.5` | `2026-11-18` | `AI (Antigravity-CLI) - ARCH` | 按用户裁决豁免 HIL-FINDING-02（确认风险可承受，本轮不修改 boot/bootloadermc 且真机全程禁用 SWD 探针），将第 3 部分收敛为仅在 mcu-p3@feat/soc-debug 重构 MC 正交 L3 透明路由（HIL-FINDING-01）并经 /dev/ttyS1 串口 OTA 真机闭环 | 已批准执行 (Approved, DEC-REM-1=A) |
 
 ---
 
@@ -327,3 +329,157 @@ flowchart TD
 3. **异常回滚预案**：
    - **软件仓回滚**：未推送前以 `git -C <repo> reset --hard <locked_baseline_commit>` 恢复至 §2 顶部记录的基线提交；已批准修改仅限本方案 `Diff Budget` 内文件，无业务仓副作用。
    - **HIL 硬件救援预案**：若 Stage B 真机测试中因意外导致任一节点卡在 Bootloader（`Bit31=1`），**禁止直接动用 `probe-rs`**，优先通过串口重发 `hil_deploy_via_minimc_ota.py` 或 MC FAT32 U 盘（`0:/fw_mc.bin`）恢复；仅在 Boot 分区损坏无法响应串口及 U 盘时，按 `HW-G2` 申请单次人类 SWD 救援授权。
+
+---
+
+## 第 3 部分：首轮真机缺陷根因与穿透式架构整改方案（v1.5 ARCH 收敛版）
+
+> 本部分基于 `SLICE-03` C308L（`192.168.1.101:/dev/ttyS1`）真机 HIL 验收报告与 `verdict.json` 暴露的两项真实硬件缺陷（`HIL-FINDING-01`、`HIL-FINDING-02`）做物理取证。按用户正式裁决（**确认 `HIL-FINDING-02` 风险可承受，本轮豁免不修且全程禁用 SWD 探针**），本版将整改范围收敛为 **单业务仓闭环**：仅在 `mcu-p3@feat/soc-debug` 重构 MC 正交 L3 透明路由（彻底解决 `HIL-FINDING-01`），保持 `boot/bootloadermc@soc_debug` 零改动只读，并通过 C308L `/dev/ttyS1` 纯串口 OTA 完成全链路真机闭环。
+
+### 3.1 缺陷根因与现状实证
+
+#### 当前受管仓干净基线快照（v1.5 取证基准）
+
+| 仓库 | 分支 | 当前干净基线 Commit | 本轮角色 |
+| :--- | :--- | :--- | :--- |
+| `project-control` | `main` | `e6f8fb70b99726e00c5fee461e1fd91aaec7e70c` | 治理总控、规划、技术债台账与切片门禁 |
+| `printer-soc` | `main` | `888d389c8969d90de57c189907cf2c58543b7b64` | 零改动参考仓（AP OTA 宿主基准） |
+| `mcu-p3` | `feat/soc-debug` | `b865222c5e7ec50cbe7d7174b8aa25f93ed16ae0` | **唯一业务修改仓**：`HIL-FINDING-01` 整改目标仓（`ENG-MCU`） |
+| `test_harness` | `main` | `371a3a3de7e878d4035388ccab70ef4bc84f9046` | 零改动静态/OTA/HIL 验证工具链（以磁盘 `git rev-parse HEAD` 实测为准） |
+| `boot/bootloadermc` | `soc_debug` | `3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4` | **零改动只读基线（用户确认 `HIL-FINDING-02` 风险可承受、本轮豁免不修）** |
+| `boot/bootloaderth` | `soc_debug` | `1a0351363cf7b9cbc0aa6919b4afc6be61561152` | 零改动参考仓（TH Bootloader 已验证 `0x20008004UL`） |
+| `agents` | `main` | `30ecc6586a861c1543a97804cfe0600bb4778efb` | 零改动规则与技能托管仓 |
+
+> 注：`ARCH` 物理核验确认 `test_harness@main` 当前真实 `HEAD` 为 `371a3a3de7e878d4035388ccab70ef4bc84f9046`，`boot/bootloaderth@soc_debug` 完整 40 位 `HEAD` 为 `1a0351363cf7b9cbc0aa6919b4afc6be1561152`；本方案及后续 `SLICE-04`/`SLICE-05` 锁定哈希均以仓库实测 `HEAD` 为准。
+
+#### 物理取证：端到端调用链与缺陷机理
+
+| 缺陷编号 | 实测现象（`SLICE-03`） | 源码物理证据与精确调用链（`仓:路径:符号:行号`） | 根因与裁决状态 |
+| :--- | :--- | :--- | :--- |
+| **`HIL-FINDING-01`** | `B4_TH` 场景下进入 TH 透明转发窗口后，AP 向 `DST=0x03` 发送 `0x24 MINIMC_CMD_OTA_ABORT`（`seq=18`），期望由 TH Bootloader 返回 `src=0x03 NACK 0x04`，但实测收到 MC 代回的 `src=0x02 NACK 0x05`（`DEVICE_BUSY`）；仅待 `5s` 代理超时后重发 `seq=19` 才由 TH 返回 `src=0x03 NACK 0x04` | 1. 接收拦截链：`drain_ap_rx`（`mcu-p3:motion-controller-mcu/project/src/minimc_proto.c:L3015`，注：`graphify-out` 2026-11-14 快照曾映射至历史行 `L2844`）➔ `handle_ap_frame`（`L2582-2610`）。在 `L2596`，代码在 **`dst_id` 路由分流（`L2601` / `L2606`）之前** 先执行 `s_th_proxy_active && !is_ota_or_maint_cmd(cmd_id)` ➔ `send_mc_nack(frame, seq, MINIMC_ERR_DEVICE_BUSY)`。<br>2. 命令白名单耦合：`is_ota_or_maint_cmd`（`L2487-2494`）仅放行 `0x01, 0x03, 0x17, 0x1D, 0x20..0x23`，遗漏 `0x24`、`0x14` 等指令。<br>3. 请求侧 L7 代理锁与超时猜测：`handle_th_relay_req`（`L2527-2575`）置位 `s_th_proxy_active=true`、`FORWARD_UART_MODE_OTA_ROUTE`（`minimc_proto.h:L46`）与单槽 `s_relay_pending=true`，并调用 `get_th_relay_timeout_ms`（`L2501-2520`）按 `cmd_id` 设定 `200~5000ms` 定时器，超时由 `check_th_relay_timeout`（`L2943-2979`）代回 `SRC=0x02 NACK 0x03`。<br>4. 回程响应审查：`drain_th_rx`（`L3034`）➔ `handle_th_frame`（`L2796-2843`）➔ `validate_th_relay_resp`（`L2669-2701`）➔ `is_valid_th_relay_cmd`（`L2619-2661`）强核对 `s_relay_pending`、`seq` 与命令字配对，并在 `L2838` 偷窥 `orig_req_cmd==0x22 && cmd_id==0x00` 清除 `s_th_proxy_active`。<br>5. 全局状态交叉污染：`trigger_mc_to_th_cascade`（`L1744-1788`，被 `handle_mc_set_temp:L1828`、`handle_mc_filament:L2233`、`handle_mc_gcode_exec:L2297` 调用）与 `handle_mc_sys_ctrl`（`L2129-2169`, `L2155`）共用 `s_relay_*` 与 `s_th_proxy_active`；而 TH 侧 `dispatch_th_command`（`mcu-p3:color-engine-mcu/io_toggle/src/app/minimc_proto.c:L845-889`）及 TH Bootloader（`boot/bootloaderth/src/iap.c:L215`）均原样回填 `dst_id = frame[2]`（AP 来包回 `0x01`，MC 来包回 `0x02`）。 | **真实阻断缺陷（本轮必改）**：MC 应用层违背《协议规范 v2.0.4》§2.2「`dst_id != local_id` 时严禁解析 `cmd_id`、解包 Payload 与修改 `seq`」及 `HW-G6` 原则，将本应正交的 **L3 无状态存储转发** 做成了深度耦合 `cmd_id` 的 **有状态 L7 透明代理**。 |
+| **`HIL-FINDING-02`** | `B4_MC` 场景下 MC Bootloader（`commit=0x4FC171EA`）在 `B3_MC`（`seq=182`）、`B4_MC` 复位前（`seq=193`）与 `B4_MC` `0x1D(1)` 软复位后（`seq=200`）三次返回完全相同的 `boot_id=0xC1E6CD05`，跨软复位未刷新 | 1. `.bss` 盐值软复位归零：`boot_uart_ota.c:L52` 定义 `static uint32_t s_boot_salt = 0U;`（位于 `.bss` 段），每次 `NVIC_SystemReset()` 经 `startup_at32f435_437.s:L72-79`（`FillZerobss`）清零；`derive_dynamic_boot_id`（`boot_uart_ota.c:L206-223`，在 `boot_uart_ota_init:L833` 调用）混合 `CRM->ctrlsts`（`at32f435_437_crm.h:L1447-1465` bit 28 `swrstf`，清除位 bit 24 `rstfc` 且源码未清）与静态 `UID0..2`，导致连续 `Boot -> Boot` 软复位产出固定 `boot_id`。<br>2. 栈顶与 `2000ms` 探测窗现状：`at32f435_bootloader.ld:L14,L22` 当前配置 `_estack = 0x20060000` / `384K`，`-Os`（`Makefile:L10`）反汇编实证 `main()`（`main.c:L187-193`）入口首指令 `stmdb sp!, {r4, r5, r6, r7, r8, r9, lr}`（压栈 28B，`r7` 恰好落入 `0x2005FFF0` 覆盖 `UPG2`，早于 `L192 boot_uart_ota_init()` 检查）；现网实际依靠 `main.c:L202-220` 的 `2000ms` U盘/UART2 探测窗 + AP 侧 `ota_transfer.cpp:L11,15,76-87`（`250ms` 初等与 `100ms` 轮询）进入 Bootloader 并锁住驻留态。<br>3. 正常升级链路兼容：`ota_transfer.cpp:L321-328` 与 `hil_deploy_via_minimc_ota.py:L568-580,686` 仅校验 `App != Boot != 新 App`（`0x8B139E59 != 0xC1E6CD05 != 0x02789779`，实测均不等）。 | **用户已裁决豁免（本轮不修）**：用户确认该风险可承受，本轮不修改 `boot/bootloadermc` 源码与链接脚本、不借 SWD 擦写 `0x08000000`，转入 `project-control/slices/ledger.md` 登记为**非阻断已接受技术债**。 |
+
+#### 沿用现有逻辑的弊端实证（为何 `HIL-FINDING-01` 禁止局部打补丁）
+
+- **`HIL-FINDING-01` 禁止“在 `is_ota_or_maint_cmd()` 增补 `0x24` 或调换 `if` 顺序”**：
+  - 若仅向 `is_ota_or_maint_cmd()` 补充 `0x24`（或仅把 `L2596` 挪到 `dst_id == 0x02` 分支内部），`handle_th_relay_req()` 与 `validate_th_relay_resp()` 仍会持续读取 `cmd_id`、强制单槽 `s_relay_pending` 串行锁、强设与 AP 侧 `ota_transfer.cpp`（`6000/5000/8000ms`）不一致的 `1500/3000/5000ms` 超时（由 MC 伪造 `SRC=0x02 NACK 0x03`），并丢弃任何未列入 `is_valid_th_relay_cmd()` 的合法 TH 响应或 `0x14/0x16` 并发探测。
+  - 既有单测 `test_mc_ota_and_relay.c:L352-384`（`L370-371` 断言代理期间发 `DST=0x02 0x10` 返回 `NACK 0x05`）、`L442-475`（断言 AP ➔ TH `0x21` 由 MC 代回 `1500ms NACK 0x03`）及 `test_twin44_mc_debug.c:L478-519, L575-667`（断言 MC 对 `DST=0x01` 回包执行 `seq` 相关性拦截与 `200ms` 代理超时）固化了上述 L7 代理错误契约，必须随正交重构同步清理并切换为真实 L3 行为断言。
+
+---
+
+### 3.2 `Design-It-Twice` 架构方案选型与精确契约设计
+
+#### 一、MC 路由正交分层重构（解决 `HIL-FINDING-01`，`mcu-p3@feat/soc-debug`）
+
+```mermaid
+flowchart LR
+  AP["AP Link USART2"] --> AP_RX["handle_ap_frame 仅检 CRC 与 L3 头"]
+  AP_RX -->|"dst != 0x02 且 dst != 0xFF"| PLANE_A["平面 A: L3 无状态存储转发"]
+  AP_RX -->|"dst == 0x02 或 0xFF"| PLANE_B["平面 B: MC 本机业务分发"]
+  PLANE_A -->|"dst == 0x03 且 hop > 1"| LEASE["刷新 5s L3 总线租约 OTA_ROUTE"]
+  LEASE -->|"relay_frame 减跳数重算 CRC"| U6_TX["USART6 DMA 发送至 TH"]
+  PLANE_B -->|"0x01 0x03 0x14 0x16 0x17 0x1D"| MC_LOCAL["MC 本地立即响应 不受 L3 租约阻塞"]
+  PLANE_B -->|"0x10 0x19 0x1C 需级联 TH"| CASCADE["trigger_mc_to_th_cascade SRC=0x02"]
+  CASCADE -->|"检查租约或 mode != NORMAL"| BUSY_GUARD["租约期内本地级联让路 返回 BUSY"]
+  TH["TH Link USART6"] --> TH_RX["handle_th_frame 按 dst_id 分流"]
+  TH_RX -->|"dst == 0x01 非 MC 本机"| L3_RET["平面 A 回程: 仅检 hop > 1 零 cmd 审查 直转 USART2"]
+  TH_RX -->|"dst == 0x02 MC 本地回包"| B_RET["平面 B 回程: validate_mc_local_th_resp 与 200ms 超时"]
+```
+
+| 方案对比维度 | 备选方案 A：**正交双平面架构（推荐采纳）** | 备选方案 B：在 `is_ota_or_maint_cmd` 补 `0x24` 并局部微调（否决） |
+| :--- | :--- | :--- |
+| **L3 零业务解析（§2.2）** | **100% 满足**。`dst_id != 0x02 && dst_id != 0xFF` 路径完全不读 `cmd_id`、`seq` 与 Payload，彻底删除 L7 审查与代理伪造超时代回。 | **不满足**。仍持续解析 `cmd_id`（`is_ota_or_maint_cmd`、`get_th_relay_timeout_ms`、`is_valid_th_relay_cmd`），未来新增任何指令仍会复现 `NACK 0x05`。 |
+| **端到端超时责任边界** | **清晰无歧义**。AP ↔ TH 超时完全由发起端 AP（`printer-soc/services/forward/modules/ota/ota_transfer.cpp` `6000/5000/8000ms`）裁决；MC 仅维护 `200ms` 的 MC-local 级联超时（`SRC=0x02 <-> DST=0x02`）。 | MC 仍用与 AP 不一致的 `1500/3000/5000ms` 定时器强行代回 `SRC=0x02 NACK 0x03`，且强行丢弃晚到或非配对表内的真实 TH 帧。 |
+| **`USART6` 半双工/文本防冲突** | 通过与业务完全解耦的 **L3 活跃租约（5000ms 静默自动释放 `FORWARD_UART_MODE_OTA_ROUTE`）** 互斥 Marlin 文本 G-code（`wk_usart.c:forward_uart_send_line`）与 MC 本地 `SRC=0x02` 级联。 | `s_th_proxy_active` 同时锁死 `DST=0x02` 无关本机查询、MC `0x1D` 复位（依赖偷窥 TH `0x22` ACK 才能解锁）及不相关指令。 |
+| **`B2_TH` 后立即 `B2_MC` 时序兼容性** | **`handle_mc_sys_ctrl`（`0x1D`）不再依赖 L3 租约状态，仅检查运动/加热安全门控与 `mc_app_is_busy_hook()`**；因此 `B2_TH` 结束 `<500ms` 内立即向 MC 发 `0x1D` 零卡顿通过。 | 若不偷窥 TH `0x22` 又保留 `s_th_proxy_active` 对 `0x1D` 的拦截，`B2_TH -> B2_MC` 会被误拦 5 秒导致阶段超时。 |
+
+**平面 A 与平面 B 精确接口/函数变更清单（`minimc_proto.h` / `minimc_proto.c`）**：
+1. **彻底删除的反模式 L7 代理函数（4 个）**：
+   - 删除 `is_ota_or_maint_cmd(uint8_t cmd_id)`（`L2487-2494`）
+   - 删除 `get_th_relay_timeout_ms(uint8_t cmd_id)`（`L2501-2520`）
+   - 删除 `is_valid_th_relay_cmd(uint8_t req_cmd, uint8_t resp_cmd, uint16_t plen)`（`L2619-2661`）
+   - 删除 `validate_th_relay_resp(const uint8_t *frame, uint8_t *out_err_code)`（`L2669-2701`）—— 拆分为仅针对 `DST=0x02`（`SRC=0x02` 级联回包）的 `validate_mc_local_th_resp(...)` 辅助函数，平面 A `DST=0x01` 回包不再经过任何 L7 校验。
+2. **平面 A（L3 无状态存储转发）精确规则**：
+   - `handle_ap_frame(frame, len)`：在校验 `MINIMC_FRAME_MIN_LEN` 与 CRC16 后，仅凭 `dst_id = frame[3]` 正交分流，严禁提前读取 `cmd_id` 拦截：
+     - `dst_id == MINIMC_NODE_MC || dst_id == MINIMC_NODE_BROADCAST` ➔ 交平面 B；
+     - 其他 `dst_id` ➔ 交 `forward_ap_to_th_l3(frame, len)`（原 `handle_th_relay_req` 重构）：
+       - Split Horizon 检查：`src_id == MINIMC_NODE_MC` 或 `dst_id == MINIMC_NODE_AP` 时丢弃并递增 `s_l3_err_bad_route`；
+       - 静态路由检查：仅支持 `dst_id == MINIMC_NODE_TH`，未知 `dst_id` 按 §2.2 & `V2-14` 直接丢弃并递增 `s_l3_err_no_route`；
+       - Hop 耗尽检查：`hop_limit <= 1U` 按 §2.2 & `V2-14` 静默丢弃并递增 `s_l3_err_hop_exhausted`（不再伪造 L7 `NACK 0x02`）；
+       - 执行转发：调用 `relay_frame(frame, len, s_l3_tx_buf)`（`hop_limit - 1`，`route_ctrl |= MINIMC_ROUTE_IS_ROUTED`，重算 CRC16），调用 `forward_uart_send_raw(s_l3_tx_buf, len)`；若 TX DMA 忙/满，递增 `s_l3_err_tx_drop` 并丢弃（不重传）；若发送成功，刷新 `s_th_l3_lease_active = true`、`s_th_l3_lease_last_ms = now_ms` 并置 `forward_uart_mode_set(FORWARD_UART_MODE_OTA_ROUTE)`。
+   - `handle_th_frame(frame, len)`：仅凭 `dst_id = frame[3]` 正交分流：
+     - `dst_id != MINIMC_NODE_MC && dst_id != MINIMC_NODE_BROADCAST`（如 `dst_id == MINIMC_NODE_AP`）：调用 `forward_th_to_ap_l3(frame, len)`，仅校验 `hop_limit > 1U`（否则丢弃并递增 `s_l3_err_hop_exhausted`）与 `src_id != MINIMC_NODE_MC`，通过独立 TX 缓冲调用 `relay_frame` + `minimc_proto_send` 直转 `USART2`，**零 `s_relay_pending` 检查、零 `seq` 检查、零 `cmd_id` 偷窥**（成功转发可刷新 `s_th_l3_lease_last_ms`）。
+3. **平面 B（MC 本机业务与 `SRC=0x02 <-> DST=0x02` 本地级联）精确规则**：
+   - `handle_mc_query`（`0x01, 0x03, 0x14, 0x16, 0x17, 0x1D`）及广播 `handle_mc_motion_stop`（`0xFF`）**在 L3 租约期间始终可用，不受 `s_th_l3_lease_active` 阻断**；其中 `handle_mc_sys_ctrl`（`0x1D`）将 `proxy_or_app_busy`（`L2155`）收敛为仅检查 `mc_app_is_busy_hook()`（不再被 5000ms L3 租约阻塞）。
+   - `trigger_mc_to_th_cascade`（`L1744-1788`）与 `minimc_proto_send_th_gcode`（`L2895-2937`）使用**平面 B 专属状态** `s_mc_local_relay_pending` / `s_mc_local_relay_cmd` / `s_mc_local_relay_seq` / `s_mc_local_relay_seq16` / `s_mc_local_relay_start_ms`（固定 `MC_RELAY_TIMEOUT_MS = 200U`）。若 `s_th_l3_lease_active || (forward_uart_mode_get() != FORWARD_UART_MODE_NORMAL)`，平面 B 本地级联主动让路并按原接口语义拒绝发起（对 `0x19 FILAMENT`、`0x1C GCODE` 或 `0x10 SET_TEMP` 喷头段返回 `MINIMC_ERR_DEVICE_BUSY (0x05)`，或使 `minimc_proto_send_th_gcode` 返回 `false`），确保不破坏 `USART6` 二进制 OTA/L3 链路。
+   - `handle_th_frame` 当 `dst_id == MINIMC_NODE_MC` 时仅处理本地 `SRC=0x02` 回包（经 `validate_mc_local_th_resp` 与 `s_mc_local_relay_pending` 配对后完成 MC-local 应答并清标志）；`check_th_link_timeouts(now_ms)`（原 `check_th_relay_timeout` 重构）分两段独立运行：仅对 `s_mc_local_relay_pending` 触发 `200ms` 超时复位并输出 `[MC-DBG] TIMEOUT` 诊断日志，严禁向 `USART2` (AP) 补发重复或无主 `NACK 0x03`；对 `s_th_l3_lease_active` 仅在连续 `MC_TH_PROXY_TIMEOUT_MS (5000U)` 无 L3 帧后自动复位 `forward_uart_mode_set(FORWARD_UART_MODE_NORMAL)`（无任何 L7 NACK 产生）。
+   - `minimc_proto.h:L282`：`minimc_proto_is_th_proxy_active(void)` 可保留为 `minimc_proto_is_th_l3_lease_active(void)`（或在 `minimc_proto.h` 保持声明并映射至 `s_th_l3_lease_active` 以兼容 `Marlin`/调用方语义，经全仓核查仅 `minimc_proto.*` 与 `test_mc_ota_and_relay.c` 引用该函数）。
+   - 编码铁律约束：`minimc_proto.c` 内所有新增及修改函数严格满足函数总行数 `<= 50` 行、入参 `<= 4` 个、单 `if` 逻辑运算符 `<= 2` 个、扁平缩进、零动态堆分配及全中文注释；`wk_usart.h` / `wk_usart.c` 保持零修改（`forward_uart_send_line` 对非 `NORMAL` 模式已原生阻断，而 `forward_uart_send_raw` 仅在 `PERF_TEST` 模式阻断）。
+
+#### 二、`HIL-FINDING-02` 风险接受裁决与零探针验收口径对齐
+
+1. **风险裁决与零改动边界**：
+   - 遵循“首版优先复用现有 Bootloader、避免单点 SWD 擦写 `0x08000000` 引入现场变砖与返修风险”原则，正式保留 `boot/bootloadermc@3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4` **源码与链接脚本零修改**，真机全程严禁使用 `probe-rs` / SWD / JTAG（`probe_rs_used: false`）。
+   - 将 `HIL-FINDING-02`（Bootloader 态下连续 `Boot -> Boot` 软复位复现固定 `boot_id=0xC1E6CD05`，以及 `-Os` 下 `main()` 栈帧在进入 `boot_uart_ota_init()` 前覆写 `0x2005FFF0` 现象）记入 `project-control/slices/ledger.md` **非阻断已接受技术债**。
+2. **真机验收口径与运行时约束对齐**：
+   - **`B4_MC` 验收聚焦**：验证合法 `0x20` + Chunk 0 后发送 `0x24` 返回 `NACK 0x04`、`4B 0x23` 返回 `NACK 0x06`、`0x1D(1)` 中途软复位安全驻留 Bootloader（`Bit31=1` 且 `0x23 bytes_written=0`）并全量重刷恢复新 App；`Boot -> Boot` 软复位复现固定 `boot_id=0xC1E6CD05` 按已批准豁免记录为预期观测特征，不再阻断 `SLICE-05` 准出。
+   - **AP `< 2.0s` 首次探询约束**：因现网 `boot/bootloadermc` 实际依赖 `main.c:L202-220` 的 `2000ms` 探测窗口接管 UART2 OTA，正常升级下发 `0x1D(2)` 后需保证 AP 在 `< 2.0s` 内发起首次 `0x01` 探询（现有 `printer-soc` `ota_transfer.cpp:L11,15,76-87` 的 `250ms` 初等 + `100ms` 轮询，以及 `hil_deploy_via_minimc_ota.py` 均已天然满足；且正常 `App -> Boot -> 新 App` 均满足 `App != Boot != 新 App` 校验）。
+
+---
+
+### 3.3 整改影响仓库、精确文件白名单与最小修改预算（Diff Budget）
+
+| 仓库 | 分支（锁） | 负责角色 | 允许改动精确文件白名单（上限） | 严禁触碰说明 |
+| :--- | :--- | :--- | :--- | :--- |
+| `mcu-p3` | `feat/soc-debug` | `ENG-MCU` | **唯一业务修改仓（上限 4 文件）**：<br>1. `motion-controller-mcu/project/inc/minimc_proto.h`<br>2. `motion-controller-mcu/project/src/minimc_proto.c`<br>3. `motion-controller-mcu/tests/test_mc_ota_and_relay.c`<br>4. `motion-controller-mcu/project/src/test_twin44_mc_debug.c` | 严禁改动 `wk_usart.*`、`color-engine-mcu/*`（TH App）、`AT32F435xG_FLASH.ld`、`startup_*` 或 `Marlin_main.c` |
+| `boot/bootloadermc` | `soc_debug` | 只读输入（豁免 `HIL-FINDING-02`） | **0 文件改动** | **绝对严禁写入任何代码或 `main` 分支**；真机严禁 SWD 刷写 |
+| `printer-soc` / `boot/bootloaderth` / `test_harness` / `agents` | 各锁定分支 | 只读参考 | **0 文件改动** | 严禁任何修改；直接复用现有 `test_harness` 与 `printer-soc` 回归基准 |
+| `project-control` | `main` | `COORD` / `ARCH` | 本方案 `mc_th_upgrade_acceptance_implementationplan_20261117_174500.md`、`slices/ledger.md`（登记 `HIL-FINDING-02` 已接受技术债）、`slices/SLICE-04.yaml`、`slices/SLICE-05.yaml`、`docs/evidence/SLICE-04/*`、`docs/evidence/SLICE-05/*`、`manifest.yaml` | **无需修改 `contracts/minimc_v2_contract.yaml` 与 `ap_mc_formal_protocol_v2_0_4_unified_ota_20261106.md`**（现行协议原本即要求 L3 零业务解析） |
+
+---
+
+### 3.4 新增垂直切片（`SLICE-04` ~ `SLICE-05`）、门禁命令与审批决策项（`Human Gate #1-R2` / `DEC-REM-1`）
+
+#### 新增切片编排总览（Phase 2 批准后由 COORD 生成 `SLICE-04.yaml` / `SLICE-05.yaml` 并续跑）
+
+| Slice ID | 依赖 (`depends_on`) | Profile | `requires_hil_immediately` | Consumes（输入依赖） | Produces（准出产物） |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **`SLICE-04`** | `["SLICE-02"]` | `host-software` | `false` | 基线 `mcu-p3@b865222c`、`test_harness@371a3a3d`、`printer-soc@888d389c`（`boot/bootloadermc@3e01c00` 只读引用） | **SW-Verified** 修复后 `mcu-p3@feat/soc-debug` 提交、`run_ota_software_suite.py` `39/39`（含 `C02`/`C03` 与 `printer-soc` CTest `C05~C08`）及单测报告、ARM 编译产物（`Marlin_AT32.bin <= 917,504 B`，`BOOT_IPC == 4 B`）与 ATSG 打包校验、以及 `ledger.md` 中 `HIL-FINDING-02` 已接受技术债登记 |
+| **`SLICE-05`** | `["SLICE-04"]` | `host-software` | `true` | `SLICE-04` 新编 `fw_mc.bin`（ATSG 打包）+ `SLICE-02` `fw_th.bin` + C308L `/dev/ttyS1 @ 921600` 实板硬件（**全程 `probe_rs_used: false`**） | **HIL-Verified** 真机全闭环报告：经串口 MiniMCProto v2.0 OTA 直接刷入新编 `fw_mc.bin`、专项实测 `HIL-FINDING-01`（`B4_TH` L3 窗口 `0x24 -> SRC=0x03 NACK 0x04`、`0x14/0x01/0x03` 透传、MC 本地查询与 `<5s` 衔接 `B2_MC` 无 `NACK 0x05`、`>5s` 恢复 `0x10` 级联）及全链路 `B1~B4`（核记 `B4_MC` `0xC1E6CD05` 为已豁免观测特征） |
+
+#### 切片详细定义与验收门禁
+
+1. **`SLICE-04`：MC L3 正交透明路由重构与 SW 全门禁**
+   - **子任务派单**：
+     - `ENG-MCU`（`mcu-p3@feat/soc-debug`，`max_files: 4`）：按 §3.2 重构 `minimc_proto.h/.c`，同步更新 `test_mc_ota_and_relay.c` 与 `test_twin44_mc_debug.c`（新增/覆写：① TH L3 活跃窗口内向 `DST=0x03` 发 `0x24` 与 `0x14` 零拦截无篡改透传；② L3 窗口内向 `DST=0x02` 发 `0x01/0x03/0x14/0x17/0x1D` 本地不报 `NACK 0x05`；③ L3 窗口内 MC 本地级联 `0x10/0x19/0x1C` 主动让路不碰 `USART6`；④ `TH -> AP`（`DST=0x01`）任何未登记指令或晚到回复无条件透传；⑤ `hop_limit <= 1` 严格按 §2.2 丢弃并统计 `s_l3_err_hop_exhausted`；⑥ `5000ms` 静默自动恢复 `FORWARD_UART_MODE_NORMAL`）。
+     - **零业务子任务**：移除原 `ENG_BOOT_MC` 子任务（`boot/bootloadermc` 保持零改动，由 `COORD` 在 `ledger.md` 同步登记 `HIL-FINDING-02` 非阻断已接受技术债）。
+   - **集成、Docker 沙箱与 ARM 验证命令（规避 `P-05` 自引用 SHA 悖论：工作日志不作为 `input_repositories` 后置修改引入未提交循环）**：
+     - 快检与代码规范门禁：`python3 project-control/tools/gates/fast_gate.py --workspace . --slice project-control/slices/SLICE-04.yaml`
+     - 宿主机 C 单测与风格检查：`(cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh)`
+     - 宿主机 ARM 交叉编译、空间门禁与打包验证（`integration_cmd` 落盘证据至 `docs/evidence/SLICE-04/`）：
+       - `(cd mcu-p3/motion-controller-mcu && cmake -B /tmp/build_mc_arm -G Ninja && cmake --build /tmp/build_mc_arm)`（验证 `Marlin_AT32.bin <= 917,504 B`、`BOOT_IPC == 4 B` 且 `FLASH`/`RAM` 无溢出，并通过打包工具生成合法 ATSG `fw_mc` 包）；
+     - Docker 只读沙箱（`qa-sandbox:20261029`）`qa_commands`（含 `printer-soc` CTest 与 39 项 OTA 套件）：
+       - `python3 static_checks/minimcproto/check_opcode_alignment.py`（于 `test_harness` 目录）
+       - `python3 static_checks/minimcproto/run_ota_software_suite.py`（于 `test_harness` 目录，确保 `39/39` 全绿，包含未改动的 `C02`、已随 L3 重构更新的 `C03` 单测以及 `C05~C08` 的 `printer-soc` CTest `test_forward_protocol`/`forward_ota_progress`/`test_firmware_updater`/`test_ui_gateway_routes`/`ota_forward_gateway_pty`）
+     - 正式切片总门禁：`python3 project-control/tools/gates/slice_gate.py --workspace . --slice project-control/slices/SLICE-04.yaml --out-dir project-control/docs/evidence/SLICE-04`（含独立 Codex `gpt-6-luna` 双轴冷审）。
+   - **Pass Criteria**：`run_tests.sh` 100% PASS；`run_ota_software_suite.py` `39/39` PASS；ARM 构建 `Marlin_AT32.bin <= 917,504 B`、`BOOT_IPC == 4 B` 且零警告；`slice_gate.py`（含 Codex）返回 `APPROVED` ➔ `SW-Verified`。
+
+2. **`SLICE-05`：纯串口真机 HIL 回归与 `HIL-FINDING-01` 穿刺验收**
+   - **零探针硬铁律（彻底移除 SWD 刷机）**：
+     - **全程 100% 禁用 `probe-rs` / SWD / JTAG（`probe_rs_used: false`）**！不再需要也严禁任何 `0x08000000` Bootloader 烧录操作；直接经 `C308L`（`root@192.168.1.101:/dev/ttyS1 @ 921600`）调用 `test_harness/hil/tools/hil_deploy_via_minimc_ota.py`，通过真实串口 MiniMCProto v2.0 OTA 将 `SLICE-04` 新编 `fw_mc.bin`（`feat/soc-debug` 新 `commit`）刷入真实 MC 板。
+   - **真机穿刺验收矩阵与 Pass Criteria**：
+     - **`HIL-FINDING-01` 专项正负验证（`B4_TH` 透明路由窗口）**：在 MC 进入 L3 `DST=0x03` 活跃窗口后，真实发送 `0x24 MINIMC_CMD_OTA_ABORT` 至 `DST=0x03` ➔ **必须收到 `SRC=0x03`（`TH Boot`）返回的 `NACK 0x04`**（绝非 MC `SRC=0x02 NACK 0x05`）；同窗口内向 `DST=0x03` 发送 `0x14` / `0x01` / `0x03` 正常收到 `SRC=0x03` 回包，向 `DST=0x02` 发送 `0x01` / `0x14` 正常收到 `SRC=0x02` 回包；停止路由 `> 5s` 后 MC 本地 `0x10` 级联恢复正常。
+     - **全量串口 OTA 链路复验（`B1~B4`）**：`B1` 双板常态遥测 -> `B2_TH` + **间隔 `< 5s` 无等待直连 `B2_MC`（验证无虚假 `NACK 0x05` 阻塞）** -> `B3_TH` -> `B3_MC` -> `B4_TH` -> `B4_MC`（验证 `0x24 -> NACK 0x04`、`4B 0x23 -> NACK 0x06`、`0x1D(1)` 中断驻留 `Bit31=1, bytes_written=0` 与全量重刷恢复新 App；将 `Boot->Boot` `boot_id=0xC1E6CD05` 复现如实核记为已豁免非阻断观测特征）全部通过（按 `DEC-REM-1` 决定是否同步纳入物理 U 盘 `B5` 与可选 Debug UART）。
+
+#### 回滚与应急预案
+
+- **软件仓回滚**：`git -C mcu-p3 reset --hard b865222c5e7ec50cbe7d7174b8aa25f93ed16ae0`（`boot/bootloadermc` 与其他业务仓全程零修改，未推送前随时零成本回滚）。
+- **HIL 硬件救援**：因本轮不碰任何 Bootloader 分区，若 Stage B 真机测试中因意外导致任一 App 卡在 Bootloader（`Bit31=1`），**禁止动用 `probe-rs`**，直接经 C308L `/dev/ttyS1` 重发 `hil_deploy_via_minimc_ota.py` 或 MC FAT32 U 盘（`0:/fw_mc.bin`）即可 100% 恢复。
+
+#### 提请用户审批的决策项（`Human Gate #1-R2`）
+
+| 决策 ID | 待拍板问题 | 选项 A（推荐） | 选项 B |
+| :--- | :--- | :--- | :--- |
+| **`DEC-REM-1`** | `SLICE-05` 整改真机复测准出范围 | **串口双板缺陷闭环 + 条件准出**：完成 `SLICE-04` 并执行 `SLICE-05`（覆盖 C308L `/dev/ttyS1` 全量 `B1~B4` 与 `HIL-FINDING-01` 复测、`HIL-FINDING-02` 按已批准豁免技术债入账，并将 `SLICE03-B5-PENDING` 物理 U 盘验收继续标为 `[UNVERIFIED / PENDING]` 另择时现场补采），串口链路全绿即闭环本轮缺陷整改 | **补齐全量物理台架 `B1~B5` 全绿准出**：除串口复测外，同步要求现场插拔真实 FAT32 U 盘完成 `B5` 实测（`HW-G1`），以消除 `SLICE03-B5-PENDING` 阻塞项 |
+
+> **可选台架辅助通道授权提示（供 `DEC-REM-1` 决策时参考）**：若希望在 `SLICE-05` 真机排查期间同步采集 MC/TH 内部 Debug UART 原始文本日志，请在批准回复中**显式给出允许访问的外部 Windows 工具路径及串口号（例如外部 Python 工具路径与对应 `COM*` 端口号）**；在未收到用户明确书面路径/端口授权前，`COORD` 与 `INTEGRATOR` 将严格遵循工作区隔离铁律，仅通过 `C308L (/dev/ttyS1)` 开展全部串口穿刺验收。

@@ -1,0 +1,47 @@
+# V2 垂直切片 SLICE-04：MC 正交双平面 L3 透明路由重构与四阶软件/ARM 门禁闭环
+slice_id: "SLICE-04"
+revision: 1
+batch_id: "BATCH-OTA-ACCEPTANCE-01"
+profile: "host-software"
+depends_on: ["SLICE-01", "SLICE-02"]
+input_repositories: ["project-control", "agents", "test_harness", "printer-soc", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
+title: "修复 HIL-FINDING-01：重构 MC App 为无状态零业务解析 L3 透明转发 + 正交本机平面"
+plan_ref: "project-control/docs/planning/mc_th_upgrade_acceptance_implementationplan_20261117_174500.md"
+contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
+requires_hil_immediately: false
+
+subtasks:
+  - role: "ENG-MCU"
+    repo: "mcu-p3"
+    branch: "feat/soc-debug"
+    allowed_paths:
+      - "motion-controller-mcu/project/inc/minimc_proto.h"
+      - "motion-controller-mcu/project/src/minimc_proto.c"
+      - "motion-controller-mcu/tests/test_mc_ota_and_relay.c"
+      - "motion-controller-mcu/project/src/test_twin44_mc_debug.c"
+    diff_budget:
+      max_files: 4
+      protected_globs: ["motion-controller-mcu/libraries/**", "color-engine-mcu/**", "motion-controller-mcu/project/marlin/**"]
+      max_protected_lines: 0
+
+integration_cmd: >-
+  python3 project-control/tools/sync_contracts.py --workspace . &&
+  (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh) &&
+  (cd boot/bootloadermc && sh tests/run_tests.sh && make clean) &&
+  (cd mcu-p3/color-engine-mcu/tests && sh run_tests.sh) &&
+  docker run --rm -v "$(pwd)":/workspace:ro -w /workspace qa-sandbox:20261029 python3 test_harness/static_checks/minimcproto/run_ota_software_suite.py &&
+  python3 -m unittest discover -s test_harness/hil/tests -p "test_mcu_firmware_upgrade.py"
+
+qa_commands:
+  - {subpath: "mcu-p3/motion-controller-mcu", kind: "build", command: "gcc -std=c11 -O2 -Wall -Wextra -Wno-int-to-pointer-cast -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -I../common/protocol -Iproject/inc -Iproject/delay -Iproject/marlin -Iproject/marlin/marlin_core -Iproject/marlin/marlin_module -Ilibraries/drivers/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support project/src/minimc_proto.c project/src/test_twin44_mc_debug.c -o /output/test_twin44_mc_debug && gcc -std=c11 -O2 -Wall -Wextra -Werror -Wno-int-to-pointer-cast -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DHOST_UNIT_TEST=1 -I../common/protocol -Iproject/inc -Iproject/delay -Iproject/marlin -Iproject/marlin/marlin_core -Iproject/marlin/marlin_module -Ilibraries/drivers/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support project/src/minimc_proto.c tests/test_mc_ota_and_relay.c -o /output/test_mc_ota_and_relay"}
+  - {subpath: "mcu-p3/motion-controller-mcu", kind: "test", command: "/output/test_twin44_mc_debug && /output/test_mc_ota_and_relay"}
+  - {subpath: "printer-soc", kind: "build", command: "cmake -S . -B /output/build_ps -DSOC_AP_BUILD_SERVICES=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps -j4"}
+  - {subpath: "printer-soc", kind: "test", command: "ctest --test-dir /output/build_ps --output-on-failure -R 'forward_ota_progress|test_forward_protocol|test_firmware_updater|test_ui_gateway_routes|ota_forward_gateway_pty'"}
+  - {subpath: "test_harness", kind: "test", command: "python3 static_checks/minimcproto/check_opcode_alignment.py && python3 static_checks/minimcproto/run_ota_software_suite.py && python3 -m unittest discover -s hil/tests -p test_mcu_firmware_upgrade.py"}
+
+acceptance_criteria:
+  - "彻底删除 is_ota_or_maint_cmd、get_th_relay_timeout_ms、is_valid_th_relay_cmd 与 validate_th_relay_resp 四个 L7 代理反模式函数"
+  - "平面 A (DST != 0x02 && DST != 0xFF) 实现零 cmd_id/Payload/seq 解析的纯 L3 存储转发（AP<->TH 双向包括 0x24、0x14、未登记帧与 NACK 0x04 无条件透传；hop_limit<=1 按 §2.2 丢弃计数）；仅用与业务解耦的 5000ms L3 活跃租约切换 FORWARD_UART_MODE_OTA_ROUTE 互斥 USART6 文本 G-code"
+  - "平面 B (DST == 0x02 / 0xFF) 中 0x01/0x03/0x14/0x16/0x17/0x1D 不受 L3 租约阻断，保证 B2_TH->B2_MC <5s 衔接不误报 NACK 0x05；MC 本地级联 (0x10/0x19/0x1C) 独占 s_mc_local_relay_* (200ms) 且在 L3 租约期内让路回 NACK 0x05"
+  - "宿主机 ARM 交叉编译 Marlin_AT32.bin <= 917,504 B 且 BOOT_IPC == 4 B，打包产物校验记录于 project-control/docs/evidence/SLICE-04/host_mc_arm_build_and_pack.log"
+  - "Docker 沙箱 C01~C09 + S/D/M/N (39/39) + printer-soc CTest + fast_gate (<3s) + 独立 Codex 双轴冷审 APPROVED (0 BLOCKER)"

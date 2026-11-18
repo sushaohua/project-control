@@ -16,3 +16,4 @@
 | 时间戳 (UTC+8) | 切片 ID | 审计轴 | 代码位置 | 问题描述与后续收敛建议 |
 | :--- | :--- | :--- | :--- | :--- |
 | 2026-11-18 09:40:38 | SLICE-01 | `spec_realism` | `printer-soc/contracts/twin/telemetry_types.h:410` | ATSG trailer 的 version_code 注释仍称编码为 (major << 8) | minor，与契约及实际解析使用的高位 major/minor 布局不一致。当前传递和 Stage 4 解析按新布局工作，属于文档残留；建议更正以免后续维护误用。 |
+| 2026-11-18 11:49:29 | SLICE-03 (`HIL-FINDING-02`) | `embedded_safety` | `boot/bootloadermc/bootloader/src/boot_uart_ota.c:52,206-223; cmake/linker/at32f435_bootloader.ld:14` | MC Bootloader `.bss` 变量 `s_boot_salt` 软复位清零致 `Boot->Boot` 连续软复位 `boot_id` 恒为 `0xC1E6CD05`，且 `-Os` 下 `main()` 栈帧压入 `0x2005FFF0` 覆盖 `UPG2`、当前依赖 `2000ms` 探测窗进入 Boot（正常 `App->Boot->新App` 三态跃迁不受影响）。经用户 2026-11-18 评估确认风险可承受、首版豁免不修以规避 `0x08000000` SWD 单点擦写风险。 |
