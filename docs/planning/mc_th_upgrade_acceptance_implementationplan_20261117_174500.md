@@ -12,6 +12,7 @@
 | `v1.3` | `2026-11-18` | `AI (Antigravity-CLI) - COORD` | 完成 `SLICE-01/02` `SW-Verified` 准出与 `SLICE-03` C308L (`/dev/ttyS1`) 真机 HIL 穿刺实测（双板升级至 `mcu-p3@b865222c` 成功，定位 `HIL-FINDING-01/02` 两项真机缺陷） | 已完成首轮验收并待决缺陷修复 |
 | `v1.4` | `2026-11-18` | `AI (Antigravity-CLI) - ARCH` | 针对 SLICE-03 真机暴露的 HIL-FINDING-01（MC 路由层违背 §2.2 零业务解析原则）与 HIL-FINDING-02（MC Bootloader .bss 盐值软复位归零及 _estack 栈顶隐患）补充第 3 部分穿透式架构整改方案、Diff Budget 与 SLICE-04/05 闭环规划 | 已由 v1.5 收敛替代 |
 | `v1.5` | `2026-11-18` | `AI (Antigravity-CLI) - ARCH` | 按用户裁决豁免 HIL-FINDING-02（确认风险可承受，本轮不修改 boot/bootloadermc 且真机全程禁用 SWD 探针），将第 3 部分收敛为仅在 mcu-p3@feat/soc-debug 重构 MC 正交 L3 透明路由（HIL-FINDING-01）并经 /dev/ttyS1 串口 OTA 真机闭环 | 已批准执行 (Approved, DEC-REM-1=A) |
+| `v1.6` | `2026-11-18` | `AI (Antigravity-CLI) - COORD` | 完成 `SLICE-04` (`mcu-p3@7b623d9`, `SW-Verified`) 正交 L3 透明路由重构与 `SLICE-05` (`C308L /dev/ttyS1 @ 921600`, `HIL-Verified`, `probe_rs_used=false`, `irq_delta=48098`) 真机全闭环穿刺验收，消除 `HIL-FINDING-01`、`HIL-FINDING-02` 按已批准豁免入账、`B5` 按 `DEC-REM-1=A` 诚实标为 `[UNVERIFIED / PENDING]` | 已结项 (HIL-Verified, DEC-REM-1=A) |
 
 ---
 

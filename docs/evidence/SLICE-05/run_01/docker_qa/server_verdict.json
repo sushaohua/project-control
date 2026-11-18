@@ -1,0 +1,12 @@
+{
+  "task_id": "SLICE-05",
+  "task_revision": 1,
+  "run_id": "run_125934",
+  "verdict": "PASSED",
+  "exit_code": 0,
+  "summary": "All sandbox tests passed",
+  "profile": "host-software",
+  "build_count": 0,
+  "test_count": 2,
+  "timestamp": "2026-11-18T05:00:04.695722+00:00"
+}

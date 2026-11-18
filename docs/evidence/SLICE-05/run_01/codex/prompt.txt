@@ -1,0 +1,13 @@
+独立只读双轴冷审切片: SLICE-05
+契约: project-control/contracts/minimc_v2_contract.yaml
+方案: project-control/docs/planning/mc_th_upgrade_acceptance_implementationplan_20261117_174500.md
+锁定提交: {"project-control": "1eeeaa1412e13719a931604686bd0fdcd8d9e763", "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb", "test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046", "printer-soc": "888d389c8969d90de57c189907cf2c58543b7b64", "mcu-p3": "7b623d9a4fff7cf460b53318b71d0b816635b733", "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4", "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"}
+容器: a615c1036923
+当前沙箱产物: server_verdict=project-control/docs/evidence/SLICE-05/run_01/docker_qa/server_verdict.json runtime_log=project-control/docs/evidence/SLICE-05/run_01/docker_qa/runtime.log integration_log=project-control/docs/evidence/SLICE-05/run_01/integration.log
+验收判据:
+- 真机硬件与防伪溯源：C308L (root@192.168.1.101:/dev/ttyS1 @ 921600 8N1 raw termios) 全程禁用 probe-rs/SWD (probe_rs_used=false) 且 Option A 加热 0%；ttyS1_hw_provenance.log 实证 /sys/class/tty/ttyS1/device 物理绑定及 UART 中断计数差值 (>100)，hil_raw_hex.log 重组 151 块 TH 与 751 块 MC 0x21 载荷与 0x7B623D9A 固件 SHA256/CRC32 一致
+- HIL-FINDING-01 消缺验证 (B4_TH)：MC 与 TH 运行 mcu-p3@7b623d9a (0x7B623D9A)（见 INTEGRATOR_hil_report.md §2.1 初始 0xB865222C->0x7B623D9A 灰度升级及归档单次全闭环 B0_MC_ROLLOUT 751 块重刷记录），在 L3 5000ms 活跃租约期内发 DST=0x03 CMD=0x24 必须收到 SRC=0x03 NACK 0x04（零 SRC=0x02 NACK 0x05），4B 0x23 回 SRC=0x03 NACK 0x06，0x01/0x03/0x14 双向透传与 DST=0x02 0x01/0x03/0x14 查询零阻塞、0x10 本地级联让路回 NACK 0x05、0x1D(1) 驻留 TH Boot 刷新 boot_id
+- 无等待跨板衔接与全量升级 (B2_TH -> <1.0s -> B2_MC)：B2_TH (151 块) 升至 TH 0x7B623D9A 并刷新 boot_id 后不等待 5s 租约，在 <1.0s 内直发 DST=0x02 0x1D(2) 立即收到 SRC=0x02 CMD_ACK 并在 <2.0s 进 MC Boot；随后 B3_MC/B4_MC/B2_MC (751 块) 将 MC 刷至 0x7B623D9A 并刷新 boot_id（按用户已批准豁免政策将 MC Boot boot_id=0xC1E6CD05 复现记为 HIL-FINDING-02 非阻断已接受技术债，未实测的硬件寄存器行为诚实标为 [UNVERIFIED]）
+- 租约释放与平面 B 恢复：静默 >=5.2s 等待 L3 租约释放后发送 DST=0x02 CMD=0x10 (0, 0) 安全级联（0% PWM）收到 SRC=0x02 CMD_ACK/0x15 TEMP_REPORT，350ms 监听无 USART2 幽灵 NACK 0x03
+- 审批与非阻断诚实边界 (DEC-REM-1=A)：按 v1.5 已批准 DEC-REM-1=A 条件准出范围，物理 FAT32 U 盘插拔 (B5) 与外接独立 Debug UART 诚实标为 [UNVERIFIED / PENDING] 且非阻塞，结合 fast_gate (<3s) 与独立 Codex 双轴 APPROVED 升级 ledger.md 至 HIL-Verified
+请严格按 BLOCKER / MINOR / NIT 分级。

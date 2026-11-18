@@ -13,6 +13,8 @@
 
 | 2026-11-18 12:34:06 | BATCH-OTA-ACCEPTANCE-01 | SLICE-04 | SW-Verified | `mcu-p3:7b623d9,project-control:c2dd08e,agents:30ecc65,test_harness:371a3a3,printer-soc:888d389,boot/bootloadermc:3e01c00,boot/bootloaderth:1a03513; inputs=447bbb6667afd86a4ec7a145008028a9d17858fef6685304f9cef4f90b1d8b0b` | `09f53545ed28` | `01a1eced-e0c0-72f3-a67e-7270f2214a3b` | `1eafe77e4d8cc0a6` |
 
+| 2026-11-18 13:01:24 | BATCH-OTA-ACCEPTANCE-01 | SLICE-05 | HIL-Verified | `project-control:1eeeaa1,agents:30ecc65,test_harness:371a3a3,printer-soc:888d389,mcu-p3:7b623d9,boot/bootloadermc:3e01c00,boot/bootloaderth:1a03513; inputs=d9be5022f99c8609d8d6e4e8876bb8ebae74e00887efdd8fe273a6a9c592e4e9` | `a615c1036923` | `01a1ed06-c06d-7711-8584-5f543ceffdfc` | `35f9f4b3e3ec733a` |
+
 ## 2. 非阻断技术债登记表 (`MINOR` Findings)
 
 | 时间戳 (UTC+8) | 切片 ID | 审计轴 | 代码位置 | 问题描述与后续收敛建议 |

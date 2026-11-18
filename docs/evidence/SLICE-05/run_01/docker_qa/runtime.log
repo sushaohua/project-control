@@ -1,0 +1,42 @@
+=== Docker Container Inspect: a615c1036923 ===
+{
+  "id": "a615c1036923f88074f5c420e17d6208094bcf1d35038c86fc84d37dce671ae9",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-18T05:00:00.043781684Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-05_run_125934_20261118_045934",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-05_run_125934_20261118_045934_output",
+      "Destination": "/output",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (test_harness) python3 hil/tools/hil_deploy_via_minimc_ota.py --self-test && python3 -m unittest discover -s hil/tests -p test_mcu_firmware_upgrade.py -> 0
+[PASS] hil_deploy_via_minimc_ota.py self-test passed: chunk_size=512B, TH(76896B/151 chunks, 1.1->2.1) then MC(1.2->2.3).
+[PASS] Packed 1024B -> 1152B (TH, v2.1, 0x02010304)
+
+....[EXPECTED-REJECT] invalid --chunk-size=0 (must be 1..512)
+[EXPECTED-REJECT] invalid --chunk-size=513 (must be 1..512)
+[EXPECTED-REJECT] invalid --baud=12345: unsupported baud=12345 (allowed: (9600, 19200, 38400, 57600, 115200, 230400, 460800, 500000, 576000, 921600, 1000000, 1152000, 1500000, 2000000))
+..
+----------------------------------------------------------------------
+Ran 6 tests in 0.575s
+
+OK
+
+$ (project-control) python3 -c 'import hashlib, json, pathlib, re, struct, zlib; p = pathlib.Path("docs/evidence/SLICE-05"); rec = json.loads((p / "hil_deployment_receipt.json").read_text(encoding="utf-8")); raw_bytes = (p / "hil_raw_hex.log").read_bytes(); raw = raw_bytes.decode("utf-8"); prov = rec["hw_provenance"]; st = rec["stages"]; assert rec["passed"] is True and rec["probe_rs_used"] is False and rec["heating_pwm_pct"] == 0 and prov["irq_after"] - prov["irq_before"] > 100 and hashlib.sha256(raw_bytes).hexdigest() == rec["raw_hex_log"]["sha256"]; tx_th = [bytes.fromhex(m.group(1)) for m in re.finditer(r"\[B2_TH\][^\n]*\bTX\s+([0-9a-fA-F]+)", raw)]; tx_mc = [bytes.fromhex(m.group(1)) for m in re.finditer(r"\[B2_MC\][^\n]*\bTX\s+([0-9a-fA-F]+)", raw)]; d_th = {struct.unpack("<I", b[12:16])[0]: b[20:20 + struct.unpack("<H", b[16:18])[0]] for b in tx_th if len(b) >= 22 and b[0] == 0x55 and b[1] == 0xAA and b[5] == 0x21}; d_mc = {struct.unpack("<I", b[12:16])[0]: b[20:20 + struct.unpack("<H", b[16:18])[0]] for b in tx_mc if len(b) >= 22 and b[0] == 0x55 and b[1] == 0xAA and b[5] == 0x21}; th_pay = b"".join(d_th[k] for k in sorted(d_th)); mc_pay = b"".join(d_mc[k] for k in sorted(d_mc)); assert len(d_th) == 151 and (zlib.crc32(th_pay) & 0xFFFFFFFF) == 0x6E82DD49 and hashlib.sha256(th_pay).hexdigest() == rec["packages"]["th"]["payload_sha256"]; assert len(d_mc) == 751 and (zlib.crc32(mc_pay) & 0xFFFFFFFF) == 0x8DC0DC33 and hashlib.sha256(mc_pay).hexdigest() == rec["packages"]["mc"]["payload_sha256"]; assert st["B4_TH"]["abort_0x24_active_lease"]["src_id"] == 3 and st["B4_TH"]["abort_0x24_active_lease"]["err_hex"] == "0x04" and st["immediate_th_to_mc_transition"]["elapsed_since_th_sec"] < 1.0 and st["post_upgrade_recovery"]["spurious_nack_count"] == 0; print("[PASS] Docker QA verified SLICE-05 provenance, receipt & 0x21 payload hashes")' -> 0
+[PASS] Docker QA verified SLICE-05 provenance, receipt & 0x21 payload hashes
+

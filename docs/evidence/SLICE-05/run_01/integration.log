@@ -1,0 +1,4 @@
+[PASS] 6 non-control repos strictly clean (0 diffs)
+
+[PASS] fast_gate rc=0 elapsed_sec=0.044 (<3.000s)
+[PASS] SLICE-05 HIL receipt, IRQ provenance delta & wire-chunk SHA256/CRC32/0x7B623D9A verified
