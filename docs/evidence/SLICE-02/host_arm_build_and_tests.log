@@ -1,7 +1,7 @@
 === SLICE-02 Host ARM Cross-Compile & Unit Tests Raw Log ===
-Timestamp: 2026-11-18T09:43:42+08:00
+Timestamp: 2026-11-18T09:58:28+08:00
 arm-none-eabi-gcc: arm-none-eabi-gcc (15:9-2019-q4-0ubuntu1) 9.2.1 20191025 (release) [ARM/arm-9-branch revision 277599]
-project-control HEAD: 3116587e2374bf9fd31ecba6d41662e50facea06
+minimc_v2_contract.yaml sha256: 4071c8dc93299c6207050e4125e674cd964de1a470e0d7cd9c51635cf38fe0ee
 mcu-p3 HEAD: b865222c5e7ec50cbe7d7174b8aa25f93ed16ae0
 boot/bootloadermc HEAD: 3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4
 boot/bootloaderth HEAD: 1a0351363cf7b9cbc0aa6919b4afc6be61561152
@@ -38,8 +38,8 @@ bootloaderth.bin size: 9360 bytes (limit: 16384 bytes)
 [PASS] test_th_boot_ota: all TH Bootloader MiniMCProto v2.0 tests passed!
 === [4/4] Verify C function length (<=50 lines) and parameter count (<=4) gate (S04) ===
 [PASS] S04 all C functions in boot/bootloaderth satisfy <=50 lines and <=4 parameters!
--rwxr-xr-x 1 sushaohua sushaohua 9360 Nov 18 09:43 build/bootloaderth.bin
-d4a0ad563ba8f5e945040b5eaa6f522189f369b04413f0b6cd166266f577c5bc  build/bootloaderth.bin
+-rwxr-xr-x 1 sushaohua sushaohua 9360 Nov 18 09:58 build/bootloaderth.bin
+1dc0be2b7c25eea393c04e2490a9c67940bb0e84301f200fa5839adb34ed07ab  build/bootloaderth.bin
 rm -rf build
 
 >>> [2/4] (cd boot/bootloadermc && sh tests/run_tests.sh)
@@ -84,20 +84,20 @@ bootloader.bin size: 37600 bytes (limit: 131072 bytes)
 === [2/4] Verify scripts/pack_firmware.py MC (896KB=917,504B) & TH (236KB=241,664B) boundary gate ===
 ==================================================
  [PACK] Firmware packaging complete
- - Input raw binary: /tmp/tmpjuub7ftw/mc_ok.bin (917504 bytes)
+ - Input raw binary: /tmp/tmpcoipoyjd/mc_ok.bin (917504 bytes)
  - Target Board ID: 0x43500001 [MC (AT32F435)]
  - Firmware Version: 0x01000000
  - SHA-256 Digest: 4438bd37db902e5676b4f257f2d6b2b479bdb88ec501bb3824a96e09f1c4568e
- - Output File: /tmp/tmpjuub7ftw/fw_mc.bin (917632 bytes)
+ - Output File: /tmp/tmpcoipoyjd/fw_mc.bin (917632 bytes)
 ==================================================
 [ERROR] Payload size 917505 B out of bounds for board 0x43500001 (allowed: 1..917504 B)
 ==================================================
  [PACK] Firmware packaging complete
- - Input raw binary: /tmp/tmpjuub7ftw/th_ok.bin (241664 bytes)
+ - Input raw binary: /tmp/tmpcoipoyjd/th_ok.bin (241664 bytes)
  - Target Board ID: 0x42300001 [TH (AT32F423)]
  - Firmware Version: 0x01000000
  - SHA-256 Digest: 8aba5e9a7cf5158a11d210bb3edfe208bc67088e6f093e8e32c026629aabf2a6
- - Output File: /tmp/tmpjuub7ftw/fw_th.bin (241792 bytes)
+ - Output File: /tmp/tmpcoipoyjd/fw_th.bin (241792 bytes)
 ==================================================
 [ERROR] Payload size 241665 B out of bounds for board 0x42300001 (allowed: 1..241664 B)
 [PASS] scripts/pack_firmware.py MC(896KB) & TH(236KB) boundary checks passed!
@@ -138,14 +138,14 @@ Jumping to Application at 0x08020000...
 [PASS] test_mc_boot_ota: all MC Bootloader MiniMCProto v2.0 & USB Host tests passed!
 === [4/4] Verify C function length (<=50 lines) and parameter count (<=4) gate ===
 [PASS] All checked C functions satisfy <=50 lines and <=4 parameters!
--rwxr-xr-x 1 sushaohua sushaohua 37600 Nov 18 09:43 build/bootloader.bin
-eb45713fb055ac229d96cdaff0f9383a9499830a71b999f5b639ad86de08c84a  build/bootloader.bin
+-rwxr-xr-x 1 sushaohua sushaohua 37600 Nov 18 09:58 build/bootloader.bin
+6da15b4140c9543d666ce537b3f020e9ead323a6e05ef6ba01a22a965316938b  build/bootloader.bin
 rm -rf build
 
 >>> [3/4] mcu-p3/color-engine-mcu (TH App ARM build + host tests)
 rm -rf build
 mkdir -p build
-[VERSION][DEV] 生成 16bit 时间特征码: 0x2940 (V2.0.1-2940 1118)
+[VERSION][DEV] 生成 16bit 时间特征码: 0x9CEB (V2.0.1-9CEB 1118)
 [VERSION] 生成头文件: build/version_autogen.h
 [CC] src/user/main.c
 [CC] src/app/minimc_proto.c
@@ -251,97 +251,6 @@ In file included from inc/motor_control.h:18,
 inc/Configuration.h:223: note: this is the location of the previous definition
   223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
       | 
-In file included from inc/temperature_control/thermistortables.h:4,
-                 from inc/temperature_control/temperature.h:5,
-                 from src/app/ConfigurationStore.c:5:
-inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
-   70 | #define BANG_MAX 950
-      | 
-In file included from src/app/ConfigurationStore.c:1:
-inc/Configuration.h:209: note: this is the location of the previous definition
-  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
-      | 
-In file included from inc/temperature_control/thermistortables.h:4,
-                 from inc/temperature_control/temperature.h:5,
-                 from src/app/ConfigurationStore.c:5:
-inc/temperature_control/temperature.h:71: warning: "K1" redefined
-   71 | #define K1 0.2
-      | 
-In file included from src/app/ConfigurationStore.c:1:
-inc/Configuration.h:222: note: this is the location of the previous definition
-  222 |   #define K1 0.20f //smoothing factor withing the PID
-      | 
-In file included from inc/temperature_control/thermistortables.h:4,
-                 from inc/temperature_control/temperature.h:5,
-                 from src/app/ConfigurationStore.c:5:
-inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
-   74 | #define DEFAULT_bedKp 200.0
-      | 
-In file included from src/app/ConfigurationStore.c:1:
-inc/Configuration.h:266: note: this is the location of the previous definition
-  266 |     #define  DEFAULT_bedKp 100.00
-      | 
-In file included from inc/temperature_control/thermistortables.h:4,
-                 from inc/temperature_control/temperature.h:5,
-                 from src/app/ConfigurationStore.c:5:
-inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
-   75 | #define DEFAULT_bedKi 0.2
-      | 
-In file included from src/app/ConfigurationStore.c:1:
-inc/Configuration.h:267: note: this is the location of the previous definition
-  267 |     #define  DEFAULT_bedKi .2
-      | 
-In file included from inc/temperature_control/thermistortables.h:4,
-                 from inc/temperature_control/temperature.h:5,
-                 from src/app/ConfigurationStore.c:5:
-inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
-   76 | #define DEFAULT_bedKd 2000
-      | 
-In file included from src/app/ConfigurationStore.c:1:
-inc/Configuration.h:268: note: this is the location of the previous definition
-  268 |     #define  DEFAULT_bedKd 30.4
-      | 
-In file included from inc/temperature_control/thermistortables.h:4,
-                 from inc/temperature_control/temperature.h:5,
-                 from src/app/ConfigurationStore.c:5:
-inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
-   90 | #define HEATER_BED_RAW_LO_TEMP 10
-      | 
-In file included from src/app/ConfigurationStore.c:1:
-inc/Configuration.h:199: note: this is the location of the previous definition
-  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
-      | 
-In file included from inc/temperature_control/thermistortables.h:4,
-                 from inc/temperature_control/temperature.h:5,
-                 from src/app/ConfigurationStore.c:5:
-inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
-   91 | #define HEATER_BED_RAW_HI_TEMP 4095
-      | 
-In file included from src/app/ConfigurationStore.c:1:
-inc/Configuration.h:202: note: this is the location of the previous definition
-  202 |   #define HEATER_BED_RAW_HI_TEMP 0
-      | 
-In file included from inc/temperature_control/thermistortables.h:4,
-                 from inc/temperature_control/temperature.h:5,
-                 from src/app/ConfigurationStore.c:5:
-inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
-   99 | #define BED_CHECK_INTERVAL 250
-      | 
-In file included from inc/Configuration.h:729,
-                 from src/app/ConfigurationStore.c:1:
-inc/Configuration_adv.h:11: note: this is the location of the previous definition
-   11 | #define BED_CHECK_INTERVAL 5000
-      | 
-In file included from inc/temperature_control/thermistortables.h:4,
-                 from inc/temperature_control/temperature.h:5,
-                 from src/app/ConfigurationStore.c:5:
-inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
-  102 | #define PID_dT ((58.0) / 1000)
-      | 
-In file included from src/app/ConfigurationStore.c:1:
-inc/Configuration.h:223: note: this is the location of the previous definition
-  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
-      | 
 In file included from src/user/main.c:22:
 inc/pins.h:57: warning: "enable_x" redefined
    57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
@@ -422,6 +331,12 @@ In file included from inc/planner.h:17,
 inc/stepper.h:205: note: this is the location of the previous definition
   205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
       | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
 In file included from src/user/main.c:22:
 inc/pins.h:166: warning: "TEMP_0_PIN" redefined
   166 | #define TEMP_0_PIN get_adc(1)
@@ -446,21 +361,106 @@ In file included from src/user/main.c:22:
 inc/pins.h:172: warning: "HEATER_BED_PIN" redefined
   172 | #define HEATER_BED_PIN GPIO_PINS_6
       | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
 In file included from inc/temperature_control/thermistortables.h:4,
                  from inc/temperature_control/temperature.h:5,
                  from src/user/main.c:13:
 inc/temperature_control/temperature.h:59: note: this is the location of the previous definition
    59 | #define HEATER_BED_PIN -1
       | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
 In file included from src/user/main.c:22:
 inc/pins.h:174: warning: "HEATER_0_PIN" redefined
   174 | #define HEATER_0_PIN GPIO_PINS_7
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
       | 
 In file included from inc/temperature_control/thermistortables.h:4,
                  from inc/temperature_control/temperature.h:5,
                  from src/user/main.c:13:
 inc/temperature_control/temperature.h:56: note: this is the location of the previous definition
    56 | #define HEATER_0_PIN 1
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from src/app/ConfigurationStore.c:1:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
       | 
 src/app/ConfigurationStore.c: In function 'Config_PrintSettings':
 src/app/ConfigurationStore.c:81:23: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'double' [-Wformat=]
@@ -1051,6 +1051,41 @@ In file included from src/app/mycontrol.c:9:
 inc/pins.h:167: note: this is the location of the previous definition
   167 | #define TEMP_BED_PIN get_adc(2)
       | 
+src/app/mycontrol.c: In function 'loop':
+src/app/mycontrol.c:471:2: warning: this 'else' clause does not guard... [-Wmisleading-indentation]
+  471 |  else
+      |  ^~~~
+src/app/mycontrol.c:474:3: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'else'
+  474 |   USART3_forward_service(); //推进监听转发的FIFO发送：DMA发完一行自动补下一行，突发不丢
+      |   ^~~~~~~~~~~~~~~~~~~~~~
+src/app/mycontrol.c:446:13: warning: unused variable 'send_time' [-Wunused-variable]
+  446 |  static int send_time = 0;
+      |             ^~~~~~~~~
+src/app/mycontrol.c:445:23: warning: unused variable 'led_time' [-Wunused-variable]
+  445 |  static unsigned long led_time = 1000;
+      |                       ^~~~~~~~
+src/app/mycontrol.c:444:16: warning: unused variable 'time_save' [-Wunused-variable]
+  444 |  unsigned long time_save = 0;
+      |                ^~~~~~~~~
+src/app/mycontrol.c:443:7: warning: unused variable 'cbuf' [-Wunused-variable]
+  443 |  char cbuf[100];
+      |       ^~~~
+src/app/mycontrol.c: In function 'get_command':
+src/app/mycontrol.c:655:13: warning: unused variable 'ok_count' [-Wunused-variable]
+  655 |  static int ok_count = 0;            //这个变量暂时没有使用到
+      |             ^~~~~~~~
+src/app/mycontrol.c: In function 'run_z_probe':
+src/app/mycontrol.c:1000:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ 1000 | }
+      | ^
+src/app/mycontrol.c: In function 'G29_CMD':
+src/app/mycontrol.c:1194:22: warning: unused variable 'distance_from_center' [-Wunused-variable]
+ 1194 |    float measured_z, distance_from_center, xProbe;
+      |                      ^~~~~~~~~~~~~~~~~~~~
+src/app/mycontrol.c: In function 'process_commands':
+src/app/mycontrol.c:2480:8: warning: variable 'beepP' set but not used [-Wunused-but-set-variable]
+ 2480 |    int beepP = 1000;
+      |        ^~~~~
 In file included from inc/temperature_control/thermistortables.h:4,
                  from inc/temperature_control/temperature.h:5,
                  from src/app/planner.c:16:
@@ -1142,9 +1177,18 @@ In file included from src/app/planner.c:12:
 inc/Configuration.h:223: note: this is the location of the previous definition
   223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
       | 
+src/app/mycontrol.c:2932:9: warning: unused variable 'isFind' [-Wunused-variable]
+ 2932 |    char isFind = 0;
+      |         ^~~~~~
+src/app/mycontrol.c:2993:17: warning: unused variable 'itemp2' [-Wunused-variable]
+ 2993 |     int itemp1, itemp2;
+      |                 ^~~~~~
 src/app/planner.c:43: warning: "CRITICAL_SECTION_START" redefined
    43 | #define CRITICAL_SECTION_START()  __disable_irq()
       | 
+src/app/mycontrol.c:2993:9: warning: unused variable 'itemp1' [-Wunused-variable]
+ 2993 |     int itemp1, itemp2;
+      |         ^~~~~~
 In file included from src/app/planner.c:15:
 inc/mycontrol.h:116: note: this is the location of the previous definition
   116 | #define CRITICAL_SECTION_START __disable_irq()
@@ -1156,54 +1200,6 @@ In file included from src/app/planner.c:15:
 inc/mycontrol.h:117: note: this is the location of the previous definition
   117 | #define CRITICAL_SECTION_END __enable_irq()
       | 
-src/app/mycontrol.c: In function 'loop':
-src/app/mycontrol.c:471:2: warning: this 'else' clause does not guard... [-Wmisleading-indentation]
-  471 |  else
-      |  ^~~~
-src/app/mycontrol.c:474:3: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'else'
-  474 |   USART3_forward_service(); //推进监听转发的FIFO发送：DMA发完一行自动补下一行，突发不丢
-      |   ^~~~~~~~~~~~~~~~~~~~~~
-src/app/mycontrol.c:446:13: warning: unused variable 'send_time' [-Wunused-variable]
-  446 |  static int send_time = 0;
-      |             ^~~~~~~~~
-src/app/mycontrol.c:445:23: warning: unused variable 'led_time' [-Wunused-variable]
-  445 |  static unsigned long led_time = 1000;
-      |                       ^~~~~~~~
-src/app/mycontrol.c:444:16: warning: unused variable 'time_save' [-Wunused-variable]
-  444 |  unsigned long time_save = 0;
-      |                ^~~~~~~~~
-src/app/mycontrol.c:443:7: warning: unused variable 'cbuf' [-Wunused-variable]
-  443 |  char cbuf[100];
-      |       ^~~~
-src/app/mycontrol.c: In function 'get_command':
-src/app/mycontrol.c:655:13: warning: unused variable 'ok_count' [-Wunused-variable]
-  655 |  static int ok_count = 0;            //这个变量暂时没有使用到
-      |             ^~~~~~~~
-src/app/mycontrol.c: In function 'run_z_probe':
-src/app/mycontrol.c:1000:1: warning: no return statement in function returning non-void [-Wreturn-type]
- 1000 | }
-      | ^
-src/app/mycontrol.c: In function 'G29_CMD':
-src/app/mycontrol.c:1194:22: warning: unused variable 'distance_from_center' [-Wunused-variable]
- 1194 |    float measured_z, distance_from_center, xProbe;
-      |                      ^~~~~~~~~~~~~~~~~~~~
-src/app/planner.c: In function 'plan_buffer_line':
-src/app/planner.c:639:1: warning: multi-line comment [-Wcomment]
-  639 | //   block->millimeters = sqrt(delta_mm[X_AXIS] * delta_mm[X_AXIS] + delta_mm[Y_AXIS] * delta_mm[Y_AXIS] \
-      | ^
-src/app/mycontrol.c: In function 'process_commands':
-src/app/mycontrol.c:2480:8: warning: variable 'beepP' set but not used [-Wunused-but-set-variable]
- 2480 |    int beepP = 1000;
-      |        ^~~~~
-src/app/mycontrol.c:2932:9: warning: unused variable 'isFind' [-Wunused-variable]
- 2932 |    char isFind = 0;
-      |         ^~~~~~
-src/app/mycontrol.c:2993:17: warning: unused variable 'itemp2' [-Wunused-variable]
- 2993 |     int itemp1, itemp2;
-      |                 ^~~~~~
-src/app/mycontrol.c:2993:9: warning: unused variable 'itemp1' [-Wunused-variable]
- 2993 |     int itemp1, itemp2;
-      |         ^~~~~~
 src/app/mycontrol.c:2992:14: warning: unused variable 'reset_addr' [-Wunused-variable]
  2992 |     uint32_t reset_addr = 0;
       |              ^~~~~~~~~~
@@ -1214,7 +1210,6 @@ src/app/mycontrol.c: In function 'ClearToSend':
 src/app/mycontrol.c:3132:6: warning: unused variable 'free_num' [-Wunused-variable]
  3132 |  int free_num = USART1_dma_free();
       |      ^~~~~~~~
-[CC] src/app/stepper.c
 src/app/mycontrol.c:3125:23: warning: unused variable 'send_time' [-Wunused-variable]
  3125 |  static unsigned long send_time = 0;
       |                       ^~~~~~~~~
@@ -1225,7 +1220,11 @@ src/app/mycontrol.c: In function 'get_coordinates':
 src/app/mycontrol.c:3147:16: warning: variable 'seen' set but not used [-Wunused-but-set-variable]
  3147 |  volatile bool seen[7] = {false, false, false, false,false,false,false};
       |                ^~~~
-[CC] src/app/temperature.c
+src/app/planner.c: In function 'plan_buffer_line':
+src/app/planner.c:639:1: warning: multi-line comment [-Wcomment]
+  639 | //   block->millimeters = sqrt(delta_mm[X_AXIS] * delta_mm[X_AXIS] + delta_mm[Y_AXIS] * delta_mm[Y_AXIS] \
+      | ^
+[CC] src/app/stepper.c
 At top level:
 src/app/mycontrol.c:3125:23: warning: 'send_time' defined but not used [-Wunused-variable]
  3125 |  static unsigned long send_time = 0;
@@ -1254,6 +1253,7 @@ src/app/mycontrol.c:292:22: warning: 'door_move_time' defined but not used [-Wun
 src/app/mycontrol.c:260:13: warning: 'gcode_N' defined but not used [-Wunused-variable]
   260 | static long gcode_N, gcode_LastN, Stopped_gcode_LastN = 0;
       |             ^~~~~~~
+[CC] src/app/temperature.c
 In file included from inc/Configuration.h:729,
                  from inc/stepper.h:30,
                  from src/app/stepper.c:12:
@@ -1651,11 +1651,11 @@ inc/stepper.h:205: note: this is the location of the previous definition
 [CC] src/bsp/at32f423_int.c
 [CC] src/bsp/pwm.c
 [CC] src/bsp/tim.c
+[CC] src/bsp/usart.c
 src/bsp/pwm.c: In function 'MX_TIM3_Init':
 src/bsp/pwm.c:19:26: warning: unused variable 'tmr_oc_init_struct' [-Wunused-variable]
    19 |   tmr_output_config_type tmr_oc_init_struct;
       |                          ^~~~~~~~~~~~~~~~~~
-[CC] src/bsp/usart.c
 [CC] src/bsp/wk_exint.c
 [CC] src/bsp/wk_gpio.c
 [CC] libraries/drivers/src/at32f423_acc.c
@@ -1687,8 +1687,8 @@ src/bsp/pwm.c:19:26: warning: unused variable 'tmr_oc_init_struct' [-Wunused-var
 --- Firmware Memory Size Report ---
    text	   data	    bss	    dec	    hex	filename
   75976	    852	  17364	  94192	  16ff0	build/fw_th.elf
--rwxr-xr-x 1 sushaohua sushaohua 76864 Nov 18 09:43 build/fw_th.bin
-2e2ffb8efbaf9903d636cfa2d17bff197d031c01ffe111c9b9ee74976e070d54  build/fw_th.bin
+-rwxr-xr-x 1 sushaohua sushaohua 76864 Nov 18 09:58 build/fw_th.bin
+a3512727423f7c9c5cd8310a43981f71fd92753809213084353f6483e2290128  build/fw_th.bin
 rm -rf build
 === [1/3] Run TWIN-45/48/60 TH regression suite (test_twin45_th_debug.c) ===
 ========================================================================
@@ -1739,7 +1739,7 @@ Build type: Debug
 -- The ASM compiler identification is GNU
 -- Found assembler: /usr/bin/arm-none-eabi-gcc
 -- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter
--- Configuring done (1.7s)
+-- Configuring done (1.6s)
 -- Generating done (0.0s)
 -- Build files have been written to: /tmp/build_mc_arm
 [1/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_i2c.c.obj
@@ -1763,12 +1763,12 @@ Build type: Debug
 [7/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_usart.c.obj
 [8/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_edma.c.obj
 [9/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_adc.c.obj
-[10/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_spi.c.obj
+[10/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_dma.c.obj
 [11/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_debug.c.obj
-[12/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_dma.c.obj
-[13/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_crc.c.obj
+[12/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_spi.c.obj
+[13/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_misc.c.obj
 [14/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_wwdt.c.obj
-[15/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_misc.c.obj
+[15/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_crc.c.obj
 [16/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_flash.c.obj
 [17/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_wdt.c.obj
 [18/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_scfg.c.obj
@@ -1783,11 +1783,22 @@ Build type: Debug
 [27/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_dvp.c.obj
 [28/91] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/cmsis/cm4/device_support/system_at32f435_437.c.obj
 [29/91] Generating version_autogen.h...
-[VERSION][DEV] 生成 16bit 时间特征码: 0x53D4 (V2.0.1-53D4 1118)
+[VERSION][DEV] 生成 16bit 时间特征码: 0xB8B1 (V2.0.1-B8B1 1118)
 [VERSION] 生成头文件: /tmp/build_mc_arm/version_autogen.h
 [30/91] Building C object CMakeFiles/Marlin_AT32.dir/project/delay/delay.c.obj
 [31/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/at32f435_437_wk_config.c.obj
-[32/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/at32f435_437_int.c.obj
+[32/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/main.c.obj
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/main.c:52:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
+  344 | #define NULL                             0
+      | 
+In file included from /usr/include/newlib/stdlib.h:16,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:12,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/main.c:46:
+/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
+  395 | #define NULL ((void *)0)
+      | 
+[33/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/at32f435_437_int.c.obj
 In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c:36:
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
   344 | #define NULL                             0
@@ -1796,17 +1807,6 @@ In file included from /usr/include/newlib/stdlib.h:16,
                  from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:12,
                  from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:5,
                  from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c:34:
-/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
-  395 | #define NULL ((void *)0)
-      | 
-[33/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/main.c.obj
-In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/main.c:52:
-/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
-  344 | #define NULL                             0
-      | 
-In file included from /usr/include/newlib/stdlib.h:16,
-                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:12,
-                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/main.c:46:
 /usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
   395 | #define NULL ((void *)0)
       | 
@@ -1819,8 +1819,8 @@ In file included from /usr/include/newlib/stdlib.h:16,
 [40/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_tmr.c.obj
 [41/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_usart.c.obj
 [42/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_usb_otgfs.c.obj
-[43/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_gpio.c.obj
-[44/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_dma.c.obj
+[43/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_dma.c.obj
+[44/91] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_gpio.c.obj
 [45/91] Building C object CMakeFiles/Marlin_AT32.dir/libraries/drivers/src/at32f435_437_exint.c.obj
 [46/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/pid.c.obj
 [47/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/motherboard.c.obj
@@ -1913,7 +1913,8 @@ In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-con
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:1125:2: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
  1125 |  if(((float)block->acceleration_st * (float)block->steps_c / (float)block->step_event_count) > axis_steps_per_sqr_second[C_AXIS])
       |  ^~
-[53/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/Marlin_main.c.obj
+[53/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/qr_solve.c.obj
+[54/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/Marlin_main.c.obj
 In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:34:
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c: In function 'kill':
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
@@ -2076,7 +2077,6 @@ In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-con
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4778:4: note: 'sprintf' output between 2 and 97 bytes into a destination of size 30
  4778 |    sprintf(commandstr_process,"%s\"",cmdbuffer[bufindr]);
       |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-[54/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/qr_solve.c.obj
 [55/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/stepper.c.obj
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:60:1: warning: 'static' is not at beginning of declaration [-Wold-style-declaration]
    60 | volatile static unsigned long step_events_completed; // The number of step events executed in the current block
@@ -2593,12 +2593,12 @@ In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-con
       |                     |      |
       |                     int    uint32_t {aka long unsigned int}
       |                    %ld
-[61/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/fan.c.obj
-[62/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/i2c_application.c.obj
+[61/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/i2c_application.c.obj
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/i2c_application.c: In function 'i2c_lowlevel_init':
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/i2c_application.c:105:48: warning: unused parameter 'hi2c' [-Wunused-parameter]
   105 | __WEAK void i2c_lowlevel_init(i2c_handle_type* hi2c)
       |                               ~~~~~~~~~~~~~~~~~^~~~
+[62/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/fan.c.obj
 [63/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_lcd/memu_gui.c.obj
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'printing_page_data_update_flag':
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:1045:9: warning: using integer absolute value function 'abs' when argument is of floating point type 'float' [-Wabsolute-value]
@@ -2740,7 +2740,15 @@ At top level:
  2308 | static bool gui_wait_screen_ready(void)
       |             ^~~~~~~~~~~~~~~~~~~~~
 [64/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/temperaturetable.c.obj
-[65/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/thermistor.c.obj
+[65/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/heater.c.obj
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c: In function 'thermal_runaway_protection':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c:827:25: warning: this statement may fall through [-Wimplicit-fallthrough=]
+  827 |         heater->trstate = TRStable;
+      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c:830:7: note: here
+  830 |       case TRStable:
+      |       ^~~~
+[66/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/thermistor.c.obj
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:9:1: warning: 'static' is not at beginning of declaration [-Wold-style-declaration]
     9 | const static int MAX_TEMP = 300;
       | ^~~~~
@@ -2754,14 +2762,6 @@ At top level:
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:106:13: warning: unused variable 'cumulative_ex2' [-Wunused-variable]
   106 |     int16_t cumulative_ex2 = 0;
       |             ^~~~~~~~~~~~~~
-[66/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/heater.c.obj
-/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c: In function 'thermal_runaway_protection':
-/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c:827:25: warning: this statement may fall through [-Wimplicit-fallthrough=]
-  827 |         heater->trstate = TRStable;
-      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~
-/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c:830:7: note: here
-  830 |       case TRStable:
-      |       ^~~~
 [67/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/led.c.obj
 [68/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/poweroff.c.obj
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:57:13: warning: ISO C forbids forward references to 'enum' types [-Wpedantic]
@@ -2784,16 +2784,7 @@ At top level:
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:303:2: note: 'sprintf' output between 17 and 126 bytes into a destination of size 100
   303 |  sprintf(stts,"sd_pos:%d.name:%s\r\n",sd_pos,FileDir);
       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-[69/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/fileinfomenuevent.c.obj
-/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c: In function 'print_finish_handle':
-/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c:350:6: warning: unused variable 'i' [-Wunused-variable]
-  350 |  int i = 0;
-      |      ^
-At top level:
-/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c:624:13: warning: 'f423_stop_printf' defined but not used [-Wunused-function]
-  624 | static void f423_stop_printf(void)
-      |             ^~~~~~~~~~~~~~~~
-[70/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/filemenushow.c.obj
+[69/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/filemenushow.c.obj
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c: In function 'utf8_to_unicode':
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c:87:33: warning: comparison is always true due to limited range of data type [-Wtype-limits]
    87 |   else if (utf8 >= 0xe0 && utf8 <= 0xff)
@@ -2806,6 +2797,15 @@ At top level:
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c:207:92: warning: comparison between pointer and integer
   207 |    if((strstr(name_file, "gcode") || strstr(name_file, "gco") || strstr(name_file, "GCO")) == NULL)continue;
       |                                                                                            ^~
+[70/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/fileinfomenuevent.c.obj
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c: In function 'print_finish_handle':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c:350:6: warning: unused variable 'i' [-Wunused-variable]
+  350 |  int i = 0;
+      |      ^
+At top level:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c:624:13: warning: 'f423_stop_printf' defined but not used [-Wunused-function]
+  624 | static void f423_stop_printf(void)
+      |             ^~~~~~~~~~~~~~~~
 [71/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/levelmenushow.c.obj
 [72/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/manunalmovemenushow.c.obj
 [73/91] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/printprocessmenushow.c.obj
@@ -2844,7 +2844,12 @@ In file included from /usr/include/newlib/string.h:17,
 [81/91] Building C object CMakeFiles/Marlin_AT32.dir/project/fatfs/source/ff.c.obj
 [82/91] Building C object CMakeFiles/Marlin_AT32.dir/project/fatfs/source/ffunicode.c.obj
 [83/91] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usb_drivers/src/usbh_int.c.obj
-[84/91] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usb_drivers/src/usbh_ctrl.c.obj
+[84/91] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usb_drivers/src/usbh_core.c.obj
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_core.c: In function 'usbh_core_init':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_core.c:503:37: warning: unused parameter 'core_id' [-Wunused-parameter]
+  503 |                             uint8_t core_id)
+      |                             ~~~~~~~~^~~~~~~
+[85/91] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usb_drivers/src/usbh_ctrl.c.obj
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c: In function 'usbh_ctrl_data_in_wait_handler':
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:206:77: warning: unused parameter 'timeout' [-Wunused-parameter]
   206 | usb_sts_type usbh_ctrl_data_in_wait_handler(usbh_core_type *uhost, uint32_t timeout)
@@ -2877,11 +2882,6 @@ In file included from /usr/include/newlib/string.h:17,
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:934:85: warning: unused parameter 'hc_num' [-Wunused-parameter]
   934 | usb_sts_type usbh_clear_ept_feature(usbh_core_type *uhost, uint8_t ept_num, uint8_t hc_num)
       |                                                                             ~~~~~~~~^~~~~~
-[85/91] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usb_drivers/src/usbh_core.c.obj
-/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_core.c: In function 'usbh_core_init':
-/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_core.c:503:37: warning: unused parameter 'core_id' [-Wunused-parameter]
-  503 |                             uint8_t core_id)
-      |                             ~~~~~~~~^~~~~~~
 [86/91] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usbh_class/usbh_msc/usbh_msc_class.c.obj
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_class.c: In function 'uhost_process_handler':
 /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_class.c:215:12: warning: variable 'msize' set but not used [-Wunused-but-set-variable]
@@ -2908,8 +2908,8 @@ Memory region         Used Size  Region Size  %age Used
            FLASH:      384348 B       896 KB     41.89%
              RAM:       44568 B     393200 B     11.33%
         BOOT_IPC:           4 B         16 B     25.00%
--rwxr-xr-x 1 sushaohua sushaohua 384348 Nov 18 09:43 /tmp/build_mc_arm/Marlin_AT32.bin
-1030ad7f92da3e4de389d42106b2d6c29c1e98a5299242c64193a190a0246fbc  /tmp/build_mc_arm/Marlin_AT32.bin
+-rwxr-xr-x 1 sushaohua sushaohua 384348 Nov 18 09:58 /tmp/build_mc_arm/Marlin_AT32.bin
+4f10f3b1fdbd81b4d7a31a930672c5aeb317845ad1add8b5ab5ee1fa6676ad74  /tmp/build_mc_arm/Marlin_AT32.bin
 === [1/3] Run TWIN-44/47/60 MC regression suite (test_twin44_mc_debug.c) ===
 ========================================================================
 TWIN-44 & TWIN-47 MC USART2 921600, Control Cmds & 0x1C Verification

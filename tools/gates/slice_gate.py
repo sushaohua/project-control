@@ -96,7 +96,7 @@ def _run_docker_qa(workspace: Path, spec: dict, commits: Dict[str, str], out_dir
     return proof
 
 
-def _build_review_prompt(spec: dict, commits: Dict[str, str], qa_proof: dict) -> str:
+def _build_review_prompt(spec: dict, commits: Dict[str, str], qa_proof: dict, int_log: str = "") -> str:
     """构造仅含精确元数据、验收条款与客观沙箱摘要的双轴冷审提示词。"""
     criteria = "\n".join(f"- {item}" for item in spec.get("acceptance_criteria", []))
     verdict_p = qa_proof.get("server_verdict", {}).get("path", "")
@@ -104,7 +104,7 @@ def _build_review_prompt(spec: dict, commits: Dict[str, str], qa_proof: dict) ->
     return (
         f"独立只读双轴冷审切片: {spec['slice_id']}\n契约: {spec.get('contract_ref')}\n方案: {spec.get('plan_ref')}\n"
         f"锁定提交: {json.dumps(commits, ensure_ascii=False)}\n容器: {qa_proof.get('sandbox', {}).get('container_id', 'ok')}\n"
-        f"当前沙箱产物: server_verdict={verdict_p} runtime_log={runtime_p}\n"
+        f"当前沙箱产物: server_verdict={verdict_p} runtime_log={runtime_p} integration_log={int_log}\n"
         f"验收判据:\n{criteria}\n请严格按 BLOCKER / MINOR / NIT 分级。"
     )
 
@@ -136,12 +136,14 @@ def execute_slice_funnel(workspace: Path, slice_path: Path, out_dir: Path, fast_
     if not ok_fast:
         return {"stage": "fast_gate", "passed": False, "errors": fast_errs}
     rc_int, int_log = _run_shell_step(spec["integration_cmd"], workspace)
+    int_log_path = out_dir / "integration.log"
+    int_log_path.write_text((int_log or "") + "\n", encoding="utf-8")
     if rc_int != 0 or fast_only:
         return {"stage": "integration", "passed": rc_int == 0, "errors": [] if rc_int == 0 else [int_log]}
     fingerprint = input_fingerprint(workspace, spec)
     commits = _collect_locked_commits(workspace, [{"repo": name} for name in input_repositories(spec)])
     qa_proof = _run_docker_qa(workspace, spec, commits, out_dir)
-    verdict = codex_review.run_codex_audit(_build_review_prompt(spec, commits, qa_proof), spec["slice_id"], workspace, out_dir / "codex")
+    verdict = codex_review.run_codex_audit(_build_review_prompt(spec, commits, qa_proof, str(int_log_path)), spec["slice_id"], workspace, out_dir / "codex")
     doc = {"slice_id": spec["slice_id"], "batch_id": spec["batch_id"], "commits": commits,
            "input_fingerprint": fingerprint, "profile": spec.get("profile", "host-software"),
            "decision": verdict.decision, "codex_session": verdict.session_id,

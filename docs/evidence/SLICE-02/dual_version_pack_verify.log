@@ -1,5 +1,5 @@
 === SLICE-02 Dual-Version ATSG Packaging Parity Raw Log ===
-Timestamp: 2026-11-18T09:43:53+08:00
+Timestamp: 2026-11-18T09:58:39+08:00
 $ python3 boot/bootloaderth/tools/pack_firmware.py /tmp/slice02_pkg_verify/th_raw.bin /tmp/slice02_pkg_verify/fw_th_v1_0.bin
 ==================================================
       AT32A423 Firmware Trailer Pack Report       
@@ -8,11 +8,11 @@ $ python3 boot/bootloaderth/tools/pack_firmware.py /tmp/slice02_pkg_verify/th_ra
  Output File    : /tmp/slice02_pkg_verify/fw_th_v1_0.bin
  U-Disk Alias   : /tmp/slice02_pkg_verify/fw_th.bin
  Payload Size   : 76864 Bytes (75.06 KB)
- Payload CRC32  : 0x3BB96BE5
- Payload SHA256 : 2e2ffb8efbaf9903d636cfa2d17bff197d031c01ffe111c9b9ee74976e070d54
+ Payload CRC32  : 0x67530BF9
+ Payload SHA256 : a3512727423f7c9c5cd8310a43981f71fd92753809213084353f6483e2290128
  Board ID       : 0x42300001 (TH)
  Magic Number   : 0x41545347 ('ATSG')
- Trailer CRC32  : 0x29A4DDC7
+ Trailer CRC32  : 0x6B975DD8
  Final Size     : 76992 Bytes (Payload + 128B Trailer)
 ==================================================
 [SUCCESS] 固件打包完成，128B 自描述 Trailer 校验一致！
@@ -23,28 +23,38 @@ $ python3 mcu-p3/tools/pack_firmware.py -i /tmp/slice02_pkg_verify/th_raw.bin -b
  - 有效代码净载: 76864 字节
  - 目标板卡架构: 0x42300001 [TH (AT32F423)]
  - 固件版本编号: 0x02000100
- - 注入构建时间: 1794966233 (2026-11-18 09:43:53)
- - SHA-256 摘要: 2e2ffb8efbaf9903d636cfa2d17bff197d031c01ffe111c9b9ee74976e070d54
+ - 注入构建时间: 1794967119 (2026-11-18 09:58:39)
+ - SHA-256 摘要: a3512727423f7c9c5cd8310a43981f71fd92753809213084353f6483e2290128
  - 最终输出文件: /tmp/slice02_pkg_verify/fw_th_v2_0.bin (76992 字节)
 ==================================================
 $ python3 test_harness/hil/tools/hil_deploy_via_minimc_ota.py --pack-in /tmp/slice02_pkg_verify/th_raw.bin --pack-out /tmp/slice02_pkg_verify/fw_th_v2_1.bin --board TH --version 2.1
 [PASS] Packed 76864B -> 76992B (TH, v2.1, 0x02010000)
+$ python3 boot/bootloadermc/scripts/pack_firmware.py -i /tmp/slice02_pkg_verify/mc_raw.bin -b 0x43500001 -o /tmp/slice02_pkg_verify/fw_mc_v1_0.bin
+==================================================
+ [PACK] Firmware packaging complete
+ - Input raw binary: /tmp/slice02_pkg_verify/mc_raw.bin (384348 bytes)
+ - Target Board ID: 0x43500001 [MC (AT32F435)]
+ - Firmware Version: 0x01000000
+ - SHA-256 Digest: 4f10f3b1fdbd81b4d7a31a930672c5aeb317845ad1add8b5ab5ee1fa6676ad74
+ - Output File: /tmp/slice02_pkg_verify/fw_mc_v1_0.bin (384476 bytes)
+==================================================
 $ python3 boot/bootloadermc/scripts/pack_firmware.py -i /tmp/slice02_pkg_verify/mc_raw.bin -b 0x43500001 -v 0x02000100 -o /tmp/slice02_pkg_verify/fw_mc_v2_0.bin
 ==================================================
  [PACK] Firmware packaging complete
  - Input raw binary: /tmp/slice02_pkg_verify/mc_raw.bin (384348 bytes)
  - Target Board ID: 0x43500001 [MC (AT32F435)]
  - Firmware Version: 0x02000100
- - SHA-256 Digest: 1030ad7f92da3e4de389d42106b2d6c29c1e98a5299242c64193a190a0246fbc
+ - SHA-256 Digest: 4f10f3b1fdbd81b4d7a31a930672c5aeb317845ad1add8b5ab5ee1fa6676ad74
  - Output File: /tmp/slice02_pkg_verify/fw_mc_v2_0.bin (384476 bytes)
 ==================================================
 $ python3 test_harness/hil/tools/hil_deploy_via_minimc_ota.py --pack-in /tmp/slice02_pkg_verify/mc_raw.bin --pack-out /tmp/slice02_pkg_verify/fw_mc_v2_1.bin --board MC --version 2.1
 [PASS] Packed 384348B -> 384476B (MC, v2.1, 0x02010000)
-[PACK-PASS] fw_th_v1_0.bin: total=76992B payload=76864B fw_version=0x01000000 payload_sha256=2e2ffb8efbaf9903d636cfa2d17bff197d031c01ffe111c9b9ee74976e070d54 file_sha256=681d64a8d1c1e146ba9764930f46f653e6a267ce60a4c8547c454030bed119ff
-[PACK-PASS] fw_th_v2_0.bin: total=76992B payload=76864B fw_version=0x02000100 payload_sha256=2e2ffb8efbaf9903d636cfa2d17bff197d031c01ffe111c9b9ee74976e070d54 file_sha256=61224dab0bf5e2818fc14e5a06ece61d3833d3087501c252c8385573be80f8b3
-[PACK-PASS] fw_th_v2_1.bin: total=76992B payload=76864B fw_version=0x02010000 payload_sha256=2e2ffb8efbaf9903d636cfa2d17bff197d031c01ffe111c9b9ee74976e070d54 file_sha256=f5680cc004b900ad82c45267a5e6fbd45d0bb3759bea30180f20ad533db35d48
-[PACK-PASS] fw_mc_v2_0.bin: total=384476B payload=384348B fw_version=0x02000100 payload_sha256=1030ad7f92da3e4de389d42106b2d6c29c1e98a5299242c64193a190a0246fbc file_sha256=6faf62d97f83f512b88174f25554eabd9185839046f3359192e6159592957dbb
-[PACK-PASS] fw_mc_v2_1.bin: total=384476B payload=384348B fw_version=0x02010000 payload_sha256=1030ad7f92da3e4de389d42106b2d6c29c1e98a5299242c64193a190a0246fbc file_sha256=a0f30562599786b1c92718f20de416a918b9d76e0465af3cb8de65e70621a5e0
+[PACK-PASS] fw_th_v1_0.bin: total=76992B payload=76864B fw_version=0x01000000 payload_sha256=a3512727423f7c9c5cd8310a43981f71fd92753809213084353f6483e2290128 file_sha256=e7aa1fe9bebf7ecfefd36c4e2062d4c6706f3d090cb1ca0a64829cbdf19de72e
+[PACK-PASS] fw_th_v2_0.bin: total=76992B payload=76864B fw_version=0x02000100 payload_sha256=a3512727423f7c9c5cd8310a43981f71fd92753809213084353f6483e2290128 file_sha256=4822f98f91452e059211cb55fe725991edc068dd8661424fb53c65d22e1ccb47
+[PACK-PASS] fw_th_v2_1.bin: total=76992B payload=76864B fw_version=0x02010000 payload_sha256=a3512727423f7c9c5cd8310a43981f71fd92753809213084353f6483e2290128 file_sha256=87ec2da010df5fe6a1cba64b414a37bf74f0ffaa548f8b5b49eb5593dcbca9ed
+[PACK-PASS] fw_mc_v1_0.bin: total=384476B payload=384348B fw_version=0x01000000 payload_sha256=4f10f3b1fdbd81b4d7a31a930672c5aeb317845ad1add8b5ab5ee1fa6676ad74 file_sha256=2aaef00be80b931e0f80d0a777ea2e365e4094b301604b24567a0516177f9df9
+[PACK-PASS] fw_mc_v2_0.bin: total=384476B payload=384348B fw_version=0x02000100 payload_sha256=4f10f3b1fdbd81b4d7a31a930672c5aeb317845ad1add8b5ab5ee1fa6676ad74 file_sha256=7b0562809e8b2b4383971fe5507e4d0487fe1ff2202984996c7995bf0f677632
+[PACK-PASS] fw_mc_v2_1.bin: total=384476B payload=384348B fw_version=0x02010000 payload_sha256=4f10f3b1fdbd81b4d7a31a930672c5aeb317845ad1add8b5ab5ee1fa6676ad74 file_sha256=81a27fc3039de502943975fc9ead5e76b496dcfb9416884e4af095515cd6ed14
 [NEG-TH-OVER] rc=1 msg=[ERR] 固件大小超限: 241665 字节 (最大允许 241664 字节 / 236KB)
 [NEG-MC-OVER] rc=1 msg=
-[PACK-PASS] All dual-version parity and oversize rejection checks passed!
+[PACK-PASS] All TH & MC (v1.0/v2.0/v2.1) parity and oversize rejection checks passed!
