@@ -1,0 +1,190 @@
+=== [1/4] Cross-compile TH Bootloader & check 16KB Flash / 48KB SRAM budget (S01/S02) ===
+rm -rf build
+mkdir -p build
+[CC] src/main.c
+[CC] src/at32a423_clock.c
+[CC] src/at32a423_int.c
+[CC] src/flash.c
+[CC] src/usart.c
+[CC] src/iap.c
+[CC] src/tmr.c
+[CC] AT32A423_Firmware_Library/libraries/cmsis/cm4/device_support/system_at32a423.c
+[CC] AT32A423_Firmware_Library/libraries/drivers/src/at32a423_crm.c
+[CC] AT32A423_Firmware_Library/libraries/drivers/src/at32a423_gpio.c
+[CC] AT32A423_Firmware_Library/libraries/drivers/src/at32a423_usart.c
+[CC] AT32A423_Firmware_Library/libraries/drivers/src/at32a423_flash.c
+[CC] AT32A423_Firmware_Library/libraries/drivers/src/at32a423_pwc.c
+[CC] AT32A423_Firmware_Library/libraries/drivers/src/at32a423_misc.c
+[AS] startup/startup_at32a423.s
+[LD] build/bootloaderth.elf
+--- Firmware Memory Size Report ---
+   text	   data	    bss	    dec	    hex	filename
+   9348	     12	   3836	  13196	   338c	build/bootloaderth.elf
+bootloaderth.bin size: 9360 bytes (limit: 16384 bytes)
+[PASS] S01 linker overflow gate rejected >16KB image with exit code 1
+=== [2/4] Check tools/pack_firmware.py 236KB (241,664B) boundary gate (S03) ===
+[PASS] S03 pack_firmware.py 236KB boundary checks (241663/241664/241665/245760) passed!
+=== [3/4] Run host unit tests for TH Bootloader MiniMCProto v2.0 state machine ===
+[PASS] test_th_boot_ota: all TH Bootloader MiniMCProto v2.0 tests passed!
+=== [4/4] Verify C function length (<=50 lines) and parameter count (<=4) gate (S04) ===
+[PASS] S04 all C functions in boot/bootloaderth satisfy <=50 lines and <=4 parameters!
+rm -rf build
+=== [1/4] Cross-compile MC Bootloader & verify 128KB Flash budget + zero USART6 coupling ===
+rm -rf build
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/cmsis/cm4/device_support/system_at32f435_437.c -o build/libraries/cmsis/cm4/device_support/system_at32f435_437.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_crm.c -o build/libraries/drivers/src/at32f435_437_crm.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_gpio.c -o build/libraries/drivers/src/at32f435_437_gpio.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_misc.c -o build/libraries/drivers/src/at32f435_437_misc.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_pwc.c -o build/libraries/drivers/src/at32f435_437_pwc.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_flash.c -o build/libraries/drivers/src/at32f435_437_flash.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_usart.c -o build/libraries/drivers/src/at32f435_437_usart.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_dma.c -o build/libraries/drivers/src/at32f435_437_dma.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_crc.c -o build/libraries/drivers/src/at32f435_437_crc.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_i2c.c -o build/libraries/drivers/src/at32f435_437_i2c.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/drivers/src/at32f435_437_usb.c -o build/libraries/drivers/src/at32f435_437_usb.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/middlewares/usb_drivers/src/usb_core.c -o build/libraries/middlewares/usb_drivers/src/usb_core.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/middlewares/usb_drivers/src/usbh_core.c -o build/libraries/middlewares/usb_drivers/src/usbh_core.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/middlewares/usb_drivers/src/usbh_ctrl.c -o build/libraries/middlewares/usb_drivers/src/usbh_ctrl.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/middlewares/usb_drivers/src/usbh_int.c -o build/libraries/middlewares/usb_drivers/src/usbh_int.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/middlewares/usbh_class/usbh_msc/usbh_msc_class.c -o build/libraries/middlewares/usbh_class/usbh_msc/usbh_msc_class.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.c -o build/libraries/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/middlewares/3rd_party/fatfs/source/ff.c -o build/libraries/middlewares/3rd_party/fatfs/source/ff.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/middlewares/3rd_party/fatfs/source/ffsystem.c -o build/libraries/middlewares/3rd_party/fatfs/source/ffsystem.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c bootloader/src/main.c -o build/bootloader/src/main.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c bootloader/src/at32f435_437_clock.c -o build/bootloader/src/at32f435_437_clock.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c bootloader/src/at32f435_437_int.c -o build/bootloader/src/at32f435_437_int.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c bootloader/src/bsp_uart.c -o build/bootloader/src/bsp_uart.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c bootloader/src/boot_uart_ota.c -o build/bootloader/src/boot_uart_ota.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c bootloader/src/usbh_msc_diskio.c -o build/bootloader/src/usbh_msc_diskio.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c bootloader/src/usbh_user.c -o build/bootloader/src/usbh_user.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c bootloader/src/bsp_eeprom.c -o build/bootloader/src/bsp_eeprom.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -g3 -Wall -Wextra -Werror -Wno-unused-parameter -fdata-sections -ffunction-sections -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DBOOT_UART_OTA_STANDALONE_OBJECT=1 -Ibuild -Ibootloader/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc -Ilibraries/middlewares/usb_drivers/inc -Ilibraries/middlewares/usbh_class/usbh_msc -Ilibraries/middlewares/3rd_party/fatfs/source -c libraries/cmsis/cm4/device_support/startup/gcc/startup_at32f435_437.s -o build/libraries/cmsis/cm4/device_support/startup/gcc/startup_at32f435_437.o
+arm-none-eabi-gcc build/libraries/cmsis/cm4/device_support/system_at32f435_437.o build/libraries/drivers/src/at32f435_437_crm.o build/libraries/drivers/src/at32f435_437_gpio.o build/libraries/drivers/src/at32f435_437_misc.o build/libraries/drivers/src/at32f435_437_pwc.o build/libraries/drivers/src/at32f435_437_flash.o build/libraries/drivers/src/at32f435_437_usart.o build/libraries/drivers/src/at32f435_437_dma.o build/libraries/drivers/src/at32f435_437_crc.o build/libraries/drivers/src/at32f435_437_i2c.o build/libraries/drivers/src/at32f435_437_usb.o build/libraries/middlewares/usb_drivers/src/usb_core.o build/libraries/middlewares/usb_drivers/src/usbh_core.o build/libraries/middlewares/usb_drivers/src/usbh_ctrl.o build/libraries/middlewares/usb_drivers/src/usbh_int.o build/libraries/middlewares/usbh_class/usbh_msc/usbh_msc_class.o build/libraries/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.o build/libraries/middlewares/3rd_party/fatfs/source/ff.o build/libraries/middlewares/3rd_party/fatfs/source/ffsystem.o build/bootloader/src/main.o build/bootloader/src/at32f435_437_clock.o build/bootloader/src/at32f435_437_int.o build/bootloader/src/bsp_uart.o build/bootloader/src/boot_uart_ota.o build/bootloader/src/usbh_msc_diskio.o build/bootloader/src/usbh_user.o build/bootloader/src/bsp_eeprom.o build/libraries/cmsis/cm4/device_support/startup/gcc/startup_at32f435_437.o -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Tcmake/linker/at32f435_bootloader.ld -Wl,--gc-sections -Wl,-Map=build/bootloader.map,--cref --specs=nano.specs --specs=nosys.specs -o build/bootloader.elf
+arm-none-eabi-objcopy -O binary -S build/bootloader.elf build/bootloader.bin
+arm-none-eabi-objcopy -O ihex build/bootloader.elf build/bootloader.hex
+arm-none-eabi-size --format=berkeley build/bootloader.elf
+   text	   data	    bss	    dec	    hex	filename
+  37364	    184	  19272	  56820	   ddf4	build/bootloader.elf
+bootloader.bin size: 37600 bytes (limit: 131072 bytes)
+[PASS] Cross-compile <=128KB and zero USART6 coupling verified!
+=== [2/4] Verify scripts/pack_firmware.py MC (896KB=917,504B) & TH (236KB=241,664B) boundary gate ===
+==================================================
+ [PACK] Firmware packaging complete
+ - Input raw binary: /tmp/tmp4k9g_mcy/mc_ok.bin (917504 bytes)
+ - Target Board ID: 0x43500001 [MC (AT32F435)]
+ - Firmware Version: 0x01000000
+ - SHA-256 Digest: 4438bd37db902e5676b4f257f2d6b2b479bdb88ec501bb3824a96e09f1c4568e
+ - Output File: /tmp/tmp4k9g_mcy/fw_mc.bin (917632 bytes)
+==================================================
+==================================================
+ [PACK] Firmware packaging complete
+ - Input raw binary: /tmp/tmp4k9g_mcy/th_ok.bin (241664 bytes)
+ - Target Board ID: 0x42300001 [TH (AT32F423)]
+ - Firmware Version: 0x01000000
+ - SHA-256 Digest: 8aba5e9a7cf5158a11d210bb3edfe208bc67088e6f093e8e32c026629aabf2a6
+ - Output File: /tmp/tmp4k9g_mcy/fw_th.bin (241792 bytes)
+==================================================
+[PASS] scripts/pack_firmware.py MC(896KB) & TH(236KB) boundary checks passed!
+=== [3/4] Compile & run host unit tests for MC Bootloader MiniMCProto v2.0 OTA ===
+FAT32 File System initialized.
+Searching for upgrade package (fw_mc.bin)...
+Found: firmwaremc.bin, Size: 1152 bytes, Target: 0x08020000
+Starting firmware flash programming...
+[PRE-VERIFY] REJECTED: Trailer check failed (rc=-6, magic=0x41545347, board=0x43500001)
+[SECURITY GATE] Pre-verification FAILED. Flash erase ABORTED!
+Upgrade failed!
+[BOOT] FS Check PASSED: 0:/firmwaremc.bin -> 0:/firmwaremc.err verified (Size=1152 B).
+FAT32 File System initialized.
+Searching for upgrade package (fw_mc.bin)...
+Found: firmwaremc.bin, Size: 1152 bytes, Target: 0x08020000
+Starting firmware flash programming...
+[PRE-VERIFY] PASS: MC Firmware verified. Payload: 1024 B, Ver: 0x01020300
+Erasing 1 sectors (2KB each) from 0x08020000...
+Writing image to Flash (1024 B)...
+CRC32 Check OK: 0x7C87C1A0
+Upgrade firmwaremc.bin successful!
+[BOOT] FS Check PASSED: 0:/firmwaremc.bin -> 0:/firmwaremc.cur verified (Size=1152 B).
+Jumping to Application at 0x08020000...
+FAT32 File System initialized.
+Searching for upgrade package (fw_mc.bin)...
+[BOOT] UART2 OTA active, deferring USB U-disk upgrade.
+FAT32 File System initialized.
+Searching for upgrade package (fw_mc.bin)...
+Found: firmwaremc.bin, Size: 1152 bytes, Target: 0x08020000
+Starting firmware flash programming...
+[PRE-VERIFY] PASS: MC Firmware verified. Payload: 1024 B, Ver: 0x01020300
+Erasing 1 sectors (2KB each) from 0x08020000...
+Writing image to Flash (1024 B)...
+CRC32 Check OK: 0x7C87C1A0
+Upgrade firmwaremc.bin successful!
+[BOOT] FS Check PASSED: 0:/firmwaremc.bin -> 0:/firmwaremc.cur verified (Size=1152 B).
+Jumping to Application at 0x08020000...
+[PASS] test_mc_boot_ota: all MC Bootloader MiniMCProto v2.0 & USB Host tests passed!
+=== [4/4] Verify C function length (<=50 lines) and parameter count (<=4) gate ===
+[PASS] All checked C functions satisfy <=50 lines and <=4 parameters!
+rm -rf build
+=== [1/3] Run TWIN-45/48/60 TH regression suite (test_twin45_th_debug.c) ===
+========================================================================
+TWIN-45 / TWIN-48 TH USART1 921600 Cascade & Control Suite
+========================================================================
+[RUN ] test_usart1_921600_and_usart3_115200_init
+[PASS] test_usart1_921600_and_usart3_115200_init
+[RUN ] test_cascade_rx_and_tx_logging
+[PASS] test_cascade_rx_and_tx_logging
+[RUN ] test_periodic_state_and_dynamic_sync
+[PASS] test_periodic_state_and_dynamic_sync
+[RUN ] test_negative_crc_err_bad_frame_and_recovery
+[PASS] test_negative_crc_err_bad_frame_and_recovery
+[RUN ] test_negative_usart1_send_raw_fail_and_recovery
+[PASS] test_negative_usart1_send_raw_fail_and_recovery
+[RUN ] test_negative_usart3_trunc_and_recovery
+[PASS] test_negative_usart3_trunc_and_recovery
+[RUN ] test_negative_usart3_ring_full_drop_and_recovery
+[PASS] test_negative_usart3_ring_full_drop_and_recovery
+[RUN ] test_twin48_set_temp_and_no_false_safety_lock
+[PASS] test_twin48_set_temp_and_no_false_safety_lock
+[RUN ] test_twin48_filament_and_stop
+[PASS] test_twin48_filament_and_stop
+[RUN ] test_twin48_gcode_queue_and_send_quick
+[PASS] test_twin48_gcode_queue_and_send_quick
+------------------------------------------------------------------------
+All 10 TWIN-45 / TWIN-48 test suites PASSED!
+========================================================================
+=== [2/3] Run TWIN-64 TH OTA 0x1D magic (0x20008000 UPGD), 534B & boot_id suite ===
+[PASS] test_th_ota_and_bootid: all TWIN-64 TH App 0x1D, UPGD & boot_id tests passed!
+=== [3/3] Verify TH AT32F423xC_FLASH.ld (LENGTH = 236K), zero M997 send_quick & S04 gates ===
+[PASS] TH AT32F423xC_FLASH.ld (236K), zero M997 residue and S04 function/comment/ternary gates verified!
+=== [1/3] Run TWIN-44/47/60 MC regression suite (test_twin44_mc_debug.c) ===
+========================================================================
+TWIN-44 & TWIN-47 MC USART2 921600, Control Cmds & 0x1C Verification
+========================================================================
+[RUN ] test_usart2_921600_reconfig
+[PASS] test_usart2_921600_reconfig
+[RUN ] test_ring_buffer_trunc_drop_and_recovery
+[PASS] test_ring_buffer_trunc_drop_and_recovery
+[RUN ] test_honest_minimc_v2_queries_and_nack
+[PASS] test_honest_minimc_v2_queries_and_nack
+[RUN ] test_non_intrusive_notify_and_fault_sync
+[PASS] test_non_intrusive_notify_and_fault_sync
+[RUN ] test_tx_fail_suppresses_ack_and_recovers
+[PASS] test_tx_fail_suppresses_ack_and_recovers
+[RUN ] test_relay_timeout_crc_err_and_recovery
+[PASS] test_relay_timeout_crc_err_and_recovery
+[RUN ] test_th_relay_correlation_and_nack
+[PASS] test_th_relay_correlation_and_nack
+[RUN ] test_twin47_temp_home_move_stop
+[PASS] test_twin47_temp_home_move_stop
+[RUN ] test_twin47_job_filament_level_gcode
+[PASS] test_twin47_job_filament_level_gcode
+[RUN ] test_twin60_adc_range_filament_nack_and_boot_id
+[PASS] test_twin60_adc_range_filament_nack_and_boot_id
+------------------------------------------------------------------------
+All 10 TWIN-44/TWIN-47/TWIN-60 test suites PASSED!
+========================================================================
+=== [2/3] Run TWIN-64 MC OTA, 0x1D magic (0x2005FFF0), 534B proxy & th_upgrade_mgr suite ===
+[PASS] test_mc_ota_and_relay: all TWIN-64/TWIN-68 MC App OTA, 534B relay & underflow tests passed!
+=== [3/3] Verify MC zero M997/5AA5 residue & S04 function/comment gates ===
+[PASS] MC S04 function length (<=50), params (<=4), flat if/ternary and Chinese comments verified!
+
+[ERROR] Payload size 917505 B out of bounds for board 0x43500001 (allowed: 1..917504 B)
+[ERROR] Payload size 241665 B out of bounds for board 0x42300001 (allowed: 1..241664 B)

@@ -1,0 +1,19 @@
+{
+  "slice_id": "SLICE-02",
+  "batch_id": "BATCH-OTA-ACCEPTANCE-01",
+  "commits": {
+    "project-control": "537ab04b47aea58abc5fe77bef95ff9267ed4bbe",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046",
+    "printer-soc": "888d389c8969d90de57c189907cf2c58543b7b64",
+    "mcu-p3": "b865222c5e7ec50cbe7d7174b8aa25f93ed16ae0",
+    "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "input_fingerprint": "e8a7d086a38815181b74c695d95ba86dc8a75293724318353444aa45314c5f16",
+  "profile": "host-software",
+  "decision": "APPROVED",
+  "codex_session": "01a1ec62-1579-7310-be0e-fa816ff31d6c",
+  "blocker_count": 0,
+  "findings": []
+}

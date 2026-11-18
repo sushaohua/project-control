@@ -1,0 +1,1 @@
+{"slice_id":"SLICE-02","decision":"APPROVED","axis_spec_realism":"验收证据与锁定提交一致：沙箱锁记录了全部七个指定提交，容器 verdict 为 PASSED。宿主机日志记录了四目标交叉编译、尺寸及溢出门禁和测试；打包日志核验了 TH/MC 的 v1.0、v2.0、v2.1 ATSG 版本位域，并记录 TH/MC 超限拒绝。证据报告所列两份原始日志 SHA256 均与实际文件一致。","axis_embedded_safety":"未发现本切片范围内的阻断级嵌入式安全问题。MC Bootloader 尺寸及零 USART6 耦合、Bootloader 宿主单测和打包边界均有日志支持。本裁决仅覆盖 host-software 验收，不构成实机 HIL 验证。","findings":[]}
