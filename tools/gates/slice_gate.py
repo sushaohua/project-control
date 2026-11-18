@@ -99,9 +99,12 @@ def _run_docker_qa(workspace: Path, spec: dict, commits: Dict[str, str], out_dir
 def _build_review_prompt(spec: dict, commits: Dict[str, str], qa_proof: dict) -> str:
     """构造仅含精确元数据、验收条款与客观沙箱摘要的双轴冷审提示词。"""
     criteria = "\n".join(f"- {item}" for item in spec.get("acceptance_criteria", []))
+    verdict_p = qa_proof.get("server_verdict", {}).get("path", "")
+    runtime_p = qa_proof.get("runtime_log", {}).get("path", "")
     return (
         f"独立只读双轴冷审切片: {spec['slice_id']}\n契约: {spec.get('contract_ref')}\n方案: {spec.get('plan_ref')}\n"
         f"锁定提交: {json.dumps(commits, ensure_ascii=False)}\n容器: {qa_proof.get('sandbox', {}).get('container_id', 'ok')}\n"
+        f"当前沙箱产物: server_verdict={verdict_p} runtime_log={runtime_p}\n"
         f"验收判据:\n{criteria}\n请严格按 BLOCKER / MINOR / NIT 分级。"
     )
 
