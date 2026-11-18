@@ -1,0 +1,11 @@
+独立只读双轴冷审切片: SLICE-01
+契约: project-control/contracts/minimc_v2_contract.yaml
+方案: project-control/docs/planning/mc_th_upgrade_acceptance_implementationplan_20261117_174500.md
+锁定提交: {"test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046", "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152", "project-control": "e90522037a33303706196bfd6a078444905b1cfe", "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb", "printer-soc": "888d389c8969d90de57c189907cf2c58543b7b64", "mcu-p3": "b865222c5e7ec50cbe7d7174b8aa25f93ed16ae0", "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4"}
+容器: b10cc87ff2f6
+验收判据:
+- 五端 MiniMCProto v2.0 (Rev 2.0.4) 契约与 check_opcode_alignment.py (含 printer-soc) 对齐校验通过
+- version_code 编码与解析在 printer-soc、boot/bootloadermc、boot/bootloaderth/tools/pack_firmware.py 与 test_harness 全链路统一为 (major<<24)|(minor<<16)|(patch<<8)|build
+- 清除 VirtualDualMcuOtaTarget 中虚构的 0x23 4B Abort 假阳性断言，对齐真机 Bootloader（0x24 回 NACK 0x04、4B 0x23 回 NACK 0x06，中止后驻留 Bootloader 并支持重刷恢复）
+- printer-soc 服务 CTest（含 ota_forward_gateway_pty）与 test_harness 静态/软件矩阵/单测在隔离只读 Docker 沙箱内全部通过，且独立 Codex 双轴冷审 0 BLOCKER
+请严格按 BLOCKER / MINOR / NIT 分级。

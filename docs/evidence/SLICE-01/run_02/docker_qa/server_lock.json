@@ -1,0 +1,48 @@
+{
+  "repositories": [
+    {
+      "name": "test_harness",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/test_harness.git",
+      "ref": "refs/heads/main",
+      "commit": "371a3a3de7e878d4035388ccab70ef4bc84f9046"
+    },
+    {
+      "name": "boot/bootloaderth",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/bootloaderth.git",
+      "ref": "refs/heads/soc_debug",
+      "commit": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+    },
+    {
+      "name": "project-control",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/project-control.git",
+      "ref": "refs/heads/main",
+      "commit": "e90522037a33303706196bfd6a078444905b1cfe"
+    },
+    {
+      "name": "agents",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/agents.git",
+      "ref": "refs/heads/main",
+      "commit": "30ecc6586a861c1543a97804cfe0600bb4778efb"
+    },
+    {
+      "name": "printer-soc",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/printer-soc.git",
+      "ref": "refs/heads/main",
+      "commit": "888d389c8969d90de57c189907cf2c58543b7b64"
+    },
+    {
+      "name": "mcu-p3",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/mcu-p3.git",
+      "ref": "refs/heads/feat/soc-debug",
+      "commit": "b865222c5e7ec50cbe7d7174b8aa25f93ed16ae0"
+    },
+    {
+      "name": "boot/bootloadermc",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/bootloadermc.git",
+      "ref": "refs/heads/soc_debug",
+      "commit": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4"
+    }
+  ],
+  "profile": "host-software",
+  "platform_inputs": {}
+}

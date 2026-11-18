@@ -7,7 +7,10 @@
 | 时间戳 (UTC+8) | 批次 ID | 切片 ID | 准出状态 | 锁定多仓 Commit 摘要 | Docker 容器 ID | Codex 会话 ID | Verdict SHA256 |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 
+| 2026-11-18 09:40:38 | BATCH-OTA-ACCEPTANCE-01 | SLICE-01 | SW-Verified | `test_harness:371a3a3,boot/bootloaderth:1a03513,project-control:e905220,agents:30ecc65,printer-soc:888d389,mcu-p3:b865222,boot/bootloadermc:3e01c00; inputs=d78eb1084e0a5c5bfe96e77aee1da621b93cfbb535a30ea6f3fe05b55620fbda` | `b10cc87ff2f6` | `01a1ec4e-08c6-74a1-a55d-1bf92676034d` | `77c377c2f09723ac` |
+
 ## 2. 非阻断技术债登记表 (`MINOR` Findings)
 
 | 时间戳 (UTC+8) | 切片 ID | 审计轴 | 代码位置 | 问题描述与后续收敛建议 |
 | :--- | :--- | :--- | :--- | :--- |
+| 2026-11-18 09:40:38 | SLICE-01 | `spec_realism` | `printer-soc/contracts/twin/telemetry_types.h:410` | ATSG trailer 的 version_code 注释仍称编码为 (major << 8) | minor，与契约及实际解析使用的高位 major/minor 布局不一致。当前传递和 Stage 4 解析按新布局工作，属于文档残留；建议更正以免后续维护误用。 |

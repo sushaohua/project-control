@@ -1,0 +1,34 @@
+{
+  "slice_id": "SLICE-01",
+  "batch_id": "BATCH-OTA-ACCEPTANCE-01",
+  "commits": {
+    "test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152",
+    "project-control": "e90522037a33303706196bfd6a078444905b1cfe",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "printer-soc": "888d389c8969d90de57c189907cf2c58543b7b64",
+    "mcu-p3": "b865222c5e7ec50cbe7d7174b8aa25f93ed16ae0",
+    "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4"
+  },
+  "input_fingerprint": "d78eb1084e0a5c5bfe96e77aee1da621b93cfbb535a30ea6f3fe05b55620fbda",
+  "profile": "host-software",
+  "decision": "APPROVED",
+  "codex_session": "01a1ec4e-08c6-74a1-a55d-1bf92676034d",
+  "blocker_count": 0,
+  "findings": [
+    {
+      "id": "SLICE-01-MINOR-01",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "printer-soc/contracts/twin/telemetry_types.h:410",
+      "message": "ATSG trailer 的 version_code 注释仍称编码为 (major << 8) | minor，与契约及实际解析使用的高位 major/minor 布局不一致。当前传递和 Stage 4 解析按新布局工作，属于文档残留；建议更正以免后续维护误用。"
+    },
+    {
+      "id": "SLICE-01-NIT-01",
+      "severity": "NIT",
+      "axis": "spec_realism",
+      "location": "test_harness/static_checks/minimcproto/run_codec_cases.py:86-88; test_harness/static_checks/minimcproto/golden_vectors.json:G16h",
+      "message": "G16h 仍命名为 CMD_OTA_ABORT_4B_REQUEST，检查器也描述为“4B 0x23 abort payload”并将其作为有效帧向量。该检查只验证帧结构，不再代表虚拟靶机接受 Abort；建议改为中性名称并注明语义负例由 M07 检查。"
+    }
+  ]
+}
