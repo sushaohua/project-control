@@ -1,0 +1,29 @@
+=== Docker Container Inspect: 9c7b4159a78e ===
+{
+  "id": "9c7b4159a78e5101fde5968a32e7fc7c0c8187a9c4b3fc1c535195bb1cdae210",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-18T09:08:05.168990981Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170750_20261118_090750",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170750_20261118_090750_output",
+      "Destination": "/output",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (test_harness) python3 static_checks/minimcproto/check_opcode_alignment.py -> 0
+[PASS] MiniMCProto v2.0 (Rev 2.0.4) 5-endpoint opcode alignment, reverse uniqueness, >=520B payload capacity, and negative self-tests verified.
+

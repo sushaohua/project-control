@@ -1,0 +1,33 @@
+=== Docker Container Inspect: 99c370069478 ===
+{
+  "id": "99c370069478c28c48db72c6d51d2ad346b2ba9fdbf162059650080a86330460",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-18T09:01:12.880192187Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170110_20261118_090110",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170110_20261118_090110_output",
+      "Destination": "/output",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (test_harness) python3 static_checks/minimcproto/check_opcode_alignment.py -> 1
+[FAIL] No header file found among candidates: ('printer-soc/contracts/twin/telemetry_types.h', 'printer-soc/core/forward/minimc/codec.h')
+[FAIL] No header file found among candidates: ('mcu-p3/common/protocol/minimc_proto_defs.h', 'mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h')
+[FAIL] No header file found among candidates: ('mcu-p3/common/protocol/minimc_proto_defs.h', 'mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h', 'mcu-p3/color-engine-mcu/io_toggle/inc/usart.h')
+[FAIL] No header file found among candidates: ('boot/bootloadermc/bootloader/inc/boot_uart_ota.h', 'boot/bootloadermc/project/inc/minimc_boot_proto.h')
+[FAIL] No header file found among candidates: ('boot/bootloaderth/inc/iap.h', 'boot/bootloaderth/project/inc/minimc_boot_proto.h')
+

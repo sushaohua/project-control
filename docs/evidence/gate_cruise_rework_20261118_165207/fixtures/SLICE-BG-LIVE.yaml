@@ -1,0 +1,23 @@
+slice_id: "SLICE-BG-LIVE"
+batch_id: "BATCH-GATE-REWORK"
+revision: 1
+profile: "host-software"
+subtasks: []
+input_repositories: ["test_harness", "agents", "printer-soc", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
+ledger_ref: "project-control/docs/evidence/gate_cruise_rework_20261118_165207/live_ledger.md"
+evidence_root: "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs"
+plan_ref: "project-control/docs/planning/gate_verdict_and_cruise_judgment_implementationplan_20261118_151000.md"
+contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
+requires_hil_immediately: false
+
+integration_cmd: "sleep 12 && python3 project-control/tools/sync_contracts.py --workspace . && echo '[PASS] five-endpoint sync_contracts.py verified (rc=0)'"
+
+qa_commands:
+  - subpath: "test_harness"
+    kind: "test"
+    command: "python3 static_checks/minimcproto/check_opcode_alignment.py"
+
+acceptance_criteria:
+  - "五端契约校验 sync_contracts.py --workspace . 返回 PASS（见 integration_log 实证输出）"
+  - "只读容器内 test_harness static_checks/minimcproto/check_opcode_alignment.py 通过（见 runtime_log 与 server_verdict.json）"
+  - "锁定输入仓 test_harness、agents、printer-soc、mcu-p3、boot/bootloadermc 与 boot/bootloaderth 均为纯净只读提交（无未提交改动）"

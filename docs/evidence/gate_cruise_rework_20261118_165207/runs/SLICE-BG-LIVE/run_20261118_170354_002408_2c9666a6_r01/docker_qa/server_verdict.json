@@ -1,0 +1,12 @@
+{
+  "task_id": "SLICE-BG-LIVE",
+  "task_revision": 1,
+  "run_id": "run_170418",
+  "verdict": "PASSED",
+  "exit_code": 0,
+  "summary": "All sandbox tests passed",
+  "profile": "host-software",
+  "build_count": 0,
+  "test_count": 1,
+  "timestamp": "2026-11-18T09:04:37.181160+00:00"
+}

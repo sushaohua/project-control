@@ -1,0 +1,61 @@
+{
+  "cruise_conflicts": {
+    "exit_1_vs_verdict_PASSED": {
+      "status": "BLOCKED",
+      "stage": "gate_runner",
+      "reason": "门禁实际退出码与裁决证据冲突 (exit=1, verdict=PASSED)"
+    },
+    "exit_0_vs_verdict_FAILED": {
+      "status": "BLOCKED",
+      "stage": "gate_runner",
+      "reason": "门禁实际退出码与裁决证据冲突 (exit=0, verdict=FAILED)"
+    },
+    "exit_0_PASSED_vs_server_qa_false": {
+      "status": "BLOCKED",
+      "stage": "docker_qa",
+      "reason": "PASSED 裁决与当次 Docker QA 证据冲突"
+    },
+    "exit_0_PASSED_codex_missing_server_qa": {
+      "status": "BLOCKED",
+      "stage": "docker_qa",
+      "reason": "PASSED 裁决与当次 Docker QA 证据冲突"
+    }
+  },
+  "missing_verdict": {
+    "exit_0": {
+      "status": "BLOCKED",
+      "stage": "gate_runner",
+      "reason": "缺失裁决文件 verdict.json (exit=0)，统一判 BLOCKED（不扣返修）"
+    },
+    "exit_1": {
+      "status": "BLOCKED",
+      "stage": "gate_runner",
+      "reason": "缺失裁决文件 verdict.json (exit=1)，统一判 BLOCKED（不扣返修）"
+    }
+  },
+  "slice_gate_checks": {
+    "nonempty_dir_reuse": {
+      "returncode": 2,
+      "status": "BLOCKED",
+      "stage": "gate_init",
+      "reason": "拒绝复用非空证据目录: /tmp/tmpi7sli3lv/reused_dir",
+      "stale_preserved": true
+    },
+    "docker_qa_rc0_vs_passed_false": {
+      "error": "server_qa 状态或任务标识未确认通过 (passed=False)"
+    },
+    "docker_qa_rc0_vs_server_verdict_failed": {
+      "error": "server_verdict 未确认通过 (FAILED, exit=1)"
+    },
+    "docker_qa_rc1_vs_passed_true": {
+      "status": "BLOCKED",
+      "stage": "docker_qa",
+      "reason": "Docker QA 退出码与当次证据冲突 (rc=1, passed=True)"
+    }
+  },
+  "unique_out_dir_on_restart": {
+    "run_a": "/tmp/tmpi7sli3lv/ev_alloc/SLICE-NEG-TEST/run_20261118_172521_880835_2b6f99a2_r01",
+    "run_b": "/tmp/tmpi7sli3lv/ev_alloc/SLICE-NEG-TEST/run_20261118_172521_880887_6f4cf476_r01",
+    "distinct": true
+  }
+}

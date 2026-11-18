@@ -1,0 +1,14 @@
+=== Checkout repository 'test_harness' from ssh://git@192.168.77.79:2222/sushaohua/test_harness.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/test_harness.git -> 0
+$ git fetch origin 371a3a3de7e878d4035388ccab70ef4bc84f9046 -> 0
+From ssh://192.168.77.79:2222/sushaohua/test_harness
+ * branch            371a3a3de7e878d4035388ccab70ef4bc84f9046 -> FETCH_HEAD
+$ git checkout 371a3a3de7e878d4035388ccab70ef4bc84f9046 -> 0
+=== Checkout repository 'agents' from ssh://git@192.168.77.79:2222/sushaohua/agents.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/agents.git -> 0
+$ git fetch origin 30ecc6586a861c1543a97804cfe0600bb4778efb -> 0
+From ssh://192.168.77.79:2222/sushaohua/agents
+ * branch            30ecc6586a861c1543a97804cfe0600bb4778efb -> FETCH_HEAD
+$ git checkout 30ecc6586a861c1543a97804cfe0600bb4778efb -> 0

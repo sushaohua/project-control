@@ -1,0 +1,11 @@
+slice_id: "SLICE-NEG-MISS"
+batch_id: "BATCH-GATE-REWORK"
+revision: 1
+profile: "host-software"
+subtasks: []
+input_repositories: ["test_harness"]
+ledger_ref: "project-control/docs/evidence/gate_cruise_rework_20261118_165207/neg_ledger.md"
+evidence_root: "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs_neg"
+plan_ref: "project-control/docs/planning/gate_verdict_and_cruise_judgment_implementationplan_20261118_151000.md"
+contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
+requires_hil_immediately: false

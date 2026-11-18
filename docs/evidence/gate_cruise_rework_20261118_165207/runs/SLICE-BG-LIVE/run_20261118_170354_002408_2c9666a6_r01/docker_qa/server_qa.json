@@ -1,0 +1,73 @@
+{
+  "task_id": "SLICE-BG-LIVE",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "profile": "host-software",
+  "platform_inputs": {},
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "36193d44c3e3",
+    "id": "SLICE-BG-LIVE_run_170418_20261118_090418",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170418_20261118_090418",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "36193d44c3e3b3c8c828c28d38445a21e47d9255ebbb3202be007251ae2fc5c8",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-18T09:04:34.094420856Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170418_20261118_090418",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170418_20261118_090418_output",
+          "Destination": "/output",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170354_002408_2c9666a6_r01/docker_qa/server_lock.json",
+    "sha256": "e3e14e02daf545d38aa0c8424bdb3974412c400e754bdd18e7c04610fef91c0d"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170354_002408_2c9666a6_r01/docker_qa/checkout.log",
+    "sha256": "dcb33a477e97d014fc5290cb37330dd44c43e4e05bb7769eede5e649df41b9cd"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170354_002408_2c9666a6_r01/docker_qa/runtime.log",
+    "sha256": "f62b3e33f514adf2db42ff41bbf61bbc787f26b8ce9beacdc6e7258027734b7c"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170354_002408_2c9666a6_r01/docker_qa/server_verdict.json",
+    "sha256": "0ebb9574f1f45bf0b7b4c8b968b1e5b1e3569c77a0139137f7e0cbb034746040"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "python3 static_checks/minimcproto/check_opcode_alignment.py",
+      "exit_code": "0",
+      "subpath": "test_harness",
+      "duration": "0.09s",
+      "output": "[PASS] MiniMCProto v2.0 (Rev 2.0.4) 5-endpoint opcode alignment, reverse uniqueness, >=520B payload capacity, and negative self-tests verified."
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-18T09:04:37.181204+00:00"
+}

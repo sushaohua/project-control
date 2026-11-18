@@ -1,0 +1,5 @@
+[QA VERDICT] Sandbox QA execution failed | Evidence bundle saved to: project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170042_997892_f9b3454f_r01/docker_qa
+[SERVER QA REF] {
+  "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170042_997892_f9b3454f_r01/docker_qa/server_qa.json",
+  "sha256": "bff3ce23da9b0e78317adce2a36e1df369c97c73b15095d4ba9ce1ae1d8af54e"
+}

@@ -1,0 +1,69 @@
+{
+  "rework_target": "6d52ac8f (V2 门禁三态与巡航裁决机制三项返修)",
+  "plan": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/planning/gate_verdict_and_cruise_judgment_implementationplan_20261118_151000.md",
+  "modified_files": [
+    "project-control/docs/planning/gate_verdict_and_cruise_judgment_implementationplan_20261118_151000.md",
+    "project-control/tools/gates/slice_gate.py",
+    "project-control/tools/workflow/run_slice_batch.py",
+    "project-control/tools/test_v2_gates.py"
+  ],
+  "line_budget_check": {
+    "sync_contracts.py": 195,
+    "gates/__init__.py": 1,
+    "gates/fast_gate.py": 203,
+    "gates/codex_review.py": 128,
+    "gates/slice_gate.py": 195,
+    "workflow/run_slice_batch.py": 178,
+    "prod_total_lines": 900,
+    "prod_limit": 900,
+    "test_v2_gates.py": 220,
+    "all_total_lines": 1120,
+    "all_limit": 1150
+  },
+  "static_and_unit_checks": {
+    "unittest_cmd": "/usr/bin/python3 -m unittest discover -s project-control/tools -p \"test_v2*.py\" -v",
+    "unittest_result": "Ran 9 tests in 4.186s -> OK",
+    "fast_gate_cmd": "/usr/bin/python3 project-control/tools/gates/fast_gate.py --workspace . --files ...",
+    "fast_gate_exit_code": 0
+  },
+  "agy_live_background_gate_e2e": {
+    "workflow_task_id": "3896821b-3820-46cd-80f7-a2c41178c8e2/task-1248",
+    "runner_subagent_id": "7eedae60-352a-4beb-af64-71091a61cf3d",
+    "runner_bg_task_id": "7eedae60-352a-4beb-af64-71091a61cf3d/task-2",
+    "bg_transition_confirmed": "17:26:02 running as a background task -> 17:27:43 Command exited with code 0.",
+    "status": "PASSED",
+    "slice_id": "SLICE-BG-LIVE",
+    "codex_session": "01a1edfa-c950-76c0-b16e-58241be15498",
+    "blocker_count": 0,
+    "gate_exit_rc": 0,
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_172558_293472_3e6ee732_r01/verdict.json",
+    "task_log": "file:///home/sushaohua/.gemini/antigravity-cli/brain/3896821b-3820-46cd-80f7-a2c41178c8e2/.system_generated/tasks/task-1248.log"
+  },
+  "agy_live_missing_verdict_test": {
+    "workflow_task_id": "3896821b-3820-46cd-80f7-a2c41178c8e2/task-1241",
+    "slice_id": "SLICE-NEG-MISS",
+    "status": "BLOCKED",
+    "remediation_used": 0,
+    "reason": "缺失裁决文件 verdict.json (exit=1)，统一判 BLOCKED（不扣返修）",
+    "evidence_dir": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs_neg/SLICE-NEG-MISS/run_20261118_172531_728164_321cbd6b_r01",
+    "task_log": "file:///home/sushaohua/.gemini/antigravity-cli/brain/3896821b-3820-46cd-80f7-a2c41178c8e2/.system_generated/tasks/task-1241.log"
+  },
+  "agy_negative_conflict_and_reuse_checks": {
+    "artifact": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/gate_cruise_rework_20261118_165207/negative_checks.json",
+    "verified_cases": [
+      "cruise exit=1 vs verdict=PASSED -> BLOCKED",
+      "cruise exit=0 vs verdict=FAILED -> BLOCKED",
+      "cruise exit=0 PASSED vs server_qa.passed=False -> BLOCKED (docker_qa)",
+      "cruise exit=0 PASSED (stage=codex) missing server_qa.json -> BLOCKED (docker_qa)",
+      "missing verdict.json under exit=0 and exit=1 -> BLOCKED (zero rework)",
+      "consecutive restarts allocate distinct timestamps+UUID run directories",
+      "slice_gate non-empty --out-dir reuse refused -> exit 2 BLOCKED (gate_init), stale files untouched",
+      "slice_gate._verify_qa_evidence rejects passed=False / server_verdict=FAILED even when rc=0",
+      "slice_gate._run_docker_qa rejects rc=1 vs server_qa.passed=True as BLOCKED"
+    ]
+  },
+  "cleanliness_check": {
+    "project_control_slices_ledger_untouched": true,
+    "business_and_sdk_repos_clean": true
+  }
+}

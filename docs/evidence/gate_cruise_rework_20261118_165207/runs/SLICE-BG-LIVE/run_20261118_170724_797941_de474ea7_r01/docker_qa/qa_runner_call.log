@@ -1,0 +1,5 @@
+[QA VERDICT] All sandbox tests passed | Evidence bundle saved to: project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170724_797941_de474ea7_r01/docker_qa
+[SERVER QA REF] {
+  "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170724_797941_de474ea7_r01/docker_qa/server_qa.json",
+  "sha256": "5af51c4a84275388977e3a747e02fb1495f95a996033be2e41584b190612b48c"
+}

@@ -1,0 +1,73 @@
+{
+  "task_id": "SLICE-BG-LIVE",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "profile": "host-software",
+  "platform_inputs": {},
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "99c370069478",
+    "id": "SLICE-BG-LIVE_run_170110_20261118_090110",
+    "image": "qa-sandbox:20261029",
+    "path": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170110_20261118_090110",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "99c370069478c28c48db72c6d51d2ad346b2ba9fdbf162059650080a86330460",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-18T09:01:12.880192187Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170110_20261118_090110",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/SLICE-BG-LIVE_run_170110_20261118_090110_output",
+          "Destination": "/output",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170042_997892_f9b3454f_r01/docker_qa/server_lock.json",
+    "sha256": "dd57d2953e729d41645c11522a451122177af614be18fadc6a6af8fbe3233870"
+  },
+  "checkout_log": {
+    "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170042_997892_f9b3454f_r01/docker_qa/checkout.log",
+    "sha256": "b202b748e30bc3b07598b383cd1865b8a674ce6bde7a635928ac466bc95088a8"
+  },
+  "runtime_log": {
+    "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170042_997892_f9b3454f_r01/docker_qa/runtime.log",
+    "sha256": "0c549cab0df3d8ca11e14f2c764bfa2f376c72237c90969940af802a2a3b2f44"
+  },
+  "server_verdict": {
+    "path": "project-control/docs/evidence/gate_cruise_rework_20261118_165207/runs/SLICE-BG-LIVE/run_20261118_170042_997892_f9b3454f_r01/docker_qa/server_verdict.json",
+    "sha256": "4ff285f8b7b51f7a75e06444f4525fd4bebb4313692f42c512f532e53737d0cb"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "python3 static_checks/minimcproto/check_opcode_alignment.py",
+      "exit_code": "1",
+      "subpath": "test_harness",
+      "duration": "0.12s",
+      "output": "[FAIL] No header file found among candidates: ('printer-soc/contracts/twin/telemetry_types.h', 'printer-soc/core/forward/minimc/codec.h')\n[FAIL] No header file found among candidates: ('mcu-p3/common/protocol/minimc_proto_defs.h', 'mcu-p3/motion-controller-mcu/project/inc/minimc_proto.h')\n[FAIL] No header file found among candidates: ('mcu-p3/common/protocol/minimc_proto_defs.h', 'mcu-p3/color-engine-mcu/io_toggle/inc/minimc_proto.h', 'mcu-p3/color-engine-mcu/io_toggle/inc/usart.h')\n[FAIL] No header file found among candidates: ('boot/bootloadermc/bootloader/inc/boot_uart_ota.h', 'boot/bootloadermc/project/inc/minimc_boot_proto.h')\n[FAIL] No header file found among candidates: ('boot/bootloaderth/inc/iap.h', 'boot/bootloaderth/project/inc/minimc_boot_proto.h')"
+    }
+  ],
+  "passed": false,
+  "timestamp": "2026-11-18T09:01:15.786227+00:00"
+}

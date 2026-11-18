@@ -1,0 +1,1 @@
+{"slice_id":"SLICE-BG-LIVE","decision":"APPROVED","axis_spec_realism":"三项验收均有证据支持：integration.log 记录五端契约校验 PASS；server_verdict.json 与 runtime.log 显示只读容器内静态检查通过；六个输入仓均与锁定提交一致且工作区干净。","axis_embedded_safety":"容器证据显示源码挂载为只读，静态协议检查通过；未发现嵌入式安全阻断项。本次审查未覆盖硬件运行时行为。","findings":[]}
