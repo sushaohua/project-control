@@ -2,8 +2,20 @@
 
 - **角色**：`ENG-AP`
 - **唯一目标仓与分支**：`printer-soc` / `main`
-- **Candidate Commit**：`c2467833eaf40c0a2dccf9ffd4171280e1e35f45`（含主实现 `9875c9f6`、沙箱路径修复 `a94419ea` 与 S6-002/DEC-SCREEN-05 测试补齐 `c2467833eaf40c0a2dccf9ffd4171280e1e35f45`，已推送至 `origin/main`）
+- **Candidate Commit**：`595eeee47a1968515333ebfcef88f4fff223a74d`（含主实现 `9875c9f6`、沙箱路径修复 `a94419ea`、S6-002/DEC-SCREEN-05 测试补齐 `c2467833` 与双节点全断连超时自愈回归 `595eeee47a1968515333ebfcef88f4fff223a74d`，已推送至 `origin/main`）
 - **基线提交**：`888d389c`
+
+### r04 Codex BLOCKER (`SLICE-06-B1`) 修复补充：串口可打开但 MC/TH 双超时全断连冷启动自愈
+- 仅修改 `printer-soc/tests/forward/startup/test_startup_fail_fast.py`（零新增文件，严守 `<=50` 行/函数、`<=4` 入参、全中文 docstring）：
+  1. `StartupModel.respond()` 新增 `both_timeout` 故障分支：`self.fault == 'both_timeout' and node in (2, 3)` 时 MC 与 TH 均静默丢弃 `0x01` 版本探测；
+  2. `scenarios`、`fault_map` 与 `monitor_signals` 新增 `'offline_allow_both_timeout': 'both_timeout'`，并在 `verify_both_timeout_recovery` 与 `evaluate_scenario` 完成全断连降级存活与双端自愈闭环校验：
+     - 拉起 `forward_service_daemon --allow-offline-start` 前先启动 `dbus-monitor`，确认服务降级存活（`mode=OFFLINE_DEGRADED`）、`GetPortStatus` 为 `true`（串口已打开，区别于 `open_failure`），且 `dbus_signals.log` 同时捕获 **node=1** 与 **node=2** 的 `LinkStateChanged(false, "STARTUP_PROBE_FAILED")`；
+     - 拉起真实 `device_manager_daemon`，确认 DM 实际轮询 MC `(2, 1)` 与 TH `(3, 1)` 且 `DM.GetVersionInfo()` 初始双端 `mc`/`th` 均离线；
+     - 清零 `model.fault = ''`（**严禁手动调用 `ForwardInterface.QueryVersion`**），纯等待 DM `500ms` 轮询自动恢复 `mc` 与 `th` 双端 `ONLINE`，并捕获 `LinkStateChanged(1, true, "OK")` 与 `LinkStateChanged(2, true, "OK")`。
+- r04 终版 `595eeee47a1968515333ebfcef88f4fff223a74d` 实测汇总（已清理 `/tmp/s6_b1_build`，`printer-soc` 洁净无残留）：
+  - `python3 project-control/tools/gates/fast_gate.py --workspace . --slice project-control/slices/SLICE-06.yaml`：PASS (`0`)
+  - `python3 printer-soc/tests/forward/startup/test_startup_fail_fast.py printer-soc /tmp/s6_b1_build/bin printer-soc/third_party/install`：PASS (`9/9`，含 `offline_allow_both_timeout`：`requests: [[2, 1], [2, 1], [3, 1], [2, 1], [3, 1]]`)
+  - `ctest --test-dir /tmp/s6_b1_build -R forward_startup_fail_fast --output-on-failure`：PASS (`1/1`, `8.24 sec`)
 
 ### r02 Codex S6-002 与 DEC-SCREEN-05 一致性测试补齐
 - 定向修复与补齐（仅改动 `printer-soc` 内 2 个测试文件）：
