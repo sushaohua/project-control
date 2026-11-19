@@ -276,11 +276,17 @@ def _link_repo_rules(sandbox_dir: Path, repo_name: str, subdir: str) -> None:
     agents_dir = sandbox_dir / "agents" / subdir
     if not repo_dir.is_dir() or not agents_dir.is_dir():
         return
+    exclude = repo_dir / ".git/info/exclude"
+    lines = exclude.read_text(encoding="utf-8").splitlines() if exclude.is_file() else []
+    added = []
     for entry in ("AGENTS.md", ".agents"):
-        src = agents_dir / entry
-        dst = repo_dir / entry
+        src, dst = agents_dir / entry, repo_dir / entry
         if src.exists() and not dst.exists() and not dst.is_symlink():
             dst.symlink_to(os.path.relpath(src, repo_dir), target_is_directory=src.is_dir())
+            if f"/{entry}" not in lines:
+                added.append(f"/{entry}")
+    if added and exclude.parent.is_dir():
+        exclude.write_text("\n".join(lines + added) + "\n", encoding="utf-8")
 
 
 def prepare_sandbox_rule_links(sandbox_dir: Path, targets: List[RepositoryTarget],
