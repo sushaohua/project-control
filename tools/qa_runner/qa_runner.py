@@ -622,7 +622,7 @@ def system_profile_timeouts(config: dict) -> Dict[str, int]:
 
 def run_profile_checks(sandbox_dir: Path, req: QARunRequest, cid: str, inputs: dict) -> CommandResult:
     """在 cid 内检查 req 的 inputs；sandbox_dir 仅定位只读输入，返回真实命令结果并记录校验身份。"""
-    command = ("PYTHONDONTWRITEBYTECODE=1 python3 "
+    command = ("REPO_TRACE=0 PYTHONDONTWRITEBYTECODE=1 python3 "
                "test_harness/static_checks/platform/check_platform_inputs.py --workspace /workspace")
     result = run_command_in_sandbox(sandbox_dir, command, "", cid)
     try:
@@ -778,7 +778,7 @@ class QARunner:
         if "c308l" not in roots:
             raise QARunnerError("C308L build workspace is missing")
         # 每条命令继承明确 SDK 输入；系统构建只采用独立副本，源树仍为只读挂载。
-        prefix = "env C308L_SDK_ROOT=" + shlex.quote(roots["c308l"]) + " bash -c "
+        prefix = "env REPO_TRACE=0 C308L_SDK_ROOT=" + shlex.quote(roots["c308l"]) + " bash -c "
         commands = [dict(item, command=prefix + shlex.quote(item["command"])) for item in req.commands]
         runtime, builds, tests, passed = self._run_sandbox_steps(
             sandbox_dir, replace(req, commands=commands), cid)
