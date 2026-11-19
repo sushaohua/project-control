@@ -1,4 +1,7 @@
 __pycache__/
 *.pyc
 *.tmp
+docs/evidence/**/docker_qa/artifacts/*.tar.gz
+docs/evidence/**/docker_qa/artifacts/*.ubi
+docs/evidence/**/docker_qa/artifacts/*.img
 

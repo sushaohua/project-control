@@ -15,7 +15,7 @@ from gates import codex_review, fast_gate
 
 _STATUS_EXIT = {"PASSED": 0, "FAST-PASSED": 0, "FAILED": 1, "BLOCKED": 2}
 _STAGE_IDX = {"fast_gate": 0, "integration": 1, "docker_qa": 2, "codex": 3}
-_EVIDENCE_ITEMS = (("fast_gate_log", "fast_gate.log", 0), ("integration_log", "integration.log", 1), ("qa_runner_log", "docker_qa/qa_runner_call.log", 2), ("server_qa_json", "docker_qa/server_qa.json", 2), ("server_verdict_json", "docker_qa/server_verdict.json", 2), ("docker_runtime_log", "docker_qa/runtime.log", 2), ("docker_checkout_log", "docker_qa/checkout.log", 2), ("codex_final_json", "codex/final.json", 3), ("codex_jsonl", "codex/codex.jsonl", 3), ("codex_stderr", "codex/codex.stderr", 3))
+_EVIDENCE_ITEMS = (("fast_gate_log", "fast_gate.log", 0), ("integration_log", "integration.log", 1), ("qa_runner_log", "docker_qa/qa_runner_call.log", 2), ("server_qa_json", "docker_qa/server_qa.json", 2), ("server_verdict_json", "docker_qa/server_verdict.json", 2), ("docker_runtime_log", "docker_qa/runtime.log", 2), ("docker_checkout_log", "docker_qa/checkout.log", 2), ("build_plan_json", "docker_qa/artifacts/build-plan.json", 2), ("release_manifest_json", "docker_qa/artifacts/release-manifest.json", 2), ("codex_final_json", "codex/final.json", 3), ("codex_jsonl", "codex/codex.jsonl", 3), ("codex_stderr", "codex/codex.stderr", 3))
 
 def load_slice_spec(slice_path: Path) -> dict:
     """加载并校验垂直切片 YAML 配置必填字段。"""
@@ -123,8 +123,8 @@ def _run_docker_qa(workspace: Path, spec: dict, commits: Dict[str, str], out_dir
 def _build_review_prompt(spec: dict, commits: Dict[str, str], qa_proof: dict, int_log: str = "") -> str:
     """构造仅含精确元数据、验收条款与客观沙箱摘要的双轴冷审提示词。"""
     criteria = "\n".join(f"- {item}" for item in spec.get("acceptance_criteria", []))
-    vp, rp = qa_proof.get("server_verdict", {}).get("path", ""), qa_proof.get("runtime_log", {}).get("path", "")
-    return f"独立只读双轴冷审切片: {spec['slice_id']}\n契约: {spec.get('contract_ref')}\n方案: {spec.get('plan_ref')}\n锁定提交: {json.dumps(commits, ensure_ascii=False)}\n容器: {qa_proof.get('sandbox', {}).get('container_id', 'ok')}\n当前沙箱产物: server_verdict={vp} runtime_log={rp} integration_log={int_log}\n验收判据:\n{criteria}\n请严格按 BLOCKER / MINOR / NIT 分级。"
+    vp, rp, af = qa_proof.get("server_verdict", {}).get("path", ""), qa_proof.get("runtime_log", {}).get("path", ""), qa_proof.get("artifacts") or {}
+    return f"独立只读双轴冷审切片: {spec['slice_id']}\n契约: {spec.get('contract_ref')}\n方案: {spec.get('plan_ref')}\n锁定提交: {json.dumps(commits, ensure_ascii=False)}\n容器: {qa_proof.get('sandbox', {}).get('container_id', 'ok')}\n当前沙箱产物: server_verdict={vp} runtime_log={rp} integration_log={int_log} archived_artifacts={json.dumps(af, ensure_ascii=False)}\n验收判据:\n{criteria}\n请严格按 BLOCKER / MINOR / NIT 分级。"
 
 def append_ledger_entry(ledger_path: Path, entry: dict) -> None:
     """将通过四阶漏斗的切片记录与 `MINOR` 技术债幂等追加写入 `slices/ledger.md`。"""

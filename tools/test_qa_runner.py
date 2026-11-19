@@ -567,6 +567,33 @@ class PlatformProfileTest(unittest.TestCase):
                 self.assertIn("C308L_SDK_ROOT=" + root, run.call_args.args[1].commands[0]["command"])
                 self.assertEqual(run.call_args.args[-1], "cid")
 
+    def test_system_profile_archives_deliverables_and_skips_symlinks(self):
+        """系统构建将普通清单与交付制品归档至 artifacts 并计算真实摘要，同时跳过符号链接。"""
+        with tempfile.TemporaryDirectory(prefix="qa_archive_") as directory:
+            base = Path(directory)
+            box = base / "SLICE-08_run_1"
+            out_tree = box.with_name(box.name + "_output") / "slice-08"
+            out_tree.mkdir(parents=True)
+            (out_tree / "build-plan.json").write_text('{"schema_version": 1}\n', encoding="utf-8")
+            (out_tree / "release-manifest.json").write_text('{"tag": "v0.1.0"}\n', encoding="utf-8")
+            (out_tree / "rootfs.ubi").write_bytes(b"UBI#test-payload")
+            (out_tree / "aml_upgrade_package.img").symlink_to("/etc/hosts")
+            sys_out = base / "ev_sys"
+            res_sys = QARunResult("SLICE-08", 1, "r1", box.name, str(box), True, profile="c308l-system")
+            refs = write_evidence_bundle(sys_out, res_sys, {"repositories": []}, {"checkout": "", "runtime": ""})
+            qa_doc = json.loads(Path(refs["server_qa"]["path"]).read_text(encoding="utf-8"))
+            self.assertEqual(set(qa_doc["artifacts"]), {"build-plan.json", "release-manifest.json", "rootfs.ubi"})
+            for name, meta in qa_doc["artifacts"].items():
+                archived = sys_out / "artifacts" / name
+                self.assertTrue(archived.is_file())
+                self.assertEqual(meta["bytes"], archived.stat().st_size)
+                self.assertEqual(meta["sha256"], compute_file_sha256(archived))
+            self.assertFalse((sys_out / "artifacts/aml_upgrade_package.img").exists())
+            host_out = base / "ev_host"
+            res_host = QARunResult("SLICE-08", 1, "r2", box.name, str(box), True, profile="host-software")
+            refs_host = write_evidence_bundle(host_out, res_host, {"repositories": []}, {"checkout": "", "runtime": ""})
+            self.assertNotIn("artifacts", json.loads(Path(refs_host["server_qa"]["path"]).read_text(encoding="utf-8")))
+
 
 class MethodologicalInvariantsTest(unittest.TestCase):
     """通过 AST 核验自研函数规模和参数数目。"""

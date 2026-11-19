@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 from typing import Dict, List, Optional, Tuple, Union
@@ -394,11 +395,45 @@ def build_server_verdict_data(run_result: QARunResult) -> dict:
     }
 
 
+SYSTEM_ARTIFACT_NAMES = (
+    "build-plan.json",
+    "build-receipt.json",
+    "package-receipt.json",
+    "image-receipt.json",
+    "release-manifest.json",
+    "printer-soc-rootfs.tar.gz",
+    "rootfs.ubi",
+    "aml_upgrade_package.img",
+)
+
+
+def archive_system_artifacts(sandbox_dir: Path, output_dir: Path, task_id: str) -> Dict[str, dict]:
+    """将系统沙箱 `/output/<task_id>` 下的清单与交付制品归档至 `output_dir/artifacts` 并流式计算 SHA256。"""
+    src_root = sandbox_dir.with_name(sandbox_dir.name + "_output") / sanitize_path_component(task_id).lower()
+    if not src_root.is_dir():
+        return {}
+    archived = {}
+    dst_root = output_dir / "artifacts"
+    for name in SYSTEM_ARTIFACT_NAMES:
+        src = src_root / name
+        if not (src.is_file() and not src.is_symlink()):
+            continue
+        dst_root.mkdir(parents=True, exist_ok=True)
+        dst = dst_root / name
+        shutil.copy2(src, dst)
+        hasher = hashlib.sha256()
+        with dst.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1048576), b""):
+                hasher.update(chunk)
+        archived[name] = {"path": str(dst), "bytes": dst.stat().st_size, "sha256": hasher.hexdigest()}
+    return archived
+
+
 def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str]]) -> dict:
     """构造满足 delivery_checks 门禁要求的标准 server_qa.json 证明字典。"""
     cid = run_result.container_id or run_result.sandbox_id
     img = run_result.container_image or "ubuntu:20.04"
-    return {
+    proof = {
         "task_id": run_result.task_id,
         "task_revision": run_result.task_revision,
         "source": "server-pinned-commits",
@@ -424,6 +459,9 @@ def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str
         "passed": run_result.passed,
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     }
+    if refs.get("artifacts"):
+        proof["artifacts"] = refs["artifacts"]
+    return proof
 
 
 def write_evidence_bundle(output_dir: Path, run_result: QARunResult,
@@ -444,6 +482,10 @@ def write_evidence_bundle(output_dir: Path, run_result: QARunResult,
         "runtime_log": runtime_ref,
         "server_verdict": verdict_ref,
     }
+    if run_result.profile == "c308l-system" and run_result.sandbox_path:
+        archived = archive_system_artifacts(Path(run_result.sandbox_path), output_dir, run_result.task_id)
+        if archived:
+            refs["artifacts"] = archived
     proof = build_server_qa_proof(run_result, refs)
     qa_ref = create_evidence_ref(output_dir / "server_qa.json",
                                  json.dumps(proof, indent=2).encode("utf-8"))
