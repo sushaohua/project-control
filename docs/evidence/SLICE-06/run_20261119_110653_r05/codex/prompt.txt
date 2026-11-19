@@ -1,0 +1,12 @@
+独立只读双轴冷审切片: SLICE-06
+契约: project-control/contracts/minimc_v2_contract.yaml
+方案: project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md
+锁定提交: {"printer-soc": "595eeee47a1968515333ebfcef88f4fff223a74d", "project-control": "c1221e04ff810f43ed302d738dd6effcc203f864", "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb", "test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046"}
+容器: 4a429a9f463b
+当前沙箱产物: server_verdict=project-control/docs/evidence/SLICE-06/run_20261119_110653_r05/docker_qa/server_verdict.json runtime_log=project-control/docs/evidence/SLICE-06/run_20261119_110653_r05/docker_qa/runtime.log integration_log=project-control/docs/evidence/SLICE-06/run_20261119_110653_r05/integration.log
+验收判据:
+- Forward 保留无 --allow-offline-start 原生 exit=2/3 fail-fast 契约；--allow-offline-start 下全断连及 MC 在线/TH 离线半断连均降级存活并发射 LinkStateChanged(false, STARTUP_PROBE_FAILED)，非写刷期放行只读 0x01 QueryVersion 并在恢复 App 后自愈；Docker host-software 沙箱内通过真实 Forward + DM 500ms 轮询自动触发 allow_open=true 重开串口并恢复双端 ONLINE 闭环
+- HelixScreen 走进程内原生 AisocConnection（零 ui_gateway / --test / mock_demo），AboutSettingsOverlay 绑定 AP(/etc/printer-soc/version.json)+MC+TH 版本与 App/Boot 模式，EmergencyStop 明确区分 后台已锁定(BUSY) 与 设备已确认急停
+- 按 DEC-SCREEN-05 在 Docker host-software 沙箱内验证编译配置、页面/XML注册守卫与 C308L 打包清单三方规则一致性；并按用户批准的选项 B 在宿主机针对锁定 printer-soc 提交与锁定 sdk/c308l 实跑 C308L ARM 交叉构建、受控动态链接打包、readelf -h -d（NEEDED/RUNPATH 闭合）与 <=44MiB 校验，完整原始证据归档于 project-control/docs/evidence/SLICE-06/host_c308l_arm_build_and_pack.log（容器级 c308l-app 待基础 QA 镜像与安全锁批准后另行切换）
+- 统一 S90printer-soc / c308l_services.py 支持非阻塞 start / stop / status / dev-mode 与串口/fb0 零残留互斥；contracts/twin/dbus_interfaces.xml 与服务实现同步；四阶门禁 + 独立 Codex 冷审 0 BLOCKER
+请严格按 BLOCKER / MINOR / NIT 分级。

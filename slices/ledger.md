@@ -15,9 +15,12 @@
 
 | 2026-11-18 13:01:24 | BATCH-OTA-ACCEPTANCE-01 | SLICE-05 | HIL-Verified | `project-control:1eeeaa1,agents:30ecc65,test_harness:371a3a3,printer-soc:888d389,mcu-p3:7b623d9,boot/bootloadermc:3e01c00,boot/bootloaderth:1a03513; inputs=d9be5022f99c8609d8d6e4e8876bb8ebae74e00887efdd8fe273a6a9c592e4e9` | `a615c1036923` | `01a1ed06-c06d-7711-8584-5f543ceffdfc` | `35f9f4b3e3ec733a` |
 
+| 2026-11-19 11:11:43 | BATCH-HELIX-P0-01 | SLICE-06 | SW-Verified | `printer-soc:595eeee,project-control:c1221e0,agents:30ecc65,test_harness:371a3a3; inputs=6c71809c88d325523d1bf140cbefe12694a72a421f6da6b46b7a0fd3cfe0b728` | `4a429a9f463b` | `01a1f1c6-d2a0-7510-b515-5ff33b747491` | `2c77f26a2adad8a8` |
+
 ## 2. 非阻断技术债登记表 (`MINOR` Findings)
 
 | 时间戳 (UTC+8) | 切片 ID | 审计轴 | 代码位置 | 问题描述与后续收敛建议 |
 | :--- | :--- | :--- | :--- | :--- |
 | 2026-11-18 09:40:38 | SLICE-01 | `spec_realism` | `printer-soc/contracts/twin/telemetry_types.h:410` | ATSG trailer 的 version_code 注释仍称编码为 (major << 8) | minor，与契约及实际解析使用的高位 major/minor 布局不一致。当前传递和 Stage 4 解析按新布局工作，属于文档残留；建议更正以免后续维护误用。 |
 | 2026-11-18 11:49:29 | SLICE-03 (`HIL-FINDING-02`) | `embedded_safety` | `boot/bootloadermc/bootloader/src/boot_uart_ota.c:52,206-223; cmake/linker/at32f435_bootloader.ld:14` | MC Bootloader `.bss` 变量 `s_boot_salt` 软复位清零致 `Boot->Boot` 连续软复位 `boot_id` 恒为 `0xC1E6CD05`，且 `-Os` 下 `main()` 栈帧压入 `0x2005FFF0` 覆盖 `UPG2`、当前依赖 `2000ms` 探测窗进入 Boot（正常 `App->Boot->新App` 三态跃迁不受影响）。经用户 2026-11-18 评估确认风险可承受、首版豁免不修以规避 `0x08000000` SWD 单点擦写风险。 |
+| 2026-11-19 11:11:43 | SLICE-06 | `spec_realism` | `printer-soc/tests/packaging/test_product_package.py:245-268` | 监管器测试只在没有活动子进程、UART/fb0 节点不存在的夹具中验证 dev-mode/status/inhibit；未直接启动并停止监管器及真实子进程来验证退出后 UART 与 fb0 无残留。实现中有停止等待和资源占用检查，但该生命周期闭环缺少运行时回归覆盖。 |
