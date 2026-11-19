@@ -1,0 +1,38 @@
+
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.27kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/qa-sandbox:20261029
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/4] FROM docker.io/library/qa-sandbox:20261029
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 53.59MB 0.1s done
+#5 DONE 0.1s
+
+#6 [2/4] RUN printf '%s\n'         'deb https://archive.ubuntu.com/ubuntu/ focal main universe'         'deb https://archive.ubuntu.com/ubuntu/ focal-updates main universe'         'deb https://security.ubuntu.com/ubuntu/ focal-security main universe' > /etc/apt/sources.list     && apt-get -o Acquire::Retries=1 -o Acquire::https::Timeout=20         -o Acquire::Languages=none -o APT::Update::Error-Mode=any update     && DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=1 -o Acquire::https::Timeout=20         install -y --no-install-recommends         autoconf=2.69-11.1 automake=1:1.16.1-4ubuntu6         bc=1.07.1-2build1 bison=2:3.5.1+dfsg-1 cpio=2.13+dfsg-2ubuntu0.4         fakeroot=1.24-1 file=1:5.38-4 flex=2.6.4-6.2 gperf=3.1-1build1         libfakeroot=1.24-1 libglib2.0-0=2.64.6-1~ubuntu20.04.9         libmagic-mgc=1:5.38-4 libmagic1=1:5.38-4 libpopt0=1.16-14         libsigsegv2=2.12-2 libssl-dev=1.1.1f-1ubuntu2.24 libtool=2.4.6-14         m4=1.4.18-4 ninja-build=1.10.0-1build1 pkg-config=0.29.1-0ubuntu4         rsync=3.1.3-8ubuntu0.9 xxd=2:8.1.2269-1ubuntu5.32     && apt-get clean
+#6 CACHED
+
+#7 [3/4] COPY repo gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz /tmp/c308l-tools/
+#7 DONE 0.2s
+
+#8 [4/4] RUN cd /tmp/c308l-tools     && printf '%s\n'         '05f571deafd6ed6da0d20fa707dde29aa5624dbf35553d697a40dbdd4c8d178a  repo'         'e73d1886fb67d5a03c0ca5be14aeab6b7b7be3fce46ad1473ba864d5eb1d2545  gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz'         | sha256sum --check     && install -m 0755 repo /usr/local/bin/repo     && mkdir /opt/c308l-aarch64-elf     && tar -xJf gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz         --strip-components=1 -C /opt/c308l-aarch64-elf     && rm -f repo gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz
+#8 0.231 repo: OK
+#8 0.339 gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz: OK
+#8 DONE 3.1s
+
+#9 exporting to image
+#9 exporting layers
+#9 exporting layers 0.7s done
+#9 writing image sha256:e5c6a7cd550d101024d046ea88a0dae12e819c0ca63646dabcc1bf9155aa00d5 done
+#9 naming to docker.io/library/qa-sandbox:c308l-system-20261119-candidate-r2 done
+#9 DONE 0.7s

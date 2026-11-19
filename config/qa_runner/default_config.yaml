@@ -10,7 +10,7 @@ sandbox:
   image: qa-sandbox:20261029
   # 目标 profile 必须填入独立接受的准确镜像 ID；未接受前保持空值并阻塞目标构建。
   image_digest: null
-  c308l_system_image_digest: sha256:aea005ad99bec8304b484fb7c1311295af4fbc38c61cc7224d33449f1afcd628
+  c308l_system_image_digest: sha256:e5c6a7cd550d101024d046ea88a0dae12e819c0ca63646dabcc1bf9155aa00d5
   cleanup_after_run: false
   enforce_clean_checkout: true
 repositories:
