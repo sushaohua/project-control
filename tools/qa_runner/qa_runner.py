@@ -17,7 +17,7 @@ import re
 import shlex
 import subprocess
 import sys
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple, Union
 import urllib.parse
 
 import yaml
@@ -299,23 +299,36 @@ def prepare_sandbox_rule_links(sandbox_dir: Path, targets: List[RepositoryTarget
 DEFAULT_CMD_TIMEOUT = 300
 
 
+@dataclass(frozen=True)
+class ContainerCommand:
+    """绑定容器 ID 与当前命令的有界执行时间。"""
+
+    container_id: str
+    timeout_seconds: int
+
+
 def run_command_in_sandbox(sandbox_dir: Path, cmd: str, subpath: str = "",
-                           container_id: Optional[str] = None) -> CommandResult:
+                           container_id: Optional[Union[str, ContainerCommand]] = None) -> CommandResult:
     """在指定 Docker 容器内或隔离沙箱子目录中执行单条构建/测试命令并记录耗时与退出码。"""
     work_dir = validate_sandbox_subpath(sandbox_dir, subpath)
     start_time = datetime.datetime.now()
     if container_id:
+        limit = DEFAULT_CMD_TIMEOUT
+        if isinstance(container_id, ContainerCommand):
+            limit, container_id = container_id.timeout_seconds, container_id.container_id
         target_dir = f"/workspace/{subpath}".rstrip("/") if subpath else "/workspace"
         exec_cmd = ["docker", "exec", "-w", target_dir, container_id, "bash", "-c", cmd]
         try:
-            proc = subprocess.run(exec_cmd, text=True, capture_output=True, timeout=DEFAULT_CMD_TIMEOUT)
+            proc = subprocess.run(exec_cmd, text=True, capture_output=True, timeout=limit)
             dur = (datetime.datetime.now() - start_time).total_seconds()
             return CommandResult(command=cmd, cwd=target_dir, returncode=proc.returncode,
                                  stdout=proc.stdout, stderr=proc.stderr, duration_seconds=dur)
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as error:
             dur = (datetime.datetime.now() - start_time).total_seconds()
-            return CommandResult(command=cmd, cwd=target_dir, returncode=-1, stdout="",
-                                 stderr=f"Command timed out after {DEFAULT_CMD_TIMEOUT}s", duration_seconds=dur)
+            stdout = (error.stdout or b"").decode(errors="replace")
+            stderr = (error.stderr or b"").decode(errors="replace")
+            return CommandResult(command=cmd, cwd=target_dir, returncode=-1, stdout=stdout,
+                                 stderr=f"{stderr}\nCommand timed out after {limit}s", duration_seconds=dur)
     env = os.environ.copy()
     for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
         env.pop(key, None)
@@ -448,6 +461,12 @@ def load_yaml_config(config_path: Path) -> dict:
 def start_docker_sandbox(name: str, image: str, mount_dir: Path, read_only: bool = True) -> str:
     """以 name/image 启动容器；mount_dir 源码按 read_only 挂载，独立输出可写，返回容器 ID。"""
     mode = "ro" if read_only else "rw"
+    return _start_docker_sandbox(name, image, mount_dir, (mode, 3600))
+
+
+def _start_docker_sandbox(name: str, image: str, mount_dir: Path, options: Tuple[str, int]) -> str:
+    """启动具有指定挂载模式和存活上限的隔离容器。"""
+    mode, lifetime = options
     output_dir = mount_dir.with_name(mount_dir.name + "_output")
     output_dir.mkdir(mode=0o700, exist_ok=False)
     cmd = [
@@ -458,7 +477,7 @@ def start_docker_sandbox(name: str, image: str, mount_dir: Path, read_only: bool
         "-e", "QA_OUTPUT_DIR=/output",
         "-e", "C308L_SDK_WORK_ROOT=/output/sdk-worktrees",
         "-w", "/workspace",
-        image, "sleep", "3600",
+        image, "sleep", str(lifetime),
     ]
     proc = subprocess.run(cmd, text=True, capture_output=True, timeout=30)
     if proc.returncode != 0:
@@ -537,7 +556,10 @@ def _stage_profile_workspace(sandbox_dir: Path, req: QARunRequest, config: dict)
     data = {"schema_version": 2, "repositories": repositories, "repo_clients": clients}
     trusted = Path(__file__).resolve().parents[3] / "tools/sdk_workspace.py"
     raw = trusted.read_bytes()
-    accepted = (config.get("security") or {}).get("accepted_sdk_tool_sha256", "")
+    security = config.get("security") or {}
+    accepted = security.get("accepted_sdk_tool_sha256", "")
+    if req.profile == "c308l-system":
+        accepted = security.get("accepted_c308l_system_sdk_tool_sha256", accepted)
     digest = compute_bytes_sha256(raw)
     if not re.fullmatch(r"[0-9a-f]{64}", accepted or "") or accepted != digest:
         raise QARunnerError("SDK input tool lacks an accepted matching SHA256")
@@ -579,9 +601,23 @@ def accepted_profile_image(req: QARunRequest, config: dict) -> str:
     if req.profile == "host-software":
         return sandbox.get("image", "qa-sandbox:20261029")
     digest = sandbox.get("image_digest", "")
+    if req.profile == "c308l-system":
+        digest = sandbox.get("c308l_system_image_digest", digest)
     if not re.fullmatch(r"sha256:[0-9a-f]{64}", digest or ""):
         raise QARunnerError("C308L QA requires an accepted exact container image digest")
     return digest
+
+
+def system_profile_timeouts(config: dict) -> Dict[str, int]:
+    """读取有上界的系统构建时限，拒绝无效或可能关闭超时保护的配置。"""
+    configured = (config.get("timeouts") or {}).get("c308l_system", {})
+    if not isinstance(configured, dict):
+        raise QARunnerError("C308L system timeouts must be a mapping")
+    defaults = dict(build=DEFAULT_CMD_TIMEOUT, image=DEFAULT_CMD_TIMEOUT, test=DEFAULT_CMD_TIMEOUT, container=3600)
+    values = {kind: configured.get(kind, seconds) for kind, seconds in defaults.items()}
+    if any(type(value) is not int or not 1 <= value <= 7200 for value in values.values()):
+        raise QARunnerError("C308L system timeouts must be integer seconds between 1 and 7200")
+    return values
 
 
 def run_profile_checks(sandbox_dir: Path, req: QARunRequest, cid: str, inputs: dict) -> CommandResult:
@@ -657,17 +693,19 @@ class QARunner:
         runtime_logs = []
         build_results, test_results = [], []
         overall_passed = True
+        limits = system_profile_timeouts(self.config) if req.profile == "c308l-system" else {}
         for cmd_item in req.commands:
             cmd, subpath = cmd_item.get("command", ""), cmd_item.get("subpath", "")
-            is_test = cmd_item.get("kind", "test") == "test"
-            c_res = run_command_in_sandbox(sandbox_dir, cmd, subpath, cid)
+            kind = cmd_item.get("kind", "test")
+            scoped = ContainerCommand(cid, limits[kind]) if cid and kind in limits else cid
+            c_res = run_command_in_sandbox(sandbox_dir, cmd, subpath, scoped)
             res_dict = {
                 "command": cmd, "exit_code": str(c_res.returncode),
                 "subpath": subpath,
                 "duration": f"{c_res.duration_seconds:.2f}s",
                 "output": (c_res.stdout + "\n" + c_res.stderr).strip(),
             }
-            if is_test:
+            if kind == "test":
                 test_results.append(res_dict)
             else:
                 build_results.append(res_dict)
@@ -682,6 +720,11 @@ class QARunner:
         """在只读容器沙箱中执行完整的远端提交校验、全新检出与客观测试流程。"""
         validate_profile_request(req)
         img = accepted_profile_image(req, self.config)
+        limits = system_profile_timeouts(self.config) if req.profile == "c308l-system" else {}
+        if limits:
+            budget = sum(limits.get(item.get("kind", "test"), DEFAULT_CMD_TIMEOUT) for item in req.commands)
+            if limits["container"] <= budget + 2 * DEFAULT_CMD_TIMEOUT:
+                raise QARunnerError("C308L system container lifetime must cover SDK checks and all commands")
         self.verify_target_commits(req.targets)
         run_id = f"run_{datetime.datetime.now().strftime('%H%M%S')}"
         sandbox_dir = create_isolated_sandbox(self.sandbox_base, req.task_id, run_id)
@@ -695,7 +738,10 @@ class QARunner:
         platform_inputs = prepare_profile_inputs(sandbox_dir, req, self.config)
         # 2. 启动以只读模式挂载该沙箱快照的 Docker 容器执行构建与测试
         c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
-        cid = start_docker_sandbox(c_name, img, sandbox_dir, read_only=True)
+        if limits:
+            cid = _start_docker_sandbox(c_name, img, sandbox_dir, ("ro", limits["container"]))
+        else:
+            cid = start_docker_sandbox(c_name, img, sandbox_dir, read_only=True)
         try:
             r_logs, b_res, t_res, ok = self._run_container_steps(
                 sandbox_dir, req, {"cid": cid, "inputs": platform_inputs})

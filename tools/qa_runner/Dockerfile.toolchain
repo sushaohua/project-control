@@ -1,0 +1,25 @@
+# 基准镜像须先核对方案中记录的本地镜像 ID，再执行构建。
+FROM qa-sandbox:20261029
+
+# 固定 Ubuntu Focal 本次解析的工具和新增依赖，保留原有 AP 库。
+RUN apt-get -o Acquire::Retries=0 -o Acquire::http::Timeout=30 -o APT::Update::Error-Mode=any update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=0 -o Acquire::http::Timeout=30 \
+        install -y --no-install-recommends \
+        binutils-arm-none-eabi=2.34-4ubuntu1+13ubuntu1 \
+        gcc-arm-none-eabi=15:9-2019-q4-0ubuntu1 \
+        libnewlib-arm-none-eabi=3.3.0-0ubuntu1 \
+        libnewlib-dev=3.3.0-0ubuntu1 \
+        ninja-build=1.10.0-1build1 \
+        python3-atomicwrites=1.1.5-2build1 \
+        python3-attr=19.3.0-2 \
+        python3-importlib-metadata=1.5.0-1 \
+        python3-more-itertools=4.2.0-1build1 \
+        python3-packaging=20.3-1 \
+        python3-pluggy=0.13.0-2 \
+        python3-py=1.8.1-1ubuntu0.1 \
+        python3-pyparsing=2.4.6-1 \
+        python3-pytest=4.6.9-1 \
+        python3-six=1.14.0-2 \
+        python3-wcwidth=0.1.8+dfsg1-3 \
+        python3-zipp=1.0.0-1ubuntu0.1 \
+    && apt-get clean

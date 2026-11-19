@@ -5,6 +5,7 @@ import ast
 import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -26,6 +27,7 @@ from qa_runner.qa_runner import (
     _stage_profile_workspace,
     accepted_profile_image,
     CommandResult,
+    ContainerCommand,
     QARunner,
     QARunnerError,
     QARunRequest,
@@ -46,6 +48,7 @@ from qa_runner.qa_runner import (
     run_command_in_sandbox,
     sanitize_path_component,
     start_docker_sandbox,
+    system_profile_timeouts,
     validate_commit_sha,
     validate_remote_url,
     validate_sandbox_path,
@@ -405,6 +408,45 @@ class PlatformProfileTest(unittest.TestCase):
                 accepted_profile_image(request, {"sandbox": {"image_digest": value}})
         config = {"sandbox": {"image_digest": "sha256:" + "b" * 64}}
         self.assertEqual(accepted_profile_image(request, config), "sha256:" + "b" * 64)
+
+    def test_system_profile_keeps_separate_image_and_sdk_tool_acceptance(self):
+        """系统镜像及工具的接受值仅用于系统范围，显式空值拦截加载。"""
+        digest = "sha256:" + "c" * 64
+        config = {"sandbox": {"image": "legacy", "image_digest": None,
+                              "c308l_system_image_digest": digest}}
+        self.assertEqual(accepted_profile_image(self._request("c308l-system"), config), digest)
+        self.assertEqual(accepted_profile_image(self._request("host-software"), config), "legacy")
+        with self.assertRaisesRegex(QARunnerError, "image digest"):
+            accepted_profile_image(self._request("c308l-app"), config)
+        with tempfile.TemporaryDirectory(prefix="qa_system_tool_acceptance_") as directory:
+            sandbox = Path(directory)
+            tool_digest = compute_file_sha256(WORKSPACE_ROOT / "tools/sdk_workspace.py")
+            config["repo_clients"] = [{"id": "c308l"}]
+            config["security"] = {"accepted_sdk_tool_sha256": None,
+                                  "accepted_c308l_system_sdk_tool_sha256": tool_digest}
+            system = self._request("c308l-system")
+            self.assertEqual(_stage_profile_workspace(sandbox, system, config)["sdk_tool_sha256"], tool_digest)
+            config["security"]["accepted_c308l_system_sdk_tool_sha256"] = None
+            with self.assertRaisesRegex(QARunnerError, "accepted matching SHA256"):
+                _stage_profile_workspace(sandbox, system, config)
+
+    def test_system_profile_time_bounds_preserve_partial_output(self):
+        """系统允许不同的构建和制镜时限，超时保留原始输出并返回失败。"""
+        config = {"timeouts": {"c308l_system": {"build": 1800, "image": 3600, "container": 6900}}}
+        self.assertEqual(system_profile_timeouts(config),
+                         {"build": 1800, "image": 3600, "test": 300, "container": 6900})
+        with tempfile.TemporaryDirectory(prefix="qa_system_timeout_") as directory:
+            expired = subprocess.TimeoutExpired(["docker"], 3600, output=b"first output", stderr=b"raw stderr")
+            with patch("qa_runner.qa_runner.subprocess.run", side_effect=expired) as run:
+                result = run_command_in_sandbox(Path(directory), "make image", "", ContainerCommand("cid", 3600))
+            self.assertEqual(run.call_args.kwargs["timeout"], 3600)
+            self.assertEqual((result.returncode, result.stdout), (-1, "first output"))
+            self.assertIn("raw stderr", result.stderr)
+            self.assertIn("3600s", result.stderr)
+        for invalid in (0, -1, 7201, True, "unbounded"):
+            config["timeouts"]["c308l_system"]["image"] = invalid
+            with self.assertRaisesRegex(QARunnerError, "integer seconds"):
+                system_profile_timeouts(config)
 
     def test_sdk_tool_hash_must_be_accepted_before_import(self):
         """缺失或错误的事先接受摘要均阻止写工作区与宿主导入，不能自报当前摘要通过。"""

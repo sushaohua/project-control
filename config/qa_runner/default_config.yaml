@@ -10,6 +10,7 @@ sandbox:
   image: qa-sandbox:20261029
   # 目标 profile 必须填入独立接受的准确镜像 ID；未接受前保持空值并阻塞目标构建。
   image_digest: null
+  c308l_system_image_digest: sha256:aea005ad99bec8304b484fb7c1311295af4fbc38c61cc7224d33449f1afcd628
   cleanup_after_run: false
   enforce_clean_checkout: true
 repositories:
@@ -47,6 +48,11 @@ timeouts:
   git_clone_seconds: 300
   build_seconds: 300
   test_seconds: 300
+  c308l_system:
+    build: 1800
+    image: 3600
+    test: 300
+    container: 6900
 security:
   disallow_local_worktrees: true
   disallow_developer_mounts: true
@@ -54,6 +60,7 @@ security:
   require_remote_hash_verification: true
   # 根 SDK 工具先经审阅接受其摘要，再由运行器在宿主加载前核对；禁止自动填当前文件摘要。
   accepted_sdk_tool_sha256: null
+  accepted_c308l_system_sdk_tool_sha256: dd8eb6a0242a8399c78c22d0741033cb7a9ec54820601995c33f527743127f2e
 repo_clients:
 - id: c308l
   path: sdk/c308l

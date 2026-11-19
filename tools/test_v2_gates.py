@@ -107,6 +107,18 @@ class V2ContractAndFastGateTest(unittest.TestCase):
 
 class V2CodexAndWorkflowCruiseTest(unittest.TestCase):
     """验证三态门禁、非空目录拒复用、后台等待及冲突拦截机制。"""
+    def test_docker_wait_is_extended_only_for_system_profile(self) -> None:
+        """正式制镜有独立外层时限，宿主与应用维持原有上限。"""
+        for profile, expected in (("host-software", 600), ("c308l-app", 600), ("c308l-system", 7200)):
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                mock_timeout = subprocess.TimeoutExpired(["runner"], expected)
+                with mock.patch.object(slice_gate, "_qa_command", return_value=["runner"]), \
+                        mock.patch.object(slice_gate.subprocess, "run", side_effect=mock_timeout) as runner:
+                    _, verdict = slice_gate._run_docker_qa(root, {"slice_id": "SLICE-T", "profile": profile}, {}, root)
+                self.assertEqual(runner.call_args.kwargs["timeout"], expected)
+                self.assertEqual(verdict["status"], "BLOCKED")
+
     def test_graded_codex_verdict_and_missing_cli_blocked(self) -> None:
         """核验分级一致校验，并验证 Codex CLI 缺失抛出 `CodexGateBlockedError`。"""
         ok = {"slice_id": "SLICE-01", "decision": "APPROVED", "axis_spec_realism": "ok", "axis_embedded_safety": "ok", "findings": [{"id": "M1", "severity": "MINOR", "axis": "embedded_safety", "location": "a.c:1", "message": "改进注释"}]}

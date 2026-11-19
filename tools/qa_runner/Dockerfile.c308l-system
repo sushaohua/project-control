@@ -1,0 +1,36 @@
+# 构建前核对基础镜像 ID：sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f。
+FROM qa-sandbox:20261029
+
+# 固定 Ubuntu Focal 的工具和新增依赖，核对由 Ubuntu 签名的包索引。
+RUN printf '%s\n' \
+        'deb https://archive.ubuntu.com/ubuntu/ focal main universe' \
+        'deb https://archive.ubuntu.com/ubuntu/ focal-updates main universe' \
+        'deb https://security.ubuntu.com/ubuntu/ focal-security main universe' > /etc/apt/sources.list \
+    && apt-get -o Acquire::Retries=1 -o Acquire::https::Timeout=20 \
+        -o Acquire::Languages=none -o APT::Update::Error-Mode=any update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=1 -o Acquire::https::Timeout=20 \
+        install -y --no-install-recommends \
+        bc=1.07.1-2build1 bison=2:3.5.1+dfsg-1 cpio=2.13+dfsg-2ubuntu0.4 \
+        fakeroot=1.24-1 file=1:5.38-4 flex=2.6.4-6.2 gperf=3.1-1build1 \
+        libfakeroot=1.24-1 libglib2.0-0=2.64.6-1~ubuntu20.04.9 \
+        libmagic-mgc=1:5.38-4 libmagic1=1:5.38-4 libpopt0=1.16-14 \
+        libsigsegv2=2.12-2 libssl-dev=1.1.1f-1ubuntu2.24 m4=1.4.18-4 \
+        ninja-build=1.10.0-1build1 pkg-config=0.29.1-0ubuntu4 \
+        rsync=3.1.3-8ubuntu0.9 xxd=2:8.1.2269-1ubuntu5.32 \
+    && apt-get clean
+
+# Repo 来源为 Gerrit 提交 d7c431b9968d928373fe9b463a51d304d3b2c48a。
+# 编译器归档来自 Armbian 镜像，已与 Arm 发布的旧版归档校验值核对。
+COPY repo gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz /tmp/c308l-tools/
+RUN cd /tmp/c308l-tools \
+    && printf '%s\n' \
+        '05f571deafd6ed6da0d20fa707dde29aa5624dbf35553d697a40dbdd4c8d178a  repo' \
+        'e73d1886fb67d5a03c0ca5be14aeab6b7b7be3fce46ad1473ba864d5eb1d2545  gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz' \
+        | sha256sum --check \
+    && install -m 0755 repo /usr/local/bin/repo \
+    && mkdir /opt/c308l-aarch64-elf \
+    && tar -xJf gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz \
+        --strip-components=1 -C /opt/c308l-aarch64-elf \
+    && rm -f repo gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz
+
+ENV PATH="/opt/c308l-aarch64-elf/bin:${PATH}"

@@ -103,7 +103,7 @@ def _run_docker_qa(workspace: Path, spec: dict, commits: Dict[str, str], out_dir
     qa_dir.mkdir(parents=True, exist_ok=True)
     blk = lambda r: (None, _write_gate_verdict(out_dir, spec, {"commits": commits, "status": "BLOCKED", "stage": "docker_qa", "reason": r, "next_step": "核查 Docker QA 环境与当次证据后使用新目录重跑（不扣返修）"}))
     try:
-        proc = subprocess.run(_qa_command(workspace, spec, commits, qa_dir), cwd=str(workspace), text=True, capture_output=True, timeout=600)
+        proc = subprocess.run(_qa_command(workspace, spec, commits, qa_dir), cwd=str(workspace), text=True, capture_output=True, timeout=7200 if spec.get("profile") == "c308l-system" else 600)
         call_log = ((proc.stdout or "") + "\n" + (proc.stderr or "")).strip()
         (qa_dir / "qa_runner_call.log").write_text(call_log + "\n", encoding="utf-8")
     except (subprocess.TimeoutExpired, OSError) as err:
