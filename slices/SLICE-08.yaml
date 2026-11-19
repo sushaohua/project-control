@@ -36,9 +36,9 @@ integration_cmd: >-
   python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test
 
 qa_commands:
-  - {subpath: "printer-soc", kind: "build", command: 'for step in plan build package; do python3 -B tools/release_product.py "$step" --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 || exit $?; done'}
-  - {subpath: "printer-soc", kind: "image", command: 'python3 -B tools/release_product.py system-image --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08'}
-  - {subpath: "printer-soc", kind: "test", command: 'python3 -B tools/release_product.py verify --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 && python3 -B -m unittest discover -s tests/integration -p test_release_product.py -v'}
+  - {subpath: "printer-soc", kind: "build", command: 'for step in plan build package; do python3 -B tools/release_product.py "$step" --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 || exit $?; done'}
+  - {subpath: "printer-soc", kind: "image", command: 'python3 -B tools/release_product.py system-image --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08'}
+  - {subpath: "printer-soc", kind: "test", command: 'python3 -B tools/release_product.py verify --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 && python3 -B -m unittest discover -s tests/integration -p test_release_product.py -v'}
   - {subpath: "test_harness", kind: "test", command: "python3 -B hil/tests/test_helix_screen_integration.py --self-test"}
 
 acceptance_criteria:
