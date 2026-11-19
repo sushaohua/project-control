@@ -476,7 +476,7 @@ def _start_docker_sandbox(name: str, image: str, mount_dir: Path, options: Tuple
     output_dir = mount_dir.with_name(mount_dir.name + "_output")
     output_dir.mkdir(mode=0o700, exist_ok=False)
     cmd = [
-        "docker", "run", "-d",
+        "docker", "run", "-d", "--init",
         "--name", name,
         "-v", f"{mount_dir.resolve()}:/workspace:{mode}",
         "-v", f"{output_dir.resolve()}:/output:rw",

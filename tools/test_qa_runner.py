@@ -530,6 +530,7 @@ class PlatformProfileTest(unittest.TestCase):
                 run.return_value = MagicMock(returncode=0, stdout="container-id", stderr="")
                 start_docker_sandbox("check", "accepted-image", box)
             command = run.call_args_list[0].args[0]
+            self.assertIn("--init", command)
             self.assertIn(str(box.resolve()) + ":/workspace:ro", command)
             self.assertIn(str(box.with_name("source_output").resolve()) + ":/output:rw", command)
 
