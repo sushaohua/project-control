@@ -1,0 +1,42 @@
+CANDIDATE_IMAGE_ID=sha256:aea005ad99bec8304b484fb7c1311295af4fbc38c61cc7224d33449f1afcd628
+bc=1.07.1-2build1
+bison=2:3.5.1+dfsg-1
+cpio=2.13+dfsg-2ubuntu0.4
+fakeroot=1.24-1
+file=1:5.38-4
+flex=2.6.4-6.2
+gperf=3.1-1build1
+libfakeroot=1.24-1
+libglib2.0-0=2.64.6-1~ubuntu20.04.9
+libmagic-mgc=1:5.38-4
+libmagic1=1:5.38-4
+libpopt0=1.16-14
+libsigsegv2=2.12-2
+libssl-dev=1.1.1f-1ubuntu2.24
+m4=1.4.18-4
+ninja-build=1.10.0-1build1
+pkg-config=0.29.1-0ubuntu4
+rsync=3.1.3-8ubuntu0.9
+xxd=2:8.1.2269-1ubuntu5.32
+05f571deafd6ed6da0d20fa707dde29aa5624dbf35553d697a40dbdd4c8d178a  /usr/local/bin/repo
+<repo not installed>
+repo launcher version 2.71
+       (from /usr/local/bin/repo)
+git 2.25.1
+Python 3.8.10 (default, Mar 18 2025, 20:04:55) 
+[GCC 9.4.0]
+OS Linux 6.18.33.2-microsoft-standard-WSL2 (#1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026)
+CPU x86_64 (x86_64)
+Bug reports: https://issues.gerritcodereview.com/issues/new?component=1370071
+cmake version 4.4.4
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+1.10.0
+aarch64-elf-gcc (Linaro GCC 7.3-2018.05) 7.3.1 20180425 [linaro-7.3-2018.05 revision d29120a424ecfbc167ef90065c0eeb7f91977701]
+Copyright (C) 2017 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Cannot create temporary file in ./: Read-only file system
+bash: line 10:    16 Done                    printf 'int qa_elf_probe(void) { return 0; }\n'
+        17 Aborted                 (core dumped) | aarch64-elf-gcc -ffreestanding -x c -c -o /scratch/probe.o -

@@ -1,0 +1,14 @@
+{
+  "slice_id": "SLICE-08",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "c308l-system",
+  "status": "FAST-PASSED",
+  "stage": "integration",
+  "reason": "前两阶 Fast-Gate 与合龙预检通过 (--fast-only)",
+  "next_step": "运行完整四阶 slice_gate.py 完成容器 QA 与 Codex 准出",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_144311_820766_preflight/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_144311_820766_preflight/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_144311_820766_preflight/integration.log"
+  }
+}

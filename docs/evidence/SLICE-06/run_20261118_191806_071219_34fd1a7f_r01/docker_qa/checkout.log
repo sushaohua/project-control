@@ -1,0 +1,28 @@
+=== Checkout repository 'printer-soc' from ssh://git@192.168.77.79:2222/sushaohua/printer-soc.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/printer-soc.git -> 0
+$ git fetch origin 9875c9f655159993d803a6ae4aa96866bdfdea03 -> 0
+From ssh://192.168.77.79:2222/sushaohua/printer-soc
+ * branch              9875c9f655159993d803a6ae4aa96866bdfdea03 -> FETCH_HEAD
+$ git checkout 9875c9f655159993d803a6ae4aa96866bdfdea03 -> 0
+=== Checkout repository 'project-control' from ssh://git@192.168.77.79:2222/sushaohua/project-control.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/project-control.git -> 0
+$ git fetch origin 98ef7f97fc18b2af012864667967a8c464ac1301 -> 0
+From ssh://192.168.77.79:2222/sushaohua/project-control
+ * branch            98ef7f97fc18b2af012864667967a8c464ac1301 -> FETCH_HEAD
+$ git checkout 98ef7f97fc18b2af012864667967a8c464ac1301 -> 0
+=== Checkout repository 'agents' from ssh://git@192.168.77.79:2222/sushaohua/agents.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/agents.git -> 0
+$ git fetch origin 30ecc6586a861c1543a97804cfe0600bb4778efb -> 0
+From ssh://192.168.77.79:2222/sushaohua/agents
+ * branch            30ecc6586a861c1543a97804cfe0600bb4778efb -> FETCH_HEAD
+$ git checkout 30ecc6586a861c1543a97804cfe0600bb4778efb -> 0
+=== Checkout repository 'test_harness' from ssh://git@192.168.77.79:2222/sushaohua/test_harness.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/test_harness.git -> 0
+$ git fetch origin 371a3a3de7e878d4035388ccab70ef4bc84f9046 -> 0
+From ssh://192.168.77.79:2222/sushaohua/test_harness
+ * branch            371a3a3de7e878d4035388ccab70ef4bc84f9046 -> FETCH_HEAD
+$ git checkout 371a3a3de7e878d4035388ccab70ef4bc84f9046 -> 0

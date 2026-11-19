@@ -1,0 +1,22 @@
+{
+  "slice_id": "SLICE-06",
+  "decision": "REJECTED",
+  "axis_spec_realism": "有 BLOCKER：当前证据不能证明 C308L 生产 HelixScreen 的编译、DEC-SCREEN-05 三方裁剪验收及真实目标包验证通过；离线恢复证据也未覆盖 DM 500ms 轮询触发的自动串口重开。",
+  "axis_embedded_safety": "本次未发现足以单独判为 BLOCKER 的嵌入式安全缺陷。宿主构建、PTY 启动用例、D-Bus 断链信号测试及打包校验单测均有通过记录；但未实际构建目标包，因此其 ARM ELF 依赖闭环与 44MiB 限制尚未得到交付物验证。",
+  "findings": [
+    {
+      "id": "S6-001",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/docker_qa/server_qa.json；printer-soc/services/helixscreen/platform/c308l/package.py",
+      "message": "Docker 证据 profile 为 host-software，platform_inputs 为空。构建结果只编译 printer-soc；Helix 仅编译 AISoC 单测，没有 C308L 生产面板构建或真实产品打包。打包单测使用测试夹具，不能证明生产编译源码、页面注册与 C308L 打包清单三方一致，也未证明实际包的 ARM NEEDED/RUNPATH 闭合及包体不超过 44MiB。DEC-SCREEN-05 与目标包验收条件缺少实物证据，必须补齐目标构建与打包结果后才能准出。"
+    },
+    {
+      "id": "S6-002",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/tests/forward/startup/test_startup_fail_fast.py:101-112；project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/docker_qa/runtime.log",
+      "message": "离线恢复测试在清除模拟故障后由测试代码显式调用 QueryVersion；它没有验证 DM 的 500ms 轮询在接回后自动触发 allow_open=true 串口重开并恢复，也未验证该自动恢复路径上的 LinkStateChanged(false)。现有 PTY 结果只能证明显式查询可自愈，不能证明判据要求的自动恢复闭环。"
+    }
+  ]
+}

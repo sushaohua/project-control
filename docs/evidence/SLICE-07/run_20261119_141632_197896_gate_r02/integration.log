@@ -1,0 +1,47 @@
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/s7_int_aisoc
+[ 20%] Building CXX object middleware/dbus/CMakeFiles/aisoc_dbus.dir/src/aisoc_dbus_msg.cpp.o
+[ 40%] Building CXX object middleware/dbus/CMakeFiles/aisoc_dbus.dir/src/aisoc_dbus_core.cpp.o
+[ 80%] Building CXX object middleware/dbus/CMakeFiles/aisoc_dbus.dir/src/aisoc_dbus_server.cpp.o
+[ 80%] Building CXX object middleware/dbus/CMakeFiles/aisoc_dbus.dir/src/aisoc_dbus_client.cpp.o
+[100%] Linking CXX static library libaisoc_dbus.a
+[100%] Built target aisoc_dbus
+[ 14%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_types.cpp.o
+[ 28%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_common.cpp.o
+[ 42%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_participant.cpp.o
+[ 57%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_pub.cpp.o
+[ 71%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_sub.cpp.o
+[ 85%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds.cpp.o
+[ 85%] Built target aisoc_dds_objects
+[100%] Linking CXX shared library libaisoc_dds.so
+[100%] Built target aisoc_dds
+[PASS] test_aisoc_p0
+[PASS] SLICE-07 integration checks finished
+
+test_rejects_mismatched_archive_manifest (test_dependency_lock.DependencyLockTest) ... ok
+test_rejects_reused_source_tree (test_dependency_lock.DependencyLockTest) ... ok
+test_rejects_tampered_patch (test_dependency_lock.DependencyLockTest) ... ok
+test_c308l_services_dev_mode_inhibit_and_status (test_product_package.ProductPackageTest)
+验证 c308l_services dev-mode 写入维护抑制并阻止 respect-inhibit 启动。 ... ok
+test_dec_screen_05_three_way_pruning_consistency (test_product_package.ProductPackageTest)
+校验 DEC-SCREEN-05 编译配置、页面与 XML 注册、C308L 打包清单三方一致性。 ... ok
+test_optional_panel_has_separate_writable_runtime (test_product_package.ProductPackageTest)
+验证合入 HelixScreen 后运行时链接指向 /data/printer-soc/helix 且清单为生产模式。 ... ok
+test_package_relocates_and_rejects_overwrite (test_product_package.ProductPackageTest)
+验证目录重定位、生产配置默认值、version.json 生成及防覆盖校验。 ... ok
+test_tampered_runtime_is_rejected_before_output (test_product_package.ProductPackageTest)
+验证运行包文件篡改时拒绝输出。 ... ok
+test_unlisted_file_is_rejected (test_product_package.ProductPackageTest)
+验证出现未登记文件时拒绝打包。 ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.524s
+
+OK

@@ -1,0 +1,12 @@
+独立只读双轴冷审切片: SLICE-07
+契约: project-control/contracts/minimc_v2_contract.yaml
+方案: project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md
+锁定提交: {"printer-soc": "cc7bd31d7fc0d5e23c4e9c5fb0deedcfb326646b", "project-control": "f131e892afbbf3e9077e20a13b6054bc566daaaf", "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb", "test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046"}
+容器: 9c85f030abcd
+当前沙箱产物: server_verdict=project-control/docs/evidence/SLICE-07/run_20261119_141632_197896_gate_r02/docker_qa/server_verdict.json runtime_log=project-control/docs/evidence/SLICE-07/run_20261119_141632_197896_gate_r02/docker_qa/runtime.log integration_log=project-control/docs/evidence/SLICE-07/run_20261119_141632_197896_gate_r02/integration.log
+验收判据:
+- DEC-SCREEN-02=B：首版仅从固定固件目录扫描 fw_mc.bin / fw_th.bin（不含 TF 卡或 U 盘导入）
+- DEC-SCREEN-08=B：sign_mcu_firmware.py 与 ota_image.cpp:verify_image() / firmware_updater.cpp 统一覆盖 trailer[0..51] (52B) ECDSA-P256 签名，Docker host-software 沙箱覆盖合法签名包/未签名全0包/坏签名或篡改包/缺失公钥 4 类验收，未通过原子返回 PACKAGE_SIGNATURE_INVALID 且 0 帧 0x1D/0x20；文档继续注明 MC FAT32 U 盘救援无 ECDSA 校验边界
+- DEC-SCREEN-03 有条件 A：Docker host-software 沙箱补齐并发 OtaCommand 拒 BUSY、维护锁互斥与急停联动（正常急停确认 vs OTA 期 BUSY 区分）验收，AisocConnection 真实订阅 DDS state/ota_status 并校验 SUCCEEDED 后重启回 App(Bit31=0) 与 boot_id 跃迁，OtaLocalOverlay 挂载至 AboutSettingsOverlay 并明确区分 后台已锁定(BUSY) 与 设备已确认急停
+- 选项 B 宿主机实证：针对同一锁定 printer-soc 提交与锁定 sdk/c308l 实跑 C308L ARM 交叉构建打包（静态链接 SDK libcrypto.a、/etc/printer-soc/fw_signing_pub.pem 0444、readelf -h -d 闭合与 <=44MiB），完整原始证据归档于 project-control/docs/evidence/SLICE-07/host_c308l_arm_build_and_pack.log
+请严格按 BLOCKER / MINOR / NIT 分级。

@@ -1,0 +1,48 @@
+{
+  "slice_id": "SLICE-06",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "host-software",
+  "commits": {
+    "printer-soc": "a94419eae101257ebf09ac6f8089e18846b732a2",
+    "project-control": "98ef7f97fc18b2af012864667967a8c464ac1301",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046"
+  },
+  "input_fingerprint": "542af150268d123954d12e25fa6539a5128570a6c0f15292eaf1c20d66bb1975",
+  "status": "FAILED",
+  "stage": "codex",
+  "decision": "REJECTED",
+  "codex_session": "01a1ee6c-8a0d-7862-8339-046fe70a4519",
+  "blocker_count": 2,
+  "findings": [
+    {
+      "id": "S6-001",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/docker_qa/server_qa.json；printer-soc/services/helixscreen/platform/c308l/package.py",
+      "message": "Docker 证据 profile 为 host-software，platform_inputs 为空。构建结果只编译 printer-soc；Helix 仅编译 AISoC 单测，没有 C308L 生产面板构建或真实产品打包。打包单测使用测试夹具，不能证明生产编译源码、页面注册与 C308L 打包清单三方一致，也未证明实际包的 ARM NEEDED/RUNPATH 闭合及包体不超过 44MiB。DEC-SCREEN-05 与目标包验收条件缺少实物证据，必须补齐目标构建与打包结果后才能准出。"
+    },
+    {
+      "id": "S6-002",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/tests/forward/startup/test_startup_fail_fast.py:101-112；project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/docker_qa/runtime.log",
+      "message": "离线恢复测试在清除模拟故障后由测试代码显式调用 QueryVersion；它没有验证 DM 的 500ms 轮询在接回后自动触发 allow_open=true 串口重开并恢复，也未验证该自动恢复路径上的 LinkStateChanged(false)。现有 PTY 结果只能证明显式查询可自愈，不能证明判据要求的自动恢复闭环。"
+    }
+  ],
+  "reason": "独立 Codex 拒单 (2 BLOCKER): S6-001: Docker 证据 profile 为 host-software，platform_inputs 为空。构建结果只编译 printer-soc；Helix 仅编译 AISoC 单测，没有 C308L 生产面板构建或真实产品打包。打包单测使",
+  "next_step": "按 codex_final_json 修复 BLOCKER 项后重过四阶门禁",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/docker_qa/checkout.log",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261118_192942_r03/codex/codex.stderr"
+  }
+}

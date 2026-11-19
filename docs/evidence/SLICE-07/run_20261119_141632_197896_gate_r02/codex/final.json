@@ -1,0 +1,15 @@
+{
+  "slice_id": "SLICE-07",
+  "decision": "APPROVED",
+  "axis_spec_realism": "已核对四个锁定仓库提交均匹配。Docker host-software 证据覆盖有效签名成功、全零未签名、坏签名、篡改包和缺失公钥；拒签均返回 PACKAGE_SIGNATURE_INVALID 且未发送 0x1D/0x20。固定目录扫描、DDS OTA 状态订阅、SUCCEEDED 后 App/boot_id 核验及并发、维护锁、急停区分均有代码或验收证据。发现一处方案文档的签名范围边界表述不精确，实际实现符合 52B 验收要求。",
+  "axis_embedded_safety": "未发现阻断级嵌入式安全或 Diff Budget 问题。宿主机 C308L ARM 构建记录核对了 SDK manifest 锁、静态链接 libcrypto.a、公钥权限 0444、ARM ELF/动态依赖及产品包大小 19,290,482B；符合不超过 44MiB 的判据。该结论限于软件与宿主机证据，不代表 HIL 验证。",
+  "findings": [
+    {
+      "id": "SLICE-07-MINOR-01",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md:474,575",
+      "message": "方案将签名范围写作 trailer[0..52]，按闭区间理解为 53B；验收要求 52B trailer[0..51]，且签发脚本使用前 52B、验证实现传入长度 52U，实际代码符合验收。建议将方案中的边界统一改为 trailer[0..51] 或明确写“前 52 字节”。"
+    }
+  ]
+}

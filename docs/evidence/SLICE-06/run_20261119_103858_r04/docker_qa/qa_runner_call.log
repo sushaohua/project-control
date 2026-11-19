@@ -1,0 +1,5 @@
+[QA VERDICT] All sandbox tests passed | Evidence bundle saved to: project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/docker_qa
+[SERVER QA REF] {
+  "path": "project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/docker_qa/server_qa.json",
+  "sha256": "5cbda143044a5c57d87750e272474edcf80086ae36c1ff1e2522d9240e5cccae"
+}

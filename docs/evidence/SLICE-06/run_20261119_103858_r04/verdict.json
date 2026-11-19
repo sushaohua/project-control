@@ -1,0 +1,41 @@
+{
+  "slice_id": "SLICE-06",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "host-software",
+  "commits": {
+    "printer-soc": "c2467833eaf40c0a2dccf9ffd4171280e1e35f45",
+    "project-control": "70c5a02acfeedb9d7c32b28d4c01c870e6ee3c86",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046"
+  },
+  "input_fingerprint": "cb28c01eae6c212ec7d36cfdd3957d1b481521c81251a1fd1a81d85621bf6b99",
+  "status": "FAILED",
+  "stage": "codex",
+  "decision": "REJECTED",
+  "codex_session": "01a1f1ad-2c4a-77f0-88a6-8306c5bf623b",
+  "blocker_count": 1,
+  "findings": [
+    {
+      "id": "SLICE-06-B1",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/tests/forward/startup/test_startup_fail_fast.py:24-36, 478-488；project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/docker_qa/runtime.log:260-262",
+      "message": "验收要求全断连时在串口可打开但 MC、TH 均无响应的情况下，`--allow-offline-start` 降级存活并发射 `LinkStateChanged(false, STARTUP_PROBE_FAILED)`。现有用例只覆盖 MC 超时、TH 在线和 MC 在线、TH 超时；`offline_allow_open_failure` 是串口打开失败场景，记录为 exit=2，不能证明全断连降级。缺少双节点超时的 Forward + DM 实际进程测试及相应证据，因此该验收项尚未闭环。"
+    }
+  ],
+  "reason": "独立 Codex 拒单 (1 BLOCKER): SLICE-06-B1: 验收要求全断连时在串口可打开但 MC、TH 均无响应的情况下，`--allow-offline-start` 降级存活并发射 `LinkStateChanged(false, STARTUP_PROBE_FAILED)`。现有用例只覆盖 M",
+  "next_step": "按 codex_final_json 修复 BLOCKER 项后重过四阶门禁",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/docker_qa/checkout.log",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-06/run_20261119_103858_r04/codex/codex.stderr"
+  }
+}

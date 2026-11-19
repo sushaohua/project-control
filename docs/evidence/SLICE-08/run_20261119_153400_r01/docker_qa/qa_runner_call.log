@@ -1,0 +1,2 @@
+[QA RUNNER ERROR] SSH authentication failed: Pseudo-terminal will not be allocated because stdin is not a terminal.
+ssh: connect to host 192.168.77.79 port 2222: No route to host

@@ -1,0 +1,2 @@
+{"node": "mc", "path": "/tmp/slice04_pkg/fw_mc_v2_0_l3.bin", "expected_sha256": "b32fdccbc74cfe3ac972d4d8254b5e6e2de4d674eb07985e767d5d8dd89e0fb8", "state": "MISSING"}
+{"node": "th", "path": "/tmp/slice04_pkg/fw_th_v2_0.bin", "expected_sha256": "e448df1d52cd27ca3865586dce6c9d1310e0471a4a49f5bbb8f80b4db7dbc818", "state": "MISSING"}

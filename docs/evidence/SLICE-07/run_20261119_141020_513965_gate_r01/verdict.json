@@ -1,0 +1,30 @@
+{
+  "slice_id": "SLICE-07",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "host-software",
+  "commits": {
+    "printer-soc": "cc7bd31d7fc0d5e23c4e9c5fb0deedcfb326646b",
+    "project-control": "f131e892afbbf3e9077e20a13b6054bc566daaaf",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "371a3a3de7e878d4035388ccab70ef4bc84f9046"
+  },
+  "input_fingerprint": "4c491ae44dd440f7ffa7160a063c4bfc320ef4b67f8372436740ce9c2215a488",
+  "status": "BLOCKED",
+  "stage": "codex",
+  "decision": "BLOCKED",
+  "reason": "Codex 审阅进程非零退出 (1)",
+  "next_step": "恢复 Codex 环境后重跑（不扣返修）",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/docker_qa/checkout.log",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-07/run_20261119_141020_513965_gate_r01/codex/codex.stderr"
+  }
+}

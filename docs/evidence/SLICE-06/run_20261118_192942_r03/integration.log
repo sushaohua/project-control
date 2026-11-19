@@ -1,0 +1,64 @@
+{"component": "fixture", "key": "00af167e83e6d5f9bc3e6f0bc5c4fd1fbc0c4ca08db6485c402bdadf5e1d41a0", "hit": false, "seconds": 0.0024358130031032488}
+{"component": "fixture", "key": "00af167e83e6d5f9bc3e6f0bc5c4fd1fbc0c4ca08db6485c402bdadf5e1d41a0", "hit": true, "seconds": 0.0023909599985927343}
+make: Entering directory '/home/sushaohua/workspace/ai_soc_project/printer-soc/services/helixscreen'
+[PASS] test_aisoc_p0
+make: Leaving directory '/home/sushaohua/workspace/ai_soc_project/printer-soc/services/helixscreen'
+[PASS] SLICE-06 integration checks finished
+
+test_clean_retires_only_application_outputs (test_tools.C308LToolsTest)
+应用重建保留库缓存和旧结果证据，不清空第三方目录。 ... ok
+test_concurrent_builders_publish_only_one_complete_prefix (test_tools.C308LToolsTest)
+两个进程竞争缺失前缀时只构建一次，其他进程核验完整发布结果。 ... ok
+test_content_change_and_source_removal_are_applied (test_tools.C308LToolsTest)
+内容变化和源文件删除必须反映到可变快照，未托管生成物保留。 ... ok
+test_drm_gate_rejects_missing_or_late_define (test_tools.C308LToolsTest)
+移除补丁后仍直接约束维护源码的 64 位 mmap 声明顺序。 ... ok
+test_host_build_variables_do_not_leak_into_target (test_tools.C308LToolsTest)
+宿主的 sanitizer、功能选项和编译器不能改变已锁定目标配方。 ... ok
+test_loose_vendor_headers_are_exported_and_tracked (test_tools.C308LToolsTest)
+根目录独立头文件也必须进入前缀，变动后集合身份随之改变。 ... ok
+test_lv_configuration_and_toolchain_invalidate_identity (test_tools.C308LToolsTest)
+改变 LVGL 配置或编译器必须产生不同的组件键。 ... ok
+test_matching_prefix_is_reusable (test_tools.C308LToolsTest)
+完整内容与输入身份一致的前缀可以直接复用。 ... ok
+test_missing_header_and_wrong_key_are_rejected (test_tools.C308LToolsTest)
+生成头缺失或目标身份不同均不得继续消费前缀。 ... ok
+test_modified_header_is_rejected (test_tools.C308LToolsTest)
+防止库与被篡改的头文件一起交付。 ... ok
+test_runtime_profile_requires_mock_argument (test_tools.C308LToolsTest)
+缺少 --test 的配置必须被拒绝，构建优化不扩大控制范围。 ... ok
+test_settings_merge_preserves_template_defaults (test_tools.C308LToolsTest)
+运行配置覆盖必须保留新版模板的未覆盖字段。 ... ok
+test_tampered_snapshot_is_rejected (test_tools.C308LToolsTest)
+私自改变快照头文件时必须报错，不把旧 registry 当作一致性证明。 ... ok
+test_unchanged_inputs_preserve_mtime (test_tools.C308LToolsTest)
+重复同步必须保留文件时间，使 Make 可以跳过未变更输入。 ... ok
+test_unlisted_file_is_rejected (test_tools.C308LToolsTest)
+前缀出现未记录文件时拒绝复用，避免搜索路径污染。 ... ok
+test_work_owner_prevents_cross_project_reuse (test_tools.C308LToolsTest)
+不同源码或开发/冻结模式不能混用同一可变目录。 ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.039s
+
+OK
+test_rejects_mismatched_archive_manifest (test_dependency_lock.DependencyLockTest) ... ok
+test_rejects_reused_source_tree (test_dependency_lock.DependencyLockTest) ... ok
+test_rejects_tampered_patch (test_dependency_lock.DependencyLockTest) ... ok
+test_c308l_services_dev_mode_inhibit_and_status (test_product_package.ProductPackageTest)
+验证 c308l_services dev-mode 写入维护抑制并阻止 respect-inhibit 启动。 ... ok
+test_optional_panel_has_separate_writable_runtime (test_product_package.ProductPackageTest)
+验证合入 HelixScreen 后运行时链接指向 /data/printer-soc/helix 且清单为生产模式。 ... ok
+test_package_relocates_and_rejects_overwrite (test_product_package.ProductPackageTest)
+验证目录重定位、生产配置默认值、version.json 生成及防覆盖校验。 ... ok
+test_tampered_runtime_is_rejected_before_output (test_product_package.ProductPackageTest)
+验证运行包文件篡改时拒绝输出。 ... ok
+test_unlisted_file_is_rejected (test_product_package.ProductPackageTest)
+验证出现未登记文件时拒绝打包。 ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.441s
+
+OK
+Makefile:1029: ⚠️  ld.lld not found — helix-tests will link with GNU ld and take ~25s longer per link.
+Makefile:1030: Install it: sudo apt install lld   (or set FAST_LINK=0 to silence this.)

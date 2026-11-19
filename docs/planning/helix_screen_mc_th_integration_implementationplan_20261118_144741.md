@@ -12,6 +12,10 @@
 | `v1.5` | `2026-11-18` | `AI (Codex)` | 按用户确认的产品结构改为 HelixScreen 进程内原生 AISoC 接入，修订生产裁剪、版本优先与 OTA 切片，并与半断连自愈、固件签名待决项及同源制镜一致 | 产品结构已确认，用户指示交 COORD 执行首批软件工作。未决选项按 §0.3 停在对应边界 |
 | `v1.6` | `2026-11-18` | `AI (Antigravity-CLI) - ARCH` | 同步第 2 部分响应审批两项复核意见：写入 Forward `--allow-offline-start`、只读 `QueryVersion` 穿透与 `allow_open=true` 自愈实证及白名单；补充 `DEC-SCREEN-08` 完整性校验 vs AP 侧 `ECDSA-P256` 数字签名擦除前原子拒绝闭环，并与 `v1.5` 原生 `AisocConnection` 架构对齐 | 与 `v1.5` 结构对齐；按 §0.3 分段推进，未决项随 `DEC-SCREEN-01~08` 停在对应边界 |
 | `v1.7` | `2026-11-18` | `AI (Antigravity-CLI) - COORD` | 回写用户 `Human Gate #1` 最终拍板结论：锁定 `DEC-SCREEN-01=A`、`02=B`、`03=有条件A`（并发/互斥/急停+`BUSY` 区分+`AC-09` 半断连与单板 OTA 解耦）、`04=留待P1`（温区隔离+禁全加热入口含通用 G-code）、`05=已确认`、`06=A`（保留 `boot_backup.img`+清前复测清单）、`07=A`、`08=B`（写刷前可信签名+4类测试向量+U盘边界） | **已批准启动**：先过 `SLICE-06` 软件门禁，通过后推进 `SLICE-07` 软件联调；`SLICE-08` 上板/整机刷写/正式发布分别按门禁另行报批 |
+| `v1.8` | `2026-11-19 14:37 +0800` | `AI (Codex) - COORD` | 记录 SLICE-08 制镜 QA 环境核验，提出独立候选镜像及后续正式接入的边界 | 仅 §3 新增 QA 环境范围待批准 |
+| `v1.9` | `2026-11-19 14:39 +0800` | `AI (Codex) - COORD` | 记录用户批准 `QA-ENV-01`，启动独立工具镜像候选 | `QA-ENV-01` 已批准，`QA-ENV-02` 待报批 |
+| `v1.10` | `2026-11-19 14:48 +0800` | `AI (Codex) - COORD` | 记录独立制镜镜像的确切摘要和通过的离线工具冒烟 | `QA-ENV-01` 通过，`QA-ENV-02` 待批准 |
+| `v1.11` | `2026-11-19 14:51 +0800` | `AI (Codex) - COORD` | 记录用户批准正式系统 profile 本地接入及回归 | `QA-ENV-02` 本地配置、代码和回归已批准 |
 
 ---
 
@@ -643,3 +647,20 @@ flowchart LR
 - [x] 彻底独立于 `ui_gateway` HTTP/SSE，零伪造 Moonraker 代理、零 UI 定时器假进度条；`Forward --allow-offline-start` 保障半/全断连冷启照常亮屏报 `OFFLINE` 并在插回后自动恢复，同时严格不破坏无参默认 `2/3` fail-fast 契约。
 - [x] `mcu-p3`、`boot/*`、`agents` 保持 **`0` 改动**；接缝 6 默认方案 A 下 `sdk/c308l` 保持 **100% 只读干净**（若切换方案 B 严格锁定 `ENG-PLATFORM` + `release-tool` 产品分支边界）。
 - [x] `SLICE-06 ~ SLICE-09` 覆盖宿主/交叉构建 ➔ 同源 rootfs ➔ 隔离 SDK 制镜 ➔ 冷启动 HIL (`AC-09`) ➔ 零重编晋级发版 (`AC-10`) 的完整系统骨架闭环，严格维持 `SW-Verified` ➔ `Human Gate #2` ➔ `HIL-Verified` ➔ `Human Gate #3` 门禁隔离与 `Diff Budget` 收敛。
+
+## 3. SLICE-08 独立制镜 QA 环境补齐
+
+`SLICE-08 r1` 已登记。软件工程沿 §2.5 执行。正式 `c308l-system` 验收要求锁定干净候选、从远端重建 56 个锁定 SDK project、目标源码只读挂载、独立输出及实际制镜。以下环境准备需要单独批准。
+
+| 已核实的调用点 | 当前结果 |
+| :--- | :--- |
+| `tools/gates/slice_gate.py::_run_docker_qa` → `tools/qa_runner/qa_runner.py::accepted_profile_image` | 第三阶段总等待 600 秒。默认配置的目标镜像摘要为空。 |
+| `prepare_profile_inputs` → `_stage_profile_workspace` → 根 `tools/sdk_workspace.py::restore_sdk` | 运行器在宿主加载工具前核验独立接受的摘要。目前该字段为空。根仓 `331ff064b9f8ff7120564c68caa8e6593a091025` 的工具内容与实际文件一致，SHA-256 为 `dd8eb6a0242a8399c78c22d0741033cb7a9ec54820601995c33f527743127f2e`，既有 9 项测试通过。 |
+| `run_profile_checks` → `check_platform_inputs.py` → `repo manifest -r` → `copy_system_worktrees` | 现有基准镜像和历史试验镜像均缺 `repo`。缺口还包括 `cpio`、`file`、`bison`、`flex`、`bc` 和 `aarch64-elf-gcc`，基准镜像同时缺 `ninja`。SDK 自带 UBI 工具。与锁定 SDK 匹配的 AArch64 编译器可再分发归档及其来源摘要待核实。 |
+| `QARunner._run_container_steps` → `run_command_in_sandbox` | 每命令 300 秒，容器空闲保活上限 3600 秒。SLICE-07 的应用和面板真实冷构建约 11 分 48 秒。SLICE-08 还包含需另测时长的完整系统制镜。 |
+
+**QA-ENV-01 独立工具镜像候选，待批准。** 在 `project-control/main` 新增 `tools/qa_runner/Dockerfile.c308l-system`，一份配方，最多 50 行。以现有基准镜像 `sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f` 为输入，构建前核对镜像 ID。核实并固定所需软件包版本和编译器归档的可核验证明，使用独立 Docker 标签与构建上下文。以最终镜像 ID 执行 `docker run --rm --network none --read-only` 的工具版本探针和 SDK 制镜工具启动检查。通过需取得准确镜像 ID、来源锁、实际探针输出及原始日志。若缺少可信编译器输入，停在该依赖。保留候选和日志供复核。
+
+**QA-ENV-02 正式接入，待 QA-ENV-01 合格后提交审批。** 候选镜像与 SDK 工具摘要经过接受后，拟在 `project-control/main` 最多改动五个现有文件。范围为 `config/qa_runner/default_config.yaml`、`tools/qa_runner/qa_runner.py`、`tools/gates/slice_gate.py`、`tools/test_qa_runner.py`、`tools/test_v2_gates.py`。在既有配置为 `c308l-system` 固定摘要和有界时限，保持现有其他 profile 的行为。试验时用已有 `qa_runner.py --config` 入口隔离配置。正式路径复用 `slice_gate.py`。首轮试验时限建议为应用构建 1800 秒、制镜 3600 秒、单项测试 300 秒、外层 7200 秒，并核对容器寿命覆盖顺序执行的命令。最终时限由实测决定。回归需覆盖缺摘要、摘要错配和超时失败，随后用准确候选执行四阶门禁，实产并复验应用包、`rootfs.ubi` 与 `aml_upgrade_package.img`。撤回本阶段配置和代码即可回滚，运行证据保留。
+
+**QA-ENV-01 执行结果。** 独立镜像 `qa-sandbox:c308l-system-20261119-candidate-r1` 的 ID 为 `sha256:aea005ad99bec8304b484fb7c1311295af4fbc38c61cc7224d33449f1afcd628`。固定 19 个 Ubuntu 工具和依赖版本。Repo 启动器来自 Gerrit 提交 `d7c431b9968d928373fe9b463a51d304d3b2c48a`，与 SDK 已检出 Git 对象逐字节一致。Linaro 归档由 Armbian 镜像取得，大小及 MD5 对上 Arm 发布目录，配方固定本次验证的 SHA-256。关闭容器网络后实际编译 AArch64 ELF、创建 UBI 样本，并由 SDK 打包器生成并复验样本镜像。正式系统制镜仍在 §2.5 的候选验收范围。 [Arm 发布目录](https://developer.arm.com/Downloads/-/Legacy%20Linaro%20GNU%20Toolchains) · [Gerrit Repo 源码](https://gerrit.googlesource.com/git-repo/+/d7c431b9968d928373fe9b463a51d304d3b2c48a/repo) · [镜像构建日志](../evidence/SLICE-08/qa_env01_image_build_20261119_144602_546849.log) · [离线冒烟日志](../evidence/SLICE-08/qa_env01_image_smoke_20261119_144811_844331.log)

@@ -1,0 +1,274 @@
+=== Docker Container Inspect: 0fb4b5b8c9aa ===
+{
+  "id": "0fb4b5b8c9aa51e6c87d6dfb2ec5a4012c9cdc504655f6fca837da018eb497d7",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-18T11:30:00.587401663Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-06_run_192947_20261118_112947",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-06_run_192947_20261118_112947_output",
+      "Destination": "/output",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (printer-soc) cmake -S . -B /output/build_ps -DSOC_AP_BUILD_SERVICES=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps -j4 -> 0
+-- The CXX compiler identification is GNU 9.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Forward version compatibility test disabled: D-Bus headers unavailable
+-- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter
+-- MiniMC QA test suite not enabled (MINIMC_QA_ROOT not set)
+-- Configuring done (0.2s)
+-- Generating done (0.1s)
+-- Build files have been written to: /output/build_ps
+[  1%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/codec.cpp.o
+[  2%] Building CXX object services/forward/modules/query/CMakeFiles/fwd_temperature_codec.dir/temperature_codec.cpp.o
+[  3%] Building CXX object services/forward/modules/status/CMakeFiles/fwd_status_codec.dir/status_codec.cpp.o
+[  4%] Building CXX object services/forward/modules/ota/CMakeFiles/fwd_ota_progress.dir/ota_progress.cpp.o
+[  5%] Linking CXX static library libfwd_ota_progress.a
+[  5%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/minimc/parser.cpp.o
+[  5%] Linking CXX static library libfwd_status_codec.a
+[  6%] Linking CXX static library libfwd_temperature_codec.a
+[  6%] Built target fwd_status_codec
+[  6%] Built target fwd_ota_progress
+[  6%] Built target fwd_temperature_codec
+[  7%] Building CXX object CMakeFiles/minimcproto.dir/core/forward/transport/serial_posix.cpp.o
+[  8%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_types.cpp.o
+[  8%] Building CXX object core/firmware/CMakeFiles/firmware_hash.dir/firmware_hash.cpp.o
+[  9%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_common.cpp.o
+[ 10%] Linking CXX static library libfirmware_hash.a
+[ 11%] Linking CXX static library libminimcproto.a
+[ 11%] Built target firmware_hash
+[ 11%] Built target minimcproto
+[ 12%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_participant.cpp.o
+[ 12%] Building CXX object middleware/dbus/CMakeFiles/aisoc_dbus.dir/src/aisoc_dbus_msg.cpp.o
+[ 13%] Building CXX object middleware/dbus/CMakeFiles/aisoc_dbus.dir/src/aisoc_dbus_core.cpp.o
+[ 14%] Building CXX object middleware/dbus/CMakeFiles/aisoc_dbus.dir/src/aisoc_dbus_client.cpp.o
+[ 15%] Building CXX object middleware/dbus/CMakeFiles/aisoc_dbus.dir/src/aisoc_dbus_server.cpp.o
+[ 16%] Linking CXX static library libaisoc_dbus.a
+[ 16%] Built target aisoc_dbus
+[ 17%] Building CXX object CMakeFiles/soc-ap.dir/core/host/main.cpp.o
+[ 17%] Building CXX object CMakeFiles/soc-ap.dir/core/host/query.cpp.o
+[ 18%] Linking CXX executable bin/soc-ap
+[ 18%] Built target soc-ap
+[ 19%] Building CXX object CMakeFiles/minimc-probe.dir/tests/protocol/probe.cpp.o
+[ 20%] Linking CXX executable bin/minimc-probe
+[ 21%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_pub.cpp.o
+[ 21%] Built target minimc-probe
+[ 22%] Building CXX object CMakeFiles/test_ota_progress.dir/tests/ota/test_ota_progress.cpp.o
+[ 23%] Linking CXX executable bin/test_ota_progress
+[ 23%] Built target test_ota_progress
+[ 24%] Building CXX object services/forward/communication/CMakeFiles/fwd_comm.dir/src/fwd_comm.cpp.o
+[ 25%] Building CXX object services/forward/communication/CMakeFiles/fwd_comm.dir/src/comm_serial.cpp.o
+[ 25%] Building CXX object services/forward/communication/CMakeFiles/fwd_comm.dir/src/fwd_router.cpp.o
+[ 26%] Building CXX object services/forward/communication/CMakeFiles/fwd_comm.dir/src/fwd_rx.cpp.o
+[ 27%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds_sub.cpp.o
+[ 28%] Linking CXX static library libfwd_comm.a
+[ 28%] Built target fwd_comm
+[ 29%] Building CXX object CMakeFiles/test_status_codec.dir/tests/forward/communication/test_status_codec.cpp.o
+[ 30%] Linking CXX executable bin/test_status_codec
+[ 30%] Built target test_status_codec
+[ 31%] Building CXX object CMakeFiles/test_temperature_codec.dir/tests/forward/communication/test_temperature_codec.cpp.o
+[ 32%] Linking CXX executable bin/test_temperature_codec
+[ 32%] Built target test_temperature_codec
+[ 32%] Building CXX object middleware/dds/CMakeFiles/aisoc_dds_objects.dir/src/aisoc_dds.cpp.o
+[ 33%] Building CXX object CMakeFiles/test_fwd_comm.dir/tests/forward/communication/test_fwd_comm.cpp.o
+[ 34%] Linking CXX executable bin/test_fwd_comm
+[ 35%] Building CXX object CMakeFiles/test_fwd_routing_rx.dir/tests/forward/communication/test_fwd_routing_rx.cpp.o
+[ 35%] Built target test_fwd_comm
+[ 36%] Linking CXX executable bin/test_fwd_routing_rx
+[ 36%] Built target test_fwd_routing_rx
+[ 36%] Built target aisoc_dds_objects
+[ 37%] Linking CXX static library libaisoc_dds_static.a
+[ 37%] Linking CXX shared library libaisoc_dds.so
+[ 37%] Built target aisoc_dds_static
+[ 39%] Building CXX object CMakeFiles/ota-status-listener.dir/tools/diagnostics/ota_status_listener.cpp.o
+[ 39%] Building CXX object CMakeFiles/device-status-listener.dir/tools/diagnostics/device_status_listener.cpp.o
+[ 40%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_io.cpp.o
+[ 42%] Linking CXX executable bin/device-status-listener
+[ 42%] Linking CXX executable bin/ota-status-listener
+[ 42%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_ota.cpp.o
+[ 43%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_ota_guard.cpp.o
+[ 44%] Building CXX object services/forward/CMakeFiles/forward_service.dir/modules/ota/ota_image.cpp.o
+[ 44%] Built target aisoc_dds
+[ 45%] Building CXX object services/device_manager/CMakeFiles/device_manager.dir/device_manager_admission.cpp.o
+[ 46%] Building CXX object services/forward/CMakeFiles/forward_service.dir/modules/ota/ota_transfer.cpp.o
+[ 47%] Building CXX object services/device_manager/CMakeFiles/device_manager.dir/device_manager_state.cpp.o
+[ 47%] Built target device-status-listener
+[ 47%] Built target ota-status-listener
+[ 47%] Building CXX object services/device_manager/CMakeFiles/device_manager.dir/device_manager_dbus.cpp.o
+[ 48%] Building CXX object services/ui_gateway/CMakeFiles/ui_gateway.dir/ui_gateway_control_input.cpp.o
+[ 49%] Building CXX object services/forward/CMakeFiles/forward_service.dir/modules/ota/ota_compat.cpp.o
+[ 50%] Building CXX object services/device_manager/CMakeFiles/device_manager.dir/device_manager_service.cpp.o
+[ 51%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_protocol.cpp.o
+[ 52%] Building CXX object services/device_manager/CMakeFiles/device_manager.dir/firmware_updater.cpp.o
+[ 52%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_control.cpp.o
+[ 53%] Building CXX object services/ui_gateway/CMakeFiles/ui_gateway.dir/ui_gateway_ota.cpp.o
+[ 53%] Building CXX object services/ui_gateway/CMakeFiles/ui_gateway.dir/ui_gateway_http.cpp.o
+[ 54%] Linking CXX static library libdevice_manager.a
+[ 54%] Built target device_manager
+[ 55%] Building CXX object services/ui_gateway/CMakeFiles/ui_gateway.dir/ui_gateway_dbus.cpp.o
+[ 56%] Building CXX object services/ui_gateway/CMakeFiles/ui_gateway.dir/ui_gateway_server.cpp.o
+[ 57%] Building CXX object services/forward/CMakeFiles/forward_service.dir/modules/gcode/gcode_line.cpp.o
+[ 58%] Building CXX object services/ui_gateway/CMakeFiles/ui_gateway.dir/ui_gateway_service.cpp.o
+[ 59%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_routes.cpp.o
+[ 60%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_receive.cpp.o
+[ 61%] Building CXX object services/ui_gateway/CMakeFiles/ui_gateway.dir/ui_gateway_job_ctrl.cpp.o
+[ 62%] Building CXX object middleware/dds/CMakeFiles/test_dds_lifecycle.dir/tests/test_dds_lifecycle.cpp.o
+[ 63%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_receive_worker.cpp.o
+[ 63%] Linking CXX executable ../../bin/test_dds_lifecycle
+[ 64%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_status.cpp.o
+[ 64%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_uart.cpp.o
+[ 65%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_dbus.cpp.o
+[ 66%] Linking CXX static library libui_gateway.a
+[ 67%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_service.cpp.o
+[ 67%] Built target ui_gateway
+[ 68%] Building CXX object services/device_manager/CMakeFiles/device_manager_daemon.dir/device_manager_main.cpp.o
+[ 69%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_version.cpp.o
+[ 70%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_exchange.cpp.o
+[ 71%] Linking CXX executable ../../bin/device_manager_daemon
+[ 72%] Building CXX object services/forward/CMakeFiles/forward_service.dir/forward_temperature.cpp.o
+[ 72%] Built target test_dds_lifecycle
+[ 73%] Building CXX object services/device_manager/CMakeFiles/test_device_manager_state.dir/__/__/tests/device_manager/twin/test_device_manager_state.cpp.o
+[ 74%] Building CXX object services/device_manager/CMakeFiles/test_firmware_updater.dir/__/__/tests/device_manager/twin/test_firmware_updater.cpp.o
+[ 74%] Linking CXX static library libforward_service.a
+[ 74%] Built target forward_service
+[ 75%] Building CXX object services/device_manager/CMakeFiles/test_device_manager.dir/__/__/tests/device_manager/twin/test_device_manager.cpp.o
+[ 75%] Linking CXX executable ../../bin/test_device_manager_state
+[ 76%] Linking CXX executable ../../bin/test_firmware_updater
+[ 76%] Built target test_firmware_updater
+[ 77%] Building CXX object services/ui_gateway/CMakeFiles/ui-gateway.dir/ui_gateway_main.cpp.o
+[ 78%] Linking CXX executable ../../bin/ui-gateway
+[ 78%] Built target device_manager_daemon
+[ 78%] Building CXX object services/ui_gateway/CMakeFiles/test_ui_gateway_routes.dir/__/__/tests/ui_gateway/twin/test_ui_gateway_routes.cpp.o
+[ 79%] Linking CXX executable ../../bin/test_ui_gateway_routes
+[ 79%] Built target test_device_manager_state
+[ 80%] Building CXX object services/device_manager/CMakeFiles/test_device_manager.dir/__/forward/forward_protocol.cpp.o
+[ 81%] Building CXX object services/device_manager/CMakeFiles/test_device_manager.dir/__/__/core/forward/minimc/codec.cpp.o
+[ 82%] Building CXX object CMakeFiles/forward-serial-stability.dir/tools/diagnostics/forward_serial_stability.cpp.o
+[ 82%] Built target ui-gateway
+[ 82%] Building CXX object CMakeFiles/test_ready_exchange.dir/tests/ota/test_ready_exchange.cpp.o
+[ 83%] Linking CXX executable bin/forward-serial-stability
+[ 84%] Linking CXX executable bin/test_ready_exchange
+[ 85%] Linking CXX executable ../../bin/test_device_manager
+[ 85%] Built target test_ui_gateway_routes
+[ 85%] Building CXX object CMakeFiles/test_io_owner.dir/tests/forward/control/test_io_owner.cpp.o
+[ 85%] Built target forward-serial-stability
+[ 86%] Building CXX object CMakeFiles/test_control_admission.dir/tests/device_manager/twin/test_control_admission.cpp.o
+[ 86%] Built target test_ready_exchange
+[ 86%] Linking CXX executable bin/test_control_admission
+[ 87%] Building CXX object CMakeFiles/test_control_input.dir/tests/ui_gateway/twin/test_control_input.cpp.o
+[ 87%] Built target test_device_manager
+[ 88%] Building CXX object CMakeFiles/test_control_exchange.dir/tests/forward/control/test_control_exchange.cpp.o
+[ 89%] Linking CXX executable bin/test_control_input
+[ 89%] Built target test_control_admission
+[ 90%] Building CXX object CMakeFiles/test_query_delivery.dir/tests/integration/test_query_delivery.cpp.o
+[ 90%] Built target test_control_input
+[ 91%] Building CXX object CMakeFiles/test_active_status.dir/tests/integration/test_active_status.cpp.o
+[ 92%] Linking CXX executable bin/test_io_owner
+[ 93%] Linking CXX executable bin/test_query_delivery
+[ 94%] Linking CXX executable bin/test_control_exchange
+[ 94%] Built target test_io_owner
+[ 95%] Building CXX object services/forward/CMakeFiles/forward_service_daemon.dir/forward_main.cpp.o
+[ 95%] Built target test_query_delivery
+[ 96%] Building CXX object services/forward/CMakeFiles/test_forward_service.dir/__/__/tests/forward/twin/test_forward_service.cpp.o
+[ 96%] Built target test_control_exchange
+[ 97%] Building CXX object services/forward/CMakeFiles/test_forward_protocol.dir/__/__/tests/forward/twin/test_forward_protocol.cpp.o
+[ 98%] Linking CXX executable ../../bin/forward_service_daemon
+[ 99%] Linking CXX executable ../../bin/test_forward_protocol
+[ 99%] Built target forward_service_daemon
+[ 99%] Built target test_forward_protocol
+[ 99%] Linking CXX executable ../../bin/test_forward_service
+[ 99%] Built target test_forward_service
+[100%] Linking CXX executable bin/test_active_status
+[100%] Built target test_active_status
+
+
+$ (printer-soc) ctest --test-dir /output/build_ps --output-on-failure && python3 tests/forward/startup/test_startup_fail_fast.py /workspace/printer-soc /output/build_ps/services/forward /usr/local && python3 -m unittest services/helixscreen/platform/c308l/tests/test_tools.py tests/packaging/test_product_package.py -> 0
+Test project /output/build_ps
+      Start  1: forward_ota_progress
+ 1/23 Test  #1: forward_ota_progress .............   Passed    0.00 sec
+      Start  2: forward_comm_state_machine
+ 2/23 Test  #2: forward_comm_state_machine .......   Passed    0.00 sec
+      Start  3: forward_routing_rx
+ 3/23 Test  #3: forward_routing_rx ...............   Passed    0.00 sec
+      Start  4: forward_status_codec
+ 4/23 Test  #4: forward_status_codec .............   Passed    0.00 sec
+      Start  5: forward_temperature_codec
+ 5/23 Test  #5: forward_temperature_codec ........   Passed    0.00 sec
+      Start  6: host_runtime_smoke
+ 6/23 Test  #6: host_runtime_smoke ...............   Passed    0.11 sec
+      Start  7: forward_startup_fail_fast
+ 7/23 Test  #7: forward_startup_fail_fast ........   Passed    2.01 sec
+      Start  8: forward_serial_stability_pty
+ 8/23 Test  #8: forward_serial_stability_pty .....   Passed    4.85 sec
+      Start  9: forward_ready_connection
+ 9/23 Test  #9: forward_ready_connection .........   Passed    0.10 sec
+      Start 10: ota_forward_gateway_pty
+10/23 Test #10: ota_forward_gateway_pty ..........   Passed   22.72 sec
+      Start 11: forward_single_io_owner
+11/23 Test #11: forward_single_io_owner ..........   Passed    0.24 sec
+      Start 12: device_control_admission
+12/23 Test #12: device_control_admission .........   Passed    0.00 sec
+      Start 13: gateway_control_input
+13/23 Test #13: gateway_control_input ............   Passed    0.00 sec
+      Start 14: forward_control_transactions
+14/23 Test #14: forward_control_transactions .....   Passed    3.88 sec
+      Start 15: query_dds_delivery
+15/23 Test #15: query_dds_delivery ...............   Passed    0.27 sec
+      Start 16: active_status_pipeline
+16/23 Test #16: active_status_pipeline ...........   Passed    0.60 sec
+      Start 17: test_forward_service
+17/23 Test #17: test_forward_service .............   Passed    0.82 sec
+      Start 18: test_forward_protocol
+18/23 Test #18: test_forward_protocol ............   Passed    0.52 sec
+      Start 19: dds_participant_lifecycle
+19/23 Test #19: dds_participant_lifecycle ........   Passed    0.12 sec
+      Start 20: test_device_manager_state
+20/23 Test #20: test_device_manager_state ........   Passed    0.66 sec
+      Start 21: test_firmware_updater
+21/23 Test #21: test_firmware_updater ............   Passed    0.00 sec
+      Start 22: test_device_manager
+22/23 Test #22: test_device_manager ..............   Passed    0.80 sec
+      Start 23: test_ui_gateway_routes
+23/23 Test #23: test_ui_gateway_routes ...........   Passed    0.07 sec
+
+100% tests passed out of 23
+
+Total Test time (real) =  37.78 sec
+{"scenario": "open_failure", "passed": true, "exit_code": 2, "requests": []}
+{"scenario": "mc_timeout", "passed": true, "exit_code": 3, "requests": [[2, 1]]}
+{"scenario": "th_timeout", "passed": true, "exit_code": 3, "requests": [[2, 1], [3, 1]]}
+{"scenario": "normal", "passed": true, "exit_code": null, "requests": [[2, 1], [3, 1], [2, 1]]}
+{"scenario": "mc_boot", "passed": true, "exit_code": null, "requests": [[2, 1], [2, 1], [2, 1], [2, 28]]}
+{"scenario": "offline_allow_open_failure", "passed": true, "exit_code": 2, "requests": []}
+{"scenario": "offline_allow_mc_timeout", "passed": true, "exit_code": null, "requests": [[2, 1], [2, 1]]}
+{"scenario": "offline_allow_th_timeout", "passed": true, "exit_code": null, "requests": [[2, 1], [3, 1], [2, 1], [3, 1]]}
+{"component": "fixture", "key": "00af167e83e6d5f9bc3e6f0bc5c4fd1fbc0c4ca08db6485c402bdadf5e1d41a0", "hit": false, "seconds": 0.001611676998436451}
+{"component": "fixture", "key": "00af167e83e6d5f9bc3e6f0bc5c4fd1fbc0c4ca08db6485c402bdadf5e1d41a0", "hit": true, "seconds": 0.0014028769946889952}
+
+.....................
+----------------------------------------------------------------------
+Ran 21 tests in 0.216s
+
+OK
+
+$ (printer-soc) g++ -std=c++17 -O2 -Wall -Wextra -Iservices/helixscreen/include -Iservices/helixscreen/include/aisoc -Iservices/helixscreen/src/aisoc -Imiddleware/dbus/include -Imiddleware/dds/include -Icontracts/twin -I/usr/local/include/dbus-1.0 -I/usr/local/lib/dbus-1.0/include services/helixscreen/src/aisoc/*.cpp services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp /output/build_ps/middleware/dbus/libaisoc_dbus.a /output/build_ps/middleware/dds/libaisoc_dds.so /usr/local/lib/libdbus-1.so -lpthread -Wl,-rpath,/output/build_ps/middleware/dds:/usr/local/lib -o /output/test_aisoc_p0 && /output/test_aisoc_p0 /usr/local/bin/dbus-daemon /usr/local/bin/dbus-send -> 0
+[PASS] test_aisoc_p0
+

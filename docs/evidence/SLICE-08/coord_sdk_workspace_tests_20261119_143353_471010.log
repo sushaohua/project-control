@@ -1,0 +1,23 @@
+test_changed_copy_and_redirected_link_are_rejected (test_workspace.SDKWorkspaceTests)
+派生文件必须保持内容或准确链接目标；其他存在文件不构成通过条件。 ... ok
+test_command_failure_preserves_both_original_streams (test_workspace.SDKWorkspaceTests)
+真实失败子进程的双流原始输出应完整保留，返回码不得被进度日志掩盖。 ... ok
+test_existing_restore_preserves_user_edits_without_sync (test_workspace.SDKWorkspaceTests)
+已有客户端恢复只验证；隔离 Repo 清单前端后仍由真实 Git 拦截本地改动。 ... ok
+test_extra_and_ignored_project_outputs_are_rejected (test_workspace.SDKWorkspaceTests)
+额外未跟踪文件和 Git 忽略输出均不属于派生白名单。 ... ok
+test_lock_worktree_and_digest_tampering_are_rejected (test_workspace.SDKWorkspaceTests)
+分别拒绝错误摘要和工作树锁改动，不能用待提交 XML 替代产品候选。 ... ok
+test_long_command_reports_progress_and_timeout_preserves_output (test_workspace.SDKWorkspaceTests)
+受控模拟仅验证等待/超时分支；不把该结果当成实际 SDK 同步物证。 ... ok
+test_missing_sdk_offline_restore_fails_before_clone (test_workspace.SDKWorkspaceTests)
+离线包没有 SDK 时必须在创建普通 Git 检出前拒绝，不能隐式联网。 ... ok
+test_same_name_nested_projects_and_nineteen_derived_files (test_workspace.SDKWorkspaceTests)
+仓名不充当唯一键；真实嵌套仓和十九项派生规则必须共同保持有效。 ... ok
+test_sdk_client_overlap_and_moving_project_lock_are_rejected (test_workspace.SDKWorkspaceTests)
+拒绝客户端占用产品仓路径与移动分支锁，避免双重管理及漂移输入。 ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.690s
+
+OK
