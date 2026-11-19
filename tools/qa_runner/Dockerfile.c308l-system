@@ -14,6 +14,8 @@ RUN printf '%s\n' \
         bc=1.07.1-2build1 bison=2:3.5.1+dfsg-1 cpio=2.13+dfsg-2ubuntu0.4 \
         device-tree-compiler=1.5.1-1 fakeroot=1.24-1 file=1:5.38-4 \
         flex=2.6.4-6.2 gperf=3.1-1build1 \
+        lib32gcc-s1=10.5.0-1ubuntu1~20.04 lib32stdc++6=10.5.0-1ubuntu1~20.04 \
+        lib32z1=1:1.2.11.dfsg-2ubuntu1.5 libc6-i386=2.31-0ubuntu9.18 \
         libfakeroot=1.24-1 libglib2.0-0=2.64.6-1~ubuntu20.04.9 \
         libmagic-mgc=1:5.38-4 libmagic1=1:5.38-4 libpopt0=1.16-14 \
         libsigsegv2=2.12-2 libssl-dev=1.1.1f-1ubuntu2.24 libtool=2.4.6-14 \
