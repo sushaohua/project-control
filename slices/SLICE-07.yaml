@@ -1,6 +1,6 @@
 # V2 垂直切片 SLICE-07 (P0-B)：固定目录 MC/TH 本地 OTA、ECDSA-P256 写刷前验签与并发/互斥/急停软件联调
 slice_id: "SLICE-07"
-revision: 1
+revision: 2
 batch_id: "BATCH-HELIX-P0-01"
 profile: "host-software"
 depends_on: ["SLICE-06"]
@@ -15,14 +15,12 @@ subtasks:
     repo: "printer-soc"
     branch: "main"
     allowed_paths:
-      - "tools/build_c308l_services.py"
       - "tools/package_c308l_product.py"
       - "tools/sign_mcu_firmware.py"
       - "boards/c308l-aw419/rootfs-overlay/etc/printer-soc/fw_signing_pub.pem"
       - "core/firmware/CMakeLists.txt"
       - "core/firmware/firmware_hash.h"
       - "core/firmware/firmware_hash.cpp"
-      - "services/forward/modules/ota/CMakeLists.txt"
       - "services/forward/modules/ota/ota_image.cpp"
       - "services/forward/forward_ota.cpp"
       - "services/device_manager/firmware_updater.cpp"
@@ -31,6 +29,9 @@ subtasks:
       - "services/helixscreen/include/ui_settings_ota.h"
       - "services/helixscreen/src/ui/ui_settings_ota.cpp"
       - "services/helixscreen/ui_xml/ota_local_overlay.xml"
+      - "services/helixscreen/src/ui/ui_settings_about.cpp"
+      - "services/helixscreen/ui_xml/about_settings_overlay.xml"
+      - "services/helixscreen/src/xml_registration.cpp"
       - "services/helixscreen/tests/unit/**"
       - "tests/ota/**"
       - "tests/device_manager/twin/test_firmware_updater.cpp"
@@ -39,24 +40,34 @@ subtasks:
       protected_globs:
         - "services/helixscreen/src/ui/**"
         - "services/helixscreen/include/ui_*.h"
+        - "services/helixscreen/src/xml_registration.cpp"
       max_protected_lines: 400
 
 integration_cmd: >-
   python3 project-control/tools/gates/fast_gate.py --workspace . --slice project-control/slices/SLICE-07.yaml &&
   python3 project-control/tools/sync_contracts.py --workspace . &&
-  make -C printer-soc/services/helixscreen test-aisoc &&
+  python3 -m unittest discover -s printer-soc/tests/packaging -p "test_*.py" -v &&
+  rm -rf /tmp/s7_int_aisoc &&
+  cmake -S printer-soc -B /tmp/s7_int_aisoc -DSOC_AP_BUILD_SERVICES=ON -DBUILD_TESTING=OFF -DTHIRDPARTY_INSTALL_DIR="$(pwd)/printer-soc/third_party/install" &&
+  cmake --build /tmp/s7_int_aisoc --target aisoc_dbus aisoc_dds -j4 &&
+  g++ -std=c++17 -O2 -Wall -Wextra -Iprinter-soc/services/helixscreen/include -Iprinter-soc/services/helixscreen/include/aisoc -Iprinter-soc/services/helixscreen/src/aisoc -Iprinter-soc/middleware/dbus/include -Iprinter-soc/middleware/dds/include -Iprinter-soc/contracts/twin -Iprinter-soc/third_party/install/include/dbus-1.0 -Iprinter-soc/third_party/install/lib/dbus-1.0/include printer-soc/services/helixscreen/src/aisoc/*.cpp printer-soc/services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp /tmp/s7_int_aisoc/middleware/dbus/libaisoc_dbus.a /tmp/s7_int_aisoc/middleware/dds/libaisoc_dds.so printer-soc/third_party/install/lib/libdbus-1.so -lpthread -Wl,-rpath,/tmp/s7_int_aisoc/middleware/dds:"$(pwd)/printer-soc/third_party/install/lib" -o /tmp/s7_int_aisoc/test_aisoc_p0 &&
+  LD_LIBRARY_PATH="$(pwd)/printer-soc/third_party/install/lib" /tmp/s7_int_aisoc/test_aisoc_p0 "$(pwd)/printer-soc/third_party/install/bin/dbus-daemon" "$(pwd)/printer-soc/third_party/install/bin/dbus-send" &&
+  rm -rf /tmp/s7_int_aisoc &&
+  python3 -c 'import pathlib, subprocess; log=pathlib.Path("project-control/docs/evidence/SLICE-07/host_c308l_arm_build_and_pack.log").read_text(); head=subprocess.check_output(["git","-C","printer-soc","rev-parse","HEAD"], text=True).strip(); assert f"PRINTER_SOC_COMMIT={head}" in log and "SDK_LOCK_SHA256=ea8f4eec4425f1624af05a2cfc529c621006f2feb40b6b0bc1fa254b3312e13e" in log and "FW_SIGNING_PUB_MODE=444" in log and "[PASS] HOST_C308L_ARM_BUILD_AND_PACK" in log, "host C308L ARM build log mismatch"' &&
   echo "[PASS] SLICE-07 integration checks finished"
 
 qa_commands:
   - {subpath: "printer-soc", kind: "build", command: "cmake -S . -B /output/build_ps -DSOC_AP_BUILD_SERVICES=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps -j4"}
-  - {subpath: "printer-soc", kind: "test", command: "ctest --test-dir /output/build_ps --output-on-failure && python3 tests/ota/test_ota_e2e.py /workspace/printer-soc /output/build_ps /usr/local"}
+  - {subpath: "printer-soc", kind: "test", command: "ctest --test-dir /output/build_ps --output-on-failure && python3 tests/ota/test_ota_e2e.py /workspace/printer-soc /output/build_ps/bin /usr/local && python3 -m unittest tests/packaging/test_product_package.py"}
+  - {subpath: "printer-soc", kind: "test", command: "g++ -std=c++17 -O2 -Wall -Wextra -Iservices/helixscreen/include -Iservices/helixscreen/include/aisoc -Iservices/helixscreen/src/aisoc -Imiddleware/dbus/include -Imiddleware/dds/include -Icontracts/twin -I/usr/local/include/dbus-1.0 -I/usr/local/lib/dbus-1.0/include services/helixscreen/src/aisoc/*.cpp services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp /output/build_ps/middleware/dbus/libaisoc_dbus.a /output/build_ps/middleware/dds/libaisoc_dds.so /usr/local/lib/libdbus-1.so -lpthread -Wl,-rpath,/output/build_ps/middleware/dds:/usr/local/lib -o /output/test_aisoc_p0 && /output/test_aisoc_p0 /usr/local/bin/dbus-daemon /usr/local/bin/dbus-send"}
 
 acceptance_criteria:
   - "DEC-SCREEN-02=B：首版仅从固定固件目录扫描 fw_mc.bin / fw_th.bin（不含 TF 卡或 U 盘导入）"
-  - "DEC-SCREEN-08=B：sign_mcu_firmware.py 与 ota_image.cpp:verify_image() 统一覆盖 trailer[0..52] ECDSA-P256 签名，覆盖合法签名包/未签名包/坏签名/缺失公钥 4 类验收，未通过返回 PACKAGE_SIGNATURE_INVALID 且 0 帧 0x1D/0x20；文档继续注明 MC FAT32 U 盘救援无 ECDSA 校验边界"
-  - "DEC-SCREEN-03 有条件 A：补齐并发 OTA、维护互斥与急停联动验收，UI 明确区分 后台已锁定(BUSY) 与 设备已确认急停"
+  - "DEC-SCREEN-08=B：sign_mcu_firmware.py 与 ota_image.cpp:verify_image() / firmware_updater.cpp 统一覆盖 trailer[0..51] (52B) ECDSA-P256 签名，Docker host-software 沙箱覆盖合法签名包/未签名全0包/坏签名或篡改包/缺失公钥 4 类验收，未通过原子返回 PACKAGE_SIGNATURE_INVALID 且 0 帧 0x1D/0x20；文档继续注明 MC FAT32 U 盘救援无 ECDSA 校验边界"
+  - "DEC-SCREEN-03 有条件 A：Docker host-software 沙箱补齐并发 OtaCommand 拒 BUSY、维护锁互斥与急停联动（正常急停确认 vs OTA 期 BUSY 区分）验收，AisocConnection 真实订阅 DDS state/ota_status 并校验 SUCCEEDED 后重启回 App(Bit31=0) 与 boot_id 跃迁，OtaLocalOverlay 挂载至 AboutSettingsOverlay 并明确区分 后台已锁定(BUSY) 与 设备已确认急停"
+  - "选项 B 宿主机实证：针对同一锁定 printer-soc 提交与锁定 sdk/c308l 实跑 C308L ARM 交叉构建打包（静态链接 SDK libcrypto.a、/etc/printer-soc/fw_signing_pub.pem 0444、readelf -h -d 闭合与 <=44MiB），完整原始证据归档于 project-control/docs/evidence/SLICE-07/host_c308l_arm_build_and_pack.log"
 
 eng_delivery_requirements:
-  - "1. 所有新增/非 protected_globs 文件（含 core/firmware/**、services/forward/**、services/device_manager/firmware_updater.cpp、services/helixscreen/{include,src}/aisoc/**、tools/*.py）严格遵守单函数<=50行、入参<=4个、全中文注释。"
-  - "2. 签发端 tools/sign_mcu_firmware.py 与验签端 ota_image.cpp / firmware_updater.cpp 统一 ECDSA-P256 对 trailer[0..52] 签名覆盖范围，并在 CMake(qa-sandbox -lcrypto) 与 C308L ARM(sdk openssl-1.1.1f libcrypto.a) 双端编通。"
-  - "3. 完成后执行 git -C printer-soc fetch origin main && rebase origin/main && push origin main 保持线性历史确保 GitLab 可检出 40 位 candidate_commit，写自检报告到 project-control/docs/evidence/SLICE-07/ENG-AP_selfcheck.md。"
+  - "1. 严守 <=20 文件预算；所有新增/非 protected_globs 文件（含 core/firmware/**、services/forward/**、services/device_manager/firmware_updater.cpp、services/helixscreen/{include,src}/aisoc/**、tools/*.py）严格遵守单函数<=50行、入参<=4个、全中文注释。"
+  - "2. qa-sandbox:20261029 无 /usr/include/openssl 头文件且无 Python cryptography，但有 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 与 /usr/bin/openssl 1.1.1f：tools/sign_mcu_firmware.py 必须仅用标准库+openssl CLI；core/firmware 必须支持 C308L SDK libcrypto.a、宿主 OpenSSL::Crypto 与无头文件容器 dlopen('libcrypto.so.1.1') 三模式（校验 P-256 NID=415），并在宿主机对普通 cmake 与 -DAISOC_FORCE_DLOPEN_LIBCRYPTO=ON 双路径实测全过。"
+  - "3. 完成后执行 git -C printer-soc fetch origin main && rebase origin/main && push origin main 保持线性历史确保 GitLab 可检出 40 位 candidate_commit，写自检报告到 project-control/docs/evidence/SLICE-07/ENG-AP_selfcheck.md（不改 slices/ 与 ledger.md）。"
