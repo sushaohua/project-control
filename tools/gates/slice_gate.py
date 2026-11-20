@@ -45,6 +45,12 @@ def _run_shell_step(cmd: str, cwd: Path, timeout_sec: int = 180) -> Tuple[int, s
         return 124, f"命令执行超时 ({timeout_sec}s): {err}"
     except OSError as err:
         return 126, f"命令启动失败: {err}"
+def _root_head(workspace: Path) -> Tuple[str, str]:
+    """读取根入口仓当前 HEAD 提交与分支；非 Git 测试目录返回空串。"""
+    ws = json.loads((workspace / "workspace.json").read_text()) if (workspace / "workspace.json").is_file() else {}
+    br, gdir = (ws.get("workspace_project") or {}).get("branch", "main"), workspace / ".workspace-git"
+    args = [f"--git-dir={gdir}", f"--work-tree={workspace}"] if (gdir / "HEAD").is_file() else ["-C", str(workspace)] if (workspace / ".git").exists() else []
+    return (subprocess.check_output(["git", *args, "rev-parse", "HEAD"], text=True, env=git_handoff._git_env()).strip(), br) if args else ("", br)
 def _collect_locked_commits(workspace: Path, subtasks: List[dict]) -> Dict[str, str]:
     """读取切片涉及各子仓当前的完整 40 位 HEAD Commit SHA。"""
     return {st["repo"]: subprocess.check_output(["git", "-C", str(workspace / st["repo"]), "rev-parse", "HEAD"], text=True).strip() for st in subtasks}
@@ -53,13 +59,16 @@ def input_repositories(spec: dict) -> List[str]:
     return list(dict.fromkeys([item["repo"] for item in spec["subtasks"]] + spec.get("input_repositories", [])))
 def input_fingerprint(workspace: Path, spec: dict) -> str:
     """以 workspace 当前提交、spec 内容及工作区清单形成完整输入摘要。"""
-    payload = {"spec": spec, "commits": _collect_locked_commits(workspace, [{"repo": n} for n in input_repositories(spec)])}
+    payload = {"spec": spec, "root_commit": _root_head(workspace)[0], "commits": _collect_locked_commits(workspace, [{"repo": n} for n in input_repositories(spec)])}
     if (workspace / "workspace.json").is_file():
         payload["workspace_manifest"] = hashlib.sha256((workspace / "workspace.json").read_bytes()).hexdigest()
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 def _qa_command(workspace: Path, spec: dict, commits: dict, qa_dir: Path) -> list:
     """按 Runner 的实际参数接口生成命令；四参数分别为工作区、切片、候选与证据目录。"""
     cmd = [sys.executable, str(workspace / "project-control/tools/qa_runner/qa_runner.py"), "--task", spec["slice_id"], "--revision", str(spec.get("revision", 1)), "--profile", spec.get("profile", "host-software"), "--output-dir", str(qa_dir)]
+    root_sha, root_br = _root_head(workspace)
+    if root_sha:
+        cmd.extend(["--root-commit", root_sha, "--root-ref", f"refs/heads/{root_br}"])
     branches = {r["path"]: r["branch"] for r in json.loads((workspace / "workspace.json").read_text())["repositories"]}
     branches.update({item["repo"]: item["branch"] for item in spec["subtasks"]})
     for name, commit in commits.items():
@@ -84,10 +93,11 @@ def _verify_qa_evidence(qa_dir: Path, spec: dict, commits: Dict[str, str], proof
     return "" if {r.get("name"): r.get("commit") for r in (ld.get("repositories") or []) if isinstance(r, dict)} == commits else "server_lock.json 锁定提交不一致"
 def _run_docker_qa(workspace: Path, spec: dict, commits: Dict[str, str], out_dir: Path) -> Tuple[Optional[dict], Optional[dict]]:
     """调用 `qa_runner.py` 执行隔离容器回归，支持同输入同镜像已通过证据复用。"""
-    qa_dir, proof_path = out_dir / "docker_qa", out_dir / "docker_qa/server_qa.json"
+    qa_dir, proof_path, root_sha = out_dir / "docker_qa", out_dir / "docker_qa/server_qa.json", _root_head(workspace)[0]
     qa_dir.mkdir(parents=True, exist_ok=True)
     reused = git_handoff.try_reuse_qa(workspace, spec, commits, qa_dir)
-    if reused and not _verify_qa_evidence(qa_dir, spec, commits, reused):
+    root_ok = lambda: not root_sha or json.loads((qa_dir / "server_lock.json").read_text(encoding="utf-8")).get("root_commit") == root_sha
+    if reused and not _verify_qa_evidence(qa_dir, spec, commits, reused) and root_ok():
         return reused, None
     blk = lambda r: (None, _write_gate_verdict(out_dir, spec, {"commits": commits, "status": "BLOCKED", "stage": "docker_qa", "reason": r, "next_step": "核查 Docker QA 环境与当次证据后使用新目录重跑（不扣返修）"}))
     try:
@@ -105,13 +115,13 @@ def _run_docker_qa(workspace: Path, spec: dict, commits: Dict[str, str], out_dir
         return blk(f"server_qa.json 解析失败: {err}")
     if proc.returncode != 0:
         return (None, _write_gate_verdict(out_dir, spec, {"commits": commits, "status": "FAILED", "stage": "docker_qa", "reason": proof.get("summary") or "Docker 隔离沙箱测试失败", "next_step": "查阅 docker_runtime_log 与 server_verdict_json 修复失败项"})) if proof.get("passed") is False else blk(f"Docker QA 退出码与当次证据冲突 (rc={proc.returncode}, passed={proof.get('passed')})")
-    err = _verify_qa_evidence(qa_dir, spec, commits, proof)
+    err = _verify_qa_evidence(qa_dir, spec, commits, proof) or ("" if root_ok() else "server_lock.json 缺失或错配 root_commit")
     return blk(f"Docker QA 退出码为 0 但当次证据未确认通过: {err}") if err else (proof, None)
 def _build_review_prompt(spec: dict, commits: Dict[str, str], qa_proof: dict, int_log: str = "") -> str:
     """构造仅含精确元数据、验收条款与客观沙箱摘要的双轴冷审提示词。"""
     criteria = "\n".join(f"- {item}" for item in spec.get("acceptance_criteria", []))
-    vp, rp, af = qa_proof.get("server_verdict", {}).get("path", ""), qa_proof.get("runtime_log", {}).get("path", ""), qa_proof.get("artifacts") or {}
-    return f"独立只读双轴冷审切片: {spec['slice_id']}\n契约: {spec.get('contract_ref')}\n方案: {spec.get('plan_ref')}\n锁定提交: {json.dumps(commits, ensure_ascii=False)}\n容器: {qa_proof.get('sandbox', {}).get('container_id', 'ok')}\n当前沙箱产物: server_verdict={vp} runtime_log={rp} integration_log={int_log} archived_artifacts={json.dumps(af, ensure_ascii=False)}\n验收判据:\n{criteria}\n请严格按 BLOCKER / MINOR / NIT 分级。"
+    vp, lp, rp, af = qa_proof.get("server_verdict", {}).get("path", ""), qa_proof.get("server_lock", {}).get("path", ""), qa_proof.get("runtime_log", {}).get("path", ""), qa_proof.get("artifacts") or {}
+    return f"独立只读双轴冷审切片: {spec['slice_id']}\n契约: {spec.get('contract_ref')}\n方案: {spec.get('plan_ref')}\n锁定提交: {json.dumps(commits, ensure_ascii=False)}\n容器: {qa_proof.get('sandbox', {}).get('container_id', 'ok')}\n当前沙箱产物: server_verdict={vp} server_lock={lp} runtime_log={rp} integration_log={int_log} archived_artifacts={json.dumps(af, ensure_ascii=False)}\n验收判据:\n{criteria}\n请严格按 BLOCKER / MINOR / NIT 分级。"
 def append_ledger_entry(ledger_path: Path, entry: dict) -> None:
     """将通过四阶漏斗的切片记录与 `MINOR` 技术债幂等追加写入 `slices/ledger.md`。"""
     text = ledger_path.read_text(encoding="utf-8") if ledger_path.is_file() else ""
@@ -136,7 +146,7 @@ def _run_codex_stage(workspace: Path, spec: dict, commits: Dict[str, str], ctx: 
     blockers = [f for f in v.payload.get("findings", []) if f.get("severity") == "BLOCKER"]
     top = f"{blockers[0]['id']}: {blockers[0]['message'][:120]}" if blockers else "存在阻断问题"
     st, reason, nxt = {"APPROVED": ("PASSED", f"四阶门禁全绿 (0 BLOCKER, {len(v.minor_findings)} MINOR)", "申请 Human Gate #2 执行真机 HIL 验收" if spec.get("requires_hil_immediately") else "已登记 SW-Verified，可推进后续切片"), "BLOCKED": ("BLOCKED", "独立 Codex 判定环境或物证缺失阻塞", "按 codex_final_json 补齐环境或物证后重跑（不扣返修）"), "REJECTED": ("FAILED", f"独立 Codex 拒单 ({v.blocker_count} BLOCKER): {top}", "按 codex_final_json 修复 BLOCKER 项后重过四阶门禁")}[v.decision]
-    res = _write_gate_verdict(out_dir, spec, {"commits": commits, "input_fingerprint": ctx["fp"], "status": st, "stage": "codex", "decision": v.decision, "codex_session": v.session_id, "blocker_count": v.blocker_count, "findings": v.payload["findings"], "reason": reason, "next_step": nxt})
+    res = _write_gate_verdict(out_dir, spec, {"commits": commits, **({"root_commit": _root_head(workspace)[0]} if _root_head(workspace)[0] else {}), "input_fingerprint": ctx["fp"], "status": st, "stage": "codex", "decision": v.decision, "codex_session": v.session_id, "blocker_count": v.blocker_count, "findings": v.payload["findings"], "reason": reason, "next_step": nxt})
     if st == "PASSED":
         append_ledger_entry(workspace / spec.get("ledger_ref", "project-control/slices/ledger.md"), {"batch_id": spec["batch_id"], "slice_id": spec["slice_id"], "status": "SW-Verified", "commits_short": ",".join(f"{k}:{v[:7]}" for k, v in commits.items()), "container_id": ctx["qa_proof"].get("sandbox", {}).get("container_id", "n/a")[:12], "codex_session": v.session_id, "verdict_sha256": res["verdict_sha256"], "minors": v.minor_findings, "input_fingerprint": ctx["fp"]})
     return res

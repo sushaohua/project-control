@@ -232,14 +232,16 @@ def _qa_matches(qa_dir: Path, spec: dict, commits: Dict[str, str], exp_img: str)
 def try_reuse_qa(ws: Path, spec: dict, commits: Dict[str, str], qa_dir: Path) -> Optional[dict]:
     """同候选、同命令与同镜像下复用已验证的 Docker QA 证据并写入目标目录。"""
     qa_root, cfg_p = ws / "project-control/docs/evidence" / spec["slice_id"], ws / "project-control/config/qa_runner/default_config.yaml"
-    prof, exp_img = spec.get("profile", "host-software"), ""
+    prof, exp_img, gdir = spec.get("profile", "host-software"), "", ws / ".workspace-git"
+    g_args = [f"--git-dir={gdir}", f"--work-tree={ws}"] if (gdir / "HEAD").is_file() else ["-C", str(ws)] if (ws / ".git").exists() else []
+    exp_root = subprocess.check_output(["git", *g_args, "rev-parse", "HEAD"], text=True, env=_git_env()).strip() if g_args else ""
     if cfg_p.is_file():
         sb = (yaml.safe_load(cfg_p.read_text(encoding="utf-8")) or {}).get("sandbox") or {}
         exp_img = sb.get("image", "") if prof == "host-software" else (sb.get("c308l_system_image_digest") if prof == "c308l-system" else sb.get("image_digest")) or ""
     for src in sorted(qa_root.glob("run_*/docker_qa"), reverse=True) if qa_root.is_dir() else []:
         try:
             sq = _qa_matches(src, spec, commits, exp_img)
-            if not sq: continue
+            if not sq or (exp_root and json.loads((src / "server_lock.json").read_text()).get("root_commit") != exp_root): continue
             qa_dir.mkdir(parents=True, exist_ok=True)
             for fn in ("server_qa.json", "server_verdict.json", "server_lock.json", "checkout.log", "runtime.log"):
                 if (src / fn).is_file(): shutil.copy2(src / fn, qa_dir / fn)
