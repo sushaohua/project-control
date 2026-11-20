@@ -1,0 +1,105 @@
+=== [1] UNITTEST: test_release_product.py ===
+test_escaping_manifest_path (test_release_product.ReleaseProductTest)
+拒绝安装树索引通过父路径或已存在目录链接逃逸。 ... ok
+test_extract_ubifs_rootfs_checks (test_release_product.ReleaseProductTest)
+核验 extract_ubifs_rootfs 拦截缺失工具、非零退出与非唯一提取目录。 ... + /tmp/tmph1xvgi_w/bin/ubireader_extract_files -k -o /tmp/tmph1xvgi_w/o1 /tmp/tmph1xvgi_w/rootfs.ubi
++ /tmp/tmph1xvgi_w/bin/ubireader_extract_files -k -o /tmp/tmph1xvgi_w/o2 /tmp/tmph1xvgi_w/rootfs.ubi
++ /tmp/tmph1xvgi_w/bin/ubireader_extract_files -k -o /tmp/tmph1xvgi_w/o3 /tmp/tmph1xvgi_w/rootfs.ubi
++ /tmp/tmph1xvgi_w/bin/ubireader_extract_files -k -o /tmp/tmph1xvgi_w/o4 /tmp/tmph1xvgi_w/rootfs.ubi
+ok
+test_filtered_filelist_folds_share_with_spaces (test_release_product.ReleaseProductTest)
+产品共享目录折叠为通配符条目，允许内部包含带空格的图片资源。 ... ok
+test_filtered_runtime_filelist (test_release_product.ReleaseProductTest)
+过滤清单保存空目录、符号链接和目标 SDK 的 Python 依赖。 ... ok
+test_handoff_and_unified_promotion (test_release_product.ReleaseProductTest)
+核验 --handoff 交接失败/摘要不符/06-07-08 缺项/错 HIL 拒绝及全通过晋级。 ... + /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmppa21yhj4/work/aml_upgrade_package.img
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmppa21yhj4/work/aml_upgrade_package.img /tmp/tmppa21yhj4/work/tmpurpi4k5z
++ /tmp/tmppa21yhj4/bin/ubireader_extract_files -k -o /tmp/tmppa21yhj4/work/tmptq8z4zls/ubi /tmp/tmppa21yhj4/work/rootfs.ubi
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmppa21yhj4/work/aml_upgrade_package.img
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmppa21yhj4/work/aml_upgrade_package.img /tmp/tmppa21yhj4/work/tmp83dtk6w9
++ /tmp/tmppa21yhj4/bin/ubireader_extract_files -k -o /tmp/tmppa21yhj4/work/tmp94gvketc/ubi /tmp/tmppa21yhj4/work/rootfs.ubi
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmppa21yhj4/work/aml_upgrade_package.img
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmppa21yhj4/work/aml_upgrade_package.img /tmp/tmppa21yhj4/work/tmpumr6ayt4
++ /tmp/tmppa21yhj4/bin/ubireader_extract_files -k -o /tmp/tmppa21yhj4/work/tmp528lqc46/ubi /tmp/tmppa21yhj4/work/rootfs.ubi
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmppa21yhj4/work/aml_upgrade_package.img
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmppa21yhj4/work/aml_upgrade_package.img /tmp/tmppa21yhj4/work/tmpnvyjlxjb
++ /tmp/tmppa21yhj4/bin/ubireader_extract_files -k -o /tmp/tmppa21yhj4/work/tmpqiwe0grn/ubi /tmp/tmppa21yhj4/work/rootfs.ubi
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmppa21yhj4/work/aml_upgrade_package.img
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmppa21yhj4/work/aml_upgrade_package.img /tmp/tmppa21yhj4/work/tmpw3__h_ll
++ /tmp/tmppa21yhj4/bin/ubireader_extract_files -k -o /tmp/tmppa21yhj4/work/tmpsse0rxyj/ubi /tmp/tmppa21yhj4/work/rootfs.ubi
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmppa21yhj4/work/aml_upgrade_package.img
++ /tmp/tmppa21yhj4/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmppa21yhj4/work/aml_upgrade_package.img /tmp/tmppa21yhj4/work/tmp4yb70bhm
++ /tmp/tmppa21yhj4/bin/ubireader_extract_files -k -o /tmp/tmppa21yhj4/work/tmptve8e_wn/ubi /tmp/tmppa21yhj4/work/rootfs.ubi
++ /usr/bin/python3 -B /tmp/tmppa21yhj4/ws/test_harness/hil/tests/test_helix_screen_integration.py --candidate /tmp/tmppa21yhj4/work/release-manifest.json --evidence /tmp/tmppa21yhj4/ws/project-control/docs/evidence/SLICE-08/run_01/hil_receipt.json --board /home/sushaohua/workspace/ai_soc_project/printer-soc/boards/c308l-aw419/board.yaml
+ok
+test_immutable_document (test_release_product.ReleaseProductTest)
+同一候选重复读取成功，任何改变均保留原件并被拒绝。 ... ok
+test_ota_policy_compat_locking_and_build_forward (test_release_product.ReleaseProductTest)
+验证旧清单默认兼容 signature-required、拒绝未知策略、计划锁及 --ota-signing-policy 透传。 ... /tmp/tmppa21yhj4/work/release-manifest.json
++ /tmp/tmpvhz_oobk/u/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmpvhz_oobk/u/work/aml_upgrade_package.img
++ /tmp/tmpvhz_oobk/u/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmpvhz_oobk/u/work/aml_upgrade_package.img /tmp/tmpvhz_oobk/u/work/tmpm6qjzfmj
++ /tmp/tmpvhz_oobk/u/bin/ubireader_extract_files -k -o /tmp/tmpvhz_oobk/u/work/tmpzfpe828c/ubi /tmp/tmpvhz_oobk/u/work/rootfs.ubi
+ok
+test_post_strip_map_with_fakeroot_state (test_release_product.ReleaseProductTest)
+fakeroot -s 复制 0444 文件后可凭状态文件验过；权限篡改为 0644 必须拒绝。 ... ok
+test_post_strip_map_without_fakeroot_state (test_release_product.ReleaseProductTest)
+无 fakeroot 状态文件时直接读取磁盘权限，0644 拒绝而真实 0444 通过。 ... ok
+test_product_archive_checked (test_release_product.ReleaseProductTest)
+真正归档文件与链接均参与校验，外置树被更改后摘要核对失败。 ... ok
+test_refuses_incomplete_promotion (test_release_product.ReleaseProductTest)
+缺少固件或根仓来源时晋级直接拒绝，并保留候选及工作区状态。 ... ok
+test_vendor_build_uses_fakeroot_only_for_non_root (test_release_product.ReleaseProductTest)
+uid=0 直接执行 make global；非 root 宿主机通过 fakeroot -s 持久化状态。 ... ok
+test_verified_patch_inputs (test_release_product.ReleaseProductTest)
+补丁内容与 SHA-256 锁相符，修改补丁内容后同一检查拒绝。 ... ok
+test_verify_candidate_ubifs_and_tar_recovery (test_release_product.ReleaseProductTest)
+移走 sdk-image 与产品树后深检全过；过滤/UBI/AML/权限/链接/ELF 异常均拒绝。 ... + /tmp/tmpaqsiqnxu/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmpaqsiqnxu/work/aml_upgrade_package.img
++ /tmp/tmpaqsiqnxu/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmpaqsiqnxu/work/aml_upgrade_package.img /tmp/tmpaqsiqnxu/work/tmp65xzsmxo
++ /tmp/tmpaqsiqnxu/bin/ubireader_extract_files -k -o /tmp/tmpaqsiqnxu/work/tmp7hvsb8e7/ubi /tmp/tmpaqsiqnxu/work/rootfs.ubi
++ /tmp/tmpzlj7vzvm/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmpzlj7vzvm/work/aml_upgrade_package.img
++ /tmp/tmpzlj7vzvm/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmpzlj7vzvm/work/aml_upgrade_package.img /tmp/tmpzlj7vzvm/work/tmprlleu303
++ /tmp/tmpzlj7vzvm/bin/ubireader_extract_files -k -o /tmp/tmpzlj7vzvm/work/tmp3_5adbml/ubi /tmp/tmpzlj7vzvm/work/rootfs.ubi
++ /tmp/tmp7ffn0af2/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp7ffn0af2/work/aml_upgrade_package.img
++ /tmp/tmp7ffn0af2/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp7ffn0af2/work/aml_upgrade_package.img /tmp/tmp7ffn0af2/work/tmp_w2z_b4x
++ /tmp/tmp9z3xxxq7/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp9z3xxxq7/work/aml_upgrade_package.img
++ /tmp/tmp9z3xxxq7/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp9z3xxxq7/work/aml_upgrade_package.img /tmp/tmp9z3xxxq7/work/tmptmddu8xs
++ /tmp/tmp9z3xxxq7/bin/ubireader_extract_files -k -o /tmp/tmp9z3xxxq7/work/tmph5tync3j/ubi /tmp/tmp9z3xxxq7/work/rootfs.ubi
++ /tmp/tmpubo5nlg0/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmpubo5nlg0/work/aml_upgrade_package.img
++ /tmp/tmpubo5nlg0/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmpubo5nlg0/work/aml_upgrade_package.img /tmp/tmpubo5nlg0/work/tmpw5r3hq_o
++ /tmp/tmpubo5nlg0/bin/ubireader_extract_files -k -o /tmp/tmpubo5nlg0/work/tmpao25jtqg/ubi /tmp/tmpubo5nlg0/work/rootfs.ubi
++ /tmp/tmpimtvdy5u/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmpimtvdy5u/work/aml_upgrade_package.img
++ /tmp/tmpimtvdy5u/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmpimtvdy5u/work/aml_upgrade_package.img /tmp/tmpimtvdy5u/work/tmptxf94xem
++ /tmp/tmpimtvdy5u/bin/ubireader_extract_files -k -o /tmp/tmpimtvdy5u/work/tmpgz53j6kt/ubi /tmp/tmpimtvdy5u/work/rootfs.ubi
+ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 2.249s
+
+OK
+=== [2] CONTAINER PATH SIMULATION CHECK (/workspace + /output/w) ===
+CONTAINER_SIM_PASS: 仅 plan 阶段支持 --hil-ota-integrity-only
+=== [3] NEW LINEAR COMMIT ON printer-soc main ===
+ tests/integration/test_release_product.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+[main 8f26e979] test(release): use /output/w in preflight check under /workspace QA container
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+8f26e979 test(release): use /output/w in preflight check under /workspace QA container
+3d020848 fix(c308l): resolve r14 HIL defects and add integrity-only-hil OTA policy
+962ce1a6 feat(release): support UBIFS candidate deep verification and handoff promotion
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+8f26e97902849fd6d90162e9136f08dd3a52658d
+commit 8f26e97902849fd6d90162e9136f08dd3a52658d
+Author: sushaohua <sushaohua@craftdance3d.com>
+Date:   Fri Nov 20 17:03:40 2026 +0800
+
+    test(release): use /output/w in preflight check under /workspace QA container
+
+ tests/integration/test_release_product.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+=== [4] FAST-GATE CHECKS ===
+FAST_GATE_FILE_EXIT=0
+FAST_GATE_SLICE_EXIT=0
