@@ -10,11 +10,20 @@ plan_ref: "project-control/docs/planning/git_server_handoff_implementationplan_2
 contract_ref: "project-control/contracts/git_handoff.schema.json"
 requires_hil_immediately: false
 
-# GH-01~GH-03 由 COORD/控制仓工具责任方在获批白名单内实现；GH-04 待提取器实物验证及 OCI/LFS 阻塞解除后由 ENG-AP 激活。
-subtasks: []
+# GH-01~GH-05 单机能力及 GH-04 发布复核已实现；跨机共享存储与 QA 镜像远端拉取保持 PENDING，第 1 项 DEFERRED。
+subtasks:
+  - role: "ENG-AP"
+    repo: "printer-soc"
+    branch: "main"
+    allowed_paths:
+      - "tools/release_product.py"
+      - "tests/integration/test_release_product.py"
+    diff_budget: {max_files: 4, protected_globs: [], max_protected_lines: 0}
 
 integration_cmd: >-
   python3 -B project-control/tools/gates/fast_gate.py --workspace . --files
+  printer-soc/tools/release_product.py
+  printer-soc/tests/integration/test_release_product.py
   project-control/tools/workflow/git_handoff.py
   project-control/tools/workflow/run_slice_batch.py
   project-control/tools/gates/slice_gate.py
@@ -23,13 +32,17 @@ integration_cmd: >-
   project-control/tools/test_qa_runner.py &&
   python3 -B -m unittest discover -s tools -p "test_workspace.py" -v &&
   python3 -B -m unittest discover -s project-control/tools -p "test_v2_gates.py" -v &&
-  python3 -B -m unittest discover -s project-control/tools -p "test_qa_runner.py" -v
+  python3 -B -m unittest discover -s project-control/tools -p "test_qa_runner.py" -v &&
+  python3 -B -m unittest discover -s printer-soc/tests/integration -p "test_release_product.py" -v &&
+  python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test
 
 qa_commands:
   - {subpath: "project-control", kind: "test", command: "python3 -B -m unittest discover -s tools -p 'test_v2_gates.py' -v && python3 -B -m unittest discover -s tools -p 'test_qa_runner.py' -v"}
+  - {subpath: "printer-soc", kind: "test", command: "python3 -B -m unittest discover -s tests/integration -p 'test_release_product.py' -v"}
+  - {subpath: "test_harness", kind: "test", command: "python3 -B hil/tests/test_helix_screen_integration.py --self-test"}
 
 acceptance_criteria:
-  - "GH-01：空工作区 SSH 克隆、56 个 SDK 项目锁定提交匹配及远端 tip 可达实测完成；LFS/OCI 阻塞及 printer-soc/.gitignore 缺口已客观落盘记录"
+  - "GH-01：空工作区 SSH 克隆、56 个 SDK 项目锁定提交匹配及远端 tip 可达实测完成；printer-soc/.gitignore 已修复并验证"
   - "GH-02：git_handoff.schema.json、git_handoff.py (prepare_handoff/verify_handoff)、checkpoint/deliverable 巡航与同输入 QA 复用通过 test_v2_gates.py 及断链负例"
-  - "GH-03：qa_runner.py 支持精确根仓检出、相对路径规范化证据与按 run 安全清理（失败/活动锁/越界软链接保留现场）并通过 test_qa_runner.py"
-  - "GH-04/GH-05：严格守住依赖与授权边界；在 OCI/LFS、UBIFS 只读提取器实证与远端读回+回收授权就绪前保持 BLOCKED 并留存完整清单"
+  - "GH-03：qa_runner.py 支持精确根仓检出、相对路径规范化证据与按 run 安全清理并通过 test_qa_runner.py"
+  - "GH-04/GH-05：UBIFS 提取器经独立 QA 验证且 release_product.py 深检/--handoff/06-07-08 覆盖门禁通过单测；单机 GitLab 读回、GH-05 回收与单机隔离取件通过，跨机共享存储与 QA 镜像远端拉取保持 PENDING，第 1 项保持 DEFERRED"

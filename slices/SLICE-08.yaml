@@ -1,12 +1,12 @@
-# 已批准方案 v1.7 的同源制镜软件阶段；实板、刷写和正式发布分别审批。
+# 已批准方案 v1.7 与 git_server_handoff v0.4 的 Helix P0 统一软件准出（06/07/08 同候选合并回归与 UBIFS 一次深检）；实板和发布分别审批。
 slice_id: "SLICE-08"
-revision: 1
+revision: 2
 batch_id: "BATCH-HELIX-P0-01"
 profile: "c308l-system"
 depends_on: ["SLICE-07"]
 input_repositories: ["project-control", "agents", "printer-soc", "test_harness", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
-title: "SLICE-08 (P0-C)：C308L 同源制镜、候选清单与实板验收准备"
-plan_ref: "project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md"
+title: "SLICE-08 (P0-C)：C308L 统一回归、FILE_FILTER=Y 同源制镜、UBIFS 一次深检与候选交接"
+plan_ref: "project-control/docs/planning/git_server_handoff_implementationplan_20261120_093936.md"
 contract_ref: "project-control/contracts/c308l_platform_contract.yaml"
 requires_hil_immediately: true
 
@@ -32,21 +32,24 @@ subtasks:
     diff_budget: {max_files: 3, protected_globs: [], max_protected_lines: 0}
 
 integration_cmd: >-
+  python3 -B project-control/tools/gates/fast_gate.py --workspace . --files
+  printer-soc/tools/release_product.py
+  printer-soc/tests/integration/test_release_product.py &&
   python3 -B -m unittest discover -s printer-soc/tests/integration -p test_release_product.py -v &&
   python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test
 
 qa_commands:
-  - {subpath: "printer-soc", kind: "build", command: 'for step in plan build package; do python3 -B tools/release_product.py "$step" --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 || exit $?; done'}
+  - {subpath: "printer-soc", kind: "build", command: 'cmake -S . -B /output/build_ps -DSOC_AP_BUILD_SERVICES=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps -j4 && g++ -std=c++17 -O2 -Wall -Wextra -Iservices/helixscreen/include -Iservices/helixscreen/include/aisoc -Iservices/helixscreen/src/aisoc -Imiddleware/dbus/include -Imiddleware/dds/include -Icontracts/twin -I/usr/local/include/dbus-1.0 -I/usr/local/lib/dbus-1.0/include services/helixscreen/src/aisoc/*.cpp services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp /output/build_ps/middleware/dbus/libaisoc_dbus.a /output/build_ps/middleware/dds/libaisoc_dds.so /usr/local/lib/libdbus-1.so -lpthread -Wl,-rpath,/output/build_ps/middleware/dds:/usr/local/lib -o /output/test_aisoc_p0 && for step in plan build package; do python3 -B tools/release_product.py "$step" --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 || exit $?; done'}
   - {subpath: "printer-soc", kind: "image", command: 'python3 -B tools/release_product.py system-image --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08'}
-  - {subpath: "printer-soc", kind: "test", command: 'python3 -B tools/release_product.py verify --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 && python3 -B -m unittest discover -s tests/integration -p test_release_product.py -v'}
+  - {subpath: "printer-soc", kind: "test", command: 'ctest --test-dir /output/build_ps --output-on-failure && python3 -B tests/forward/startup/test_startup_fail_fast.py /workspace/printer-soc /output/build_ps/services/forward /usr/local && python3 -B tests/ota/test_ota_e2e.py /workspace/printer-soc /output/build_ps/bin /usr/local && /output/test_aisoc_p0 /usr/local/bin/dbus-daemon /usr/local/bin/dbus-send && python3 -B -m unittest services/helixscreen/platform/c308l/tests/test_tools.py tests/packaging/test_product_package.py && python3 -B tools/release_product.py verify --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 && python3 -B -m unittest discover -s tests/integration -p test_release_product.py -v'}
   - {subpath: "test_harness", kind: "test", command: "python3 -B hil/tests/test_helix_screen_integration.py --self-test"}
 
 acceptance_criteria:
-  - "接缝 6 方案 A：按候选应用提交读取 SDK 锁；SDK 源树只读。仅在隔离副本对 release-tool/env/include/image.mk 校验补丁 SHA-256 并以零模糊应用，于 SWUPDATE_DEPENDENCIES_INSTALL 后、STRIP_DIR_ELF 前合入确切应用安装树；适配 FILE_FILTER=Y。"
-  - "复用后台、HelixScreen 和产品包的现有构建打包入口，在同一次构建产出唯一 printer-soc-rootfs.tar.gz、rootfs.ubi、aml_upgrade_package.img。核验 MTD 容量、归档中的公钥 0444 和剥离后入镜摘要。"
-  - "构建计划和候选清单记录准确提交、SDK 锁及补丁、产品包及镜像 SHA-256、固件来源和验收证据；输入不足时明确报错或保留候选未完状态。晋级校验对输入缺失、摘要不符、缺 HIL 证据应拒绝，使用同一候选并禁止重编。"
-  - "真机用例准备覆盖冷启动、全/半断连及自愈、调试互斥、P0 与零重编晋级。软件阶段可用离线自测验证取证判据；实板操作须 Human Gate #2，正式发布须 Human Gate #3。"
+  - "接缝 6 方案 A：按候选提交读取 SDK 锁、只读挂载 SDK 源树，仅对隔离副本 release-tool/env/include/image.mk 零模糊打补丁并合入安装树；FILE_FILTER=Y 且保留 0444 权限"
+  - "在 08 最终候选上统一覆盖 06/07/08 全部软件回归（ctest、test_startup_fail_fast.py、test_ota_e2e.py、test_aisoc_p0、test_tools.py、test_product_package.py、test_release_product.py、test_helix_screen_integration.py --self-test）及 C308L ARM 构建与制镜"
+  - "verify_candidate 执行不依赖 sdk-image 的一次独立深检（aml_image_v2_packer_new -d 与 ubireader_extract_files -k），核对 MTD 容量/对齐、0444 公钥/version.json、符号链接、stripped ELF SHA-256 及 FILE_FILTER=Y；release_manifest --handoff 拒绝缺 06/07 覆盖、错 HIL 或缺 LFS 字节"
+  - "实板验收（Human Gate #2）与正式发布（Human Gate #3）各自独立审批；跨机共享存储与远端镜像拉取未就绪前仅单机候选产出与字节核对有效"
 
 eng_delivery_requirements:
-  - "基线 printer-soc@cc7bd31d7fc0d5e23c4e9c5fb0deedcfb326646b、test_harness@371a3a3de7e878d4035388ccab70ef4bc84f9046。只在各自列定路径开发并本地自检。"
+  - "基线 test_harness@d601cc5a63bbe453b4d4c253fc5e62a2d0a5a19b，printer-soc 基于 8921fad5 完成 GH-04 提交 962ce1a6。只在各自列定路径开发并自检。"
   - "各席分别记录原始命令、结果和本地 40 位候选；COORD 收齐候选后核对正式制镜环境并请示远端候选同步。"
