@@ -3,6 +3,8 @@
   "slice_id": "SLICE-GIT-HANDOFF-01",
   "verdict_label": "单机隔离取件",
   "status": "PASSED",
+  "plan_ref": "project-control/docs/planning/git_server_handoff_implementationplan_20261120_093936.md",
+  "plan_revision": "v0.4",
   "container_image": {
     "tag": "qa-sandbox:c308l-system-20261120-candidate-r5",
     "config_id": "sha256:94adbc325f2748fd82cfc10cb21ee33b319f593b6eb865ed234af0c679975635",
@@ -11,11 +13,14 @@
   },
   "isolation_assertions": {
     "mount_mode": "ro",
-    "mounted_host_path_relative": "project-control/docs/evidence/SLICE-08/run_20261119_201950_r11/docker_qa/artifacts",
+    "proc_mounts_ro_verified": true,
+    "write_probe_erofs_errno": 30,
+    "dedicated_stage_scope": "only release-manifest.json, build-plan.json, image-receipt.json, and 3 deliverable artifacts",
     "container_mount_point": "/handoff",
     "host_build_workspace_absent_in_container": true,
     "host_sdk_absent_in_container": true,
-    "host_home_absent_in_container": true
+    "host_home_absent_in_container": true,
+    "docker_socket_absent_in_container": true
   },
   "positive_verification": {
     "build_plan_sha256": "5acf6fe9180e557abdfe879334000b9fccefb54ec9ecfbc3ef46319ba509157d",
