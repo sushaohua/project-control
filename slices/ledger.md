@@ -21,6 +21,8 @@
 
 | 2026-11-20 14:28:35 | BATCH-HELIX-P0-01 | SLICE-08 | SW-Verified | `printer-soc:962ce1a,test_harness:d601cc5,project-control:ab9dc5c,agents:30ecc65,mcu-p3:7b623d9,boot/bootloadermc:3e01c00,boot/bootloaderth:1a03513; inputs=4a41896ea67ec8d4809ea9bc76667e78b6e7632e807f8e201bd50367fa52aeba` | `f593c1989ee1` | `01a1f7a2-5b59-7831-933d-540c52c3fae6` | `b50d42fc19d763c1` |
 
+| 2026-11-20 17:40:09 | BATCH-HELIX-P0-01 | SLICE-08 | SW-Verified | `printer-soc:8f26e97,test_harness:fb1409b,project-control:b957c08,agents:30ecc65,mcu-p3:7b623d9,boot/bootloadermc:3e01c00,boot/bootloaderth:1a03513; inputs=7150145bbe210847fc340c18991f2321c753a6c0102f42cd9dc5cac742ca1637` | `cab377dea9a2` | `01a1f852-5fd5-7b02-ab55-6b4e409f0017` | `f579aacae78788b0` |
+
 ## 2. 非阻断技术债登记表 (`MINOR` Findings)
 
 | 时间戳 (UTC+8) | 切片 ID | 审计轴 | 代码位置 | 问题描述与后续收敛建议 |

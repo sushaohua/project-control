@@ -1,0 +1,39 @@
+{
+  "slice_id": "SLICE-08",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "c308l-system",
+  "commits": {
+    "printer-soc": "8f26e97902849fd6d90162e9136f08dd3a52658d",
+    "test_harness": "fb1409be7ad5586c701df586553d7f5b67bc2b43",
+    "project-control": "b957c080dcef09e596d984ca78aa6b5e79977f5d",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "mcu-p3": "7b623d9a4fff7cf460b53318b71d0b816635b733",
+    "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "root_commit": "4a1a637c4894ecfc177a70839bf5eebc39b527df",
+  "input_fingerprint": "7150145bbe210847fc340c18991f2321c753a6c0102f42cd9dc5cac742ca1637",
+  "status": "PASSED",
+  "stage": "codex",
+  "decision": "APPROVED",
+  "codex_session": "01a1f852-5fd5-7b02-ab55-6b4e409f0017",
+  "blocker_count": 0,
+  "findings": [],
+  "reason": "四阶门禁全绿 (0 BLOCKER, 0 MINOR)",
+  "next_step": "申请 Human Gate #2 执行真机 HIL 验收",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/docker_qa/checkout.log",
+    "build_plan_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/docker_qa/artifacts/build-plan.json",
+    "release_manifest_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/docker_qa/artifacts/release-manifest.json",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/codex/codex.stderr"
+  }
+}
