@@ -1,0 +1,46 @@
+{
+  "slice_id": "SLICE-08",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "c308l-system",
+  "commits": {
+    "printer-soc": "962ce1a6c6cbb32acdb3b1d544e4cb48b2835fb6",
+    "test_harness": "d601cc5a63bbe453b4d4c253fc5e62a2d0a5a19b",
+    "project-control": "3633ce53f80e30fd6eb25aad3ffb0a955edc2125",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "mcu-p3": "7b623d9a4fff7cf460b53318b71d0b816635b733",
+    "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "input_fingerprint": "c93493bd1a0bc420d56b766b9e754053d036bd159fd4e2940c0e552d31258229",
+  "status": "FAILED",
+  "stage": "codex",
+  "decision": "REJECTED",
+  "codex_session": "01a1f77e-1590-7741-a7b0-c773cd81c901",
+  "blocker_count": 1,
+  "findings": [
+    {
+      "id": "SLICE08-SPEC-001",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/docker_qa/server_lock.json: root_commit",
+      "message": "root_commit 为 null。已批准方案要求固定包含源码锁的根入口仓提交，并由 QA 从该提交检出 workspace.json；当前收据无法把构建与制品绑定到准确根仓版本，违反候选身份及交接验收要求。补齐并验证精确根提交后再审。"
+    }
+  ],
+  "reason": "独立 Codex 拒单 (1 BLOCKER): SLICE08-SPEC-001: root_commit 为 null。已批准方案要求固定包含源码锁的根入口仓提交，并由 QA 从该提交检出 workspace.json；当前收据无法把构建与制品绑定到准确根仓版本，违反候选身份及交接验收要求。补齐并验证精确根提交后再审。",
+  "next_step": "按 codex_final_json 修复 BLOCKER 项后重过四阶门禁",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/docker_qa/checkout.log",
+    "build_plan_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/docker_qa/artifacts/build-plan.json",
+    "release_manifest_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/docker_qa/artifacts/release-manifest.json",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261120_132030_r13/codex/codex.stderr"
+  }
+}
