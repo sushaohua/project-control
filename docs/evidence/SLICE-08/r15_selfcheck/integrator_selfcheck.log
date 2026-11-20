@@ -1,0 +1,48 @@
+=== [1] python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test ===
+test_default_and_explicit_signature_required_policy (__main__.OfflineChecks)
+缺省策略等价 signature-required；显式严签均要求保留签名负例。 ... ok
+test_disallow_path_escape_before_read (__main__.OfflineChecks)
+物证相对路径不得读取收据目录之外的数据。 ... ok
+test_integrity_only_hil_policy_and_required_cases (__main__.OfflineChecks)
+integrity-only-hil 免除签名负例，但仍严格检查 AC-03、完整性负例与安全门禁。 ... ok
+test_latency_and_promotion_changes_rejected (__main__.OfflineChecks)
+超时和晋级时更换产物摘要均须失败。 ... ok
+test_rejected_package_trace_with_write_command_fails (__main__.OfflineChecks)
+离线重放旧日志中的合法启动写刷帧，确认拒签窗口判据会拒绝它。 ... ok
+test_reordered_reply_is_not_evidence (__main__.OfflineChecks)
+同一对历史帧若回包早于请求，即使 CRC 合法也不能作为本次关联。 ... ok
+test_short_or_damaged_tx_cannot_prove_zero_erase (__main__.OfflineChecks)
+归档缺失整帧时，不能将一次截断采集解释为零写刷。 ... ok
+test_unknown_signing_policy_rejected (__main__.OfflineChecks)
+未知或非法类型的 ota_signing_policy 必须在清单读取与用例核验阶段拒绝。 ... ok
+test_valid_promotion_can_append_evidence (__main__.OfflineChecks)
+晋级附加审签证据时复用候选构建身份和制品信息。 ... ok
+test_version_exchange_uses_raw_frame_identity (__main__.OfflineChecks)
+复用 SLICE-05 的 B1 两行采集向量，核对配对、短版本和 App 模式。 ... ok
+test_wrong_artifact_hash_rejected (__main__.OfflineChecks)
+同目录真实文件的错误摘要必须拒绝。 ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.052s
+
+OK
+EXIT_CODE=0
+
+=== [2] git -C test_harness rev-parse HEAD && status && show --stat ===
+fb1409be7ad5586c701df586553d7f5b67bc2b43
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+commit fb1409be7ad5586c701df586553d7f5b67bc2b43
+Author: sushaohua <sushaohua@craftdance3d.com>
+Date:   Fri Nov 20 16:11:22 2026 +0800
+
+    test(hil): support ota_signing_policy in Helix integration verifier
+
+ hil/tests/test_helix_screen_integration.py | 229 +++++++++++++++++++++++++++--
+ 1 file changed, 219 insertions(+), 10 deletions(-)
+
+=== [3] python3 -B project-control/tools/gates/fast_gate.py --workspace . --files test_harness/hil/tests/test_helix_screen_integration.py ===
+EXIT_CODE=0
