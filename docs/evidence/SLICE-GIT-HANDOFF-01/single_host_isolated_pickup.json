@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "slice_id": "SLICE-GIT-HANDOFF-01",
+  "verdict_label": "单机隔离取件",
+  "status": "PASSED",
+  "container_image": {
+    "tag": "qa-sandbox:c308l-system-20261120-candidate-r5",
+    "config_id": "sha256:94adbc325f2748fd82cfc10cb21ee33b319f593b6eb865ed234af0c679975635",
+    "arch": "amd64",
+    "network": "none"
+  },
+  "isolation_assertions": {
+    "mount_mode": "ro",
+    "mounted_host_path_relative": "project-control/docs/evidence/SLICE-08/run_20261119_201950_r11/docker_qa/artifacts",
+    "container_mount_point": "/handoff",
+    "host_build_workspace_absent_in_container": true,
+    "host_sdk_absent_in_container": true,
+    "host_home_absent_in_container": true
+  },
+  "positive_verification": {
+    "build_plan_sha256": "5acf6fe9180e557abdfe879334000b9fccefb54ec9ecfbc3ef46319ba509157d",
+    "artifacts_matched": {
+      "aml_upgrade_package.img": {
+        "bytes": 103328192,
+        "sha256": "14fa8e31f76e8f23ac8a5ca2d9a344cc4b8c1db88e279697255a368fa424484f"
+      },
+      "printer-soc-rootfs.tar.gz": {
+        "bytes": 19288546,
+        "sha256": "f043ab2fe594ffe8575c220ae1f320d9f62deba7433ab80c5b3ade462cae4866"
+      },
+      "rootfs.ubi": {
+        "bytes": 82182144,
+        "sha256": "a2f478c38179cd9fbb023e4596ecaabce69c69b3c33c3224cade4d64bc34d8bd"
+      }
+    },
+    "ubifs_extract_verify": {
+      "symlinks": 12,
+      "regular_files": 653,
+      "stripped_elfs": 12
+    }
+  },
+  "negative_rejections": [
+    {
+      "case": "missing_artifact_rootfs_ubi",
+      "exit_code": 1,
+      "error": "FAIL MISSING:rootfs.ubi"
+    },
+    {
+      "case": "corrupted_byte_rootfs_ubi",
+      "exit_code": 1,
+      "error": "FAIL SHA_MISMATCH:rootfs.ubi expected=a2f478c38179cd9fbb023e4596ecaabce69c69b3c33c3224cade4d64bc34d8bd actual=85b4c435bfd456bdd6f3b1069aebc73cd28097b0b6f33a39bd3b126e459ff263"
+    },
+    {
+      "case": "symlink_replaced_rootfs_ubi",
+      "exit_code": 1,
+      "error": "FAIL SYMLINK_REJECTED:rootfs.ubi"
+    }
+  ],
+  "pending_and_deferred": {
+    "cross_host_access": "PENDING",
+    "shared_storage": "PENDING",
+    "remote_qa_image_pull": "PENDING",
+    "item_1_gitlab_external_url_registry_lfs": "DEFERRED"
+  }
+}
