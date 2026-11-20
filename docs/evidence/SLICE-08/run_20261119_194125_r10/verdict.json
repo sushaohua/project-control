@@ -1,0 +1,44 @@
+{
+  "slice_id": "SLICE-08",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "c308l-system",
+  "commits": {
+    "printer-soc": "20528ed21a7838e955e4ddf786d6fdac756ba89c",
+    "test_harness": "d601cc5a63bbe453b4d4c253fc5e62a2d0a5a19b",
+    "project-control": "75ed6b9124e41a0a080a7cf30fbd4ad41cabdb6b",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "mcu-p3": "7b623d9a4fff7cf460b53318b71d0b816635b733",
+    "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "input_fingerprint": "668f85845003b1605a82de1f932ab32adf1656bb3ea3479e232605f66fc566cc",
+  "status": "FAILED",
+  "stage": "codex",
+  "decision": "REJECTED",
+  "codex_session": "01a1f3b5-4859-7e33-9890-bf6329b5caf2",
+  "blocker_count": 1,
+  "findings": [
+    {
+      "id": "SLICE-08-B1",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/",
+      "message": "现有证据仅包含 verdict、runtime.log 和 integration.log，未归档构建计划、release-manifest.json、printer-soc-rootfs.tar.gz、rootfs.ubi 与 aml_upgrade_package.img。虽然日志显示 release_product verify 和镜像打包成功，且单测覆盖缺失输入拒绝，但无法独立核对本候选记录的实际提交、SDK 锁/补丁摘要、交付制品摘要及固件来源。补齐并绑定同一候选的清单与制品证据后再审。"
+    }
+  ],
+  "reason": "独立 Codex 拒单 (1 BLOCKER): SLICE-08-B1: 现有证据仅包含 verdict、runtime.log 和 integration.log，未归档构建计划、release-manifest.json、printer-soc-rootfs.tar.gz、rootfs.ubi 与 aml_u",
+  "next_step": "按 codex_final_json 修复 BLOCKER 项后重过四阶门禁",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/docker_qa/checkout.log",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/codex/codex.stderr"
+  }
+}

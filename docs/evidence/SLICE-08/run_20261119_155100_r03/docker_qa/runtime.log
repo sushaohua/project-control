@@ -1,0 +1,39 @@
+=== Docker Container Inspect: 9e25689b50c7 ===
+{
+  "id": "9e25689b50c717139d30955b204ff1181aad40aad537422bd5ffcc49d4a52d56",
+  "image": "sha256:aea005ad99bec8304b484fb7c1311295af4fbc38c61cc7224d33449f1afcd628",
+  "image_digest": "sha256:aea005ad99bec8304b484fb7c1311295af4fbc38c61cc7224d33449f1afcd628",
+  "created": "2026-11-19T07:52:40.412240171Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-08_run_155133_20261119_075133",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-08_run_155133_20261119_075133_output",
+      "Destination": "/output",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ mkdir -p /output/sdk-worktrees && test ! -e /output/sdk-worktrees/c308l && cp -a -- /workspace/sdk/c308l /output/sdk-worktrees/c308l -> 0
+{
+  "passed": true,
+  "scope": "software-inputs",
+  "errors": []
+}
+
+
+
+
+$ (printer-soc) env REPO_TRACE=0 C308L_SDK_ROOT=/output/sdk-worktrees/c308l bash -c 'for step in plan build package; do python3 -B tools/release_product.py "$step" --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 || exit $?; done' -> 1
+
+发布阶段 plan 失败：QA 检出不匹配：printer-soc

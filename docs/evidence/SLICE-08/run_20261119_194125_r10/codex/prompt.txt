@@ -1,0 +1,12 @@
+独立只读双轴冷审切片: SLICE-08
+契约: project-control/contracts/c308l_platform_contract.yaml
+方案: project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md
+锁定提交: {"printer-soc": "20528ed21a7838e955e4ddf786d6fdac756ba89c", "test_harness": "d601cc5a63bbe453b4d4c253fc5e62a2d0a5a19b", "project-control": "75ed6b9124e41a0a080a7cf30fbd4ad41cabdb6b", "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb", "mcu-p3": "7b623d9a4fff7cf460b53318b71d0b816635b733", "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4", "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"}
+容器: f4dcebb7b68f
+当前沙箱产物: server_verdict=project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/docker_qa/server_verdict.json runtime_log=project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/docker_qa/runtime.log integration_log=project-control/docs/evidence/SLICE-08/run_20261119_194125_r10/integration.log
+验收判据:
+- 接缝 6 方案 A：按候选应用提交读取 SDK 锁；SDK 源树只读。仅在隔离副本对 release-tool/env/include/image.mk 校验补丁 SHA-256 并以零模糊应用，于 SWUPDATE_DEPENDENCIES_INSTALL 后、STRIP_DIR_ELF 前合入确切应用安装树；适配 FILE_FILTER=Y。
+- 复用后台、HelixScreen 和产品包的现有构建打包入口，在同一次构建产出唯一 printer-soc-rootfs.tar.gz、rootfs.ubi、aml_upgrade_package.img。核验 MTD 容量、归档中的公钥 0444 和剥离后入镜摘要。
+- 构建计划和候选清单记录准确提交、SDK 锁及补丁、产品包及镜像 SHA-256、固件来源和验收证据；输入不足时明确报错或保留候选未完状态。晋级校验对输入缺失、摘要不符、缺 HIL 证据应拒绝，使用同一候选并禁止重编。
+- 真机用例准备覆盖冷启动、全/半断连及自愈、调试互斥、P0 与零重编晋级。软件阶段可用离线自测验证取证判据；实板操作须 Human Gate #2，正式发布须 Human Gate #3。
+请严格按 BLOCKER / MINOR / NIT 分级。

@@ -1,0 +1,8 @@
+2026-11-19T14:42:16+08:00 plan
+plan PASS
+2026-11-19T14:42:18+08:00 build
+build PASS
+2026-11-19T14:53:58+08:00 package
+package PASS
+2026-11-19T14:54:02+08:00 system-image
+system-image EXIT=1 LOG=/home/sushaohua/workspace/ai_soc_project/artifacts/slice-08-release.g9zrBD/system-image.log

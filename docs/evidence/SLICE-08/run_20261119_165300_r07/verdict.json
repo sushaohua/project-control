@@ -1,0 +1,28 @@
+{
+  "slice_id": "SLICE-08",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "c308l-system",
+  "commits": {
+    "printer-soc": "dc52a4193ef6110500ab6981f4f7b6d6767bdded",
+    "test_harness": "d601cc5a63bbe453b4d4c253fc5e62a2d0a5a19b",
+    "project-control": "000eea1dfd92539d583f86917d63f564316d0c65",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "mcu-p3": "7b623d9a4fff7cf460b53318b71d0b816635b733",
+    "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "status": "FAILED",
+  "stage": "docker_qa",
+  "reason": "Docker 隔离沙箱测试失败",
+  "next_step": "查阅 docker_runtime_log 与 server_verdict_json 修复失败项",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_165300_r07/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_165300_r07/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_165300_r07/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_165300_r07/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_165300_r07/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_165300_r07/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_165300_r07/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261119_165300_r07/docker_qa/checkout.log"
+  }
+}

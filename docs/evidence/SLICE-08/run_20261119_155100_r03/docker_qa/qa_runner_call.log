@@ -1,0 +1,20 @@
+SDK INIT sdk/c308l
+
+repo has been initialized in /tmp/qa_sandboxes/SLICE-08_run_155133_20261119_075133/sdk/c308l
+
+SDK SYNC sdk/c308l
+SDK RUNNING repo elapsed=30s
+
+platform/bootloader/uboot-repo/bl31/bl31_1.0/bin: Shared project firmware-bin-bl31 found, disabling pruning.
+
+platform/bootloader/uboot-repo/bl32/bl32_2.4/bin: Shared project firmware-bin-bl32 found, disabling pruning.
+
+platform/rtos/lib/rtos_pipeline: Shared project vendor-amlogic-ipc-sdk_demo found, disabling pruning.
+Finalizing sync state...
+repo sync has finished successfully.
+
+[QA VERDICT] Sandbox QA execution failed | Evidence bundle saved to: project-control/docs/evidence/SLICE-08/run_20261119_155100_r03/docker_qa
+[SERVER QA REF] {
+  "path": "project-control/docs/evidence/SLICE-08/run_20261119_155100_r03/docker_qa/server_qa.json",
+  "sha256": "182e2b1c1ae70ddfd9a70c53e0cfe4771b322e15e29e21121e1b0786a1cbfad3"
+}

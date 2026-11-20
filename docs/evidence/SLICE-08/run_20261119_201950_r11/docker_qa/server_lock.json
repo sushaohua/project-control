@@ -1,0 +1,356 @@
+{
+  "repositories": [
+    {
+      "name": "printer-soc",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/printer-soc.git",
+      "ref": "refs/heads/main",
+      "commit": "20528ed21a7838e955e4ddf786d6fdac756ba89c"
+    },
+    {
+      "name": "test_harness",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/test_harness.git",
+      "ref": "refs/heads/main",
+      "commit": "d601cc5a63bbe453b4d4c253fc5e62a2d0a5a19b"
+    },
+    {
+      "name": "project-control",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/project-control.git",
+      "ref": "refs/heads/main",
+      "commit": "357aec47e1caf4fa52d1885bc5f9055ebb97156b"
+    },
+    {
+      "name": "agents",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/agents.git",
+      "ref": "refs/heads/main",
+      "commit": "30ecc6586a861c1543a97804cfe0600bb4778efb"
+    },
+    {
+      "name": "mcu-p3",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/mcu-p3.git",
+      "ref": "refs/heads/feat/soc-debug",
+      "commit": "7b623d9a4fff7cf460b53318b71d0b816635b733"
+    },
+    {
+      "name": "boot/bootloadermc",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/bootloadermc.git",
+      "ref": "refs/heads/soc_debug",
+      "commit": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4"
+    },
+    {
+      "name": "boot/bootloaderth",
+      "url": "ssh://git@192.168.77.79:2222/sushaohua/bootloaderth.git",
+      "ref": "refs/heads/soc_debug",
+      "commit": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+    }
+  ],
+  "profile": "c308l-system",
+  "platform_inputs": {
+    "source": "server-reconstructed-sdk",
+    "clients": [
+      {
+        "id": "c308l",
+        "path": "sdk/c308l",
+        "kind": "repo-client",
+        "manifest_commit": "eb5d0d5179a03b25ceb56ac4a41c6bd87b7e06ac",
+        "lock_sha256": "ea8f4eec4425f1624af05a2cfc529c621006f2feb40b6b0bc1fa254b3312e13e",
+        "project_count": 56,
+        "projects": [
+          {
+            "name": "amlogic-tools-fip",
+            "path": "platform/bootloader/uboot-repo/fip",
+            "commit": "f9279e891ed59558c4080c1050592eb87cefeb2a"
+          },
+          {
+            "name": "bootloader-secondary-core-loader",
+            "path": "platform/rtos/bl22",
+            "commit": "45dddacf5fd9622b760f27604bd95ebbb333e77e"
+          },
+          {
+            "name": "craftdance-kliper",
+            "path": "craftdance/craftdance-kliper",
+            "commit": "ce7002bedf37e938bb483572949f3703ac6476cb"
+          },
+          {
+            "name": "firmware-aocpu",
+            "path": "platform/bootloader/uboot-repo/bl30/src_ao",
+            "commit": "1f6e079570d1a7bd8d08edd83d16f974b2f16704"
+          },
+          {
+            "name": "firmware-bin-bl2",
+            "path": "platform/bootloader/uboot-repo/bl2/bin",
+            "commit": "06969a0d81f8f0fe1a128e6570732abd1deec4aa"
+          },
+          {
+            "name": "firmware-bin-bl30",
+            "path": "platform/bootloader/uboot-repo/bl30/bin",
+            "commit": "1c7fa9341c8b4fe3a3f13c559fb160ec1eb4dca8"
+          },
+          {
+            "name": "firmware-bin-bl31",
+            "path": "platform/bootloader/uboot-repo/bl31/bl31_1.0/bin",
+            "commit": "67b5cd8b17997ec2d6e5876079d06e919b05cd09"
+          },
+          {
+            "name": "firmware-bin-bl31",
+            "path": "platform/bootloader/uboot-repo/bl31/bl31_1.3/bin",
+            "commit": "67b5cd8b17997ec2d6e5876079d06e919b05cd09"
+          },
+          {
+            "name": "firmware-bin-bl32",
+            "path": "platform/bootloader/uboot-repo/bl32/bl32_2.4/bin",
+            "commit": "46fdfd0fc80358246e8cc1e5bce3efccd08cfcc7"
+          },
+          {
+            "name": "firmware-bin-bl32",
+            "path": "platform/bootloader/uboot-repo/bl32/bl32_3.8/bin",
+            "commit": "46fdfd0fc80358246e8cc1e5bce3efccd08cfcc7"
+          },
+          {
+            "name": "firmware-bin-bl40-dummy",
+            "path": "platform/bootloader/uboot-repo/bl40/bin",
+            "commit": "459bceaba164a3b61b17f485a94dcda070364eea"
+          },
+          {
+            "name": "firmware-bin-templates",
+            "path": "platform/bootloader/uboot-repo/soc/templates",
+            "commit": "53f8df140d3400baae6bafafc51248af62b62a82"
+          },
+          {
+            "name": "hardware-amlogic-bluetooth",
+            "path": "platform/hardware/bluetooth",
+            "commit": "2a5eb222eff8f0678292893ecb60a323deb6ae80"
+          },
+          {
+            "name": "kernel-common",
+            "path": "platform/kernel/aml-5.15",
+            "commit": "083fce9cdb512e87ba770192c182633cb6151c28"
+          },
+          {
+            "name": "kernel-common_drivers",
+            "path": "platform/kernel/aml-5.15/common_drivers",
+            "commit": "6aef285d50e998cb39dd6a3d7e05f82bd4c0c31c"
+          },
+          {
+            "name": "moonraker",
+            "path": "craftdance/moonraker",
+            "commit": "1cfb0c41e468645951a371621f06d32777b6107c"
+          },
+          {
+            "name": "platform-hardware-aml-isp",
+            "path": "platform/rtos/lib/isp",
+            "commit": "311c8cc11dcdbc2cc0276255b46116ea6f88302d"
+          },
+          {
+            "name": "platform-hardware-amlogic-adla",
+            "path": "platform/rtos/lib/adla",
+            "commit": "6f1c700da5890c93557636ce144d27c0bd1d84a2"
+          },
+          {
+            "name": "platform-hardware-amlogic-amlbt",
+            "path": "platform/hardware/aml_bt_ct",
+            "commit": "bff510da282d0680986b3e7546428b02e6274006"
+          },
+          {
+            "name": "platform-hardware-amlogic-libencoder",
+            "path": "platform/rtos/lib/venc",
+            "commit": "880d83483767576c1897245f88e7a3df06282bb4"
+          },
+          {
+            "name": "platform-hardware-amlogic-media_modules",
+            "path": "platform/hardware/media_modules",
+            "commit": "660b2369d848d012ae3d4e947695ff3c4b9865a4"
+          },
+          {
+            "name": "platform-hardware-bluetooth-amlogic-drivers-w1",
+            "path": "platform/hardware/bluetooth/w1",
+            "commit": "88bee6a674f0470853b47b4b4e09233794456eb5"
+          },
+          {
+            "name": "platform-hardware-bluetooth-amlogic-drivers-w1u",
+            "path": "platform/hardware/bluetooth/w1u",
+            "commit": "908600c37ff4da642f6a45965852c1af1ed25b49"
+          },
+          {
+            "name": "platform-hardware-wifi-amlogic-drivers-w1",
+            "path": "platform/hardware/w1",
+            "commit": "906ae5da76063762823e96e480ae540de9b96527"
+          },
+          {
+            "name": "platform-hardware-wifi-amlogic-drivers-w1u",
+            "path": "platform/hardware/w1u",
+            "commit": "ea624921b7fb613bb91a8415eaed0ef5a9ed74c6"
+          },
+          {
+            "name": "platform-hardware-wifi-amlogic-drivers-wifi_comm",
+            "path": "platform/hardware/wifi_comm",
+            "commit": "e18114f281fc4894d90e7b09a5fbaefb87445f8e"
+          },
+          {
+            "name": "platform-hardware-wifi-broadcom-drivers-ap6xxx",
+            "path": "platform/hardware/broadcom/drivers/ap6xxx",
+            "commit": "8bb78b9ca1d6e18f703929e27b57f703d8d6d135"
+          },
+          {
+            "name": "platform-prebuilts-gcc-linux-x86-arm-gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf",
+            "path": "toolchain/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf",
+            "commit": "74adb09d9141cca818c343a24152ed83be6c8070"
+          },
+          {
+            "name": "platform-prebuilts-gcc-linux-x86-arm-gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf",
+            "path": "toolchain/gcc/linux-x86/arm/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf",
+            "commit": "3cccaf143248ccaa3b20420bbef1ae41f9adad18"
+          },
+          {
+            "name": "platform-tools",
+            "path": "platform/tools",
+            "commit": "821c4d8174ac0389763df03fabcdc8565bd03b0e"
+          },
+          {
+            "name": "rtos_sdk-arch-arm64",
+            "path": "platform/rtos/arch/arm64",
+            "commit": "4da0f97f7bdb83ad194b720ada43b2d3a63d0347"
+          },
+          {
+            "name": "rtos_sdk-audio",
+            "path": "platform/rtos/lib/audio/lib",
+            "commit": "bab0cef328994d5253c48f2d9bcb57899d171d1e"
+          },
+          {
+            "name": "rtos_sdk-audio_drv",
+            "path": "platform/rtos/lib/audio/drv",
+            "commit": "c4f2ff0f29f09c506ef07492b68a45f4c5fc277d"
+          },
+          {
+            "name": "rtos_sdk-boards-arm64",
+            "path": "platform/rtos/boards/arm64",
+            "commit": "c4b1b89313dc87080df3c386c18934df3fc55a94"
+          },
+          {
+            "name": "rtos_sdk-build",
+            "path": "platform/rtos/build_system",
+            "commit": "731dd884eabfd78d3d1cd0679b923ade50bafa15"
+          },
+          {
+            "name": "rtos_sdk-common_io",
+            "path": "platform/rtos/lib/common_io",
+            "commit": "e12ae7c21af57f7bafe7bac9b9aa33d97329840d"
+          },
+          {
+            "name": "rtos_sdk-drivers",
+            "path": "platform/rtos/drivers",
+            "commit": "64955266cdeaf5c8fdd71d59d2c7f997a1f9623c"
+          },
+          {
+            "name": "rtos_sdk-fat",
+            "path": "platform/rtos/lib/fat",
+            "commit": "0e94f59465806d93c2f1faa18548723e95820537"
+          },
+          {
+            "name": "rtos_sdk-freertos",
+            "path": "platform/rtos/kernel/freertos",
+            "commit": "8d1a53d05fc98b2ac19f533e7f6a1507acb42325"
+          },
+          {
+            "name": "rtos_sdk-freertos_plus_posix",
+            "path": "platform/rtos/lib/posix",
+            "commit": "50e1e2bca0577275b37f347cdf92243e46d4d8ee"
+          },
+          {
+            "name": "rtos_sdk-libc",
+            "path": "platform/rtos/lib/libc",
+            "commit": "fd44976ab8c6236bb05ce3f0c12bbaeb1ed1be19"
+          },
+          {
+            "name": "rtos_sdk-osal",
+            "path": "platform/rtos/lib/osal",
+            "commit": "aad4e933ead98774061e035db6f095e66bc48fb9"
+          },
+          {
+            "name": "rtos_sdk-product-fastboot",
+            "path": "platform/rtos/products/fastboot",
+            "commit": "4b7cb6284f9b9832db8980d1b26e47c578bc6d7d"
+          },
+          {
+            "name": "rtos_sdk-scripts",
+            "path": "platform/rtos/scripts",
+            "commit": "a5cc115bcf3255971578a99510a736a85df15b68"
+          },
+          {
+            "name": "rtos_sdk-soc-arm64",
+            "path": "platform/rtos/soc/arm64",
+            "commit": "c2008b867ab13d6f25dbde7b62f66f8cbed36ac7"
+          },
+          {
+            "name": "rtos_sdk-stack_trace",
+            "path": "platform/rtos/lib/backtrace",
+            "commit": "53484a70d9bd0e3516936ff31ab49cd156b6df47"
+          },
+          {
+            "name": "rtos_sdk-ulog",
+            "path": "platform/rtos/lib/ulog",
+            "commit": "0cb2b3837aa755e23c02c15bebfd7658c6d86cae"
+          },
+          {
+            "name": "rtos_sdk-utilities",
+            "path": "platform/rtos/lib/utilities",
+            "commit": "768d27b754b94853a511711a9814711577195fc1"
+          },
+          {
+            "name": "rtos_sdk-vfs",
+            "path": "platform/rtos/lib/vfs",
+            "commit": "bf3d22e8e30e2631586e4be16d882c195d3637cb"
+          },
+          {
+            "name": "uboot",
+            "path": "platform/bootloader/uboot-repo/bl33/v2019",
+            "commit": "99fbceaddfa1b590ea46eb03b2dcaf5db8cb42e6"
+          },
+          {
+            "name": "vendor-amlogic-aml_commonlib",
+            "path": "platform/vendor/aml_commonlib",
+            "commit": "701c2dcbc84984cf27eff2f63cc44469261f55a4"
+          },
+          {
+            "name": "vendor-amlogic-ipc-ipc-release-tool",
+            "path": "release-tool",
+            "commit": "21653a117c57f3d9a21baec7a86f5801a80146ec"
+          },
+          {
+            "name": "vendor-amlogic-ipc-mbp-prebuilt",
+            "path": "linux/mbp",
+            "commit": "498b21cb07224f65ec1ff4154ee04670ba883170"
+          },
+          {
+            "name": "vendor-amlogic-ipc-sdk_demo",
+            "path": "platform/rtos/lib/rtos_pipeline",
+            "commit": "1b1a0586bf49ed0ed95312e9b35abfd84d033e70"
+          },
+          {
+            "name": "vendor-amlogic-ipc-sdk_demo",
+            "path": "sdk_demo",
+            "commit": "1b1a0586bf49ed0ed95312e9b35abfd84d033e70"
+          },
+          {
+            "name": "vendor-amlogic-tdk_basic",
+            "path": "platform/vendor/tdk-3.8",
+            "commit": "6d9edfce24b6f904ec62ea4ea9a5fa82c7ae2ccd"
+          }
+        ],
+        "errors": [],
+        "dirty": false
+      }
+    ],
+    "contract_sha256": "c327917aa6439acf6d7b75bf37ad25573a3a90323ea5e8d6746b9abd344f3bae",
+    "sdk_tool_sha256": "dd8eb6a0242a8399c78c22d0741033cb7a9ec54820601995c33f527743127f2e",
+    "validation": {
+      "passed": true,
+      "container_id": "135b5de0c8d7",
+      "command": "REPO_TRACE=0 PYTHONDONTWRITEBYTECODE=1 python3 test_harness/static_checks/platform/check_platform_inputs.py --workspace /workspace",
+      "stdout_sha256": "fa3ed6561df5178b4c8a1e6b8d43619b90dbb8012b5f252eadedbfc8cddb9554",
+      "system_copy_passed": true
+    },
+    "build_worktrees": {
+      "c308l": "/output/sdk-worktrees/c308l"
+    }
+  }
+}

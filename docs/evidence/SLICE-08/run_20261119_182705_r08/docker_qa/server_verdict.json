@@ -1,0 +1,12 @@
+{
+  "task_id": "SLICE-08",
+  "task_revision": 1,
+  "run_id": "run_182712",
+  "verdict": "FAILED",
+  "exit_code": 1,
+  "summary": "Sandbox QA execution failed",
+  "profile": "c308l-system",
+  "build_count": 2,
+  "test_count": 1,
+  "timestamp": "2026-11-19T10:55:23.155543+00:00"
+}

@@ -1,0 +1,35 @@
+=== Docker Container Inspect: 259ae28164bb ===
+{
+  "id": "259ae28164bba7462a6550e0aaf76b412022db36e9841dee52a6244e0649204b",
+  "image": "sha256:aea005ad99bec8304b484fb7c1311295af4fbc38c61cc7224d33449f1afcd628",
+  "image_digest": "sha256:aea005ad99bec8304b484fb7c1311295af4fbc38c61cc7224d33449f1afcd628",
+  "created": "2026-11-19T07:50:20.01898575Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-08_run_154906_20261119_074906",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-08_run_154906_20261119_074906_output",
+      "Destination": "/output",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ PYTHONDONTWRITEBYTECODE=1 python3 test_harness/static_checks/platform/check_platform_inputs.py --workspace /workspace -> 1
+{
+  "passed": false,
+  "scope": "software-inputs",
+  "errors": [
+    "平台输入核验失败：Traceback (most recent call last):\n  File \"/workspace/sdk/c308l/.repo/repo/main.py\", line 963, in <module>\n    _Main(sys.argv[1:])\n  File \"/workspace/sdk/c308l/.repo/repo/main.py\", line 939, in _Main\n    result = repo._Run(name, gopts, argv) or 0\n  File \"/workspace/sdk/c308l/.repo/repo/main.py\", line 266, in _Run\n    with repo_trace.Trace(\n  File \"/workspace/sdk/c308l/.repo/repo/repo_trace.py\", line 107, in __enter__\n    with open(_TRACE_FILE, \"a\") as f:\nOSError: [Errno 30] Read-only file system: '/workspace/sdk/c308l/.repo/TRACE_FILE'\n"
+  ]
+}
+
