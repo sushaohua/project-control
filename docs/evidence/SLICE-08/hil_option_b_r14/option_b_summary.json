@@ -1,0 +1,274 @@
+{
+  "schema_version": 1,
+  "slice_id": "SLICE-08",
+  "mode": "human_gate_2_option_b",
+  "candidate": {
+    "tag": "v0.1.0-skeleton",
+    "product_version": "0.1.0-skeleton",
+    "ap_git_sha": "962ce1a6",
+    "ap_commit": "962ce1a6c6cbb32acdb3b1d544e4cb48b2835fb6",
+    "expected_mcu_commit": "7b623d9a4fff7cf460b53318b71d0b816635b733",
+    "release_manifest_path": "project-control/docs/evidence/SLICE-08/run_20261120_135830_r14/docker_qa/artifacts/release-manifest.json",
+    "release_manifest_sha256": "a2ec40a3cc740079cfd093224b3ee960de1a7fc8911db3b8f5eec8d6a434a851",
+    "rootfs_tarball_path": "project-control/docs/evidence/SLICE-08/run_20261120_135830_r14/docker_qa/artifacts/printer-soc-rootfs.tar.gz",
+    "rootfs_tarball_sha256": "cb5f48b51eae5f30dd045c0400131d4244dfc987ae94e2d254d65dbcd665ea50",
+    "rootfs_tarball_bytes": 19288672
+  },
+  "target": {
+    "host": "192.168.1.101",
+    "eth0_mac": "02:ad:3d:01:8e:eb",
+    "kernel": "Linux (none) 5.15.137-g083fce9cdb51 #4 SMP PREEMPT Fri Nov 13 19:04:26 CST 2026 armv7l GNU/Linux",
+    "python_version": "3.9.2",
+    "uart": {
+      "path": "/dev/ttyS1",
+      "device_symlink": "/sys/devices/platform/soc/fe000000.apb4/fe080000.serial",
+      "irq": 37,
+      "baud": 921600,
+      "pre_reboot_irq37_count": 247278,
+      "pre_reboot_meson_uart": {
+        "tx": 2315758,
+        "rx": 214198
+      }
+    },
+    "storage": {
+      "chip": "Macronix SPI NAND (spi0.0)",
+      "total_mib": 256,
+      "block_size_bytes": 131072,
+      "page_size_bytes": 2048,
+      "oob_size_bytes": 64,
+      "mtd_partitions": [
+        {"mtd": "mtd0", "name": "bl2", "size_bytes": 2097152, "erasesize_bytes": 131072},
+        {"mtd": "mtd1", "name": "tpl", "size_bytes": 12582912, "erasesize_bytes": 131072},
+        {"mtd": "mtd2", "name": "logo", "size_bytes": 2097152, "erasesize_bytes": 131072},
+        {"mtd": "mtd3", "name": "misc", "size_bytes": 2097152, "erasesize_bytes": 131072},
+        {"mtd": "mtd4", "name": "recovery", "size_bytes": 16777216, "erasesize_bytes": 131072},
+        {"mtd": "mtd5", "name": "boot", "size_bytes": 16777216, "erasesize_bytes": 131072},
+        {"mtd": "mtd6", "name": "system", "size_bytes": 134217728, "erasesize_bytes": 131072},
+        {"mtd": "mtd7", "name": "data", "size_bytes": 78643200, "erasesize_bytes": 131072}
+      ],
+      "ubi_volumes": {
+        "ubi0_0": {"mtd_num": 6, "name": "rootfs", "reserved_ebs": 980, "usable_eb_size": 126976, "bad_peb_count": 0},
+        "ubi1_0": {"mtd_num": 7, "name": "data", "reserved_ebs": 556, "usable_eb_size": 126976, "bad_peb_count": 0}
+      }
+    }
+  },
+  "safety_invariants": {
+    "probe_rs_used": false,
+    "heating_pwm_pct": 0,
+    "motion_commands_sent": false,
+    "valid_ota_flash_executed": false,
+    "fw_signing_pub_pem_untouched": true,
+    "fw_signing_pub_pem_mode": "0o444",
+    "fw_signing_pub_pem_sha256": "391ed9e5993fc86be51c0646693e9a92ad1fb7c2facd05b71f14df08ba75e2d3",
+    "boot_backup_img_sha256_before": "59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86",
+    "boot_backup_img_sha256_after_cleanup": "59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86",
+    "boot_backup_img_sha256_final": "59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86"
+  },
+  "preflight": {
+    "root_free_before_bytes": 61108224,
+    "root_avail_before_bytes": 61108224,
+    "root_free_after_bytes": 35561472,
+    "root_avail_after_bytes": 35561472,
+    "data_free_before_bytes": 16465920,
+    "data_avail_before_bytes": 13189120,
+    "data_free_after_bytes": 55664640,
+    "data_avail_after_bytes": 52391936,
+    "cleaned_paths": [
+      "/data/apps/a.log",
+      "/data/apps/helixscreen-c308l-demo",
+      "/data/apps/printer-soc-diagnostics",
+      "/data/apps/printer-soc-product-20261114",
+      "/data/apps/printer-soc-product-20261114-v2",
+      "/data/apps/soc-ap-c308l-20261113",
+      "/data/apps/soc-ap-c308l-20261113-v2",
+      "/data/apps/soc-ap-c308l-20261113-v3"
+    ],
+    "preserved_items_verified": [
+      "/data/boot_backup.img",
+      "/data/ev_watch.py",
+      "/data/flash_erase",
+      "/data/nandwrite",
+      "/data/rollback_boot.sh",
+      "/data/scripts",
+      "/data/tp_reset.sh"
+    ]
+  },
+  "deploy_verify": {
+    "status": "PASS",
+    "manifest_path": "/usr/share/printer-soc/manifest.json",
+    "manifest_sha256": "1a9d23241c3e564e09ae6c5aa23d4bc25b7fc7101a48d089be5b5130379b8046",
+    "regular_files_verified": 652,
+    "symlinks_verified": 12,
+    "total_checked": 664,
+    "errors": 0,
+    "tmp_tarball_removed": true
+  },
+  "cases": {
+    "COLD-BOOT-AUTOSTART": {
+      "status": "PARTIAL_WITH_DEFECT",
+      "pre_reboot_uptime_s": 195437.99,
+      "first_ssh_reachable_uptime_s": 23.43,
+      "collection_uptime_s": 58.79,
+      "manual_start_used": false,
+      "processes_running": [
+        "services.py _run (pid=848)",
+        "dbus-daemon (pid=849)",
+        "forward_service_daemon (pid=850, ttyS1, 921600, --allow-offline-start)",
+        "device_manager_daemon (pid=865)",
+        "helix-screen (pid=905, restarted once from pid=875)"
+      ],
+      "ui_gateway_running": false,
+      "test_or_mock_flags_present": false,
+      "fuser_ttyS1": [850],
+      "fuser_fb0": [905],
+      "panel_restarts": 1,
+      "notes": "First helix-screen (pid=875) exited ~5.1s after start with FastDDS SHM error (fastdds_port7400/7411: Invalid argument); services.py restarted pid=905. Forward logged Service active and OFFLINE_DEGRADED (error_code=-8); ttyS1 tx=1736, rx=0, irq37=0."
+    },
+    "AC-02": {
+      "status": "PARTIAL_MCU_OFFLINE",
+      "ap_version_json": {
+        "product_version": "0.1.0-skeleton",
+        "build_id": "20261120T062137Z",
+        "candidate_id": "0.1.0-skeleton+962ce1a6",
+        "profile": "c308l-production",
+        "git_sha": "962ce1a6",
+        "abi": "armv7l-hf-glibc2.33",
+        "mcu_proto": "2.0"
+      },
+      "dbus_ap_checks": "PASS",
+      "forward_port_open": true,
+      "forward_tx_count": 234,
+      "forward_rx_count": 0,
+      "mc_status": "OFFLINE",
+      "th_status": "OFFLINE/QUERY_FAILED",
+      "notes": "AP git_sha==962ce1a6 and D-Bus GetVersionInfo/RequestImmediateSample/GetSnapshot/GetPortStatus responsive; MC/TH 7b623d9a and App-mode verification blocked because /dev/ttyS1 rx=0 and irq37=0."
+    },
+    "AC-05": {
+      "status": "PARTIAL_MCU_OFFLINE",
+      "estop_assert_dbus_rc": 0,
+      "estop_assert_return_int32": -8,
+      "snapshot_after_assert": {
+        "system_status": "EMERGENCY_STOP_INVOKED",
+        "device_state": "FAULT"
+      },
+      "estop_clear_dbus_rc": 0,
+      "estop_clear_return_int32": -9,
+      "snapshot_after_clear": {
+        "system_status": "EMERGENCY_STOP_INVOKED",
+        "device_state": "FAULT"
+      },
+      "notes": "Local fault latch engages safely despite MCU offline (-8 timeout); clearing E-Stop while MCU is offline is safely rejected with -9 (AISOC_DEV_ERR_TIMEOUT) by dev_state_control_admission."
+    },
+    "AC-06": {
+      "status": "PASS_AP_SYSFS_NET",
+      "eth0_ip": "192.168.1.101/24",
+      "eth0_mac": "02:ad:3d:01:8e:eb",
+      "backlight_before": 204,
+      "backlight_set_180_readback": 180,
+      "backlight_actual_180_readback": 180,
+      "backlight_restored": 204,
+      "notes": "Sysfs brightness verified; physical display brightness change and GT911 touch require on-site visual/manual confirmation."
+    },
+    "AC-04-UNSIGNED": {
+      "status": "PASS_AP_PRECHECK",
+      "package_bytes": 1421,
+      "package_sha256": "fe9578fabfcc0ce690e1ca471e93280617152f132833435561239bd14c23b107",
+      "op0_task_id": "4000001",
+      "op0_phase": "FAILED",
+      "op0_error": "PACKAGE_SIGNATURE_INVALID",
+      "op1_task_id": "4000002",
+      "op1_phase": "FAILED",
+      "op1_error": "PACKAGE_SIGNATURE_INVALID",
+      "ota_packets_sent": 0,
+      "mcu_boot_id_recheck": "BLOCKED_MCU_OFFLINE"
+    },
+    "AC-04-BAD-SIGNATURE": {
+      "status": "PASS_AP_PRECHECK",
+      "package_bytes": 1421,
+      "package_sha256": "210f82501c134bca413fed3b85f2192840e00ad3cb9825f78384d5991b88d63c",
+      "op0_task_id": "4000003",
+      "op0_phase": "FAILED",
+      "op0_error": "PACKAGE_SIGNATURE_INVALID",
+      "op1_task_id": "4000004",
+      "op1_phase": "FAILED",
+      "op1_error": "PACKAGE_SIGNATURE_INVALID",
+      "ota_packets_sent": 0,
+      "mcu_boot_id_recheck": "BLOCKED_MCU_OFFLINE"
+    },
+    "AC-04-WRONG-PACKAGE": {
+      "status": "PASS_AP_PRECHECK",
+      "package_bytes": 1421,
+      "package_sha256": "f75441ad0c00ccf12b7d8e741b8b93babee6a152c343b5a625bd96366ea39c3d",
+      "board_id_used": "0x42300001",
+      "op0_task_id": "4000005",
+      "op0_phase": "FAILED",
+      "op0_error": "PACKAGE_INVALID_OR_CHANGED",
+      "op1_task_id": "4000006",
+      "op1_phase": "FAILED",
+      "op1_error": "PACKAGE_INVALID_OR_CHANGED",
+      "forward_tx_count_before": 456,
+      "forward_tx_count_after": 456,
+      "meson_uart_tx_before": 6385,
+      "meson_uart_tx_after": 6385,
+      "ota_packets_sent": 0,
+      "mcu_boot_id_recheck": "BLOCKED_MCU_OFFLINE"
+    },
+    "AC-09-DEV-MODE": {
+      "status": "PASS_STOP_DEVMODE_INHIBIT_FAIL_RECOVERY",
+      "stop_rc": 0,
+      "dev_mode_rc": 0,
+      "dev_mode_uart_owners": [],
+      "dev_mode_fb_owners": [],
+      "maintenance_inhibit": true,
+      "s90_respect_inhibit_rc": 2,
+      "explicit_start_rc": 0,
+      "post_recovery_state": {
+        "phase": "stopped",
+        "panel_restarts": 6,
+        "error": "PANEL_CRASH_LOOP:139",
+        "exit_codes": {"dbus": 0, "forward": 0, "device_manager": 0, "panel": 139}
+      }
+    },
+    "AC-03": {
+      "status": "PENDING_BLOCKED",
+      "reason": "Option B boundary forbids valid-signed OTA flash; signed MC/TH firmware packages and release signing private key are absent."
+    }
+  },
+  "defects_and_blockers": [
+    {
+      "id": "HIL-DEF-01",
+      "classification": "REJECTED_SOURCE_DEFECT",
+      "severity": "BLOCKER",
+      "owner": "ENG-AP",
+      "summary": "helix-screen crashes ~4.2-5.1s after launch with FastDDS SHM Invalid argument (port 7400/7411), glibc tpp.c:82 assertion, and exit code 139 (SIGSEGV); warm recovery hits PANEL_CRASH_LOOP:139 and shuts down all printer-soc services."
+    },
+    {
+      "id": "HIL-DEF-02",
+      "classification": "REJECTED_SOURCE_DEFECT",
+      "severity": "BLOCKER",
+      "owner": "ENG-AP",
+      "summary": "services.py launch_panel() does not propagate AISOC_DDS_DOMAIN from services.json (198) to helix-screen, causing helix-screen AisocConnection to bind DDS domain 0 (fastdds_port7400/7411) instead of domain 198."
+    },
+    {
+      "id": "HIL-BLK-01",
+      "classification": "BLOCKED_ENVIRONMENT",
+      "severity": "BLOCKER",
+      "owner": "HIL_BENCH_OPERATOR",
+      "summary": "/dev/ttyS1 shows tx=7785, rx=0, irq37=0 after cold reboot (whereas pre-flight history had rx=214198, irq37=247278), indicating MCU board power/serial connection is offline on bench."
+    },
+    {
+      "id": "HIL-DEF-03",
+      "classification": "REJECTED_SOURCE_DEFECT",
+      "severity": "MINOR",
+      "owner": "ENG-AP",
+      "summary": "helix-screen logs startup warnings: HELIX_DATA_DIR '/data/printer-soc/helix' has no ui_xml/ directory, and helixscreen.env.backup fails at /var/lib/helixscreen and /data/printer-soc/helix/.helixscreen."
+    }
+  ],
+  "evidence_files": {
+    "pre_flight.log": "2212f945195df51dbf7c1d06487fec7cbffcf96c50fb82e06dd3b9e30dc84a0e",
+    "deploy_verify.log": "01036dbd979c431612934922baa3d9e9e562f82a43e7cefd4ea65b8ef14f9601",
+    "cold_boot.log": "3ac3009c67f0688eae7206478ede1a8673a4be7538535f4d80b2f51f54c5bc60",
+    "dbus_p0_and_ac04.log": "6a824bc11b30ec4c9c6b51ef62891dd03147f24be06407cd72ae10b7f314145c",
+    "panel_crash_diag.log": "a2785d63387acfdbbc957075d6929f600e15cff5eba2e4aa156afacd0b02ea97"
+  }
+}

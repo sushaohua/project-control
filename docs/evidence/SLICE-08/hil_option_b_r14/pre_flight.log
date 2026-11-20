@@ -1,0 +1,541 @@
+=== TIMESTAMP ===
+1970-01-03T06:15:05+0000
+=== UNAME & RELEASE ===
+Linux (none) 5.15.137-g083fce9cdb51 #4 SMP PREEMPT Fri Nov 13 19:04:26 CST 2026 armv7l GNU/Linux
+=== PYTHON3 & TAR ===
+/usr/bin/python3
+/bin/tar
+Python 3.9.2
+=== DF BEFORE ===
+=== BOOT BACKUP SHA256 BEFORE ===
+-rw-r--r--    1 root     root      16777216 Jan  1 00:38 /data/boot_backup.img
+59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86  /data/boot_backup.img
+=== DATA DIR LIST ===
+total 16516
+drwxr-xr-x    4 root     root           728 Jan  1 02:00 .
+drwxrwxr-x   21 dbus     dbus          1504 Nov 12  2026 ..
+drwxr-xr-x    9 root     root           816 Jan  1 01:49 apps
+-rw-r--r--    1 root     root      16777216 Jan  1 00:38 boot_backup.img
+-rwxr-xr-x    1 root     root          6757 Jan  1 00:19 ev_watch.py
+-rwxr-xr-x    1 root     root         56836 Jan  1 00:36 flash_erase
+-rwxr-xr-x    1 root     root         61132 Jan  1 00:36 nandwrite
+-rwxr-xr-x    1 root     root           183 Jan  1 00:38 rollback_boot.sh
+drwxr-xr-x    2 root     root           160 Jan  1 00:02 scripts
+-rwxr-xr-x    1 root     root          2603 Jan  1 00:21 tp_reset.sh
+total 4
+drwxr-xr-x    9 root     root           816 Jan  1 01:49 .
+drwxr-xr-x    4 root     root           728 Jan  1 02:00 ..
+-rw-r--r--    1 root     root          1438 Jan  1 21:06 a.log
+drwxr-xr-x    9 dbus     dbus          1048 Jan  1 02:11 helixscreen-c308l-demo
+drwxr-xr-x    3 root     root           248 Jan  1 21:11 printer-soc-diagnostics
+drwxr-xr-x    3 root     root           312 Jan  1 01:37 printer-soc-product-20261114
+drwxr-xr-x    3 root     root           240 Jan  1 01:49 printer-soc-product-20261114-v2
+drwx------    4 root     root           312 Jan  1 00:00 soc-ap-c308l-20261113
+drwx------    3 root     root           240 Jan  1 00:02 soc-ap-c308l-20261113-v2
+drwx------    3 root     root           240 Jan  1 00:04 soc-ap-c308l-20261113-v3
+=== PROC MTD & SYS CLASS MTD ===
+dev:    size   erasesize  name
+mtd0: 00200000 00020000 "bl2"
+mtd1: 00c00000 00020000 "tpl"
+mtd2: 00200000 00020000 "logo"
+mtd3: 00200000 00020000 "misc"
+mtd4: 01000000 00020000 "recovery"
+mtd5: 01000000 00020000 "boot"
+mtd6: 08000000 00020000 "system"
+mtd7: 04b00000 00020000 "data"
+--- /sys/class/mtd/mtd0 ---
+name: bl2
+size: 2097152
+erasesize: 131072
+writesize: 2048
+oobsize: 64
+type: nand
+flags: 0x400
+--- /sys/class/mtd/mtd1 ---
+name: tpl
+size: 12582912
+erasesize: 131072
+writesize: 2048
+oobsize: 64
+type: nand
+flags: 0x400
+--- /sys/class/mtd/mtd2 ---
+name: logo
+size: 2097152
+erasesize: 131072
+writesize: 2048
+oobsize: 64
+type: nand
+flags: 0x400
+--- /sys/class/mtd/mtd3 ---
+name: misc
+size: 2097152
+erasesize: 131072
+writesize: 2048
+oobsize: 64
+type: nand
+flags: 0x400
+--- /sys/class/mtd/mtd4 ---
+name: recovery
+size: 16777216
+erasesize: 131072
+writesize: 2048
+oobsize: 64
+type: nand
+flags: 0x400
+--- /sys/class/mtd/mtd5 ---
+name: boot
+size: 16777216
+erasesize: 131072
+writesize: 2048
+oobsize: 64
+type: nand
+flags: 0x400
+--- /sys/class/mtd/mtd6 ---
+name: system
+size: 134217728
+erasesize: 131072
+writesize: 2048
+oobsize: 64
+type: nand
+flags: 0x400
+--- /sys/class/mtd/mtd7 ---
+name: data
+size: 78643200
+erasesize: 131072
+writesize: 2048
+oobsize: 64
+type: nand
+flags: 0x400
+=== UBINFO ===
+sh: ubinfo: not found
+=== DMESG SPI-NAND / MTD / UBI ===
+[    0.000000][0 T0     ..] Kernel command line: console=ttyS0,921600 no_console_suspend earlycon=aml_uart,0xfe07a000 otg_device=1 androidboot.serialno=ap2227c114be362524a6f lcd_ctrl=0x3c000083 connector0_type=MIPI-A vout=720x1280p60hz,enable fb_width=720 fb_height=1280 display_bpp=16 reboot_mode=cold_boot mtdparts=aml-mtd:2m@0g(bl2),12m@5m(tpl),2m@17m(logo),2m@19m(misc),16m@21m(recovery),16m@37m(boot),128m@53m(system),75m@181m(data) root=/dev/ubi0_0 rootfstype=ubifs rw init=/sbin/init ubi.mtd=system usbcore.autosuspend=-1
+[    0.250289][0 T1     ..] fe07a000.serial: ttyS0 at MMIO 0xfe07a000 (irq = 36, base_baud = 1500000) is a meson_uart
+[    0.254438][0 T1     ..] fe080000.serial: ttyS1 at MMIO 0xfe080000 (irq = 37, base_baud = 1500000) is a meson_uart
+[    0.526631][0 T1     ..] spi-nand spi0.0: Macronix SPI NAND was found.
+[    0.526767][0 T1     ..] spi-nand spi0.0: 256 MiB, block size: 128 KiB, page size: 2048, OOB size: 64
+[    0.561243][0 T1     ..] 8 cmdlinepart partitions found on MTD device aml-mtd
+[    0.561763][0 T1     ..] Creating 8 MTD partitions on "aml-mtd":
+[    0.698474][1 T1     ..] ubi0: attaching mtd6
+[    1.073340][0 T1     ..] ubi0: scanning is finished
+[    1.078982][1 T1     ..] ubi0: attached mtd6 (name "system", size 128 MiB)
+[    1.079165][1 T1     ..] ubi0: PEB size: 131072 bytes (128 KiB), LEB size: 126976 bytes
+[    1.080182][1 T1     ..] ubi0: min./max. I/O unit sizes: 2048/2048, sub-page size 2048
+[    1.081143][1 T1     ..] ubi0: VID header offset: 2048 (aligned 2048), data offset: 4096
+[    1.082150][1 T1     ..] ubi0: good PEBs: 1024, bad PEBs: 0, corrupted PEBs: 0
+[    1.083049][1 T1     ..] ubi0: user volume: 1, internal volumes: 1, max. volumes count: 128
+[    1.084099][1 T1     ..] ubi0: max/mean erase counter: 2/0, WL threshold: 4096, image sequence number: 950526185
+[    1.085357][1 T1     ..] ubi0: available PEBs: 0, total reserved PEBs: 1024, PEBs reserved for bad PEB handling: 40
+[    1.086674][0 T595   ..] ubi0: background thread "ubi_bgt0d" started, PID 595
+[    1.089618][1 T1     ..] UBIFS (ubi0:0): Mounting in unauthenticated mode
+[    1.089938][1 T597   ..] UBIFS (ubi0:0): background thread "ubifs_bgt0_0" started, PID 597
+[    1.119792][0 T1     ..] UBIFS (ubi0:0): recovery needed
+[    1.178800][0 T1     ..] UBIFS (ubi0:0): recovery completed
+[    1.178896][0 T1     ..] UBIFS (ubi0:0): UBIFS: mounted UBI device 0, volume 0, name "rootfs"
+[    1.179879][0 T1     ..] UBIFS (ubi0:0): LEB size: 126976 bytes (124 KiB), min./max. I/O unit sizes: 2048 bytes/2048 bytes
+[    1.181273][0 T1     ..] UBIFS (ubi0:0): FS size: 123039744 bytes (117 MiB, 969 LEBs), max 2212 LEBs, journal size 9023488 bytes (8 MiB, 72 LEBs)
+[    1.182934][0 T1     ..] UBIFS (ubi0:0): reserved for root: 0 bytes (0 KiB)
+[    1.183745][0 T1     ..] UBIFS (ubi0:0): media format: w4/r0 (latest is w5/r0), UUID 58B10F33-D66B-4111-B5E9-5FA588393662, small LPT model
+[    1.186519][0 T1     ..] VFS: Mounted root (ubifs filesystem) on device 0:15.
+[    1.537389][0 T648   ..] ubi1: attaching mtd7
+[    1.762349][1 T648   ..] ubi1: scanning is finished
+[    1.767827][0 T648   ..] ubi1: attached mtd7 (name "data", size 75 MiB)
+[    1.768067][0 T648   ..] ubi1: PEB size: 131072 bytes (128 KiB), LEB size: 126976 bytes
+[    1.768978][0 T648   ..] ubi1: min./max. I/O unit sizes: 2048/2048, sub-page size 2048
+[    1.769962][0 T648   ..] ubi1: VID header offset: 2048 (aligned 2048), data offset: 4096
+[    1.770970][0 T648   ..] ubi1: good PEBs: 600, bad PEBs: 0, corrupted PEBs: 0
+[    1.771858][0 T648   ..] ubi1: user volume: 1, internal volumes: 1, max. volumes count: 128
+[    1.772941][0 T648   ..] ubi1: max/mean erase counter: 1/0, WL threshold: 4096, image sequence number: 262971879
+[    1.774158][0 T648   ..] ubi1: available PEBs: 0, total reserved PEBs: 600, PEBs reserved for bad PEB handling: 40
+[    1.775486][1 T651   ..] ubi1: background thread "ubi_bgt1d" started, PID 651
+[    1.785626][0 T653   ..] UBIFS (ubi1:0): Mounting in unauthenticated mode
+[    1.788800][1 T655   ..] UBIFS (ubi1:0): background thread "ubifs_bgt1_0" started, PID 655
+[    1.812030][1 T653   ..] UBIFS (ubi1:0): recovery needed
+[    1.895306][0 T653   ..] UBIFS (ubi1:0): recovery completed
+[    1.895431][0 T653   ..] UBIFS (ubi1:0): UBIFS: mounted UBI device 1, volume 0, name "data"
+[    1.896387][0 T653   ..] UBIFS (ubi1:0): LEB size: 126976 bytes (124 KiB), min./max. I/O unit sizes: 2048 bytes/2048 bytes
+[    1.897740][0 T653   ..] UBIFS (ubi1:0): FS size: 69328896 bytes (66 MiB, 546 LEBs), max 556 LEBs, journal size 3428352 bytes (3 MiB, 27 LEBs)
+[    1.899332][0 T653   ..] UBIFS (ubi1:0): reserved for root: 3274574 bytes (3197 KiB)
+[    1.901052][0 T653   ..] UBIFS (ubi1:0): media format: w5/r0 (latest is w5/r0), UUID CCD5EF74-B95B-42D5-AB48-0AD0DDF1ED51, small LPT model
+[13506.053865][0 T995   dh] IRQRatio___NOTICE.irq:37/ttyS1 action=meson_uart_interrupt ratio:8 period_time:1000ms isr_sum_time:87ms, cnt:21201, last_exec_time:7us
+=== TTYS1 DEVICE & INTERRUPTS & MESON_UART BEFORE ===
+lrwxrwxrwx    1 root     root             0 Jan  1 03:36 /sys/class/tty/ttyS1 -> ../../devices/platform/soc/fe000000.apb4/fe080000.serial/tty/ttyS1
+lrwxrwxrwx    1 root     root             0 Jan  1 00:00 /sys/class/tty/ttyS1/device -> ../../../fe080000.serial
+/sys/devices/platform/soc/fe000000.apb4/fe080000.serial
+           CPU0       CPU1       
+ 36:        138          0     GIC-0 201 Edge      ttyS0
+ 37:     247278          0     GIC-0 204 Edge      ttyS1
+IPI0:          0          0  CPU wakeup interrupts
+IPI4:          0          0  CPU stop interrupts
+serinfo:1.0 driver revision:
+0: uart:meson_uart mmio:0xFE07A000 irq:36 tx:504 rx:0 RTS|CTS|DTR
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:2315758 rx:214198 RTS|CTS|DTR
+=== CURRENT PROCESSES & FUSER BEFORE ===
+PID   USER     COMMAND
+    1 root     init
+    2 root     [kthreadd]
+    3 root     [rcu_gp]
+    4 root     [rcu_par_gp]
+    5 root     [slub_flushwq]
+    7 root     [kworker/0:0H-ev]
+    9 root     [mm_percpu_wq]
+   10 root     [rcu_tasks_kthre]
+   11 root     [rcu_tasks_rude_]
+   12 root     [ksoftirqd/0]
+   13 root     [rcu_preempt]
+   14 root     [migration/0]
+   16 root     [cpuhp/0]
+   17 root     [cpuhp/1]
+   18 root     [migration/1]
+   19 root     [ksoftirqd/1]
+   21 root     [kworker/1:0H-ev]
+   22 root     [kdevtmpfs]
+   23 root     [inet_frag_wq]
+   24 root     [vmap_thread]
+   26 root     [khungtaskd]
+   27 root     [oom_reaper]
+   28 root     [writeback]
+   29 root     [kcompactd0]
+   30 root     [kblockd]
+   33 root     [devfreq_wq]
+   36 root     [watchdogd]
+   37 root     [kworker/1:1H]
+   54 root     [kswapd0]
+   62 root     [kworker/0:2-rcu]
+   73 root     [kworker/0:3-eve]
+  126 root     [dmabuf-deferred]
+  203 root     [aml_hld/0]
+  204 root     [aml_hld/1]
+  213 root     [irq/54-dmc_moni]
+  251 root     [irq/32-fe08a000]
+  253 root     [irq/67-fe08a000]
+  256 root     [irq/33-fe088000]
+  286 root     [spi0]
+  291 root     [hwrng]
+  292 root     [tee-log-wq]
+  296 root     [tee_timer]
+  309 root     [irq/68-gt911]
+  345 root     [lcd_work_queue]
+  368 root     [affinity_set_th]
+  374 root     [ion_system_heap]
+  472 root     [cma_task0]
+  473 root     [cma_task1]
+  486 root     [kworker/1:2-eve]
+  496 root     [kworker/1:4-eve]
+  540 root     [card_process_th]
+  544 root     [kworker/0:1H]
+  546 root     [mld]
+  547 root     [ipv6_addrconf]
+  556 root     [stmmac_wq]
+  557 root     [amlogic_wq]
+  582 root     [sugov:0]
+  595 root     [ubi_bgt0d]
+  597 root     [ubifs_bgt0_0]
+  612 root     [aml_crypto]
+  651 root     [ubi_bgt1d]
+  655 root     [ubifs_bgt1_0]
+  669 root     [irq/69-0.1:08]
+  691 root     /usr/sbin/dropbear -B -R
+  730 root     [ppu_thread]
+  754 root     [Venc-Thread0]
+  755 root     [Venc-Thread1]
+  771 root     [gdc_monitor]
+  772 root     [gdc_release_thr]
+  780 root     [ge2d_irq_thread]
+  802 root     [irq/60-CVE]
+  810 root     [adlak_kthread_0]
+  850 root     -sh
+ 1139 root     [kworker/u4:1-ev]
+ 1192 root     [kworker/u4:2-ev]
+ 1270 root     /usr/sbin/dropbear -B -R -2 8
+ 1271 root     sh -c  set -u echo "=== TIMESTAMP ===" date -Iseconds echo "=== UNAME & RELEASE ===" uname -a cat /etc/os-release 2>/dev/null || true echo "=== PYTHON3 & TAR ===" which python3 tar || true python3 --version || true echo "=== DF BEFORE ===" df -B1 / /data echo "=== BOOT BACKUP SHA256 BEFORE ===" ls -la /data/boot_backup.img sha256sum /data/boot_backup.img echo "=== DATA DIR LIST ===" ls -la /data/ ls -la /data/apps/ 2>/dev/null || true echo "=== PROC MTD & SYS CLASS MTD ===" cat /proc/mtd for d in /sys/class/mtd/mtd[0-7]; do   if [ -e "$d" ]; then     echo "--- $d ---"     for f in name size erasesize writesize oobsize type flags; do       [ -r "$d/$f" ] && printf "%s: %s\n" "$f" "$(cat "$d/$f")"     done   fi done echo "=== UBINFO ===" ubinfo -a 2>&1 || true echo "=== DMESG SPI-NAND / MTD / UBI ===" dmesg | grep -iE "spi-nand|spinand|mtd|ubi|meson_uart|ttyS1" | head -n 120 || true echo "=== TTYS1 DEVICE & INTERRUPTS & MESON_UART BEFORE ===" ls -la /sys/class/tty/ttyS1 /sys/class/tty/ttyS1/device 2>&1 || true readlink -f /sys/class/tty/ttyS1/device 2>&1 || true grep -E "CPU|37:|uart|ttyS" /proc/interrupts 2>&1 || cat /proc/interrupts cat /proc/tty/driver/meson_uart 2>&1 || true echo "=== CURRENT PROCESSES & FUSER BEFORE ===" ps fuser -v /dev/ttyS1 /dev/fb0 2>&1 || true ls -la /etc/init.d/S90* /etc/printer-soc/ /run/printer-soc/ 2>&1 || true 
+ 1346 root     ps
+fuser: invalid option -- 'v'
+BusyBox v1.32.0 (2026-11-09 17:28:00 CST) multi-call binary.
+
+Usage: fuser [OPTIONS] FILE or PORT/PROTO
+
+Find processes which use FILEs or PORTs
+
+	-m	Find processes which use same fs as FILEs
+	-4,-6	Search only IPv4/IPv6 space
+	-s	Don't display PIDs
+	-k	Kill found processes
+	-SIGNAL	Signal to send (default: KILL)
+ls: /etc/init.d/S90*: No such file or directory
+ls: /etc/printer-soc/: No such file or directory
+ls: /run/printer-soc/: No such file or directory
+=== STEP 1B: STATVFS BEFORE & UBI & RCS & FUSER ===
+STATVFS_BEFORE: {"/": {"bsize": 4096, "frsize": 4096, "blocks": 27610, "bfree": 14919, "bavail": 14919, "total_bytes": 113090560, "free_bytes": 61108224, "avail_bytes": 61108224}, "/data": {"bsize": 4096, "frsize": 4096, "blocks": 15482, "bfree": 4020, "bavail": 3220, "total_bytes": 63414272, "free_bytes": 16465920, "avail_bytes": 13189120}}
+=== STEP 1C: UBI, DF, FUSER, RCS, INITTAB, PASSWD ===
+SYS_UBI: {
+  "ubi0": {
+    "avail_eraseblocks": "0",
+    "bad_peb_count": "0",
+    "bgt_enabled": "1",
+    "dev": "504:0",
+    "eraseblock_size": "126976",
+    "max_ec": "2",
+    "max_vol_count": "128",
+    "min_io_size": "2048",
+    "mtd_num": "6",
+    "reserved_for_bad": "40",
+    "ro_mode": "0",
+    "total_eraseblocks": "1024",
+    "uevent": "MAJOR=504\nMINOR=0\nDEVNAME=ubi0",
+    "volumes_count": "1"
+  },
+  "ubi0_0": {
+    "alignment": "1",
+    "corrupted": "0",
+    "data_bytes": "124436480",
+    "dev": "504:1",
+    "name": "rootfs",
+    "reserved_ebs": "980",
+    "type": "dynamic",
+    "uevent": "MAJOR=504\nMINOR=1\nDEVNAME=ubi0_0",
+    "upd_marker": "0",
+    "usable_eb_size": "126976"
+  },
+  "ubi1": {
+    "avail_eraseblocks": "0",
+    "bad_peb_count": "0",
+    "bgt_enabled": "1",
+    "dev": "503:0",
+    "eraseblock_size": "126976",
+    "max_ec": "1",
+    "max_vol_count": "128",
+    "min_io_size": "2048",
+    "mtd_num": "7",
+    "reserved_for_bad": "40",
+    "ro_mode": "0",
+    "total_eraseblocks": "600",
+    "uevent": "MAJOR=503\nMINOR=0\nDEVNAME=ubi1",
+    "volumes_count": "1"
+  },
+  "ubi1_0": {
+    "alignment": "1",
+    "corrupted": "0",
+    "data_bytes": "70598656",
+    "dev": "503:1",
+    "name": "data",
+    "reserved_ebs": "556",
+    "type": "dynamic",
+    "uevent": "MAJOR=503\nMINOR=1\nDEVNAME=ubi1_0",
+    "upd_marker": "0",
+    "usable_eb_size": "126976"
+  },
+  "version": "1"
+}
+Filesystem           1024-blocks    Used Available Capacity Mounted on
+ubi0_0                  110440     50764     59676  46% /
+/dev/ubi1_0              61928     45848     12880  78% /data
+=== FUSER BEFORE ===
+fuser_exit=1
+=== INITTAB & INIT.D & PASSWD ===
+# /etc/inittab
+#
+# Copyright (C) 2001 Erik Andersen <andersen@codepoet.org>
+#
+# Note: BusyBox init doesn't support runlevels.  The runlevels field is
+# completely ignored by BusyBox init. If you want runlevels, use
+# sysvinit.
+#
+# Format for each entry: <id>:<runlevels>:<action>:<process>
+#
+# id        == tty to run on, or empty for /dev/console
+# runlevels == ignored
+# action    == one of sysinit, respawn, askfirst, wait, and once
+# process   == program to run
+
+# Startup the system
+#::sysinit:/bin/mount -t proc proc /proc
+::sysinit:/bin/mkdir /dev/shm
+::sysinit:/bin/mkdir /dev/pts
+::sysinit:/bin/mount -a
+#::sysinit:/bin/mount -o remount,rw /
+#::sysinit:/bin/hostname -F /etc/hostname
+::sysinit:/sbin/ifconfig lo 127.0.0.1 up
+::sysinit:/sbin/route add -net 127.0.0.0 netmask 255.0.0.0 lo
+# now run any rc scripts
+::sysinit:/etc/init.d/rcS
+
+# Set up a couple of getty's
+#tty1::once:/sbin/getty 38400 tty1
+#tty2::once:/sbin/getty 38400 tty2
+
+# Put a getty on the serial port
+ttyS0::respawn:/sbin/getty -L ttyS0 921600 vt100 -n root # UNSUPPORT GENERIC_SERIAL
+# ttyS0::respawn:-/bin/sh  # AMLOGIC_GENERAL_SERIAL
+
+# Logging junk
+#null::sysinit:/bin/touch /var/log/messages
+#null::respawn:/sbin/syslogd -n
+#null::respawn:/sbin/klogd -n
+#tty3::once:/usr/bin/tail -f /var/log/messages
+#null::respawn:/usr/sbin/telnetd -l /bin/sh
+
+# Stuff to do for the 3-finger salute
+::ctrlaltdel:/sbin/reboot
+
+# Stuff to do before rebooting
+#null::shutdown:/usr/bin/killall klogd
+#null::shutdown:/usr/bin/killall syslogd
+null::shutdown:/etc/init.d/rcK
+null::shutdown:/bin/umount -a -r
+null::shutdown:/sbin/swapoff -a
+
+null::sysinit:/usr/bin/remotecfg /etc/remote.conf
+null::sysinit:echo 0 > /sys/class/graphics/fb0/blank
+#null::sysinit:echo 0 > /sys/class/graphics/fb1/free_scale
+#null::sysinit:echo 0 > /sys/class/graphics/fb0/free_scale
+null::sysinit:echo 0 > /sys/module/amvdec_h264mvc/parameters/view_mode
+null::sysinit:echo 96000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+null::sysinit:echo interactive > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+null::sysinit:echo 0 > /sys/class/freq_limit/limit
+null::sysinit:echo 1488000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_dflt_freq
+null::sysinit:echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+#::sysinit:/lib/preinit/auto_reboot.sh
+total 44
+drwxr-xr-x    2 dbus     dbus           936 Nov 10  2026 .
+drwxr-xr-x   13 dbus     dbus          2112 Jan  1 00:00 ..
+-rwxr-xr-x    1 dbus     dbus           643 Nov 10  2026 S01mkmisc
+-rwxr-xr-x    1 dbus     dbus          1876 Nov 10  2026 S02sysctl
+-rwxr-xr-x    1 dbus     dbus           456 Nov 10  2026 S03datamount
+-rwxr-xr-x    1 dbus     dbus           324 Nov 10  2026 S10mdev
+-rwxr-xr-x    1 dbus     dbus          1684 Nov 10  2026 S20urandom
+-rwxr-xr-x    1 dbus     dbus           115 Nov 10  2026 S40network
+-rwxr-xr-x    1 dbus     dbus           242 Nov 10  2026 S45display_splash
+-rwxr-xr-x    1 dbus     dbus           985 Nov 10  2026 S50dropbear
+-rwxr-xr-x    1 dbus     dbus           848 Nov 10  2026 S50mbp_pipeline
+-rwxr-xr-x    1 dbus     dbus           423 Nov 10  2026 rcK
+-rwxr-xr-x    1 dbus     dbus           357 Nov 10  2026 rcS
+#!/bin/sh
+
+# Start all init scripts in /etc/init.d
+# executing them in numerical order.
+
+VENDOR_DIR=/amlogic/modules/vendor
+if [ -f $VENDOR_DIR/vendor_install.sh ]; then
+    cd $VENDOR_DIR
+    $VENDOR_DIR/vendor_install.sh
+    cd -
+fi
+
+for initscript in /etc/init.d/S[0-9][0-9]*
+do
+    if [ -x $initscript ] ;
+    then
+        $initscript start
+    fi
+done
+root::0:0:root:/root:/bin/sh
+dbus:x:1000:1000:DBus messagebus user:/var/run/dbus:/bin/false
+=== CLEANUP APPROVED ITEMS IN /data/apps ===
+REMOVING: /data/apps/a.log
+REMOVING: /data/apps/helixscreen-c308l-demo
+REMOVING: /data/apps/printer-soc-diagnostics
+REMOVING: /data/apps/printer-soc-product-20261114
+REMOVING: /data/apps/printer-soc-product-20261114-v2
+REMOVING: /data/apps/soc-ap-c308l-20261113
+REMOVING: /data/apps/soc-ap-c308l-20261113-v2
+REMOVING: /data/apps/soc-ap-c308l-20261113-v3
+=== POST-CLEANUP VERIFY ===
+total 16516
+drwxr-xr-x    4 root     root           728 Jan  1 02:00 .
+drwxrwxr-x   21 dbus     dbus          1504 Nov 12  2026 ..
+drwxr-xr-x    2 root     root           160 Jan  3 06:15 apps
+-rw-r--r--    1 root     root      16777216 Jan  1 00:38 boot_backup.img
+-rwxr-xr-x    1 root     root          6757 Jan  1 00:19 ev_watch.py
+-rwxr-xr-x    1 root     root         56836 Jan  1 00:36 flash_erase
+-rwxr-xr-x    1 root     root         61132 Jan  1 00:36 nandwrite
+-rwxr-xr-x    1 root     root           183 Jan  1 00:38 rollback_boot.sh
+drwxr-xr-x    2 root     root           160 Jan  1 00:02 scripts
+-rwxr-xr-x    1 root     root          2603 Jan  1 00:21 tp_reset.sh
+total 0
+drwxr-xr-x    2 root     root           160 Jan  3 06:15 .
+drwxr-xr-x    4 root     root           728 Jan  1 02:00 ..
+59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86  /data/boot_backup.img
+Filesystem           1024-blocks    Used Available Capacity Mounted on
+ubi0_0                  110440     50644     59796  46% /
+/dev/ubi1_0              61928      7568     51164  13% /data
+STATVFS_AFTER_CLEANUP: {"/": {"bsize": 4096, "frsize": 4096, "blocks": 27610, "bfree": 14949, "bavail": 14949, "total_bytes": 113090560, "free_bytes": 61231104, "avail_bytes": 61231104}, "/data": {"bsize": 4096, "frsize": 4096, "blocks": 15482, "bfree": 13590, "bavail": 12791, "total_bytes": 63414272, "free_bytes": 55664640, "avail_bytes": 52391936}}
+=== CHECK EXISTING TARGET PATHS & INIT SCRIPTS ===
+ifconfig eth0 192.168.1.101 netmask 255.255.255.0 up
+route add default gw 192.168.1.1 dev eth0 2>/dev/null || true
+#!/bin/sh
+case "$1" in
+    start)
+        echo "Starting display splash..."
+        /usr/bin/show_color helix > /dev/null 2>&1 || /usr/bin/show_color grid > /dev/null 2>&1
+        ;;
+    stop)
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+#!/bin/sh
+
+case "$1" in
+    start)
+        echo "Starting MBP drivers..."
+        if [ -x /usr/bin/load_mbd.sh ]; then
+            /usr/bin/load_mbd.sh
+        else
+            echo "Error: /usr/bin/load_mbd.sh not found!"
+            exit 1
+        fi
+
+        # Disabled pipeline demo by default to avoid resource & GPIO conflicts
+        # if [ -x /usr/bin/run_pipeline.sh ]; then
+        #     /usr/bin/run_pipeline.sh 2
+        # fi
+        ;;
+    stop)
+        echo "Stopping pipeline demo..."
+        killall pipeline_demo 2>/dev/null
+        if [ -x /usr/bin/ipc-property-startup.sh ]; then
+            /usr/bin/ipc-property-startup.sh stop 2>/dev/null
+        fi
+        ;;
+    restart)
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
+ls: /usr/bin/dbus*: No such file or directory
+ls: /usr/bin/printer-soc*: No such file or directory
+ls: /usr/bin/forward_service_daemon: No such file or directory
+ls: /usr/bin/device_manager_daemon: No such file or directory
+ls: /usr/bin/ui-gateway: No such file or directory
+ls: /usr/lib/printer-soc: No such file or directory
+ls: /usr/share/printer-soc: No such file or directory
+/sys/class/backlight/:
+total 0
+drwxr-xr-x    2 root     root             0 Jan  1 05:38 .
+drwxr-xr-x   78 root     root             0 Jan  1 00:00 ..
+lrwxrwxrwx    1 root     root             0 Jan  1 05:38 aml-bl -> ../../devices/platform/backlight/backlight/aml-bl
+
+/sys/class/backlight/aml-bl/:
+total 0
+drwxr-xr-x    3 root     root             0 Jan  1 05:38 .
+drwxr-xr-x    3 root     root             0 Jan  1 05:38 ..
+-r--r--r--    1 root     root          4096 Jan  3 06:15 actual_brightness
+-rw-r--r--    1 root     root          4096 Jan  3 06:15 bl_power
+-rw-r--r--    1 root     root          4096 Jan  1 05:38 brightness
+lrwxrwxrwx    1 root     root             0 Jan  3 06:15 device -> ../../../backlight
+-r--r--r--    1 root     root          4096 Jan  1 05:38 max_brightness
+drwxr-xr-x    2 root     root             0 Jan  3 06:15 power
+-r--r--r--    1 root     root          4096 Jan  3 06:15 scale
+lrwxrwxrwx    1 root     root             0 Jan  3 06:15 subsystem -> ../../../../../class/backlight
+-r--r--r--    1 root     root          4096 Jan  3 06:15 type
+-rw-r--r--    1 root     root          4096 Jan  3 06:15 uevent

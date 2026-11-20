@@ -16,6 +16,10 @@
 | `v1.9` | `2026-11-19 14:39 +0800` | `AI (Codex) - COORD` | 记录用户批准 `QA-ENV-01`，启动独立工具镜像候选 | `QA-ENV-01` 已批准，`QA-ENV-02` 待报批 |
 | `v1.10` | `2026-11-19 14:48 +0800` | `AI (Codex) - COORD` | 记录独立制镜镜像的确切摘要和通过的离线工具冒烟 | `QA-ENV-01` 通过，`QA-ENV-02` 待批准 |
 | `v1.11` | `2026-11-19 14:51 +0800` | `AI (Codex) - COORD` | 记录用户批准正式系统 profile 本地接入及回归 | `QA-ENV-02` 本地配置、代码和回归已批准 |
+| `v1.12` | `2026-11-20 15:23 +0800` | `AI (Codex)` | 记录 r14 部分真机验收及固件签发暂缓决定 | 用户已确认签发留待统一签名设计 |
+| `v1.13` | `2026-11-20 15:33 +0800` | `AI (Codex)` | 记录本轮继续实测 Helix OTA，提出仅校验固件完整性的真机候选 | 升级实测目标已确认，候选改动待审批 |
+| `v1.14` | `2026-11-20 15:42 +0800` | `AI (Antigravity-CLI) - COORD` | 汇总 Option B (`r14`) 实板排障根因（`HIL-DEF-01~03` 与 `HIL-BLK-01`），给出 `r15` 最小修复切片、`board.yaml` 存储同步及与 §0.5 `AC-03` 候选的审批衔接 | Option B 已完整取证；`r15` 修复与 `AC-03` 路径待用户审批 |
+| `v1.15` | `2026-11-20 16:00 +0800` | `AI (Antigravity-CLI) - COORD` | 记录用户批准 `§0.6` (`S08-HIL-FIX-01`) 与 `§0.5` 方案 2A (`integrity-only-hil`) 及双板持续上电事实；同步锁定 `SLICE-08 revision: 3` (`r15`) 软件闭环边界 | **已批准执行 `r15` SW 闭环**（实板刷写前仍须过 `Human Gate #2`） |
 
 ---
 
@@ -82,6 +86,49 @@
   2. `SLICE-06` 软件门禁通过后，按批准连续推进 **`SLICE-07` 软件联调**，落实 **`DEC-SCREEN-02=B`**（固定固件目录读取）、**`DEC-SCREEN-03` 有条件选 A**（复用 `Forward.OtaCommand` + DDS，补齐并发控制/维护互斥/急停后端验收，UI 明确区分“后台已锁定”与“设备已确认急停”）与 **`DEC-SCREEN-08=B`**（`Forward` 写刷前验证可信发布方签名，覆盖合法包、未签名包、坏签名、缺失公钥 4 类测试）；
   3. **已锁定跨切片边界**：`DEC-SCREEN-01=A`（本轮只做 P0 + 同源制镜 + 冷启动验收 + 发版骨架，`SLICE-09` P1 后续单独排期，未来 P1 须按温区隔离故障并在热敏开路时拦截含通用 G-code 在内的全部加热入口）；`DEC-SCREEN-06=A`（部署入 `/`、持久数据留 `/data`，清理前复测两处余量并列清单，**保留 `/data/boot_backup.img`**，确需迁移须先核对备份与恢复路径）；`DEC-SCREEN-07=A`（产出并校验同源系统镜像，实板使用同一安装包验证冷启动/断连恢复/P0，上板部署、整机刷写、正式发布分别停机申请对应门禁授权）；`AC-09` 半断连验证 MC 可识别、TH 离线与接回自愈，MC 单板能否升级由 OTA 准入单独验证。
   4. **汇报与门禁约束**：由 COORD 通过 V2 切片账本与四阶门禁执行；进度仅报告**通过、失败或阻塞**并附当次证据链接，严禁未过门禁推进下一切片或未获 `Human Gate #2/#3` 授权触碰实板/远端发布。
+
+### 0.4 r14 部分真机验收与固件签发暂缓决定
+
+- 用户已选 r14 实板验收选项 B。本轮按既有授权执行自启、版本显示、断连恢复、急停、背光、网络、开发模式互斥等实板项目，以及 `AC-04` 已授权的拒签零擦写负例。结果按实际完成项分别记录。
+- 暂缓配套 MC／TH 固件的密钥配置和正式签发。合法签名升级 `AC-03` 保持待补，r14 记录部分真机验收结果，完整 `HIL-Verified` 与正式发布待相应条件及授权满足。`DEC-SCREEN-08` 的写刷前验签仍是正式 OTA 准入条件。
+- 后续以统一签名方案确定签发责任、密钥生成与保管、公钥随候选交付，以及签名固件与验收清单的绑定。具体技术设计及实施另行审批。
+
+### 0.5 本轮 Helix OTA 真机候选与完整性校验（已批准方案 2A）
+
+> **审批生效（`2026-11-20`）**：用户已选定方案 **2A**，批准在 `r15` 合入 `S08-OTA-HIL-01/02`（`integrity-only-hil` 仅作用于带 `--hil-ota-integrity-only` 的 HIL 构建计划；默认构建保持 `signature-required` 不变，且晋级入口拒绝非 `signature-required` 候选）。
+
+用户明确本轮继续实测升级，签名留给后续统一设计。本节提出独立的 HIL 候选，范围为 `Helix → Forward → MC／TH` 的真实升级。`AC-03` 保留，从界面发起、真实写刷、DDS 进度、先 TH 后 MC、重启回 App 后的版本和 `boot_id` 复核都要取证。`AC-04` 保留错板、截断、尾块 CRC32、净荷 SHA-256、扫描后换包、断链和恢复等适用负例。签名本身的正负例继续由已有验签构建覆盖，本轮实板签发与验签用例留待统一签名验收。r14 仍按 §0.4 归档已经采集的证据。
+
+源码核实 Helix 的 `execute_fwd_ota_command()` 通过 `ForwardInterface.OtaCommand` 进入 `prepare_images()` → `ota_load_image()` → `verify_image()`，板型、长度、尾块 CRC32 和净荷 SHA-256 校验在 ECDSA 之前。`DeviceManager` 的 `fw_updater_verify_buffer()` 是另一个入口，Helix 在升级后走 DM `GetVersionInfo` 读取版本。`release_product.py` 目前要求两板包与历史 HIL 净荷摘要相符并通过签名检查，HIL 核验器也固定要求签名负例。因此完整验收需要同时对齐运行端、候选清单和测试判据。现有 r14 二进制运行时仍会拒收未签名包。
+
+候选设计采用编译时固定策略，仅 `Forward` 的 Helix 真机候选由构建计划显式选用 `integrity-only-hil`，常规构建采用 `signature-required`。计划、构建日志、候选清单明确绑定该策略；HIL 核验器从候选清单读取，输入缺失时按旧候选的 `signature-required` 处理，拒绝未知值。该候选在发布晋级入口明确阻塞。另一种路径是沿用早期独立串口工具验证 MCU 传输，能验证协议写刷但无法覆盖 Helix 界面、Forward 和 DDS，故无法代替本轮 `AC-03`。本候选复用现有 MiniMCProto、Bootloader、已验固件净荷及 SDK 锁。尾块布局、路由、命令码、超时、UART、Flash 分区及 VTOR 沿用现有契约。
+
+| 步骤／责任 | 精确路径和预算 | 依赖、接口和验收 |
+| :--- | :--- | :--- |
+| `S08-OTA-HIL-01`／`ENG-AP` | `printer-soc/services/forward/CMakeLists.txt`、`printer-soc/services/forward/modules/ota/ota_image.cpp`、`printer-soc/tools/build_c308l_services.py`、`printer-soc/tools/release_product.py`、`printer-soc/tests/ota/test_ota_e2e.py`、`printer-soc/tests/integration/test_release_product.py`。上限 6 个文件，新增与删除合计不超过 190 行 | 拟在 `release_product.py plan` 接收 `--hil-ota-integrity-only`，固定 `ota_signing_policy` 后由 `build_app(args, plan)` 传给构建脚本和 Forward 目标。`verify_image(ota_image*, uint8_t, const char**)` 继续完整性校验。`firmware_records(args, plan, product_root)` 在 HIL 策略下绑定两板包和 SLICE-05 净荷实测身份，`release_manifest(args, plan)` 拒绝晋级该候选。用 `test_ota_e2e.py` 分别实跑默认策略的拒签、HIL 策略的零签名包成功及完整性负例。用 `python3 -B -m unittest discover -s printer-soc/tests/integration -p test_release_product.py -v` 验证默认兼容、策略锁定和发布拒绝。 |
+| `S08-OTA-HIL-02`／`COORD`、`INTEGRATOR` | `project-control/slices/SLICE-08.yaml`、`test_harness/hil/tests/test_helix_screen_integration.py`。上限 2 个文件，新增与删除合计不超过 100 行 | 依赖 `S08-OTA-HIL-01`。`check_cases(cases, root, wire_ids, ota_signing_policy)` 根据候选策略核对实际用例，缺失和错误证据失败。用 `python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test` 验证两种策略，再对新候选执行现行独立软件门禁。完成新候选写刷授权后，按现有 CLI 用候选清单、实测收据及板级描述核对真实 `AC-03` 和适用负例。 |
+
+两板制品优先取回 SLICE-05 原包或准确净荷，逐板核对历史收据中的 SHA-256 后再装入新候选。找不到原净荷时，重新构建所得字节若与原 SHA 不符，按新制品身份单独取证。台架只运行已锁定本候选及配套制品。产品正式验签准入与生产晋级条件按 `DEC-SCREEN-08` 执行。若测试候选失败，保留原始日志并回到获批的 r14 验收边界；需要实板回滚时按已授权方式恢复 r14 原安装包。实施改动、远端写入及新候选实板写刷按现有门禁办理。
+
+### 0.6 Option B (`r14`) 实板排障根因分诊与 `r15` 最小修复方案（已批准执行）
+
+Option B（见 [INTEGRATOR_option_b_report.md](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/hil_option_b_r14/INTEGRATOR_option_b_report.md) 与 [COORD_root_cause_triage.md](file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/hil_option_b_r14/COORD_root_cause_triage.md)）已验证：`/` 同源部署与 `664/664` 清单核验、`boot_backup.img` 零改动保护、`/data/apps/` 清理、冷启动 `S90printer-soc` 脱离 SSH 拉起、`AP AC-02` 版本、急停本地锁存（`AC-05`）、`eth0`/背光 `aml-bl`（`AC-06`）、`AC-04`（未签名/坏签名/错包 `0` 擦写预检拒收）及 `stop`/`dev-mode` 设备释放（`AC-09-DEV-MODE`）均工作正常；同时真实暴露出 **3 项可定位的 `printer-soc` 缺陷** 与 **1 项台架硬件阻塞**：
+
+1. **`HIL-DEF-01` (`BLOCKER` — `SIGSEGV 139` / `tpp.c:82` 崩溃循环)**：
+   - 根因：`printer-soc/services/helixscreen/platform/c308l/live-profile.json` 开启 `"rotate": 270`，C308L 显示屏为 `1280x720`（`XLARGE` 断点），但 `printer-soc/services/helixscreen/platform/c308l/cross.mk:26` 仅设置 `FONT_TIERS := medium`，未编入 `_large`/`_xlarge` 字体。`/usr/share/printer-soc/helixscreen/config/crash.txt` 实证 `ThemeManager` 跳过注册 `font_heading` 与 `font_small`，导致 `ui_text.cpp:45-48` 触发 `FATAL: Font constant 'font_small' not found in globals.xml` 并调用 `std::exit(EXIT_FAILURE)`；在 `AisocConnection`/LVGL/FastDDS 线程与静态对象仍存活时退出，引发 `SIGSEGV(139)`、`tpp.c:82` 断言失败及 `/dev/shm/fastdds_port7400` 初始化残片。
+2. **`HIL-DEF-02` (`BLOCKER` — DDS 域失配与独立脚本运行期动态库查找断裂)**：
+   - 根因：`printer-soc/tools/c308l_services.py` 中 `launch_panel()` 未从 `services.json` 注入 `AISOC_DDS_DOMAIN=198`，致使 `helix-screen` 默认连接 DDS Domain `0`；且 `printer-soc/services/helixscreen/platform/c308l/dependencies.mk:30` 使用 `--enable-new-dtags`（`DT_RUNPATH` 不传递至 `libaisoc_dds.so` 依赖的 `libfastdds.so.3.6`），导致独立调用 `/usr/bin/printer-soc-panel` 报缺库。已在实板通过 Python `ctypes` 验证 `libaisoc_dds.so` + `SHM` 在 Domain `198` 可正常建 participant (`rc=0`) 与清理。同时须在 `launch_panel()` 中确保透传管理总线的 `DBUS_SESSION_BUS_ADDRESS`。
+3. **`HIL-DEF-03` (`MINOR` — `HELIX_DATA_DIR` / `HELIX_CONFIG_DIR` 错配写脏 `/`)**：
+   - 根因：`launch_panel()` 与 `usr/bin/printer-soc-panel` 将 `HELIX_DATA_DIR` 指向空目录 `/data/printer-soc/helix` 且未设 `HELIX_CONFIG_DIR`，导致 `ui_xml/` 与 `assets/config/themes/defaults/` 告警，且运行时 `settings.json`、`crash.txt`、`.crash_restart_count`、`telemetry_*.json` 回写污染 `/` 下的 `/usr/share/printer-soc/helixscreen/config/`。修复为：`HELIX_DATA_DIR=/usr/share/printer-soc/helixscreen`、`HELIX_CONFIG_DIR=/data/printer-soc/helix/config`，首次启动时将随包打包的默认 `settings.json` 播种到 `/data/printer-soc/helix/config/settings.json`。
+4. **`HIL-BLK-01` (`ENV` — `/dev/ttyS1` 在 `reboot` 后 `rx=0, irq 37=0`)**：
+   - 实证：AP 侧 `GPIOX_7`/`GPIOX_8` 引脚复用（`0xfe00400c=0x10111111`、`0xfe004010=0x00001001`）、空闲高电平（`0xfe004100=0x000025FF`）、`meson_uart` 921600 8N1 及 `probe_uart_read_write.py` TX 发包均正常，设备树亦无 AP GPIO 控制 MCU 电源；需人工核对台架 MC/TH 供电与 UART 物理连线。
+
+#### 已批准 `r15` 修复范围与边界（Diff Budget，已授权 `ENG-AP`/`INTEGRATOR` 实施并重跑 `SLICE-08 revision: 3` 四阶门禁）
+
+| 步骤／责任 | 精确修改文件与最小预算 | 修改内容与门禁验收 |
+| :--- | :--- | :--- |
+| `S08-HIL-FIX-01`／`ENG-AP` | `printer-soc/services/helixscreen/platform/c308l/cross.mk`、`printer-soc/services/helixscreen/platform/c308l/dependencies.mk`、`printer-soc/tools/c308l_services.py`、`printer-soc/boards/c308l-aw419/rootfs-overlay/usr/bin/printer-soc-panel`、`printer-soc/boards/c308l-aw419/board.yaml`、`printer-soc/services/helixscreen/platform/c308l/tests/test_tools.py`、`printer-soc/tests/packaging/test_product_package.py`（上限 7 个文件，增删合计 $\le 120$ 行） | 1. `cross.mk`: `FONT_TIERS := large xlarge`（核对安装包仍满足 `<= 44 MiB` 与 `/` 余量）；<br>2. `dependencies.mk` + `printer-soc-panel` + `c308l_services.py`: `launch_panel()` 注入 `AISOC_DDS_DOMAIN` 与 `DBUS_SESSION_BUS_ADDRESS`，使用 `--disable-new-dtags`（并在脚本兜底 `LD_LIBRARY_PATH`），分离 `HELIX_DATA_DIR=/usr/share/printer-soc/helixscreen` 与 `HELIX_CONFIG_DIR=/data/printer-soc/helix/config`（首次启动从默认配置播种 `settings.json`）；<br>3. `board.yaml`: 按板端 `/proc/mtd` 与 `dmesg` 实证同步 Macronix 256MiB SPI-NAND (`128KiB` PEB / `2048B` page / `64B` OOB / `mtd0..mtd7`) 状态，保持 `camera: unverified`；<br>4. 在 `test_tools.py` / `test_product_package.py` 补全断言后，按 `SLICE-08` 重跑全套构建、制镜深检与 Codex 只读审阅（产出 `r15`）。 |
+| **`AC-03` OTA 策略衔接（已选定方案 2A）** | 已批准叠加 `§0.5` `S08-OTA-HIL-01/02`（`integrity-only-hil`）；用户亦确认 MC/TH 处于物理上电状态，待 `r15` 通过 `SW-Verified` 后停在 `Human Gate #2` 再人工断电复位 MCU / 核查 `/dev/ttyS1` 恢复。 | 默认 `signature-required` 契约、`mcu-p3`、`boot/*` 及晋级门槛保持零破坏。 |
 
 ---
 

@@ -1,0 +1,473 @@
+=== STEP 4.1 / 4.2 / 4.3: D-BUS AC-02, AC-05, AC-06 ===
+2026-11-20T15:25:09+08:00
+BUS_ADDR=unix:path=/tmp/dbus-gLvsYRbrrs,guid=37e05298ba0a0fee3f94bb2500000004
+=== /etc/printer-soc/version.json ===
+{
+  "product_version": "0.1.0-skeleton",
+  "build_id": "20261120T062137Z",
+  "candidate_id": "0.1.0-skeleton+962ce1a6",
+  "profile": "c308l-production",
+  "git_sha": "962ce1a6",
+  "abi": "armv7l-hf-glibc2.33",
+  "mcu_proto": "2.0"
+}
+--- [AC-02] DeviceInterface.GetVersionInfo ---
+method return time=103.368575 sender=:1.1 -> destination=:1.4 serial=323 reply_serial=2
+   string "{"devices":{"mc":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0},"th":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0}}}"
+rc=0
+--- [AC-02] DeviceInterface.RequestImmediateSample string:all ---
+method return time=105.003815 sender=:1.1 -> destination=:1.5 serial=326 reply_serial=2
+   boolean false
+   string "FORWARD_RPC_ERROR_-8"
+rc=0
+--- [AC-02] DeviceInterface.GetSnapshot ---
+method return time=106.179705 sender=:1.1 -> destination=:1.6 serial=330 reply_serial=2
+   string "{"schema_version":2,"generation_id":1,"timestamp_ns":5265183669,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"devices":{"mc":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0},"th":{"valid":false,"status":"QUERY_FAILED","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0}},"system_status":"OFFLINE","device_state":"OFFLINE"}"
+rc=0
+--- [AC-02] ForwardInterface.GetPortStatus ---
+method return time=106.406348 sender=:1.0 -> destination=:1.7 serial=472 reply_serial=2
+   boolean true
+   string "/dev/ttyS1"
+   uint64 234
+   uint64 0
+rc=0
+--- [AC-02] ForwardInterface.QueryVersion MC(2) & TH(3) ---
+Error org.aisoc.Error.Timeout: Method invocation failed
+rc_mc=1
+Error org.aisoc.Error.Timeout: Method invocation failed
+rc_th=1
+--- [AC-05] EmergencyStop byte:1 ---
+method return time=108.976342 sender=:1.1 -> destination=:1.10 serial=340 reply_serial=2
+   int32 -8
+rc_estop1=0
+--- [AC-05] GetSnapshot after EmergencyStop(1) ---
+method return time=110.052983 sender=:1.1 -> destination=:1.11 serial=344 reply_serial=2
+   string "{"schema_version":2,"generation_id":1,"timestamp_ns":5265183669,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"devices":{"mc":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0},"th":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0}},"system_status":"EMERGENCY_STOP_INVOKED","device_state":"FAULT"}"
+rc=0
+--- [AC-05] EmergencyStop byte:0 (clear) ---
+method return time=110.488305 sender=:1.1 -> destination=:1.12 serial=346 reply_serial=2
+   int32 -9
+rc_estop0=0
+--- [AC-05] GetSnapshot after EmergencyStop(0) ---
+method return time=110.940576 sender=:1.1 -> destination=:1.13 serial=349 reply_serial=2
+   string "{"schema_version":2,"generation_id":1,"timestamp_ns":5265183669,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"devices":{"mc":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0},"th":{"valid":false,"status":"QUERY_FAILED","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0}},"system_status":"EMERGENCY_STOP_INVOKED","device_state":"FAULT"}"
+rc=0
+--- [AC-06] ip addr show eth0 ---
+3: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq qlen 1000
+    link/ether 02:ad:3d:01:8e:eb brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.101/24 brd 192.168.1.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::ad:3dff:fe01:8eeb/64 scope link 
+       valid_lft forever preferred_lft forever
+rc=0
+--- [AC-06] backlight read/write 180/restore ---
+BEFORE: brightness=204 actual_brightness=204 max_brightness=255 bl_power=0
+AFTER_180: brightness=180 actual_brightness=180
+RESTORED: brightness=204 actual_brightness=204
+
+=== STEP 4.4: AC-04 0-ERASE SIGNATURE REJECTION NEGATIVE TESTS ===
+PUBKEY_BEFORE:
+391ed9e5993fc86be51c0646693e9a92ad1fb7c2facd05b71f14df08ba75e2d3  /etc/printer-soc/fw_signing_pub.pem
+-r--r--r--    1 root     root           178 Jan  3  1970 /etc/printer-soc/fw_signing_pub.pem
+
+/run/printer-soc/firmware/:
+total 0
+drwxr-xr-x    2 root     root            40 Jan  1 00:00 .
+drwx------    3 root     root           180 Jan  1 00:00 ..
+
+
+--- CASE AC-04-UNSIGNED (bytes=1421 sha256=fe9578fabfcc0ce690e1ca471e93280617152f132833435561239bd14c23b107) ---
+UPLOAD: fe9578fabfcc0ce690e1ca471e93280617152f132833435561239bd14c23b107  /run/printer-soc/firmware/fw_mc.bin 
+LINES_BEFORE: 899
+PORT_BEFORE: (0, 'method return time=197.942551 sender=:1.0 -> destination=:1.14 serial=906 reply_serial=2\n   boolean true\n   string "/dev/ttyS1"\n   uint64 451\n   uint64 0', '')
+UART_BEFORE: (['1: uart:meson_uart mmio:0xFE080000 irq:37 tx:6315 rx:0 RTS|CTS|DTR'], [' 37:          0          0     GIC-0 204 Edge      ttyS1'])
+OTA_OP0_DBUS: 0 method return time=198.173459 sender=:1.0 -> destination=:1.15 serial=909 reply_serial=2
+   int32 0
+   uint64 4000001 
+OTA_OP0_STAGE: [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198166,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000001","event_id":3,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_SIGNATURE_INVALID","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+OTA_OP1_DBUS: 0 method return time=198.198000 sender=:1.0 -> destination=:1.16 serial=910 reply_serial=2
+   int32 0
+   uint64 4000002 
+OTA_OP1_STAGE: [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198196,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000002","event_id":5,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_SIGNATURE_INVALID","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+PORT_AFTER: (0, 'method return time=198.214811 sender=:1.0 -> destination=:1.17 serial=911 reply_serial=2\n   boolean true\n   string "/dev/ttyS1"\n   uint64 452\n   uint64 0', '')
+UART_AFTER: (['1: uart:meson_uart mmio:0xFE080000 irq:37 tx:6329 rx:0 RTS|CTS|DTR'], [' 37:          0          0     GIC-0 204 Edge      ttyS1'])
+LINES_AFTER: 909
+NEW_FORWARD_LOG_LINES:
+  [FWD QUERY] target_node=2 sequence_id=450 elapsed_ms=501 error_code=-8 may_have_been_sent=1
+  [FWD VERSION] target_node=2 sequence_id=450 elapsed_ms=501 error_code=-8
+  [FWD QUERY] target_node=2 sequence_id=451 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+  [FWD VERSION] target_node=2 sequence_id=451 elapsed_ms=200 error_code=-8
+  [FWD QUERY] target_node=3 sequence_id=452 elapsed_ms=201 error_code=-8 may_have_been_sent=1
+  [FWD VERSION] target_node=3 sequence_id=452 elapsed_ms=201 error_code=-8
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198165,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000001","event_id":2,"phase":"PRECHECK","active":true,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":true,"target_mask":1,"active_node":2,"progress_pct":0,"error":"","mc":{"valid":false,"file":"fw_mc.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198166,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000001","event_id":3,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_SIGNATURE_INVALID","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198196,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000002","event_id":4,"phase":"PRECHECK","active":true,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":true,"target_mask":1,"active_node":2,"progress_pct":0,"error":"","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198196,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000002","event_id":5,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_SIGNATURE_INVALID","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+
+
+--- CASE AC-04-BAD-SIGNATURE (bytes=1421 sha256=210f82501c134bca413fed3b85f2192840e00ad3cb9825f78384d5991b88d63c) ---
+UPLOAD: 210f82501c134bca413fed3b85f2192840e00ad3cb9825f78384d5991b88d63c  /run/printer-soc/firmware/fw_mc.bin 
+LINES_BEFORE: 909
+PORT_BEFORE: (0, 'method return time=198.678099 sender=:1.0 -> destination=:1.18 serial=914 reply_serial=2\n   boolean true\n   string "/dev/ttyS1"\n   uint64 453\n   uint64 0', '')
+UART_BEFORE: (['1: uart:meson_uart mmio:0xFE080000 irq:37 tx:6343 rx:0 RTS|CTS|DTR'], [' 37:          0          0     GIC-0 204 Edge      ttyS1'])
+OTA_OP0_DBUS: 0 method return time=198.697368 sender=:1.0 -> destination=:1.19 serial=915 reply_serial=2
+   int32 0
+   uint64 4000003 
+OTA_OP0_STAGE: [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198801,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000003","event_id":7,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_SIGNATURE_INVALID","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+OTA_OP1_DBUS: 0 method return time=198.821231 sender=:1.0 -> destination=:1.20 serial=916 reply_serial=2
+   int32 0
+   uint64 4000004 
+OTA_OP1_STAGE: [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198824,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000004","event_id":9,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_SIGNATURE_INVALID","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+PORT_AFTER: (0, 'method return time=199.356094 sender=:1.0 -> destination=:1.21 serial=919 reply_serial=2\n   boolean true\n   string "/dev/ttyS1"\n   uint64 454\n   uint64 0', '')
+UART_AFTER: (['1: uart:meson_uart mmio:0xFE080000 irq:37 tx:6357 rx:0 RTS|CTS|DTR'], [' 37:          0          0     GIC-0 204 Edge      ttyS1'])
+LINES_AFTER: 917
+NEW_FORWARD_LOG_LINES:
+  [FWD QUERY] target_node=2 sequence_id=453 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+  [FWD VERSION] target_node=2 sequence_id=453 elapsed_ms=200 error_code=-8
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198695,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000003","event_id":6,"phase":"PRECHECK","active":true,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":true,"target_mask":1,"active_node":2,"progress_pct":0,"error":"","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198801,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000003","event_id":7,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_SIGNATURE_INVALID","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198820,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000004","event_id":8,"phase":"PRECHECK","active":true,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":true,"target_mask":1,"active_node":2,"progress_pct":0,"error":"","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":198824,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000004","event_id":9,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_SIGNATURE_INVALID","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [FWD QUERY] target_node=2 sequence_id=454 elapsed_ms=501 error_code=-8 may_have_been_sent=1
+  [FWD VERSION] target_node=2 sequence_id=454 elapsed_ms=501 error_code=-8
+
+
+--- CASE AC-04-WRONG-PACKAGE (bytes=1421 sha256=f75441ad0c00ccf12b7d8e741b8b93babee6a152c343b5a625bd96366ea39c3d) ---
+UPLOAD: f75441ad0c00ccf12b7d8e741b8b93babee6a152c343b5a625bd96366ea39c3d  /run/printer-soc/firmware/fw_mc.bin 
+LINES_BEFORE: 919
+PORT_BEFORE: (0, 'method return time=199.767350 sender=:1.0 -> destination=:1.22 serial=924 reply_serial=2\n   boolean true\n   string "/dev/ttyS1"\n   uint64 456\n   uint64 0', '')
+UART_BEFORE: (['1: uart:meson_uart mmio:0xFE080000 irq:37 tx:6385 rx:0 RTS|CTS|DTR'], [' 37:          0          0     GIC-0 204 Edge      ttyS1'])
+OTA_OP0_DBUS: 0 method return time=199.781749 sender=:1.0 -> destination=:1.23 serial=925 reply_serial=2
+   int32 0
+   uint64 4000005 
+OTA_OP0_STAGE: [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":199780,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000005","event_id":11,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_INVALID_OR_CHANGED","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+OTA_OP1_DBUS: 0 method return time=199.797062 sender=:1.0 -> destination=:1.24 serial=926 reply_serial=2
+   int32 0
+   uint64 4000006 
+OTA_OP1_STAGE: [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":199795,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000006","event_id":13,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_INVALID_OR_CHANGED","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+PORT_AFTER: (0, 'method return time=199.810668 sender=:1.0 -> destination=:1.25 serial=927 reply_serial=2\n   boolean true\n   string "/dev/ttyS1"\n   uint64 456\n   uint64 0', '')
+UART_AFTER: (['1: uart:meson_uart mmio:0xFE080000 irq:37 tx:6385 rx:0 RTS|CTS|DTR'], [' 37:          0          0     GIC-0 204 Edge      ttyS1'])
+LINES_AFTER: 925
+NEW_FORWARD_LOG_LINES:
+  [FWD QUERY] target_node=2 sequence_id=456 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+  [FWD VERSION] target_node=2 sequence_id=456 elapsed_ms=200 error_code=-8
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":199780,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000005","event_id":10,"phase":"PRECHECK","active":true,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":true,"target_mask":1,"active_node":2,"progress_pct":0,"error":"","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":199780,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000005","event_id":11,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_INVALID_OR_CHANGED","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":199795,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000006","event_id":12,"phase":"PRECHECK","active":true,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":true,"target_mask":1,"active_node":2,"progress_pct":0,"error":"","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+  [OTA_STAGE] {"schema_version":1,"timestamp_unix_ms":199795,"last_sequence":0,"last_elapsed_ms":0,"task_id":"4000006","event_id":13,"phase":"FAILED","active":false,"communication_error":0,"failed_node":0,"failed_command":0,"maintenance":false,"target_mask":1,"active_node":2,"progress_pct":0,"error":"PACKAGE_INVALID_OR_CHANGED","mc":{"valid":false,"file":"fw_mc.bin","size":1293,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""},"th":{"valid":false,"file":"fw_th.bin","size":0,"version_raw":0,"sha256":"","progress_pct":0,"received":0,"written":0,"pre_boot_id":0,"post_boot_id":0,"warning":""}}
+
+
+CLEANUP_AND_PUBKEY_AFTER:
+total 0
+drwxr-xr-x    2 root     root            40 Jan  1 00:03 .
+drwx------    3 root     root           180 Jan  1 00:00 ..
+391ed9e5993fc86be51c0646693e9a92ad1fb7c2facd05b71f14df08ba75e2d3  /etc/printer-soc/fw_signing_pub.pem
+
+
+=== STEP 4.5: AC-09-DEV-MODE & RECOVERY ===
+2026-11-20T15:27:04+08:00
+--- 1. /etc/init.d/S90printer-soc stop ---
+{
+  "phase": "stopped",
+  "mode": "production",
+  "panel_restarts": 1,
+  "controller": {
+    "pid": 848,
+    "start_ticks": "408",
+    "exe": "/usr/bin/python3.9",
+    "cmdline": "2f7573722f62696e2f707974686f6e33002d42002f7573722f6c69622f7072696e7465722d736f632f73657276696365732e7079005f72756e002d2d62756e646c65002f7573722f6c69622f7072696e7465722d736f6300"
+  },
+  "children": {
+    "dbus": {
+      "pid": 849,
+      "start_ticks": "429",
+      "exe": "/usr/bin/dbus-daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f646275732d6461656d6f6e002d2d6e6f666f726b002d2d7072696e742d616464726573733d31002d2d636f6e6669672d66696c653d2f7573722f6c69622f7072696e7465722d736f632f636f6e6669672f73657373696f6e2e636f6e6600"
+    },
+    "forward": {
+      "pid": 850,
+      "start_ticks": "437",
+      "exe": "/usr/bin/forward_service_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f666f72776172645f736572766963655f6461656d6f6e002d2d706f7274002f6465762f7474795331002d2d6261756400393231363030002d2d6669726d776172652d646972002f72756e2f7072696e7465722d736f632f6669726d77617265002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d674c76735952627272732c677569643d3337653035323938626130613066656533663934626232353030303030303034002d2d6464732d646f6d61696e00313938002d2d616c6c6f772d6f66666c696e652d737461727400"
+    },
+    "device_manager": {
+      "pid": 865,
+      "start_ticks": "519",
+      "exe": "/usr/bin/device_manager_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f6465766963655f6d616e616765725f6461656d6f6e002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d674c76735952627272732c677569643d3337653035323938626130613066656533663934626232353030303030303034002d2d6464732d646f6d61696e0031393800"
+    },
+    "panel": {
+      "pid": 905,
+      "start_ticks": "1178",
+      "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+      "cmdline": "2f7573722f73686172652f7072696e7465722d736f632f68656c697873637265656e2f62696e2f68656c69782d73637265656e00"
+    }
+  },
+  "bus_address": "unix:path=/tmp/dbus-gLvsYRbrrs,guid=37e05298ba0a0fee3f94bb2500000004",
+  "exit_codes": {
+    "dbus": 0,
+    "forward": 0,
+    "device_manager": 0,
+    "panel": 0
+  }
+}
+stop_rc=0
+--- 2. /usr/bin/printer-soc dev-mode ---
+{
+  "phase": "maintenance_inhibit",
+  "mode": "dev_mode",
+  "uart_owners": [],
+  "fb_owners": [],
+  "maintenance_inhibit": true,
+  "children": {}
+}
+dev_mode_rc=0
+--- 3. Verify stopped & released ---
+{
+  "phase": "maintenance_inhibit",
+  "mode": "dev_mode",
+  "uart_owners": [],
+  "fb_owners": [],
+  "maintenance_inhibit": true,
+  "children": {},
+  "controller_alive": false,
+  "children_alive": {},
+  "allow_offline_start": true,
+  "enable_gateway": false
+}
+status_rc=0
+-rw-r--r--    1 root     root             9 Jan  1 00:03 /run/printer-soc/maintenance_inhibit
+-rw-r--r--    1 root     root           148 Jan  1 00:03 /run/printer-soc/state.json
+fuser_ttyS1=
+fuser_fb0=
+NO_TARGET_PROCESSES
+--- 4. Verify S90printer-soc start respects maintenance_inhibit ---
+MAINTENANCE_INHIBIT_ACTIVE:请先退出 dev-mode 或显式执行 start
+inhibited_start_rc=2
+STILL_NO_TARGET_PROCESSES
+--- 5. Explicit /usr/bin/printer-soc start to restore production runtime ---
+{
+  "phase": "running",
+  "mode": "production",
+  "panel_restarts": 0,
+  "controller": {
+    "pid": 1084,
+    "start_ticks": "21965",
+    "exe": "/usr/bin/python3.9",
+    "cmdline": "2f7573722f62696e2f707974686f6e33002d42002f7573722f6c69622f7072696e7465722d736f632f73657276696365732e7079005f72756e002d2d62756e646c65002f7573722f6c69622f7072696e7465722d736f6300"
+  },
+  "children": {
+    "dbus": {
+      "pid": 1085,
+      "start_ticks": "21986",
+      "exe": "/usr/bin/dbus-daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f646275732d6461656d6f6e002d2d6e6f666f726b002d2d7072696e742d616464726573733d31002d2d636f6e6669672d66696c653d2f7573722f6c69622f7072696e7465722d736f632f636f6e6669672f73657373696f6e2e636f6e6600"
+    },
+    "forward": {
+      "pid": 1086,
+      "start_ticks": "21987",
+      "exe": "/usr/bin/forward_service_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f666f72776172645f736572766963655f6461656d6f6e002d2d706f7274002f6465762f7474795331002d2d6261756400393231363030002d2d6669726d776172652d646972002f72756e2f7072696e7465722d736f632f6669726d77617265002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d735a48737243307279562c677569643d6237323035363836393162643235653030626237626465633030303030306462002d2d6464732d646f6d61696e00313938002d2d616c6c6f772d6f66666c696e652d737461727400"
+    },
+    "device_manager": {
+      "pid": 1101,
+      "start_ticks": "22013",
+      "exe": "/usr/bin/device_manager_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f6465766963655f6d616e616765725f6461656d6f6e002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d735a48737243307279562c677569643d6237323035363836393162643235653030626237626465633030303030306462002d2d6464732d646f6d61696e0031393800"
+    },
+    "panel": {
+      "pid": 1111,
+      "start_ticks": "22022",
+      "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+      "cmdline": "2f7573722f73686172652f7072696e7465722d736f632f68656c697873637265656e2f62696e2f68656c69782d73637265656e00"
+    }
+  },
+  "bus_address": "unix:path=/tmp/dbus-sZHsrC0ryV,guid=b720568691bd25e00bb7bdec000000db"
+}
+explicit_start_rc=0
+--- 6. Verify production runtime restored & stable after 7s ---
+{
+  "phase": "running",
+  "mode": "production",
+  "panel_restarts": 1,
+  "controller": {
+    "pid": 1084,
+    "start_ticks": "21965",
+    "exe": "/usr/bin/python3.9",
+    "cmdline": "2f7573722f62696e2f707974686f6e33002d42002f7573722f6c69622f7072696e7465722d736f632f73657276696365732e7079005f72756e002d2d62756e646c65002f7573722f6c69622f7072696e7465722d736f6300"
+  },
+  "children": {
+    "dbus": {
+      "pid": 1085,
+      "start_ticks": "21986",
+      "exe": "/usr/bin/dbus-daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f646275732d6461656d6f6e002d2d6e6f666f726b002d2d7072696e742d616464726573733d31002d2d636f6e6669672d66696c653d2f7573722f6c69622f7072696e7465722d736f632f636f6e6669672f73657373696f6e2e636f6e6600"
+    },
+    "forward": {
+      "pid": 1086,
+      "start_ticks": "21987",
+      "exe": "/usr/bin/forward_service_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f666f72776172645f736572766963655f6461656d6f6e002d2d706f7274002f6465762f7474795331002d2d6261756400393231363030002d2d6669726d776172652d646972002f72756e2f7072696e7465722d736f632f6669726d77617265002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d735a48737243307279562c677569643d6237323035363836393162643235653030626237626465633030303030306462002d2d6464732d646f6d61696e00313938002d2d616c6c6f772d6f66666c696e652d737461727400"
+    },
+    "device_manager": {
+      "pid": 1101,
+      "start_ticks": "22013",
+      "exe": "/usr/bin/device_manager_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f6465766963655f6d616e616765725f6461656d6f6e002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d735a48737243307279562c677569643d6237323035363836393162643235653030626237626465633030303030306462002d2d6464732d646f6d61696e0031393800"
+    },
+    "panel": {
+      "pid": 1131,
+      "start_ticks": "22561",
+      "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+      "cmdline": "2f7573722f73686172652f7072696e7465722d736f632f68656c697873637265656e2f62696e2f68656c69782d73637265656e00"
+    }
+  },
+  "bus_address": "unix:path=/tmp/dbus-sZHsrC0ryV,guid=b720568691bd25e00bb7bdec000000db",
+  "controller_alive": true,
+  "children_alive": {
+    "dbus": true,
+    "forward": true,
+    "device_manager": true,
+    "panel": true
+  },
+  "uart_owners": [
+    1086
+  ],
+  "fb_owners": [
+    1131
+  ],
+  "maintenance_inhibit": false,
+  "allow_offline_start": true,
+  "enable_gateway": false
+}
+status_after_rc=0
+fuser_ttyS1=1086 
+fuser_fb0=1131 
+ 1084 root     /usr/bin/python3 -B /usr/lib/printer-soc/services.py _run --bundle /usr/lib/printer-soc
+ 1085 root     /usr/lib/printer-soc/bin/dbus-daemon --nofork --print-address=1 --config-file=/usr/lib/printer-soc/config/session.conf
+ 1086 root     /usr/lib/printer-soc/bin/forward_service_daemon --port /dev/ttyS1 --baud 921600 --firmware-dir /run/printer-soc/firmware --dbus-custom unix:path=/tmp/dbus-sZHsrC0ryV,guid=b720568691bd25e00bb7bdec000000db --dds-domain 198 --allow-offline-start
+ 1101 root     /usr/lib/printer-soc/bin/device_manager_daemon --dbus-custom unix:path=/tmp/dbus-sZHsrC0ryV,guid=b720568691bd25e00bb7bdec000000db --dds-domain 198
+ 1131 root     /usr/share/printer-soc/helixscreen/bin/helix-screen
+=== panel.log after restart ===
+[00:03:40.276] [+00000.021] [warning] [1111] [Application] HELIX_DATA_DIR '/data/printer-soc/helix' has no ui_xml/ directory
+[00:03:40.282] [+00000.027] [warning] [1111] [Config] Backup of config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+[00:03:45.704] [+00000.027] [warning] [1131] [Application] HELIX_DATA_DIR '/data/printer-soc/helix' has no ui_xml/ directory
+[00:03:45.709] [+00000.033] [warning] [1131] [Config] Backup of config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+=== maintenance_inhibit exists? ===
+ls: /run/printer-soc/maintenance_inhibit: No such file or directory
+inhibit_cleared_ok
+
+=== FINAL POST-RECOVERY BOARD STATE CHECK ===
+2026-11-20T15:27:39+08:00
+{
+  "phase": "stopped",
+  "mode": "production",
+  "panel_restarts": 6,
+  "controller": {
+    "pid": 1084,
+    "start_ticks": "21965",
+    "exe": "/usr/bin/python3.9",
+    "cmdline": "2f7573722f62696e2f707974686f6e33002d42002f7573722f6c69622f7072696e7465722d736f632f73657276696365732e7079005f72756e002d2d62756e646c65002f7573722f6c69622f7072696e7465722d736f6300"
+  },
+  "children": {
+    "dbus": {
+      "pid": 1085,
+      "start_ticks": "21986",
+      "exe": "/usr/bin/dbus-daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f646275732d6461656d6f6e002d2d6e6f666f726b002d2d7072696e742d616464726573733d31002d2d636f6e6669672d66696c653d2f7573722f6c69622f7072696e7465722d736f632f636f6e6669672f73657373696f6e2e636f6e6600"
+    },
+    "forward": {
+      "pid": 1086,
+      "start_ticks": "21987",
+      "exe": "/usr/bin/forward_service_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f666f72776172645f736572766963655f6461656d6f6e002d2d706f7274002f6465762f7474795331002d2d6261756400393231363030002d2d6669726d776172652d646972002f72756e2f7072696e7465722d736f632f6669726d77617265002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d735a48737243307279562c677569643d6237323035363836393162643235653030626237626465633030303030306462002d2d6464732d646f6d61696e00313938002d2d616c6c6f772d6f66666c696e652d737461727400"
+    },
+    "device_manager": {
+      "pid": 1101,
+      "start_ticks": "22013",
+      "exe": "/usr/bin/device_manager_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f6465766963655f6d616e616765725f6461656d6f6e002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d735a48737243307279562c677569643d6237323035363836393162643235653030626237626465633030303030306462002d2d6464732d646f6d61696e0031393800"
+    },
+    "panel": {
+      "pid": 1200,
+      "start_ticks": "24300",
+      "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+      "cmdline": "2f7573722f73686172652f7072696e7465722d736f632f68656c697873637265656e2f62696e2f68656c69782d73637265656e00"
+    }
+  },
+  "bus_address": "unix:path=/tmp/dbus-sZHsrC0ryV,guid=b720568691bd25e00bb7bdec000000db",
+  "error": "PANEL_CRASH_LOOP:139",
+  "exit_codes": {
+    "dbus": 0,
+    "forward": 0,
+    "device_manager": 0,
+    "panel": 139
+  },
+  "controller_alive": false,
+  "children_alive": {
+    "dbus": false,
+    "forward": false,
+    "device_manager": false,
+    "panel": false
+  },
+  "uart_owners": [],
+  "fb_owners": [],
+  "maintenance_inhibit": false,
+  "allow_offline_start": true,
+  "enable_gateway": false
+}
+=== panel.log ===
+[00:03:40.276] [+00000.021] [warning] [1111] [Application] HELIX_DATA_DIR '/data/printer-soc/helix' has no ui_xml/ directory
+[00:03:40.282] [+00000.027] [warning] [1111] [Config] Backup of config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+[00:03:45.704] [+00000.027] [warning] [1131] [Application] HELIX_DATA_DIR '/data/printer-soc/helix' has no ui_xml/ directory
+[00:03:45.709] [+00000.033] [warning] [1131] [Config] Backup of config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+[00:03:51.165] [+00000.030] [warning] [1161] [Application] HELIX_DATA_DIR '/data/printer-soc/helix' has no ui_xml/ directory
+[00:03:51.172] [+00000.036] [warning] [1161] [Config] Backup of config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+helix-screen: tpp.c:82: __pthread_tpp_change_priority: Assertion `new_prio == -1 || (new_prio >= fifo_min_prio && new_prio <= fifo_max_prio)' failed.
+[00:03:56.455] [+00000.027] [warning] [1180] [Application] HELIX_DATA_DIR '/data/printer-soc/helix' has no ui_xml/ directory
+[00:03:56.461] [+00000.033] [warning] [1180] [Config] Backup of config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+[00:03:56.462] [+00000.033] [error] [1180] [Application] Crash loop detected: 3 restarts within 120s — halting to prevent infinite restart loop
+[00:03:57.686] [+00000.031] [warning] [1181] [Application] HELIX_DATA_DIR '/data/printer-soc/helix' has no ui_xml/ directory
+[00:03:57.693] [+00000.038] [warning] [1181] [Config] Backup of config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+[00:04:03.112] [+00000.030] [warning] [1200] [Application] HELIX_DATA_DIR '/data/printer-soc/helix' has no ui_xml/ directory
+[00:04:03.118] [+00000.035] [warning] [1200] [Config] Backup of config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+=== dmesg tail ===
+[  220.288093][1 T1111  ..] aml_media: osd_release:index=0,open_count=1
+[  220.288571][1 T1111  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  220.303937][1 T1111  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  224.527638][1 T1111  ..] aml_media: osd_release:index=0,open_count=1
+[  225.715579][1 T1131  ..] aml_media: osd_release:index=0,open_count=1
+[  225.716102][1 T1131  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  225.724515][0 T1131  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  229.955685][0 T1149  ..] aml_media: osd_release:index=0,open_count=1
+[  231.178138][0 T1161  ..] aml_media: osd_release:index=0,open_count=1
+[  231.178588][0 T1161  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  231.196194][0 T1161  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  235.259589][1 T1169  ..] aml_media: osd_release:index=0,open_count=1
+[  237.698611][0 T1181  ..] aml_media: osd_release:index=0,open_count=1
+[  237.699062][0 T1181  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  237.703492][0 T1181  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  241.911690][1 T1189  ..] aml_media: osd_release:index=0,open_count=1
+[  243.124117][1 T1200  ..] aml_media: osd_release:index=0,open_count=1
+[  243.124616][1 T1200  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  243.141881][0 T1200  ..] aml_media: osd[0] enable: 1 (helix-screen)
+[  247.351600][1 T1200  ..] aml_media: osd_release:index=0,open_count=1
+=== /data/boot_backup.img final verify ===
+59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86  /data/boot_backup.img
+=== /etc/printer-soc/fw_signing_pub.pem final verify ===
+391ed9e5993fc86be51c0646693e9a92ad1fb7c2facd05b71f14df08ba75e2d3  /etc/printer-soc/fw_signing_pub.pem
+-r--r--r--    1 root     root           178 Jan  3  1970 /etc/printer-soc/fw_signing_pub.pem
+-r--r--r--    1 root     root           233 Jan  3  1970 /etc/printer-soc/version.json
+=== /data preserved items verify ===
+total 16516
+drwxr-xr-x    5 root     root           800 Jan  1 00:00 .
+drwxrwxr-x   21 dbus     dbus          1504 Nov 12  2026 ..
+drwxr-xr-x    2 root     root           160 Jan  3  1970 apps
+-rw-r--r--    1 root     root      16777216 Jan  1  1970 boot_backup.img
+-rwxr-xr-x    1 root     root          6757 Jan  1  1970 ev_watch.py
+-rwxr-xr-x    1 root     root         56836 Jan  1  1970 flash_erase
+-rwxr-xr-x    1 root     root         61132 Jan  1  1970 nandwrite
+drwxr-xr-x    3 root     root           224 Jan  1 00:00 printer-soc
+-rwxr-xr-x    1 root     root           183 Jan  1  1970 rollback_boot.sh
+drwxr-xr-x    2 root     root           160 Jan  1 00:02 scripts
+-rwxr-xr-x    1 root     root          2603 Jan  1  1970 tp_reset.sh

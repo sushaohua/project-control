@@ -1,0 +1,223 @@
+=== /dev/shm after PANEL_CRASH_LOOP ===
+total 1668
+drwxrwxrwx    2 root     root           200 Jan  1 00:04 .
+drwxr-xr-x    8 root     root          2940 Jan  1 00:00 ..
+-rw-r--r--    1 root     root        549408 Jan  1 00:03 fastdds_6528877f5677c53b
+-rw-r--r--    1 root     root             0 Jan  1 00:03 fastdds_6528877f5677c53b_el
+-rw-r--r--    1 root     root        549408 Jan  1 00:00 fastdds_7e49aa55cc504fbd
+-rw-r--r--    1 root     root             0 Jan  1 00:00 fastdds_7e49aa55cc504fbd_el
+-rw-r--r--    1 root     root        549408 Jan  1 00:00 fastdds_e451c4ad024dc942
+-rw-r--r--    1 root     root             0 Jan  1 00:00 fastdds_e451c4ad024dc942_el
+-rw-r--r--    1 root     root         44176 Jan  1 00:00 fastdds_port7400
+-rw-r--r--    1 root     root            16 Jan  1 00:00 sem.fastdds_port7400_mutex
+=== /run/printer-soc/ ===
+total 176
+drwx------    3 root     root           260 Jan  1 00:04 .
+drwxr-xr-x    3 root     root            60 Jan  1 00:00 ..
+-rw-r--r--    1 root     root            69 Jan  1 00:03 dbus.log
+-rw-r--r--    1 root     root            69 Jan  1 00:00 dbus.log.1
+-rw-r--r--    1 root     root          4773 Jan  1 00:04 device_manager.log
+-rw-r--r--    1 root     root         42376 Jan  1 00:03 device_manager.log.1
+drwxr-xr-x    2 root     root            40 Jan  1 00:03 firmware
+-rw-r--r--    1 root     root         10076 Jan  1 00:04 forward.log
+-rw-r--r--    1 root     root         90546 Jan  1 00:03 forward.log.1
+-rw-r--r--    1 root     root             0 Jan  1 00:03 lock
+-rw-r--r--    1 root     root          2432 Jan  1 00:04 panel.log
+-rw-r--r--    1 root     root          1108 Jan  1 00:03 panel.log.1
+-rw-r--r--    1 root     root          2305 Jan  1 00:04 state.json
+=== /run/printer-soc/device_manager.log ===
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR] Shutting down service...
+=== /run/printer-soc/forward.log tail ===
+[FWD VERSION] target_node=3 sequence_id=38 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=39 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=39 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=40 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=40 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=41 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=41 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=42 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=42 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=43 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=43 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=44 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=44 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=45 elapsed_ms=501 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=45 elapsed_ms=501 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=46 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=46 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=47 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=47 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=48 elapsed_ms=201 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=48 elapsed_ms=201 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=49 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=49 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=50 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=50 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=51 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=51 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=52 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=52 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=53 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=53 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=54 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=54 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=55 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=55 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=56 elapsed_ms=201 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=56 elapsed_ms=201 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=57 elapsed_ms=501 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=57 elapsed_ms=501 error_code=-8
+[FORWARD] Shutting down service...
+=== /data/printer-soc/ ===
+/data/printer-soc/:
+total 0
+drwxr-xr-x    3 root     root           224 Jan  1 00:00 .
+drwxr-xr-x    5 root     root           800 Jan  1 00:00 ..
+drwxr-xr-x    3 root     root           224 Jan  1 00:00 helix
+
+/data/printer-soc/helix:
+total 0
+drwxr-xr-x    3 root     root           224 Jan  1 00:00 .
+drwxr-xr-x    3 root     root           224 Jan  1 00:00 ..
+drwxr-xr-x    3 root     root           224 Jan  1 00:00 .cache
+
+/data/printer-soc/helix/.cache:
+total 0
+drwxr-xr-x    3 root     root           224 Jan  1 00:00 .
+drwxr-xr-x    3 root     root           224 Jan  1 00:00 ..
+drwxr-xr-x    4 root     root           304 Jan  1 00:00 helix
+
+/data/printer-soc/helix/.cache/helix:
+total 0
+drwxr-xr-x    4 root     root           304 Jan  1 00:00 .
+drwxr-xr-x    3 root     root           224 Jan  1 00:00 ..
+drwxr-xr-x    2 root     root           160 Jan  1 00:00 gcode_mod
+drwxr-xr-x    2 root     root           160 Jan  1 00:00 printer_images
+
+/data/printer-soc/helix/.cache/helix/gcode_mod:
+total 0
+drwxr-xr-x    2 root     root           160 Jan  1 00:00 .
+drwxr-xr-x    4 root     root           304 Jan  1 00:00 ..
+
+/data/printer-soc/helix/.cache/helix/printer_images:
+total 0
+drwxr-xr-x    2 root     root           160 Jan  1 00:00 .
+drwxr-xr-x    4 root     root           304 Jan  1 00:00 ..
+total 8
+drwxrwxrwt    2 root     root            80 Jan  1 00:04 .
+drwxrwxr-x   21 dbus     dbus          1504 Nov 12  2026 ..
+-rw-r--r--    1 root     root             4 Jan  1 00:00 dropbear.pid
+-rw-r--r--    1 root     root           384 Jan  1 00:00 utmp
+/var/lib/:
+total 4
+drwxrwxr-x    3 dbus     dbus           304 Jan  1 00:00 .
+drwxrwxr-x    3 dbus     dbus           608 Nov  9  2026 ..
+drwxr-xr-x    2 root     root           240 Jan  1 00:04 helixscreen
+-rw-r--r--    1 root     root            32 Jan  1 00:00 random-seed
+
+/var/run/:
+total 8
+drwxrwxrwt    2 root     root            80 Jan  1 00:04 .
+drwxrwxr-x   21 dbus     dbus          1504 Nov 12  2026 ..
+-rw-r--r--    1 root     root             4 Jan  1 00:00 dropbear.pid
+-rw-r--r--    1 root     root           384 Jan  1 00:00 utmp
+=== CHECK /proc/tty/driver/meson_uart & interrupts ===
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:7785 rx:0 RTS|CTS|DTR
+ 37:          0          0     GIC-0 204 Edge      ttyS1
+=== CHECK BOOT BACKUP & PUBKEY ===
+59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86  /data/boot_backup.img
+391ed9e5993fc86be51c0646693e9a92ad1fb7c2facd05b71f14df08ba75e2d3  /etc/printer-soc/fw_signing_pub.pem
+04e5348ed0080599c0553c207c2a1212147b8bf3af0d70537ed441c87598203f  /etc/printer-soc/version.json
+total 24
+drwxr-xr-x    2 root     root           240 Jan  1 00:04 .
+drwxrwxr-x    3 dbus     dbus           304 Jan  1 00:00 ..
+-rw-r--r--    1 root     root         21615 Jan  1 00:04 settings.json.backup
+{
+  "_active_printer_id_comment": "Which entry under 'printers' is live. Must name an existing key there.",
+  "_beta_features_comment": "Enable beta features (e.g., HelixPrint plugin install prompt). Default: false. Always enabled in --test mode.",
+  "_brightness_comment": "Screen brightness percentage (1-100). Default: 80%.",
+  "_completion_alert_comment": "Print completion alert mode: 0=Off, 1=Notification, 2=Alert. Default: 1.",
+  "_config_version_comment": "Config schema version. MUST be present and current: Config::init treats a missing version as 0, reads that as a tarball default, and will restore a rolling backup over this file. Pinned by tests/unit/test_settings_template_contract.cpp.",
+  "_disable_sound_comment": "Disable all sound output. Prevents audio backend initialization entirely. Use on hardware where audio causes excessive CPU load (e.g., Artillery M1 Pro). Also available as --no-sound CLI flag. Default: false.",
+  "_language_comment": "UI language code. Options: 'en' (English). Default: 'en'.",
+  "_log_dest_comment": "Log destination: 'auto' (detect best), 'journal' (systemd), 'syslog', 'file', 'console' (disable system log)",
+  "_log_level_comment": "Log verbosity: warn (quiet), info (default), debug, trace. CLI -v flags override this.",
+  "_log_path_comment": "Log file path when using file destination. Empty = auto (/var/log or ~/.local/share)",
+  "_sound_theme_comment": "Active sound theme. Loads from config/sounds/<name>.json. Options: 'default', 'minimal'. Default: 'default'.",
+  "_sounds_enabled_comment": "Master switch for all sound effects. Default: true.",
+  "_telemetry_enabled_comment": "Enable anonymous usage telemetry. Opt-in during setup wizard. Default: false.",
+  "_ui_sounds_enabled_comment": "Enable UI interaction sounds (button taps, navigation). Independent of event sounds. Default: true.",
+  "_wifi_expected_comment": "Whether WiFi connectivity is expected. Used to show connection warnings. Set during wizard.",
+  "_wizard_completed_comment": "Whether the setup wizard has been completed. Set automatically after first-run wizard.",
+  "active_printer_id": "default",
+  "ams": {
+    "_spool_style_comment": "Filament spool visualization style. Options: '3d' (Bambu-style pseudo-3D canvas with gradients), 'flat' (concentric rings). Default is '3d'.",
+    "spool_style": "3d"
+  },
+  "appearance": {
+    "_show_widget_labels_comment": "Show text labels below home panel widget icons. Default: false.",
+    "show_widget_labels": false
+  },
+  "beta_features": false,
+  "brightness": 80,
+  "cache": {
+    "_disk_critical_mb_comment": "Stop caching when available disk falls below this (MB). Prevents filling filesystem. AD5M default: 5",
+    "_disk_low_mb_comment": "Evict aggressively when available disk falls below this (MB). Reduces cache to half normal limit. AD5M default: 20",
+    "_thumbnail_max_mb_comment": "Maximum thumbnail cache size in MB. Auto-sizes to 5% of available disk, clamped to this ceiling. AD5M default: 20",
+    "disk_critical_mb": 5,
+    "disk_low_mb": 20,
+    "thumbnail_max_mb": 20
+  },
+  "completion_alert": 1,
+  "config_version": 23,
+  "dark_mode": true,
+  "disable_sound": true,
+  "display": {
+    "_animations_enabled_comment": "Enable UI animations and transitions. Default: auto-detected from platform capabilities (off on embedded/basic hardware, on for standard).",
+    "_backlight_enable_ioctl_comment": "Use BACKLIGHT_ENABLE/DISABLE ioctls for Allwinner display control. Some platforms (e.g. Elegoo CC1, AD5X) invert PWM polarity when these are called; set false for brightness-only control. Default: true.",
+    "_backlight_floor_percent_comment": "Lowest brightness level (percent of the panel's raw range) the screen may drop to while on. Some panels render lower levels as black; raise this if the panel goes black before the slider minimum. 0 disables. Default: 0 (20 on K2 builds). Requires restart.",
+    "_bed_mesh_render_mode_comment": "Bed mesh visualization mode. 0=3D surface (default), 1=2D heatmap. Default: 0.",
+    "_bed_mesh_show_zero_plane_comment": "Show translucent reference plane at Z=0 in bed mesh 3D view. Helps visualize where nozzle touches bed. Default: true.",
+    "_dim_brightness_comment": "Brightness percentage when dimmed (1-100). Default: 30%.",
+    "_dim_sec_comment": "Seconds of inactivity before display dims (0 = no dimming). Default: 600 (10 minutes). Must be less than sleep_sec.",
+    "_drm_device_comment": "Override DRM device path (e.g., '/dev/dri/card1'). Empty string enables auto-detection. Pi 5 has multiple DRM cards: card0 (v3d, 3D only), card1 (DSI touchscreen), card2 (vc4/HDMI). Auto-detection finds the first with dumb buffer support and a connected display.",
+    "_gcode_render_mode_comment": "G-code visualization mode. 0=Auto, 1=3D GLES, 2=2D Layer (default). Can also be overridden via HELIX_GCODE_MODE env var (3D/2D).",
