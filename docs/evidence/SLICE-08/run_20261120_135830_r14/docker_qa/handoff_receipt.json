@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "task_id": "SLICE-08",
+  "slice_id": "SLICE-08",
+  "revision": 2,
+  "run_id": "run_20261120_135830_r14",
+  "stage": "docker_qa",
+  "status": "PASSED",
+  "previous_receipt": null,
+  "input_fingerprint": "4a41896ea67ec8d4809ea9bc76667e78b6e7632e807f8e201bd50367fa52aeba",
+  "inputs": {
+    "repos": {
+      ".": {
+        "ref": "refs/heads/main",
+        "commit": "3e2d5b6a597a3a8d87a6b2b9ea40c2e62aab9bc0"
+      },
+      "printer-soc": {
+        "ref": "refs/heads/main",
+        "commit": "962ce1a6c6cbb32acdb3b1d544e4cb48b2835fb6"
+      },
+      "test_harness": {
+        "ref": "refs/heads/main",
+        "commit": "d601cc5a63bbe453b4d4c253fc5e62a2d0a5a19b"
+      },
+      "project-control": {
+        "ref": "refs/heads/main",
+        "commit": "ab9dc5cfac0ea4848b1117b955034672e56f066f"
+      },
+      "agents": {
+        "ref": "refs/heads/main",
+        "commit": "30ecc6586a861c1543a97804cfe0600bb4778efb"
+      },
+      "mcu-p3": {
+        "ref": "refs/heads/feat/soc-debug",
+        "commit": "7b623d9a4fff7cf460b53318b71d0b816635b733"
+      },
+      "boot/bootloadermc": {
+        "ref": "refs/heads/soc_debug",
+        "commit": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4"
+      },
+      "boot/bootloaderth": {
+        "ref": "refs/heads/soc_debug",
+        "commit": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+      }
+    },
+    "sdk_lock_sha256": "ea8f4eec4425f1624af05a2cfc529c621006f2feb40b6b0bc1fa254b3312e13e",
+    "qa_image_digest": "sha256:94adbc325f2748fd82cfc10cb21ee33b319f593b6eb865ed234af0c679975635"
+  },
+  "evidence": [
+    {
+      "path": "server_qa.json",
+      "bytes": 1473766,
+      "sha256": "48092f1610a3f5809b2e078096b62859796cba3cb1687f158956814678ee4e3b",
+      "storage": "git"
+    },
+    {
+      "path": "server_lock.json",
+      "bytes": 13466,
+      "sha256": "c0af195b01aacf208edfad0db72772ac04f2ca070618205e1c998fb4b364020d",
+      "storage": "git"
+    },
+    {
+      "path": "server_verdict.json",
+      "bytes": 276,
+      "sha256": "ecfe59dc6506350e4474bd360d7e6978624d1d246b1e2af8153b2a2223a1849b",
+      "storage": "git"
+    },
+    {
+      "path": "runtime.log",
+      "bytes": 1429606,
+      "sha256": "72897b99dbfe091367feb562e1225aa8ba1b7eb805aa29ed527c7647202088ab",
+      "storage": "git"
+    },
+    {
+      "path": "checkout.log",
+      "bytes": 3542,
+      "sha256": "a3309b0c4708670c2b69c33cbd0aee04307c18fc906df1c0fcadfb0f56ffba76",
+      "storage": "git"
+    },
+    {
+      "path": "artifacts/build-plan.json",
+      "bytes": 10435,
+      "sha256": "97cc448daabe98e77fabbba719f64abb75b92cb6bf954d36a45e75b977d96d0c",
+      "storage": "git"
+    },
+    {
+      "path": "artifacts/build-receipt.json",
+      "bytes": 245,
+      "sha256": "e45bb1cade8beffbf2f1707aa977a48cce03ee9a47f055ec39256692cd5722c4",
+      "storage": "git"
+    },
+    {
+      "path": "artifacts/package-receipt.json",
+      "bytes": 144,
+      "sha256": "8ebbe526c335824a376a3efc8072e3a598512da6278141e170415774092ba9de",
+      "storage": "git"
+    },
+    {
+      "path": "artifacts/image-receipt.json",
+      "bytes": 3128,
+      "sha256": "36f5ce1e5e2a4ad8c62273a537b1938ba3ecb066dfe2dabe9a76ccfce160df91",
+      "storage": "git"
+    },
+    {
+      "path": "artifacts/release-manifest.json",
+      "bytes": 4896,
+      "sha256": "a2ec40a3cc740079cfd093224b3ee960de1a7fc8911db3b8f5eec8d6a434a851",
+      "storage": "git"
+    }
+  ],
+  "artifacts": [],
+  "verdict_ref": {
+    "repo": "project-control",
+    "ref": "refs/heads/main",
+    "path": "docs/evidence/SLICE-08/run_20261120_135830_r14/verdict.json",
+    "sha256": "b50d42fc19d763c138a634fc90c016178f05cdf62a25a41a9c8613260af42ab1"
+  },
+  "approval_ref": null
+}

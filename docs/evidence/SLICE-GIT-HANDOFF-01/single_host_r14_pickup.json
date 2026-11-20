@@ -1,0 +1,46 @@
+{
+  "mode": "单机隔离取件",
+  "candidate_run": "project-control/docs/evidence/SLICE-08/run_20261120_135830_r14",
+  "container_image": "sha256:94adbc325f2748fd82cfc10cb21ee33b319f593b6eb865ed234af0c679975635",
+  "positive": {
+    "status": "PASS",
+    "ro_mount": true,
+    "erofs": true,
+    "artifacts": {
+      "aml_upgrade_package.img": {
+        "bytes": 89958840,
+        "sha256": "7f36a78b3ecd2e203e60908cc229d9e6ebc6ba62e3f2a23d215b6f6f7b77b59d"
+      },
+      "printer-soc-rootfs.tar.gz": {
+        "bytes": 19288672,
+        "sha256": "cb5f48b51eae5f30dd045c0400131d4244dfc987ae94e2d254d65dbcd665ea50"
+      },
+      "rootfs.ubi": {
+        "bytes": 68812800,
+        "sha256": "7665ee600dd4f77d0a4e14c098c5e31afd19ffa79a3bcd75824656f1af2f3487"
+      }
+    },
+    "elf_checked": 12,
+    "symlinks_checked": 12,
+    "tar_regs_checked": 653
+  },
+  "negatives": {
+    "missing_ubi": {
+      "rejected": true,
+      "returncode": 1
+    },
+    "corrupt_1byte_ubi": {
+      "rejected": true,
+      "returncode": 1
+    },
+    "symlink_ubi": {
+      "rejected": true,
+      "returncode": 1
+    }
+  },
+  "boundaries": {
+    "cross_host": "PENDING",
+    "shared_storage": "PENDING",
+    "remote_qa_image_pull": "PENDING"
+  }
+}
