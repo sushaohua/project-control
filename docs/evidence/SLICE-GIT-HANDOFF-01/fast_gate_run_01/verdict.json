@@ -1,0 +1,14 @@
+{
+  "slice_id": "SLICE-GIT-HANDOFF-01",
+  "batch_id": "BATCH-GIT-HANDOFF-01",
+  "profile": "host-software",
+  "status": "FAST-PASSED",
+  "stage": "integration",
+  "reason": "前两阶 Fast-Gate 与合龙预检通过 (--fast-only)",
+  "next_step": "运行完整四阶 slice_gate.py 完成容器 QA 与 Codex 准出",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-GIT-HANDOFF-01/fast_gate_run_01/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-GIT-HANDOFF-01/fast_gate_run_01/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-GIT-HANDOFF-01/fast_gate_run_01/integration.log"
+  }
+}

@@ -13,7 +13,12 @@ plan_revision: v2-slice-funnel
 
 AP 使用 `printer-soc`，SDK 使用 `sdk/c308l` 独立 Repo 客户端，角色采用十席。COORD 对业务和平台源码只读；根工作区治理维护仅能写获批方案逐项列出的根路径，不因此取得应用或 SDK 写权。平台 project 的实现委派 `ENG-PLATFORM`，Helix 与打印业务委派 `ENG-AP`。
 
-切片声明 `revision`、`profile`（`host-software` / `c308l-app` / `c308l-system`）和完整候选；SDK 锁引用来自准确 printer-soc 提交。SDK 输入变化必须重验，账本同一 slice_id 的历史绿行不能跳过新输入。每次门禁明确检查子进程退出状态与真实 verdict，禁止根据“调用返回了字符串”准出。
+切片声明 `revision`、`profile`（`host-software` / `c308l-app` / `c308l-system`）、`delivery_kind`（`checkpoint | deliverable`，旧切片缺省按 `deliverable`）及完整候选；交付点须用 `covered_checkpoints` 声明覆盖的检查点，漏项或输入不符立即阻塞。SDK 锁引用来自准确 printer-soc 提交。SDK 输入变化必须重验，账本同一 slice_id 的历史绿行不能跳过新输入。每次门禁明确检查子进程退出状态与真实 verdict，禁止根据“调用返回了字符串”准出。
+
+跨阶段交接与断点续跑须遵循 `project-control/contracts/git_handoff.schema.json` 与 `tools/workflow/git_handoff.py`：
+- 内部检查点（`checkpoint`）执行本地快检与合龙并生成 `checkpoint_receipt.json`，不触发独立 Codex 冷审且不写 `SW-Verified` / `HIL-Verified`；
+- 同候选、同测试命令、同容器镜像且通过 `server_qa` 校验的 Docker QA 证据支持阶段续跑复用，任一输入变更即拒绝复用；
+- 正式交付点准出与账本写入须可从 Git 服务端读回定位符验证，禁止仅凭本地 `verdict.json` 或私有路径放行。
 
 `run_workflow` 仅在运行时实际提供所需原语时启动。环境缺少运行时则报告该部分未演练，可继续由当前客户端按相同写边界委派相互独立的已授权任务；不得伪称自动巡航已运行。软件及应用交叉构建不触碰硬件；发布和物理操作仍按 Human Gate #2。
 

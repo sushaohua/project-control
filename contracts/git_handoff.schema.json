@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI SoC V2 Git Server Handoff Receipt",
+  "type": "object",
+  "required": ["schema_version", "task_id", "slice_id", "revision", "run_id", "stage", "status", "previous_receipt", "input_fingerprint", "inputs", "evidence", "artifacts"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "slice_id": {"type": "string", "minLength": 1},
+    "revision": {"type": "integer", "minimum": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "stage": {"type": "string", "enum": ["plan", "checkpoint", "integration", "docker_qa", "codex", "hil", "release"]},
+    "status": {"type": "string", "enum": ["PASSED", "FAILED", "BLOCKED", "CHECKPOINT_READY"]},
+    "previous_receipt": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/locator"}]},
+    "input_fingerprint": {"type": "string"},
+    "inputs": {
+      "type": "object",
+      "required": ["repos"],
+      "properties": {
+        "repos": {
+          "type": "object",
+          "additionalProperties": {"type": "object", "required": ["ref", "commit"], "properties": {"url": {"type": "string"}, "ref": {"type": "string", "minLength": 1}, "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}}}
+        },
+        "sdk_lock_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "qa_image_digest": {"type": "string"},
+        "qa_commands": {"type": "array"}
+      }
+    },
+    "evidence": {"type": "array", "items": {"$ref": "#/$defs/file_entry"}},
+    "artifacts": {"type": "array", "items": {"$ref": "#/$defs/file_entry"}},
+    "verdict_ref": {"oneOf": [{"type": "null"}, {"type": "string"}, {"$ref": "#/$defs/locator"}]},
+    "approval_ref": {"oneOf": [{"type": "null"}, {"type": "string"}, {"$ref": "#/$defs/locator"}]}
+  },
+  "$defs": {
+    "locator": {
+      "type": "object",
+      "required": ["repo", "ref", "commit", "path", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "repo": {"type": "string", "minLength": 1}, "ref": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "file_entry": {
+      "type": "object",
+      "required": ["path", "bytes", "sha256", "storage"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {"type": "string", "minLength": 1}, "bytes": {"type": "integer", "minimum": 0},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "storage": {"type": "string", "enum": ["git", "lfs"]}
+      }
+    }
+  }
+}

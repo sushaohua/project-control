@@ -1,0 +1,85 @@
+{
+  "task_id": "SLICE-GIT-HANDOFF-01",
+  "task_revision": 1,
+  "source": "server-pinned-commits",
+  "profile": "host-software",
+  "platform_inputs": {},
+  "fresh_checkout": true,
+  "sandbox": {
+    "kind": "container",
+    "container_id": "c70cbb63f25d",
+    "id": "SLICE-GIT-HANDOFF-01_run_111406_20261120_031406",
+    "image": "qa-sandbox:20261029",
+    "path": "SLICE-GIT-HANDOFF-01_run_111406_20261120_031406",
+    "developer_mounts": [],
+    "container_inspect": {
+      "id": "c70cbb63f25d2da72844d97f1e83813b87d699991bfd4f83bdeeb10dc8067ee0",
+      "image": "qa-sandbox:20261029",
+      "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+      "created": "2026-11-20T03:14:28.828279171Z",
+      "state": "exited",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/SLICE-GIT-HANDOFF-01_run_111406_20261120_031406_output",
+          "Destination": "/output",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/tmp/qa_sandboxes/SLICE-GIT-HANDOFF-01_run_111406_20261120_031406",
+          "Destination": "/workspace",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  },
+  "server_lock": {
+    "path": "server_lock.json",
+    "bytes": 1400,
+    "sha256": "b6ebbbdf2f2ad57e2724efd22adfa4d9b195a748493ea3e06c192ffc66fe7fc5"
+  },
+  "checkout_log": {
+    "path": "checkout.log",
+    "bytes": 3106,
+    "sha256": "9cede937bf9df01e63925559cf50dd38fe43c83cfeb2d3434c634740a4ba9b7f"
+  },
+  "runtime_log": {
+    "path": "runtime.log",
+    "bytes": 3080,
+    "sha256": "a9b5522bacb1d66032e017db2cefa391dd9c76efed753e7652d0f755ec40fd84"
+  },
+  "server_verdict": {
+    "path": "server_verdict.json",
+    "bytes": 289,
+    "sha256": "f03ed72be72219b6428996c2ddf210ad1db54d94ce421de339f9eda1cfc1ea3e"
+  },
+  "tool_versions": {
+    "git": "git version 2.25.1",
+    "python": "Python 3.8.10"
+  },
+  "build_results": [],
+  "test_results": [
+    {
+      "command": "bash tools/workspace_git.sh rev-parse HEAD && python3 -B -m unittest discover -s project-control/tools -p 'test_v2_gates.py' -v",
+      "exit_code": "0",
+      "subpath": ".",
+      "duration": "4.26s",
+      "output": "331ff064b9f8ff7120564c68caa8e6593a091025\n\ntest_docker_wait_is_extended_only_for_system_profile (test_v2_gates.V2CodexAndWorkflowCruiseTest)\n\u6b63\u5f0f\u5236\u955c\u6709\u72ec\u7acb\u5916\u5c42\u65f6\u9650\uff0c\u5bbf\u4e3b\u4e0e\u5e94\u7528\u7ef4\u6301\u539f\u6709\u4e0a\u9650\u3002 ... ok\ntest_graded_codex_verdict_and_missing_cli_blocked (test_v2_gates.V2CodexAndWorkflowCruiseTest)\n\u6838\u9a8c\u5206\u7ea7\u4e00\u81f4\u6821\u9a8c\uff0c\u5e76\u9a8c\u8bc1 Codex CLI \u7f3a\u5931\u629b\u51fa `CodexGateBlockedError`\u3002 ... ok\ntest_slice_gate_tristate_nonempty_reuse_and_qa_conflict (test_v2_gates.V2CodexAndWorkflowCruiseTest)\n\u6838\u9a8c\u4e09\u6001\u8f93\u51fa\u3001\u975e\u7a7a\u8bc1\u636e\u76ee\u5f55\u62d2\u590d\u7528\u53ca Docker QA \u9000\u51fa\u7801\u4e0e\u8bc1\u636e\u51b2\u7a81\u62e6\u622a\u3002 ... ok\ntest_workflow_bg_wait_conflict_and_restart_isolation (test_v2_gates.V2CodexAndWorkflowCruiseTest)\n\u6838\u9a8c\u540e\u53f0\u95e8\u7981\u7b49\u5f85\u7ed3\u675f\u3001\u91cd\u542f\u7eed\u8dd1\u76ee\u5f55\u72ec\u7acb\u3001\u53cc\u5c42\u51b2\u7a81\u62e6\u622a\u53ca\u6743\u9650\u62d2\u7edd\u96f6\u6263\u6b21\u3002 ... ok\ntest_workflow_rework_and_missing_verdict_always_blocked (test_v2_gates.V2CodexAndWorkflowCruiseTest)\n\u6838\u9a8c\u5408\u6cd5 `FAILED` \u89e6\u53d1 2 \u8f6e\u8fd4\u4fee\uff0c\u800c\u7f3a\u5931 `verdict.json`\uff08\u4e0d\u8bba\u9000\u51fa\u7801/\u5f02\u5e38\uff09\u4e00\u5f8b `BLOCKED` \u96f6\u6263\u6b21\u3002 ... ok\ntest_contract_negative_collisions_and_bad_crc (test_v2_gates.V2ContractAndFastGateTest)\n\u6838\u9a8c 0x05 \u7981\u7528\u7801\u3001\u547d\u4ee4\u7801\u78b0\u649e\u53ca <520B \u5bb9\u91cf\u8fdd\u4f8b\u5747\u88ab\u786e\u5b9a\u6027\u62e6\u622a\u3002 ... ok\ntest_fast_gate_catches_scale_unverified_and_shim (test_v2_gates.V2ContractAndFastGateTest)\n\u6838\u9a8c Fast-Gate \u62e6\u622a\u8d85 4 \u53c2\u6570\u3001\u7f3a\u4e2d\u6587\u6ce8\u91ca\u3001\u6b8b\u7559\u672a\u9a8c\u8bc1\u6807\u8bb0\u3001\u6539\u5305\u57ab\u7247\u53ca C \u6307\u9488\u81ea\u589e\u3002 ... ok\ntest_subtask_boundary_blocks_bootloader_main_and_path_escape (test_v2_gates.V2ContractAndFastGateTest)\n\u6838\u9a8c\u53cc Bootloader \u5207\u5165 main \u5206\u652f\u6216\u4fee\u6539\u767d\u540d\u5355\u5916\u8def\u5f84\u65f6\u7acb\u5373\u88ab\u963b\u65ad\u3002 ... ok\ntest_v2_python_tools_pass_fast_gate_self_check (test_v2_gates.V2ContractAndFastGateTest)\n\u786c\u6027\u95e8\u7981\u81ea\u68c0\uff1a\u751f\u4ea7 6 \u6587\u4ef6 <=900 \u884c\u3001\u542b\u5355\u6d4b <=1150 \u884c\u4e14\u901a\u8fc7 AST \u4e0e\u9632\u4f2a\u626b\u63cf\u3002 ... ok\ntest_workspace_five_endpoints_and_header_render (test_v2_gates.V2ContractAndFastGateTest)\n\u6838\u9a8c\u771f\u5b9e\u5de5\u4f5c\u533a\u4e94\u7aef\u5934\u6587\u4ef6\u4e0e\u9ec4\u91d1\u5e27 CRC \u5168\u7eff\uff0c\u4e14\u751f\u6210\u5934\u6587\u4ef6\u53ef\u88ab\u91cd\u89e3\u6790\u901a\u8fc7\u3002 ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 4.141s\n\nOK"
+    }
+  ],
+  "qa_image": "qa-sandbox:20261029",
+  "qa_commands": [
+    {
+      "kind": "test",
+      "subpath": ".",
+      "command": "bash tools/workspace_git.sh rev-parse HEAD && python3 -B -m unittest discover -s project-control/tools -p 'test_v2_gates.py' -v"
+    }
+  ],
+  "passed": true,
+  "timestamp": "2026-11-20T03:14:33.976045+00:00"
+}

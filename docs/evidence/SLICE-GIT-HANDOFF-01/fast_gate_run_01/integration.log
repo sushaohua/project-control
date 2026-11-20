@@ -1,0 +1,169 @@
+BUNDLED /tmp/tmp_beyg2lo/bundles
+RESTORED all pinned commits; existing checkouts were preserved
+BUNDLED /tmp/tmpz0cnurcw/nested-bundles
+RESTORED all pinned commits; existing checkouts were preserved
+VERIFIED soc-ap main 70c36d618d9f2c73caae193a6f535ab3b8a52262
+VERIFIED soc-ap main 70c36d618d9f2c73caae193a6f535ab3b8a52262
+VERIFIED soc-ap main 70c36d618d9f2c73caae193a6f535ab3b8a52262
+VERIFIED workspace main 47e04766eacb65da5d17dfd755b62752aa31cc35
+PUBLISHED file:///tmp/tmpvnhxojxf/gitlab_entry.git
+RESTORED all pinned commits; existing checkouts were preserved
+
+test_changed_copy_and_redirected_link_are_rejected (test_workspace.SDKWorkspaceTests)
+派生文件必须保持内容或准确链接目标；其他存在文件不构成通过条件。 ... ok
+test_command_failure_preserves_both_original_streams (test_workspace.SDKWorkspaceTests)
+真实失败子进程的双流原始输出应完整保留，返回码不得被进度日志掩盖。 ... ok
+test_existing_restore_preserves_user_edits_without_sync (test_workspace.SDKWorkspaceTests)
+已有客户端恢复只验证；隔离 Repo 清单前端后仍由真实 Git 拦截本地改动。 ... ok
+test_extra_and_ignored_project_outputs_are_rejected (test_workspace.SDKWorkspaceTests)
+额外未跟踪文件和 Git 忽略输出均不属于派生白名单。 ... ok
+test_lock_worktree_and_digest_tampering_are_rejected (test_workspace.SDKWorkspaceTests)
+分别拒绝错误摘要和工作树锁改动，不能用待提交 XML 替代产品候选。 ... ok
+test_long_command_reports_progress_and_timeout_preserves_output (test_workspace.SDKWorkspaceTests)
+受控模拟仅验证等待/超时分支；不把该结果当成实际 SDK 同步物证。 ... ok
+test_missing_sdk_offline_restore_fails_before_clone (test_workspace.SDKWorkspaceTests)
+离线包没有 SDK 时必须在创建普通 Git 检出前拒绝，不能隐式联网。 ... ok
+test_same_name_nested_projects_and_nineteen_derived_files (test_workspace.SDKWorkspaceTests)
+仓名不充当唯一键；真实嵌套仓和十九项派生规则必须共同保持有效。 ... ok
+test_sdk_client_overlap_and_moving_project_lock_are_rejected (test_workspace.SDKWorkspaceTests)
+拒绝客户端占用产品仓路径与移动分支锁，避免双重管理及漂移输入。 ... ok
+test_bundle_roundtrip_uses_exact_root_and_child_commits (test_workspace.WorkspaceTests) ... ok
+test_dirty_lock_is_rejected_without_changing_manifest (test_workspace.WorkspaceTests) ... ok
+test_manifest_rejects_escaping_paths_and_credential_urls (test_workspace.WorkspaceTests)
+校验非法穿越路径、重叠嵌套路径、含凭据 URL 及非法 mirror/agents_subdir 均被拒绝。 ... ok
+test_missing_child_does_not_resolve_to_parent_git (test_workspace.WorkspaceTests) ... ok
+test_nested_repo_bundle_restore_and_relative_symlinks (test_workspace.WorkspaceTests)
+校验嵌套路径仓库离线打包恢复，以及恢复时自动生成指向 agents/ 的相对软链接。 ... ok
+test_non_fast_forward_push_is_rejected (test_workspace.WorkspaceTests) ... ok
+test_publish_pushes_to_gitlab_and_mirror_urls (test_workspace.WorkspaceTests)
+校验 publish 命令无 API/Token 依赖，直接向主库与 mirror_urls 推送并核验 SHA。 ... ok
+test_publish_requires_no_gitlab_api_and_validates_entry_url (test_workspace.WorkspaceTests)
+校验 publish 不再依赖 GitLab API/Token，且拒绝非法的 workspace_project.url。 ... ok
+test_restore_pins_commit_even_when_branch_has_advanced (test_workspace.WorkspaceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 1.269s
+
+OK
+test_checkpoint_deliverable_cruise_and_qa_reuse (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验检查点免冷审禁写账本、交付点核查检查点、多交付与 QA 复用/拒用。 ... ok
+test_docker_wait_is_extended_only_for_system_profile (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+正式制镜有独立外层时限，宿主与应用维持原有上限。 ... ok
+test_graded_codex_verdict_and_missing_cli_blocked (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验分级一致校验，并验证 Codex CLI 缺失抛出 `CodexGateBlockedError`。 ... ok
+test_handoff_roundtrip_and_negative_blocks (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验 Git 交接准备与远端读回、LFS 阻塞、私有路径/失效 ref/非可达提交拒收。 ... ok
+test_slice_gate_tristate_nonempty_reuse_and_qa_conflict (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验三态输出、非空证据目录拒复用及 Docker QA 退出码与证据冲突拦截。 ... ok
+test_workflow_bg_wait_conflict_and_restart_isolation (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验后台门禁等待结束、重启续跑目录独立、双层冲突拦截及权限拒绝零扣次。 ... ok
+test_workflow_rework_and_missing_verdict_always_blocked (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验合法 `FAILED` 触发 2 轮返修，而缺失 `verdict.json`（不论退出码/异常）一律 `BLOCKED` 零扣次。 ... ok
+test_contract_negative_collisions_and_bad_crc (test_v2_gates.V2ContractAndFastGateTest)
+核验 0x05 禁用码、命令码碰撞及 <520B 容量违例均被确定性拦截。 ... ok
+test_fast_gate_catches_scale_unverified_and_shim (test_v2_gates.V2ContractAndFastGateTest)
+核验 Fast-Gate 拦截超 4 参数、缺中文注释、残留未验证标记、改包垫片及 C 指针自增。 ... ok
+test_subtask_boundary_blocks_bootloader_main_and_path_escape (test_v2_gates.V2ContractAndFastGateTest)
+核验双 Bootloader 切入 main 分支或修改白名单外路径时立即被阻断。 ... ok
+test_v2_python_tools_pass_fast_gate_self_check (test_v2_gates.V2ContractAndFastGateTest)
+硬性门禁自检：生产 6 文件 <=900 行、含单测 <=1150 行且通过 AST 与防伪扫描。 ... ok
+test_workspace_five_endpoints_and_header_render (test_v2_gates.V2ContractAndFastGateTest)
+核验真实工作区五端头文件与黄金帧 CRC 全绿，且生成头文件可被重解析通过。 ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 4.284s
+
+OK
+test_evidence_bundle_delivery_checks_compatibility (test_qa_runner.CommandAndEvidenceTest)
+生成的证据包必须兼容既有收件检查器。 ... ok
+test_parse_helpers (test_qa_runner.CommandAndEvidenceTest)
+保持仓库候选和 kind:subpath:command 的准确解析。 ... ok
+test_repo_default_branch_and_explicit_override (test_qa_runner.CommandAndEvidenceTest)
+候选必须有明确分支，显式 ref 优先于配置默认值。 ... ok
+test_run_command_in_sandbox_escape_blocked (test_qa_runner.CommandAndEvidenceTest)
+命令工作路径越界时拒绝执行。 ... ok
+test_run_command_in_sandbox_success (test_qa_runner.CommandAndEvidenceTest)
+记录实际命令输出与零退出码。 ... ok
+test_validate_commit_sha_negative_format (test_qa_runner.CommitAndUrlValidationTest)
+拒绝长度或字符格式错误的提交哈希。 ... ok
+test_validate_commit_sha_placeholder_rejected (test_qa_runner.CommitAndUrlValidationTest)
+拒绝由单一重复字符伪造的占位提交。 ... ok
+test_validate_commit_sha_positive (test_qa_runner.CommitAndUrlValidationTest)
+接受合法的完整提交哈希。 ... ok
+test_validate_remote_url_negative (test_qa_runner.CommitAndUrlValidationTest)
+拒绝本地路径、明文凭据和不支持协议。 ... ok
+test_validate_remote_url_positive (test_qa_runner.CommitAndUrlValidationTest)
+接受受支持协议的无凭据远端 URL。 ... ok
+test_harness_runner_execution (test_qa_runner.HarnessRunnerTest)
+测试仓运行器必须保留命令的真实输出与结果。 ... ok
+test_prepare_sandbox_rule_links (test_qa_runner.HarnessRunnerTest)
+校验沙箱内同时存在 agents 与业务仓时正确生成相对规则软链接，且不覆盖已有文件。 ... ok
+test_python_functions_scale_and_parameters_limits (test_qa_runner.MethodologicalInvariantsTest)
+对运行器和测试入口核验函数行数与入参数量。 ... ok
+test_accepted_sdk_tool_bytes_are_copied_without_candidate_execution (test_qa_runner.PlatformProfileTest)
+单测显式接受已知工具字节后，暂存副本必须与事先接受摘要完全一致。 ... ok
+test_application_requires_all_provenance_repositories (test_qa_runner.PlatformProfileTest)
+缺少规则或测试候选不能进入平台 QA。 ... ok
+test_candidate_checker_is_not_imported_during_host_preparation (test_qa_runner.PlatformProfileTest)
+真实候选模块含可见副作用时，宿主准备仍只导入已暂存工具，候选保持未执行。 ... ok
+test_checkout_workspace_root_and_cleanup_safety (test_qa_runner.PlatformProfileTest)
+核验根入口仓精确检出以及按 run 清理在未验/锁占用/越界软链接时保留现场。 ... ok
+test_checkout_workspace_root_rejects_unconfigured_or_bad_commit (test_qa_runner.PlatformProfileTest)
+核验未配置根仓 URL 拒绝及真实临时根仓精确检出校验。 ... ok
+test_cli_profile_is_explicit (test_qa_runner.PlatformProfileTest)
+命令行默认宿主检查，并能显式选择 ARM 应用范围。 ... ok
+test_container_output_mount_is_separate_and_writable (test_qa_runner.PlatformProfileTest)
+构建输出只能写独立目录，受测来源仍按只读挂载；不启动真实 Docker。 ... ok
+test_container_platform_failure_prevents_build (test_qa_runner.PlatformProfileTest)
+平台校验失败时即使业务命令存在，也不得执行下一条构建。 ... ok
+test_host_profile_never_downloads_sdk (test_qa_runner.PlatformProfileTest)
+宿主 profile 不建立平台输入，也不触发 SDK 下载。 ... ok
+test_platform_check_executes_in_container_and_records_failure (test_qa_runner.PlatformProfileTest)
+容器内检查失败或伪造零退出且无有效证据时，保留输出并阻止后续构建。 ... ok
+test_platform_evidence_preserves_scope_and_lock (test_qa_runner.PlatformProfileTest)
+QA 证据保留构建范围和 SDK 锁来源，不把 profile 名当成 HIL 结论。 ... ok
+test_platform_failure_prevents_container_start (test_qa_runner.PlatformProfileTest)
+平台来源核验失败时保留错误，不启动容器或继续测试。 ... ok
+test_sdk_tool_hash_must_be_accepted_before_import (test_qa_runner.PlatformProfileTest)
+缺失或错误的事先接受摘要均阻止写工作区与宿主导入，不能自报当前摘要通过。 ... ok
+test_system_build_environment_selects_separate_sdk (test_qa_runner.PlatformProfileTest)
+候选构建只在容器执行，系统命令继承可写 SDK 副本路径，应用命令使用只读 SDK。 ... ok
+test_system_profile_archives_deliverables_and_skips_symlinks (test_qa_runner.PlatformProfileTest)
+系统构建将普通清单与交付制品归档至 artifacts 并计算真实摘要，同时跳过符号链接。 ... ok
+test_system_profile_copies_only_its_reconstructed_sdk (test_qa_runner.PlatformProfileTest)
+系统范围先校验再复制 SDK，副本路径和成功状态绑定输入；应用范围不复制。 ... ok
+test_system_profile_keeps_separate_image_and_sdk_tool_acceptance (test_qa_runner.PlatformProfileTest)
+系统镜像及工具的接受值仅用于系统范围，显式空值拦截加载。 ... ok
+test_system_profile_requires_image_command (test_qa_runner.PlatformProfileTest)
+普通应用构建不能冒充完整系统制镜。 ... ok
+test_system_profile_time_bounds_preserve_partial_output (test_qa_runner.PlatformProfileTest)
+系统允许不同的构建和制镜时限，超时保留原始输出并返回失败。 ... ok
+test_target_profile_requires_accepted_image_digest (test_qa_runner.PlatformProfileTest)
+目标验证拒绝浮动镜像标签，宿主 profile 保留既有镜像选择。 ... ok
+test_unknown_repository_has_no_guessed_url (test_qa_runner.PlatformProfileTest)
+SDK 和新应用仓必须显式映射 URL，不从逻辑名猜服务器路径。 ... ok
+test_create_isolated_sandbox (test_qa_runner.SandboxIsolationTest)
+隔离沙箱必须创建独立目录并绑定任务前缀。 ... ok
+test_sandbox_path_forbidden_roots (test_qa_runner.SandboxIsolationTest)
+拒绝将沙箱创建在开发者工作树内。 ... ok
+test_sanitize_path_component (test_qa_runner.SandboxIsolationTest)
+接受合法沙箱名称并拒绝路径穿越字符。 ... ok
+test_stop_docker_sandbox_preserves_container_state (test_qa_runner.SandboxIsolationTest)
+停止容器时保留退出现场供后续 inspect。 ... ok
+test_validate_sandbox_subpath_escape (test_qa_runner.SandboxIsolationTest)
+拒绝沙箱内部命令的工作目录越界。 ... ok
+test_verify_clean_worktree_detection (test_qa_runner.SandboxIsolationTest)
+新检出工作树存在修改时必须报告错误。 ... ok
+test_check_ssh_connection_parsing (test_qa_runner.ServerVerificationTest)
+从受控 SSH 返回值识别 GitLab 认证结果。 ... ok
+test_verify_remote_ref_missing_rejection (test_qa_runner.ServerVerificationTest)
+远端仓库缺失或引用不存在时必须拒绝并保留原始错误。 ... ok
+test_verify_remote_ref_positive (test_qa_runner.ServerVerificationTest)
+原生 git ls-remote 成功返回远端分支与提交哈希。 ... ok
+test_verify_server_prerequisites_ssh_only (test_qa_runner.ServerVerificationTest)
+服务端前置检查仅执行 SSH 认证，不再依赖 GITLAB_TOKEN 或 HTTP API。 ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 0.065s
+
+OK

@@ -8,6 +8,7 @@
 import argparse
 from dataclasses import dataclass, field, replace
 import datetime
+import fcntl
 import hashlib
 import importlib.util
 import json
@@ -48,6 +49,8 @@ class QARunRequest:
     targets: List[RepositoryTarget]
     commands: List[dict]
     profile: str = "host-software"
+    root_commit: Optional[str] = None
+    root_ref: str = "refs/heads/main"
 
 
 @dataclass
@@ -83,6 +86,7 @@ class QARunResult:
     container_inspect: Dict[str, object] = field(default_factory=dict)
     profile: str = "host-software"
     platform_inputs: Dict[str, object] = field(default_factory=dict)
+    commands: List[dict] = field(default_factory=list)
 
 
 def compute_bytes_sha256(data: bytes) -> str:
@@ -97,12 +101,14 @@ def compute_file_sha256(file_path: Path) -> str:
     return compute_bytes_sha256(file_path.read_bytes())
 
 
-def create_evidence_ref(output_path: Path, data: bytes) -> Dict[str, str]:
-    """将字节数据写入目标证据路径并返回包含 path 与 sha256 的引用字典。"""
+def create_evidence_ref(output_path: Path, data: bytes, base_dir: Optional[Path] = None) -> Dict[str, object]:
+    """将字节数据写入目标证据路径并返回含相对路径、字节数与 sha256 的引用字典。"""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_bytes(data)
+    rel = str(output_path.relative_to(base_dir)) if base_dir is not None else str(output_path)
     return {
-        "path": str(output_path),
+        "path": rel,
+        "bytes": len(data),
         "sha256": compute_bytes_sha256(data),
     }
 
@@ -408,7 +414,7 @@ SYSTEM_ARTIFACT_NAMES = (
 
 
 def archive_system_artifacts(sandbox_dir: Path, output_dir: Path, task_id: str) -> Dict[str, dict]:
-    """将系统沙箱 `/output/<task_id>` 下的清单与交付制品归档至 `output_dir/artifacts` 并流式计算 SHA256。"""
+    """将系统沙箱 `/output/<task_id>` 下的清单与交付制品归档至 `output_dir/artifacts` 并返回相对路径与摘要。"""
     src_root = sandbox_dir.with_name(sandbox_dir.name + "_output") / sanitize_path_component(task_id).lower()
     if not src_root.is_dir():
         return {}
@@ -425,12 +431,12 @@ def archive_system_artifacts(sandbox_dir: Path, output_dir: Path, task_id: str) 
         with dst.open("rb") as stream:
             for chunk in iter(lambda: stream.read(1048576), b""):
                 hasher.update(chunk)
-        archived[name] = {"path": str(dst), "bytes": dst.stat().st_size, "sha256": hasher.hexdigest()}
+        archived[name] = {"path": f"artifacts/{name}", "bytes": dst.stat().st_size, "sha256": hasher.hexdigest()}
     return archived
 
 
 def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str]]) -> dict:
-    """构造满足 delivery_checks 门禁要求的标准 server_qa.json 证明字典。"""
+    """构造满足交接与门禁要求的规范相对路径 server_qa.json 证明字典。"""
     cid = run_result.container_id or run_result.sandbox_id
     img = run_result.container_image or "ubuntu:20.04"
     proof = {
@@ -445,7 +451,7 @@ def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str
             "container_id": cid,
             "id": run_result.sandbox_id,
             "image": img,
-            "path": run_result.sandbox_path,
+            "path": run_result.sandbox_id,
             "developer_mounts": [],
             "container_inspect": run_result.container_inspect,
         },
@@ -456,6 +462,8 @@ def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str
         "tool_versions": run_result.tool_versions,
         "build_results": run_result.build_results,
         "test_results": run_result.test_results,
+        "qa_image": img,
+        "qa_commands": run_result.commands,
         "passed": run_result.passed,
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     }
@@ -466,16 +474,16 @@ def build_server_qa_proof(run_result: QARunResult, refs: Dict[str, Dict[str, str
 
 def write_evidence_bundle(output_dir: Path, run_result: QARunResult,
                           lock_data: dict, logs: Dict[str, str]) -> Dict[str, Dict[str, str]]:
-    """将锁文件、检出日志、运行日志、判定结果及 server_qa 证明写入输出目录并返回引用映射。"""
+    """将锁文件、检出日志、运行日志、判定结果及 server_qa 证明以相对路径写入输出目录。"""
     output_dir.mkdir(parents=True, exist_ok=True)
     lock_ref = create_evidence_ref(output_dir / "server_lock.json",
-                                   json.dumps(lock_data, indent=2).encode("utf-8"))
+                                   json.dumps(lock_data, indent=2).encode("utf-8"), output_dir)
     checkout_ref = create_evidence_ref(output_dir / "checkout.log",
-                                       logs.get("checkout", "").encode("utf-8"))
+                                       logs.get("checkout", "").encode("utf-8"), output_dir)
     runtime_ref = create_evidence_ref(output_dir / "runtime.log",
-                                      logs.get("runtime", "").encode("utf-8"))
+                                      logs.get("runtime", "").encode("utf-8"), output_dir)
     verdict_ref = create_evidence_ref(output_dir / "server_verdict.json",
-                                      json.dumps(build_server_verdict_data(run_result), indent=2).encode("utf-8"))
+                                      json.dumps(build_server_verdict_data(run_result), indent=2).encode("utf-8"), output_dir)
     refs = {
         "server_lock": lock_ref,
         "checkout_log": checkout_ref,
@@ -488,7 +496,7 @@ def write_evidence_bundle(output_dir: Path, run_result: QARunResult,
             refs["artifacts"] = archived
     proof = build_server_qa_proof(run_result, refs)
     qa_ref = create_evidence_ref(output_dir / "server_qa.json",
-                                 json.dumps(proof, indent=2).encode("utf-8"))
+                                 json.dumps(proof, indent=2).encode("utf-8"), output_dir)
     refs["server_qa"] = qa_ref
     return refs
 
@@ -611,13 +619,18 @@ def _stage_profile_workspace(sandbox_dir: Path, req: QARunRequest, config: dict)
     digest = compute_bytes_sha256(raw)
     if not re.fullmatch(r"[0-9a-f]{64}", accepted or "") or accepted != digest:
         raise QARunnerError("SDK input tool lacks an accepted matching SHA256")
-    # 先核对接受值，再写入同一字节串；不以复制后的自报摘要作为接受依据。
-    with (sandbox_dir / "workspace.json").open("x", encoding="utf-8") as output:
-        json.dump(data, output, ensure_ascii=False, indent=2)
+    # 先核对接受值，再写入或核验同源字节串；根仓已检出工具时校验字节一致而非覆写。
+    wf = sandbox_dir / "workspace.json"
+    if not wf.exists():
+        wf.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     destination = sandbox_dir / "tools/sdk_workspace.py"
-    destination.parent.mkdir(exist_ok=False)
-    with destination.open("xb") as output:
-        output.write(raw)
+    if destination.exists():
+        if destination.read_bytes() != raw:
+            raise QARunnerError("Checked-out SDK input tool bytes do not match accepted SHA256")
+    else:
+        destination.parent.mkdir(exist_ok=True)
+        with destination.open("xb") as output:
+            output.write(raw)
     return {"workspace": data, "sdk_tool_sha256": digest}
 
 
@@ -708,6 +721,64 @@ def copy_system_worktrees(sandbox_dir: Path, cid: str, inputs: dict) -> CommandR
     return result
 
 
+def checkout_workspace_root(sandbox_dir: Path, config: dict, root_commit: str, root_ref: str = "refs/heads/main") -> str:
+    """从受控远端拉取精确根入口仓提交至沙箱根目录并校验洁净度，再供子仓与容器只读校验。"""
+    validate_commit_sha(root_commit)
+    ws_cfg = config.get("workspace_repository") or {}
+    url = validate_remote_url(ws_cfg.get("url", ""))
+    target = RepositoryTarget(".", url, root_commit, root_ref or ws_cfg.get("default_branch", "main"))
+    verify_remote_ref(target, timeout=int((config.get("server") or {}).get("ssh_timeout_seconds", 60)))
+    logs = [f"=== Checkout workspace root '.' from {url} ==="]
+    for args in (["init"], ["remote", "add", "origin", url], ["fetch", "--depth=50", "origin", root_commit], ["checkout", "--force", root_commit]):
+        res = run_git_command(["git"] + args, cwd=sandbox_dir, timeout=180)
+        logs.append(f"$ git {' '.join(args)} -> {res.returncode}")
+        if res.returncode != 0 and args[0] == "fetch":
+            res = run_git_command(["git", "fetch", "origin", target.ref], cwd=sandbox_dir, timeout=180)
+        if res.returncode != 0:
+            raise QARunnerError(f"Root checkout failed ({args[0]}): {res.stderr.strip()}")
+    if run_git_command(["git", "rev-parse", "HEAD"], cwd=sandbox_dir, timeout=30).stdout.strip() != root_commit:
+        raise QARunnerError("Root commit mismatch after checkout")
+    verify_clean_worktree(sandbox_dir)
+    return "\n".join(logs)
+
+
+def _has_escaping_symlink(directory: Path, root: Path) -> bool:
+    """检测目录内是否存在指向受控根路径之外的符号链接，防止清理穿透。"""
+    for cur, dirs, files in os.walk(directory, followlinks=False):
+        for name in dirs + files:
+            p = Path(cur) / name
+            if p.is_symlink():
+                resolved = p.resolve(strict=False)
+                if resolved != root and root not in resolved.parents:
+                    return True
+    return False
+
+
+def cleanup_sandbox_run(sandbox_dir: Path, container_id: str, config: dict, verified: bool = False) -> dict:
+    """仅在交接验证通过且满足所有权、无活动锁及无越界软链接时，按 run 清理沙箱树与容器。"""
+    if not verified:
+        return {"cleaned": False, "reason": "handoff_or_run_unverified"}
+    base = Path((config.get("sandbox") or {}).get("base_dir", "/tmp/qa_sandboxes")).resolve()
+    sb_res = sandbox_dir.resolve()
+    if sandbox_dir.is_symlink() or base not in sb_res.parents or _has_escaping_symlink(sb_res, sb_res):
+        return {"cleaned": False, "reason": "unsafe_sandbox_path_or_symlink"}
+    lock_p = sb_res / ".qa_run.lock"
+    with lock_p.open("a+") as lk:
+        try:
+            fcntl.flock(lk.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            return {"cleaned": False, "reason": "active_run_lock"}
+    removed = []
+    if container_id:
+        subprocess.run(["docker", "rm", "-f", container_id], text=True, capture_output=True, timeout=30)
+        removed.append(f"container:{container_id}")
+    for target in (sb_res, sb_res.with_name(sb_res.name + "_output")):
+        if target.exists() and not target.is_symlink() and not _has_escaping_symlink(target, target):
+            shutil.rmtree(target)
+            removed.append(str(target))
+    return {"cleaned": True, "removed": removed}
+
+
 class QARunner:
     """统筹远端提交核验、隔离沙箱检出与只读容器测试执行的 QA 核心运行器。"""
 
@@ -764,46 +835,42 @@ class QARunner:
                 break
         return runtime_logs, build_results, test_results, overall_passed
 
+    def _checkout_all_targets(self, sandbox_dir: Path, req: QARunRequest) -> List[str]:
+        """按请求可选先检出根入口仓，再逐一拉取子仓与规则软链接及平台 SDK。"""
+        c_logs, git_timeout = [], int(self.config.get("timeouts", {}).get("git_clone_seconds", 300))
+        if req.root_commit:
+            c_logs.append(checkout_workspace_root(sandbox_dir, self.config, req.root_commit, req.root_ref))
+        for target in req.targets:
+            c_logs.append(checkout_remote_repository(sandbox_dir, target, timeout=git_timeout))
+        prepare_sandbox_rule_links(sandbox_dir, req.targets, self.config)
+        return c_logs
+
     def execute_run(self, req: QARunRequest) -> tuple:
         """在只读容器沙箱中执行完整的远端提交校验、全新检出与客观测试流程。"""
         validate_profile_request(req)
         img = accepted_profile_image(req, self.config)
         limits = system_profile_timeouts(self.config) if req.profile == "c308l-system" else {}
-        if limits:
-            budget = sum(limits.get(item.get("kind", "test"), DEFAULT_CMD_TIMEOUT) for item in req.commands)
-            if limits["container"] <= budget + 2 * DEFAULT_CMD_TIMEOUT:
-                raise QARunnerError("C308L system container lifetime must cover SDK checks and all commands")
+        if limits and limits["container"] <= sum(limits.get(i.get("kind", "test"), DEFAULT_CMD_TIMEOUT) for i in req.commands) + 2 * DEFAULT_CMD_TIMEOUT:
+            raise QARunnerError("C308L system container lifetime must cover SDK checks and all commands")
         self.verify_target_commits(req.targets)
         run_id = f"run_{datetime.datetime.now().strftime('%H%M%S')}"
         sandbox_dir = create_isolated_sandbox(self.sandbox_base, req.task_id, run_id)
-        # 1. 在宿主机隔离沙箱目录内拉取服务端精确锁定的 Commit
-        git_timeout = int(self.config.get("timeouts", {}).get("git_clone_seconds", 300))
-        c_logs = []
-        for target in req.targets:
-            log = checkout_remote_repository(sandbox_dir, target, timeout=git_timeout)
-            c_logs.append(log)
-        prepare_sandbox_rule_links(sandbox_dir, req.targets, self.config)
+        c_logs = self._checkout_all_targets(sandbox_dir, req)
         platform_inputs = prepare_profile_inputs(sandbox_dir, req, self.config)
-        # 2. 启动以只读模式挂载该沙箱快照的 Docker 容器执行构建与测试
         c_name = f"qa_{sanitize_path_component(req.task_id)}_{run_id}"
-        if limits:
-            cid = _start_docker_sandbox(c_name, img, sandbox_dir, ("ro", limits["container"]))
-        else:
-            cid = start_docker_sandbox(c_name, img, sandbox_dir, read_only=True)
+        cid = _start_docker_sandbox(c_name, img, sandbox_dir, ("ro", limits["container"])) if limits else start_docker_sandbox(c_name, img, sandbox_dir, read_only=True)
         try:
-            r_logs, b_res, t_res, ok = self._run_container_steps(
-                sandbox_dir, req, {"cid": cid, "inputs": platform_inputs})
+            r_logs, b_res, t_res, ok = self._run_container_steps(sandbox_dir, req, {"cid": cid, "inputs": platform_inputs})
         finally:
             stop_docker_sandbox(cid)
             inspect_data = inspect_docker_sandbox(cid)
         r_logs.insert(0, f"=== Docker Container Inspect: {cid} ===\n{json.dumps(inspect_data, indent=2)}")
         res = QARunResult(
-            task_id=req.task_id, task_revision=req.task_revision, run_id=run_id,
-            sandbox_id=sandbox_dir.name, sandbox_path=str(sandbox_dir),
-            container_id=cid, container_image=img, container_inspect=inspect_data, passed=ok,
-            tool_versions=collect_tool_versions(), build_results=b_res, test_results=t_res,
+            task_id=req.task_id, task_revision=req.task_revision, run_id=run_id, sandbox_id=sandbox_dir.name,
+            sandbox_path=str(sandbox_dir), container_id=cid, container_image=img, container_inspect=inspect_data,
+            passed=ok, tool_versions=collect_tool_versions(), build_results=b_res, test_results=t_res,
             summary="All sandbox tests passed" if ok else "Sandbox QA execution failed",
-            profile=req.profile, platform_inputs=platform_inputs,
+            profile=req.profile, platform_inputs=platform_inputs, commands=req.commands,
         )
         return res, sandbox_dir, c_logs, r_logs
 
@@ -848,6 +915,10 @@ def create_cli_parser() -> argparse.ArgumentParser:
     parser.add_argument("--check-only", action="store_true", help="Only verify server credentials")
     parser.add_argument("--profile", choices=BUILD_PROFILES, default="host-software",
                         help="Explicit software build and verification scope")
+    parser.add_argument("--root-commit", default="", help="Pinned ai-soc-workspace root commit SHA")
+    parser.add_argument("--root-ref", default="refs/heads/main", help="Remote ref for root workspace")
+    parser.add_argument("--cleanup-verified", action="store_true",
+                        help="Clean per-run container and sandbox tree only after evidence bundle passes")
     return parser
 
 
@@ -892,14 +963,18 @@ def main() -> int:
         targets = [parse_repo_target(r, urls, branches) for r in args.repo_commit]
         commands = [parse_command_spec(c) for c in args.cmd]
         req = QARunRequest(task_id=args.task, task_revision=args.revision, targets=targets,
-                           commands=commands, profile=args.profile)
+                           commands=commands, profile=args.profile,
+                           root_commit=args.root_commit or None, root_ref=args.root_ref)
         res, s_dir, c_logs, r_logs = runner.execute_run(req)
         out_dir = Path(args.output_dir) if args.output_dir else s_dir / "evidence"
         lock_data = build_server_lock_data(targets)
-        lock_data.update({"profile": res.profile, "platform_inputs": res.platform_inputs})
+        lock_data.update({"profile": res.profile, "platform_inputs": res.platform_inputs,
+                          "root_commit": req.root_commit})
         logs = {"checkout": "\n".join(c_logs), "runtime": "\n".join(r_logs)}
         refs = write_evidence_bundle(out_dir, res, lock_data, logs)
-        print(f"[QA VERDICT] {res.summary} | Evidence bundle saved to: {out_dir}")
+        cleanup = cleanup_sandbox_run(s_dir, res.container_id, config,
+                                      verified=res.passed and (args.cleanup_verified or bool((config.get("sandbox") or {}).get("cleanup_after_run"))))
+        print(f"[QA VERDICT] {res.summary} | Evidence bundle saved to: {out_dir} | Cleanup: {cleanup.get('cleaned')}")
         print(f"[SERVER QA REF] {json.dumps(refs['server_qa'], indent=2)}")
         return 0 if res.passed else 1
     except QARunnerError as err:

@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "task_id": "SLICE-GIT-HANDOFF-01",
+  "slice_id": "SLICE-GIT-HANDOFF-01",
+  "revision": 1,
+  "run_id": "gh03_live_qa_smoke",
+  "stage": "docker_qa",
+  "status": "PASSED",
+  "previous_receipt": null,
+  "input_fingerprint": "",
+  "inputs": {
+    "qa_image_digest": "qa-sandbox:20261029",
+    "repos": {
+      ".": {
+        "ref": "refs/heads/main",
+        "commit": "331ff064b9f8ff7120564c68caa8e6593a091025"
+      },
+      "project-control": {
+        "ref": "refs/heads/main",
+        "commit": "33c66117c5d7ceec7098b27c8c5bb98ab679731f"
+      },
+      "printer-soc": {
+        "ref": "refs/heads/main",
+        "commit": "20528ed21a7838e955e4ddf786d6fdac756ba89c"
+      },
+      "mcu-p3": {
+        "ref": "refs/heads/feat/soc-debug",
+        "commit": "7b623d9a4fff7cf460b53318b71d0b816635b733"
+      },
+      "test_harness": {
+        "ref": "refs/heads/main",
+        "commit": "d601cc5a63bbe453b4d4c253fc5e62a2d0a5a19b"
+      },
+      "boot/bootloadermc": {
+        "ref": "refs/heads/soc_debug",
+        "commit": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4"
+      },
+      "boot/bootloaderth": {
+        "ref": "refs/heads/soc_debug",
+        "commit": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+      }
+    }
+  },
+  "evidence": [
+    {
+      "path": "checkout.log",
+      "bytes": 3106,
+      "sha256": "9cede937bf9df01e63925559cf50dd38fe43c83cfeb2d3434c634740a4ba9b7f",
+      "storage": "git"
+    },
+    {
+      "path": "runtime.log",
+      "bytes": 3080,
+      "sha256": "a9b5522bacb1d66032e017db2cefa391dd9c76efed753e7652d0f755ec40fd84",
+      "storage": "git"
+    },
+    {
+      "path": "server_lock.json",
+      "bytes": 1400,
+      "sha256": "b6ebbbdf2f2ad57e2724efd22adfa4d9b195a748493ea3e06c192ffc66fe7fc5",
+      "storage": "git"
+    },
+    {
+      "path": "server_qa.json",
+      "bytes": 5641,
+      "sha256": "0e25bf28584f61625c660e2a38579a32d42af014b048122a79d9d42246c60fe3",
+      "storage": "git"
+    },
+    {
+      "path": "server_verdict.json",
+      "bytes": 289,
+      "sha256": "f03ed72be72219b6428996c2ddf210ad1db54d94ce421de339f9eda1cfc1ea3e",
+      "storage": "git"
+    }
+  ],
+  "artifacts": [],
+  "verdict_ref": null,
+  "approval_ref": null
+}

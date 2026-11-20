@@ -1,0 +1,6 @@
+# AI SoC V2 经服务端交接的下游大件与镜像构建上下文由 Git LFS 管理（未就绪前禁止直接入库原始二进制）
+docs/evidence/**/handoff_artifacts/*.tar.gz filter=lfs diff=lfs merge=lfs -text
+docs/evidence/**/handoff_artifacts/*.ubi filter=lfs diff=lfs merge=lfs -text
+docs/evidence/**/handoff_artifacts/*.img filter=lfs diff=lfs merge=lfs -text
+docs/evidence/**/handoff_artifacts/*.bin filter=lfs diff=lfs merge=lfs -text
+tools/qa_runner/*.tar.xz filter=lfs diff=lfs merge=lfs -text

@@ -1,22 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""V2 垂直切片四阶无状态门禁漏斗 (`slice_gate.py`)。
-
-顺序串联：`fast_gate` ➔ 合龙 ➔ `qa_runner` Docker ➔ Codex 冷审；统一输出 `PASSED(0)`/`FAILED(1)`/`BLOCKED(2)` 与当次证据。
-"""
+"""V2 垂直切片四阶无状态门禁漏斗 (`slice_gate.py`)：快检 ➔ 合龙 ➔ 容器 QA ➔ Codex 冷审。"""
 from __future__ import annotations
-import argparse, datetime, hashlib, json, subprocess, sys
+import argparse, datetime, hashlib, json, os, subprocess, sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 import yaml
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1])) if str(Path(__file__).resolve().parents[1]) not in sys.path else None
 from gates import codex_review, fast_gate
-
+from workflow import git_handoff
 _STATUS_EXIT = {"PASSED": 0, "FAST-PASSED": 0, "FAILED": 1, "BLOCKED": 2}
-_STAGE_IDX = {"fast_gate": 0, "integration": 1, "docker_qa": 2, "codex": 3}
+_STAGE_IDX = {"fast_gate": 0, "checkpoint": 1, "integration": 1, "docker_qa": 2, "codex": 3}
 _EVIDENCE_ITEMS = (("fast_gate_log", "fast_gate.log", 0), ("integration_log", "integration.log", 1), ("qa_runner_log", "docker_qa/qa_runner_call.log", 2), ("server_qa_json", "docker_qa/server_qa.json", 2), ("server_verdict_json", "docker_qa/server_verdict.json", 2), ("docker_runtime_log", "docker_qa/runtime.log", 2), ("docker_checkout_log", "docker_qa/checkout.log", 2), ("build_plan_json", "docker_qa/artifacts/build-plan.json", 2), ("release_manifest_json", "docker_qa/artifacts/release-manifest.json", 2), ("codex_final_json", "codex/final.json", 3), ("codex_jsonl", "codex/codex.jsonl", 3), ("codex_stderr", "codex/codex.stderr", 3))
-
 def load_slice_spec(slice_path: Path) -> dict:
     """加载并校验垂直切片 YAML 配置必填字段。"""
     spec = yaml.safe_load(slice_path.read_text(encoding="utf-8"))
@@ -24,17 +19,14 @@ def load_slice_spec(slice_path: Path) -> dict:
     if miss:
         raise ValueError(f"切片定义 {slice_path} 缺失必填字段: {miss[0]}")
     return spec
-
 def _last_line(text: str, default: str) -> str:
     """提取输出文本最后一个非空行作为精简原因摘要。"""
     lines = [ln.strip() for ln in (text or "").splitlines() if ln.strip()]
     return lines[-1][:180] if lines else default
-
 def _collect_evidence_uris(out_dir: Path, stage: str = "codex") -> Dict[str, str]:
     """仅收集本次 `--out-dir` 内截至当前阶段的实际证据文件 `file://` 链接。"""
     max_idx = _STAGE_IDX.get(stage, 3)
     return {"verdict_json": (out_dir / "verdict.json").resolve().as_uri(), **{k: (out_dir / rel).resolve().as_uri() for k, rel, idx in _EVIDENCE_ITEMS if idx <= max_idx and (out_dir / rel).is_file()}}
-
 def _write_gate_verdict(out_dir: Path, spec: dict, doc: dict) -> dict:
     """固化带三态结论与当次证据链接的 `verdict.json`，返回精简门禁结果。"""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -44,32 +36,27 @@ def _write_gate_verdict(out_dir: Path, spec: dict, doc: dict) -> dict:
     v_sha, st = hashlib.sha256(raw).hexdigest(), payload["status"]
     (out_dir / "verdict.json").write_bytes(raw)
     return {"slice_id": payload["slice_id"], "status": st, "passed": st in ("PASSED", "FAST-PASSED"), "exit_code": _STATUS_EXIT[st], "stage": payload["stage"], "reason": payload["reason"], "next_step": payload["next_step"], "evidence": ev, "verdict_sha256": v_sha, "verdict": payload}
-
 def _run_shell_step(cmd: str, cwd: Path, timeout_sec: int = 180) -> Tuple[int, str]:
     """在指定目录执行受超时保护的子进程命令并返回 `(退出码, 合并输出)`。"""
     try:
-        proc = subprocess.run(["bash", "-lc", cmd], cwd=str(cwd), text=True, capture_output=True, timeout=timeout_sec)
+        proc = subprocess.run(["bash", "-lc", cmd], cwd=str(cwd), env={**os.environ, "AISOC_FAST_GATE_DONE": "1"}, text=True, capture_output=True, timeout=timeout_sec)
         return proc.returncode, ((proc.stdout or "") + ("\n" + proc.stderr if proc.stderr else "")).strip()
     except subprocess.TimeoutExpired as err:
         return 124, f"命令执行超时 ({timeout_sec}s): {err}"
     except OSError as err:
         return 126, f"命令启动失败: {err}"
-
 def _collect_locked_commits(workspace: Path, subtasks: List[dict]) -> Dict[str, str]:
     """读取切片涉及各子仓当前的完整 40 位 HEAD Commit SHA。"""
     return {st["repo"]: subprocess.check_output(["git", "-C", str(workspace / st["repo"]), "rev-parse", "HEAD"], text=True).strip() for st in subtasks}
-
 def input_repositories(spec: dict) -> List[str]:
     """返回 spec 的业务及只读输入仓路径；重复输入只保留一次。"""
     return list(dict.fromkeys([item["repo"] for item in spec["subtasks"]] + spec.get("input_repositories", [])))
-
 def input_fingerprint(workspace: Path, spec: dict) -> str:
     """以 workspace 当前提交、spec 内容及工作区清单形成完整输入摘要。"""
     payload = {"spec": spec, "commits": _collect_locked_commits(workspace, [{"repo": n} for n in input_repositories(spec)])}
     if (workspace / "workspace.json").is_file():
         payload["workspace_manifest"] = hashlib.sha256((workspace / "workspace.json").read_bytes()).hexdigest()
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
-
 def _qa_command(workspace: Path, spec: dict, commits: dict, qa_dir: Path) -> list:
     """按 Runner 的实际参数接口生成命令；四参数分别为工作区、切片、候选与证据目录。"""
     cmd = [sys.executable, str(workspace / "project-control/tools/qa_runner/qa_runner.py"), "--task", spec["slice_id"], "--revision", str(spec.get("revision", 1)), "--profile", spec.get("profile", "host-software"), "--output-dir", str(qa_dir)]
@@ -78,7 +65,6 @@ def _qa_command(workspace: Path, spec: dict, commits: dict, qa_dir: Path) -> lis
     for name, commit in commits.items():
         cmd.extend(["--repo-commit", f"{name}={commit}:refs/heads/{branches[name]}"])
     return cmd + [x for ck in spec.get("qa_commands", []) for x in ("--cmd", f"{ck['kind']}:{ck['subpath']}:{ck['command']}")]
-
 def _verify_qa_evidence(qa_dir: Path, spec: dict, commits: Dict[str, str], proof: dict) -> str:
     """核验 `server_qa`、`server_verdict` 与 `server_lock` 摘要、状态及提交均确认通过。"""
     sid, vp, lp = spec.get("slice_id", ""), qa_dir / "server_verdict.json", qa_dir / "server_lock.json"
@@ -96,11 +82,13 @@ def _verify_qa_evidence(qa_dir: Path, spec: dict, commits: Dict[str, str], proof
     if vd.get("verdict") != "PASSED" or vd.get("exit_code") != 0 or vd.get("task_id") != sid:
         return f"server_verdict 未确认通过 ({vd.get('verdict')}, exit={vd.get('exit_code')})"
     return "" if {r.get("name"): r.get("commit") for r in (ld.get("repositories") or []) if isinstance(r, dict)} == commits else "server_lock.json 锁定提交不一致"
-
 def _run_docker_qa(workspace: Path, spec: dict, commits: Dict[str, str], out_dir: Path) -> Tuple[Optional[dict], Optional[dict]]:
-    """调用 `qa_runner.py` 执行隔离容器回归，强一致校验退出码与当次证据。"""
+    """调用 `qa_runner.py` 执行隔离容器回归，支持同输入同镜像已通过证据复用。"""
     qa_dir, proof_path = out_dir / "docker_qa", out_dir / "docker_qa/server_qa.json"
     qa_dir.mkdir(parents=True, exist_ok=True)
+    reused = git_handoff.try_reuse_qa(workspace, spec, commits, qa_dir)
+    if reused and not _verify_qa_evidence(qa_dir, spec, commits, reused):
+        return reused, None
     blk = lambda r: (None, _write_gate_verdict(out_dir, spec, {"commits": commits, "status": "BLOCKED", "stage": "docker_qa", "reason": r, "next_step": "核查 Docker QA 环境与当次证据后使用新目录重跑（不扣返修）"}))
     try:
         proc = subprocess.run(_qa_command(workspace, spec, commits, qa_dir), cwd=str(workspace), text=True, capture_output=True, timeout=7200 if spec.get("profile") == "c308l-system" else 600)
@@ -119,13 +107,11 @@ def _run_docker_qa(workspace: Path, spec: dict, commits: Dict[str, str], out_dir
         return (None, _write_gate_verdict(out_dir, spec, {"commits": commits, "status": "FAILED", "stage": "docker_qa", "reason": proof.get("summary") or "Docker 隔离沙箱测试失败", "next_step": "查阅 docker_runtime_log 与 server_verdict_json 修复失败项"})) if proof.get("passed") is False else blk(f"Docker QA 退出码与当次证据冲突 (rc={proc.returncode}, passed={proof.get('passed')})")
     err = _verify_qa_evidence(qa_dir, spec, commits, proof)
     return blk(f"Docker QA 退出码为 0 但当次证据未确认通过: {err}") if err else (proof, None)
-
 def _build_review_prompt(spec: dict, commits: Dict[str, str], qa_proof: dict, int_log: str = "") -> str:
     """构造仅含精确元数据、验收条款与客观沙箱摘要的双轴冷审提示词。"""
     criteria = "\n".join(f"- {item}" for item in spec.get("acceptance_criteria", []))
     vp, rp, af = qa_proof.get("server_verdict", {}).get("path", ""), qa_proof.get("runtime_log", {}).get("path", ""), qa_proof.get("artifacts") or {}
     return f"独立只读双轴冷审切片: {spec['slice_id']}\n契约: {spec.get('contract_ref')}\n方案: {spec.get('plan_ref')}\n锁定提交: {json.dumps(commits, ensure_ascii=False)}\n容器: {qa_proof.get('sandbox', {}).get('container_id', 'ok')}\n当前沙箱产物: server_verdict={vp} runtime_log={rp} integration_log={int_log} archived_artifacts={json.dumps(af, ensure_ascii=False)}\n验收判据:\n{criteria}\n请严格按 BLOCKER / MINOR / NIT 分级。"
-
 def append_ledger_entry(ledger_path: Path, entry: dict) -> None:
     """将通过四阶漏斗的切片记录与 `MINOR` 技术债幂等追加写入 `slices/ledger.md`。"""
     text = ledger_path.read_text(encoding="utf-8") if ledger_path.is_file() else ""
@@ -139,7 +125,6 @@ def append_ledger_entry(ledger_path: Path, entry: dict) -> None:
         text = text + debt if debt not in text else text
     ledger_path.parent.mkdir(parents=True, exist_ok=True)
     ledger_path.write_text(text, encoding="utf-8")
-
 def _run_codex_stage(workspace: Path, spec: dict, commits: Dict[str, str], ctx: dict) -> dict:
     """执行第 4 阶独立 Codex 审查，输出 `PASSED`/`FAILED`/`BLOCKED` 并维护账本。"""
     out_dir = ctx["out_dir"]
@@ -155,9 +140,8 @@ def _run_codex_stage(workspace: Path, spec: dict, commits: Dict[str, str], ctx: 
     if st == "PASSED":
         append_ledger_entry(workspace / spec.get("ledger_ref", "project-control/slices/ledger.md"), {"batch_id": spec["batch_id"], "slice_id": spec["slice_id"], "status": "SW-Verified", "commits_short": ",".join(f"{k}:{v[:7]}" for k, v in commits.items()), "container_id": ctx["qa_proof"].get("sandbox", {}).get("container_id", "n/a")[:12], "codex_session": v.session_id, "verdict_sha256": res["verdict_sha256"], "minors": v.minor_findings, "input_fingerprint": ctx["fp"]})
     return res
-
 def execute_slice_funnel(workspace: Path, slice_path: Path, out_dir: Path, fast_only: bool = False) -> dict:
-    """顺序执行四阶门禁漏斗并统一落盘 `PASSED`/`FAILED`/`BLOCKED`，严禁复用非空证据目录。"""
+    """顺序执行门禁漏斗；检查点仅做快检与合龙并写检查点收据，不入正式准出账本。"""
     spec = load_slice_spec(slice_path)
     if out_dir.is_symlink() or (out_dir.exists() and (not out_dir.is_dir() or any(out_dir.iterdir()))):
         return {"slice_id": spec["slice_id"], "status": "BLOCKED", "passed": False, "exit_code": 2, "stage": "gate_init", "reason": f"拒绝复用非空证据目录: {out_dir}", "next_step": "每次运行须指定全新独立证据目录（不扣返修）", "evidence": {"existing_dir": out_dir.resolve().as_uri()}, "verdict_sha256": ""}
@@ -180,6 +164,9 @@ def execute_slice_funnel(workspace: Path, slice_path: Path, out_dir: Path, fast_
         fp, commits = input_fingerprint(workspace, spec), _collect_locked_commits(workspace, [{"repo": n} for n in input_repositories(spec)])
     except (subprocess.CalledProcessError, OSError, KeyError) as err:
         return _write_gate_verdict(out_dir, spec, {"status": "BLOCKED", "stage": "docker_qa", "reason": f"采集锁定提交失败: {err}", "next_step": "检查子仓 Git 与 workspace.json（不扣返修）"})
+    if spec.get("delivery_kind", "deliverable") == "checkpoint":
+        git_handoff.save_checkpoint_receipt(workspace, spec, out_dir, commits)
+        return _write_gate_verdict(out_dir, spec, {"commits": commits, "input_fingerprint": fp, "status": "PASSED", "stage": "checkpoint", "reason": "内部检查点就绪（未写入正式准出账本）", "next_step": "交由覆盖该检查点的交付点统一准出"})
     qa_proof, qa_fail = _run_docker_qa(workspace, spec, commits, out_dir)
     return qa_fail if qa_fail is not None else _run_codex_stage(workspace, spec, commits, {"out_dir": out_dir, "fp": fp, "qa_proof": qa_proof})
 def main(argv: Optional[List[str]] = None) -> int:

@@ -26,6 +26,8 @@ RUN printf '%s\n' \
 
 # Repo 来源为 Gerrit 提交 d7c431b9968d928373fe9b463a51d304d3b2c48a。
 # 编译器归档来自 Armbian 镜像，已与 Arm 发布的旧版归档校验值核对。
+# GH-01 核对(amd64)：r5 Config ID sha256:94adbc325f2748fd82cfc10cb21ee33b319f593b6eb865ed234af0c679975635（含 ubi-reader 0.8.9 + lzallright 0.2.6；尚无 GitLab OCI manifest digest）。
+# GH-01 差距：repo(47710B) 与 Linaro 归档(53536848B) 当前仅位于本机 .qa-env01-c308l.WxfLjQ.tmp/build-context/，跨机传递路径待定。
 COPY repo gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz /tmp/c308l-tools/
 RUN cd /tmp/c308l-tools \
     && printf '%s\n' \
@@ -40,3 +42,14 @@ RUN cd /tmp/c308l-tools \
     && rm -f repo gcc-linaro-7.3.1-2018.05-x86_64_aarch64-elf.tar.xz
 
 ENV PATH="/opt/c308l-aarch64-elf/bin:${PATH}"
+
+# 固定 SHA-256 哈希安装只读 UBIFS 提取器（ubi-reader 与 lzallright），供 QA 只读核对 rootfs.ubi 入镜权限与软链接。
+RUN mkdir -p /tmp/c308l-ubifs \
+    && printf '%s\n' \
+        'lzallright==0.2.6 --hash=sha256:bad91a3b9dde691a1aef2201f5d5dfa478ded10095383f76504532859a84fb48' \
+        'ubi-reader==0.8.9 --hash=sha256:b079af81201e29d8bdf91dc9c3e51acf88d2a47770a1de3e7ff3a45bfb4b2223' \
+        > /tmp/c308l-ubifs/requirements.txt \
+    && pip3 install --no-cache-dir --no-deps --only-binary=:all: --require-hashes \
+        -i https://pypi.tuna.tsinghua.edu.cn/simple \
+        -r /tmp/c308l-ubifs/requirements.txt \
+    && rm -rf /tmp/c308l-ubifs

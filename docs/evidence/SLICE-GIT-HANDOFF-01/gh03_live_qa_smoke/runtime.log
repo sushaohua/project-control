@@ -1,0 +1,54 @@
+=== Docker Container Inspect: c70cbb63f25d ===
+{
+  "id": "c70cbb63f25d2da72844d97f1e83813b87d699991bfd4f83bdeeb10dc8067ee0",
+  "image": "qa-sandbox:20261029",
+  "image_digest": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+  "created": "2026-11-20T03:14:28.828279171Z",
+  "state": "exited",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-GIT-HANDOFF-01_run_111406_20261120_031406_output",
+      "Destination": "/output",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/tmp/qa_sandboxes/SLICE-GIT-HANDOFF-01_run_111406_20261120_031406",
+      "Destination": "/workspace",
+      "Mode": "ro",
+      "RW": false,
+      "Propagation": "rprivate"
+    }
+  ]
+}
+$ (.) bash tools/workspace_git.sh rev-parse HEAD && python3 -B -m unittest discover -s project-control/tools -p 'test_v2_gates.py' -v -> 0
+331ff064b9f8ff7120564c68caa8e6593a091025
+
+test_docker_wait_is_extended_only_for_system_profile (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+正式制镜有独立外层时限，宿主与应用维持原有上限。 ... ok
+test_graded_codex_verdict_and_missing_cli_blocked (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验分级一致校验，并验证 Codex CLI 缺失抛出 `CodexGateBlockedError`。 ... ok
+test_slice_gate_tristate_nonempty_reuse_and_qa_conflict (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验三态输出、非空证据目录拒复用及 Docker QA 退出码与证据冲突拦截。 ... ok
+test_workflow_bg_wait_conflict_and_restart_isolation (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验后台门禁等待结束、重启续跑目录独立、双层冲突拦截及权限拒绝零扣次。 ... ok
+test_workflow_rework_and_missing_verdict_always_blocked (test_v2_gates.V2CodexAndWorkflowCruiseTest)
+核验合法 `FAILED` 触发 2 轮返修，而缺失 `verdict.json`（不论退出码/异常）一律 `BLOCKED` 零扣次。 ... ok
+test_contract_negative_collisions_and_bad_crc (test_v2_gates.V2ContractAndFastGateTest)
+核验 0x05 禁用码、命令码碰撞及 <520B 容量违例均被确定性拦截。 ... ok
+test_fast_gate_catches_scale_unverified_and_shim (test_v2_gates.V2ContractAndFastGateTest)
+核验 Fast-Gate 拦截超 4 参数、缺中文注释、残留未验证标记、改包垫片及 C 指针自增。 ... ok
+test_subtask_boundary_blocks_bootloader_main_and_path_escape (test_v2_gates.V2ContractAndFastGateTest)
+核验双 Bootloader 切入 main 分支或修改白名单外路径时立即被阻断。 ... ok
+test_v2_python_tools_pass_fast_gate_self_check (test_v2_gates.V2ContractAndFastGateTest)
+硬性门禁自检：生产 6 文件 <=900 行、含单测 <=1150 行且通过 AST 与防伪扫描。 ... ok
+test_workspace_five_endpoints_and_header_render (test_v2_gates.V2ContractAndFastGateTest)
+核验真实工作区五端头文件与黄金帧 CRC 全绿，且生成头文件可被重解析通过。 ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 4.141s
+
+OK

@@ -1,0 +1,51 @@
+# 独立 QA 验证结论：PASS (2026-11-20T12:08:04+08:00, subagent 7741c3bc-4b2e-4aa1-b4d3-2e9766d1b23d)
+# 验证镜像：qa-sandbox:c308l-system-20261120-candidate-r5
+# Config ID：sha256:94adbc325f2748fd82cfc10cb21ee33b319f593b6eb865ed234af0c679975635 (amd64, RepoDigests=[])
+# 隔离条件：docker run --rm --network=none，全部挂载目录/文件使用 :ro，零工作区写入。
+# 真实只读输入：
+#   - project-control/docs/evidence/SLICE-08/run_20261119_201950_r11/docker_qa/artifacts/
+#     - aml_upgrade_package.img (103328192 B, sha256=14fa8e31f76e8f23ac8a5ca2d9a344cc4b8c1db88e279697255a368fa424484f)
+#     - rootfs.ubi (82182144 B, sha256=a2f478c38179cd9fbb023e4596ecaabce69c69b3c33c3224cade4d64bc34d8bd)
+#     - printer-soc-rootfs.tar.gz (19288546 B, sha256=f043ab2fe594ffe8575c220ae1f320d9f62deba7433ab80c5b3ade462cae4866)
+#     - image-receipt.json (3129 B, sha256=1b03352fa2da8efee181c37d4cf42edd1e2aab68bc3842f4e39335a7f71e7d76)
+#   - sdk/c308l/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new (sha256=7511fb8d1a483d606d67bcb87ae20ab0821fbaff797ad6da958903e46fb4ed9a)
+
+=== [A] ENV & PACKAGES ===
+Python 3.8.10
+Name: ubi-reader
+Version: 0.8.9
+Requires: lzallright
+Name: lzallright
+Version: 0.2.6
+which aarch64-elf-gcc: /opt/c308l-aarch64-elf/bin/aarch64-elf-gcc (Linaro GCC 7.3-2018.05)
+which repo: /usr/local/bin/repo (launcher 2.71)
+which fakeroot: /usr/bin/fakeroot (1.24)
+which ubireader_extract_files: /usr/local/bin/ubireader_extract_files
+
+=== [B] AML -> UBI EQUIVALENCE ===
+aml_packer rc: 0
+system.PARTITION bytes: 82182144 sha256: a2f478c38179cd9fbb023e4596ecaabce69c69b3c33c3224cade4d64bc34d8bd
+rootfs.ubi       bytes: 82182144 sha256: a2f478c38179cd9fbb023e4596ecaabce69c69b3c33c3224cade4d64bc34d8bd
+EQUAL_SIZE: True EQUAL_SHA256: True
+
+=== [C] UBI -> UBIFS EXTRACTION & FULL CHECK ===
+ubireader_extract_files -k rc: 0 -> /tmp/ubi/2088662984/rootfs
+positive verify rc: 0
+symlinks_verified: 12 (12/12 readlink target exact match)
+dirs_verified: 143
+regs_verified: 653
+total_mode_checked (dirs+regs): 796
+special_0o444_files:
+  etc/printer-soc/fw_signing_pub.pem -> ('0o444', '0o444')
+  etc/printer-soc/version.json -> ('0o444', '0o444')
+mode_0o755_files_count: 20 (all matched 0o755)
+stripped_elf_count: 12 (12/12 matched image-receipt.json & tar)
+all_tar_reg_files_byte_match_count: 653 / 653
+VERIFY_STATUS: PASS
+
+=== [D] NEGATIVE REJECTIONS ===
+[D.1] corrupted UBI header b'BAD!' -> ubireader_extract_files rc=1 ("UBI Fatal: Less than 2 layout blocks found.")
+[D.2(i)] chmod 0o644 etc/printer-soc/fw_signing_pub.pem -> rc=1 (FILE_MODE_MISMATCH expected=0o444 actual=0o644)
+[D.2(ii)] symlink usr/lib/printer-soc/bin -> ../../wrong_target -> rc=1 (SYMLINK_TARGET_MISMATCH expected='../../bin' actual='../../wrong_target')
+[D.2(iii)] flip 1 byte in usr/bin/ui-gateway -> rc=1 (ELF_SHA256_MISMATCH)
+ALL_QA_CHECKS_PASSED

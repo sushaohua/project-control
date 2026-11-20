@@ -1,8 +1,12 @@
-# V2 垂直业务切片模板；实际执行前填写本切片的方案、候选和真实合龙命令。
+# V2 垂直业务切片模板；实际执行前填写本切片的方案、候选、交付类型与真实合龙命令。
 slice_id: "SLICE-00"
 revision: 1
 batch_id: "BATCH-TEMPLATE"
 profile: "host-software"
+# deliverable（独立交付点，执行完整四阶准出）或 checkpoint（内部开发检查点，不做独立 Codex 冷审，不写入正式账本）
+delivery_kind: "deliverable"
+# 交付点覆盖的前序检查点切片列表；缺失或输入不匹配时阻断准出
+# covered_checkpoints: ["SLICE-00-CP1"]
 input_repositories: ["project-control", "agents", "test_harness", "printer-soc"]
 title: "示例：端到端温度遥测查询与超时降级闭环"
 plan_ref: "project-control/docs/planning/c308l_workspace_and_governance_implementationplan_20261116_111055.md"
@@ -21,6 +25,7 @@ subtasks:
     allowed_paths: ["motion-controller-mcu/project/**", "color-engine-mcu/io_toggle/**"]
     diff_budget: {max_files: 6, protected_globs: ["**/Marlin_main.c"], max_protected_lines: 20}
 
+# 说明：经 slice_gate.py 执行时快检与五端契约已在第 1 阶运行，此处不重复调用 fast_gate.py 或 sync_contracts.py。
 integration_cmd: "python3 test_harness/static_checks/minimcproto/check_opcode_alignment.py"
 qa_commands:
   - {subpath: "test_harness", kind: "test", command: "python3 static_checks/minimcproto/check_opcode_alignment.py"}

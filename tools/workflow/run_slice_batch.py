@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Antigravity `run_workflow` V2 垂直切片批次自动巡航脚本：支持后台门禁等待、唯一证据目录及 `BLOCKED` 零扣返修。"""
+"""Antigravity `run_workflow` V2 垂直切片批次自动巡航脚本：支持检查点/交付点、远端收据及零扣返修。"""
 from __future__ import annotations
 import asyncio, datetime, json, re, subprocess, sys, time, uuid
 from pathlib import Path
@@ -10,6 +10,12 @@ VERIFIED_ROW_RE = re.compile(r"\|\s*(SLICE-[A-Za-z0-9_-]+)\s*\|\s*(SW-Verified|H
 BG_TASK_RE, TASK_STATUS_RE = re.compile(r"running as a background task with task id:\s*(\S+)"), re.compile(r"^Status:\s*(\S+)", re.MULTILINE)
 EXIT_CODE_RE, INPUTS_RE = re.compile(r"Command exited with code (\d+)\."), re.compile(r"\binputs=([0-9a-fA-F]+)\b")
 _EXP_RC, _RUN_STATES = {"PASSED": 0, "FAILED": 1, "BLOCKED": 2}, {"RUNNING", "PENDING", "STARTING", "IN_PROGRESS", "QUEUED"}
+def _gh(ws: Path):
+    """按需加载 `git_handoff` 模块执行远端交接与检查点核验。"""
+    t = ws / "project-control/tools"
+    sys.path.insert(0, str(t)) if t.is_dir() and str(t) not in sys.path else None
+    from workflow import git_handoff
+    return git_handoff
 def parse_verified_slices(ledger_text: str) -> List[str]:
     """从 `ledger.md` 文本中解析已完成 `SW-Verified` 或 `HIL-Verified` 的切片 ID 列表。"""
     return [m.group(1) for m in VERIFIED_ROW_RE.finditer(ledger_text or "")]
@@ -22,11 +28,8 @@ def is_slice_verified(ledger_text: str, slice_id: str, expected_fp: str = "") ->
     return False
 def _load_yaml(p: Path) -> dict:
     """加载 YAML 配置；缺失 PyYAML 时回退系统 `/usr/bin/python3` 解析。"""
-    try:
-        import yaml
-        return yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-    except ImportError:
-        return json.loads(subprocess.check_output(["/usr/bin/python3", "-c", "import json,sys,yaml;print(json.dumps(yaml.safe_load(open(sys.argv[1]))))", str(p)], text=True))
+    import yaml
+    return yaml.safe_load(p.read_text(encoding="utf-8")) or {}
 def _safe_fingerprint(ws: Path, spec: dict) -> str:
     """当全部依赖仓均存在于工作区时计算当前输入指纹，否则返回空串。"""
     tools = ws / "project-control/tools"
@@ -37,7 +40,7 @@ def _safe_fingerprint(ws: Path, spec: dict) -> str:
         from gates import slice_gate
         return slice_gate.input_fingerprint(ws, spec) if all((ws / r / ".git").exists() for r in slice_gate.input_repositories(spec)) else ""
     except Exception:
-        return subprocess.run(["/usr/bin/python3", "-c", "import json,pathlib,sys;sys.path.insert(0,sys.argv[1]+'/project-control/tools');from gates import slice_gate as g;ws,sp=pathlib.Path(sys.argv[1]),json.loads(sys.argv[2]);print(g.input_fingerprint(ws,sp) if all((ws/r/'.git').exists() for r in g.input_repositories(sp)) else '')", str(ws), json.dumps(spec)], capture_output=True, text=True).stdout.strip()
+        return ""
 def subtask_schema() -> dict:
     """构造子任务工程 Agent `finish` 工具强制校验的返回 JSON Schema。"""
     props = {k: {"type": "string"} for k in ("role", "repo", "candidate_commit", "summary")}
@@ -55,15 +58,12 @@ def _alloc_out_rel(ws: Path, spec: dict, run_idx: int) -> str:
     if (ws / rel).exists():
         raise RuntimeError(f"拒绝复用已存在证据目录: {rel}")
     return rel
-
 def _extract_exit_code(out_dir: Path, text: str) -> Optional[int]:
     """综合 `gate_exit.rc` 与命令输出提取唯一可信退出码；缺失或冲突返回 `None`。"""
     rc_p, rc_file = out_dir / "gate_exit.rc", None
     if rc_p.is_file():
-        try:
-            rc_file = int(rc_p.read_text(encoding="utf-8").strip())
-        except (OSError, ValueError):
-            return None
+        try: rc_file = int(rc_p.read_text(encoding="utf-8").strip())
+        except (OSError, ValueError): return None
     ms = EXIT_CODE_RE.findall(text or "")
     rc_txt = int(ms[-1]) if ms else None
     return (rc_file if rc_file == rc_txt else None) if (rc_file is not None and rc_txt is not None) else (rc_file if rc_file is not None else rc_txt)
@@ -78,14 +78,14 @@ async def _wait_bg_gate(out_dir: Path, task_id: str, timeout_sec: float = BG_TIM
                 await asyncio.sleep(min(0.2, BG_POLL_SEC)) if not rc_p.is_file() else None
                 return st_out
         except Exception as err:
-            if getattr(err, "denied", False) or any(k in str(err).lower() for k in ("permission", "denied")):
-                raise
-            if rc_p.is_file():
-                return f"Command exited with code {rc_p.read_text(encoding='utf-8').strip()}."
+            if getattr(err, "denied", False) or any(k in str(err).lower() for k in ("permission", "denied")): raise
+            if rc_p.is_file(): return f"Command exited with code {rc_p.read_text(encoding='utf-8').strip()}."
         await asyncio.sleep(BG_POLL_SEC)
     return ""
 def _qa_ok(out_dir: Path, stage: str) -> bool:
     """核验 `PASSED` 裁决时当次 `server_qa` 与 `server_verdict` 均确认通过。"""
+    if stage in ("checkpoint", "integration"):
+        return True
     qa_p, vp = out_dir / "docker_qa/server_qa.json", out_dir / "docker_qa/server_verdict.json"
     if not qa_p.is_file():
         return stage != "codex"
@@ -127,7 +127,6 @@ async def _run_and_adjudicate(ws: Path, sid: str, slice_yaml: str, out_rel: str)
         gate_out = await _exec_gate_cmd(sid, cmd)
         bg = BG_TASK_RE.search(gate_out)
         if bg:
-            log(f"[WAIT] {sid} 门禁已转入后台 ({bg.group(1)})，等待命令结束...")
             gate_out = await _wait_bg_gate(out_dir, bg.group(1))
         return _adjudicate_verdict_file(out_dir, sid, _extract_exit_code(out_dir, gate_out), expected_fp)
     except Exception as err:
@@ -143,9 +142,8 @@ async def run_single_slice(workspace_str: str, plan_path: str, slice_yaml: str) 
         await parallel(spec["subtasks"], lambda st: workers[st["role"]](build_pointer_prompt(plan_path, slice_yaml, contract_ref, st)))
     remediation_used = 0
     for run_idx in range(1, MAX_REMEDIATION_ROUNDS + 2):
-        phase(f"{sid}: 四阶门禁核验 (第 {run_idx} 次)")
+        phase(f"{sid}: 门禁核验 (第 {run_idx} 次)")
         res = await _run_and_adjudicate(ws, sid, slice_yaml, _alloc_out_rel(ws, spec, run_idx))
-        log(f"[{sid}] 结果={res['status']} | 原因={res['reason']} | 下一步={res['next_step']} | 证据={res['evidence'].get('verdict_json', '')}")
         if res["status"] == "PASSED":
             return {**res, "remediation_used": remediation_used, "requires_hil": bool(spec.get("requires_hil_immediately"))}
         if res["status"] != "FAILED" or not workers or remediation_used >= MAX_REMEDIATION_ROUNDS:
@@ -155,24 +153,25 @@ async def run_single_slice(workspace_str: str, plan_path: str, slice_yaml: str) 
         await parallel(spec["subtasks"], lambda st, b=brief: workers[st["role"]](b))
     return {**_blk(sid, "gate_runner", "异常退出返修循环"), "remediation_used": remediation_used}
 async def run_batch_cruise(cfg: dict) -> dict:
-    """按序巡航批次切片，依据真实裁决推进并输出精简三段汇报。"""
-    ws, completed, last_ev = Path(cfg.get("workspace") or (WORKSPACES[0] if "WORKSPACES" in globals() and WORKSPACES else ".")), [], {}
+    """按序巡航检查点与交付点，验证远端收据及前置覆盖并输出三段裁决。"""
+    ws, completed, last_ev, cp_ready = Path(cfg.get("workspace") or (WORKSPACES[0] if "WORKSPACES" in globals() and WORKSPACES else ".")), [], {}, set(cfg.get("verified_checkpoints") or [])
     for slice_yaml in cfg.get("slice_files", []):
         spec = _load_yaml(ws / slice_yaml)
-        sid, ledger_p = spec["slice_id"], ws / (cfg.get("ledger_ref") or spec.get("ledger_ref") or "project-control/slices/ledger.md")
-        if is_slice_verified(ledger_p.read_text(encoding="utf-8") if ledger_p.is_file() else "", sid, _safe_fingerprint(ws, spec)):
-            log(f"[SKIP] {sid} 账本输入指纹匹配，幂等跳过。")
+        sid, kind = spec["slice_id"], spec.get("delivery_kind", "deliverable")
+        ledger_p = ws / (cfg.get("ledger_ref") or spec.get("ledger_ref") or "project-control/slices/ledger.md")
+        if kind != "checkpoint" and is_slice_verified(ledger_p.read_text(encoding="utf-8") if ledger_p.is_file() else "", sid, _safe_fingerprint(ws, spec)):
             continue
+        if cfg.get("handoff_receipts") or cfg.get("require_remote_handoff") or spec.get("covered_checkpoints"):
+            err = _gh(ws).cruise_precheck(ws, cfg, spec, cp_ready)
+            if err:
+                return {**_blk(sid, "handoff", err), "remediation_used": 0, "completed_slices": completed}
         res = await run_single_slice(str(ws), cfg["plan_path"], slice_yaml)
         last_ev = res.get("evidence", {})
         if res["status"] != "PASSED":
-            phase(f"批次停止 ({res['status']}: {sid})")
             return {"status": res["status"], "slice_id": sid, "reason": res["reason"], "next_step": res["next_step"], "remediation_used": res.get("remediation_used", 0), "completed_slices": completed, "evidence": last_ev}
-        completed.append(sid)
-        if res.get("requires_hil"):
-            phase("Human Gate #2 真机 HIL 待审批")
+        cp_ready.add(sid) if kind == "checkpoint" else completed.append(sid)
+        if kind == "deliverable" and res.get("requires_hil"):
             return {"status": "HIL_REQUIRED", "slice_id": sid, "reason": f"{sid} 已通过 SW-Verified 并触及真机 HIL 红线", "next_step": "停机申请 Human Gate #2 真机穿刺验收", "completed_slices": completed, "evidence": last_ev}
-    phase("批次巡航通过")
-    return {"status": "PASSED", "reason": "批次全部切片已通过四阶门禁", "next_step": "进入下一阶段或交付汇总", "completed_slices": completed, "evidence": last_ev}
+    return {"status": "PASSED", "reason": "批次全部交付切片已通过四阶门禁", "next_step": "进入下一阶段或交付汇总", "completed_slices": completed, "evidence": last_ev}
 if "WORKSPACES" in globals() and "args" in globals():
     print(json.dumps(await run_batch_cruise(args), ensure_ascii=False, indent=2))

@@ -26,6 +26,8 @@ import delivery_checks as gate
 from qa_runner.qa_runner import (
     _stage_profile_workspace,
     accepted_profile_image,
+    checkout_workspace_root,
+    cleanup_sandbox_run,
     CommandResult,
     ContainerCommand,
     QARunner,
@@ -276,16 +278,14 @@ class CommandAndEvidenceTest(unittest.TestCase):
         self.assertTrue((evidence_dir / "server_lock.json").is_file())
         card = {"id": "AUTO-01", "revision": 1}
         qa_header = {"server_qa": {
-            "path": str((evidence_dir / "server_qa.json").relative_to(self.root)),
+            "path": refs["server_qa"]["path"],
             "sha256": compute_file_sha256(evidence_dir / "server_qa.json"),
         }}
         server_qa_dict = json.loads((evidence_dir / "server_qa.json").read_text(encoding="utf-8"))
         for key in ["server_lock", "checkout_log", "runtime_log", "server_verdict"]:
-            abs_p = Path(server_qa_dict[key]["path"])
-            server_qa_dict[key]["path"] = str(abs_p.relative_to(self.root))
-        (evidence_dir / "server_qa.json").write_text(json.dumps(server_qa_dict), encoding="utf-8")
-        qa_header["server_qa"]["sha256"] = compute_file_sha256(evidence_dir / "server_qa.json")
-        gate.check_server_qa(qa_header, card, self.root)
+            self.assertFalse(Path(server_qa_dict[key]["path"]).is_absolute())
+        self.assertFalse(Path(server_qa_dict["sandbox"]["path"]).is_absolute())
+        gate.check_server_qa(qa_header, card, evidence_dir)
 
 
 class HarnessRunnerTest(unittest.TestCase):
@@ -581,10 +581,11 @@ class PlatformProfileTest(unittest.TestCase):
             sys_out = base / "ev_sys"
             res_sys = QARunResult("SLICE-08", 1, "r1", box.name, str(box), True, profile="c308l-system")
             refs = write_evidence_bundle(sys_out, res_sys, {"repositories": []}, {"checkout": "", "runtime": ""})
-            qa_doc = json.loads(Path(refs["server_qa"]["path"]).read_text(encoding="utf-8"))
+            qa_doc = json.loads((sys_out / refs["server_qa"]["path"]).read_text(encoding="utf-8"))
             self.assertEqual(set(qa_doc["artifacts"]), {"build-plan.json", "release-manifest.json", "rootfs.ubi"})
             for name, meta in qa_doc["artifacts"].items():
-                archived = sys_out / "artifacts" / name
+                archived = sys_out / meta["path"]
+                self.assertEqual(meta["path"], f"artifacts/{name}")
                 self.assertTrue(archived.is_file())
                 self.assertEqual(meta["bytes"], archived.stat().st_size)
                 self.assertEqual(meta["sha256"], compute_file_sha256(archived))
@@ -592,7 +593,51 @@ class PlatformProfileTest(unittest.TestCase):
             host_out = base / "ev_host"
             res_host = QARunResult("SLICE-08", 1, "r2", box.name, str(box), True, profile="host-software")
             refs_host = write_evidence_bundle(host_out, res_host, {"repositories": []}, {"checkout": "", "runtime": ""})
-            self.assertNotIn("artifacts", json.loads(Path(refs_host["server_qa"]["path"]).read_text(encoding="utf-8")))
+            self.assertNotIn("artifacts", json.loads((host_out / refs_host["server_qa"]["path"]).read_text(encoding="utf-8")))
+
+    def test_checkout_workspace_root_and_cleanup_safety(self):
+        """核验根入口仓精确检出以及按 run 清理在未验/锁占用/越界软链接时保留现场。"""
+        with tempfile.TemporaryDirectory(prefix="qa_root_cleanup_") as directory:
+            base = Path(directory)
+            box = base / "sandboxes/S8_r1"
+            out = base / "sandboxes/S8_r1_output"
+            box.mkdir(parents=True)
+            out.mkdir(parents=True)
+            cfg = {"sandbox": {"base_dir": str(base / "sandboxes")}}
+            self.assertFalse(cleanup_sandbox_run(box, "cid1", cfg, verified=False)["cleaned"])
+            self.assertTrue(box.is_dir())
+            (box / "escape").symlink_to("/etc")
+            self.assertFalse(cleanup_sandbox_run(box, "cid1", cfg, verified=True)["cleaned"])
+            (box / "escape").unlink()
+            with (box / ".qa_run.lock").open("a+") as held:
+                import fcntl
+                fcntl.flock(held.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                self.assertEqual(cleanup_sandbox_run(box, "cid1", cfg, verified=True)["reason"], "active_run_lock")
+            with patch("subprocess.run") as mock_rm:
+                res = cleanup_sandbox_run(box, "cid1", cfg, verified=True)
+            self.assertTrue(res["cleaned"])
+            self.assertFalse(box.exists() or out.exists())
+            mock_rm.assert_called_once()
+
+    def test_checkout_workspace_root_rejects_unconfigured_or_bad_commit(self):
+        """核验未配置根仓 URL 拒绝及真实临时根仓精确检出校验。"""
+        with tempfile.TemporaryDirectory(prefix="qa_ws_root_") as td:
+            base = Path(td)
+            bare, work = base / "root.git", base / "work"
+            for cmd in (["init", "--bare", str(bare)], ["init", str(work)], ["-C", str(work), "symbolic-ref", "HEAD", "refs/heads/main"]):
+                subprocess.run(["git"] + cmd, check=True, capture_output=True)
+            (work / "workspace.json").write_text("{}\n", encoding="utf-8")
+            for args in (["add", "."], ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-m", "r"], ["push", str(bare), "HEAD:refs/heads/main"]):
+                subprocess.run(["git", "-C", str(work)] + args, check=True, capture_output=True)
+            commit = subprocess.check_output(["git", "-C", str(work), "rev-parse", "HEAD"], text=True).strip()
+            with self.assertRaises(QARunnerError):
+                checkout_workspace_root(base / "s1", {}, commit)
+            sb = base / "s2"
+            sb.mkdir()
+            with patch("qa_runner.qa_runner.validate_remote_url", side_effect=lambda u: u), patch("qa_runner.qa_runner.verify_remote_ref", return_value=commit):
+                log = checkout_workspace_root(sb, {"workspace_repository": {"url": str(bare)}}, commit)
+            self.assertIn("Checkout workspace root", log)
+            self.assertTrue((sb / "workspace.json").is_file())
 
 
 class MethodologicalInvariantsTest(unittest.TestCase):

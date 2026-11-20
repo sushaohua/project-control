@@ -1,0 +1,35 @@
+# V2 纵向治理切片 SLICE-GIT-HANDOFF-01：全流程 Git 服务端交接、资源节约与 Helix 统一准出改造
+slice_id: "SLICE-GIT-HANDOFF-01"
+revision: 1
+batch_id: "BATCH-GIT-HANDOFF-01"
+profile: "host-software"
+delivery_kind: "deliverable"
+input_repositories: ["project-control", "agents", "printer-soc", "test_harness"]
+title: "SLICE-GIT-HANDOFF-01：GitLab 服务端交接协议、检查点/交付点巡航、按 run 清理与实测阻塞记录"
+plan_ref: "project-control/docs/planning/git_server_handoff_implementationplan_20261120_093936.md"
+contract_ref: "project-control/contracts/git_handoff.schema.json"
+requires_hil_immediately: false
+
+# GH-01~GH-03 由 COORD/控制仓工具责任方在获批白名单内实现；GH-04 待提取器实物验证及 OCI/LFS 阻塞解除后由 ENG-AP 激活。
+subtasks: []
+
+integration_cmd: >-
+  python3 -B project-control/tools/gates/fast_gate.py --workspace . --files
+  project-control/tools/workflow/git_handoff.py
+  project-control/tools/workflow/run_slice_batch.py
+  project-control/tools/gates/slice_gate.py
+  project-control/tools/qa_runner/qa_runner.py
+  project-control/tools/test_v2_gates.py
+  project-control/tools/test_qa_runner.py &&
+  python3 -B -m unittest discover -s tools -p "test_workspace.py" -v &&
+  python3 -B -m unittest discover -s project-control/tools -p "test_v2_gates.py" -v &&
+  python3 -B -m unittest discover -s project-control/tools -p "test_qa_runner.py" -v
+
+qa_commands:
+  - {subpath: "project-control", kind: "test", command: "python3 -B -m unittest discover -s tools -p 'test_v2_gates.py' -v && python3 -B -m unittest discover -s tools -p 'test_qa_runner.py' -v"}
+
+acceptance_criteria:
+  - "GH-01：空工作区 SSH 克隆、56 个 SDK 项目锁定提交匹配及远端 tip 可达实测完成；LFS/OCI 阻塞及 printer-soc/.gitignore 缺口已客观落盘记录"
+  - "GH-02：git_handoff.schema.json、git_handoff.py (prepare_handoff/verify_handoff)、checkpoint/deliverable 巡航与同输入 QA 复用通过 test_v2_gates.py 及断链负例"
+  - "GH-03：qa_runner.py 支持精确根仓检出、相对路径规范化证据与按 run 安全清理（失败/活动锁/越界软链接保留现场）并通过 test_qa_runner.py"
+  - "GH-04/GH-05：严格守住依赖与授权边界；在 OCI/LFS、UBIFS 只读提取器实证与远端读回+回收授权就绪前保持 BLOCKED 并留存完整清单"

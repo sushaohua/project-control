@@ -1,4 +1,5 @@
 # 基准镜像须先核对方案中记录的本地镜像 ID，再执行构建。
+# GH-01 核对(amd64)：基座 sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f；产物 sha256:6a0b568976683a70ff8dd68ea3723217fda94bbf6b2d8ec5cd75feeffefa2dd7（尚无 GitLab OCI manifest digest）。
 FROM qa-sandbox:20261029
 
 # 固定 Ubuntu Focal 本次解析的工具和新增依赖，保留原有 AP 库。

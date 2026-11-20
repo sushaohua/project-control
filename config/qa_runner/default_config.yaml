@@ -9,10 +9,14 @@ sandbox:
   kind: container
   image: qa-sandbox:20261029
   # 目标 profile 必须填入独立接受的准确镜像 ID；未接受前保持空值并阻塞目标构建。
+  # GH-01 实测：GitLab OCI Registry 未启用（仅本机 Config ID），待启用后切换为 name@sha256:<manifest digest>。
   image_digest: null
-  c308l_system_image_digest: sha256:3ce0f137eab47c1976748e87ffc5b67063f16648b2a1c94b631eeff4f9c08909
+  c308l_system_image_digest: sha256:94adbc325f2748fd82cfc10cb21ee33b319f593b6eb865ed234af0c679975635
   cleanup_after_run: false
   enforce_clean_checkout: true
+workspace_repository:
+  url: ssh://git@192.168.77.79:2222/sushaohua/ai-soc-workspace.git
+  default_branch: main
 repositories:
   project-control:
     url: ssh://git@192.168.77.79:2222/sushaohua/project-control.git
