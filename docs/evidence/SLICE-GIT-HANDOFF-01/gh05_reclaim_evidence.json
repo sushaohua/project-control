@@ -1,0 +1,61 @@
+{
+  "stage": "GH-05",
+  "plan_ref": "project-control/docs/planning/git_server_handoff_implementationplan_20261120_093936.md",
+  "reclaimed_paths": [
+    {
+      "path": "project-control/.slice-07-build.5BvVlh.tmp",
+      "bytes": 9194819584,
+      "archived_evidence_ref": "docs/evidence/SLICE-07/host_c308l_arm_build_and_pack.log",
+      "archived_evidence_sha256": "9a34122f6a3626ef61fbcdd4b635cc7a86de136be1db2fce39da620445a051d9"
+    },
+    {
+      "path": "artifacts/slice-08-release.g9zrBD",
+      "bytes": 17703243776,
+      "archived_evidence_ref": "docs/evidence/SLICE-08/legacy_local_failure_g9zrBD/",
+      "key_archived_files_sha256": {
+        "stages.log": "fd4b6c2fd37f8b500d06dbc5afa92f5fc5b50d0d096d3775c95ded8dad6e0fcb",
+        "system-image.log": "eba45286d9d7aeffdc98d650d41efadfd6de3c6d8d654093c34822871095ef9f",
+        "build-plan.json": "16c273dd4fb91d7ec71302cec00e4d1f9f7d76f946557cd30d3fab666fe78226"
+      }
+    }
+  ],
+  "workspace_du_before_bytes": 45992644608,
+  "workspace_du_after_bytes": 19095588864,
+  "reclaimed_bytes": 26897055744,
+  "readback_verification": {
+    "root_commit_tested": "92ae32eff10f292622b664a0182b3ca9f6d555e8",
+    "project_control_commit_tested": "3319f8c3ea9dcdaa74aa391bb82b76aa12557111",
+    "printer_soc_commit_tested": "8921fad578ca78b8ba89cca9e455b0c0ff91f3b2",
+    "workspace_verify_exit": 0,
+    "sdk_project_count": 56,
+    "git_handoff_cli_verify": {
+      "status": "VERIFIED",
+      "commit": "3319f8c3ea9dcdaa74aa391bb82b76aa12557111",
+      "files": 5
+    }
+  },
+  "qa_container_transfer_check": {
+    "combined_docker_save_raw_bytes": 1995287552,
+    "combined_docker_save_gzip1_bytes": 723428791,
+    "images": [
+      {
+        "tag": "qa-sandbox:20261029",
+        "config_id": "sha256:acbab225932c3877fff37f4d9e5a21235e099182c198e4f4034064ea80cf544f",
+        "raw_bytes": 556336640,
+        "gzip1_bytes": 226884689
+      },
+      {
+        "tag": "qa-sandbox:toolchain-20261118-candidate",
+        "config_id": "sha256:6a0b568976683a70ff8dd68ea3723217fda94bbf6b2d8ec5cd75feeffefa2dd7",
+        "raw_bytes": 1494359552,
+        "gzip1_bytes": 508856786
+      },
+      {
+        "tag": "qa-sandbox:c308l-system-20261120-candidate-r5",
+        "config_id": "sha256:94adbc325f2748fd82cfc10cb21ee33b319f593b6eb865ed234af0c679975635",
+        "raw_bytes": 1057241600,
+        "gzip1_bytes": 441456481
+      }
+    ]
+  }
+}
