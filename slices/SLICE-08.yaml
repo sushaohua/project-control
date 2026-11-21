@@ -27,6 +27,7 @@ subtasks:
       - "services/device_manager/device_manager_service.cpp"
       - "tests/ota/test_ota_e2e.py"
       - "tests/device_manager/twin/test_device_manager.cpp"
+      - "tests/integration/test_active_status.cpp"
     diff_budget:
       max_files: 13
       protected_globs: ["*services/helixscreen/src/application/**", "*services/helixscreen/src/ui/**", "*tests/device_manager/twin/test_device_manager.cpp"]

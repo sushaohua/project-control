@@ -1,0 +1,143 @@
+{"component": "fixture", "key": "00af167e83e6d5f9bc3e6f0bc5c4fd1fbc0c4ca08db6485c402bdadf5e1d41a0", "hit": false, "seconds": 0.0018971200042869896}
+{"component": "fixture", "key": "00af167e83e6d5f9bc3e6f0bc5c4fd1fbc0c4ca08db6485c402bdadf5e1d41a0", "hit": true, "seconds": 0.001989139011129737}
++ /tmp/tmphpufug6x/bin/ubireader_extract_files -k -o /tmp/tmphpufug6x/o1 /tmp/tmphpufug6x/rootfs.ubi
++ /tmp/tmphpufug6x/bin/ubireader_extract_files -k -o /tmp/tmphpufug6x/o2 /tmp/tmphpufug6x/rootfs.ubi
++ /tmp/tmphpufug6x/bin/ubireader_extract_files -k -o /tmp/tmphpufug6x/o3 /tmp/tmphpufug6x/rootfs.ubi
++ /tmp/tmphpufug6x/bin/ubireader_extract_files -k -o /tmp/tmphpufug6x/o4 /tmp/tmphpufug6x/rootfs.ubi
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img /tmp/tmp_9w2n8wf/work/tmpomfjkv1g
++ /tmp/tmp_9w2n8wf/bin/ubireader_extract_files -k -o /tmp/tmp_9w2n8wf/work/tmpwmpd14i7/ubi /tmp/tmp_9w2n8wf/work/rootfs.ubi
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img /tmp/tmp_9w2n8wf/work/tmpxn8k7jlk
++ /tmp/tmp_9w2n8wf/bin/ubireader_extract_files -k -o /tmp/tmp_9w2n8wf/work/tmp2x5y_ibi/ubi /tmp/tmp_9w2n8wf/work/rootfs.ubi
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img /tmp/tmp_9w2n8wf/work/tmplelefn1y
++ /tmp/tmp_9w2n8wf/bin/ubireader_extract_files -k -o /tmp/tmp_9w2n8wf/work/tmplucx2z_7/ubi /tmp/tmp_9w2n8wf/work/rootfs.ubi
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img /tmp/tmp_9w2n8wf/work/tmp4t3q0rm0
++ /tmp/tmp_9w2n8wf/bin/ubireader_extract_files -k -o /tmp/tmp_9w2n8wf/work/tmpr8yguvsn/ubi /tmp/tmp_9w2n8wf/work/rootfs.ubi
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img /tmp/tmp_9w2n8wf/work/tmp_qo33lug
++ /tmp/tmp_9w2n8wf/bin/ubireader_extract_files -k -o /tmp/tmp_9w2n8wf/work/tmpgx0rxcxj/ubi /tmp/tmp_9w2n8wf/work/rootfs.ubi
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img
++ /tmp/tmp_9w2n8wf/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp_9w2n8wf/work/aml_upgrade_package.img /tmp/tmp_9w2n8wf/work/tmpcul77a3p
++ /tmp/tmp_9w2n8wf/bin/ubireader_extract_files -k -o /tmp/tmp_9w2n8wf/work/tmpywrchd0m/ubi /tmp/tmp_9w2n8wf/work/rootfs.ubi
++ /usr/bin/python3 -B /tmp/tmp_9w2n8wf/ws/test_harness/hil/tests/test_helix_screen_integration.py --candidate /tmp/tmp_9w2n8wf/work/release-manifest.json --evidence /tmp/tmp_9w2n8wf/ws/project-control/docs/evidence/SLICE-08/run_01/hil_receipt.json --board /home/sushaohua/workspace/ai_soc_project/printer-soc/boards/c308l-aw419/board.yaml
+/tmp/tmp_9w2n8wf/work/release-manifest.json
++ /tmp/tmp28ok0mru/u/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp28ok0mru/u/work/aml_upgrade_package.img
++ /tmp/tmp28ok0mru/u/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp28ok0mru/u/work/aml_upgrade_package.img /tmp/tmp28ok0mru/u/work/tmp2yo_ju9g
++ /tmp/tmp28ok0mru/u/bin/ubireader_extract_files -k -o /tmp/tmp28ok0mru/u/work/tmp80fa9074/ubi /tmp/tmp28ok0mru/u/work/rootfs.ubi
++ /tmp/tmp7p42flt0/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp7p42flt0/work/aml_upgrade_package.img
++ /tmp/tmp7p42flt0/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp7p42flt0/work/aml_upgrade_package.img /tmp/tmp7p42flt0/work/tmp02yixbae
++ /tmp/tmp7p42flt0/bin/ubireader_extract_files -k -o /tmp/tmp7p42flt0/work/tmpv2eznhd9/ubi /tmp/tmp7p42flt0/work/rootfs.ubi
++ /tmp/tmp9e91gwfp/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp9e91gwfp/work/aml_upgrade_package.img
++ /tmp/tmp9e91gwfp/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp9e91gwfp/work/aml_upgrade_package.img /tmp/tmp9e91gwfp/work/tmpb4qko89e
++ /tmp/tmp9e91gwfp/bin/ubireader_extract_files -k -o /tmp/tmp9e91gwfp/work/tmp0bivcd9p/ubi /tmp/tmp9e91gwfp/work/rootfs.ubi
++ /tmp/tmp6uluksp0/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp6uluksp0/work/aml_upgrade_package.img
++ /tmp/tmp6uluksp0/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp6uluksp0/work/aml_upgrade_package.img /tmp/tmp6uluksp0/work/tmp7xq6mcor
++ /tmp/tmp93wsxu5h/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmp93wsxu5h/work/aml_upgrade_package.img
++ /tmp/tmp93wsxu5h/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmp93wsxu5h/work/aml_upgrade_package.img /tmp/tmp93wsxu5h/work/tmpixkwoson
++ /tmp/tmp93wsxu5h/bin/ubireader_extract_files -k -o /tmp/tmp93wsxu5h/work/tmpktxg9wge/ubi /tmp/tmp93wsxu5h/work/rootfs.ubi
++ /tmp/tmpcp4d8sl0/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmpcp4d8sl0/work/aml_upgrade_package.img
++ /tmp/tmpcp4d8sl0/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmpcp4d8sl0/work/aml_upgrade_package.img /tmp/tmpcp4d8sl0/work/tmp76npkhh1
++ /tmp/tmpcp4d8sl0/bin/ubireader_extract_files -k -o /tmp/tmpcp4d8sl0/work/tmp99591quq/ubi /tmp/tmpcp4d8sl0/work/rootfs.ubi
++ /tmp/tmpe6jf8g9z/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -c /tmp/tmpe6jf8g9z/work/aml_upgrade_package.img
++ /tmp/tmpe6jf8g9z/sdk/release-tool/aml-tools/pc/upgrade_tool/aml_image_v2_packer_new -d /tmp/tmpe6jf8g9z/work/aml_upgrade_package.img /tmp/tmpe6jf8g9z/work/tmpi6bl7c72
++ /tmp/tmpe6jf8g9z/bin/ubireader_extract_files -k -o /tmp/tmpe6jf8g9z/work/tmpc11h5gg7/ubi /tmp/tmpe6jf8g9z/work/rootfs.ubi
+=== [1/3] Run TWIN-44/47/60 MC regression suite (test_twin44_mc_debug.c) ===
+========================================================================
+TWIN-44 & TWIN-47 MC USART2 921600, Control Cmds & 0x1C Verification
+========================================================================
+[RUN ] test_usart2_921600_reconfig
+[PASS] test_usart2_921600_reconfig
+[RUN ] test_ring_buffer_trunc_drop_and_recovery
+[PASS] test_ring_buffer_trunc_drop_and_recovery
+[RUN ] test_honest_minimc_v2_queries_and_nack
+[PASS] test_honest_minimc_v2_queries_and_nack
+[RUN ] test_non_intrusive_notify_and_fault_sync
+[PASS] test_non_intrusive_notify_and_fault_sync
+[RUN ] test_tx_fail_suppresses_ack_and_recovers
+[PASS] test_tx_fail_suppresses_ack_and_recovers
+[RUN ] test_relay_timeout_crc_err_and_recovery
+[PASS] test_relay_timeout_crc_err_and_recovery
+[RUN ] test_th_relay_correlation_and_nack
+[PASS] test_th_relay_correlation_and_nack
+[RUN ] test_twin47_temp_home_move_stop
+[PASS] test_twin47_temp_home_move_stop
+[RUN ] test_twin47_job_filament_level_gcode
+[PASS] test_twin47_job_filament_level_gcode
+[RUN ] test_twin60_adc_range_filament_nack_and_boot_id
+[PASS] test_twin60_adc_range_filament_nack_and_boot_id
+------------------------------------------------------------------------
+All 10 TWIN-44/TWIN-47/TWIN-60 test suites PASSED!
+========================================================================
+=== [2/3] Run TWIN-64 MC OTA, 0x1D magic (0x2005FFF0), 534B proxy & th_upgrade_mgr suite ===
+[PASS] test_mc_ota_and_relay: all TWIN-64/TWIN-68 MC App OTA, 534B relay & underflow tests passed!
+=== [3/3] Verify MC zero M997/5AA5 residue & S04 function/comment gates ===
+[PASS] MC S04 function length (<=50), params (<=4), flat if/ternary and Chinese comments verified!
+
+............................
+----------------------------------------------------------------------
+Ran 28 tests in 0.599s
+
+OK
+test_escaping_manifest_path (test_release_product.ReleaseProductTest)
+拒绝安装树索引通过父路径或已存在目录链接逃逸。 ... ok
+test_extract_ubifs_rootfs_checks (test_release_product.ReleaseProductTest)
+核验 extract_ubifs_rootfs 拦截缺失工具、非零退出与非唯一提取目录。 ... ok
+test_filtered_filelist_folds_share_with_spaces (test_release_product.ReleaseProductTest)
+产品共享目录折叠为通配符条目，允许内部包含带空格的图片资源。 ... ok
+test_filtered_runtime_filelist (test_release_product.ReleaseProductTest)
+过滤清单保存空目录、符号链接和目标 SDK 的 Python 依赖。 ... ok
+test_handoff_and_unified_promotion (test_release_product.ReleaseProductTest)
+核验 --handoff 交接失败/摘要不符/06-07-08 缺项/错 HIL 拒绝及全通过晋级。 ... ok
+test_immutable_document (test_release_product.ReleaseProductTest)
+同一候选重复读取成功，任何改变均保留原件并被拒绝。 ... ok
+test_ota_policy_compat_locking_and_build_forward (test_release_product.ReleaseProductTest)
+验证旧清单默认兼容 signature-required、拒绝未知策略、计划锁及 --ota-signing-policy 透传。 ... ok
+test_post_strip_map_with_fakeroot_state (test_release_product.ReleaseProductTest)
+fakeroot -s 复制 0444 文件后可凭状态文件验过；权限篡改为 0644 必须拒绝。 ... ok
+test_post_strip_map_without_fakeroot_state (test_release_product.ReleaseProductTest)
+无 fakeroot 状态文件时直接读取磁盘权限，0644 拒绝而真实 0444 通过。 ... ok
+test_product_archive_checked (test_release_product.ReleaseProductTest)
+真正归档文件与链接均参与校验，外置树被更改后摘要核对失败。 ... ok
+test_refuses_incomplete_promotion (test_release_product.ReleaseProductTest)
+缺少固件或根仓来源时晋级直接拒绝，并保留候选及工作区状态。 ... ok
+test_vendor_build_uses_fakeroot_only_for_non_root (test_release_product.ReleaseProductTest)
+uid=0 直接执行 make global；非 root 宿主机通过 fakeroot -s 持久化状态。 ... ok
+test_verified_patch_inputs (test_release_product.ReleaseProductTest)
+补丁内容与 SHA-256 锁相符，修改补丁内容后同一检查拒绝。 ... ok
+test_verify_candidate_ubifs_and_tar_recovery (test_release_product.ReleaseProductTest)
+移走 sdk-image 与产品树后深检全过；过滤/UBI/AML/权限/链接/ELF 异常均拒绝。 ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 2.171s
+
+OK
+test_default_and_explicit_signature_required_policy (__main__.OfflineChecks)
+缺省策略等价 signature-required；显式严签均要求保留签名负例。 ... ok
+test_disallow_path_escape_before_read (__main__.OfflineChecks)
+物证相对路径不得读取收据目录之外的数据。 ... ok
+test_integrity_only_hil_policy_and_required_cases (__main__.OfflineChecks)
+integrity-only-hil 免除签名负例，但仍严格检查 AC-03、完整性负例与安全门禁。 ... ok
+test_latency_and_promotion_changes_rejected (__main__.OfflineChecks)
+超时和晋级时更换产物摘要均须失败。 ... ok
+test_rejected_package_trace_with_write_command_fails (__main__.OfflineChecks)
+离线重放旧日志中的合法启动写刷帧，确认拒签窗口判据会拒绝它。 ... ok
+test_reordered_reply_is_not_evidence (__main__.OfflineChecks)
+同一对历史帧若回包早于请求，即使 CRC 合法也不能作为本次关联。 ... ok
+test_short_or_damaged_tx_cannot_prove_zero_erase (__main__.OfflineChecks)
+归档缺失整帧时，不能将一次截断采集解释为零写刷。 ... ok
+test_unknown_signing_policy_rejected (__main__.OfflineChecks)
+未知或非法类型的 ota_signing_policy 必须在清单读取与用例核验阶段拒绝。 ... ok
+test_valid_promotion_can_append_evidence (__main__.OfflineChecks)
+晋级附加审签证据时复用候选构建身份和制品信息。 ... ok
+test_version_exchange_uses_raw_frame_identity (__main__.OfflineChecks)
+复用 SLICE-05 的 B1 两行采集向量，核对配对、短版本和 App 模式。 ... ok
+test_wrong_artifact_hash_rejected (__main__.OfflineChecks)
+同目录真实文件的错误摘要必须拒绝。 ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.053s
+
+OK
