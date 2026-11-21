@@ -1,0 +1,115 @@
+CLEAR_MC_PAUSE_FWD_RC: -8
+PRE_OTA_VERSION: method return time=16647.021011 sender=:1.1 -> destination=:1.11 serial=1331 reply_serial=2
+   string "{"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":87314761,"git_commit":"0xE5E45EEA","capability_flags":3,"last_update_ns":16646830755604},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":3292647499,"git_commit":"0x7B623D9A","capability_flags":7,"last_update_ns":16646287299604}}}"
+SCAN_RC: 0
+TRIG_RC: 0
+[STAGE] eid=15 phase=PRECHECK active=True maint=True node=3 pct=0% err=
+[STAGE] eid=16 phase=PACKAGE_VERIFIED active=True maint=True node=2 pct=0% err=
+[STAGE] eid=17 phase=PACKAGE_VERIFIED active=True maint=True node=3 pct=0% err=
+[STAGE] eid=18 phase=CHECKING_DEVICE active=True maint=True node=3 pct=0% err=
+[STAGE] eid=19 phase=DEVICE_CHECKED active=True maint=True node=3 pct=0% err=
+[STAGE] eid=20 phase=ENTERING_BOOT active=True maint=True node=3 pct=0% err=
+[STAGE] eid=21 phase=BOOT_CONFIRMED active=True maint=True node=3 pct=0% err=
+[STAGE] eid=22 phase=PREPARING_FLASH active=True maint=True node=3 pct=0% err=
+[STAGE] eid=23 phase=FLASH_READY active=True maint=True node=3 pct=0% err=
+[STAGE] eid=24 phase=CHUNK0_CACHED_RAM active=True maint=True node=3 pct=0% err=
+[STAGE] eid=25 phase=FLASH_WRITING active=True maint=True node=3 pct=0% err=
+AC-05-OTA-BUSY dup_rc=-5 estop_busy_rc=-5
+SNAP_DURING_OTA_MAINT: method return time=16648.702330 sender=:1.1 -> destination=:1.16 serial=1361 reply_serial=2
+   string "{"schema_version":2,"generation_id":8,"timestamp_ns":16647762037438,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"UNKNOWN","quality":"MAINTENANCE_HOLD","raw_adc":null},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"UNKNOWN","quality":"MAINTENANCE_HOLD","raw_adc":null},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":87314761,"git_commit":"0xE5E45EEA","capability_flags":3,"last_update_ns":16646830755604},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":3292647499,"git_commit":"0x7B623D9A","capability_flags":7,"last_update_ns":16647358292688}},"system_status":"EMERGENCY_STOP_INVOKED","device_state":"FAULT"}"
+[STAGE] eid=26 phase=FLASH_WRITING active=True maint=True node=3 pct=0% err=
+[STAGE] eid=122 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=123 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=124 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=125 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=126 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=127 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=128 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=129 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=130 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=131 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=132 phase=FLASH_WRITING active=True maint=True node=3 pct=10% err=
+[STAGE] eid=175 phase=VERIFYING_IMAGE active=True maint=True node=3 pct=14% err=
+[STAGE] eid=176 phase=IMAGE_COMMITTED active=True maint=True node=3 pct=15% err=
+[STAGE] eid=177 phase=APP_VERIFIED active=True maint=True node=3 pct=16% err=
+[STAGE] eid=178 phase=CHECKING_DEVICE active=True maint=True node=2 pct=16% err=
+[STAGE] eid=179 phase=DEVICE_CHECKED active=True maint=True node=2 pct=16% err=
+[STAGE] eid=180 phase=ENTERING_BOOT active=True maint=True node=2 pct=16% err=
+[STAGE] eid=181 phase=BOOT_CONFIRMED active=True maint=True node=2 pct=16% err=
+[STAGE] eid=182 phase=PREPARING_FLASH active=True maint=True node=2 pct=16% err=
+[STAGE] eid=183 phase=FLASH_READY active=True maint=True node=2 pct=16% err=
+[STAGE] eid=184 phase=CHUNK0_CACHED_RAM active=True maint=True node=2 pct=20% err=
+[STAGE] eid=185 phase=FLASH_WRITING active=True maint=True node=2 pct=20% err=
+[STAGE] eid=186 phase=FLASH_WRITING active=True maint=True node=2 pct=20% err=
+[STAGE] eid=187 phase=FLASH_WRITING active=True maint=True node=2 pct=20% err=
+[STAGE] eid=188 phase=FLASH_WRITING active=True maint=True node=2 pct=20% err=
+[STAGE] eid=189 phase=FLASH_WRITING active=True maint=True node=2 pct=20% err=
+[STAGE] eid=190 phase=FLASH_WRITING active=True maint=True node=2 pct=20% err=
+[STAGE] eid=191 phase=FLASH_WRITING active=True maint=True node=2 pct=20% err=
+[STAGE] eid=290 phase=FLASH_WRITING active=True maint=True node=2 pct=30% err=
+[STAGE] eid=291 phase=FLASH_WRITING active=True maint=True node=2 pct=30% err=
+[STAGE] eid=292 phase=FLASH_WRITING active=True maint=True node=2 pct=30% err=
+[STAGE] eid=293 phase=FLASH_WRITING active=True maint=True node=2 pct=30% err=
+[STAGE] eid=294 phase=FLASH_WRITING active=True maint=True node=2 pct=30% err=
+[STAGE] eid=295 phase=FLASH_WRITING active=True maint=True node=2 pct=30% err=
+[STAGE] eid=296 phase=FLASH_WRITING active=True maint=True node=2 pct=30% err=
+[STAGE] eid=297 phase=FLASH_WRITING active=True maint=True node=2 pct=30% err=
+[STAGE] eid=396 phase=FLASH_WRITING active=True maint=True node=2 pct=40% err=
+[STAGE] eid=397 phase=FLASH_WRITING active=True maint=True node=2 pct=40% err=
+[STAGE] eid=398 phase=FLASH_WRITING active=True maint=True node=2 pct=40% err=
+[STAGE] eid=399 phase=FLASH_WRITING active=True maint=True node=2 pct=40% err=
+[STAGE] eid=400 phase=FLASH_WRITING active=True maint=True node=2 pct=40% err=
+[STAGE] eid=401 phase=FLASH_WRITING active=True maint=True node=2 pct=40% err=
+[STAGE] eid=402 phase=FLASH_WRITING active=True maint=True node=2 pct=40% err=
+[STAGE] eid=403 phase=FLASH_WRITING active=True maint=True node=2 pct=40% err=
+[STAGE] eid=502 phase=FLASH_WRITING active=True maint=True node=2 pct=50% err=
+[STAGE] eid=503 phase=FLASH_WRITING active=True maint=True node=2 pct=50% err=
+[STAGE] eid=504 phase=FLASH_WRITING active=True maint=True node=2 pct=50% err=
+[STAGE] eid=505 phase=FLASH_WRITING active=True maint=True node=2 pct=50% err=
+[STAGE] eid=506 phase=FLASH_WRITING active=True maint=True node=2 pct=50% err=
+[STAGE] eid=507 phase=FLASH_WRITING active=True maint=True node=2 pct=50% err=
+[STAGE] eid=508 phase=FLASH_WRITING active=True maint=True node=2 pct=50% err=
+[STAGE] eid=509 phase=FLASH_WRITING active=True maint=True node=2 pct=50% err=
+[STAGE] eid=608 phase=FLASH_WRITING active=True maint=True node=2 pct=60% err=
+[STAGE] eid=609 phase=FLASH_WRITING active=True maint=True node=2 pct=60% err=
+[STAGE] eid=610 phase=FLASH_WRITING active=True maint=True node=2 pct=60% err=
+[STAGE] eid=611 phase=FLASH_WRITING active=True maint=True node=2 pct=60% err=
+[STAGE] eid=612 phase=FLASH_WRITING active=True maint=True node=2 pct=60% err=
+[STAGE] eid=613 phase=FLASH_WRITING active=True maint=True node=2 pct=60% err=
+[STAGE] eid=614 phase=FLASH_WRITING active=True maint=True node=2 pct=60% err=
+[STAGE] eid=615 phase=FLASH_WRITING active=True maint=True node=2 pct=60% err=
+[STAGE] eid=714 phase=FLASH_WRITING active=True maint=True node=2 pct=70% err=
+[STAGE] eid=715 phase=FLASH_WRITING active=True maint=True node=2 pct=70% err=
+[STAGE] eid=716 phase=FLASH_WRITING active=True maint=True node=2 pct=70% err=
+[STAGE] eid=717 phase=FLASH_WRITING active=True maint=True node=2 pct=70% err=
+[STAGE] eid=718 phase=FLASH_WRITING active=True maint=True node=2 pct=70% err=
+[STAGE] eid=719 phase=FLASH_WRITING active=True maint=True node=2 pct=70% err=
+[STAGE] eid=720 phase=FLASH_WRITING active=True maint=True node=2 pct=70% err=
+[STAGE] eid=721 phase=FLASH_WRITING active=True maint=True node=2 pct=70% err=
+[STAGE] eid=820 phase=FLASH_WRITING active=True maint=True node=2 pct=80% err=
+[STAGE] eid=821 phase=FLASH_WRITING active=True maint=True node=2 pct=80% err=
+[STAGE] eid=822 phase=FLASH_WRITING active=True maint=True node=2 pct=80% err=
+[STAGE] eid=823 phase=FLASH_WRITING active=True maint=True node=2 pct=80% err=
+[STAGE] eid=824 phase=FLASH_WRITING active=True maint=True node=2 pct=80% err=
+[STAGE] eid=825 phase=FLASH_WRITING active=True maint=True node=2 pct=80% err=
+[STAGE] eid=826 phase=FLASH_WRITING active=True maint=True node=2 pct=80% err=
+[STAGE] eid=827 phase=FLASH_WRITING active=True maint=True node=2 pct=80% err=
+[STAGE] eid=828 phase=FLASH_WRITING active=True maint=True node=2 pct=80% err=
+[STAGE] eid=926 phase=FLASH_WRITING active=True maint=True node=2 pct=90% err=
+[STAGE] eid=927 phase=FLASH_WRITING active=True maint=True node=2 pct=90% err=
+[STAGE] eid=928 phase=FLASH_WRITING active=True maint=True node=2 pct=90% err=
+[STAGE] eid=929 phase=FLASH_WRITING active=True maint=True node=2 pct=90% err=
+[STAGE] eid=930 phase=FLASH_WRITING active=True maint=True node=2 pct=90% err=
+[STAGE] eid=931 phase=FLASH_WRITING active=True maint=True node=2 pct=90% err=
+[STAGE] eid=932 phase=FLASH_WRITING active=True maint=True node=2 pct=90% err=
+[STAGE] eid=933 phase=FLASH_WRITING active=True maint=True node=2 pct=90% err=
+[STAGE] eid=934 phase=FLASH_WRITING active=True maint=True node=2 pct=90% err=
+[STAGE] eid=936 phase=VERIFYING_IMAGE active=True maint=True node=2 pct=91% err=
+[STAGE] eid=937 phase=IMAGE_COMMITTED active=True maint=True node=2 pct=95% err=
+[STAGE] eid=938 phase=APP_VERIFIED active=True maint=True node=2 pct=100% err=
+[STAGE] eid=939 phase=SUCCEEDED active=False maint=False node=2 pct=100% err=
+FINAL_STAGE_JSON: {"schema_version": 1, "timestamp_unix_ms": 16678511, "last_sequence": 2376, "last_elapsed_ms": 3, "task_id": "16358000004", "event_id": 939, "phase": "SUCCEEDED", "active": false, "communication_error": 0, "failed_node": 0, "failed_command": 0, "maintenance": false, "target_mask": 3, "active_node": 2, "progress_pct": 100, "error": "", "mc": {"valid": true, "file": "fw_mc.bin", "size": 384540, "version_raw": 33589179, "sha256": "1a259d259d478ef6f461932ad72c9f3a418f31d79bb224000226d8c2df7339c1", "progress_pct": 100, "received": 384540, "written": 384540, "pre_boot_id": 87314761, "post_boot_id": 1775181012, "warning": "TEMPERATURE_NOT_VERIFIED"}, "th": {"valid": true, "file": "fw_th.bin", "size": 76864, "version_raw": 33592846, "sha256": "f839e1d56f26ed47594c4846bc9fc797fdf3e219d718a79b45f398bb96c52e3e", "progress_pct": 100, "received": 76864, "written": 76864, "pre_boot_id": 3292647499, "post_boot_id": 1462640722, "warning": ""}}
+POST_OTA_VERSION: method return time=16681.012169 sender=:1.1 -> destination=:1.17 serial=2142 reply_serial=2
+   string "{"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":1775181012,"git_commit":"0xA64BFFBF","capability_flags":3,"last_update_ns":16680823918662},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":1462640722,"git_commit":"0xA64BFFBF","capability_flags":7,"last_update_ns":16680307565245}}}"
+POST_OTA_SNAPSHOT: method return time=16681.027032 sender=:1.1 -> destination=:1.18 serial=2143 reply_serial=2
+   string "{"schema_version":2,"generation_id":9,"timestamp_ns":16678584408869,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"UNKNOWN","quality":"UNKNOWN","raw_adc":null},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"UNKNOWN","quality":"UNKNOWN","raw_adc":null},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":1775181012,"git_commit":"0xA64BFFBF","capability_flags":3,"last_update_ns":16680823918662},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":1462640722,"git_commit":"0xA64BFFBF","capability_flags":7,"last_update_ns":16680307565245}},"system_status":"EMERGENCY_STOP_INVOKED","device_state":"IDLE"}"

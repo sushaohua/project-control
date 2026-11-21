@@ -1,0 +1,10 @@
+FULL_MANIFEST_CHECK files_ok=652 symlinks_ok=12 total_checked=664/664 errors=0
+VERSION_JSON: {"product_version": "0.1.0-skeleton", "build_id": "20261121T082130Z", "candidate_id": "0.1.0-skeleton+6f28023f", "profile": "c308l-production", "git_sha": "6f28023f", "abi": "armv7l-hf-glibc2.33", "mcu_proto": "2.0"}
+PUBKEY mode=0o444 is_symlink=False sha256=391ed9e5993fc86be51c0646693e9a92ad1fb7c2facd05b71f14df08ba75e2d3
+BOOT_BACKUP_SHA256: 59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86
+=== PRE-OTA VERSION INFO ===
+method return time=16363.572977 sender=:1.1 -> destination=:1.2 serial=15 reply_serial=2
+   string "{"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":87314761,"git_commit":"0xE5E45EEA","capability_flags":3,"last_update_ns":16363150294760},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":3292647499,"git_commit":"0x7B623D9A","capability_flags":7,"last_update_ns":16362645679385}}}"
+=== AC-05 EMERGENCY STOP SET (byte:1) ===
+method return time=16363.839203 sender=:1.1 -> destination=:1.3 serial=18 reply_serial=2
+   int32 -8

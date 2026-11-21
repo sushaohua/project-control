@@ -1,0 +1,12 @@
+REBOOT_TRIGGER_UNIX_MS=1795252203145
+=== POST-REBOOT HARDWARE & PANEL DIAG ===
+ 00:00:59 up 1 min,  load average: 1.18, 0.33, 0.11
+serinfo:1.0 driver revision:
+0: uart:meson_uart mmio:0xFE07A000 irq:36 tx:2699 rx:0 RTS|CTS|DTR
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:1442 rx:3090 RTS|CTS|DTR
+ 37:       1785          0     GIC-0 204 Edge      ttyS1
+    "rotate": 270,
+    "_touch_device_comment": "Override touch/pointer input device (e.g., '/dev/input/event1'). Empty string enables auto-detection. Auto-detection finds touch or pointer capable devices.",
+    "touch_device": ""
+59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86  /data/boot_backup.img
+

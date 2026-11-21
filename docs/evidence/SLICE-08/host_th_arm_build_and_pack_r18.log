@@ -1,0 +1,1559 @@
+make: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle'
+rm -rf build
+[VERSION][DEV] 生成 16bit 时间特征码: 0x960E (V2.0.1-960E 1121)
+[VERSION] 生成头文件: build/version_autogen.h
+make[1]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle'
+[CC] src/user/main.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:7:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:7:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:7:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:7:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:7:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:7:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:7:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/motor_control.h:18,
+                 from src/user/main.c:7:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/motor_control.h:18,
+                 from src/user/main.c:7:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:7:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:7:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:7:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:7:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:7:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:7:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:7:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/user/main.c:7:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:166: warning: "TEMP_0_PIN" redefined
+  166 | #define TEMP_0_PIN get_adc(1)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:105: note: this is the location of the previous definition
+  105 | #define TEMP_0_PIN ADC_CHANNEL_5
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:167: warning: "TEMP_BED_PIN" redefined
+  167 | #define TEMP_BED_PIN get_adc(2)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:108: note: this is the location of the previous definition
+  108 | #define TEMP_BED_PIN -1
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:172: warning: "HEATER_BED_PIN" redefined
+  172 | #define HEATER_BED_PIN GPIO_PINS_6
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:59: note: this is the location of the previous definition
+   59 | #define HEATER_BED_PIN -1
+      | 
+In file included from src/user/main.c:22:
+inc/pins.h:174: warning: "HEATER_0_PIN" redefined
+  174 | #define HEATER_0_PIN GPIO_PINS_7
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/user/main.c:13:
+inc/temperature_control/temperature.h:56: note: this is the location of the previous definition
+   56 | #define HEATER_0_PIN 1
+      | 
+[CC] src/app/minimc_proto.c
+[CC] src/app/ConfigurationStore.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from src/app/ConfigurationStore.c:1:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/ConfigurationStore.c:5:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from src/app/ConfigurationStore.c:1:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+src/app/ConfigurationStore.c: In function 'Config_PrintSettings':
+src/app/ConfigurationStore.c:81:23: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'double' [-Wformat=]
+   81 |     printf("  M201 X%ld" ,max_acceleration_units_per_sq_second[0] );
+      |                     ~~^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                       |                                       |
+      |                       long int                                double
+      |                     %f
+src/app/ConfigurationStore.c:82:17: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'double' [-Wformat=]
+   82 |     printf(" Y%ld" , max_acceleration_units_per_sq_second[1] );
+      |               ~~^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                 |                                        |
+      |                 long int                                 double
+      |               %f
+src/app/ConfigurationStore.c:83:17: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'double' [-Wformat=]
+   83 |     printf(" Z%ld" ,max_acceleration_units_per_sq_second[2] );
+      |               ~~^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                 |                                       |
+      |                 long int                                double
+      |               %f
+src/app/ConfigurationStore.c:84:17: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'double' [-Wformat=]
+   84 |     printf(" E%ld\r\n" ,max_acceleration_units_per_sq_second[3]);
+      |               ~~^       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                 |                                           |
+      |                 long int                                    double
+      |               %f
+At top level:
+src/app/ConfigurationStore.c:161:17: warning: 'GetPage' defined but not used [-Wunused-function]
+  161 | static uint32_t GetPage(uint32_t Addr)
+      |                 ^~~~~~~
+[CC] src/app/gcodeplayer.c
+[CC] src/app/heater.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:166: warning: "TEMP_0_PIN" redefined
+  166 | #define TEMP_0_PIN get_adc(1)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:105: note: this is the location of the previous definition
+  105 | #define TEMP_0_PIN ADC_CHANNEL_5
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:167: warning: "TEMP_BED_PIN" redefined
+  167 | #define TEMP_BED_PIN get_adc(2)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:108: note: this is the location of the previous definition
+  108 | #define TEMP_BED_PIN -1
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:172: warning: "HEATER_BED_PIN" redefined
+  172 | #define HEATER_BED_PIN GPIO_PINS_6
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:59: note: this is the location of the previous definition
+   59 | #define HEATER_BED_PIN -1
+      | 
+In file included from src/app/heater.c:16:
+inc/pins.h:174: warning: "HEATER_0_PIN" redefined
+  174 | #define HEATER_0_PIN GPIO_PINS_7
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/heater.c:13:
+inc/temperature_control/temperature.h:56: note: this is the location of the previous definition
+   56 | #define HEATER_0_PIN 1
+      | 
+[CC] src/app/motion_control.c
+[CC] src/app/motor_control.c
+In file included from src/app/motor_control.c:16:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/app/motor_control.c:16:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/planner.h:17,
+                 from inc/motor_control.h:19,
+                 from src/app/motor_control.c:12:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+[CC] src/app/mycontrol.c
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:7:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:7:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:7:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:7:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:7:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:7:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:7:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/mycontrol.c:7:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:56: warning: "HEATER_0_PIN" redefined
+   56 | #define HEATER_0_PIN 1
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:174: note: this is the location of the previous definition
+  174 | #define HEATER_0_PIN GPIO_PINS_7
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:59: warning: "HEATER_BED_PIN" redefined
+   59 | #define HEATER_BED_PIN -1
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:172: note: this is the location of the previous definition
+  172 | #define HEATER_BED_PIN GPIO_PINS_6
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:7:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:7:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:7:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:7:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:7:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:7:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:7:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:7:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/mycontrol.h:9,
+                 from src/app/mycontrol.c:7:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:105: warning: "TEMP_0_PIN" redefined
+  105 | #define TEMP_0_PIN ADC_CHANNEL_5
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:166: note: this is the location of the previous definition
+  166 | #define TEMP_0_PIN get_adc(1)
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/mycontrol.c:16:
+inc/temperature_control/temperature.h:108: warning: "TEMP_BED_PIN" redefined
+  108 | #define TEMP_BED_PIN -1
+      | 
+In file included from src/app/mycontrol.c:9:
+inc/pins.h:167: note: this is the location of the previous definition
+  167 | #define TEMP_BED_PIN get_adc(2)
+      | 
+src/app/mycontrol.c: In function 'loop':
+src/app/mycontrol.c:471:2: warning: this 'else' clause does not guard... [-Wmisleading-indentation]
+  471 |  else
+      |  ^~~~
+src/app/mycontrol.c:474:3: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'else'
+  474 |   USART3_forward_service(); //推进监听转发的FIFO发送：DMA发完一行自动补下一行，突发不丢
+      |   ^~~~~~~~~~~~~~~~~~~~~~
+src/app/mycontrol.c:446:13: warning: unused variable 'send_time' [-Wunused-variable]
+  446 |  static int send_time = 0;
+      |             ^~~~~~~~~
+src/app/mycontrol.c:445:23: warning: unused variable 'led_time' [-Wunused-variable]
+  445 |  static unsigned long led_time = 1000;
+      |                       ^~~~~~~~
+src/app/mycontrol.c:444:16: warning: unused variable 'time_save' [-Wunused-variable]
+  444 |  unsigned long time_save = 0;
+      |                ^~~~~~~~~
+src/app/mycontrol.c:443:7: warning: unused variable 'cbuf' [-Wunused-variable]
+  443 |  char cbuf[100];
+      |       ^~~~
+src/app/mycontrol.c: In function 'get_command':
+src/app/mycontrol.c:655:13: warning: unused variable 'ok_count' [-Wunused-variable]
+  655 |  static int ok_count = 0;            //这个变量暂时没有使用到
+      |             ^~~~~~~~
+src/app/mycontrol.c: In function 'run_z_probe':
+src/app/mycontrol.c:1000:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ 1000 | }
+      | ^
+src/app/mycontrol.c: In function 'G29_CMD':
+src/app/mycontrol.c:1194:22: warning: unused variable 'distance_from_center' [-Wunused-variable]
+ 1194 |    float measured_z, distance_from_center, xProbe;
+      |                      ^~~~~~~~~~~~~~~~~~~~
+src/app/mycontrol.c: In function 'process_commands':
+src/app/mycontrol.c:2480:8: warning: variable 'beepP' set but not used [-Wunused-but-set-variable]
+ 2480 |    int beepP = 1000;
+      |        ^~~~~
+src/app/mycontrol.c:2932:9: warning: unused variable 'isFind' [-Wunused-variable]
+ 2932 |    char isFind = 0;
+      |         ^~~~~~
+src/app/mycontrol.c:2993:17: warning: unused variable 'itemp2' [-Wunused-variable]
+ 2993 |     int itemp1, itemp2;
+      |                 ^~~~~~
+src/app/mycontrol.c:2993:9: warning: unused variable 'itemp1' [-Wunused-variable]
+ 2993 |     int itemp1, itemp2;
+      |         ^~~~~~
+src/app/mycontrol.c:2992:14: warning: unused variable 'reset_addr' [-Wunused-variable]
+ 2992 |     uint32_t reset_addr = 0;
+      |              ^~~~~~~~~~
+src/app/mycontrol.c:3059:18: warning: variable 'make_move' set but not used [-Wunused-but-set-variable]
+ 3059 |    volatile bool make_move = false;
+      |                  ^~~~~~~~~
+src/app/mycontrol.c: In function 'ClearToSend':
+src/app/mycontrol.c:3132:6: warning: unused variable 'free_num' [-Wunused-variable]
+ 3132 |  int free_num = USART1_dma_free();
+      |      ^~~~~~~~
+src/app/mycontrol.c:3125:23: warning: unused variable 'send_time' [-Wunused-variable]
+ 3125 |  static unsigned long send_time = 0;
+      |                       ^~~~~~~~~
+src/app/mycontrol.c:3124:7: warning: unused variable 'cbuf' [-Wunused-variable]
+ 3124 |  char cbuf[25];
+      |       ^~~~
+src/app/mycontrol.c: In function 'get_coordinates':
+src/app/mycontrol.c:3147:16: warning: variable 'seen' set but not used [-Wunused-but-set-variable]
+ 3147 |  volatile bool seen[7] = {false, false, false, false,false,false,false};
+      |                ^~~~
+At top level:
+src/app/mycontrol.c:3125:23: warning: 'send_time' defined but not used [-Wunused-variable]
+ 3125 |  static unsigned long send_time = 0;
+      |                       ^~~~~~~~~
+src/app/mycontrol.c:655:13: warning: 'ok_count' defined but not used [-Wunused-variable]
+  655 |  static int ok_count = 0;            //这个变量暂时没有使用到
+      |             ^~~~~~~~
+src/app/mycontrol.c:445:23: warning: 'led_time' defined but not used [-Wunused-variable]
+  445 |  static unsigned long led_time = 1000;
+      |                       ^~~~~~~~
+src/app/mycontrol.c:446:13: warning: 'send_time' defined but not used [-Wunused-variable]
+  446 |  static int send_time = 0;
+      |             ^~~~~~~~~
+src/app/mycontrol.c:1090:13: warning: 'AutoHitBed' defined but not used [-Wunused-function]
+ 1090 | static void AutoHitBed() // 自动往下运动，直到触碰到Z_Min开关,并设置Z为0
+      |             ^~~~~~~~~~
+src/app/mycontrol.c:1028:14: warning: 'probe_pt' defined but not used [-Wunused-function]
+ 1028 | static float probe_pt(float x, float y, float z_before)
+      |              ^~~~~~~~
+src/app/mycontrol.c:835:13: warning: 'homeaxis' defined but not used [-Wunused-function]
+  835 | static void homeaxis(int axis)
+      |             ^~~~~~~~
+src/app/mycontrol.c:292:22: warning: 'door_move_time' defined but not used [-Wunused-variable]
+  292 | static unsigned long door_move_time = 0;
+      |                      ^~~~~~~~~~~~~~
+src/app/mycontrol.c:260:13: warning: 'gcode_N' defined but not used [-Wunused-variable]
+  260 | static long gcode_N, gcode_LastN, Stopped_gcode_LastN = 0;
+      |             ^~~~~~~
+[CC] src/app/planner.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from src/app/planner.c:12:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/planner.c:16:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from src/app/planner.c:12:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+src/app/planner.c:43: warning: "CRITICAL_SECTION_START" redefined
+   43 | #define CRITICAL_SECTION_START()  __disable_irq()
+      | 
+In file included from src/app/planner.c:15:
+inc/mycontrol.h:116: note: this is the location of the previous definition
+  116 | #define CRITICAL_SECTION_START __disable_irq()
+      | 
+src/app/planner.c:44: warning: "CRITICAL_SECTION_END" redefined
+   44 | #define CRITICAL_SECTION_END()    __enable_irq()
+      | 
+In file included from src/app/planner.c:15:
+inc/mycontrol.h:117: note: this is the location of the previous definition
+  117 | #define CRITICAL_SECTION_END __enable_irq()
+      | 
+src/app/planner.c: In function 'plan_buffer_line':
+src/app/planner.c:639:1: warning: multi-line comment [-Wcomment]
+  639 | //   block->millimeters = sqrt(delta_mm[X_AXIS] * delta_mm[X_AXIS] + delta_mm[Y_AXIS] * delta_mm[Y_AXIS] \
+      | ^
+[CC] src/app/stepper.c
+In file included from inc/Configuration.h:729,
+                 from inc/stepper.h:30,
+                 from src/app/stepper.c:12:
+src/app/stepper.c: In function 'calc_timer':
+inc/Configuration_adv.h:29:28: warning: unsigned conversion from 'int' to 'short unsigned int' changes value from '200000' to '3392' [-Woverflow]
+   29 | #define MAX_STEP_FREQUENCY 200000
+      |                            ^~~~~~
+src/app/stepper.c:111:17: note: in expansion of macro 'MAX_STEP_FREQUENCY'
+  111 |     step_rate = MAX_STEP_FREQUENCY;
+      |                 ^~~~~~~~~~~~~~~~~~
+src/app/stepper.c: In function 'st_interrupt_handler':
+src/app/stepper.c:322:29: warning: variable 'act_z' set but not used [-Wunused-but-set-variable]
+  322 |  char act_x = 0, act_y = 0, act_z = 0, act_a = 0,act_b = 0,act_c = 0,act_d = 0;
+      |                             ^~~~~
+src/app/stepper.c:322:18: warning: variable 'act_y' set but not used [-Wunused-but-set-variable]
+  322 |  char act_x = 0, act_y = 0, act_z = 0, act_a = 0,act_b = 0,act_c = 0,act_d = 0;
+      |                  ^~~~~
+src/app/stepper.c:322:7: warning: variable 'act_x' set but not used [-Wunused-but-set-variable]
+  322 |  char act_x = 0, act_y = 0, act_z = 0, act_a = 0,act_b = 0,act_c = 0,act_d = 0;
+      |       ^~~~~
+src/app/stepper.c:321:7: warning: unused variable 'limit_hit' [-Wunused-variable]
+  321 |  bool limit_hit;
+      |       ^~~~~~~~~
+src/app/stepper.c:318:11: warning: unused variable 'cnt' [-Wunused-variable]
+  318 |  uint32_t cnt = 0;  //计数测试
+      |           ^~~
+[CC] src/app/temperature.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from inc/temperature_control/temperature.h:5,
+                 from src/app/temperature.c:1:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+src/app/temperature.c: In function 'manage_heater':
+src/app/temperature.c:109:14: warning: unused variable 'pwm_debug_count' [-Wunused-variable]
+  109 |   static int pwm_debug_count = 0; // 移到这里，在所有可执行语句之前
+      |              ^~~~~~~~~~~~~~~
+src/app/temperature.c: In function 'get_heat_sensor_data':
+src/app/temperature.c:490:9: warning: unused variable 'R_target' [-Wunused-variable]
+  490 |   float R_target;
+      |         ^~~~~~~~
+src/app/temperature.c:489:9: warning: unused variable 'target_equiv' [-Wunused-variable]
+  489 |   float target_equiv;
+      |         ^~~~~~~~~~~~
+src/app/temperature.c:488:7: warning: unused variable 'simulated_raw' [-Wunused-variable]
+  488 |   int simulated_raw;
+      |       ^~~~~~~~~~~~~
+src/app/temperature.c:484:16: warning: unused variable 'simulated_temp' [-Wunused-variable]
+  484 |   static float simulated_temp = 25.0f;
+      |                ^~~~~~~~~~~~~~
+src/app/temperature.c:483:14: warning: unused variable 'test_mode' [-Wunused-variable]
+  483 |   static int test_mode = 0;
+      |              ^~~~~~~~~
+src/app/temperature.c:482:14: warning: unused variable 'debug_count' [-Wunused-variable]
+  482 |   static int debug_count = 0;
+      |              ^~~~~~~~~~~
+At top level:
+src/app/temperature.c:482:14: warning: 'debug_count' defined but not used [-Wunused-variable]
+src/app/temperature.c:483:14: warning: 'test_mode' defined but not used [-Wunused-variable]
+  483 |   static int test_mode = 0;
+      |              ^~~~~~~~~
+src/app/temperature.c:484:16: warning: 'simulated_temp' defined but not used [-Wunused-variable]
+  484 |   static float simulated_temp = 25.0f;
+      |                ^~~~~~~~~~~~~~
+src/app/temperature.c:109:14: warning: 'pwm_debug_count' defined but not used [-Wunused-variable]
+  109 |   static int pwm_debug_count = 0; // 移到这里，在所有可执行语句之前
+      |              ^~~~~~~~~~~~~~~
+src/app/temperature.c:69:12: warning: 'maxttemp_raw' defined but not used [-Wunused-variable]
+   69 | static int maxttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS(HEATER_0_RAW_HI_TEMP, HEATER_1_RAW_HI_TEMP, HEATER_2_RAW_HI_TEMP);
+      |            ^~~~~~~~~~~~
+src/app/temperature.c:68:12: warning: 'minttemp_raw' defined but not used [-Wunused-variable]
+   68 | static int minttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS(HEATER_0_RAW_LO_TEMP, HEATER_1_RAW_LO_TEMP, HEATER_2_RAW_LO_TEMP);
+      |            ^~~~~~~~~~~~
+src/app/temperature.c: In function 'get_heat_sensor_data':
+src/app/temperature.c:561:26: warning: array subscript 1 is above array bounds of 'int[1]' [-Warray-bounds]
+  561 |   current_temperature_raw[1] = 0;
+      |   ~~~~~~~~~~~~~~~~~~~~~~~^~~
+src/app/temperature.c:13:5: note: while referencing 'current_temperature_raw'
+   13 | int current_temperature_raw[EXTRUDERS] = {0};
+      |     ^~~~~~~~~~~~~~~~~~~~~~~
+src/app/temperature.c:565:26: warning: array subscript 2 is above array bounds of 'int[1]' [-Warray-bounds]
+  565 |   current_temperature_raw[2] = 0;
+      |   ~~~~~~~~~~~~~~~~~~~~~~~^~~
+src/app/temperature.c:13:5: note: while referencing 'current_temperature_raw'
+   13 | int current_temperature_raw[EXTRUDERS] = {0};
+      |     ^~~~~~~~~~~~~~~~~~~~~~~
+[CC] src/app/thermistor_adc.c
+[CC] src/app/thermistortables.c
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:70: warning: "BANG_MAX" redefined
+   70 | #define BANG_MAX 950
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:209: note: this is the location of the previous definition
+  209 | #define BANG_MAX 500 // limits current to nozzle while in bang-bang mode; 256=full current
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:71: warning: "K1" redefined
+   71 | #define K1 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:222: note: this is the location of the previous definition
+  222 |   #define K1 0.20f //smoothing factor withing the PID
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:74: warning: "DEFAULT_bedKp" redefined
+   74 | #define DEFAULT_bedKp 200.0
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:266: note: this is the location of the previous definition
+  266 |     #define  DEFAULT_bedKp 100.00
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:75: warning: "DEFAULT_bedKi" redefined
+   75 | #define DEFAULT_bedKi 0.2
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:267: note: this is the location of the previous definition
+  267 |     #define  DEFAULT_bedKi .2
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:76: warning: "DEFAULT_bedKd" redefined
+   76 | #define DEFAULT_bedKd 2000
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:268: note: this is the location of the previous definition
+  268 |     #define  DEFAULT_bedKd 30.4
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:90: warning: "HEATER_BED_RAW_LO_TEMP" redefined
+   90 | #define HEATER_BED_RAW_LO_TEMP 10
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:199: note: this is the location of the previous definition
+  199 |   #define HEATER_BED_RAW_LO_TEMP 4095
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:91: warning: "HEATER_BED_RAW_HI_TEMP" redefined
+   91 | #define HEATER_BED_RAW_HI_TEMP 4095
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:202: note: this is the location of the previous definition
+  202 |   #define HEATER_BED_RAW_HI_TEMP 0
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:99: warning: "BED_CHECK_INTERVAL" redefined
+   99 | #define BED_CHECK_INTERVAL 250
+      | 
+In file included from inc/Configuration.h:729,
+                 from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration_adv.h:11: note: this is the location of the previous definition
+   11 | #define BED_CHECK_INTERVAL 5000
+      | 
+In file included from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/temperature_control/temperature.h:102: warning: "PID_dT" redefined
+  102 | #define PID_dT ((58.0) / 1000)
+      | 
+In file included from inc/mycontrol.h:9,
+                 from inc/temperature_control/temperature.h:35,
+                 from inc/temperature_control/thermistortables.h:4,
+                 from src/app/thermistortables.c:18:
+inc/Configuration.h:223: note: this is the location of the previous definition
+  223 |   #define PID_dT ((58.0)/1000) //sampling period of the temperature routine
+      | 
+[CC] src/app/Timeout.c
+[CC] src/app/motherboard.c
+In file included from src/app/motherboard.c:4:
+inc/pins.h:57: warning: "enable_x" redefined
+   57 | #define enable_x() gpio_bits_set(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:195: note: this is the location of the previous definition
+  195 | #define enable_x()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:58: warning: "disable_x" redefined
+   58 | #define disable_x() gpio_bits_reset(GPIOA, GPIO_PINS_11)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:196: note: this is the location of the previous definition
+  196 | #define disable_x()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:74: warning: "enable_y" redefined
+   74 | #define enable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:197: note: this is the location of the previous definition
+  197 | #define enable_y()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:75: warning: "disable_y" redefined
+   75 | #define disable_y() do { } while (0)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:198: note: this is the location of the previous definition
+  198 | #define disable_y()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:92: warning: "enable_z" redefined
+   92 | #define enable_z() gpio_bits_set(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:199: note: this is the location of the previous definition
+  199 | #define enable_z()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:93: warning: "disable_z" redefined
+   93 | #define disable_z() gpio_bits_reset(GPIOC, GPIO_PINS_10)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:200: note: this is the location of the previous definition
+  200 | #define disable_z()
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:104: warning: "enable_a" redefined
+  104 | #define enable_a() gpio_bits_set(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:204: note: this is the location of the previous definition
+  204 | #define enable_a()   A_ENABLE_PORT->clr = A_ENABLE_PIN
+      | 
+In file included from src/app/motherboard.c:4:
+inc/pins.h:105: warning: "disable_a" redefined
+  105 | #define disable_a() gpio_bits_reset(GPIOF, GPIO_PINS_6)
+      | 
+In file included from inc/mycontrol.h:10,
+                 from src/app/motherboard.c:3:
+inc/stepper.h:205: note: this is the location of the previous definition
+  205 | #define disable_a()   A_ENABLE_PORT->scr = A_ENABLE_PIN
+      | 
+[CC] at32f423_board/at32f423_board.c
+[CC] src/bsp/adc.c
+[CC] src/bsp/at32f423_clock.c
+[CC] src/bsp/at32f423_int.c
+[CC] src/bsp/pwm.c
+src/bsp/pwm.c: In function 'MX_TIM3_Init':
+src/bsp/pwm.c:19:26: warning: unused variable 'tmr_oc_init_struct' [-Wunused-variable]
+   19 |   tmr_output_config_type tmr_oc_init_struct;
+      |                          ^~~~~~~~~~~~~~~~~~
+[CC] src/bsp/tim.c
+[CC] src/bsp/usart.c
+[CC] src/bsp/wk_exint.c
+[CC] src/bsp/wk_gpio.c
+[CC] libraries/drivers/src/at32f423_acc.c
+[CC] libraries/drivers/src/at32f423_adc.c
+[CC] libraries/drivers/src/at32f423_can.c
+[CC] libraries/drivers/src/at32f423_crc.c
+[CC] libraries/drivers/src/at32f423_crm.c
+[CC] libraries/drivers/src/at32f423_dac.c
+[CC] libraries/drivers/src/at32f423_debug.c
+[CC] libraries/drivers/src/at32f423_dma.c
+[CC] libraries/drivers/src/at32f423_ertc.c
+[CC] libraries/drivers/src/at32f423_exint.c
+[CC] libraries/drivers/src/at32f423_flash.c
+[CC] libraries/drivers/src/at32f423_gpio.c
+[CC] libraries/drivers/src/at32f423_i2c.c
+[CC] libraries/drivers/src/at32f423_misc.c
+[CC] libraries/drivers/src/at32f423_pwc.c
+[CC] libraries/drivers/src/at32f423_scfg.c
+[CC] libraries/drivers/src/at32f423_spi.c
+[CC] libraries/drivers/src/at32f423_tmr.c
+[CC] libraries/drivers/src/at32f423_usart.c
+[CC] libraries/drivers/src/at32f423_usb.c
+[CC] libraries/drivers/src/at32f423_wdt.c
+[CC] libraries/drivers/src/at32f423_wwdt.c
+[CC] libraries/drivers/src/at32f423_xmc.c
+[CC] libraries/cmsis/cm4/device_support/system_at32f423.c
+[AS] libraries/cmsis/cm4/device_support/startup/gcc/startup_at32f423.s
+[LD] build/fw_th.elf
+--- Firmware Memory Size Report ---
+   text	   data	    bss	    dec	    hex	filename
+  75976	    852	  17364	  94192	  16ff0	build/fw_th.elf
+make[1]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle'
+[PACK] Generating signed firmware with 128B Trailer & 140B Anchor...
+==================================================
+ [PACK] 固件打包完成
+ - 原始输入文件: build/fw_th.bin (76864 字节)
+ - 有效代码净载: 76864 字节
+ - 目标板卡架构: 0x42300001 [TH (AT32F423)]
+ - 固件版本编号: 0x0200960E
+ - 注入构建时间: 1795251316 (2026-11-21 16:55:16)
+ - SHA-256 摘要: 49b76a1d1f114b147a2d71cbb63efe11a93aa24b8130b2c35f50be35465bd914
+ - 最终输出文件: build/fw_th.bin (76992 字节)
+ - Sector 127 锚点: build/anchor.bin (140 字节)
+==================================================
+make: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/color-engine-mcu/io_toggle'
