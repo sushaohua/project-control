@@ -23,6 +23,7 @@
 | `v1.16` | `2026-11-20 18:25 +0800` | `AI (Antigravity-CLI) - COORD` | 补充 `SLICE-08` (`r16`) 真机首轮 HIL 分诊根因（`HIL-DEF-04` 触摸固定绑定 `event1`、`HIL-DEF-05` Klipper 故障弹窗覆盖与按钮/版本 Subject 缺失、`HIL-BLK-01` / `MCU-UART-01` MC `USART2` 失联），提出 `r17` 最小修复切片 `S08-HIL-FIX-02` 与可选 `S08-MCU-FIX-01` | **待用户审批 (`Human Gate #1`)**（选定方案 A/B 并确认物理旋转方向） |
 | `v1.17` | `2026-11-21 10:48 +0800` | `AI (Antigravity-CLI) - COORD` | 记录用户 `Human Gate #1` 拍板（批准 `S08-HIL-FIX-02` + 方案 A 解冻 `mcu-p3@feat/soc-debug` 实施 `S08-MCU-FIX-01` + 屏幕维持 `rotate: 270`）；同步源码物理核验后的 `S08-MCU-FIX-01` 精确初始化时序（`main.c` L186 `minimc_proto_init` 早于 L237 `eeprom_Init`，须在 `while(1)` 前复清并补齐 `USART_BFF_FLAG` 写清）与 6 文件预算，锁定 `SLICE-08 revision: 4` (`r17`) 软件闭环边界 | **已批准执行 `r17` SW 闭环**（实板刷写前仍须过 `Human Gate #2`） |
 | `v1.18` | `2026-11-21 14:58 +0800` | `AI (Antigravity-CLI) - COORD & ARCH` | 汇总 `r17b` 真机验证成果（`HIL-DEF-04/05` 触摸/界面/`AC-04` 100% 闭环）、2×2 控制变量实验及 `probe-rs` 现场硅片实锤证据（`PA2` `GPIO_DRIVE_STRENGTH_MODERATE -> STRONGER` 2.5s 恢复双板在线），合入当轮收口 `SLICE-08 revision: 5` (`r18`) 的 3 项最小修复（`MCU-UART-01` 终极修复 + `HIL-DEF-06` Stage-4 回 App 有界重询 + `HIL-DEF-07` `DeviceManager` 维护态退出闭环）；按选项 B 将 `bootloadermc` `0x01` 误锁 `stay_in_boot` 剥离至独立交接单 | **已批准执行 `r18` SW 闭环**（`2026-11-21 15:03` 用户“批准执行”；实板刷写前仍须过 `Human Gate #2`） |
+| `v1.19` | `2026-11-21 17:18 +0800` | `AI (Antigravity-CLI) - COORD` | 记录 `r18b` 四阶门禁 `SW-Verified`（`printer-soc@6f28023f`、`mcu-p3@a64bffbf`）及 `Human Gate #2` 获批后的实板 HIL 闭环证据（`664/664` 清单、`AC-03` 双板 OTA 直达 `SUCCEEDED 100%`、`DM` 自动退出维护态回 `IDLE`、`AC-09` AP 冷重启零干预双板 `ONLINE` `tx=213/rx=213`）；记录用户拍板**选项 B**将存量 `TH-ESTOP-01`（`color-engine-mcu` `0x17` 返回 `0B ACK`）按独立交接单延后至下一轮修复，准予 `SLICE-08` 升级 `HIL-Verified` 并封存停机 | **已批准按选项 B 结单 `SLICE-08`（`HIL-Verified`）并暂停** |
 
 ---
 
@@ -849,3 +850,17 @@ flowchart LR
      - **`AC-09-COLD-BOOT`**：执行 AP `sync && reboot` 冷重启（MC 不断电），验证重启后无需人工干预或 `probe-rs`，HelixScreen 自启且 **MC + TH 自动恢复 `ONLINE`**；
   4. **结单暂停**：经独立审计通过后将 `SLICE-08` 记入 `ledger.md` **`HIL-Verified`**，干净封存停机，绝不触碰 `boot/*` 或自动开启 `SLICE-09`。
 - **回滚预案**：若 `r18` 软件门禁或真机验证异常，保留全部原始日志，`mcu-p3` 回退至 `e5e45eea`、`printer-soc` 回退至 `c9a1541e`（板端切回 `r17b` 安装包与已归档固件），全程保持 `/data/boot_backup.img` 与 `boot/*` 零改动。
+
+---
+
+### 5.5 `r18b` 真机 HIL 收口结果与选项 B 延后交接单锁定（`v1.19`）
+
+1. **真机收口验证通过项**（物证归档于 [hil_r18b/](../evidence/SLICE-08/hil_r18b/HIL_R18B_SUMMARY.md)，全程 `probe_rs_used=false`、`heating_pwm_pct=0`、`/data/boot_backup.img` SHA-256 `59951adabc...` 不变）：
+   - **同源制品部署**：`printer-soc-rootfs.tar.gz`（`76e9348b...`, `git_sha=6f28023f`）原子覆盖 `/`，`652` 文件 + `12` 软链共 `664/664` 零误差，`fw_signing_pub.pem` 维持 `0o444`；
+   - **`AC-03` 双板真实串口 OTA（`HIL-DEF-06` 闭环）**：先 `TH`（`fw_th_r18.bin`, `76,864 B`）后 `MC`（`fw_mc_r18.bin`, `384,540 B`）走完 Stage 1～4，Stage-4 自动跨越 `MC` 启动窗直达 **`phase="SUCCEEDED", progress_pct=100, communication_error=0`**，双板均固化为 `0xA64BFFBF` 且 `boot_id` 真实更新；
+   - **`DM` 维护态退出与并发互斥（`HIL-DEF-07` & `AC-05-OTA-BUSY` 闭环）**：`FLASH_WRITING` 期间并发 `OtaCommand` 与急停均返回 `-5` (`BUSY`)；升级结束 `maintenance: true -> false` 后 `GetSnapshot` 的 `device_state` 自动恢复为 `"IDLE"`；
+   - **`AC-09-COLD-BOOT` 免干预冷重启自愈（`MCU-UART-01` 闭环）**：仅对 AP 执行 `sync && reboot`（双 MCU 不断电、零复位、零 `probe-rs`），重启后 `S90printer-soc` 自动拉起后台与 `helix-screen`（绑定 `/dev/fb0` + Goodix `/dev/input/event0`，`rotate=270`），`/dev/ttyS1` 计数 `tx=213, rx=213` 零丢包，`MC` 与 `TH`（`0xA64BFFBF`）自动恢复 `"ONLINE"`；`AC-09-DEV-MODE` 排他释放与恢复通过。
+2. **用户拍板选项 B 延后交接单（诚实边界声明）**：
+   - **`TH-ESTOP-01`**（`AC-05` 中 `MC` 已正常执行 `0x17` 并回 `4B ACK`，但存量 `mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c:661-670` 对 `plen==1` 返回 `0B ACK` 致 `Forward` 报 `-8`）：经用户 `2026-11-21 17:17` 明确拍板按 **选项 B** 豁免延后至下一轮控制面任务（`SLICE-09`）修复，独立交接单已归档于 [th_app_0x17_estop_ack_handoff_20261121_171500.md](./th_app_0x17_estop_ack_handoff_20261121_171500.md)；
+   - **`BOOT-MC-STAY-01`**（`bootloadermc` `0x01` 误置 `stay_in_boot`）：按先前用户拍板选项 B 归档于独立交接单 [bootloadermc_0x01_stay_in_boot_handoff_20261121_145800.md](./bootloadermc_0x01_stay_in_boot_handoff_20261121_145800.md)；
+   - **签发策略诚实边界**：本轮候选采用已批准的 `integrity-only-hil` 策略完成真机 P0 闭环，禁止直接生产晋级；正式生产发布仍须按 `DEC-SCREEN-08` 注入可信发布方密钥并执行 `signature-required` 封套晋级。
