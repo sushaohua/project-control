@@ -1,0 +1,1 @@
+{"slice_id":"SLICE-08","decision":"APPROVED","axis_spec_realism":"判据与锁定源码、方案 A、集成日志及隔离 QA 回执一致。r17b 的 7 个仓库提交与 server_lock 相符；触摸配置清洗、AISoC 弹窗与按钮处理、启动前注册关于页回调，以及 USART2 接收错误清除和复位路径均有对应实现与测试。制品摘要与归档记录一致。","axis_embedded_safety":"所审 USART2 路径保留循环 DMA 并清理错误和初始化噪声；宿主回归及 ARM 构建制包均有通过记录，两个 Bootloader 保持锁定提交。未发现本切片引入的阻断级嵌入式安全或 Diff Budget 问题；本审查不构成实板刷写批准。","findings":[]}

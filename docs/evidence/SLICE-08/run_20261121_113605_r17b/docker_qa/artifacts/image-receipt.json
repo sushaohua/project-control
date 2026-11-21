@@ -1,0 +1,62 @@
+{
+  "artifacts": {
+    "aml_upgrade_package.img": {
+      "bytes": 89827752,
+      "sha256": "4b5cd578cbcc14151797b0889995332f6fa5e5757de85f45896e05152281d491"
+    },
+    "rootfs.ubi": {
+      "bytes": 68681728,
+      "sha256": "906c6eb06ed01f4168708b8c01421f1bf9d4f10daef97219051d2cc2aa6b077b"
+    }
+  },
+  "in_image_post_strip_digest_map": {
+    "usr/bin/dbus-daemon": {
+      "image_sha256": "05bfd717b5d4808f89417494c70351d806131e56b34f5d08a4b7c9f3f494207b",
+      "product_sha256": "05bfd717b5d4808f89417494c70351d806131e56b34f5d08a4b7c9f3f494207b"
+    },
+    "usr/bin/dbus-send": {
+      "image_sha256": "ba1e7b225f3cd6c5948d01a9d0d5120c4ceb4175ac57ffa4f47927f1feb2fb1c",
+      "product_sha256": "ba1e7b225f3cd6c5948d01a9d0d5120c4ceb4175ac57ffa4f47927f1feb2fb1c"
+    },
+    "usr/bin/device_manager_daemon": {
+      "image_sha256": "754d57e580af38ae9ea274a5f942c678f83d095cc86395fab7005337fb84d5a1",
+      "product_sha256": "754d57e580af38ae9ea274a5f942c678f83d095cc86395fab7005337fb84d5a1"
+    },
+    "usr/bin/forward_service_daemon": {
+      "image_sha256": "a2b911d2d6a9f6ec533f30c9a1225306a80fd5a22ccc18b42f8beb316c432e03",
+      "product_sha256": "a2b911d2d6a9f6ec533f30c9a1225306a80fd5a22ccc18b42f8beb316c432e03"
+    },
+    "usr/bin/ui-gateway": {
+      "image_sha256": "8b90adf1ea30e86a6bf6bba30705809f9d4fc54e82af77dce8e540bba38aa16d",
+      "product_sha256": "8b90adf1ea30e86a6bf6bba30705809f9d4fc54e82af77dce8e540bba38aa16d"
+    },
+    "usr/lib/printer-soc/libaisoc_dds.so": {
+      "image_sha256": "dfd6685fc7a4a04de7c6619324b19ee58f6d5fda9cea3a1d6cd796dd7598f787",
+      "product_sha256": "dfd6685fc7a4a04de7c6619324b19ee58f6d5fda9cea3a1d6cd796dd7598f787"
+    },
+    "usr/lib/printer-soc/libdbus-1.so.3.38.3": {
+      "image_sha256": "e5f9cb3ec08b1110a9b38d328b45c38e1dfa5dba15b2d715cf5b7398f1d1351a",
+      "product_sha256": "e5f9cb3ec08b1110a9b38d328b45c38e1dfa5dba15b2d715cf5b7398f1d1351a"
+    },
+    "usr/lib/printer-soc/libexpat.so.1.6.11": {
+      "image_sha256": "4d6b0a4abb5f1a19ac12505cac951536f20365fdd7fa01d401d976283d750a54",
+      "product_sha256": "4d6b0a4abb5f1a19ac12505cac951536f20365fdd7fa01d401d976283d750a54"
+    },
+    "usr/lib/printer-soc/libfastcdr.so.2.2.5": {
+      "image_sha256": "1e554d8c17c8da2a1e557d1d5272f1af601ea351333b921ee244b2e934273af5",
+      "product_sha256": "1e554d8c17c8da2a1e557d1d5272f1af601ea351333b921ee244b2e934273af5"
+    },
+    "usr/lib/printer-soc/libfastdds.so.3.6.2.0": {
+      "image_sha256": "69a69a3cfd9829dd3ada30d8259e33f464b9191a669d838bda50b27cc3f2ab20",
+      "product_sha256": "69a69a3cfd9829dd3ada30d8259e33f464b9191a669d838bda50b27cc3f2ab20"
+    },
+    "usr/lib/printer-soc/libfoonathan_memory-0.7.3.so": {
+      "image_sha256": "e48b46a57c93cc4d9dcd35a63992f878528f8cd3cde539112d5124dfec0ade4e",
+      "product_sha256": "e48b46a57c93cc4d9dcd35a63992f878528f8cd3cde539112d5124dfec0ade4e"
+    },
+    "usr/share/printer-soc/helixscreen/bin/helix-screen": {
+      "image_sha256": "146f88194f31d3b0aee9c587934f7e4ac406fadfe488f061f4ba603ff0c7f54e",
+      "product_sha256": "146f88194f31d3b0aee9c587934f7e4ac406fadfe488f061f4ba603ff0c7f54e"
+    }
+  }
+}
