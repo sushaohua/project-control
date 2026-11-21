@@ -1,0 +1,21 @@
+独立只读双轴冷审切片（HIL-Verified 准出结单审查）: SLICE-08
+契约: project-control/contracts/c308l_platform_contract.yaml 与 project-control/contracts/minimc_v2_contract.yaml
+方案: project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md (重点 §5 及 §5.5 v1.19 用户已批准按选项 B 结单决定)
+延后交接单 (用户已明确批准按选项 B 延后至下一轮修复，不作为 SLICE-08 阻断项):
+- project-control/docs/planning/bootloadermc_0x01_stay_in_boot_handoff_20261121_145800.md (BOOT-MC-STAY-01)
+- project-control/docs/planning/th_app_0x17_estop_ack_handoff_20261121_171500.md (TH-ESTOP-01)
+锁定提交: {"printer-soc": "6f28023f7f1b774d181fc4ba59d3c378f260bfc1", "mcu-p3": "a64bffbf1a0c5cbc2fe96b51632098042697878b", "project-control": "725fcbe4ed9a0fe0037bef0e0e64864d09dca4eb", "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb", "test_harness": "fb1409be7ad5586c701df586553d7f5b67bc2b43", "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4", "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"}
+软件门禁已准出物证 (SW-Verified, 容器 5fc544710549): project-control/docs/evidence/SLICE-08/run_20261121_155747_r18b/verdict.json
+真机 HIL 收口物证目录 (C308L root@192.168.1.101):
+- 汇总: project-control/docs/evidence/SLICE-08/hil_r18b/HIL_R18B_SUMMARY.md
+- 部署与 664/664 清单校验: project-control/docs/evidence/SLICE-08/hil_r18b/02_deploy_r18b.log, 03_ac05_and_ac03_ota.log
+- AC-03 先 TH 后 MC 真实串口 OTA 直达 SUCCEEDED (100%)、双板固化 0xA64BFFBF、DM 自动退出 UPGRADING_MAINTENANCE 恢复 IDLE 及 AC-05-OTA-BUSY (-5): project-control/docs/evidence/SLICE-08/hil_r18b/04b_ac03_ota_th_mc_full.log, 04c_ac03_forward_and_dm_logs.log
+- AC-09-COLD-BOOT 仅 AP sync && reboot 零干预自愈 (HelixScreen 绑 Goodix event0, ttyS1 tx=213/rx=213, 双板 ONLINE): project-control/docs/evidence/SLICE-08/hil_r18b/05b_ac09_cold_boot_verified.log
+- AC-09-DEV-MODE 排他释放与恢复: project-control/docs/evidence/SLICE-08/hil_r18b/06_raw_wire_version_and_estop_proof.log
+- 前序 r17b 已闭环的触摸/界面/AC-04 4类完整性负例物证: project-control/docs/evidence/SLICE-08/hil_r17b/03_r17b_ui_and_touch_check.log, 04_ac04_negative_ota.log
+
+审查要点:
+1. 核验 r18b 真机 HIL 物证真实性（probe_rs_used=false、heating_pwm_pct=0、boot_backup.img SHA-256 恒定、0444 公钥、664/664 安装清单、AC-03 双板 OTA Stage-4 SUCCEEDED 100% 且 boot_id 真实变化、DM 维护态退出回 IDLE、AC-09 冷重启双板自动恢复 ONLINE）。
+2. 核验两项用户明确拍板按选项 B 延后的存量问题（BOOT-MC-STAY-01 与 TH-ESTOP-01）是否均已诚实落盘独立交接单并在方案 v1.19 明示边界（不伪造已通过，按用户豁免决定记为 MINOR/技术债交下一轮）。
+3. 核验 integrity-only-hil 候选未伪称生产晋级（正式发布仍待可信发布方密钥）。
+请严格按 BLOCKER / MINOR / NIT 分级。

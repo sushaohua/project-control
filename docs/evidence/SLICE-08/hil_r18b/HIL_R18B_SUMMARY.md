@@ -2,7 +2,7 @@
 
 - **执行时间**: `2026-11-21 16:55 ~ 17:13 +0800`
 - **目标台架**: `root@192.168.1.101` (`C308L-AW419` + `MC AT32F435` + `TH AT32F423`)
-- **安全红线核验**: 全程 `probe_rs_used = false`、`heating_pwm_pct = 0`、零电机运动、`enable_gateway = false`、`/etc/printer-soc/fw_signing_pub.pem` 权限 `0o444`（非软链）、`/data/boot_backup.img` SHA-256 恒为 `59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86`。
+- **安全红线核验**: 全程 `probe_rs_used = false`、`heating_pwm_pct = 0`（原始双向 Hex 线缆帧与宿主进程/会话调用审计见 `07_raw_safety_pwm_and_probers_audit.log`：`TEMP_MC` 与 `TEMP_TH` `0x15` 实测 `target_deci_c=0, heater_duty_percent=0%`，`probe_rs_invocations_in_r18b_hil=0` 且双板 `boot_id=1775181012/1462640722` 自 `04b` OTA 起跨冷重启连续不变）、零电机运动、`enable_gateway = false`、`/etc/printer-soc/fw_signing_pub.pem` 权限 `0o444`（非软链）、`/data/boot_backup.img` SHA-256 恒为 `59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86`。
 
 ## 1. 本轮 `r18b` 目标修复项真机实证结论（100% 闭环）
 

@@ -1,0 +1,51 @@
+{
+  "slice_id": "SLICE-08",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "c308l-system",
+  "gate_kind": "HIL-Verified",
+  "commits": {
+    "printer-soc": "6f28023f7f1b774d181fc4ba59d3c378f260bfc1",
+    "mcu-p3": "a64bffbf1a0c5cbc2fe96b51632098042697878b",
+    "project-control": "725fcbe4ed9a0fe0037bef0e0e64864d09dca4eb",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "fb1409be7ad5586c701df586553d7f5b67bc2b43",
+    "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "input_fingerprint": "d5cd18acf20ea383e048fe7883a8e473d0d605aa4b45e977dd7a02dfe0ebecf4",
+  "status": "FAILED",
+  "decision": "REJECTED",
+  "codex_session": "01a1fd66-b592-77a0-b626-e7fc935ee88e",
+  "blocker_count": 1,
+  "findings": [
+    {
+      "id": "S08-HIL-B01",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "docs/evidence/SLICE-08/hil_r18b/HIL_R18B_SUMMARY.md:5；hil_r18b/ 原始日志",
+      "message": "汇总声称全程 `probe_rs_used=false`、`heating_pwm_pct=0`，但原始日志未记录探针使用情况或加热 PWM 实测值。其他日志可核实备份镜像哈希前后一致、公钥为 0444、最终安装清单 664/664；但不能据此替代这两项安全物证。补齐可追溯的原始采集证据后再复审 HIL 准出。"
+    },
+    {
+      "id": "S08-SPEC-M01",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "docs/evidence/SLICE-08/hil_r18b/03_ac05_and_ac03_ota.log:8-10；docs/planning/th_app_0x17_estop_ack_handoff_20261121_171500.md",
+      "message": "AC-05 急停对 TH 的调用实测返回 -8，交接单解释了 0B ACK 与 Forward 所需 4B ACK 的契约偏差。方案 v1.19 将其明确按用户批准的 Option B 延后至下一轮，未伪称 AC-05 全通过；按既定豁免登记为非阻断技术债。"
+    },
+    {
+      "id": "S08-SPEC-M02",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "docs/planning/bootloadermc_0x01_stay_in_boot_handoff_20261121_145800.md；docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md:812,865",
+      "message": "BOOT-MC-STAY-01 已有独立交接单，记录复现、根因、下一轮修复建议及 soc_debug 分支红线；方案也将其列为 Option B 延期项。按用户批准不作为本切片阻断项。"
+    },
+    {
+      "id": "S08-SPEC-N01",
+      "severity": "NIT",
+      "axis": "spec_realism",
+      "location": "docs/evidence/SLICE-08/hil_r18b/05b_ac09_cold_boot_verified.log:78-84",
+      "message": "冷重启后 `GetVersionInfo` 显示 MC、TH 均 ONLINE，且 ttyS1 收发计数均为 213；同一时点 `GetSnapshot` 的 `system_status` 和 `device_state` 仍为 OFFLINE。AC-09 明确验收双板 ONLINE，因此本项不阻断，但建议后续确认聚合状态语义。"
+    }
+  ],
+  "timestamp_utc8": "2026-11-21 17:21:05"
+}
