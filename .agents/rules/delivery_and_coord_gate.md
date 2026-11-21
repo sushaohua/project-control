@@ -37,10 +37,10 @@ AP 使用 `printer-soc`，SDK 使用 `sdk/c308l` 独立 Repo 客户端，角色�
    - **PM/ARCH 自动拉起与模型选择**（[实施方案](../../docs/planning/pm_arch_model_dispatch_implementationplan_20261121_121337.md)）：COORD 即用户启动的主会话，不派发自身。进入 Phase 1 时先读 `project-control/config/role_models.yaml`（只允许 `PM`、`ARCH` 两键，出现其他键即停止自动拉起并报告）；需产品澄清先拉起 PM，PM 交出产品定义后再拉起 ARCH，目标明确的小修只拉起 ARCH，双方往返由 COORD 中转。
      - agy 主会话：首次拉起前加载 `swarm_pane` 技能；用 `swarm models` 依次检查 `model`、`fallback_model`，取第一个在清单内且额度大于 0% 的执行 `swarm add(name="pm"|"arch", model=<ID>, workspace="inherit", brief=<指针>)`；两者都不可用才省略 `model` 继承主会话并记录；拉起后用 `swarm status` 记录实际型号。
      - Codex 主会话：用原生方式拉起子会话；配置中的 `codex` 项未核实前继承主会话模型并记录。
-     - brief 只写指针，不复制历史对话：角色、技能（`product-requirements` / `arch-deep-spec`）、写入边界（仅本任务方案的产品或技术章节）、方案路径、用户原话摘要；交回 COORD 的格式为 `{plan_path, plan_revision, changed_sections, open_items}`。
+     - brief 只写指针，不复制历史对话：角色、技能（`product-requirements` / `arch-deep-spec`）、写入边界（仅本任务方案的产品或技术章节）、方案路径、用户原话摘要；交回 COORD 的格式为 `{plan_path, plan_revision, changed_sections, open_items}`，交回消息须以 `@coordinator` 开头（否则唤醒不了主会话）。
      - 复用已在线的 PM/ARCH 前，先用 `swarm status` 核对实际型号，并按上述顺序重新确定目标型号；不一致时，成员处于 `waiting` 就用 `swarm model` 切换（保留对话），处于 `working` 就等本轮结束再切换。
-     - 每次拉起、复用或切换都写运行记录 `project-control/docs/evidence/planning/<方案文件名>/dispatch_<role>_<YYYYMMDD_HHMMSS>.json`，字段 `role, action, main_session, requested_model, effective_model, fallback_reason, member_name, ts`；`effective_model` 取 `swarm status`，查不到记 `unverified`。
-     - PM/ARCH 修订方案时，修订人写 `AI (Antigravity-CLI / <角色> / <型号 ID>)`；方案获批前保持在线，不执行 `swarm kill`。
+     - 每次拉起、复用或切换都写运行记录 `project-control/docs/evidence/planning/<方案文件名>/dispatch_<role>_<YYYYMMDD_HHMMSS>.json`，字段 `role, action, main_session, requested_model, effective_model, fallback_reason, member_name, ts`，其中 `action` 取 `spawn | reuse | switch`；`effective_model` 取 `swarm status`，查不到记 `unverified`。
+     - PM/ARCH 修订方案时，修订人写 `AI (<实际客户端实体，如 Antigravity-CLI / Antigravity-IDE / Codex> / <角色> / <型号 ID>)`；方案获批前保持在线，不执行 `swarm kill`。
 2. **Phase 2（`run_workflow` 有界自动巡航）**：
    - `COORD` 通过 `project-control/tools/workflow/run_slice_batch.py` 按序推进批次切片，以追加式账本 `project-control/slices/ledger.md` 实现幂等断点续跑，耗时 $>1\text{ min}$ 步骤通过 `phase()`/`log()` 实时输出进度。
    - **`COORD` 业务仓只读硬铁律**：`COORD` 严禁直接修改 `printer-soc/`、`mcu-p3/`、`test_harness/`、`boot/bootloadermc/`、`boot/bootloaderth/`，所有代码变更必须委派对应 `ENG-*` / `ENG_BOOT_*` / `INTEGRATOR` 执行。

@@ -11,6 +11,7 @@
 | `v0.5` | `2026-11-21 15:27:26` | `AI (Antigravity-CLI)` | 用户更正 ARCH 的备用型号：由 `claude-opus-5-5-high` 改为 `gemini-4-neon-xhigh`（与 PM 相同） | 沿用 v0.3 的批准（范围和预算未变）；仍按 §7 暂缓实施 |
 | `v0.6` | `2026-11-21 18:24:47` | `AI (Antigravity-CLI)` | **PMARCH-01 已实施**：18:23 核查 ledger 第 30 行已有 SLICE-08 `HIL-Verified`（17:26:46，提交 `1f8399f`），无门禁进程，本地与 `origin/main` 一致，无已跟踪的未提交改动。提交 `58ee28d` 新增 `config/role_models.yaml`（+12），`delivery_and_coord_gate.md` 升到 revision 9（+9/-2），合计 23 行，不超过 45；YAML 解析和键校验通过；`test_v2_gates.py` 12 项全部通过；`fast_gate.py --files` 退出码 0。PMARCH-02 实测待在新的 agy 会话中进行 | PMARCH-01 完成；PMARCH-02 待执行 |
 | `v0.7` | `2026-11-21 18:29:30` | `AI (Antigravity-CLI)` | **PMARCH-02 实测完成**（agy 主会话，coordinator 为 `claude-opus-5-5-high`）：① 按规则加载 `swarm_pane`，`swarm models` 显示主型号额度 96%，`swarm add` 拉起的 pm、arch，`swarm status` 显示的实际型号分别为 `gemini-4-neon-high`、`gemini-4-carbon-high`，与配置一致；② pm 处于 `waiting` 时用 `swarm model` 切到 `gemini-4-neon-xhigh`，只凭对话记忆答对上一轮的 `plan_revision=v0.6` 和 summary 开头，对话保留；随后按复用前核对规则切回主型号；③ 退回顺序只做了逻辑演练（全部可用 / 主型号不可用 / 主备都不可用），没有在运行时注入故障；④ 两者都按规定格式交回。ARCH 提出 4 条非阻塞意见，记录在 `returns_pm_arch_20261121.json`，待用户决定是否另行修订。证据目录：`docs/evidence/planning/pm_arch_model_dispatch/`。没有实测的部分：Codex 主会话、真实额度耗尽时的退回 | PMARCH-01、PMARCH-02 完成 |
+| `v0.8` | `2026-11-21 18:35:35` | `AI (Antigravity-CLI)` | 用户 18:35 指示修复 PMARCH-02 中 ARCH 提出的 3 条意见：① 运行记录的 `action` 取 `spawn \| reuse \| switch`；② 修订人按实际客户端实体填写；③ 交回消息须以 `@coordinator` 开头。同步修改 §3.2 第 4–6 条和 `delivery_and_coord_gate.md` 第 40、42、43 行，只改这 3 行，总 Diff 仍在 45 行以内 | 用户指示执行（18:35） |
 
 ## 1. 产品目标与范围
 
@@ -88,9 +89,9 @@ roles:
    - 用 `swarm models` 依次检查 `model`、`fallback_model`，取第一个在清单里且额度大于 0% 的，执行 `swarm add(name="pm" | "arch", model=<ID>, workspace="inherit", brief=<拉起说明>)`；两者都不可用时省略 `model`（继承主会话）并记录；
    - 拉起后用 `swarm status` 记下实际型号。
 3. **Codex 主会话**：用 Codex 原生方式拉起子会话，配置里的 `codex` 项还没核实时继承主会话模型并记录。
-4. **拉起说明（brief）只写指针**，不复制历史对话：角色、对应技能（`product-requirements` 或 `arch-deep-spec`）、写入边界（只改本任务方案的产品章节或技术章节）、方案路径、用户原话摘要，以及交回格式 `{plan_path, plan_revision, changed_sections, open_items}`，交回对象为 COORD。
-5. **运行记录**：写到 `docs/evidence/planning/<方案文件名>/dispatch_<role>_<YYYYMMDD_HHMMSS>.json`，字段为 `role, main_session, requested_model, effective_model, fallback_reason, member_name, ts`。`effective_model` 取 `swarm status` 的结果，查不到时为 `unverified`。
-6. **修订人**：PM/ARCH 修改方案时，修订人写成 `AI (Antigravity-CLI / PM / <型号 ID>)` 这种格式。
+4. **拉起说明（brief）只写指针**，不复制历史对话：角色、对应技能（`product-requirements` 或 `arch-deep-spec`）、写入边界（只改本任务方案的产品章节或技术章节）、方案路径、用户原话摘要，以及交回格式 `{plan_path, plan_revision, changed_sections, open_items}`，交回对象为 COORD，交回消息须以 `@coordinator` 开头。
+5. **运行记录**：写到 `docs/evidence/planning/<方案文件名>/dispatch_<role>_<YYYYMMDD_HHMMSS>.json`，字段为 `role, action, main_session, requested_model, effective_model, fallback_reason, member_name, ts`，`action` 取 `spawn | reuse | switch`。`effective_model` 取 `swarm status` 的结果，查不到时为 `unverified`。
+6. **修订人**：PM/ARCH 修改方案时，修订人写成 `AI (<实际客户端实体> / PM / <型号 ID>)` 这种格式，客户端实体按实际填写，如 `Antigravity-CLI`、`Antigravity-IDE`、`Codex`。
 7. **生命周期**：方案获批之前，PM/ARCH 一直保持在线（空闲时处于 `waiting`，不消耗额度），以便返工；第一步不执行 `swarm kill`。
 8. **复用前核对**：每次给已在线的 PM/ARCH 派活之前，先用 `swarm status` 核对实际型号，再按 S8 的顺序重新确定应该用的型号。两者不一致时：成员空闲就用 `swarm model` 切换（保留对话）；成员正在工作就等这一轮结束再切换。写入运行记录（`action: reuse | switch`）。
 
