@@ -1,0 +1,44 @@
+{
+  "slice_id": "SLICE-08",
+  "batch_id": "BATCH-HELIX-P0-01",
+  "profile": "c308l-system",
+  "gate_kind": "HIL-Verified",
+  "commits": {
+    "printer-soc": "6f28023f7f1b774d181fc4ba59d3c378f260bfc1",
+    "mcu-p3": "a64bffbf1a0c5cbc2fe96b51632098042697878b",
+    "project-control": "3c24d42872eef3f96674fac20c7d4c3611598133",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "fb1409be7ad5586c701df586553d7f5b67bc2b43",
+    "boot/bootloadermc": "3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "input_fingerprint": "68ac2cfd3724021eb157338dc8c85385faab9ca112b36d81356ac9641a8b719c",
+  "status": "PASSED",
+  "decision": "APPROVED",
+  "codex_session": "01a1fd6b-eccd-7ea3-90b7-c93c478fe86b",
+  "blocker_count": 0,
+  "findings": [
+    {
+      "id": "SLICE08-BOOT-MC-STAY-01",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "boot/bootloadermc/bootloader/src/boot_uart_ota.c:323-337；project-control/docs/planning/bootloadermc_0x01_stay_in_boot_handoff_20261121_145800.md",
+      "message": "只读 0x01 查询可能置位 stay_in_boot，导致 MC 复位后停留在 Bootloader。交接单记录了复现、根因和下一轮修复边界；方案 v1.19 按用户批准的选项 B 延后，因此不阻断 SLICE-08。"
+    },
+    {
+      "id": "SLICE08-TH-ESTOP-01",
+      "severity": "MINOR",
+      "axis": "embedded_safety",
+      "location": "mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c:661-670；project-control/docs/planning/th_app_0x17_estop_ack_handoff_20261121_171500.md",
+      "message": "TH 对 0x17 返回 0B ACK，而 Forward 要求 4B ACK，实测 AC-05 返回 -8；交接单也记录 stop_mode=0 的解除语义偏差。该问题按用户批准的选项 B 延后，并在 v1.19 明示为下一轮事项，作为 MINOR 技术债记录，不阻断本切片。"
+    },
+    {
+      "id": "SLICE08-SW-N1",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/forward/modules/ota/ota_transfer.cpp:16",
+      "message": "软件门禁 verdict 记录 Stage-4 重试次数注释称“首轮 + 最多8次重询”，实际常量对应总探测 8 轮（首轮加 7 次重询）。实现符合最多 8 轮判据；该注释偏差为非阻断项。"
+    }
+  ],
+  "timestamp_utc8": "2026-11-21 17:26:46"
+}

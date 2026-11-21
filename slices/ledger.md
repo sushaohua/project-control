@@ -27,6 +27,8 @@
 
 | 2026-11-21 16:30:58 | BATCH-HELIX-P0-01 | SLICE-08 | SW-Verified | `printer-soc:6f28023,mcu-p3:a64bffb,project-control:d528cd5,agents:30ecc65,test_harness:fb1409b,boot/bootloadermc:3e01c00,boot/bootloaderth:1a03513; inputs=ceea6db89736859451720586a4239dc1f8a6dc064c976e6422912431dc613363` | `5fc544710549` | `01a1fd38-682b-7dc1-853a-45cf18e9640f` | `8dfca02c9e446448` |
 
+| 2026-11-21 17:26:46 | BATCH-HELIX-P0-01 | SLICE-08 | HIL-Verified | `printer-soc:6f28023,mcu-p3:a64bffb,project-control:3c24d42,agents:30ecc65,test_harness:fb1409b,boot/bootloadermc:3e01c00,boot/bootloaderth:1a03513; inputs=68ac2cfd3724021eb157338dc8c85385faab9ca112b36d81356ac9641a8b719c` | `5fc544710549` | `01a1fd6b-eccd-7ea3-90b7-c93c478fe86b` | `b418e4ba5fb032a2` |
+
 ## 2. 非阻断技术债登记表 (`MINOR` Findings)
 
 | 时间戳 (UTC+8) | 切片 ID | 审计轴 | 代码位置 | 问题描述与后续收敛建议 |
@@ -36,3 +38,5 @@
 | 2026-11-19 11:11:43 | SLICE-06 | `spec_realism` | `printer-soc/tests/packaging/test_product_package.py:245-268` | 监管器测试只在没有活动子进程、UART/fb0 节点不存在的夹具中验证 dev-mode/status/inhibit；未直接启动并停止监管器及真实子进程来验证退出后 UART 与 fb0 无残留。实现中有停止等待和资源占用检查，但该生命周期闭环缺少运行时回归覆盖。 |
 | 2026-11-19 14:20:02 | SLICE-07 | `spec_realism` | `project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md:474,575` | 方案将签名范围写作 trailer[0..52]，按闭区间理解为 53B；验收要求 52B trailer[0..51]，且签发脚本使用前 52B、验证实现传入长度 52U，实际代码符合验收。建议将方案中的边界统一改为 trailer[0..51] 或明确写“前 52 字节”。 |
 | 2026-11-21 16:30:58 | SLICE-08 | `spec_realism` | `printer-soc/services/forward/modules/ota/ota_transfer.cpp:16` | Stage-4 重试次数注释称“首轮 + 最多8次重询”，但常量控制的总探测次数为8轮（首轮加7次重询）。实现符合“最多8轮”判据，建议修正注释以免误读。 |
+| 2026-11-21 17:26:46 | SLICE-08 (`BOOT-MC-STAY-01`) | `spec_realism` | `boot/bootloadermc/bootloader/src/boot_uart_ota.c:323-337` | 只读 `0x01` 查询置位 `stay_in_boot` 致 MC 复位撞上 2s 探测窗时驻留 Bootloader（不影响 `0x22` 直接 `jump_to_app()`）。按用户批准选项 B 延后至下一轮 `soc_debug` 修复，交接单：`project-control/docs/planning/bootloadermc_0x01_stay_in_boot_handoff_20261121_145800.md`。 |
+| 2026-11-21 17:26:46 | SLICE-08 (`TH-ESTOP-01`) | `embedded_safety` | `mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c:661-670` | TH App 对 `0x17` (`plen=1`) 返回 `0B ACK`（Forward 要求 `4B ACK` 致 `AC-05` 返 `-8`）且未区分 `stop_mode=0` 解除语义。按用户批准选项 B 延后至下一轮控制面任务修复，交接单：`project-control/docs/planning/th_app_0x17_estop_ack_handoff_20261121_171500.md`。 |
