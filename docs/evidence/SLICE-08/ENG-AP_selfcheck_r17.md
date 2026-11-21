@@ -51,3 +51,18 @@
 - 本阶段在宿主机完成全部 Python 单测、集成测试、XML/Shell/AST/Diff Budget 校验与 C++ 防回归守卫校验；
 - C308L ARM `helix-screen` 交叉编译、全量 `qa_commands` 与 UBIFS/AML 打包构建将在后续 `COORD` / `qa_runner.py` 独立只读 Docker 沙箱及 `Human Gate #2` 批准后的真机 HIL 验收中实测验证；
 - 严守边界：未修改 `mcu-p3/`、`boot/`、`test_harness/`、`sdk/`、`agents/` 或根仓文件。
+
+
+---
+
+## 4. Round 1 定向返修（`r17b`：`test_ota_e2e.py` 双节点 ONLINE 竞态修复）
+
+- **最新候选提交 (`candidate_commit`)**: `c9a1541ed8a54b83ec26799153754fa710b5e57b`（`printer-soc` `main`，已完成 `fetch origin main && rebase origin/main && push origin main`，线性历史且工作树干净）
+- **根因与最小修复**：
+  - `printer-soc/tests/ota/test_ota_e2e.py` 第 393 行 `_wait_dm_online()` 原仅判断 `'"status":"ONLINE"' in res.stdout` 即退出轮询，可能在 `DM` 仅完成 `MC` 探测、尚未完成 500ms 轮询下的 `TH` `QueryVersion` 时提前放行，导致随后的 `EmergencyStop(byte:0)` 校验 `node_ready(TH)` 误返 `-9`。
+  - **仅修改文件**：`printer-soc/tests/ota/test_ota_e2e.py`（`+2 / -1` 行），将第 393 行改为 `if res.returncode == 0 and res.stdout.count('"status":"ONLINE"') >= 2:` 并附中文说明注释；未触碰任何其他源码文件（累计修改 9 个文件 `<= max_files: 9`）。
+- **提交后实测命令与退出码（均在 `c9a1541ed8a54b83ec26799153754fa710b5e57b` 推送后执行）**：
+  1. `python3 project-control/tools/gates/fast_gate.py --workspace . --files printer-soc/tests/ota/test_ota_e2e.py` -> 退出码 `0`
+  2. `python3 project-control/tools/gates/fast_gate.py --workspace . --slice project-control/slices/SLICE-08.yaml` -> 退出码 `0`
+  3. `python3 -B -m unittest printer-soc/services/helixscreen/platform/c308l/tests/test_tools.py printer-soc/tests/packaging/test_product_package.py` -> 退出码 `0`（`Ran 28 tests in 0.612s`, `OK`）
+  4. `git -C printer-soc rev-parse HEAD origin/main` -> `c9a1541ed8a54b83ec26799153754fa710b5e57b`（`nothing to commit, working tree clean`）

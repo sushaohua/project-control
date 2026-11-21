@@ -1,0 +1,10 @@
+{
+  "helix": {
+    "bytes": 4932,
+    "sha256": "efd3a58acc4820509513540d1678cfdf8da2d7efd17b32a461916428b7e04fec"
+  },
+  "services": {
+    "bytes": 2612122,
+    "sha256": "c3f6194b76bc4f0ea2e9beb77002b01b3d62220fe651fdac5d64995721cd1f93"
+  }
+}

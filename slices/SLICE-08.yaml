@@ -23,6 +23,7 @@ subtasks:
       - "services/helixscreen/ui_xml/advanced_panel.xml"
       - "services/helixscreen/platform/c308l/tests/test_tools.py"
       - "tests/packaging/test_product_package.py"
+      - "tests/ota/test_ota_e2e.py"
     diff_budget:
       max_files: 9
       protected_globs: ["*services/helixscreen/src/application/**", "*services/helixscreen/src/ui/**"]
