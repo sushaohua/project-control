@@ -1,0 +1,36 @@
+{
+  "role": "PM",
+  "action": "switch",
+  "main_session": "agy / coordinator=claude-opus-5-5-high",
+  "member_name": "pm",
+  "conversation_id": "b20c95eb-f7f7-4e99-877f-343901071d1c",
+  "steps": [
+    {
+      "ts": "2026-11-21T18:27:43+08:00",
+      "from": "gemini-4-neon-high",
+      "to": "gemini-4-neon-xhigh",
+      "state_before": "waiting",
+      "reason": "PMARCH-02 实测：模拟配置变更后复用"
+    },
+    {
+      "ts": "2026-11-21T18:28:00+08:00",
+      "check": "切换后只凭对话记忆回答",
+      "answer": {
+        "recall_revision": "v0.6",
+        "recall_summary_head": "在不改变现有角色职责、写入边界"
+      },
+      "expected": {
+        "plan_revision": "v0.6",
+        "summary_head": "在不改变现有角色职责、写入边界"
+      },
+      "context_retained": true
+    },
+    {
+      "ts": "2026-11-21T18:28:10+08:00",
+      "from": "gemini-4-neon-xhigh",
+      "to": "gemini-4-neon-high",
+      "reason": "复用前核对：与 role_models.yaml 主型号不一致，按规则切回"
+    }
+  ],
+  "effective_model_source": "swarm status"
+}

@@ -1,0 +1,13 @@
+{
+  "action": "spawn",
+  "main_session": "agy / coordinator=claude-opus-5-5-high (swarm status)",
+  "fallback_reason": null,
+  "ts": "2026-11-21T18:26:26+08:00",
+  "models_check": "swarm models 18:26:13: 主型号在清单内，额度 96%",
+  "role": "PM",
+  "requested_model": "gemini-4-neon-high",
+  "effective_model": "gemini-4-neon-high",
+  "member_name": "pm",
+  "conversation_id": "b20c95eb-f7f7-4e99-877f-343901071d1c",
+  "effective_model_source": "swarm status 18:26:34"
+}

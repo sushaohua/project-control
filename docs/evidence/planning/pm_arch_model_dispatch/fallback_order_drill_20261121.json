@@ -1,0 +1,35 @@
+{
+  "note": "选型顺序逻辑演练，未在运行时注入故障",
+  "cases": {
+    "全部可用": {
+      "PM": {
+        "selected": "gemini-4-neon-high",
+        "fallback_reason": null
+      },
+      "ARCH": {
+        "selected": "gemini-4-carbon-high",
+        "fallback_reason": null
+      }
+    },
+    "主型号不可用": {
+      "PM": {
+        "selected": "gemini-4-neon-xhigh",
+        "fallback_reason": "primary_unavailable"
+      },
+      "ARCH": {
+        "selected": "gemini-4-neon-xhigh",
+        "fallback_reason": "primary_unavailable"
+      }
+    },
+    "主备都不可用": {
+      "PM": {
+        "selected": null,
+        "fallback_reason": "primary_and_fallback_unavailable->inherit"
+      },
+      "ARCH": {
+        "selected": null,
+        "fallback_reason": "primary_and_fallback_unavailable->inherit"
+      }
+    }
+  }
+}

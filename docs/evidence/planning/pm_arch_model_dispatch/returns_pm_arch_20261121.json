@@ -1,0 +1,22 @@
+{
+  "source": "swarm 消息板 #3 / #6（原文 JSON）",
+  "pm_seq3_2026-11-21T18:27:24": {
+    "plan_path": "project-control/docs/planning/pm_arch_model_dispatch_implementationplan_20261121_121337.md",
+    "plan_revision": "v0.6",
+    "changed_sections": [],
+    "open_items": [],
+    "summary_head": "在不改变现有角色职责、写入边界与审批流程的前提下，由 COORD 主会话在阶段一自动拉起 PM、ARCH 并指定各自高级模型"
+  },
+  "arch_seq6_2026-11-21T18:29:10": {
+    "plan_revision": "v0.6",
+    "changed_sections": [],
+    "open_items_count": 4,
+    "open_items": [
+      "运行记录 action 未定义首次拉起取值（spawn）；路径口径 <方案文件名> 与 pm_arch_model_dispatch/ 不一致",
+      "修订人固定写 Antigravity-CLI，应按实际客户端实体填写",
+      "主备型号同属 Gemini 配额池，可能同步耗尽",
+      "brief 应要求以 @coordinator 前缀交回，否则唤醒不了主会话；只读核查轮建议允许可选 summary"
+    ],
+    "summary_head": "核对通过：config/role_models.yaml 与方案 §3.1、§4 完全一致；delivery_and_coord_gate.md（rev 9）第 37–43 行完整落实方案 §3.2 全部 8 条规则"
+  }
+}
