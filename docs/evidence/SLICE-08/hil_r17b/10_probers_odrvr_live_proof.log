@@ -1,0 +1,56 @@
+=== [1] PRE-WRITE AP MESON_UART & VERSION ===
+ 02:20:45 up  2:20,  load average: 1.31, 1.35, 1.36
+serinfo:1.0 driver revision:
+0: uart:meson_uart mmio:0xFE07A000 irq:36 tx:2700 rx:1 RTS|CTS|DTR
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:268958 rx:29163 RTS|CTS|DTR
+ 37:       4156          0     GIC-0 204 Edge      ttyS1
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: '/var/run/printer-soc/state.json'
+Failed to open connection to "session" message bus: Using X11 for dbus-daemon autolaunch was disabled at compile time, set your DBUS_SESSION_BUS_ADDRESS instead
+=== [2] PRE-WRITE MC VTOR & GPIOA->ODRVR ===
+VTOR_PRE=08020000 ODRVR_PRE=55695aa5
+=== [3] WRITE GPIOA->ODRVR (0x40020008 = 0x55695A95: PA2 MODERATE -> STRONGER) ===
+=== [4] POST-WRITE MC VTOR & GPIOA->ODRVR READBACK ===
+08020000
+55695a95
+=== [5] WAIT 2.5s & CHECK AP MESON_UART + DBUS VERSION ===
+ 02:20:48 up  2:20,  load average: 1.29, 1.34, 1.35
+serinfo:1.0 driver revision:
+0: uart:meson_uart mmio:0xFE07A000 irq:36 tx:2700 rx:1 RTS|CTS|DTR
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:269056 rx:29343 RTS|CTS|DTR
+ 37:       4201          0     GIC-0 204 Edge      ttyS1
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: '/var/run/printer-soc/state.json'
+Failed to open connection to "session" message bus: Using X11 for dbus-daemon autolaunch was disabled at compile time, set your DBUS_SESSION_BUS_ADDRESS instead
+Failed to open connection to "session" message bus: Using X11 for dbus-daemon autolaunch was disabled at compile time, set your DBUS_SESSION_BUS_ADDRESS instead
+serinfo:1.0 driver revision:
+0: uart:meson_uart mmio:0xFE07A000 irq:36 tx:2700 rx:1 RTS|CTS|DTR
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:269616 rx:30543 RTS|CTS|DTR
+ 37:       4398          0     GIC-0 204 Edge      ttyS1
+BUS=unix:path=/tmp/dbus-0fjoEbudrj,guid=64d629beeb237cfcbc1dfc5c000017d5
+Error org.freedesktop.DBus.Error.ServiceUnknown: The name org.aisoc.ForwardService was not provided by any .service files
+Error org.freedesktop.DBus.Error.ServiceUnknown: The name org.aisoc.DeviceManager was not provided by any .service files
+Error org.freedesktop.DBus.Error.ServiceUnknown: The name org.aisoc.DeviceManager was not provided by any .service files
+Error org.freedesktop.DBus.Error.UnknownMethod: Method "GetPortStatus" with signature "" on interface "org.aisoc.ForwardInterface" doesn't exist
+
+Error org.freedesktop.DBus.Error.UnknownMethod: Method "GetVersionInfo" with signature "" on interface "org.aisoc.DeviceInterface" doesn't exist
+
+Error org.freedesktop.DBus.Error.UnknownMethod: Method "GetSnapshot" with signature "" on interface "org.aisoc.DeviceInterface" doesn't exist
+
+Error org.freedesktop.DBus.Error.UnknownMethod: Method "GetPortStatus" with signature "" on interface "org.aisoc.ForwardInterface" doesn't exist
+
+Error org.freedesktop.DBus.Error.UnknownMethod: Method "GetVersionInfo" with signature "" on interface "org.aisoc.DeviceInterface" doesn't exist
+
+Error org.freedesktop.DBus.Error.UnknownMethod: Method "GetSnapshot" with signature "" on interface "org.aisoc.DeviceInterface" doesn't exist
+
+method return time=8651.403673 sender=:1.0 -> destination=:1.25 serial=11848 reply_serial=2
+   boolean true
+   string "/dev/ttyS1"
+   uint64 5919
+   uint64 379
+method return time=8651.517418 sender=:1.1 -> destination=:1.26 serial=8910 reply_serial=2
+   string "{"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":87314761,"git_commit":"0xE5E45EEA","capability_flags":3,"last_update_ns":8651402792041},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":3292647499,"git_commit":"0x7B623D9A","capability_flags":7,"last_update_ns":8650894563124}}}"
+method return time=8651.541167 sender=:1.1 -> destination=:1.27 serial=8911 reply_serial=2
+   string "{"schema_version":2,"generation_id":1,"timestamp_ns":6102080929284,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":87314761,"git_commit":"0xE5E45EEA","capability_flags":3,"last_update_ns":8651402792041},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":3292647499,"git_commit":"0x7B623D9A","capability_flags":7,"last_update_ns":8650894563124}},"system_status":"OFFLINE","device_state":"OFFLINE"}"

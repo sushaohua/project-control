@@ -1,0 +1,27 @@
+STAGED_MC bytes=384668 sha256=d94b42b47e0b7ff74e474c0710e2303c99d36ee032d5b581e258ffcd33896e87
+SCAN_TASK_ID=65420000006
+[STAGE] task=65420000006 phase=PRECHECK pct=0% mc_written=0/384530 err=
+[STAGE] task=65420000006 phase=PACKAGE_VERIFIED pct=0% mc_written=0/384540 err=
+[STAGE] task=65420000006 phase=READY pct=0% mc_written=0/384540 err=
+TRIGGER_TASK_ID=65420000007
+[STAGE] task=65420000007 phase=PRECHECK pct=0% mc_written=0/384540 err=
+[STAGE] task=65420000007 phase=PACKAGE_VERIFIED pct=0% mc_written=0/384540 err=
+[STAGE] task=65420000007 phase=CHECKING_DEVICE pct=0% mc_written=0/384540 err=
+[STAGE] task=65420000007 phase=BOOT_CONFIRMED pct=0% mc_written=0/384540 err=
+[STAGE] task=65420000007 phase=PREPARING_FLASH pct=0% mc_written=0/384540 err=
+[STAGE] task=65420000007 phase=FLASH_READY pct=0% mc_written=0/384540 err=
+[STAGE] task=65420000007 phase=CHUNK0_CACHED_RAM pct=5% mc_written=0/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=5% mc_written=512/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=10% mc_written=22528/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=20% mc_written=67584/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=30% mc_written=112640/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=40% mc_written=158208/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=50% mc_written=203264/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=60% mc_written=248320/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=70% mc_written=293888/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=80% mc_written=338944/384540 err=
+[STAGE] task=65420000007 phase=FLASH_WRITING pct=90% mc_written=384028/384540 err=
+[STAGE] task=65420000007 phase=VERIFYING_IMAGE pct=90% mc_written=384028/384540 err=
+[STAGE] task=65420000007 phase=IMAGE_COMMITTED pct=95% mc_written=384540/384540 err=
+[STAGE] task=65420000007 phase=FAILED pct=95% mc_written=384540/384540 err=SERIAL_TIMEOUT
+FINAL_STAGE_JSON: {"schema_version": 1, "timestamp_unix_ms": 65499393, "last_sequence": 1511, "last_elapsed_ms": 501, "task_id": "65420000007", "event_id": 776, "phase": "FAILED", "active": false, "communication_error": -8, "failed_node": 2, "failed_command": 1, "maintenance": true, "target_mask": 1, "active_node": 2, "progress_pct": 95, "error": "SERIAL_TIMEOUT", "mc": {"valid": true, "file": "fw_mc.bin", "size": 384540, "version_raw": 33602169, "sha256": "d94b42b47e0b7ff74e474c0710e2303c99d36ee032d5b581e258ffcd33896e87", "progress_pct": 95, "received": 384540, "written": 384540, "pre_boot_id": 3253128453, "post_boot_id": 0, "warning": ""}, "th": {"valid": false, "file": "fw_th.bin", "size": 0, "version_raw": 0, "sha256": "", "progress_pct": 0, "received": 0, "written": 0, "pre_boot_id": 0, "post_boot_id": 0, "warning": ""}}

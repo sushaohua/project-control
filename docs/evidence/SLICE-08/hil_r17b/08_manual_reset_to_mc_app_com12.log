@@ -1,0 +1,31 @@
+=== Phase 1: Verify MC App Heartbeat on COM12 (3.0s) ===
+OPENED_COM12_OK_1
+[MC_APP] Heartbeat alive (Marlin Loop OK)
+
+=== Phase 2: Background COM12 Capture (8.5s) ===
+OPENED_COM12_OK_2
+[MC_APP] Heartbeat alive (Marlin Loop OK)
+[MC-DBG] ts=45375 dir=RX node=MC seq=1 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[MC-DBG] ts=45375 dir=TX node=MC seq=1 cmd=0x02 status=ACK fw=2.0 boot_id=0x05345149 commit=0xE5E45EEA drop=0 trunc=0
+[MC-DBG] ts=45658 dir=RX node=MC seq=2 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[MC-DBG] ts=45658 dir=TX node=MC seq=2 cmd=0x02 status=ACK fw=2.0 boot_id=0x05345149 commit=0xE5E45EEA drop=0 trunc=0
+[MC-DBG] ts=46669 dir=RX node=MC seq=4 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[MC-DBG] ts=46669 [MC_APP] Heartbeat alive (Marlin Loop OK)
+dir=TX node=MC seq=4 cmd=0x02 status=ACK fw=2.0 boot_id=0x05345149 commit=0xE5E45EEA drop=0 trunc=0
+[MC-DBG] ts=47681 dir=RX node=MC seq=6 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[MC-DBG] ts=47681 dir=TX node=MC seq=6 cmd=0x02 status=ACK fw=2.0 boot_id=0x05345149 commit=0xE5E45EEA drop=0 trunc=0
+[MC_APP] Heartbeat alive (Marlin Loop OK)
+[MC-DBG] ts=48691 dir=RX node=MC seq=8 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[MC-DBG] ts=48691 dir=TX node=MC seq=8 cmd=0x02 status=ACK fw=2.0 boot_id=0x05345149 commit=0xE5E45EEA drop=0 trunc=0
+[MC-DBG] ts=49697 dir=RX node=MC seq=10 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[MC-DBG] ts=49698 dir=TX node=MC seq=10 cmd=0x02 status=ACK fw=2.0 boot_id=0x05345149 commit=0xE5E45EEA drop=0 trunc=0
+[MC_APP] Heartbeat alive (Marlin Loop OK)
+[MC-DBG] ts=50704 dir=RX node=MC seq=12 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[MC-DBG] ts=50704 dir=TX node=MC seq=12 cmd=0x02 status=ACK fw=2.0 boot_id=0x05345149 commit=0xE5E45EEA drop=0 trunc=0
+[MC-DBG] ts=51796 dir=RX node=MC seq=14 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[MC-DBG] ts=51796 dir=TX node=MC seq=14 cmd=0x02 status=ACK fw=2.0 boot_id=0x05345149 commit=0xE5E45EEA drop=0 trunc=0
+[MC_APP] Heartbeat alive (Marlin Loop OK)
+[MC-DBG] ts=52805 dir=RX node=MC seq=16 cmd=0x01 status=OK len=14 drop=0 trunc=0
+[MC-DBG] ts=52805 dir=TX node=MC seq=16 cmd=0x02 status=ACK fw=2.0 boot_id=0x05345149 commit=0xE5E45EEA drop=0 trunc=0
+
+DONE_COM12_READ_2

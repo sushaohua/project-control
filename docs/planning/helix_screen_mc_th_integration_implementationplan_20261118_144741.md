@@ -22,6 +22,7 @@
 | `v1.15` | `2026-11-20 16:00 +0800` | `AI (Antigravity-CLI) - COORD` | 记录用户批准 `§0.6` (`S08-HIL-FIX-01`) 与 `§0.5` 方案 2A (`integrity-only-hil`) 及双板持续上电事实；同步锁定 `SLICE-08 revision: 3` (`r15`) 软件闭环边界 | **已批准执行 `r15` SW 闭环**（实板刷写前仍须过 `Human Gate #2`） |
 | `v1.16` | `2026-11-20 18:25 +0800` | `AI (Antigravity-CLI) - COORD` | 补充 `SLICE-08` (`r16`) 真机首轮 HIL 分诊根因（`HIL-DEF-04` 触摸固定绑定 `event1`、`HIL-DEF-05` Klipper 故障弹窗覆盖与按钮/版本 Subject 缺失、`HIL-BLK-01` / `MCU-UART-01` MC `USART2` 失联），提出 `r17` 最小修复切片 `S08-HIL-FIX-02` 与可选 `S08-MCU-FIX-01` | **待用户审批 (`Human Gate #1`)**（选定方案 A/B 并确认物理旋转方向） |
 | `v1.17` | `2026-11-21 10:48 +0800` | `AI (Antigravity-CLI) - COORD` | 记录用户 `Human Gate #1` 拍板（批准 `S08-HIL-FIX-02` + 方案 A 解冻 `mcu-p3@feat/soc-debug` 实施 `S08-MCU-FIX-01` + 屏幕维持 `rotate: 270`）；同步源码物理核验后的 `S08-MCU-FIX-01` 精确初始化时序（`main.c` L186 `minimc_proto_init` 早于 L237 `eeprom_Init`，须在 `while(1)` 前复清并补齐 `USART_BFF_FLAG` 写清）与 6 文件预算，锁定 `SLICE-08 revision: 4` (`r17`) 软件闭环边界 | **已批准执行 `r17` SW 闭环**（实板刷写前仍须过 `Human Gate #2`） |
+| `v1.18` | `2026-11-21 14:58 +0800` | `AI (Antigravity-CLI) - COORD & ARCH` | 汇总 `r17b` 真机验证成果（`HIL-DEF-04/05` 触摸/界面/`AC-04` 100% 闭环）、2×2 控制变量实验及 `probe-rs` 现场硅片实锤证据（`PA2` `GPIO_DRIVE_STRENGTH_MODERATE -> STRONGER` 2.5s 恢复双板在线），合入当轮收口 `SLICE-08 revision: 5` (`r18`) 的 3 项最小修复（`MCU-UART-01` 终极修复 + `HIL-DEF-06` Stage-4 回 App 有界重询 + `HIL-DEF-07` `DeviceManager` 维护态退出闭环）；按选项 B 将 `bootloadermc` `0x01` 误锁 `stay_in_boot` 剥离至独立交接单 | **已批准执行 `r18` SW 闭环**（`2026-11-21 15:03` 用户“批准执行”；实板刷写前仍须过 `Human Gate #2`） |
 
 ---
 
@@ -785,3 +786,66 @@ flowchart LR
   1. **精确初始化时序**：`main.c:181-254` 中 `wk_usart2_init()`（L181，`115200`）后即在 L186 调用 `minimc_proto_init()` 切至 `921600`，之后才执行 `eeprom_Init()`（L237）、`Board_init()`（L239）与 `setup()`（L245）直至 L254 进入 `while(1)`。因此须在 `minimc_proto_init()` 切完 `921600` 后立即清除错误标志与接收通道状态，并在 `main.c` 进入 `while(1)` 前再调用一次 `minimc_proto_reset_rx_channel()` 抛弃初始化长耗时阶段积累的噪声字节与状态位。
   2. **AT32F435 错误标志清除机制**：核实 `at32f435_437_usart.c:716-727`，`USART_ROERR_FLAG`/`USART_FERR_FLAG`/`USART_NERR_FLAG`/`USART_IDLEF_FLAG` 通过读 `STS+DT` 序列清除，而 **`USART_BFF_FLAG`（Break 帧）必须显式调用 `usart_flag_clear(USART2, USART_BFF_FLAG)`（写 `sts = ~flag`）** 才能清除；同时宿主机桩 `test_twin44_mc_debug.c:128` 恒返回 `SET`，清错函数不得使用 `while` 循环轮询标志。
   3. 同步更新 `project-control/slices/SLICE-08.yaml` 至 **`revision: 4`**（`r17`），锁定四阶门禁后停在 **Human Gate #2** 报批刷板。
+
+---
+
+## 5. SLICE-08 (`r17b`) 真机二轮 HIL 硅片实锤与 `r18` (`v1.18`) 收口实施方案
+
+### 5.1 `r17b` 真机验证成果、2×2 控制变量矩阵与 `probe-rs` 1 秒硅片实锤证据链
+
+`r17b`（`printer-soc@c9a1541e`、`mcu-p3@e5e45eea`）上板验证证据归档于 `project-control/docs/evidence/SLICE-08/hil_r17b/`：
+1. **已 100% 闭环项**：
+   - `S08-HIL-FIX-02`（`HIL-DEF-04` Goodix 动态触摸识别 + `/data` 残留清洗、`HIL-DEF-05` 屏蔽 Klipper 恢复弹窗与高级页按钮隐藏 + 版本 Subject 启动前注册、`rotate: 270`）：用户现场目视与触控确认全部正常（[03_r17b_ui_and_touch_check.log](../evidence/SLICE-08/hil_r17b/03_r17b_ui_and_touch_check.log)）；
+   - `AC-04` 4 类完整性负例全部零擦写拒绝（`PACKAGE_INVALID_OR_CHANGED`、`ERASE_OR_BOOT_PACKETS=0`，[04_ac04_negative_ota.log](../evidence/SLICE-08/hil_r17b/04_ac04_negative_ota.log)）；
+   - `S08-MCU-FIX-01`（`PA3` 上拉 + `USART2` 接收错误自愈）：MC `COM12` 日志与硅片寄存器 `DMA1_CH6` 均证实 AP 重启后 **`AP -> MC` (`PA3` RX) 已 100% 正常收包零错误**。
+2. **双 ST-Link 物理归属核验**（[09_probers_probe_id.log](../evidence/SLICE-08/hil_r17b/09_probers_probe_id.log)）：
+   - `0483:3748:75003800120000334C41534E` ➔ **MC 主控板 (`AT32F435VGT7`)**（`PID=0x70083344`、`Flash=1024KB`、`UID=05302390 4c96c000 0d819709`、`VTOR=0x08020000`）；
+   - `0483:3748:`（无序列号实例）➔ **TH 工具头板 (`AT32F423CCT7`)**（`PID=0x700A3243`、`Flash=256KB`、`UID=053173c5 8023c000 127c0707`、`VTOR=0x08004000`）。
+3. **当轮收口 `SLICE-08` 必须修复的 3 项实锤源码缺陷（+ 1 项按选项 B 生成交接单延后项）**：
+
+| 缺陷编号 | 分类 | 实机铁证与文件锚点 | 物理与源码根因定案 | 责任与处置 |
+| :--- | :---: | :--- | :--- | :--- |
+| **`MCU-UART-01` (TX 终极根因)** | 当轮必修 | 同一次 C308L 启动下 `bootloadermc` 收发 `29,161B` 100% 正常，切入 `MC App (0xE5E45EEA)` 后 `COM12` 持续打印 `RX 0x01 OK + TX 0x02 ACK`，但 C308L `GPIOX_8` `bit8_low=0`（38 分钟仅偶发 `+2B`）；[09b_probers_mc_live_regs.log](../evidence/SLICE-08/hil_r17b/09b_probers_mc_live_regs.log) + **[10_probers_odrvr_live_proof.log](../evidence/SLICE-08/hil_r17b/10_probers_odrvr_live_proof.log)** | 硅片实读证实 `USART2` (`baudr=0x9C`) 与 `DMA1_CH2` (`dtcnt=0, TDBE=1, TDC=1`) 均正常移出全部字节；唯一硬件差异是 `mcu-p3:motion-controller-mcu/project/src/wk_usart.c:245,253` 将 `PA2/PA3` 配为 `GPIO_DRIVE_STRENGTH_MODERATE`（`GPIOA->odrvr=0x55695AA5`），而 `bootloadermc`（`boot_uart_ota.c:847`）配为 `GPIO_DRIVE_STRENGTH_STRONGER`。在 `921600 bps`（`1.085µs`/bit）下 `MODERATE` 灌电流不足以将跨板信号拉过 C308L `GPIOX_8` $V_{IL}$ 阈值。**经用户授权执行单寄存器在线写入 `0x40020008: 0x55695AA5 -> 0x55695A95`（仅将 `PA2` 切为 `STRONGER`，零复位、零改 DMA），`meson_uart rx` 在 2.5s 内即从冻结 38 分钟的 `29163` 暴涨至 `29343 -> 30543+`，D-Bus 实读 MC (`0xE5E45EEA`) 与 TH (`0x7B623D9A`) 当场双双恢复 `ONLINE`！** | `ENG-MCU` (`mcu-p3@feat/soc-debug`) |
+| **`HIL-DEF-06` (OTA Stage-4 窗口短路)** | 当轮必修 | [05b_post_ota_recovered.log](../evidence/SLICE-08/hil_r17b/05b_post_ota_recovered.log) L46–L50：`0x22` ACK（`95%`）后 `953ms` 即报 `SERIAL_TIMEOUT (-8)`，随后新 `MC App` 已成功跑起 | `boot_uart_ota.c:689` 在 `0x22` 后执行软跳转 `jump_to_app()`（跳过 2s Bootloader 窗口），但实机跳转含 `usb_bus_disconnect_se0(200ms)` + `eeprom_Init(200+500+500ms)` + `Board_init/setup` 共需 **`~1.7–2.2s`** 才进入 `while(1)`。`printer-soc:services/forward/modules/ota/ota_transfer.cpp:13,63-89` 仅等 `450ms` + 单次 `500ms` 查询（合计 `950ms`），且 `ota_exchange()` 首轮超时即永久锁存 `rt->communication_error = -8`，导致 `wait_mode()` 的 `attempt < 30` 循环在 `attempt == 0` 直接短路退出 | `ENG-AP` (`printer-soc@main`) |
+| **`HIL-DEF-07` (DM 维护态退出残留)** | 当轮必修 | [05b_post_ota_recovered.log](../evidence/SLICE-08/hil_r17b/05b_post_ota_recovered.log) L16,51：`Forward` 已发 `"maintenance":false`，但 `GetSnapshot` 的 `device_state` 永久卡在 `"UPGRADING_MAINTENANCE"` | `printer-soc:services/device_manager/device_manager_service.cpp:307-316` `receive_maintenance()` 仅更新布尔值 `state->is_maintenance`，未在 `true -> false` 边沿调用 `dev_state_exit_maintenance(state, false)`（对比 `device_manager_state.cpp:289-290` 在维护期写入了 `state->device_state = "UPGRADING_MAINTENANCE"`，退出后 `update_system_status_desc()` 不重置 `device_state`） | `ENG-AP` (`printer-soc@main`) |
+| **`BOOT-MC-STAY-01` (`0x01` 误置 `stay_in_boot`)** | **延后下一轮（选项 B）** | [07_option1_mc_com12_reset.log](../evidence/SLICE-08/hil_r17b/07_option1_mc_com12_reset.log) 与实板手动 `RESET` 测试：AP 运行期按 MC `RESET` 键必卡死在 `bootloadermc` | `boot/bootloadermc/bootloader/src/boot_uart_ota.c:327` 在只读 `handle_cmd_get_version()` (`0x01`) 中无条件置 `s_ota.stay_in_boot = 1U`，导致 AP `500ms` 轮询撞上 `2.0s` 启动窗口即永久驻留 Bootloader（注：`0x22` OTA 提交走 `jump_to_app()` 直接跳 `0x08020000`，不经过该窗口，不影响 `SLICE-08` `AC-03` 闭环） | 已生成独立交接单 [bootloadermc_0x01_stay_in_boot_handoff_20261121_145800.md](./bootloadermc_0x01_stay_in_boot_handoff_20261121_145800.md) 交下一轮 `ENG_BOOT_MC` (`soc_debug`) |
+
+---
+
+### 5.2 端到端真实符号调用链与现状断点核实表（含 `graphify` 取证）
+
+| 链路 | `graphify` / 源码核实调用边 (`仓:文件路径:行号:符号`) | 现状断点与修复锚点 |
+| :--- | :--- | :--- |
+| **MC `USART2` 物理层驱动初始化** | `mcu-p3:motion-controller-mcu/project/src/main.c:181:main()` ➔ `wk_usart.c:239:wk_usart2_init()` ➔ `at32f435_437_gpio.c:gpio_init(GPIOA)` & `usart_init(USART2)` ➔ `minimc_proto.c:3281:minimc_proto_init()` | `wk_usart.c:245,253` 对 `PA2/PA3` 使用 `GPIO_DRIVE_STRENGTH_MODERATE`（`0x02`），且 L261 先以 `115200` 使能再在 `minimc_proto_init` 关断重配 `921600`。修复：将 `PA2/PA3` 统一对齐 `bootloadermc` 的 `GPIO_DRIVE_STRENGTH_STRONGER`（`0x01`），并在 `wk_usart2_init()` 直接以 `AP_USART_BAUDRATE` (`921600U`) 初始化，保留 `DMA1_CHANNEL2` 发送与既有单测接口零破坏。 |
+| **AP `Forward` OTA Stage-4 回 App 确认** | `printer-soc:services/forward/forward_ota.cpp:130:execute_task()` ➔ `modules/ota/ota_transfer.cpp:341:ota_upgrade_node()` ➔ `L300:finish_image()` ➔ `L316:wait_mode(rt, false, &reply)` ➔ `L63:version()` ➔ `L32:ota_exchange()` | `wait_mode(rt, true)`（Stage-2 进 Boot）须保持超时单次快速失败以严格满足 `tests/ota/test_ota_e2e.py:292` 的 `boot_timeout` 契约（`count((3,1)) == 4`）；`wait_mode(rt, false)`（Stage-4 回 App）须支持有界非锁存超时重询（最多 `8` 次 × `(500ms + 100ms)` + 首轮 `450ms` = 最长 `~5.25s` 覆盖 MC 实机 `~2.0s` 启动期），仅在非超时致命错误或耗尽重试仍未上线时锁存 `rt->communication_error` 并返回 `false`。 |
+| **AP `DeviceManager` 维护态同步** | `printer-soc:services/device_manager/device_manager_service.cpp:348:device_manager_dispatch()` ➔ `L307:receive_maintenance()` ➔ `device_manager_state.cpp:1236/1251:dev_state_enter/exit_maintenance()` | `receive_maintenance()` 在 DDS 样本 `maintenance` 发生 `false -> true` 跳变时调用 `dev_state_enter_maintenance(state)`，在 `true -> false` 跳变时调用 `dev_state_exit_maintenance(state, false)` 并同步发布最新快照，消除 `"UPGRADING_MAINTENANCE"` 残留。 |
+
+---
+
+### 5.3 关键接缝 `Design-It-Twice` 比选
+
+1. **接缝 A（`MCU-UART-01`：最小驱动强度对齐 vs 连带重写 CPU 轮询 TX）**：
+   - *方案 A1（推荐，最小必要修改）*：仅在 `wk_usart2_init()` 将 `PA2/PA3` 设为 `GPIO_DRIVE_STRENGTH_STRONGER` 并直接按 `921600U` 初始化，保留已通过现场硅片实证 100% 正常的 `DMA1_CHANNEL2` 非阻塞发送。优点：现场 `10_probers_odrvr_live_proof.log` 已在完全保留 `DMA1_CHANNEL2` 的前提下实锤 100% 恢复通信，不阻塞 Marlin 步进/温控主循环，改动 `< 10` 行。
+   - *方案 A2（淘汰）*：拆除 `DMA1_CHANNEL2` 改为 CPU 阻塞轮询 `usart_data_transmit`。缺点：每发 534B 大帧需在主循环忙等 `~5.8ms`，引入不必要的主循环抖动与测试桩大改。
+2. **接缝 B（`HIL-DEF-06`：Stage-2 / Stage-4 差异化探测 vs 全局放开 `ota_exchange` 锁存）**：
+   - *方案 B1（推荐，窄接缝）*：保持 `ota_exchange()` 对控制/写刷指令（`0x1D/0x20/0x21/0x22/0x23/0x14/0x16`）及 Stage-2 `wait_mode(rt, true)` 的“首错立即锁存停止”安全契约不变（同时将 `OTA_ENTER_BOOT_WAIT_US` 微调至 `450000U` 给 MC `0x1D(2)` 留足裕量且不增加发包次数）；仅为 Stage-4 `wait_mode(rt, false)` 提取小于 30 行的有界可恢复版本探测辅助函数（最多 `8` 轮，仅容忍重启动窗内的 `AISOC_FWD_ERR_TIMEOUT`；遇 `REMOTE_NACK` / `SERIAL_IO` 或耗尽 8 轮立即锁存 `communication_error` 报错）。既 100% 保留 `test_ota_e2e.py` 的 `count((3, 1)) == 4` 与 `< 15s` 时限，又完整覆盖真机 MC `~2.0s` 回 App 启动期。
+   - *方案 B2（淘汰）*：全局把 `OTA_ENTER_APP_WAIT_US` 硬拉到 `3500ms` 或取消 `communication_error` 锁存。缺点：使 17 个软件 E2E 用例每轮白等 `7s` 逼近 `15s` 超时，且破坏故障后零残余发包隔离契约。
+
+---
+
+### 5.4 `SLICE-08 revision: 5` (`r18`) 有序子任务、Diff Budget、验收判据与回滚预案
+
+| 子任务 / 责任席位 | 锁定仓库与分支 | 精确允许路径 (`allowed_paths`) 与 `diff_budget` | 精确接口变更与验收命令 (`Pass Criteria`) |
+| :--- | :--- | :--- | :--- |
+| **`S08-R18-MCU`** / `ENG-MCU` | `mcu-p3` (`feat/soc-debug`) | `motion-controller-mcu/project/src/wk_usart.c`、`motion-controller-mcu/tests/test_mc_ota_and_relay.c`<br>**预算**：`max_files: 6`（含 `SLICE-08` 累计文件集），本轮实际仅改 **2 个文件**（增删合计 $\le 35$ 行），`protected_globs` 累计 $\le 120$ 行 | 1. `void wk_usart2_init(void)`：将 `PA2` (`USART2_TX`) 与 `PA3` (`USART2_RX`) 的 `gpio_drive_strength` 均设为 `GPIO_DRIVE_STRENGTH_STRONGER`，并以 `AP_USART_BAUDRATE` (`921600U`) 直接调用 `usart_init`；<br>2. `test_mc_ota_and_relay.c`：调用或校验 `wk_usart2_init()` 后 `GPIOA->odrvr` 中 `PA2/PA3` 位域严格等于 `GPIO_DRIVE_STRENGTH_STRONGER` (`0x1`)；<br>3. 宿主机执行 `(cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh)` 全绿，并用 `arm-none-eabi-gcc` 重新干净构建 + `pack_firmware.py` 生成带 `ATSG` 尾块的 `fw_mc_r18.bin`。 |
+| **`S08-R18-AP`** / `ENG-AP` | `printer-soc` (`main`) | 在 `SLICE-08` 既有白名单基础上纳入 `services/forward/modules/ota/ota_transfer.cpp`、`services/device_manager/device_manager_service.cpp`、`tests/ota/test_ota_e2e.py`、`tests/device_manager/twin/test_device_manager.cpp`<br>**预算**：`SLICE-08` 切片累计 `max_files: 13`，本轮增量仅改 **4 个文件**（增删合计 $\le 90$ 行；新辅助函数严格 $\le 50$ 行、$\le 4$ 入参、全中文注释） | 1. `ota_transfer.cpp`：`OTA_ENTER_BOOT_WAIT_US = 450000U`；新增静态辅助函数 `probe_version_once(...)`（不提前锁存超时），使 `wait_mode(rt, false, out)` 在回 App 阶段最多执行 `8` 次有界探测，耗尽或非超时错误才锁存 `rt->communication_error`；保持 `wait_mode(rt, true, out)` 首错锁存不变；<br>2. `device_manager_service.cpp`：`receive_maintenance()` 在 `maintenance` `false->true` 与 `true->false` 跳变时分别调用 `dev_state_enter_maintenance(state)` / `dev_state_exit_maintenance(state, false)` 并刷新发布快照；<br>3. `test_ota_e2e.py` & `test_device_manager.cpp`：新增 `delayed_app_boot`（模拟 `0x22` 后前 3 次 `0x01` 超时、第 4 次上线仍 `SUCCEEDED`）及 `receive_maintenance` 进出维护态恢复 `device_state="IDLE"` 单测，原 17+1 用例（含 `boot_timeout` `count((3,1))==4`）100% 全通。 |
+
+- **四阶门禁与真机收口流程**：
+  1. **Human Gate #1**：用户批准本节 `v1.18` 后，`COORD` 更新 `project-control/slices/SLICE-08.yaml` 至 **`revision: 5`**，并行委派 `ENG-MCU` 与 `ENG-AP` 实施并推送线性提交，更新 `workspace.json` 候选锁；
+  2. **四阶无状态软件门禁**：依次通过 `fast_gate.py (<3s)` ➔ `integration_cmd` 跨仓合龙 ➔ `qa_runner.py` 独立 Docker 只读沙箱构建与 `c308l-system` 制镜（产出 `r18` 产品包、`rootfs.ubi`、`aml_upgrade_package.img`）➔ `codex_review.py` 独立 Codex 双轴冷审（`0 BLOCKER`），写入 `ledger.md` **`SW-Verified`**；
+  3. **Human Gate #2（`r18` 真机收口验证）**：获批部署 `r18` + 拷入 `fw_mc_r18.bin` / `fw_th.bin` 至 `/run/printer-soc/firmware/`，在 `192.168.1.101` 实测闭环：
+     - **`AC-03`**：从 Helix / `Forward.OtaCommand` 执行真实升级（先 TH 后 MC），验证 Stage-4 自动跨越 `~2.0s` 启动期直达 **`phase="SUCCEEDED", progress_pct=100`**，且升级结束后 `DeviceManager` `device_state` 自动退出 `"UPGRADING_MAINTENANCE"`，新 `fw_mc_r18.bin` 固化进 MC Flash；
+     - **`AC-05`**：验证全局急停（`0x17`）下发与硬件真实 ACK / 解除恢复；
+     - **`AC-09-COLD-BOOT`**：执行 AP `sync && reboot` 冷重启（MC 不断电），验证重启后无需人工干预或 `probe-rs`，HelixScreen 自启且 **MC + TH 自动恢复 `ONLINE`**；
+  4. **结单暂停**：经独立审计通过后将 `SLICE-08` 记入 `ledger.md` **`HIL-Verified`**，干净封存停机，绝不触碰 `boot/*` 或自动开启 `SLICE-09`。
+- **回滚预案**：若 `r18` 软件门禁或真机验证异常，保留全部原始日志，`mcu-p3` 回退至 `e5e45eea`、`printer-soc` 回退至 `c9a1541e`（板端切回 `r17b` 安装包与已归档固件），全程保持 `/data/boot_backup.img` 与 `boot/*` 零改动。

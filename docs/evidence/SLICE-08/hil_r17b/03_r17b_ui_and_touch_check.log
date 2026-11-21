@@ -1,0 +1,134 @@
+=== PRINTER-SOC START ===
+{
+  "phase": "running",
+  "mode": "production",
+  "panel_restarts": 0,
+  "controller": {
+    "pid": 1181,
+    "start_ticks": "6542018",
+    "exe": "/usr/bin/python3.9",
+    "cmdline": "2f7573722f62696e2f707974686f6e33002d42002f7573722f6c69622f7072696e7465722d736f632f73657276696365732e7079005f72756e002d2d62756e646c65002f7573722f6c69622f7072696e7465722d736f6300"
+  },
+  "children": {
+    "dbus": {
+      "pid": 1182,
+      "start_ticks": "6542040",
+      "exe": "/usr/bin/dbus-daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f646275732d6461656d6f6e002d2d6e6f666f726b002d2d7072696e742d616464726573733d31002d2d636f6e6669672d66696c653d2f7573722f6c69622f7072696e7465722d736f632f636f6e6669672f73657373696f6e2e636f6e6600"
+    },
+    "forward": {
+      "pid": 1183,
+      "start_ticks": "6542041",
+      "exe": "/usr/bin/forward_service_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f666f72776172645f736572766963655f6461656d6f6e002d2d706f7274002f6465762f7474795331002d2d6261756400393231363030002d2d6669726d776172652d646972002f72756e2f7072696e7465722d736f632f6669726d77617265002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d42674153547a487473312c677569643d6138306433613963373165636436356162303433373864623030303066663863002d2d6464732d646f6d61696e00313938002d2d616c6c6f772d6f66666c696e652d737461727400"
+    },
+    "device_manager": {
+      "pid": 1198,
+      "start_ticks": "6542046",
+      "exe": "/usr/bin/device_manager_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f6465766963655f6d616e616765725f6461656d6f6e002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d42674153547a487473312c677569643d6138306433613963373165636436356162303433373864623030303066663863002d2d6464732d646f6d61696e0031393800"
+    },
+    "panel": {
+      "pid": 1208,
+      "start_ticks": "6542055",
+      "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+      "cmdline": "2f7573722f73686172652f7072696e7465722d736f632f68656c697873637265656e2f62696e2f68656c69782d73637265656e00"
+    }
+  },
+  "bus_address": "unix:path=/tmp/dbus-BgASTzHts1,guid=a80d3a9c71ecd65ab04378db0000ff8c"
+}
+=== PRINTER-SOC STATUS ===
+{
+  "phase": "running",
+  "mode": "production",
+  "panel_restarts": 0,
+  "controller": {
+    "pid": 1181,
+    "start_ticks": "6542018",
+    "exe": "/usr/bin/python3.9",
+    "cmdline": "2f7573722f62696e2f707974686f6e33002d42002f7573722f6c69622f7072696e7465722d736f632f73657276696365732e7079005f72756e002d2d62756e646c65002f7573722f6c69622f7072696e7465722d736f6300"
+  },
+  "children": {
+    "dbus": {
+      "pid": 1182,
+      "start_ticks": "6542040",
+      "exe": "/usr/bin/dbus-daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f646275732d6461656d6f6e002d2d6e6f666f726b002d2d7072696e742d616464726573733d31002d2d636f6e6669672d66696c653d2f7573722f6c69622f7072696e7465722d736f632f636f6e6669672f73657373696f6e2e636f6e6600"
+    },
+    "forward": {
+      "pid": 1183,
+      "start_ticks": "6542041",
+      "exe": "/usr/bin/forward_service_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f666f72776172645f736572766963655f6461656d6f6e002d2d706f7274002f6465762f7474795331002d2d6261756400393231363030002d2d6669726d776172652d646972002f72756e2f7072696e7465722d736f632f6669726d77617265002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d42674153547a487473312c677569643d6138306433613963373165636436356162303433373864623030303066663863002d2d6464732d646f6d61696e00313938002d2d616c6c6f772d6f66666c696e652d737461727400"
+    },
+    "device_manager": {
+      "pid": 1198,
+      "start_ticks": "6542046",
+      "exe": "/usr/bin/device_manager_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f6465766963655f6d616e616765725f6461656d6f6e002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d42674153547a487473312c677569643d6138306433613963373165636436356162303433373864623030303066663863002d2d6464732d646f6d61696e0031393800"
+    },
+    "panel": {
+      "pid": 1208,
+      "start_ticks": "6542055",
+      "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+      "cmdline": "2f7573722f73686172652f7072696e7465722d736f632f68656c697873637265656e2f62696e2f68656c69782d73637265656e00"
+    }
+  },
+  "bus_address": "unix:path=/tmp/dbus-BgASTzHts1,guid=a80d3a9c71ecd65ab04378db0000ff8c",
+  "controller_alive": true,
+  "children_alive": {
+    "dbus": true,
+    "forward": true,
+    "device_manager": true,
+    "panel": true
+  },
+  "uart_owners": [
+    1183
+  ],
+  "fb_owners": [
+    1208
+  ],
+  "maintenance_inhibit": false,
+  "allow_offline_start": true,
+  "enable_gateway": false
+}
+=== SETTINGS TOUCH & ROTATE ===
+69:    "rotate": 270,
+101:    "_touch_device_comment": "Override touch/pointer input device (e.g., '/dev/input/event1'). Empty string enables auto-detection. Auto-detection finds touch or pointer capable devices.",
+116:    "touch_device": ""
+=== PANEL FDS ===
+total 0
+dr-x------    2 root     root             0 Jan  1 18:10 .
+dr-xr-xr-x    9 root     root             0 Jan  1 18:10 ..
+lrwx------    1 root     root            64 Jan  1 18:10 0 -> /dev/null
+l-wx------    1 root     root            64 Jan  1 18:10 1 -> pipe:[255653]
+lr-x------    1 root     root            64 Jan  1 18:10 10 -> /dev/shm/fastdds_889cde1650ccdcec_el
+lr-x------    1 root     root            64 Jan  1 18:10 11 -> /dev/shm/fastdds_port56900_sl
+lr-x------    1 root     root            64 Jan  1 18:10 12 -> /dev/shm/fastdds_port56915_el
+lrwx------    1 root     root            64 Jan  1 18:10 13 -> socket:[255719]
+l-wx------    1 root     root            64 Jan  1 18:10 2 -> pipe:[255653]
+lrwx------    1 root     root            64 Jan  1 18:10 3 -> /data/printer-soc/helix/config/.helix-screen.lock
+lrwx------    1 root     root            64 Jan  1 18:10 4 -> /dev/fb0
+lr-x------    1 root     root            64 Jan  1 18:10 5 -> /dev/input/event0
+lr-x------    1 root     root            64 Jan  1 18:10 6 -> /proc/1208/mountinfo
+lrwx------    1 root     root            64 Jan  1 18:10 7 -> socket:[255710]
+lr-x------    1 root     root            64 Jan  1 18:10 8 -> /dev/shm/fastdds_port56914_el
+lrwx------    1 root     root            64 Jan  1 18:10 9 -> socket:[255711]
+=== PANEL LOGS ===
+-rw-r--r--    1 root     root           255 Jan  1 18:10 /run/printer-soc/panel.log
+[18:10:20.618] [+00000.027] [warning] [1208] [Config] Backup of /data/printer-soc/helix/config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+/data/printer-soc/helix/config/settings.json:101:    "_touch_device_comment": "Override touch/pointer input device (e.g., '/dev/input/event1'). Empty string enables auto-detection. Auto-detection finds touch or pointer capable devices.",
+/data/printer-soc/helix/config/settings.json:116:    "touch_device": ""
+=== DBUS CHECKS ===
+method return time=65428.769041 sender=:1.0 -> destination=:1.3 serial=6 reply_serial=2
+   boolean true
+   string "/dev/ttyS1"
+   uint64 2
+   uint64 2
+method return time=65428.782755 sender=:1.1 -> destination=:1.4 serial=17 reply_serial=2
+   string "{"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":3253128453,"git_commit":"0x4FC171EA","capability_flags":3221750837,"last_update_ns":65420537302194},"th":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0}}}"
+method return time=65428.797152 sender=:1.1 -> destination=:1.5 serial=18 reply_serial=2
+   string "{"schema_version":2,"generation_id":1,"timestamp_ns":65420493235194,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"UNKNOWN","quality":"MAINTENANCE_HOLD","raw_adc":null},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"UNKNOWN","quality":"MAINTENANCE_HOLD","raw_adc":null},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":3253128453,"git_commit":"0x4FC171EA","capability_flags":3221750837,"last_update_ns":65420537302194},"th":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0}},"system_status":"UPGRADING_MAINTENANCE","device_state":"UPGRADING_MAINTENANCE"}"
+=== CAPTURE FB0 PRE-OTA ===
+FB0 pan=0,0 stride=2880 offset=0 length=3686400
+-rw-r--r--    1 root     root        3.5M Jan  1 18:10 /run/fb0_pre_ota.raw

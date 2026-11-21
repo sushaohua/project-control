@@ -1,0 +1,90 @@
+=== UPTIME ===
+36.75 47.44
+=== UART & IRQ ===
+serinfo:1.0 driver revision:
+0: uart:meson_uart mmio:0xFE07A000 irq:36 tx:2699 rx:0 RTS|CTS|DTR
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:1050 rx:0 RTS|CTS|DTR
+ 37:          0          0     GIC-0 204 Edge      ttyS1
+=== FORWARD LOG TAIL ===
+[FWD QUERY] target_node=3 sequence_id=60 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=60 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=61 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=61 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=62 elapsed_ms=500 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=62 elapsed_ms=500 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=63 elapsed_ms=201 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=63 elapsed_ms=201 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=64 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=64 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=65 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=65 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=66 elapsed_ms=500 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=66 elapsed_ms=500 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=67 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=67 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=68 elapsed_ms=201 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=68 elapsed_ms=201 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=69 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=69 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=70 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=70 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=71 elapsed_ms=501 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=71 elapsed_ms=501 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=72 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=72 elapsed_ms=200 error_code=-8
+[FWD QUERY] target_node=3 sequence_id=73 elapsed_ms=201 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=3 sequence_id=73 elapsed_ms=201 error_code=-8
+[FWD QUERY] target_node=2 sequence_id=74 elapsed_ms=200 error_code=-8 may_have_been_sent=1
+[FWD VERSION] target_node=2 sequence_id=74 elapsed_ms=200 error_code=-8
+=== DM LOG TAIL ===
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=2, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN] LinkStateChanged disconnected: node=1, reason=SERIAL_TIMEOUT_OR_IO
+[DEVICE_MGR WARN=== STTY -F /dev/ttyS1 ===
+speed 921600 baud;stty: /dev/ttyS1: Inappropriate ioctl for device
+ line = 0;
+intr = ^C; quit = ^\; erase = ^?; kill = ^U; eof = ^D; eol = <undef>;
+eol2 = <undef>; swtch = <undef>; start = ^Q; stop = ^S; susp = ^Z; rprnt = ^R;
+werase = ^W; lnext = ^V; flush = ^O; min = 0; time = 0;
+-parenb -parodd -cmspar cs8 -hupcl -cstopb cread clocal -crtscts
+-ignbrk -brkint -ignpar -parmrk -inpck -istrip -inlcr -igncr -icrnl -ixon
+-ixoff -iuclc -ixany -imaxbel -iutf8
+-opost -olcuc -ocrnl -onlcr -onocr -onlret -ofill -ofdel nl0 cr0 tab0 bs0 vt0
+ff0
+-isig -icanon -iexten -echo -echoe -echok -echonl -noflsh -xcase -tostop
+-echoprt -echoctl -echoke -flusho -extproc
+=== DMESG UART ===
+[    0.000000][0 T0     ..] aml_uart0 at MMIO 0xfe07a000 (options '')
+[    0.000000][0 T0     ..] bootconsole [aml_uart0] enabled
+[    0.000000][0 T0     ..] Kernel command line: console=ttyS0,921600 no_console_suspend earlycon=aml_uart,0xfe07a000 otg_device=1 androidboot.serialno=ap2227c114be362524a6f lcd_ctrl=0x3c000083 connector0_type=MIPI-A vout=720x1280p60hz,enable fb_width=720 fb_height=1280 display_bpp=16 reboot_mode=normal mtdparts=aml-mtd:2m@0g(bl2),12m@5m(tpl),2m@17m(logo),2m@19m(misc),16m@21m(recovery),16m@37m(boot),128m@53m(system),75m@181m(data) root=/dev/ubi0_0 rootfstype=ubifs rw init=/sbin/init ubi.mtd=system usbcore.autosuspend=-1
+[    0.250141][1 T1     ..] fe07a000.serial: ttyS0 at MMIO 0xfe07a000 (irq = 36, base_baud = 1500000) is a meson_uart
+[    0.251476][1 T1     ..] console [ttyS0] enabled
+[    0.252007][1 T1     ..] bootconsole [aml_uart0] disabled
+[    0.253944][0 T1     ..] fe080000.serial: ttyS1 at MMIO 0xfe080000 (irq = 37, base_baud = 1500000) is a meson_uart
+[    0.276722][1 T1     ..] serial = 3d0a0101000000006f4a5262e34b117c

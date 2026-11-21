@@ -1,0 +1,99 @@
+=== TRIGGER AP-ONLY REBOOT ===
+SSH_RECOVERED uptime_s=7.79
+=== UPTIME ===
+18.63 20.65
+=== PS ===
+PID   USER     COMMAND
+  849 root     /usr/bin/python3 -B /usr/lib/printer-soc/services.py _run --bundle /usr/lib/printer-soc
+  850 root     /usr/lib/printer-soc/bin/dbus-daemon --nofork --print-address=1 --config-file=/usr/lib/printer-soc/config/session.conf
+  851 root     /usr/lib/printer-soc/bin/forward_service_daemon --port /dev/ttyS1 --baud 921600 --firmware-dir /run/printer-soc/firmware --dbus-custom unix:path=/tmp/dbus-A6CPzLlKFR,guid=3cd849a1389244f2459b195a00000004 --dds-domain 198 --allow-offline-start
+  866 root     /usr/lib/printer-soc/bin/device_manager_daemon --dbus-custom unix:path=/tmp/dbus-A6CPzLlKFR,guid=3cd849a1389244f2459b195a00000004 --dds-domain 198
+  876 root     /usr/share/printer-soc/helixscreen/bin/helix-screen
+  910 root     sh -c python3 - <<'PYEOF' import json, os, pathlib, re, subprocess, time  print("=== UPTIME ===") print(pathlib.Path("/proc/uptime").read_text().strip())  print("=== PS ===") ps_out = subprocess.check_output(["ps"], text=True) for line in ps_out.splitlines():     if any(k in line for k in ("PID", "printer-soc", "dbus-daemon", "forward_service", "device_manager", "helix-screen", "services.py", "ui-gateway")):         print(line)  print("=== PRINTER-SOC STATUS ===") st_raw = subprocess.check_output(["printer-soc", "status"], text=True) print(st_raw.strip()) st = json.loads(st_raw) assert st["phase"] == "running" and st["panel_restarts"] == 0, st assert all(st["children_alive"].values()), st["children_alive"] assert st["enable_gateway"] is False, st  print("=== PANEL FDS ===") panel_pid = st["children"]["panel"]["pid"] fds = subprocess.check_output(["ls", "-la", f"/proc/{panel_pid}/fd"], text=True) print(fds.strip()) assert "/dev/input/event0" in fds and "/dev/fb0" in fds, fds  print("=== PANEL LOG & SUBJECT WARNING CHECK ===") plog = pathlib.Path("/run/printer-soc/panel.log").read_text(errors="replace") print(plog.strip()) assert "No subject was found" not in plog, plog  print("=== MESON_UART & INTERRUPTS ===") uart_txt = pathlib.Path("/proc/tty/driver/meson_uart").read_text() print(uart_txt.strip()) irqs = subprocess.check_output(["grep", "-iE", "ttyS1|uart", "/proc/interrupts"], text=True) print(irqs.strip())  m_rx = re.search(r"1:.*rx:(\d+)", uart_txt) m_irq = re.search(r"37:\s+(\d+)", irqs) rx_bytes = int(m_rx.group(1)) if m_rx else 0 irq37 = int(m_irq.group(1)) if m_irq else 0 print(f"UART_COUNTERS ttyS1_rx={rx_bytes} irq37={irq37}") assert rx_bytes > 0 and irq37 > 0, f"UART still locked up! rx={rx_bytes} irq37={irq37}"  bus = st["bus_address"] env = dict(os.environ, LD_LIBRARY_PATH="/usr/lib/printer-soc/lib", DBUS_SESSION_BUS_ADDRESS=bus)  def dbus_cmd(dest, path, iface_method, extra=()):     return subprocess.check_output([         "/usr/lib/printer-soc/bin/dbus-send", "--session", "--print-re
+=== PRINTER-SOC STATUS ===
+{
+  "phase": "running",
+  "mode": "production",
+  "panel_restarts": 0,
+  "controller": {
+    "pid": 849,
+    "start_ticks": "413",
+    "exe": "/usr/bin/python3.9",
+    "cmdline": "2f7573722f62696e2f707974686f6e33002d42002f7573722f6c69622f7072696e7465722d736f632f73657276696365732e7079005f72756e002d2d62756e646c65002f7573722f6c69622f7072696e7465722d736f6300"
+  },
+  "children": {
+    "dbus": {
+      "pid": 850,
+      "start_ticks": "434",
+      "exe": "/usr/bin/dbus-daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f646275732d6461656d6f6e002d2d6e6f666f726b002d2d7072696e742d616464726573733d31002d2d636f6e6669672d66696c653d2f7573722f6c69622f7072696e7465722d736f632f636f6e6669672f73657373696f6e2e636f6e6600"
+    },
+    "forward": {
+      "pid": 851,
+      "start_ticks": "442",
+      "exe": "/usr/bin/forward_service_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f666f72776172645f736572766963655f6461656d6f6e002d2d706f7274002f6465762f7474795331002d2d6261756400393231363030002d2d6669726d776172652d646972002f72756e2f7072696e7465722d736f632f6669726d77617265002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d413643507a4c6c4b46522c677569643d3363643834396131333839323434663234353962313935613030303030303034002d2d6464732d646f6d61696e00313938002d2d616c6c6f772d6f66666c696e652d737461727400"
+    },
+    "device_manager": {
+      "pid": 866,
+      "start_ticks": "524",
+      "exe": "/usr/bin/device_manager_daemon",
+      "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f6465766963655f6d616e616765725f6461656d6f6e002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d413643507a4c6c4b46522c677569643d3363643834396131333839323434663234353962313935613030303030303034002d2d6464732d646f6d61696e0031393800"
+    },
+    "panel": {
+      "pid": 876,
+      "start_ticks": "537",
+      "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+      "cmdline": "2f7573722f73686172652f7072696e7465722d736f632f68656c697873637265656e2f62696e2f68656c69782d73637265656e00"
+    }
+  },
+  "bus_address": "unix:path=/tmp/dbus-A6CPzLlKFR,guid=3cd849a1389244f2459b195a00000004",
+  "controller_alive": true,
+  "children_alive": {
+    "dbus": true,
+    "forward": true,
+    "device_manager": true,
+    "panel": true
+  },
+  "uart_owners": [
+    851
+  ],
+  "fb_owners": [
+    876
+  ],
+  "maintenance_inhibit": false,
+  "allow_offline_start": true,
+  "enable_gateway": false
+}
+=== PANEL FDS ===
+total 0
+dr-x------    2 root     root             0 Jan  1 00:00 .
+dr-xr-xr-x    9 root     root             0 Jan  1 00:00 ..
+lrwx------    1 root     root            64 Jan  1 00:00 0 -> /dev/null
+l-wx------    1 root     root            64 Jan  1 00:00 1 -> pipe:[13692]
+lr-x------    1 root     root            64 Jan  1 00:00 10 -> /dev/shm/fastdds_port56914_el
+lr-x------    1 root     root            64 Jan  1 00:00 11 -> /dev/shm/fastdds_port56900_sl
+lr-x------    1 root     root            64 Jan  1 00:00 12 -> /dev/shm/fastdds_port56915_el
+lrwx------    1 root     root            64 Jan  1 00:00 13 -> socket:[14504]
+l-wx------    1 root     root            64 Jan  1 00:00 2 -> pipe:[13692]
+lrwx------    1 root     root            64 Jan  1 00:00 3 -> /data/printer-soc/helix/config/.helix-screen.lock
+lrwx------    1 root     root            64 Jan  1 00:00 4 -> /dev/fb0
+lr-x------    1 root     root            64 Jan  1 00:00 5 -> /dev/input/event0
+lr-x------    1 root     root            64 Jan  1 00:00 6 -> /proc/876/mountinfo
+lr-x------    1 root     root            64 Jan  1 00:00 7 -> /dev/shm/fastdds_40281a6ba092dc72_el
+lrwx------    1 root     root            64 Jan  1 00:00 8 -> socket:[14500]
+lrwx------    1 root     root            64 Jan  1 00:00 9 -> socket:[14501]
+=== PANEL LOG & SUBJECT WARNING CHECK ===
+[00:00:05.660] [+00000.111] [warning] [876] [Config] Backup of /data/printer-soc/helix/config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+=== MESON_UART & INTERRUPTS ===
+serinfo:1.0 driver revision:
+0: uart:meson_uart mmio:0xFE07A000 irq:36 tx:2699 rx:0 RTS|CTS|DTR
+1: uart:meson_uart mmio:0xFE080000 irq:37 tx:462 rx:0 RTS|CTS|DTR
+37:          0          0     GIC-0 204 Edge      ttyS1
+UART_COUNTERS ttyS1_rx=0 irq37=0
+
+STDERR:
+Traceback (most recent call last):
+  File "<stdin>", line 42, in <module>
+AssertionError: UART still locked up! rx=0 irq37=0
+

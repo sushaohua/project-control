@@ -1,11 +1,11 @@
-# 已批准方案 v1.17 (§4.4 批准 + 方案 A + rotate=270) 的 SLICE-08 revision 4 (r17)；实板刷写与正式发布分别审批。
+# 已批准方案 v1.18 (§5 批准收口 SLICE-08 + 选项 B 延后 bootloadermc 0x01 stay_in_boot) 的 SLICE-08 revision 5 (r18)；实板刷写与正式发布分别审批。
 slice_id: "SLICE-08"
-revision: 4
+revision: 5
 batch_id: "BATCH-HELIX-P0-01"
 profile: "c308l-system"
 depends_on: ["SLICE-07"]
 input_repositories: ["project-control", "agents", "printer-soc", "test_harness", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
-title: "SLICE-08 (P0-C / r17)：r16 真机触摸/UI 修复 (S08-HIL-FIX-02, rotate=270) 与 MC USART2 跨重启韧性修复 (S08-MCU-FIX-01)"
+title: "SLICE-08 (P0-C / r18)：MC USART2 PA2/PA3 STRONGER 驱动修复 (S08-R18-MCU) 与 AP OTA Stage-4 回 App 重询及 DM 维护态退出修复 (S08-R18-AP)"
 plan_ref: "project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md"
 contract_ref: "project-control/contracts/c308l_platform_contract.yaml"
 requires_hil_immediately: true
@@ -23,10 +23,13 @@ subtasks:
       - "services/helixscreen/ui_xml/advanced_panel.xml"
       - "services/helixscreen/platform/c308l/tests/test_tools.py"
       - "tests/packaging/test_product_package.py"
+      - "services/forward/modules/ota/ota_transfer.cpp"
+      - "services/device_manager/device_manager_service.cpp"
       - "tests/ota/test_ota_e2e.py"
+      - "tests/device_manager/twin/test_device_manager.cpp"
     diff_budget:
-      max_files: 9
-      protected_globs: ["*services/helixscreen/src/application/**", "*services/helixscreen/src/ui/**"]
+      max_files: 13
+      protected_globs: ["*services/helixscreen/src/application/**", "*services/helixscreen/src/ui/**", "*tests/device_manager/twin/test_device_manager.cpp"]
       max_protected_lines: 120
   - role: "ENG-MCU"
     repo: "mcu-p3"
@@ -50,7 +53,7 @@ integration_cmd: >-
   cd .. &&
   python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test &&
   (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh) &&
-  python3 -c 'import pathlib, subprocess; log=pathlib.Path("project-control/docs/evidence/SLICE-08/host_mc_arm_build_and_pack_r17.log").read_text(encoding="utf-8"); head=subprocess.check_output(["git","-C","mcu-p3","rev-parse","HEAD"], text=True).strip(); assert f"MCU_P3_COMMIT={head}" in log and "[PASS] HOST_MC_ARM_BUILD_AND_PACK" in log, "host MC ARM build log mismatch"'
+  python3 -c 'import pathlib, subprocess; log=pathlib.Path("project-control/docs/evidence/SLICE-08/host_mc_arm_build_and_pack_r18.log").read_text(encoding="utf-8"); head=subprocess.check_output(["git","-C","mcu-p3","rev-parse","HEAD"], text=True).strip(); assert f"MCU_P3_COMMIT={head}" in log and "[PASS] HOST_MC_ARM_BUILD_AND_PACK" in log, "host MC ARM build log mismatch"'
 
 qa_commands:
   - {subpath: "printer-soc", kind: "build", command: 'cmake -S . -B /output/build_ps -DSOC_AP_BUILD_SERVICES=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps -j4 && cmake -S . -B /output/build_ps_hil -DSOC_AP_BUILD_SERVICES=ON -DAISOC_OTA_INTEGRITY_ONLY_HIL=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps_hil -j4 && g++ -std=c++17 -O2 -Wall -Wextra -Iservices/helixscreen/include -Iservices/helixscreen/include/aisoc -Iservices/helixscreen/src/aisoc -Imiddleware/dbus/include -Imiddleware/dds/include -Icontracts/twin -I/usr/local/include/dbus-1.0 -I/usr/local/lib/dbus-1.0/include services/helixscreen/src/aisoc/*.cpp services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp /output/build_ps/middleware/dbus/libaisoc_dbus.a /output/build_ps/middleware/dds/libaisoc_dds.so /usr/local/lib/libdbus-1.so -lpthread -Wl,-rpath,/output/build_ps/middleware/dds:/usr/local/lib -o /output/test_aisoc_p0 && python3 -B tools/release_product.py plan --hil-ota-integrity-only --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 && for step in build package; do python3 -B tools/release_product.py "$step" --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 || exit $?; done'}
@@ -59,11 +62,11 @@ qa_commands:
   - {subpath: "", kind: "test", command: 'python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test && (cd mcu-p3/motion-controller-mcu && gcc -std=c11 -O2 -Wall -Wextra -Wno-int-to-pointer-cast -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -I../common/protocol -Iproject/inc -Iproject/delay -Iproject/marlin -Iproject/marlin/marlin_core -Iproject/marlin/marlin_module -Ilibraries/drivers/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support project/src/minimc_proto.c project/src/test_twin44_mc_debug.c -o /output/test_twin44_mc_debug && gcc -std=c11 -O2 -Wall -Wextra -Werror -Wno-int-to-pointer-cast -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DHOST_UNIT_TEST=1 -I../common/protocol -Iproject/inc -Iproject/delay -Iproject/marlin -Iproject/marlin/marlin_core -Iproject/marlin/marlin_module -Ilibraries/drivers/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support project/src/minimc_proto.c tests/test_mc_ota_and_relay.c -o /output/test_mc_ota_and_relay && /output/test_twin44_mc_debug && /output/test_mc_ota_and_relay)'}
 
 acceptance_criteria:
-  - "S08-HIL-FIX-02：live-profile.json 将 touch_device 设为空串并维持 rotate=270；c308l_services.py 与 printer-soc-panel 清洗 /data 残留的失效或非触摸 input.touch_device 键；ui_emergency_stop.cpp 受 HELIX_ENABLE_AISOC 保护屏蔽 klipper_recovery_dialog；advanced_panel.xml 对 Klipper/Firmware Restart 按钮绑定 aisoc_mode=1 隐藏；application.cpp 在启动 AISoC 前注册关于页 Subject 与回调"
-  - "S08-MCU-FIX-01（方案 A）：wk_usart2_init 将 PA3(USART2_RX) 配为 GPIO_PULL_UP；memu_gui.c 与 minimc_proto.c 补齐 USART_ROERR_FLAG/FERR/NERR/BFF 全量清除与 DMA1_CHANNEL6 恢复；minimc_proto_init 切 921600 后与 main.c 进入 while(1) 前调用 minimc_proto_reset_rx_channel 清理初始化噪声；test_mc_ota_and_relay.c 覆盖错误清除与初始化恢复单测，宿主机 ARM make pack 产出已验证 fw_mc_r17.bin"
-  - "r17 统一回归覆盖 06/07/08 全量宿主测试、C308L ARM 构建与隔离制镜（FILE_FILTER=Y, 0444 权限, UBIFS 复核）以及 mcu-p3 宿主测试，保持 boot/bootloadermc 与 boot/bootloaderth 零改动"
-  - "四阶门禁（fast_gate <3s + integration_cmd + qa_runner + 独立 Codex 冷审 0 BLOCKER）通过并写 ledger SW-Verified 后，停在 Human Gate #2 申请 r17 实板刷写"
+  - "S08-R18-MCU：wk_usart2_init 将 PA2(USART2_TX) 与 PA3(USART2_RX) 的 gpio_drive_strength 均设为 GPIO_DRIVE_STRENGTH_STRONGER (0x01) 对齐 bootloadermc 硅片实证参数，并以 AP_USART_BAUDRATE (921600U) 直接初始化 USART2；test_mc_ota_and_relay.c 校验 wk_usart2_init 后 PA2/PA3 odrv 位域等于 GPIO_DRIVE_STRENGTH_STRONGER，宿主机 ARM make pack 产出最终提交对应的 fw_mc_r18.bin"
+  - "S08-R18-AP：ota_transfer.cpp 将 OTA_ENTER_BOOT_WAIT_US 调至 450000U，保持 Stage-2 wait_mode(rt, true) 首错锁存（严格保留 test_ota_e2e.py boot_timeout count((3,1))==4），并为 Stage-4 wait_mode(rt, false) 增加最多 8 轮有界非锁存超时重询（覆盖 MC ~2.0s 启动期，遇非超时错误或耗尽重试立即锁存 communication_error）；device_manager_service.cpp receive_maintenance 在维护态进出边沿分别调用 dev_state_enter_maintenance / dev_state_exit_maintenance(state, false) 并刷新发布快照，消除 UPGRADING_MAINTENANCE 残留；新增 delayed_app_boot 与 DM 维护态退出单测"
+  - "r18 统一回归覆盖 06/07/08 全量宿主测试、C308L ARM 构建与隔离制镜（FILE_FILTER=Y, 0444 权限, UBIFS 复核）以及 mcu-p3 宿主测试，保持 boot/bootloadermc 与 boot/bootloaderth 零改动"
+  - "四阶门禁（fast_gate <3s + integration_cmd + qa_runner + 独立 Codex 冷审 0 BLOCKER）通过并写 ledger SW-Verified 后，停在 Human Gate #2 申请 r18 实板收口验收"
 
 eng_delivery_requirements:
-  - "ENG-AP 仅限修改 printer-soc@main 的 8 个 allowed_paths（max_files <= 9），ENG-MCU 仅限修改 mcu-p3@feat/soc-debug 的 6 个 allowed_paths（max_files <= 6）；禁止修改 boot/*、test_harness、agents 与根仓。"
-  - "所有新增/非受保护函数严格遵守 <=50 行、<=4 入参、全中文 docstring/逻辑注释、零伪状态垫片；各自先本地全通测试，执行 fetch/rebase/push 保持严格线性历史并落盘自检报告。"
+  - "ENG-AP 仅限修改 printer-soc@main 的 4 个 r18 目标文件（切片累计 max_files <= 13），ENG-MCU 仅限修改 mcu-p3@feat/soc-debug 的 2 个 r18 目标文件（切片累计 max_files <= 6）；禁止修改 boot/*、test_harness、agents、project-control 与根仓。"
+  - "所有新增/非受保护函数严格遵守 <=50 行、<=4 入参、全中文 docstring/逻辑注释、零伪状态垫片；各自先本地全通测试与 fast_gate 校验，执行 fetch/rebase/push 保持严格线性历史并向 COORD 回报最终 40 位提交 SHA。"
