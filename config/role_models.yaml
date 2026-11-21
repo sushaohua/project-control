@@ -1,0 +1,12 @@
+# PM/ARCH 子角色模型配置（第一步）。
+# COORD 即用户启动的主会话，不在此表中；其他角色暂不配置，只允许出现 PM 与 ARCH 两个键。
+# 由 COORD 按 .agents/rules/delivery_and_coord_gate.md §1 读取：依次尝试 model、fallback_model，均不可用才继承主会话。
+# 方案：docs/planning/pm_arch_model_dispatch_implementationplan_20261121_121337.md
+schema_version: 1
+roles:
+  PM:
+    antigravity: {model: gemini-4-neon-high, fallback_model: gemini-4-neon-xhigh}
+    codex: {model: "[UNVERIFIED]"}  # Codex 型号尚未核实，Codex 主会话下继承主会话模型并记录
+  ARCH:
+    antigravity: {model: gemini-4-carbon-high, fallback_model: gemini-4-neon-xhigh}
+    codex: {model: "[UNVERIFIED]"}  # 同上
