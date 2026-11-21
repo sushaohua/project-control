@@ -1,0 +1,54 @@
+=== Checkout workspace root '.' from ssh://git@192.168.77.79:2222/sushaohua/ai-soc-workspace.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/ai-soc-workspace.git -> 0
+$ git fetch --depth=50 origin 4dfb108307b20a2b82363daa4525a473456ed877 -> 0
+$ git checkout --force 4dfb108307b20a2b82363daa4525a473456ed877 -> 0
+=== Checkout repository 'printer-soc' from ssh://git@192.168.77.79:2222/sushaohua/printer-soc.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/printer-soc.git -> 0
+$ git fetch origin 6f28023f7f1b774d181fc4ba59d3c378f260bfc1 -> 0
+From ssh://192.168.77.79:2222/sushaohua/printer-soc
+ * branch              6f28023f7f1b774d181fc4ba59d3c378f260bfc1 -> FETCH_HEAD
+$ git checkout 6f28023f7f1b774d181fc4ba59d3c378f260bfc1 -> 0
+=== Checkout repository 'mcu-p3' from ssh://git@192.168.77.79:2222/sushaohua/mcu-p3.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/mcu-p3.git -> 0
+$ git fetch origin a64bffbf1a0c5cbc2fe96b51632098042697878b -> 0
+From ssh://192.168.77.79:2222/sushaohua/mcu-p3
+ * branch            a64bffbf1a0c5cbc2fe96b51632098042697878b -> FETCH_HEAD
+$ git checkout a64bffbf1a0c5cbc2fe96b51632098042697878b -> 0
+=== Checkout repository 'project-control' from ssh://git@192.168.77.79:2222/sushaohua/project-control.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/project-control.git -> 0
+$ git fetch origin d528cd52a162bc7f943556cdc95894d6eeb0e0f3 -> 0
+From ssh://192.168.77.79:2222/sushaohua/project-control
+ * branch            d528cd52a162bc7f943556cdc95894d6eeb0e0f3 -> FETCH_HEAD
+$ git checkout d528cd52a162bc7f943556cdc95894d6eeb0e0f3 -> 0
+=== Checkout repository 'agents' from ssh://git@192.168.77.79:2222/sushaohua/agents.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/agents.git -> 0
+$ git fetch origin 30ecc6586a861c1543a97804cfe0600bb4778efb -> 0
+From ssh://192.168.77.79:2222/sushaohua/agents
+ * branch            30ecc6586a861c1543a97804cfe0600bb4778efb -> FETCH_HEAD
+$ git checkout 30ecc6586a861c1543a97804cfe0600bb4778efb -> 0
+=== Checkout repository 'test_harness' from ssh://git@192.168.77.79:2222/sushaohua/test_harness.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/test_harness.git -> 0
+$ git fetch origin fb1409be7ad5586c701df586553d7f5b67bc2b43 -> 0
+From ssh://192.168.77.79:2222/sushaohua/test_harness
+ * branch            fb1409be7ad5586c701df586553d7f5b67bc2b43 -> FETCH_HEAD
+$ git checkout fb1409be7ad5586c701df586553d7f5b67bc2b43 -> 0
+=== Checkout repository 'boot/bootloadermc' from ssh://git@192.168.77.79:2222/sushaohua/bootloadermc.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/bootloadermc.git -> 0
+$ git fetch origin 3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4 -> 0
+From ssh://192.168.77.79:2222/sushaohua/bootloadermc
+ * branch            3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4 -> FETCH_HEAD
+$ git checkout 3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4 -> 0
+=== Checkout repository 'boot/bootloaderth' from ssh://git@192.168.77.79:2222/sushaohua/bootloaderth.git ===
+$ git init -> 0
+$ git remote add origin ssh://git@192.168.77.79:2222/sushaohua/bootloaderth.git -> 0
+$ git fetch origin 1a0351363cf7b9cbc0aa6919b4afc6be61561152 -> 0
+From ssh://192.168.77.79:2222/sushaohua/bootloaderth
+ * branch            1a0351363cf7b9cbc0aa6919b4afc6be61561152 -> FETCH_HEAD
+$ git checkout 1a0351363cf7b9cbc0aa6919b4afc6be61561152 -> 0

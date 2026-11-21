@@ -25,6 +25,8 @@
 
 | 2026-11-21 12:08:57 | BATCH-HELIX-P0-01 | SLICE-08 | SW-Verified | `printer-soc:c9a1541,mcu-p3:e5e45ee,project-control:dc9a027,agents:30ecc65,test_harness:fb1409b,boot/bootloadermc:3e01c00,boot/bootloaderth:1a03513; inputs=2d78eecbda2581f0fe9091c72843f4d5cf99bce0844158b5227ff5c5d1d9c018` | `080ae3a07474` | `01a1fc48-463a-7d10-a07d-14fd1b64b53c` | `85b9fef0c903d68d` |
 
+| 2026-11-21 16:30:58 | BATCH-HELIX-P0-01 | SLICE-08 | SW-Verified | `printer-soc:6f28023,mcu-p3:a64bffb,project-control:d528cd5,agents:30ecc65,test_harness:fb1409b,boot/bootloadermc:3e01c00,boot/bootloaderth:1a03513; inputs=ceea6db89736859451720586a4239dc1f8a6dc064c976e6422912431dc613363` | `5fc544710549` | `01a1fd38-682b-7dc1-853a-45cf18e9640f` | `8dfca02c9e446448` |
+
 ## 2. 非阻断技术债登记表 (`MINOR` Findings)
 
 | 时间戳 (UTC+8) | 切片 ID | 审计轴 | 代码位置 | 问题描述与后续收敛建议 |
@@ -33,3 +35,4 @@
 | 2026-11-18 11:49:29 | SLICE-03 (`HIL-FINDING-02`) | `embedded_safety` | `boot/bootloadermc/bootloader/src/boot_uart_ota.c:52,206-223; cmake/linker/at32f435_bootloader.ld:14` | MC Bootloader `.bss` 变量 `s_boot_salt` 软复位清零致 `Boot->Boot` 连续软复位 `boot_id` 恒为 `0xC1E6CD05`，且 `-Os` 下 `main()` 栈帧压入 `0x2005FFF0` 覆盖 `UPG2`、当前依赖 `2000ms` 探测窗进入 Boot（正常 `App->Boot->新App` 三态跃迁不受影响）。经用户 2026-11-18 评估确认风险可承受、首版豁免不修以规避 `0x08000000` SWD 单点擦写风险。 |
 | 2026-11-19 11:11:43 | SLICE-06 | `spec_realism` | `printer-soc/tests/packaging/test_product_package.py:245-268` | 监管器测试只在没有活动子进程、UART/fb0 节点不存在的夹具中验证 dev-mode/status/inhibit；未直接启动并停止监管器及真实子进程来验证退出后 UART 与 fb0 无残留。实现中有停止等待和资源占用检查，但该生命周期闭环缺少运行时回归覆盖。 |
 | 2026-11-19 14:20:02 | SLICE-07 | `spec_realism` | `project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md:474,575` | 方案将签名范围写作 trailer[0..52]，按闭区间理解为 53B；验收要求 52B trailer[0..51]，且签发脚本使用前 52B、验证实现传入长度 52U，实际代码符合验收。建议将方案中的边界统一改为 trailer[0..51] 或明确写“前 52 字节”。 |
+| 2026-11-21 16:30:58 | SLICE-08 | `spec_realism` | `printer-soc/services/forward/modules/ota/ota_transfer.cpp:16` | Stage-4 重试次数注释称“首轮 + 最多8次重询”，但常量控制的总探测次数为8轮（首轮加7次重询）。实现符合“最多8轮”判据，建议修正注释以免误读。 |
