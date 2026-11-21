@@ -1,11 +1,11 @@
-# 已批准方案 v1.15 (§0.5 方案 2A + §0.6 S08-HIL-FIX-01) 与 git_server_handoff v0.4 的 SLICE-08 revision 3 (r15)；实板刷写与正式发布分别审批。
+# 已批准方案 v1.17 (§4.4 批准 + 方案 A + rotate=270) 的 SLICE-08 revision 4 (r17)；实板刷写与正式发布分别审批。
 slice_id: "SLICE-08"
-revision: 3
+revision: 4
 batch_id: "BATCH-HELIX-P0-01"
 profile: "c308l-system"
 depends_on: ["SLICE-07"]
 input_repositories: ["project-control", "agents", "printer-soc", "test_harness", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
-title: "SLICE-08 (P0-C / r15)：r14 实板三缺陷修复 (§0.6) 与 integrity-only-hil 临时 OTA 候选 (§0.5 方案 2A) 统一软件准出"
+title: "SLICE-08 (P0-C / r17)：r16 真机触摸/UI 修复 (S08-HIL-FIX-02, rotate=270) 与 MC USART2 跨重启韧性修复 (S08-MCU-FIX-01)"
 plan_ref: "project-control/docs/planning/helix_screen_mc_th_integration_implementationplan_20261118_144741.md"
 contract_ref: "project-control/contracts/c308l_platform_contract.yaml"
 requires_hil_immediately: true
@@ -15,46 +15,56 @@ subtasks:
     repo: "printer-soc"
     branch: "main"
     allowed_paths:
-      - "services/helixscreen/platform/c308l/cross.mk"
-      - "services/helixscreen/platform/c308l/dependencies.mk"
+      - "services/helixscreen/platform/c308l/live-profile.json"
       - "tools/c308l_services.py"
       - "boards/c308l-aw419/rootfs-overlay/usr/bin/printer-soc-panel"
-      - "boards/c308l-aw419/board.yaml"
+      - "services/helixscreen/src/application/application.cpp"
+      - "services/helixscreen/src/ui/ui_emergency_stop.cpp"
+      - "services/helixscreen/ui_xml/advanced_panel.xml"
       - "services/helixscreen/platform/c308l/tests/test_tools.py"
       - "tests/packaging/test_product_package.py"
-      - "services/forward/CMakeLists.txt"
-      - "services/forward/modules/ota/ota_image.cpp"
-      - "tools/build_c308l_services.py"
-      - "tools/release_product.py"
-      - "tests/ota/test_ota_e2e.py"
-      - "tests/integration/test_release_product.py"
-    diff_budget: {max_files: 15, protected_globs: [], max_protected_lines: 0}
-  - role: "INTEGRATOR"
-    repo: "test_harness"
-    branch: "main"
+    diff_budget:
+      max_files: 9
+      protected_globs: ["*services/helixscreen/src/application/**", "*services/helixscreen/src/ui/**"]
+      max_protected_lines: 120
+  - role: "ENG-MCU"
+    repo: "mcu-p3"
+    branch: "feat/soc-debug"
     allowed_paths:
-      - "hil/tests/test_helix_screen_integration.py"
-    diff_budget: {max_files: 3, protected_globs: [], max_protected_lines: 0}
+      - "motion-controller-mcu/project/src/wk_usart.c"
+      - "motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c"
+      - "motion-controller-mcu/project/inc/minimc_proto.h"
+      - "motion-controller-mcu/project/src/minimc_proto.c"
+      - "motion-controller-mcu/project/src/main.c"
+      - "motion-controller-mcu/tests/test_mc_ota_and_relay.c"
+    diff_budget:
+      max_files: 6
+      protected_globs: ["*motion-controller-mcu/project/src/wk_usart.c", "*motion-controller-mcu/project/src/main.c", "*motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c"]
+      max_protected_lines: 120
 
 integration_cmd: >-
   cd printer-soc &&
   python3 -B -m unittest services/helixscreen/platform/c308l/tests/test_tools.py tests/packaging/test_product_package.py &&
   python3 -B -m unittest discover -s tests/integration -p test_release_product.py -v &&
   cd .. &&
-  python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test
+  python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test &&
+  (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh) &&
+  python3 -c 'import pathlib, subprocess; log=pathlib.Path("project-control/docs/evidence/SLICE-08/host_mc_arm_build_and_pack_r17.log").read_text(encoding="utf-8"); head=subprocess.check_output(["git","-C","mcu-p3","rev-parse","HEAD"], text=True).strip(); assert f"MCU_P3_COMMIT={head}" in log and "[PASS] HOST_MC_ARM_BUILD_AND_PACK" in log, "host MC ARM build log mismatch"'
 
 qa_commands:
   - {subpath: "printer-soc", kind: "build", command: 'cmake -S . -B /output/build_ps -DSOC_AP_BUILD_SERVICES=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps -j4 && cmake -S . -B /output/build_ps_hil -DSOC_AP_BUILD_SERVICES=ON -DAISOC_OTA_INTEGRITY_ONLY_HIL=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps_hil -j4 && g++ -std=c++17 -O2 -Wall -Wextra -Iservices/helixscreen/include -Iservices/helixscreen/include/aisoc -Iservices/helixscreen/src/aisoc -Imiddleware/dbus/include -Imiddleware/dds/include -Icontracts/twin -I/usr/local/include/dbus-1.0 -I/usr/local/lib/dbus-1.0/include services/helixscreen/src/aisoc/*.cpp services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp /output/build_ps/middleware/dbus/libaisoc_dbus.a /output/build_ps/middleware/dds/libaisoc_dds.so /usr/local/lib/libdbus-1.so -lpthread -Wl,-rpath,/output/build_ps/middleware/dds:/usr/local/lib -o /output/test_aisoc_p0 && python3 -B tools/release_product.py plan --hil-ota-integrity-only --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 && for step in build package; do python3 -B tools/release_product.py "$step" --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 || exit $?; done'}
   - {subpath: "printer-soc", kind: "image", command: 'python3 -B tools/release_product.py system-image --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08'}
   - {subpath: "printer-soc", kind: "test", command: 'ctest --test-dir /output/build_ps --output-on-failure && ctest --test-dir /output/build_ps_hil --output-on-failure && python3 -B tests/forward/startup/test_startup_fail_fast.py /workspace/printer-soc /output/build_ps/services/forward /usr/local && python3 -B tests/ota/test_ota_e2e.py /workspace/printer-soc /output/build_ps/bin /usr/local && python3 -B tests/ota/test_ota_e2e.py /workspace/printer-soc /output/build_ps_hil/bin /usr/local --policy integrity-only-hil && /output/test_aisoc_p0 /usr/local/bin/dbus-daemon /usr/local/bin/dbus-send && python3 -B -m unittest services/helixscreen/platform/c308l/tests/test_tools.py tests/packaging/test_product_package.py && python3 -B tools/release_product.py verify --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-08 && python3 -B -m unittest discover -s tests/integration -p test_release_product.py -v'}
+  - {subpath: "mcu-p3/motion-controller-mcu", kind: "build", command: "gcc -std=c11 -O2 -Wall -Wextra -Wno-int-to-pointer-cast -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -I../common/protocol -Iproject/inc -Iproject/delay -Iproject/marlin -Iproject/marlin/marlin_core -Iproject/marlin/marlin_module -Ilibraries/drivers/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support project/src/minimc_proto.c project/src/test_twin44_mc_debug.c -o /output/test_twin44_mc_debug && gcc -std=c11 -O2 -Wall -Wextra -Werror -Wno-int-to-pointer-cast -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DHOST_UNIT_TEST=1 -I../common/protocol -Iproject/inc -Iproject/delay -Iproject/marlin -Iproject/marlin/marlin_core -Iproject/marlin/marlin_module -Ilibraries/drivers/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support project/src/minimc_proto.c tests/test_mc_ota_and_relay.c -o /output/test_mc_ota_and_relay"}
+  - {subpath: "mcu-p3/motion-controller-mcu", kind: "test", command: "/output/test_twin44_mc_debug && /output/test_mc_ota_and_relay"}
   - {subpath: "test_harness", kind: "test", command: "python3 -B hil/tests/test_helix_screen_integration.py --self-test"}
 
 acceptance_criteria:
-  - "S08-HIL-FIX-01：c308l/cross.mk 启用 FONT_TIERS := large xlarge 消除 rotate=270 缺失字体致崩溃循环；c308l/dependencies.mk 改用 --disable-new-dtags；c308l_services.py 与 printer-soc-panel 注入 AISOC_DDS_DOMAIN/DBUS_SESSION_BUS_ADDRESS 并分离 HELIX_DATA_DIR=/usr/share/printer-soc/helixscreen 与 HELIX_CONFIG_DIR=/data/printer-soc/helix/config（首启播种 settings.json）；board.yaml 同步实板 SPI-NAND 256MiB 状态"
-  - "S08-OTA-HIL-01/02（§0.5 方案 2A）：默认保持 signature-required 契约与既有 ECDSA 4 类 test_ota_e2e.py 全通过；--hil-ota-integrity-only 构建路径通过 integrity-only-hil 完整实测及 release-manifest.json 策略绑定，且 release_product.py release-manifest --promote 坚决拒绝晋级非 signature-required 候选"
-  - "r15 统一回归覆盖 06/07/08 全量宿主测试与 C308L ARM 构建、隔离制镜（FILE_FILTER=Y, 0444 权限）及不依赖 sdk-image 的 UBIFS 一次深检"
-  - "实板验收（Human Gate #2）与正式发布（Human Gate #3）各自独立审批；r15 过 SW-Verified 后须停在 Human Gate #2 申请上板部署与 MC/TH 供电复位检查"
+  - "S08-HIL-FIX-02：live-profile.json 将 touch_device 设为空串并维持 rotate=270；c308l_services.py 与 printer-soc-panel 清洗 /data 残留的失效或非触摸 input.touch_device 键；ui_emergency_stop.cpp 受 HELIX_ENABLE_AISOC 保护屏蔽 klipper_recovery_dialog；advanced_panel.xml 对 Klipper/Firmware Restart 按钮绑定 aisoc_mode=1 隐藏；application.cpp 在启动 AISoC 前注册关于页 Subject 与回调"
+  - "S08-MCU-FIX-01（方案 A）：wk_usart2_init 将 PA3(USART2_RX) 配为 GPIO_PULL_UP；memu_gui.c 与 minimc_proto.c 补齐 USART_ROERR_FLAG/FERR/NERR/BFF 全量清除与 DMA1_CHANNEL6 恢复；minimc_proto_init 切 921600 后与 main.c 进入 while(1) 前调用 minimc_proto_reset_rx_channel 清理初始化噪声；test_mc_ota_and_relay.c 覆盖错误清除与初始化恢复单测，宿主机 ARM make pack 产出已验证 fw_mc_r17.bin"
+  - "r17 统一回归覆盖 06/07/08 全量宿主测试、C308L ARM 构建与隔离制镜（FILE_FILTER=Y, 0444 权限, UBIFS 复核）以及 mcu-p3 宿主测试，保持 boot/bootloadermc 与 boot/bootloaderth 零改动"
+  - "四阶门禁（fast_gate <3s + integration_cmd + qa_runner + 独立 Codex 冷审 0 BLOCKER）通过并写 ledger SW-Verified 后，停在 Human Gate #2 申请 r17 实板刷写"
 
 eng_delivery_requirements:
-  - "基线 printer-soc@962ce1a6、test_harness@d601cc5a、project-control@e9273122；ENG-AP 与 INTEGRATOR 各自在 allowed_paths 内完成全部修改后落单个干净提交到 main 并自检。"
-  - "所有改动须符合 fast_gate.py（Python/C++ 函数 <=50 行、<=4 入参、全中文文档字符串与逻辑注释、零伪状态垫片）。"
+  - "ENG-AP 仅限修改 printer-soc@main 的 8 个 allowed_paths（max_files <= 9），ENG-MCU 仅限修改 mcu-p3@feat/soc-debug 的 6 个 allowed_paths（max_files <= 6）；禁止修改 boot/*、test_harness、agents 与根仓。"
+  - "所有新增/非受保护函数严格遵守 <=50 行、<=4 入参、全中文 docstring/逻辑注释、零伪状态垫片；各自先本地全通测试，执行 fetch/rebase/push 保持严格线性历史并落盘自检报告。"

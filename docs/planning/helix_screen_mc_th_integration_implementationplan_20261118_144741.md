@@ -20,6 +20,8 @@
 | `v1.13` | `2026-11-20 15:33 +0800` | `AI (Codex)` | 记录本轮继续实测 Helix OTA，提出仅校验固件完整性的真机候选 | 升级实测目标已确认，候选改动待审批 |
 | `v1.14` | `2026-11-20 15:42 +0800` | `AI (Antigravity-CLI) - COORD` | 汇总 Option B (`r14`) 实板排障根因（`HIL-DEF-01~03` 与 `HIL-BLK-01`），给出 `r15` 最小修复切片、`board.yaml` 存储同步及与 §0.5 `AC-03` 候选的审批衔接 | Option B 已完整取证；`r15` 修复与 `AC-03` 路径待用户审批 |
 | `v1.15` | `2026-11-20 16:00 +0800` | `AI (Antigravity-CLI) - COORD` | 记录用户批准 `§0.6` (`S08-HIL-FIX-01`) 与 `§0.5` 方案 2A (`integrity-only-hil`) 及双板持续上电事实；同步锁定 `SLICE-08 revision: 3` (`r15`) 软件闭环边界 | **已批准执行 `r15` SW 闭环**（实板刷写前仍须过 `Human Gate #2`） |
+| `v1.16` | `2026-11-20 18:25 +0800` | `AI (Antigravity-CLI) - COORD` | 补充 `SLICE-08` (`r16`) 真机首轮 HIL 分诊根因（`HIL-DEF-04` 触摸固定绑定 `event1`、`HIL-DEF-05` Klipper 故障弹窗覆盖与按钮/版本 Subject 缺失、`HIL-BLK-01` / `MCU-UART-01` MC `USART2` 失联），提出 `r17` 最小修复切片 `S08-HIL-FIX-02` 与可选 `S08-MCU-FIX-01` | **待用户审批 (`Human Gate #1`)**（选定方案 A/B 并确认物理旋转方向） |
+| `v1.17` | `2026-11-21 10:48 +0800` | `AI (Antigravity-CLI) - COORD` | 记录用户 `Human Gate #1` 拍板（批准 `S08-HIL-FIX-02` + 方案 A 解冻 `mcu-p3@feat/soc-debug` 实施 `S08-MCU-FIX-01` + 屏幕维持 `rotate: 270`）；同步源码物理核验后的 `S08-MCU-FIX-01` 精确初始化时序（`main.c` L186 `minimc_proto_init` 早于 L237 `eeprom_Init`，须在 `while(1)` 前复清并补齐 `USART_BFF_FLAG` 写清）与 6 文件预算，锁定 `SLICE-08 revision: 4` (`r17`) 软件闭环边界 | **已批准执行 `r17` SW 闭环**（实板刷写前仍须过 `Human Gate #2`） |
 
 ---
 
@@ -711,3 +713,75 @@ flowchart LR
 **QA-ENV-02 正式接入，待 QA-ENV-01 合格后提交审批。** 候选镜像与 SDK 工具摘要经过接受后，拟在 `project-control/main` 最多改动五个现有文件。范围为 `config/qa_runner/default_config.yaml`、`tools/qa_runner/qa_runner.py`、`tools/gates/slice_gate.py`、`tools/test_qa_runner.py`、`tools/test_v2_gates.py`。在既有配置为 `c308l-system` 固定摘要和有界时限，保持现有其他 profile 的行为。试验时用已有 `qa_runner.py --config` 入口隔离配置。正式路径复用 `slice_gate.py`。首轮试验时限建议为应用构建 1800 秒、制镜 3600 秒、单项测试 300 秒、外层 7200 秒，并核对容器寿命覆盖顺序执行的命令。最终时限由实测决定。回归需覆盖缺摘要、摘要错配和超时失败，随后用准确候选执行四阶门禁，实产并复验应用包、`rootfs.ubi` 与 `aml_upgrade_package.img`。撤回本阶段配置和代码即可回滚，运行证据保留。
 
 **QA-ENV-01 执行结果。** 独立镜像 `qa-sandbox:c308l-system-20261119-candidate-r1` 的 ID 为 `sha256:aea005ad99bec8304b484fb7c1311295af4fbc38c61cc7224d33449f1afcd628`。固定 19 个 Ubuntu 工具和依赖版本。Repo 启动器来自 Gerrit 提交 `d7c431b9968d928373fe9b463a51d304d3b2c48a`，与 SDK 已检出 Git 对象逐字节一致。Linaro 归档由 Armbian 镜像取得，大小及 MD5 对上 Arm 发布目录，配方固定本次验证的 SHA-256。关闭容器网络后实际编译 AArch64 ELF、创建 UBI 样本，并由 SDK 打包器生成并复验样本镜像。正式系统制镜仍在 §2.5 的候选验收范围。 [Arm 发布目录](https://developer.arm.com/Downloads/-/Legacy%20Linaro%20GNU%20Toolchains) · [Gerrit Repo 源码](https://gerrit.googlesource.com/git-repo/+/d7c431b9968d928373fe9b463a51d304d3b2c48a/repo) · [镜像构建日志](../evidence/SLICE-08/qa_env01_image_build_20261119_144602_546849.log) · [离线冒烟日志](../evidence/SLICE-08/qa_env01_image_smoke_20261119_144811_844331.log)
+
+---
+
+## 4. SLICE-08 (`r16`) 真机首轮 HIL 缺陷分诊与 `r17` 最小修复计划 (`HIL-DEF-04` / `HIL-DEF-05` / `MCU-UART-01`)
+
+### 4.1 `r16` 实板验证状态与分诊结论总览
+
+`SLICE-08 revision: 3` (`r16`：`printer-soc@8f26e979`、`test_harness@fb1409b`、`project-control@019512ea`、`.@bc1ea44f`) 通过四阶门禁并获 `Human Gate #2` 批准部署后，实板冷上电验证了 `r15` 对 `HIL-DEF-01/02/03` 的修复成效（参见 [cold_boot_r16.log](../evidence/SLICE-08/hil_r16/cold_boot_r16.log)）：
+- 4 个核心守护进程由 `S90printer-soc` 正常自启，`/var/run/printer-soc/state.json` 记录 `panel_restarts: 0`，DDS 域 `198` 正常、`large+xlarge` 字体及 `/dev/fb0` 32bpp 渲染零崩溃；
+- 初次冷上电 (`17:45`) 时 `MC` (`85171363`, `7b623d9a`) 与 `TH` (`3292647499`, `7b623d9a`) 均在 `921600` 在线。
+
+针对用户实机观测与报告（`1，触摸没有反应。界面乱（不是提示下位机离线）。2，重启MC了。`），已完成硬件节点、`/dev/fb0` 抓帧、UART 驱动计数、内核 `osd_fb` 及跨仓源码的物理取证，定位出以下 3 项根因：
+
+| 缺陷编号 | 严重度 | 实板现象与证据路径 | 经代码核实的根因 | 影响仓库 / 角色 |
+| :--- | :---: | :--- | :--- | :--- |
+| **`HIL-DEF-04`** | `BLOCKER` | 触摸完全无反应；[helix_console_diag.log](../evidence/SLICE-08/hil_r16/helix_console_diag.log) L20–L35 显示面板打开 `/dev/input/event1` (`ir_keypad1`, `abs=false`) 而跳过 `/dev/input/event0` (`Goodix Capacitive TouchScreen`)；`ioctl` 实测 `event0` 为 `MT_X=0..719`, `MT_Y=0..1279` | `live-profile.json:24` 硬编码 `"touch_device": "/dev/input/event1"`；`/data/printer-soc/helix/config/settings.json` 持久化该键值，且 `c308l_services.py:173-176` 与 `printer-soc-panel:25-26` 仅在目标文件不存在时拷贝配置（`if not target_settings.exists()`），升级后旧错节点残留并绕过 `DisplayBackendFbdev::auto_detect_touch_device()`。对比 `demo.py:87-96,122,127` 已实现动态按名称检索 Goodix | `printer-soc` (`ENG-AP`) |
+| **`HIL-DEF-05`** | `BLOCKER` | 用户体感“界面乱（不是提示下位机离线）”与启动 Subject 警告；[fb0_frame0.png](../evidence/SLICE-08/hil_r16/fb0_frame0.png)、[fb0_frame0_rot90ccw.png](../evidence/SLICE-08/hil_r16/fb0_frame0_rot90ccw.png)、[helix_console_diag.log](../evidence/SLICE-08/hil_r16/helix_console_diag.log) L440–L442 | **非 `osd_fb` 扫描花屏**：内核 `osd_fb.c:173-213` 原生支持 32bpp `BGRA/RGBA/BGRX/RGBX`，板端 `fb0` (`32bpp`, `stride=2880`, `osd[0] enable=1`, `720x1280`) 清晰正常；将 `fb0` 按 `rotate: 270` (`+90° CCW`) 旋转后可见清晰主界面（`Home` 左栏、`Tips` 右上），但其上被深色全屏模糊遮罩与黄框弹窗 `"Printer Error"` / `"Klipper has entered an error state..."` (`[Firmware Restart]` / `[Restart Klipper]` / `[Dismiss]`) 覆盖。源码链路：① `PrinterNetworkState::init_subjects()` (`printer_network_state.cpp:48`) 初始 `klippy_state=SHUTDOWN`，且 `application.cpp:2022-2027` 在 `snap.mc.is_boot_mode`（用户重启 MC 触发）设为 `ERROR`、`snap.estop_latched` 设为 `SHUTDOWN`；② `EmergencyStopOverlay::klippy_state_observer_` (`ui_emergency_stop.cpp:270-303`) 据此弹出 `klipper_recovery_dialog.xml` 全屏模糊恢复框（叠加无触摸导致无法点击 `Dismiss`）；③ `advanced_panel.xml:266-279` 仍残留未按 `aisoc_mode` 隐藏的 Klipper/Firmware Restart 按钮；④ `AboutSettingsOverlay` 延后初始化导致启动时报 `No subject "aisoc_ap_version"` / `"aisoc_mc_version"` / `"aisoc_th_version"` 警告（虽 `on_activate()` 会重填） | `printer-soc` (`ENG-AP`) |
+| **`HIL-BLK-01` / `MCU-UART-01`** | `MAJOR` (架构韧性) | `17:50` 仅 AP `sync && reboot` 后，`/dev/ttyS1` 全量 `-8`、`meson_uart rx=0`、`irq 37=0`（[post_reboot_uart_check.log](../evidence/SLICE-08/hil_r16/post_reboot_uart_check.log)）；`18:04` 用户手动复位 MC 后 `bootloadermc (0x4FC171EA)` 在 `921600` 正常应答（`rx 0->3768`, [mc_reset_and_ui_diag.log](../evidence/SLICE-08/hil_r16/mc_reset_and_ui_diag.log)）；`18:05:40` 下发 `0x1D(action=1, target=1, delay=50ms)` 收到 `55aa02010600040034120400100200` 并 `NVIC_SystemReset()` 后，标准 `921600`/`115200` 探测超时、`rx=3768` 无增量 | **AP 重启必现根因已实证**：`c3_c308l_aw419.dts:935-943` 仅在 Linux pinctrl 就绪后拉高 `e_uart_2wire_pins`（AP 重启/U-Boot 阶段 TX 跌落或浮空）；`mcu-p3` `wk_usart2_init()` (`wk_usart.c:257`) 将 `PA3 (USART2_RX)` 配为 **`GPIO_PULL_NONE`**（对照 `bootloadermc` 配为 `GPIO_PULL_UP`）；且 MC App (`wk_usart.c:269-270`、`memu_gui.c:450` `usart2_rx_dma_drain`、`at32f435_437_int.c:354`) **从未清除 `USART_ROERR_FLAG` / `FERR` / `NERR` / `BFF`**（对照 `boot_uart_ota.c:807` 与 `wk_usart.c:360,411` `USART6` 均有清除），在 AT32F435 上未清 `ROERR` 会锁死 DMA 接收。此外 `eeprom_Init()` (`eeprom_at24cxx.c:776,804,810`) 在 `minimc_proto_init()` 切至 `921600` (`minimc_proto.c:3225`) 前执行长延时期间，`USART2` 已以 `115200` + `IDLE_INT` + 循环 `DMA1_CHANNEL6` 开启；另记录 `boot_uart_ota.c:936` 对 `0x1D(1)` 调用 `NVIC_SystemReset()` | `mcu-p3` (`ENG-MCU`, `feat/soc-debug`)；暂不动 `boot/bootloadermc` |
+
+> **待用户目视确认的屏幕朝向问题**：请结合实物 LCD 核对抓帧描述 [fb0_frame0_rot90ccw.png](../evidence/SLICE-08/hil_r16/fb0_frame0_rot90ccw.png)（即当前 `rotate: 270` 渲染后的画面：`Home` 导航图标在**左侧**，`Tips` 卡片在**右上角**）。若您在实物屏幕上看到的主界面是**正立横向**（仅被正中间 `"Printer Error"` 弹窗和模糊背景遮挡），则维持 `rotate: 270`；若实物画面**上下颠倒 `180°`**，则需在 `r17` 中将 `rotate` 由 `270` 调整为 `90`。
+
+---
+
+### 4.2 `r17` 最小修复方案设计（供 **Human Gate #1** 审批）
+
+本轮提请审批两个垂直切片，其中 **`S08-HIL-FIX-02` 为必选**，**`S08-MCU-FIX-01` 为可选方案对比（方案 A 推荐 vs 方案 B 保守冻结）**，在用户明确批准前零代码修改：
+
+#### 4.2.1 必选切片 `S08-HIL-FIX-02`（`printer-soc`，委派 `ENG-AP`，预计修改 $\le 9$ 个文件）
+
+1. **动态触摸与 `/data` 历史配置纠偏（消除 `HIL-DEF-04`）**：
+   - [printer-soc/services/helixscreen/platform/c308l/live-profile.json](../../../printer-soc/services/helixscreen/platform/c308l/live-profile.json)（第 24 行）：将 `"touch_device": "/dev/input/event1"` 改为空串 `""`，交由 `DisplayBackendFbdev::auto_detect_touch_device()` 按名称/能力自动探测；`rotate` 默认保留 `270`（若用户确认为倒置则改为 `90`）。
+   - [printer-soc/tools/c308l_services.py](../../../printer-soc/tools/c308l_services.py)（`launch_panel` 第 172–177 行）与 [printer-soc/boards/c308l-aw419/rootfs-overlay/usr/bin/printer-soc-panel](../../../printer-soc/boards/c308l-aw419/rootfs-overlay/usr/bin/printer-soc-panel)（第 25–27 行）：提取独立短小辅助逻辑——当目标 `/data/printer-soc/helix/config/settings.json` 已存在且 `/input/touch_device` 非空时，核对对应 `/sys/class/input/event*/device/name` 与 `EV_ABS` 能力，若节点缺失或非触摸设备（如 `ir_keypad*`）则将其重置为空串 `""` 后再拉起 `helix-screen`，既保留其余用户设置又消除升级残留粘滞。
+2. **AISoC 模式下屏蔽 Klipper 故障遮罩与无关恢复按钮，补齐版本 Subject 初始化（消除 `HIL-DEF-05`）**：
+   - [printer-soc/services/helixscreen/src/application/application.cpp](../../../printer-soc/services/helixscreen/src/application/application.cpp)（第 2020–2031 行附近）与 [printer-soc/services/helixscreen/src/ui/ui_emergency_stop.cpp](../../../printer-soc/services/helixscreen/src/ui/ui_emergency_stop.cpp)（`EmergencyStopOverlay` 回调区）：在 `#ifdef HELIX_ENABLE_AISOC` 保护下，禁止 AISoC 模式触发 Klipper `klipper_recovery_dialog.xml` 全屏模糊弹窗（包含启动初始 `KlippyState::SHUTDOWN`、`mc.is_boot_mode` 与 `estop_latched` 路径），改由 AISoC 原有在线/Bootloader/急停状态与标题栏真实呈现下位机状态（绝不伪造在线或篡改 `AC-01..AC-09` 快照字符串）。
+   - [printer-soc/services/helixscreen/ui_xml/advanced_panel.xml](../../../printer-soc/services/helixscreen/ui_xml/advanced_panel.xml)（第 266–279 行）：为 `advanced_restart_klipper_btn` 与 `advanced_firmware_restart_btn` 增加 `<bind_flag_if_eq subject="aisoc_mode" flag="hidden" ref_value="1"/>`，与 `navigation_bar.xml` / `about_settings_overlay.xml` 保持一致。
+   - [printer-soc/services/helixscreen/src/ui/ui_settings_about.cpp](../../../printer-soc/services/helixscreen/src/ui/ui_settings_about.cpp) 及启动初始化路径：在 `Application::init_aisoc()` 运行前确保 `aisoc_ap_version`、`aisoc_mc_version`、`aisoc_th_version` Subject 完成注册（同时保留 `AboutSettingsOverlay::on_activate()` 从 `conn->snapshot()` 刷新），消除启动阶段 `lv_xml_get_subject` 缺失警告。
+3. **单测与包校验扩展**：
+   - 更新 [printer-soc/services/helixscreen/platform/c308l/tests/test_tools.py](../../../printer-soc/services/helixscreen/platform/c308l/tests/test_tools.py) 与 [printer-soc/services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp](../../../printer-soc/services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp)，覆盖：空/非触摸 `settings.json` 清洗、AISoC 下不弹 `klipper_recovery_dialog`、版本 Subject 启动可用性；全部新增注释使用中文，自研函数严格 $\le 50$ 行、入参 $\le 4$ 个。
+
+#### 4.2.2 `MC UART` 决策对比：方案 A（推荐联合修复 `S08-MCU-FIX-01`） vs 方案 B（继续冻结 `mcu-p3`）
+
+| 对比维度 | **方案 A（推荐：`S08-HIL-FIX-02` + `S08-MCU-FIX-01` 联合进 `r17`）** | **方案 B（保守：仅 `S08-HIL-FIX-02`，保持 `mcu-p3@7b623d9` 冻结 0 修改）** |
+| :--- | :--- | :--- |
+| **审批动作** | 批准 `S08-HIL-FIX-02`，并**明示解冻 `mcu-p3`**（仅限 `feat/soc-debug`，不改 `boot/bootloadermc`），授权 `ENG-MCU` 修复 `USART2` 并由 `make pack` 产出新 `fw_mc.bin` | 仅批准 `S08-HIL-FIX-02`；`mcu-p3@7b623d9` 继续严格冻结 0 修改 |
+| **`S08-MCU-FIX-01` 最小范围与 Diff Budget** | **$\le 5$ 个文件**（均在 `mcu-p3/motion-controller-mcu/`）：<br>1. `project/src/wk_usart.c`：`wk_usart2_init()` 将 `PA3` 由 `GPIO_PULL_NONE` 改为 `GPIO_PULL_UP`（与 `bootloadermc` 对齐）；<br>2. `project/marlin/marlin_lcd/memu_gui.c` (`usart2_rx_dma_drain`) 与 `project/src/at32f435_437_int.c` (`USART2_IRQHandler`)：补齐 `USART_ROERR_FLAG` / `FERR` / `NERR` / `BFF` 检测与 `STS+DT` 清除及 DMA 恢复（参考 `wk_usart.c` `USART6` 与 `boot_uart_ota.c:807`）；<br>3. `project/src/minimc_proto.c` / `main.c`：避免 `eeprom_Init()` 长延时期间 `115200` 噪声触发错帧锁死，切换 `921600` 后清错误标志与历史环形缓冲指针；<br>4. `tests/test_mc_ota_and_relay.c`：补充 `ROERR` 恢复/重启韧性单测（运行 `tests/run_tests.sh` 与 `make pack` 用本机 `arm-none-eabi-gcc` 生成 `fw_mc.bin`） | 无 `mcu-p3` 代码变更，继续使用 `SLICE-05` 归档包 `7b623d9a` |
+| **真机闭环收益与局限** | 解决实板“仅重启 AP 后 MC 永久哑巴”的真实产品缺陷，直接支持 `AC` 全链路热重启回归与后续 `0x1D(1)` 隔离验证（如届时发现仍受 `bootloadermc` `NVIC_SystemReset()` 影响，再另行提请 `ENG_BOOT_MC` `@ soc_debug`） | 可更快完成 `r17` 触摸/UI/升级门禁验证，但**期间每次测试 AP 重启均须物理同步冷断电重启双板**；`MCU-UART-01` 留待独立固件任务闭环 |
+
+---
+
+### 4.3 `r17` 门禁流水线与安全边界
+
+1. **前置检查（Human Gate #1 批准后执行）**：
+   - 依据用户选定的方案（A 或 B）与旋转方向确认，同步更新 `project-control/slices/SLICE-08.yaml`（`revision: 4`）与 `slices/ledger.md`，由 `COORD` 仅通过既定白名单委派 `ENG-AP`（及方案 A 时的 `ENG-MCU`）。
+2. **四阶软件门禁（全离线/只读沙箱后置）**：
+   - `fast_gate.py (<3s)` 校验 Diff Budget、全中文注释、反假状态、单一契约；
+   - 跨仓零修改合龙后运行 `qa_runner.py` 独立 Docker 只读沙箱完成 C308L `app + rootfs.ubi + aml_upgrade_package.img` 实产，及方案 A 下的 `mcu-p3` 编译/单测/`fw_mc.bin` 构建；
+   - `codex_review.py`（串联于 `slice_gate.py`）独立异构 Codex 双轴冷审达到 `0 BLOCKER / 0 MINOR`。
+3. **Human Gate #2 与 `r17` 实板 HIL**：
+   - 软件包与（若选方案 A）`fw_mc.bin` 产齐后再次提请 **Human Gate #2**，获批后刷入 `192.168.1.101`，逐项验收：Goodix 触摸响应、无 Klipper 弹窗的干净主界面、`About` 版本页、`AP reboot` 与（若选方案 A）`0x1D(1)` MC UART 恢复、以及 `AC-01..AC-09`。
+   - **安全与回滚底线**：全程禁用 `probe-rs`/SWD、`heating_pwm_pct=0`、禁用电机运动、不动 `/data/boot_backup.img` 与 `/etc/printer-soc/fw_signing_pub.pem`；回滚仅需切回 `r16` 根文件系统与 `SLICE-05` 已归档 `fw_mc.bin`。
+
+---
+
+### 4.4 `v1.17` Human Gate #1 拍板锁定与源码核验修正
+
+- **已批准方案（用户 `2026-11-21` 拍板：`批准 + 方案 A + 维持 270`）**：
+  1. **`S08-HIL-FIX-02`**（`printer-soc@main`，委派 `ENG-AP`，上限 9 个文件）：`live-profile.json` 设 `"touch_device": ""` 并维持 `"rotate": 270`；`c308l_services.py` 与 `printer-soc-panel` 对既有 `/data/printer-soc/helix/config/settings.json` 中的失效或非触摸 `input.touch_device` 自动清洗重置为空串；`ui_emergency_stop.cpp` 受 `#ifdef HELIX_ENABLE_AISOC` 保护屏蔽 `klipper_recovery_dialog`；`advanced_panel.xml` 为 Klipper/Firmware Restart 按钮绑定 `aisoc_mode=1` 隐藏；`application.cpp` 在 `m_aisoc->start()` 前提前调用关于页 `init_subjects()` 与 `register_callbacks()`（保留懒加载按钮回调并消除 Subject 缺失告警）；补全 `test_tools.py` 与 `test_product_package.py` 断言。
+  2. **方案 A `S08-MCU-FIX-01`**（解冻 `mcu-p3@feat/soc-debug`，委派 `ENG-MCU`，上限 6 个文件：`wk_usart.c`、`memu_gui.c`、`minimc_proto.h`、`minimc_proto.c`、`main.c`、`tests/test_mc_ota_and_relay.c`；继续冻结 `boot/bootloadermc` 与 `boot/bootloaderth`）。
+- **源码物理核验修正（对照 `mcu-p3` 实码）**：
+  1. **精确初始化时序**：`main.c:181-254` 中 `wk_usart2_init()`（L181，`115200`）后即在 L186 调用 `minimc_proto_init()` 切至 `921600`，之后才执行 `eeprom_Init()`（L237）、`Board_init()`（L239）与 `setup()`（L245）直至 L254 进入 `while(1)`。因此须在 `minimc_proto_init()` 切完 `921600` 后立即清除错误标志与接收通道状态，并在 `main.c` 进入 `while(1)` 前再调用一次 `minimc_proto_reset_rx_channel()` 抛弃初始化长耗时阶段积累的噪声字节与状态位。
+  2. **AT32F435 错误标志清除机制**：核实 `at32f435_437_usart.c:716-727`，`USART_ROERR_FLAG`/`USART_FERR_FLAG`/`USART_NERR_FLAG`/`USART_IDLEF_FLAG` 通过读 `STS+DT` 序列清除，而 **`USART_BFF_FLAG`（Break 帧）必须显式调用 `usart_flag_clear(USART2, USART_BFF_FLAG)`（写 `sts = ~flag`）** 才能清除；同时宿主机桩 `test_twin44_mc_debug.c:128` 恒返回 `SET`，清错函数不得使用 `while` 循环轮询标志。
+  3. 同步更新 `project-control/slices/SLICE-08.yaml` 至 **`revision: 4`**（`r17`），锁定四阶门禁后停在 **Human Gate #2** 报批刷板。

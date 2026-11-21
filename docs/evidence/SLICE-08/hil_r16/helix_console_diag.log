@@ -1,0 +1,668 @@
+[00:17:54.103] [+00000.026] [warning] [1119] [Config] Backup of /data/printer-soc/helix/config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/root/.helixscreen/helixscreen.env.backup)
+[00:17:54.104] [+00000.027] [debug] [1119] [Logging] Initialized: target=console, console=yes, backtrace=32 messages
+[00:17:54.104] [+00000.027] [info] [1119] [Application] ========================
+[00:17:54.104] [+00000.027] [info] [1119] [Application] HelixScreen 1.0.9 (d585278b7cfbb640c4b88cd774e71a2c0de37a82)
+[00:17:54.104] [+00000.027] [debug] [1119] [Application] Target: 0x0
+[00:17:54.104] [+00000.027] [debug] [1119] [Application] DPI: 160 (default)
+[00:17:54.107] [+00000.030] [info] [1119] [DisplayBackend] HELIX_DISPLAY_BACKEND=fbdev - using forced backend
+[00:17:54.107] [+00000.030] [debug] [1119] [DisplayManager] Using backend: Linux Framebuffer
+[00:17:54.107] [+00000.030] [info] [1119] [Fbdev Backend] Detected resolution: 720x1280
+[00:17:54.107] [+00000.030] [info] [1119] [DisplayManager] Auto-detected resolution: 720x1280
+[00:17:54.107] [+00000.030] [info] [1119] [Fbdev Backend] Creating framebuffer display on /dev/fb0
+[00:17:54.111] [+00000.034] [info] [1119] [Fbdev Backend] Set color format to ARGB8888 (AD5M alpha fix)
+[00:17:54.111] [+00000.034] [warning] [1119] [Fbdev Backend] Could not suppress console — kernel messages may bleed through
+[00:17:54.111] [+00000.034] [info] [1119] [Fbdev Backend] Framebuffer display created: 720x1280 on /dev/fb0
+[00:17:54.127] [+00000.050] [info] [1119] [Fbdev Backend] Display unblanked via FBIOBLANK
+[00:17:54.127] [+00000.050] [info] [1119] [Fbdev Backend] Display pan reset to yoffset=0
+[00:17:54.127] [+00000.050] [info] [1119] [DisplayManager] Display unblanked via framebuffer ioctl
+[00:17:54.127] [+00000.051] [info] [1119] [DisplayManager] Display rotated 270° — effective resolution: 1280x720
+[00:17:54.128] [+00000.051] [debug] [1119] [UpdateQueue] Initialized - timer created for queue drain
+[00:17:54.128] [+00000.051] [info] [1119] [Fbdev Backend] Using touch device from config: /dev/input/event1
+[00:17:54.128] [+00000.051] [info] [1119] [Fbdev Backend] Creating evdev touch input on /dev/input/event1
+[00:17:54.128] [+00000.051] [info] [1119] [Fbdev Backend] Input device 'ir_keypad1' phys='keypad/input0' abs=false (st=false mt=false) → calibration not needed [no ABS axes (not a touchscreen)], manual entry point hidden
+[00:17:54.128] [+00000.052] [info] [1119] [Fbdev Backend] Touch range source: kernel/MT-declared ABS range
+[00:17:54.129] [+00000.052] [debug] [1119] [TouchCal] No valid calibration in config
+[00:17:54.129] [+00000.052] [info] [1119] [Fbdev Backend] Evdev touch input created on /dev/input/event1
+[00:17:54.129] [+00000.053] [debug] [1119] [InputScanner] Scanning /dev/input/event4 (input_ethrcu) abs=[0] rel=[0] key=[20 100000 0 0 0]
+[00:17:54.130] [+00000.053] [debug] [1119] [InputScanner] Skipping /dev/input/event4 (no REL_X/REL_Y)
+[00:17:54.130] [+00000.053] [debug] [1119] [InputScanner] Scanning /dev/input/event3 (vad_keypad) abs=[0] rel=[0] key=[1 0 0 0 0 100000 0 0 0]
+[00:17:54.130] [+00000.053] [debug] [1119] [InputScanner] Skipping /dev/input/event3 (no REL_X/REL_Y)
+[00:17:54.131] [+00000.054] [debug] [1119] [InputScanner] Scanning /dev/input/event2 (ir_keypad) abs=[0] rel=[0] key=[3fff0000 0 fc800 40 0 0 0 2000 b710000 78000178 50003ffc 2f9e37c2 80005f e0014001 5000cffc]
+[00:17:54.131] [+00000.054] [debug] [1119] [InputScanner] Skipping /dev/input/event2 (no REL_X/REL_Y)
+[00:17:54.131] [+00000.055] [debug] [1119] [InputScanner] Scanning /dev/input/event1 (ir_keypad1) abs=[0] rel=[0] key=[3ffd0000 0 fc000 40 0 0 0 0 2000000 78000010 50002400 1e16c0 0 0 10000ffc]
+[00:17:54.132] [+00000.055] [debug] [1119] [InputScanner] Skipping /dev/input/event1 (no REL_X/REL_Y)
+[00:17:54.132] [+00000.055] [debug] [1119] [InputScanner] Scanning /dev/input/event0 (Goodix Capacitive TouchScreen) abs=[2658000 3] rel=[0] key=[400 0 0 0 0 0 0 20000000 1 f8000000 0]
+[00:17:54.132] [+00000.055] [debug] [1119] [InputScanner] Skipping /dev/input/event0 (touchscreen: legacy_abs=true mt_abs=true btn_touch=true)
+[00:17:54.133] [+00000.056] [info] [1119] [DisplayManager] Sleep-aware input wrapper installed
+[00:17:54.133] [+00000.056] [debug] [1119] [Fbdev Backend] No keyboard device found
+[00:17:54.134] [+00000.057] [info] [1119] [Backlight-Sysfs] Found device: aml-bl (max=255)
+[00:17:54.134] [+00000.057] [info] [1119] [Backlight] Auto-detected: Sysfs
+[00:17:54.134] [+00000.057] [info] [1119] [DisplayManager] Backlight: Sysfs (available: true)
+[00:17:54.134] [+00000.057] [info] [1119] [DisplayManager] Hardware blank: false (auto-detected from Sysfs)
+[00:17:54.134] [+00000.057] [info] [1119] [DisplayManager] Display power-off: false (backlight off (no panel power-off))
+[00:17:54.134] [+00000.057] [debug] [1119] [Backlight-Sysfs] bl_power ON for aml-bl
+[00:17:54.134] [+00000.058] [debug] [1119] [Backlight-Sysfs] Set aml-bl to 255/255 (100%)
+[00:17:54.135] [+00000.058] [debug] [1119] [DisplayManager] Backlight forced ON at 100% for startup
+[00:17:54.135] [+00000.058] [debug] [1119] [DisplayManager] Display dim: 0s timeout, 30% brightness
+[00:17:54.135] [+00000.058] [debug] [1119] [DisplayManager] Color transform flush hook installed
+[00:17:54.135] [+00000.059] [debug] [1119] [Application] Display DPI applied: 160 (was 269 before set)
+[00:17:54.136] [+00000.059] [debug] [1119] [Application] Display initialized
+[00:17:54.136] [+00000.059] [info] [1119] [AssetManager] Fonts registered for tier 5 (48 faces; larger tiers deferred until the breakpoint needs them)
+[00:17:54.137] [+00000.060] [debug] [1119] [Application] Assets registered
+[00:17:54.145] [+00000.068] [debug] [1119] [ThemeLoader] Loading default theme from /usr/share/printer-soc/helixscreen/assets/config/themes/defaults/helixscreen.json
+[00:17:54.146] [+00000.069] [info] [1119] [Theme] Loaded theme: HelixScreen (helixscreen)
+[00:17:54.146] [+00000.070] [debug] [1119] [Theme] Registered 16 semantic colors + legacy aliases (dark=true, light=true)
+[00:17:54.147] [+00000.070] [debug] [1119] [Theme] Registered properties: border_radius=11px (size=3, Soft), border_width=1, border_opacity=40, shadow=(0,0,2)
+[00:17:54.149] [+00000.072] [debug] [1119] [Theme] Registered 8 object color palette tokens
+[00:17:54.153] [+00000.076] [warning] [1119] [LVGL] [Warn]	(1074.153, +1074153)	 lv_xml_update_const: Const `icon_font_hero` not found for update, registering as new. lv_xml.c:902
+[00:17:54.153] [+00000.076] [warning] [1119] [LVGL] [Warn]	(1074.153, +0)	 lv_xml_update_const: Const `icon_size` not found for update, registering as new. lv_xml.c:902
+[00:17:54.153] [+00000.076] [warning] [1119] [LVGL] [Warn]	(1074.153, +0)	 lv_xml_update_const: Const `font_badge_compact` not found for update, registering as new. lv_xml.c:902
+[00:17:54.153] [+00000.076] [warning] [1119] [LVGL] [Warn]	(1074.153, +0)	 lv_xml_update_const: Const `font_heading` not found for update, registering as new. lv_xml.c:902
+[00:17:54.153] [+00000.076] [warning] [1119] [LVGL] [Warn]	(1074.153, +0)	 lv_xml_update_const: Const `font_xl` not found for update, registering as new. lv_xml.c:902
+[00:17:54.153] [+00000.076] [warning] [1119] [LVGL] [Warn]	(1074.153, +0)	 lv_xml_update_const: Const `icon_font_xl` not found for update, registering as new. lv_xml.c:902
+[00:17:54.153] [+00000.076] [warning] [1119] [LVGL] [Warn]	(1074.153, +0)	 lv_xml_update_const: Const `font_body_bold` not found for update, registering as new. lv_xml.c:902
+[00:17:54.153] [+00000.077] [warning] [1119] [LVGL] [Warn]	(1074.153, +0)	 lv_xml_update_const: Const `font_body` not found for update, registering as new. lv_xml.c:902
+[00:17:54.154] [+00000.077] [warning] [1119] [LVGL] [Warn]	(1074.154, +1)	 lv_xml_update_const: Const `icon_font_xs` not found for update, registering as new. lv_xml.c:902
+[00:17:54.154] [+00000.077] [warning] [1119] [LVGL] [Warn]	(1074.154, +0)	 lv_xml_update_const: Const `font_small` not found for update, registering as new. lv_xml.c:902
+[00:17:54.154] [+00000.077] [warning] [1119] [LVGL] [Warn]	(1074.154, +0)	 lv_xml_update_const: Const `font_xs` not found for update, registering as new. lv_xml.c:902
+[00:17:54.154] [+00000.077] [warning] [1119] [LVGL] [Warn]	(1074.154, +0)	 lv_xml_update_const: Const `icon_font_lg` not found for update, registering as new. lv_xml.c:902
+[00:17:54.154] [+00000.077] [warning] [1119] [LVGL] [Warn]	(1074.154, +0)	 lv_xml_update_const: Const `font_mono` not found for update, registering as new. lv_xml.c:902
+[00:17:54.154] [+00000.077] [warning] [1119] [LVGL] [Warn]	(1074.154, +0)	 lv_xml_update_const: Const `icon_font_sm` not found for update, registering as new. lv_xml.c:902
+[00:17:54.154] [+00000.077] [warning] [1119] [LVGL] [Warn]	(1074.154, +0)	 lv_xml_update_const: Const `icon_font_md` not found for update, registering as new. lv_xml.c:902
+[00:17:54.155] [+00000.078] [debug] [1119] [Theme] Registered ui_breakpoint subject: 5 (min_dim=720)
+[00:17:54.155] [+00000.078] [debug] [1119] [Theme] Registered ui_breakpoint_v subject: 5 (vert_dim=720)
+[00:17:54.155] [+00000.078] [debug] [1119] [Theme] Registered ui_is_portrait subject: 0 (1280x720)
+[00:17:54.155] [+00000.078] [debug] [1119] [Theme] Initialized HelixScreen theme: dark mode
+[00:17:54.155] [+00000.078] [debug] [1119] [Theme] theme_manager_init took 10 ms (token table on)
+[00:17:54.155] [+00000.078] [debug] [1119] [Application] Theme initialized (dark=true)
+[00:17:54.257] [+00000.180] [debug] [1119] [Memory Profiling] baseline RSS=16316KB
+[00:17:54.257] [+00000.180] [debug] [1119] [Memory Profiling] SIGUSR1 handler installed (kill -USR1 1119 for snapshot)
+[00:17:54.258] [+00000.181] [debug] [1119] [Application] System memory: total=1742MB, available=1639MB
+[00:17:54.258] [+00000.181] [debug] [1119] [Application] Widgets registered
+[00:17:54.258] [+00000.181] [info] [1119] [Application] Language set to 'en'
+[00:17:54.258] [+00000.182] [info] [1119] [Application] Rotation probe skipped: probed=false, has_rotate_key=true
+[00:17:54.259] [+00000.182] [info] [1119] LayoutManager: 1280x720 -> layout 'standard'
+[00:17:54.259] [+00000.182] [info] [1119] [Application] Layout: standard (default)
+[00:17:54.263] [+00000.186] [debug] [1119] [Color Picker] Registered color_preview_size=56, theme_swatch_size=32 for screen 1280px
+[00:17:54.263] [+00000.186] [debug] [1119] [ui_text_input] Registered <text_input> widget
+[00:17:54.267] [+00000.190] [debug] [1119] [SpoolCanvas] Registered spool_canvas widget with XML system
+[00:17:54.267] [+00000.190] [debug] [1119] [AmsCurrentTool] Callbacks registered
+[00:17:54.268] [+00000.191] [debug] [1119] [AmsEditOverlay] Constructed
+[00:17:54.268] [+00000.191] [debug] [1119] [AmsEditOverlay] Callbacks registered
+[00:17:54.269] [+00000.192] [debug] [1119] [SwatchGrid] color_swatch_grid: registered swatch=32 gap=8 width=232 for min_dim 720px
+[00:17:54.270] [+00000.193] [debug] [1119] [SwatchGrid] theme_swatch_grid: registered swatch=32 gap=8 width=232 for min_dim 720px
+[00:17:54.272] [+00000.196] [warning] [1119] [LVGL] [Warn]	(1074.272, +118)	 lv_xml_update_const: Const `swatch_size` not found for update, registering as new. lv_xml.c:902
+[00:17:54.272] [+00000.196] [debug] [1119] [Color Picker] ams_edit_overlay: swatch_size=32, sv_size=240, hue_height=26 for height 720px
+[00:17:54.283] [+00000.206] [debug] [1119] [progress_bar] Registered progress bar callbacks
+[00:17:54.284] [+00000.207] [debug] [1119] [PinEntryModal] Callbacks registered
+[00:17:54.293] [+00000.216] [debug] [1119] [Color Picker] color_picker: swatch_size=32, sv_size=240, hue_height=26 for height 720px
+[00:17:54.310] [+00000.233] [debug] [1119] [PrinterSwitchMenu] Callbacks registered
+[00:17:54.318] [+00000.241] [warning] [1119] [LVGL] [Warn]	(1074.318, +46)	 lv_xml_register_style: style_flex_main_place style property is not supported lv_xml_style.c:339
+[00:17:54.318] [+00000.241] [warning] [1119] [LVGL] [Warn]	(1074.318, +0)	 lv_xml_register_style: style_flex_cross_place style property is not supported lv_xml_style.c:339
+[00:17:54.318] [+00000.241] [warning] [1119] [LVGL] [Warn]	(1074.318, +0)	 lv_xml_register_style: style_flex_main_place style property is not supported lv_xml_style.c:339
+[00:17:54.318] [+00000.241] [warning] [1119] [LVGL] [Warn]	(1074.318, +0)	 lv_xml_register_style: style_flex_cross_place style property is not supported lv_xml_style.c:339
+[00:17:54.325] [+00000.248] [debug] [1119] [Multi-Filament System Management] Created
+[00:17:54.325] [+00000.249] [debug] [1119] [Multi-Filament System Management] Callbacks registered
+[00:17:54.327] [+00000.250] [debug] [1119] [Section Detail] Created
+[00:17:54.327] [+00000.250] [debug] [1119] [Section Detail] Callbacks registered (none needed)
+[00:17:54.374] [+00000.298] [debug] [1119] [Application] XML components registered
+[00:17:54.375] [+00000.298] [debug] [1119] [SubjectInitializer] Initializing core and state subjects...
+[00:17:54.375] [+00000.298] [debug] [1119] [LockManager] Subjects initialized (pin_set=0)
+[00:17:54.375] [+00000.298] [info] [1119] [MaterialSettingsManager] Initialized with 0 override(s)
+[00:17:54.375] [+00000.298] [debug] [1119] [PresetMaterials] Subjects initialized (4 slots)
+[00:17:54.375] [+00000.299] [debug] [1119] [CapabilityOverrides] Loaded: bed_mesh=auto(N), qgl=auto(N), z_tilt=auto(N), nozzle_clean=auto(N), heat_soak=auto(N), chamber=auto(N), speaker=auto(N)
+[00:17:54.378] [+00000.301] [debug] [1119] [ActivePrintMediaManager] Filename empty - preserving current display
+[00:17:54.378] [+00000.301] [debug] [1119] [ActivePrintMediaManager] Observer attached to print_filename subject
+[00:17:54.378] [+00000.301] [debug] [1119] [ActivePrintMediaManager] Initialized
+[00:17:54.387] [+00000.310] [debug] [1119] [filament] loaded 31 Orca library types, 10 overrides from assets/filaments.json
+[00:17:54.410] [+00000.333] [debug] [1119] [AMS Backend] No AMS detected
+[00:17:54.412] [+00000.335] [debug] [1119] [SubjectInitializer] Core and state subjects initialized
+[00:17:54.412] [+00000.335] [debug] [1119] [AmsToolText] Tool text observers initialized
+[00:17:54.412] [+00000.336] [debug] [1119] [LedController] Loaded config: 0 strips, 7 presets, 0 macros
+[00:17:54.413] [+00000.336] [info] [1119] [LedController] Initialized
+[00:17:54.413] [+00000.336] [debug] [1119] [Application] Core subjects initialized
+[00:17:54.413] [+00000.336] [debug] [1119] [PrinterState] Active printer name set to: 'C308L Printer'
+[00:17:54.413] [+00000.336] [debug] [1119] [PrinterState] Multi-printer enabled: false
+[00:17:54.413] [+00000.336] [debug] [1121] [HttpExecutor:fast] worker 0 started
+[00:17:54.414] [+00000.337] [debug] [1122] [HttpExecutor:fast] worker 1 started
+[00:17:54.414] [+00000.337] [debug] [1123] [HttpExecutor:fast] worker 2 started
+[00:17:54.414] [+00000.337] [debug] [1124] [HttpExecutor:fast] worker 3 started
+[00:17:54.414] [+00000.337] [debug] [1119] [MoonrakerManager] Initializing...
+[00:17:54.414] [+00000.338] [debug] [1119] [MoonrakerManager] Creating Moonraker client...
+[00:17:54.414] [+00000.338] [debug] [1119] [MoonrakerManager] Creating REAL client
+[00:17:54.414] [+00000.338] [debug] [1119] [SoundManager] Moonraker client set: connected
+[00:17:54.415] [+00000.338] [debug] [1119] [MoonrakerManager] Timeouts: connection=10000ms, request=30000ms, keepalive=10000ms
+[00:17:54.415] [+00000.338] [debug] [1119] [Moonraker Client] Event handler registered
+[00:17:54.415] [+00000.338] [debug] [1119] [MoonrakerManager] Creating Moonraker API...
+[00:17:54.415] [+00000.338] [debug] [1119] [AMS State] Moonraker API set for Spoolman integration
+[00:17:54.415] [+00000.338] [debug] [1119] [FilamentSensorManager] Moonraker API set for bypass arming
+[00:17:54.415] [+00000.338] [info] [1119] [MoonrakerManager] Initialized (not connected yet)
+[00:17:54.415] [+00000.338] [debug] [1119] [HistoryManager] Created
+[00:17:54.415] [+00000.338] [debug] [1119] [Moonraker Client] Registering new method callback: notify_history_changed (handler: PrintHistoryManager)
+[00:17:54.415] [+00000.338] [debug] [1119] [Moonraker Client] Registering new method callback: notify_filelist_changed (handler: PrintHistoryManager)
+[00:17:54.415] [+00000.338] [debug] [1119] [Application] PrintHistoryManager created
+[00:17:54.415] [+00000.338] [debug] [1119] [Moonraker Client] Registering new method callback: notify_job_queue_changed (handler: JobQueueState)
+[00:17:54.415] [+00000.338] [debug] [1119] [JobQueueState] Subscribed to notify_job_queue_changed
+[00:17:54.415] [+00000.338] [debug] [1119] [JobQueueState] Created
+[00:17:54.414] [+00000.338] [debug] [1125] [HttpExecutor:slow] worker 0 started
+[00:17:54.415] [+00000.338] [debug] [1119] [JobQueueState] Subjects initialized
+[00:17:54.415] [+00000.338] [debug] [1119] [Application] JobQueueState created
+[00:17:54.415] [+00000.338] [debug] [1119] [MacroModificationManager] Created
+[00:17:54.415] [+00000.338] [debug] [1119] [MoonrakerManager] Macro modification manager initialized
+[00:17:54.415] [+00000.338] [debug] [1119] [KeyboardManager] Initializing global keyboard
+[00:17:54.415] [+00000.339] [debug] [1119] [KeyboardManager] Created font with MDI fallback
+[00:17:54.416] [+00000.339] [debug] [1119] [KeyboardManager] Using keyboard with long-press alternatives
+[00:17:54.416] [+00000.339] [debug] [1119] [KeyboardManager] Switched to alpha lowercase
+[00:17:54.416] [+00000.339] [debug] [1119] [KeyboardManager] Initialization complete
+[00:17:54.417] [+00000.340] [debug] [1119] [LVGL] [Warn]	(1074.417, +99)	 lv_translation_get: `en` language is not found, using the `Memory (MB)` as translation. lv_translation.c:204
+[00:17:54.419] [+00000.342] [debug] [1119] [MemoryStats] Overlay hidden
+[00:17:54.419] [+00000.342] [debug] [1119] [MemoryStats] Overlay initialized (baseline=18900KB)
+[00:17:54.419] [+00000.342] [debug] [1119] [Application] Moonraker initialized
+[00:17:54.419] [+00000.342] [debug] [1119] [UpdateChecker] LVGL subjects initialized
+[00:17:54.419] [+00000.342] [debug] [1119] [UpdateChecker] Notification callbacks registered
+[00:17:54.419] [+00000.343] [debug] [1119] [UpdateChecker] release_info.json asset_name is correct (helixscreen-pi.zip)
+[00:17:54.419] [+00000.343] [debug] [1119] [UpdateChecker] Initialized
+[00:17:54.420] [+00000.343] [debug] [1119] [Icon] Using icon font for 'icon_font_xl' — line_height=81px
+[00:17:54.420] [+00000.344] [debug] [1119] [Icon] Using icon font for 'icon_font_sm' — line_height=33px
+[00:17:54.421] [+00000.344] [debug] [1119] [ui_button] Default button icon font — line_height=33px
+[00:17:54.422] [+00000.345] [debug] [1119] [UpgradeNudge] Loaded intensity=off dismissed_version=''
+[00:17:54.422] [+00000.345] [debug] [1119] [UpgradeNudge] Loaded intensity=off dismissed_version=''
+[00:17:54.422] [+00000.345] [info] [1119] [UpgradeBanner] Initialized (hidden)
+[00:17:54.422] [+00000.345] [debug] [1119] [CrashHistory] No history file at /data/printer-soc/helix/config/crash_history.json
+[00:17:54.422] [+00000.345] [debug] [1119] [CrashHistory] Initialized with 0 entries from /data/printer-soc/helix/config
+[00:17:54.422] [+00000.345] [debug] [1119] [CrashReporter] Initialized with config dir: /data/printer-soc/helix/config
+[00:17:54.422] [+00000.345] [info] [1119] [TelemetryManager] Initializing with config dir: /data/printer-soc/helix/config
+[00:17:54.422] [+00000.346] [info] [1119] [TelemetryManager] Loaded device identity from /data/printer-soc/helix/config/telemetry_device.json
+[00:17:54.423] [+00000.346] [debug] [1119] [TelemetryManager] No queue file at /data/printer-soc/helix/config/telemetry_queue.json, starting with empty queue
+[00:17:54.423] [+00000.346] [info] [1119] [TelemetryManager] Loaded enabled state: false
+[00:17:54.423] [+00000.346] [debug] [1119] [TelemetryManager] No crash file found at /data/printer-soc/helix/config/crash.txt
+[00:17:54.423] [+00000.346] [debug] [1119] [TelemetryManager] LVGL subject initialized
+[00:17:54.423] [+00000.346] [info] [1119] [TelemetryManager] Initialization complete (enabled=false, queue=0)
+[00:17:54.423] [+00000.347] [info] [1119] [PrinterImageManager] Initialized, custom_dir: /data/printer-soc/helix/config/custom_images/
+[00:17:54.423] [+00000.347] [debug] [1119] [SubjectInitializer] Initializing panel subjects (api=valid)...
+[00:17:54.425] [+00000.348] [debug] [1119] [PanelWidgetRegistry] All widget factories registered
+[00:17:54.425] [+00000.348] [debug] [1119] [PanelWidgetManager] Initializing subjects for widget 'printer_image'
+[00:17:54.425] [+00000.349] [debug] [1119] [PrinterImageWidget] Subjects initialized (type + host + info_visible)
+[00:17:54.425] [+00000.349] [debug] [1119] [PanelWidgetManager] Initializing subjects for widget 'network'
+[00:17:54.426] [+00000.349] [debug] [1119] [NetworkWidget] Subjects initialized (icon_state + label)
+[00:17:54.426] [+00000.349] [debug] [1119] [PanelWidgetManager] Initializing subjects for widget 'humidity'
+[00:17:54.426] [+00000.349] [debug] [1119] [HumidityWidget] Subjects initialized (chamber_humidity_text)
+[00:17:54.426] [+00000.349] [debug] [1119] [PanelWidgetManager] Initializing subjects for widget 'width_sensor'
+[00:17:54.426] [+00000.349] [debug] [1119] [WidthSensorWidget] Subjects initialized (diameter text observer)
+[00:17:54.426] [+00000.349] [debug] [1119] [PanelWidgetManager] Initializing subjects for widget 'clock'
+[00:17:54.426] [+00000.349] [debug] [1119] [ClockWidget] Subjects initialized
+[00:17:54.426] [+00000.349] [debug] [1119] [PanelWidgetManager] Initializing subjects for widget 'job_queue'
+[00:17:54.426] [+00000.349] [debug] [1119] [JobQueueWidget] Subjects initialized
+[00:17:54.426] [+00000.349] [debug] [1119] [PanelWidgetManager] Initializing subjects for widget 'tips'
+[00:17:54.426] [+00000.350] [debug] [1119] [TipsWidget] Subjects initialized (status_text)
+[00:17:54.426] [+00000.350] [debug] [1119] [PanelWidgetManager] Initializing subjects for widget 'print_stats'
+[00:17:54.427] [+00000.350] [debug] [1119] [PrintStatsWidget] Subjects initialized
+[00:17:54.427] [+00000.350] [debug] [1119] [PanelWidgetManager] Initializing subjects for widget 'camera'
+[00:17:54.427] [+00000.350] [debug] [1119] [CameraWidget] Subjects initialized
+[00:17:54.427] [+00000.350] [debug] [1119] [PanelWidgetManager] Widget subjects initialized
+[00:17:54.427] [+00000.350] [debug] [1119] [Home Panel] Initializing subjects
+[00:17:54.427] [+00000.351] [debug] [1119] [Home Panel] Registered subjects and event callbacks
+[00:17:54.432] [+00000.355] [debug] [1119] [Filament Panel] temp=0/0°C, material=-1
+[00:17:54.432] [+00000.355] [debug] [1119] [Filament Panel] Subjects initialized
+[00:17:54.432] [+00000.355] [debug] [1119] [SettingsManager] Initializing subjects
+[00:17:54.432] [+00000.355] [debug] [1119] [DisplaySettingsManager] Initializing subjects
+[00:17:54.437] [+00000.361] [debug] [1119] [ThemeLoader] Discovered 18 themes (user + defaults)
+[00:17:54.438] [+00000.361] [debug] [1119] [DisplayManager] Dim timeout set to 0s
+[00:17:54.438] [+00000.361] [debug] [1119] [DisplaySettingsManager] Brightness initialized to 80%
+[00:17:54.446] [+00000.369] [debug] [1119] Platform detected: RAM=1742MB, cores=2, tier=basic
+[00:17:54.446] [+00000.369] [info] [1119] [DisplaySettingsManager] Timezone set to 'UTC' (index 0)
+[00:17:54.454] [+00000.377] [debug] [1119] Platform detected: RAM=1742MB, cores=2, tier=basic
+[00:17:54.454] [+00000.377] [debug] [1119] [DisplaySettingsManager] Subjects initialized: dark_mode=true, theme=helixscreen, dim=0s, sleep=0s, brightness=80, animations=true
+[00:17:54.454] [+00000.377] [debug] [1119] [SystemSettingsManager] Initializing subjects
+[00:17:54.454] [+00000.377] [debug] [1119] [SystemSettingsManager] Language initialized to en (index 0)
+[00:17:54.454] [+00000.377] [info] [1119] locale: language='en', using C locale (English default)
+[00:17:54.454] [+00000.377] [debug] [1119] [SystemSettingsManager] telemetry_enabled: false
+[00:17:54.455] [+00000.378] [debug] [1119] [SystemSettingsManager] wifi_enabled: true
+[00:17:54.455] [+00000.378] [debug] [1119] [SystemSettingsManager] log_level: info (index 1)
+[00:17:54.455] [+00000.378] [debug] [1119] [SystemSettingsManager] Subjects initialized: language=en, update_channel=0, telemetry=false, wifi_enabled=true
+[00:17:54.455] [+00000.378] [debug] [1119] [InputSettingsManager] Initializing subjects
+[00:17:54.455] [+00000.379] [debug] [1119] [InputSettingsManager] Subjects initialized: scroll_throw=25, scroll_limit=10, long_press_time=500, scroll_guard=false, debug_touches=false
+[00:17:54.455] [+00000.379] [debug] [1119] [AudioSettingsManager] Initializing subjects
+[00:17:54.456] [+00000.379] [debug] [1119] [AudioSettingsManager] Subjects initialized: sounds=false, ui_sounds=true, volume=80, completion_alert=1
+[00:17:54.456] [+00000.379] [debug] [1119] [SafetySettingsManager] Initializing subjects
+[00:17:54.457] [+00000.380] [debug] [1119] [SafetySettingsManager] Subjects initialized: estop_confirm=true, cancel_escalation=false, timeout_index=1, macro_confirm=true
+[00:17:54.458] [+00000.381] [info] [1119] [SettingsManager] Loaded scanner keymap: qwerty
+[00:17:54.458] [+00000.381] [debug] [1119] [SettingsManager] Subjects initialized
+[00:17:54.460] [+00000.383] [debug] [1119] [Display & Sound] Created
+[00:17:54.461] [+00000.384] [debug] [1119] [Display & Sound] Callbacks registered
+[00:17:54.461] [+00000.384] [debug] [1119] [Printing Settings] Created
+[00:17:54.461] [+00000.384] [debug] [1119] [Printing Settings] Callbacks registered
+[00:17:54.461] [+00000.384] [debug] [1119] [Hardware & Devices] Created
+[00:17:54.461] [+00000.384] [debug] [1119] [Hardware & Devices] Callbacks registered
+[00:17:54.461] [+00000.384] [debug] [1119] [Safety & Notifications] Created
+[00:17:54.462] [+00000.385] [debug] [1119] [Safety & Notifications] Callbacks registered
+[00:17:54.462] [+00000.385] [debug] [1119] [System] Created
+[00:17:54.462] [+00000.385] [debug] [1119] [System] Callbacks registered (delegated to SettingsPanel)
+[00:17:54.462] [+00000.385] [debug] [1119] [Help & About] Created
+[00:17:54.462] [+00000.385] [debug] [1119] [Help & About] Callbacks registered
+[00:17:54.462] [+00000.385] [debug] [1119] [TouchInput] Created
+[00:17:54.462] [+00000.385] [debug] [1119] [Sensors] Created
+[00:17:54.462] [+00000.385] [debug] [1119] [Sensors] Callbacks registered
+[00:17:54.462] [+00000.385] [debug] [1119] [Fans] Created
+[00:17:54.462] [+00000.385] [debug] [1119] [Fans] Callbacks registered
+[00:17:54.462] [+00000.386] [debug] [1119] [Settings Panel] Subjects initialized
+[00:17:54.463] [+00000.386] [debug] [1119] [Timelapse Settings] Constructor
+[00:17:54.463] [+00000.386] [debug] [1119] [Timelapse Settings] init_subjects()
+[00:17:54.463] [+00000.387] [debug] [1119] [Timelapse Videos] Constructor
+[00:17:54.463] [+00000.387] [debug] [1119] [Timelapse Videos] init_subjects()
+[00:17:54.464] [+00000.387] [debug] [1119] [Retraction Settings] Constructor
+[00:17:54.464] [+00000.387] [debug] [1119] [RetractionSettings] Registering callbacks
+[00:17:54.464] [+00000.387] [debug] [1119] [Retraction Settings] init_subjects() - registered callbacks
+[00:17:54.464] [+00000.387] [debug] [1119] [Console Settings] Constructor
+[00:17:54.464] [+00000.387] [debug] [1119] [Console Settings] init_subjects() — XML callbacks registered
+[00:17:54.464] [+00000.388] [debug] [1119] [FanControlOverlay] Global instance initialized
+[00:17:54.465] [+00000.388] [debug] [1119] [LedControlOverlay] Global instance initialized
+[00:17:54.465] [+00000.388] [debug] [1119] [ZOffsetCal] Initializing subjects
+[00:17:54.465] [+00000.388] [debug] [1119] [ZOffsetCal] Subjects and callbacks registered
+[00:17:54.465] [+00000.388] [debug] [1119] [ZOffsetCal] Event callbacks registration verified
+[00:17:54.465] [+00000.389] [debug] [1119] [Wizard] Initializing subjects
+[00:17:54.466] [+00000.389] [debug] [1119] [Wizard] Subjects initialized (10 subjects registered)
+[00:17:54.467] [+00000.390] [debug] [1119] [Keypad] Subjects initialized
+[00:17:54.468] [+00000.391] [debug] [1119] [UsbSource] Subjects initialized (print_source_is_usb, print_source_usb_present, print_source_moonraker_usb_access)
+[00:17:54.468] [+00000.391] [debug] [1119] [Print Select Panel] Subjects initialized
+[00:17:54.468] [+00000.391] [debug] [1119] [Moonraker Client] Adding handler to existing method notify_filelist_changed: print_select_filelist_17219960
+[00:17:54.468] [+00000.391] [debug] [1119] [Print Select Panel] Registered for notify_filelist_changed notifications
+[00:17:54.468] [+00000.391] [debug] [1119] [Print Select Panel] Created file list polling timer (5000ms, paused)
+[00:17:54.469] [+00000.392] [debug] [1119] [Print Status] Subscribed to PrinterState subjects
+[00:17:54.469] [+00000.392] [debug] [1119] [Print Status] LED state observer registered (strips read lazily)
+[00:17:54.469] [+00000.392] [debug] [1119] [Print Status] G-code render mode observer registered
+[00:17:54.469] [+00000.392] [debug] [1119] [FilamentRunoutHandler] Constructed
+[00:17:54.469] [+00000.392] [debug] [1119] [Print Status] Created filament runout handler
+[00:17:54.471] [+00000.394] [debug] [1119] [PrintLightTimelapseControls] Subjects initialized
+[00:17:54.473] [+00000.396] [debug] [1119] [Print Status] Subjects initialized (20 subjects)
+[00:17:54.473] [+00000.396] [debug] [1119] [Motion Panel] Initializing subjects
+[00:17:54.474] [+00000.397] [debug] [1119] [Motion Panel] Position + kinematics + homing observers registered (observer factory)
+[00:17:54.474] [+00000.397] [debug] [1119] [Motion Panel] Z-axis updated: label=Print Head, icons=arrow_up/arrow_down (bed_moves=false)
+[00:17:54.474] [+00000.397] [debug] [1119] [Motion Panel] Subjects initialized: X/Y/Z position + Z-axis label + observers (16 subjects managed)
+[00:17:54.476] [+00000.399] [debug] [1119] [Bed Mesh Panel] Subjects registered
+[00:17:54.476] [+00000.399] [debug] [1119] [Bed Mesh Panel] Subjects initialized
+[00:17:54.476] [+00000.399] [debug] [1119] [PIDCal] Initializing subjects
+[00:17:54.479] [+00000.402] [debug] [1119] [PIDCal] Subjects and callbacks registered
+[00:17:54.479] [+00000.402] [debug] [1119] [ZOffsetCal] Subjects already initialized
+[00:17:54.479] [+00000.402] [debug] [1119] [TempController] Presets refreshed for slots [PLA, PETG, ABS, TPU]
+[00:17:54.479] [+00000.403] [debug] [1119] [TempPanel] Constructed - subscribed to PrinterState temperature subjects
+[00:17:54.480] [+00000.403] [debug] [1119] [TempPanel] Subjects initialized for 3 heater types
+[00:17:54.481] [+00000.404] [debug] [1119] [EmergencyStop] Subjects initialized
+[00:17:54.482] [+00000.405] [debug] [1119] [AbortManager] Subjects initialized
+[00:17:54.482] [+00000.405] [debug] [1119] [ActivePrintMediaManager] API set: valid
+[00:17:54.482] [+00000.405] [debug] [1119] [Moonraker Client] Adding handler to existing method notify_filelist_changed: apmm_filelist_15611704
+[00:17:54.482] [+00000.405] [debug] [1119] [Moonraker Client] Registering new method callback: notify_klippy_ready (handler: apmm_klippy_ready_15611704)
+[00:17:54.482] [+00000.405] [debug] [1119] [ActivePrintMediaManager] Registered Moonraker notification listeners
+[00:17:54.482] [+00000.405] [debug] [1119] [SubjectInitializer] Initializing post-panel subjects...
+[00:17:54.483] [+00000.406] [debug] [1119] [PrintComplete] Observer registered, awaiting first Moonraker update
+[00:17:54.483] [+00000.406] [debug] [1119] [PrintComplete] Lifecycle: 0 -> 0
+[00:17:54.483] [+00000.406] [debug] [1119] [PrintStartNav] Observer registered (initial state=0)
+[00:17:54.483] [+00000.406] [debug] [1119] [Telemetry] Print outcome observer registered
+[00:17:54.483] [+00000.406] [debug] [1119] [Telemetry] Print observer armed (initial state=0)
+[00:17:54.483] [+00000.406] [debug] [1119] [Notification] Notification system initialized (main thread ID captured)
+[00:17:54.483] [+00000.406] [debug] [1119] [UsbManager] Created (force_mock=false)
+[00:17:54.483] [+00000.406] [debug] [1119] [UsbBackend] Linux platform detected - using native backend
+[00:17:54.483] [+00000.406] [debug] [1119] [UsbBackendLinux] Created
+[00:17:54.484] [+00000.407] [info] [1119] [UsbBackendLinux] Initial scan found 0 USB drives (content-polling=false)
+[00:17:54.484] [+00000.407] [info] [1119] [UsbBackendLinux] Started (mode=mountinfo-poll)
+[00:17:54.484] [+00000.407] [debug] [1119] [UsbManager] Started successfully
+[00:17:54.484] [+00000.407] [debug] [1119] [SubjectInitializer] USB Manager started (mock=false)
+[00:17:54.484] [+00000.407] [debug] [1119] [Printer Image] Created
+[00:17:54.484] [+00000.407] [debug] [1119] [Printer Image] USB manager set (valid)
+[00:17:54.484] [+00000.407] [debug] [1126] [UsbBackendLinux] Monitor thread started (mode=mountinfo-poll)
+[00:17:54.484] [+00000.407] [debug] [1119] [SubjectInitializer] Initialized 7 observer guards
+[00:17:54.484] [+00000.407] [debug] [1119] [EmergencyStop] Initialized with dependencies
+[00:17:54.484] [+00000.407] [debug] [1119] [EmergencyStop] Initialized visibility subject for contextual E-Stop buttons
+[00:17:54.484] [+00000.407] [debug] [1119] [EmergencyStop] Confirmation requirement set to: true
+[00:17:54.484] [+00000.407] [debug] [1119] [AbortManager] Initialized with dependencies
+[00:17:54.484] [+00000.408] [debug] [1119] DetectionManager: registered source 'u1_stock'
+[00:17:54.485] [+00000.408] [debug] [1119] [NotificationManager] Event callbacks registered
+[00:17:54.486] [+00000.409] [debug] [1119] [ScrewsTilt] Subjects initialized and registered
+[00:17:54.486] [+00000.409] [debug] [1119] [ScrewsTilt] Registered XML event callbacks
+[00:17:54.499] [+00000.423] [debug] [1119] [InputShaper] Subjects initialized and registered
+[00:17:54.499] [+00000.423] [debug] [1119] [InputShaper] Registered XML event callbacks
+[00:17:54.502] [+00000.425] [debug] [1119] [BeltTension] Subjects initialized and registered
+[00:17:54.502] [+00000.425] [debug] [1119] [BeltTension] Registered XML event callbacks
+[00:17:54.503] [+00000.426] [debug] [1119] [TempHistory] recording 2 sensors (0 extruders discovered)
+[00:17:54.503] [+00000.426] [debug] [1119] [TempHistory] recording 2 sensors (0 extruders discovered)
+[00:17:54.503] [+00000.426] [debug] [1119] [TempHistory] recording 2 sensors (0 extruders discovered)
+[00:17:54.503] [+00000.426] [debug] [1119] TemperatureHistoryManager: initialized with 2 heaters
+[00:17:54.503] [+00000.426] [debug] [1119] [Application] TemperatureHistoryManager created
+[00:17:54.504] [+00000.428] [debug] [1119] [Moonraker Client] Registering new method callback: notify_proc_stat_update (handler: MoonrakerPerformanceSource)
+[00:17:54.505] [+00000.428] [debug] [1119] [Moonraker Client] Adding handler to existing method notify_klippy_ready: MoonrakerPerformanceSource
+[00:17:54.505] [+00000.428] [debug] [1119] [Application] PerformanceState initialized
+[00:17:54.505] [+00000.428] [debug] [1119] [Application] Panel subjects initialized
+[00:17:54.506] [+00000.429] [debug] [1119] [Backlight-Sysfs] bl_power ON for aml-bl
+[00:17:54.506] [+00000.429] [debug] [1119] [Backlight-Sysfs] Set aml-bl to 204/255 (80%)
+[00:17:54.506] [+00000.429] [info] [1119] [DisplayManager] Startup: forcing display ON at 80% brightness
+[00:17:54.506] [+00000.429] [info] [1119] [Application] AISoC native D-Bus/DDS mode active; bypassing Moonraker connect
+[00:17:54.506] [+00000.429] [info] [1119] [TelemetryManager] Telemetry disabled
+[00:17:54.521] [+00000.444] [debug] [1119] [TelemetryManager] Persisted enabled state to settings.json
+[00:17:54.521] [+00000.444] [info] [1119] [SoundManager] Sound disabled via --no-sound, skipping initialization
+[00:17:54.521] [+00000.444] [info] [1119] [AudioSettingsManager] audio_device_available=0
+[00:17:54.521] [+00000.444] [info] [1119] [PostOpCooldown] Initialized
+[00:17:54.543] [+00000.467] [debug] [1119] [Icon] Using icon font for 'icon_font_xs' — line_height=24px
+[00:17:54.548] [+00000.471] [warning] [1119] [LVGL] [Warn]	(1074.548, +131)	 lv_xml_component_process: Component 'print_select_panel' sets name="print_select_panel_root" on its own <view>; the instance-site name="print_select_panel" takes precedence lv_xml_component.c:191
+[00:17:54.646] [+00000.569] [warning] [1119] [LVGL] [Warn]	(1074.646, +98)	 lv_xml_component_process: Component 'setting_action_row' sets name="action_row" on its own <view>; the instance-site name="row_display_sound" takes precedence lv_xml_component.c:191
+[00:17:54.706] [+00000.629] [warning] [1119] [LVGL] [Warn]	(1074.706, +60)	 lv_xml_component_process: Component 'setting_info_row' sets name="info_row" on its own <view>; the instance-site name="row_no_spoolman" takes precedence lv_xml_component.c:191
+[00:17:54.754] [+00000.677] [warning] [1119] [LVGL] [Warn]	(1074.754, +48)	 lv_xml_component_process: Component 'setting_toggle_row' sets name="setting_row" on its own <view>; the instance-site name="row_phase_tracking" takes precedence lv_xml_component.c:191
+[00:17:54.816] [+00000.739] [debug] [1119] [Application] app_layout XML create took 294.7ms
+[00:17:54.961] [+00000.884] [debug] [1119] [PrinterStatusIcon] init() called
+[00:17:54.961] [+00000.884] [debug] [1119] [PrinterStatusIcon] Initialization complete
+[00:17:54.961] [+00000.884] [debug] [1119] [NotificationManager] init() called
+[00:17:54.961] [+00000.884] [debug] [1119] [NotificationManager] Initialization complete
+[00:17:54.961] [+00000.884] [debug] [1119] [ToastManager] Toast notification system initialized
+[00:17:54.961] [+00000.884] [debug] [1119] [PanelFactory] Panels found in container
+[00:17:54.961] [+00000.884] [debug] [1119] [Home Panel] Setup (awaiting finalize)
+[00:17:54.961] [+00000.884] [debug] [1119] [PanelFactory] setup('home') took 0.0ms
+[00:17:54.962] [+00000.885] [debug] [1119] [LedWidget] Found light_icon for dynamic brightness/color
+[00:17:54.962] [+00000.885] [debug] [1119] [PrinterLedState] LED tracking disabled
+[00:17:54.962] [+00000.885] [debug] [1119] [LedWidget] No status-reported LED among 0 selected strip(s) — tracking controller state (OFF)
+[00:17:54.962] [+00000.885] [debug] [1119] [LedWidget] Attached
+[00:17:54.965] [+00000.888] [debug] [1119] [Controls Panel] Setup complete
+[00:17:54.965] [+00000.888] [debug] [1119] [PanelFactory] setup('controls') took 3.6ms
+[00:17:54.965] [+00000.888] [debug] [1119] [UsbSource] Source selector found (visibility bound to print_source_usb_present / print_source_moonraker_usb_access)
+[00:17:54.965] [+00000.888] [debug] [1119] [UsbSource] UsbManager set
+[00:17:54.967] [+00000.890] [debug] [1119] [DetailView] Initialized pre-print option subjects
+[00:17:54.968] [+00000.891] [debug] [1119] [Icon] Using icon font for 'icon_font_lg' — line_height=66px
+[00:17:54.976] [+00000.899] [debug] [1119] [GCode Viewer] Using LVGL 2D renderer (3D disabled)
+[00:17:54.976] [+00000.899] [debug] [1119] [GCode Viewer] Default render mode: Auto
+[00:17:54.991] [+00000.914] [debug] [1119] [GCode Viewer] INIT: viewport=200x200, aspect=1.000
+[00:17:54.991] [+00000.914] [debug] [1119] [GCode Viewer] Widget created
+[00:17:55.004] [+00000.927] [debug] [1119] [DetailView] G-code viewer widget found
+[00:17:55.004] [+00000.928] [debug] [1119] [GCode Viewer] Render mode set to 2D_LAYER
+[00:17:55.004] [+00000.928] [debug] [1119] [DetailView]   ✓ Set G-code render mode: 2 (settings)
+[00:17:55.004] [+00000.928] [debug] [1119] [GCode Viewer] Bottom occluder set
+[00:17:55.004] [+00000.928] [debug] [1119] [GCode Viewer] Thumbnail parity on
+[00:17:55.004] [+00000.928] [debug] [1119] [GCode Viewer] Rendering PAUSED (cached=-1 target=-1 progress_layer=-1)
+[00:17:55.005] [+00000.928] [debug] [1119] [FilamentMapping] Card created
+[00:17:55.005] [+00000.928] [debug] [1119] [DetailView] Detail view created
+[00:17:55.005] [+00000.928] [debug] [1119] [Moonraker Client] Refusing send for 'server.files.roots' — connection_state=0
+[00:17:55.005] [+00000.928] [debug] [1119] [PrintStartController] Created
+[00:17:55.005] [+00000.928] [debug] [1119] [Print Select Panel] Detail view module initialized
+[00:17:55.005] [+00000.928] [debug] [1119] [Print Select Panel] Cannot refresh files: not connected (API state: 0)
+[00:17:55.005] [+00000.928] [debug] [1119] [HistoryManager] Added observer (total: 1)
+[00:17:55.005] [+00000.928] [debug] [1119] [PanelFactory] setup('print_select') took 40.2ms
+[00:17:55.005] [+00000.928] [debug] [1119] [Filament Panel] Setting up (events handled declaratively via XML)
+[00:17:55.011] [+00000.934] [debug] [1119] [SpoolCanvas] Created widget programmatically (size=48)
+[00:17:55.018] [+00000.941] [debug] [1119] [Filament Panel] External spool display initialized
+[00:17:55.019] [+00000.942] [debug] [1119] [Filament Panel] Multi-filament card: ams=false, multi_tool=false, title=External Spool
+[00:17:55.019] [+00000.942] [debug] [1119] [Filament Panel] Extrude length set to 10mm
+[00:17:55.020] [+00000.943] [debug] [1119] [TempGraph] Updated colors on theme change
+[00:17:55.020] [+00000.943] [debug] [1119] [TempGraph] Created: 400 points, 0-100°C range
+[00:17:55.020] [+00000.944] [debug] [1119] [TempGraphController] 1 of 2 series unresolved — watching discovery
+[00:17:55.020] [+00000.944] [debug] [1119] [TempGraphController] Initialized with 2 series
+[00:17:55.020] [+00000.944] [debug] [1119] [TempPanel] Mini combined graph created with 300 point capacity
+[00:17:55.021] [+00000.944] [debug] [1119] [Filament Panel] Temperature graph initialized
+[00:17:55.021] [+00000.944] [debug] [1119] [Filament Panel] Setup complete!
+[00:17:55.021] [+00000.944] [debug] [1119] [PanelFactory] setup('filament') took 15.5ms
+[00:17:55.022] [+00000.945] [debug] [1119] [Settings Panel] Setup complete
+[00:17:55.022] [+00000.945] [debug] [1119] [PanelFactory] setup('settings') took 1.0ms
+[00:17:55.022] [+00000.945] [debug] [1119] [Advanced Panel] Setup complete
+[00:17:55.022] [+00000.945] [debug] [1119] [PanelFactory] setup('advanced') took 0.0ms
+[00:17:55.022] [+00000.945] [debug] [1119] [PanelFactory] all six setup() calls took 60.4ms total
+[00:17:55.022] [+00000.945] [debug] [1119] [SpoolmanManager] Starting Spoolman polling (refcount: 1)
+[00:17:55.022] [+00000.945] [debug] [1119] [SpoolmanManager] Spoolman not available yet, poll deferred (refcount: 1)
+[00:17:55.022] [+00000.945] [debug] [1119] [FirstRunTour] gate: already_completed_current_version
+[00:17:55.022] [+00000.945] [debug] [1119] [PanelFactory] All panels set up
+[00:17:55.022] [+00000.945] [debug] [1119] [PanelFactory] Print status overlay initialized (lazy creation)
+[00:17:55.022] [+00000.945] [debug] [1119] [Keypad] Numeric keypad registered (tree deferred to first show)
+[00:17:55.022] [+00000.945] [info] [1119] [Application] UI created successfully
+[00:17:55.022] [+00000.945] [debug] [1119] [Home Panel] Finalizing setup (carousel + widgets)
+[00:17:55.023] [+00000.946] [debug] [1119] [Home Panel] Building carousel: 1 pages, main=0
+[00:17:55.038] [+00000.961] [debug] [1119] [UpgradeNudge] Loaded intensity=off dismissed_version=''
+[00:17:55.038] [+00000.961] [debug] [1119] [UpgradeNudge] Loaded intensity=off dismissed_version=''
+[00:17:55.039] [+00000.962] [debug] [1119] [Print Status] on_print_state_changed() job_state=0 current_state=0
+[00:17:55.039] [+00000.962] [debug] [1119] [Print Status] ensure_preview_current: thumb_file='' gcode_file='' desired='' thumb_src=false gcode_content=false want_viewer=false viewer_enabled=true -> load_thumb=false load_gcode=false clear_gcode=false
+[00:17:55.039] [+00000.962] [debug] [1119] [PrintTuneOverlay] Created
+[00:17:55.039] [+00000.962] [debug] [1119] [Print Status] Print start phase changed: 0 (visible=false)
+[00:17:55.039] [+00000.962] [debug] [1119] [PrintLightTimelapseControls] LED state changed: OFF
+[00:17:55.039] [+00000.962] [info] [1119] [Print Status] G-code render mode changed from settings: 2
+[00:17:55.039] [+00000.962] [debug] [1119] [Print Status] Bound fans: part='' hotend='' aux=''
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] Bound fans: part='' hotend='' aux=''
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_density: entry
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_density: overlay_root_ is null
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_fit: entry
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_fit: overlay_root_ is null
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_density: entry
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_density: overlay_root_ is null
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_fit: entry
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_fit: overlay_root_ is null
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_density: entry
+[00:17:55.039] [+00000.963] [debug] [1119] [Print Status] recompute_fans_density: overlay_root_ is null
+[00:17:55.040] [+00000.963] [debug] [1119] [Print Status] recompute_fans_fit: entry
+[00:17:55.040] [+00000.963] [debug] [1119] [Print Status] recompute_fans_fit: overlay_root_ is null
+[00:17:55.040] [+00000.963] [debug] [1119] [Print Status] recompute_fans_density: entry
+[00:17:55.040] [+00000.963] [debug] [1119] [Print Status] recompute_fans_density: overlay_root_ is null
+[00:17:55.040] [+00000.963] [debug] [1119] [Print Status] recompute_fans_fit: entry
+[00:17:55.040] [+00000.963] [debug] [1119] [Print Status] recompute_fans_fit: overlay_root_ is null
+[00:17:55.040] [+00000.963] [debug] [1119] [KlipperRecovery] Skipping initial klippy_state observer fire (state=2)
+[00:17:55.044] [+00000.967] [warning] [1119] [LVGL] [Warn]	(1075.044, +290)	 lv_xml_get_subject: No subject was found with name "aisoc_ap_version". lv_xml.c:778
+[00:17:55.044] [+00000.967] [warning] [1119] [LVGL] [Warn]	(1075.044, +0)	 lv_xml_get_subject: No subject was found with name "aisoc_mc_version". lv_xml.c:778
+[00:17:55.044] [+00000.967] [warning] [1119] [LVGL] [Warn]	(1075.044, +0)	 lv_xml_get_subject: No subject was found with name "aisoc_th_version". lv_xml.c:778
+[00:17:55.058] [+00000.981] [debug] [1119] [PrinterStatusIcon] conn=0 klippy=2 expected_restart=false -> icon state 3
+[00:17:55.058] [+00000.982] [debug] [1119] [PrinterStatusIcon] conn=0 klippy=2 expected_restart=false -> icon state 3
+[00:17:55.059] [+00000.982] [debug] [1119] [PrinterLedState] LED tracking disabled
+[00:17:55.059] [+00000.982] [debug] [1119] [LedWidget] No status-reported LED among 0 selected strip(s) — tracking controller state (OFF)
+[00:17:55.059] [+00000.982] [debug] [1119] [DetailView] filament card: visible=false remap=no-strategy setup=false degraded=false
+[00:17:55.059] [+00000.982] [debug] [1119] [DetailView] filament card: visible=false remap=no-strategy setup=false degraded=false
+[00:17:55.060] [+00000.984] [debug] [1119] [DetailView] server.files.roots unavailable (WebSocket connection lost); G-code comes over HTTP
+[00:17:55.061] [+00000.984] [debug] [1119] [Filament Panel] Multi-filament card: ams=false, multi_tool=false, title=External Spool
+[00:17:55.061] [+00000.984] [debug] [1119] [Filament Panel] Multi-filament card: ams=false, multi_tool=false, title=External Spool
+[00:17:55.064] [+00000.987] [debug] [1119] [HistoryManager] Added observer (total: 2)
+[00:17:55.064] [+00000.987] [debug] [1119] [HistoryManager] Not connected yet, deferring history fetch
+[00:17:55.064] [+00000.987] [debug] [1119] [DetailedFormatter] subjects initialized
+[00:17:55.064] [+00000.988] [debug] [1119] [FanStackWidget] Config: fan_stack fan=(auto) icon=fan (default)
+[00:17:55.065] [+00000.988] [debug] [1119] [PanelWidgetManager] Grid layout: 8cols x 5rows (bp=5, cached=5) for 'home'
+[00:17:55.065] [+00000.988] [debug] [1119] [PanelWidgetManager] Card background at (3,2 1x2)
+[00:17:55.066] [+00000.989] [debug] [1119] [PanelWidgetManager] Card background at (4,4 4x1)
+[00:17:55.069] [+00000.992] [debug] [1119] [PanelWidgetManager] Placed widget 'printer_image' at (0,0 3x3)
+[00:17:55.092] [+00001.015] [debug] [1119] [PrinterDetector] Loaded bundled printer database version 2.0
+[00:17:55.092] [+00001.015] [debug] [1119] [PrinterDetector] No user extensions directory at /data/printer-soc/helix/config/printer_database.d
+[00:17:55.092] [+00001.015] [debug] [1119] [PrinterDetector] No pre_print_options found for printer 'Generic'
+[00:17:55.092] [+00001.016] [debug] [1119] [PrinterDetector] No z_offset_calibration_strategy found for printer 'Generic'
+[00:17:55.093] [+00001.016] [debug] [1119] [PrinterCapabilitiesState] Purge line capability set: false
+[00:17:55.093] [+00001.016] [debug] [1119] [PrinterCompositeVisibilityState] has_any_preprint_options=0 (plugin=false, framework=0)
+[00:17:55.093] [+00001.016] [info] [1119] [PrinterState] Printer type set to: 'Generic' (pre_print_options: none, priming=false, z_cal=endstop)
+[00:17:55.093] [+00001.016] [debug] [1119] [PrinterImageWidget] Attached
+[00:17:55.107] [+00001.030] [warning] [1119] [LVGL] [Warn]	(1075.107, +63)	 lv_xml_component_process: Component 'print_status_detailed_idle' sets name="print_status_detailed_idle" on its own <view>; the instance-site name="print_card_idle_detailed" takes precedence lv_xml_component.c:191
+[00:17:55.125] [+00001.049] [warning] [1119] [LVGL] [Warn]	(1075.125, +18)	 lv_xml_component_process: Component 'print_status_detailed_active' sets name="print_status_detailed_active" on its own <view>; the instance-site name="print_card_printing_detailed" takes precedence lv_xml_component.c:191
+[00:17:55.126] [+00001.049] [debug] [1119] [PanelWidgetManager] Placed widget 'print_status' at (0,3 3x2)
+[00:17:55.132] [+00001.055] [debug] [1119] [HistoryManager] Added observer (total: 3)
+[00:17:55.132] [+00001.055] [debug] [1119] [HistoryManager] Not connected yet, deferring history fetch
+[00:17:55.132] [+00001.055] [debug] [1119] [PrintStatusWidget] Subscribed to print state/progress/time/thumbnail/runout
+[00:17:55.132] [+00001.055] [debug] [1119] [PrintStatusWidget] Found print card widgets for dynamic updates
+[00:17:55.137] [+00001.060] [debug] [1119] [PrintStatusWidget] Attached (layout_style=library)
+[00:17:55.139] [+00001.062] [debug] [1119] [PanelWidgetManager] Placed widget 'tips' at (3,0 5x2)
+[00:17:55.139] [+00001.062] [debug] [1119] [TipsManager] Loading tips from /usr/share/printer-soc/helixscreen/assets/config/printing_tips.json
+[00:17:55.153] [+00001.076] [debug] [1119] [TipsWidget] Starting tip fade transition to: Choose Sparse Infill Pattern Wisely
+[00:17:55.153] [+00001.076] [debug] [1119] [TipsWidget] Attached
+[00:17:55.155] [+00001.078] [warning] [1119] [LVGL] [Warn]	(1075.155, +30)	 lv_xml_component_process: Component 'nozzle_icon' sets name="nozzle_icon" on its own <view>; the instance-site name="temp_icon_container" takes precedence lv_xml_component.c:191
+[00:17:55.157] [+00001.080] [debug] [1119] [PanelWidgetManager] Placed widget 'temperature' at (3,2 1x1)
+[00:17:55.157] [+00001.080] [debug] [1119] [NozzleTempWidget] Attached
+[00:17:55.159] [+00001.082] [debug] [1119] [PanelWidgetManager] Placed widget 'led' at (4,4 1x1)
+[00:17:55.159] [+00001.082] [debug] [1119] [PanelWidgetManager] Widget 'led' gated: No LED strips detected
+[00:17:55.162] [+00001.085] [debug] [1119] [PanelWidgetManager] Placed widget 'fan_stack' at (5,4 1x1)
+[00:17:55.162] [+00001.085] [debug] [1119] [FanStackWidget] No fans discovered yet
+[00:17:55.162] [+00001.085] [debug] [1119] [FanStackWidget] Attached stack (animations=true)
+[00:17:55.167] [+00001.090] [debug] [1119] [FanStackWidget] on_size_changed 1x1 -> font font_xs
+[00:17:55.169] [+00001.093] [debug] [1119] [PanelWidgetManager] Placed widget 'filament' at (6,4 1x1)
+[00:17:55.170] [+00001.093] [debug] [1119] [PanelWidgetManager] Widget 'filament' gated: No filament sensor detected
+[00:17:55.172] [+00001.095] [debug] [1119] [PanelWidgetManager] Placed widget 'notifications' at (7,4 1x1)
+[00:17:55.174] [+00001.098] [debug] [1119] [PanelWidgetManager] Placed widget 'bed_temperature' at (3,3 1x1)
+[00:17:55.175] [+00001.098] [debug] [1119] [BedTempWidget] Attached
+[00:17:55.175] [+00001.098] [debug] [1119] [PanelWidgetManager] Populated 9 widgets (6 with factories) via grid for 'home'
+[00:17:55.183] [+00001.106] [debug] [1119] [LedWidget] Detached
+[00:17:55.183] [+00001.106] [debug] [1119] [PrinterDetector] No pre_print_options found for printer 'Generic'
+[00:17:55.183] [+00001.106] [debug] [1119] [PrinterDetector] No z_offset_calibration_strategy found for printer 'Generic'
+[00:17:55.184] [+00001.107] [debug] [1119] [TipsWidget] Started tip rotation timer (60000ms interval)
+[00:17:55.184] [+00001.107] [debug] [1119] [Home Panel] Carousel built with 1 pages
+[00:17:55.185] [+00001.108] [debug] [1119] [PanelWidgetManager] Set up 11 gate observers for panel 'home'
+[00:17:55.185] [+00001.108] [debug] [1119] [Home Panel] Finalize complete
+[00:17:55.185] [+00001.109] [debug] [1119] [Application] Initializing plugin system
+[00:17:55.185] [+00001.109] [debug] [1119] [plugin] PluginManager created
+[00:17:55.185] [+00001.109] [debug] [1119] [plugin] Core services set
+[00:17:55.185] [+00001.109] [debug] [1119] [plugin] Enabled plugins set: 0 plugins
+[00:17:55.185] [+00001.109] [debug] [1119] [Application] Enabled plugins from config: 0
+[00:17:55.185] [+00001.109] [info] [1119] [plugin] Plugins directory does not exist: plugins
+[00:17:55.185] [+00001.109] [debug] [1119] [plugin] Load order: 
+[00:17:55.186] [+00001.109] [debug] [1119] [plugin] Loading 0 plugins in dependency order
+[00:17:55.186] [+00001.109] [debug] [1119] [plugin] Loaded 0 of 0 plugins
+[00:17:55.186] [+00001.109] [debug] [1119] [Application] 0 plugin(s) loaded successfully
+[00:17:55.186] [+00001.109] [debug] [1119] [WiFiManager] Creating global instance
+[00:17:55.186] [+00001.109] [debug] [1119] [WiFiManager] Initializing with backend system (silent mode)
+[00:17:55.186] [+00001.109] [debug] [1119] [WifiBackend] Selecting wpa_supplicant backend (nmcli=false, nm_daemon_active=false) (silent)
+[00:17:55.186] [+00001.109] [debug] [1119] [WifiBackend] Initialized (wpa_supplicant mode)
+[00:17:55.186] [+00001.109] [debug] [1119] [WifiBackend] Registered callback 'SCAN_COMPLETE'
+[00:17:55.186] [+00001.109] [debug] [1119] [WifiBackend] Registered callback 'CONNECTED'
+[00:17:55.186] [+00001.109] [debug] [1119] [WifiBackend] Registered callback 'DISCONNECTED'
+[00:17:55.186] [+00001.109] [debug] [1119] [WifiBackend] Registered callback 'AUTH_FAILED'
+[00:17:55.186] [+00001.109] [debug] [1119] [WifiBackend] Registered callback 'INIT_FAILED'
+[00:17:55.186] [+00001.109] [debug] [1119] [WifiBackend] Registered callback 'READY'
+[00:17:55.186] [+00001.109] [debug] [1119] [WiFiManager] Self-reference initialized for async callback safety
+[00:17:55.186] [+00001.110] [debug] [1139] [WifiBackend] Starting wpa_supplicant backend...
+[00:17:55.187] [+00001.110] [debug] [1139] [WifiBackend] Performing system prerequisites check
+[00:17:55.187] [+00001.110] [debug] [1139] [WifiBackend] Pre-flight failed (silent mode): No WiFi interfaces detected
+[00:17:55.187] [+00001.110] [debug] [1139] [WifiBackend] Dispatching synthetic event 'INIT_FAILED': No WiFi interfaces detected
+[00:17:55.187] [+00001.110] [debug] [1139] [WiFiManager] WiFi init failed (silent): No WiFi interfaces detected
+[00:17:55.187] [+00001.110] [info] [1119] [MemoryMonitor] Thresholds: warn_rss=522MB critical_rss=871MB warn_avail=48MB critical_avail=24MB growth_5min=5MB (device tier: good, total=1742MB)
+[00:17:55.187] [+00001.110] [debug] [1119] [MemoryMonitor] Started (interval=5000ms)
+[00:17:55.187] [+00001.111] [debug] [1119] [MemoryMonitor] Main-loop hang threshold set to 60000ms
+[00:17:55.187] [+00001.111] [debug] [1119] [MemoryMonitor] Registered pressure responder (id=1)
+[00:17:55.187] [+00001.111] [debug] [1119] [MemoryMonitor] Registered pressure responder (id=2)
+[00:17:55.246] [+00001.169] [info] [1119] [Application] Entering main loop
+[00:17:55.246] [+00001.169] [debug] [1119] [PrinterDetector] No image found for printer 'Generic'
+[00:17:55.246] [+00001.170] [warning] [1119] [LVGL] [Warn]	(1075.246, +91)	 fs_open: Could not open file: assets/images/printers/generic-corexy.png, flags: 0x0, errno: 2 lv_fs_posix.c:121
+[00:17:55.246] [+00001.170] [error] [1119] [LVGL] [Error]	(1075.246, +0)	 image_decoder_get_info: File open failed: 13 lv_image_decoder.c:407
+[00:17:55.246] [+00001.170] [warning] [1119] [LVGL] [Warn]	(1075.246, +0)	 lv_image_set_src: failed to get image info: A:assets/images/printers/generic-corexy.png [obj=printer_image, parent=printer_container] lv_image.c:192
+[00:17:55.246] [+00001.170] [debug] [1119] [PrinterImageWidget] Source image: 'A:assets/images/printers/generic-corexy.png'
+[00:17:55.247] [+00001.170] [debug] [1119] [PrintStatusWidget] Idle thumbnail: benchy (no history)
+[00:17:55.247] [+00001.170] [info] [1119] [PrintStatusWidget] Active print thumbnail updated: A:assets/images/benchy_thumbnail_white.png
+[00:17:55.248] [+00001.171] [debug] [1119] [PrinterVersionsState] OS version set: 0.1.0-skeleton
+[00:17:55.248] [+00001.171] [debug] [1119] [PrinterVersionsState] Klipper version set: 未连接 (DM 离线)
+[00:17:55.248] [+00001.171] [debug] [1119] [PrinterVersionsState] Moonraker version set: 未连接 (DM 离线) (history degraded: false)
+[00:17:55.248] [+00001.171] [debug] [1119] [PrinterNetworkState] Printer connection state changed: 0 - DM Offline
+[00:17:55.251] [+00001.174] [debug] [1119] [PrintStatusWidget] Print not active - reverting card to idle state
+[00:17:55.251] [+00001.174] [debug] [1119] [PrintStatusWidget] Filament runout subject changed: 0
+[00:17:55.253] [+00001.176] [debug] [1119] [FanStackWidget] No fans discovered yet
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'platform_host_power_supported' -> 1 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'power_device_count' -> 0 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'led_controllable' -> 0 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'printer_has_chamber' -> 0 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'temp_sensor_count' -> 0 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'ams_slot_count' -> 0 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'ams_supports_bypass' -> 0 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'filament_sensor_count' -> 0 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'humidity_sensor_count' -> 0 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'width_sensor_count' -> 0 (rebuild)
+[00:17:55.254] [+00001.177] [debug] [1119] [PanelWidgetManager] gate 'clog_meter_mode' -> 0 (rebuild)
+[00:17:55.254] [+00001.178] [debug] [1119] [Home Panel] Page 0 widget list unchanged, skipping rebuild
+[00:17:55.256] [+00001.179] [debug] [1119] [PrintStatusWidget] Idle thumbnail: benchy (no history)
+[00:17:55.296] [+00001.219] [debug] [1119] [PrinterImageWidget] Cache miss, generating 418x390 from 'A:assets/images/printers/generic-corexy.png'
+[00:17:55.296] [+00001.219] [warning] [1119] [PrinterCache] Cannot decode source image: assets/images/printers/generic-corexy.png
+[00:17:55.296] [+00001.219] [warning] [1119] [PrinterImageWidget] Cache generation failed, using scaled source
+[00:17:55.477] [+00001.400] [debug] [1119] [TipsWidget] Applied pending tip: Choose Sparse Infill Pattern Wisely
+[00:17:59.249] [+00005.173] [info] [1119] [Application] Timeout reached (4 seconds)
+[00:17:59.302] [+00005.225] [debug] [1119] [MemoryMonitor] Stopped
+[00:17:59.302] [+00005.225] [info] [1119] [Application] Shutting down...
+[00:17:59.304] [+00005.228] [info] [1119] [Moonraker Client] Suppressing disconnect modal for 2000ms
+[00:17:59.310] [+00005.233] [debug] [1119] [SoundManager] Moonraker client set: nullptr
+[00:17:59.310] [+00005.233] [debug] [1119] [PageScroll] detach_all: detaching 0 controller(s)
+[00:17:59.310] [+00005.233] [debug] [1119] [UpdateChecker] Shutting down
+[00:17:59.314] [+00005.237] [debug] [1119] [UpdateChecker] Shutdown complete
+[00:17:59.314] [+00005.237] [info] [1119] [TelemetryManager] Shutting down...
+[00:17:59.318] [+00005.241] [info] [1119] [TelemetryManager] Shutdown complete
+[00:17:59.318] [+00005.242] [info] [1119] [PostOpCooldown] Shutting down
+[00:17:59.318] [+00005.242] [debug] [1119] [plugin] PluginManager destroyed
+[00:17:59.321] [+00005.244] [debug] [1119] [Moonraker Client] Unregistered handler 'PrintHistoryManager' from method 'notify_history_changed'
+[00:17:59.321] [+00005.244] [debug] [1119] [Moonraker Client] Removed empty method entry for 'notify_history_changed'
+[00:17:59.321] [+00005.244] [debug] [1119] [Moonraker Client] Unregistered handler 'PrintHistoryManager' from method 'notify_filelist_changed'
+[00:17:59.321] [+00005.245] [debug] [1119] TemperatureHistoryManager: destroyed
+[00:17:59.322] [+00005.245] [debug] [1119] [Moonraker Client] Unregister failed: method 'notify_timelapse_event' not found
+[00:17:59.322] [+00005.245] [debug] [1119] [Moonraker Client] Unregister failed: method 'notify_power_changed' not found
+[00:17:59.322] [+00005.245] [debug] [1119] [PowerDeviceState] Unsubscribed and cleaned up
+[00:17:59.325] [+00005.248] [debug] [1119] [Moonraker Client] Unregister failed: method 'notify_sensor_update' not found
+[00:17:59.325] [+00005.248] [debug] [1119] [SensorState] Unsubscribed and cleaned up
+[00:17:59.325] [+00005.248] [debug] [1119] [AMS State] Gcode response callback cleared
+[00:17:59.334] [+00005.257] [debug] [1119] [TempPanel] Subjects deinitialized
+[00:17:59.334] [+00005.257] [debug] [1119] [TempGraphController] Detached observers
+[00:17:59.334] [+00005.258] [debug] [1119] [TempGraphController] Destroyed
+[00:17:59.496] [+00005.419] [debug] [1126] [UsbBackendLinux] Monitor thread stopped
+[00:17:59.498] [+00005.421] [info] [1119] [UsbBackendLinux] Stopped
+[00:17:59.578] [+00005.502] [info] [1119] [Fbdev Backend] Cleared framebuffer to 0x00000000 (720x1280, 32bpp)
+[00:17:59.580] [+00005.504] [debug] [1119] [Backlight-Sysfs] bl_power ON for aml-bl
+[00:17:59.581] [+00005.504] [debug] [1119] [Backlight-Sysfs] Set aml-bl to 204/255 (80%)
+[00:17:59.581] [+00005.504] [debug] [1119] [DisplayManager] Shutdown: restoring display to 80% brightness
+[00:17:59.598] [+00005.521] [debug] [1119] [ScrewsTilt] Cleanup called
+[00:17:59.600] [+00005.523] [debug] [1119] [ScrewsTiltPanel] Subjects deinitialized
+[00:17:59.601] [+00005.524] [debug] [1119] [EmergencyStop] Subjects deinitialized
+[00:17:59.602] [+00005.525] [debug] [1119] [PIDCal] Subjects deinitialized
+[00:17:59.606] [+00005.529] [debug] [1119] [PrintLightTimelapseControls] Subjects deinitialized
+[00:17:59.608] [+00005.531] [debug] [1119] [PrintStatusPanel] Subjects deinitialized
+[00:17:59.609] [+00005.532] [debug] [1119] [PrintSelectPanel] Subjects deinitialized
+[00:17:59.609] [+00005.532] [debug] [1119] [PrintSelectCardView] cleanup()
+[00:17:59.609] [+00005.532] [debug] [1119] [PrintSelectListView] cleanup()
+[00:17:59.611] [+00005.534] [debug] [1119] [DetailView] cleanup()
+[00:17:59.615] [+00005.538] [debug] [1119] [PrintSelectListView] cleanup()
+[00:17:59.615] [+00005.538] [debug] [1119] [PrintSelectCardView] cleanup()
+[00:17:59.615] [+00005.538] [debug] [1119] [Keypad] Subjects deinitialized
+[00:17:59.616] [+00005.539] [debug] [1119] [Wizard] Subjects deinitialized
+[00:17:59.617] [+00005.540] [debug] [1119] [Settings Panel] Deinitializing subjects
+[00:17:59.617] [+00005.540] [debug] [1119] [Settings Panel] Subjects deinitialized
+[00:17:59.623] [+00005.547] [debug] [1119] [LedWidget] Detached
+[00:17:59.626] [+00005.549] [debug] [1119] [Controls Panel] Subjects deinitialized (0 subjects)
+[00:17:59.626] [+00005.549] [debug] [1119] [PanelWidgetManager] Clearing 11 gate observers for panel 'home'
+[00:17:59.626] [+00005.549] [debug] [1119] [Home Panel] Subjects deinitialized
+[00:17:59.626] [+00005.549] [debug] [1119] [PrinterImageWidget] Detached
+[00:17:59.626] [+00005.550] [debug] [1119] [PrintStatusWidget] Detached
+[00:17:59.626] [+00005.550] [debug] [1119] [TipsWidget] Detached
+[00:17:59.626] [+00005.550] [debug] [1119] [NozzleTempWidget] Detached
+[00:17:59.627] [+00005.550] [debug] [1119] [FanStackWidget] Detached
+[00:17:59.627] [+00005.550] [debug] [1119] [BedTempWidget] Detached
+[00:17:59.627] [+00005.550] [debug] [1119] [PrinterImageWidget] Detached
+[00:17:59.627] [+00005.550] [debug] [1119] [PrintStatusWidget] Detached
+[00:17:59.627] [+00005.550] [debug] [1119] [TipsWidget] Detached
+[00:17:59.627] [+00005.550] [debug] [1119] [NozzleTempWidget] Detached
+[00:17:59.627] [+00005.550] [debug] [1119] [FanStackWidget] Detached
+[00:17:59.627] [+00005.550] [debug] [1119] [BedTempWidget] Detached
+[00:17:59.629] [+00005.552] [debug] [1119] [MemoryStats] Shutting down
+[00:17:59.630] [+00005.553] [debug] [1119] [NotificationManager] Subjects deinitialized
+[00:17:59.630] [+00005.553] [debug] [1119] [PrinterStatusIcon] Subjects deinitialized
+[00:17:59.635] [+00005.559] [debug] [1119] [ToastManager] Deinitialized
+[00:17:59.636] [+00005.559] [debug] [1119] [Moonraker Client] Unregistered handler 'MoonrakerPerformanceSource' from method 'notify_proc_stat_update'
+[00:17:59.636] [+00005.559] [debug] [1119] [Moonraker Client] Removed empty method entry for 'notify_proc_stat_update'
+[00:17:59.636] [+00005.559] [debug] [1119] [Moonraker Client] Unregistered handler 'MoonrakerPerformanceSource' from method 'notify_klippy_ready'
+[00:17:59.636] [+00005.559] [debug] [1119] [Moonraker Client] Unsubscribed notify callback ID 2
+[00:17:59.639] [+00005.563] [debug] [1119] [JobQueueState] Subjects deinitialized
+[00:17:59.642] [+00005.566] [warning] [1119] [UpdateQueue] DROPPED (shutdown): observe_int_sync::apply
+[00:17:59.646] [+00005.569] [debug] [1119] [ToolState] Deinitializing subjects
+[00:17:59.647] [+00005.570] [debug] [1119] [PrinterTemperatureState] Deinitializing subjects
+[00:17:59.647] [+00005.570] [debug] [1119] [PrinterMotionState] Deinitializing subjects
+[00:17:59.648] [+00005.572] [debug] [1119] [PrinterLedState] Deinitializing subjects
+[00:17:59.649] [+00005.572] [debug] [1119] [PrinterFanState] Deinitializing subjects
+[00:17:59.651] [+00005.574] [debug] [1119] [PrinterCapabilitiesState] Deinitializing subjects
+[00:17:59.653] [+00005.576] [debug] [1119] [PrinterPluginStatusState] Deinitializing subjects
+[00:17:59.653] [+00005.576] [debug] [1119] [PrinterCalibrationState] Deinitializing subjects
+[00:17:59.653] [+00005.576] [debug] [1119] [PrinterHardwareValidationState] Deinitializing subjects
+[00:17:59.654] [+00005.577] [debug] [1119] [PrinterCompositeVisibilityState] Deinitializing subjects
+[00:17:59.654] [+00005.577] [debug] [1119] [PrinterNetworkState] Deinitializing subjects
+[00:17:59.655] [+00005.578] [debug] [1119] [PrinterVersionsState] Deinitializing subjects
+[00:17:59.656] [+00005.579] [debug] [1119] [PresetMaterials] Subjects deinitialized
+[00:17:59.656] [+00005.579] [debug] [1119] [Modal] Modal dialog subjects deinitialized
+[00:17:59.656] [+00005.579] [debug] [1119] [App Globals] Global subjects deinitialized
+[00:17:59.657] [+00005.580] [debug] [1119] [AfcFaultPath] Subject deinitialized
+[00:17:59.657] [+00005.580] [debug] [1119] [XML Registration] No-op subject deinitialized
+[00:17:59.657] [+00005.580] [debug] [1119] [StaticPanelRegistry] No panels registered, nothing to destroy
+[00:17:59.657] [+00005.580] [debug] [1119] [Moonraker Client] Unregistered handler 'JobQueueState' from method 'notify_job_queue_changed'
+[00:17:59.657] [+00005.580] [debug] [1119] [Moonraker Client] Removed empty method entry for 'notify_job_queue_changed'
+[00:17:59.657] [+00005.580] [debug] [1119] [JobQueueState] Destroyed
+[00:17:59.657] [+00005.580] [debug] [1119] [MoonrakerManager] Shutting down...
+[00:17:59.660] [+00005.583] [info] [1119] [MoonrakerManager] Shutdown complete
+[00:17:59.660] [+00005.583] [debug] [1125] [HttpExecutor:slow] worker 0 exiting
+[00:17:59.661] [+00005.584] [debug] [1121] [HttpExecutor:fast] worker 0 exiting
+[00:17:59.661] [+00005.584] [debug] [1124] [HttpExecutor:fast] worker 3 exiting
+[00:17:59.661] [+00005.584] [debug] [1123] [HttpExecutor:fast] worker 2 exiting
+[00:17:59.661] [+00005.584] [debug] [1122] [HttpExecutor:fast] worker 1 exiting
+[00:17:59.662] [+00005.585] [debug] [1119] [DisplayManager] Shutting down
+[00:17:59.715] [+00005.638] [debug] [1119] [CrashHandler] Uninstalled signal handlers
+[00:17:59.715] [+00005.638] [info] [1119] [Application] Shutdown complete

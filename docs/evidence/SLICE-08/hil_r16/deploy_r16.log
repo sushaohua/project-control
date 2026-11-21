@@ -1,0 +1,23 @@
+4ba250de96c6b5f040e4c5fecd0f5827fe96ba2bb9897c4536d64cf2aae9f85a  project-control/docs/evidence/SLICE-08/run_20261120_170900_r16/docker_qa/artifacts/printer-soc-rootfs.tar.gz
+manifest sample keys: ['sha256', 'bytes', 'mode']
+symlink meta: {'symlink': '../../bin'}
+{
+  "status": "DEPLOY_VERIFIED",
+  "manifest_sha256": "1ff7fa3161bf18141539e3ee3ef46350ee78ee76ff9db9675150865969394b04",
+  "ap_version": {
+    "product_version": "0.1.0-skeleton",
+    "build_id": "20261120T093231Z",
+    "candidate_id": "0.1.0-skeleton+8f26e979",
+    "profile": "c308l-production",
+    "git_sha": "8f26e979",
+    "abi": "armv7l-hf-glibc2.33",
+    "mcu_proto": "2.0"
+  },
+  "regular_files_verified": 652,
+  "symlinks_verified": 12,
+  "pub_key_mode": "0o444",
+  "pub_key_sha256": "391ed9e5993fc86be51c0646693e9a92ad1fb7c2facd05b71f14df08ba75e2d3",
+  "root_free_after_bytes": 34390016,
+  "data_free_bytes": 52391936,
+  "boot_backup_sha256": "59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86"
+}

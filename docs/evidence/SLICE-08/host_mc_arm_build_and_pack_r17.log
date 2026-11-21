@@ -1,0 +1,1226 @@
+make: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu'
+[VERSION][DEV] 生成 16bit 时间特征码: 0xBA79 (V2.0.1-BA79 1121)
+[VERSION] 生成头文件: build/version_autogen.h
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+-- The C compiler identification is GNU 9.2.1
+-- The CXX compiler identification is GNU 9.2.1
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/arm-none-eabi-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/arm-none-eabi-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/arm-none-eabi-gcc
+-- Found Python3: /usr/bin/python3.8 (found version "3.8.10") found components: Interpreter
+-- Configuring done (1.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build
+cmake --build build -j4
+make[1]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[2]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[3]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[3]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[3]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+[  1%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_crm.c.obj
+[  2%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_tmr.c.obj
+[  3%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_ertc.c.obj
+[  4%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_gpio.c.obj
+[  5%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_i2c.c.obj
+[  6%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_usart.c.obj
+[  7%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_pwc.c.obj
+[  8%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_adc.c.obj
+[  9%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_spi.c.obj
+[ 10%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_dma.c.obj
+[ 12%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_edma.c.obj
+[ 13%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_debug.c.obj
+[ 14%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_flash.c.obj
+[ 15%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_crc.c.obj
+[ 16%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_wwdt.c.obj
+[ 17%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_wdt.c.obj
+[ 18%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_misc.c.obj
+[ 19%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_scfg.c.obj
+[ 20%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_usb.c.obj
+[ 21%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_acc.c.obj
+[ 24%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_dac.c.obj
+[ 24%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_can.c.obj
+[ 25%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_xmc.c.obj
+[ 26%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_qspi.c.obj
+[ 27%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_sdio.c.obj
+[ 28%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_dvp.c.obj
+[ 29%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/drivers/src/at32f435_437_emac.c.obj
+[ 30%] Building C object cmake/at32_workbench/CMakeFiles/AT32_Drivers.dir/__/__/libraries/cmsis/cm4/device_support/system_at32f435_437.c.obj
+make[3]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+[ 30%] Built target AT32_Drivers
+make[3]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[3]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[3]: Entering directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+[ 31%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/at32f435_437_int.c.obj
+[ 34%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/main.c.obj
+[ 34%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/at32f435_437_wk_config.c.obj
+[ 35%] Building C object CMakeFiles/Marlin_AT32.dir/project/delay/delay.c.obj
+[ 36%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_system.c.obj
+[ 37%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_adc.c.obj
+[ 38%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_exint.c.obj
+[ 39%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_i2c.c.obj
+[ 40%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_sdio.c.obj
+[ 41%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_spi.c.obj
+[ 42%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_tmr.c.obj
+[ 43%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_usart.c.obj
+[ 45%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_usb_otgfs.c.obj
+[ 46%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_dma.c.obj
+[ 47%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/wk_gpio.c.obj
+[ 48%] Building C object CMakeFiles/Marlin_AT32.dir/libraries/drivers/src/at32f435_437_exint.c.obj
+[ 49%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/motherboard.c.obj
+[ 50%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/pid.c.obj
+[ 51%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/Timeout.c.obj
+[ 52%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/utf8.c.obj
+[ 53%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/mem_api.c.obj
+[ 54%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/ConfigurationStore.c.obj
+[ 56%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/Marlin_main.c.obj
+[ 57%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/planner.c.obj
+[ 58%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/qr_solve.c.obj
+[ 59%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/stepper.c.obj
+[ 60%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/vector_3.c.obj
+[ 61%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_core/filament_runout.c.obj
+[ 62%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_lcd/dgus_t300spro.c.obj
+[ 63%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_lcd/memu_gui.c.obj
+[ 64%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_lcd/gui_cmd_list.c.obj
+[ 65%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/eeprom_at24cxx.c.obj
+[ 67%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/i2c_application.c.obj
+[ 68%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/fan.c.obj
+[ 69%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/heater.c.obj
+[ 70%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/temperaturetable.c.obj
+[ 71%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/thermistor.c.obj
+[ 72%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/led.c.obj
+[ 73%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/poweroff.c.obj
+[ 74%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/fileinfomenuevent.c.obj
+[ 75%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/filemenushow.c.obj
+[ 76%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/levelmenushow.c.obj
+[ 78%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/manunalmovemenushow.c.obj
+[ 80%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/sdio_sdcard.c.obj
+[ 80%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_msc/printprocessmenushow.c.obj
+[ 81%] Building C object CMakeFiles/Marlin_AT32.dir/project/fatfs/source/diskio.c.obj
+[ 82%] Building C object CMakeFiles/Marlin_AT32.dir/project/fatfs/source/ff.c.obj
+[ 83%] Building C object CMakeFiles/Marlin_AT32.dir/project/fatfs/source/ffsystem.c.obj
+[ 84%] Building C object CMakeFiles/Marlin_AT32.dir/project/fatfs/source/ffunicode.c.obj
+[ 85%] Building ASM object CMakeFiles/Marlin_AT32.dir/startup_at32f435_437.s.obj
+[ 86%] Building C object CMakeFiles/Marlin_AT32.dir/sysmem.c.obj
+[ 89%] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usb_drivers/src/usb_core.c.obj
+[ 89%] Building C object CMakeFiles/Marlin_AT32.dir/syscalls.c.obj
+[ 90%] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usb_drivers/src/usbh_core.c.obj
+[ 92%] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usb_drivers/src/usbh_int.c.obj
+[ 92%] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usb_drivers/src/usbh_ctrl.c.obj
+[ 93%] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usbh_class/usbh_msc/usbh_msc_class.c.obj
+[ 94%] Building C object CMakeFiles/Marlin_AT32.dir/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.c.obj
+[ 95%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/usbh_user.c.obj
+[ 96%] Building C object CMakeFiles/Marlin_AT32.dir/project/marlin/marlin_module/th_upgrade_mgr.c.obj
+[ 97%] Building C object CMakeFiles/Marlin_AT32.dir/project/src/minimc_proto.c.obj
+[ 98%] Linking C executable Marlin_AT32.elf
+Memory region         Used Size  Region Size  %age Used
+           FLASH:      384540 B       896 KB     41.91%
+             RAM:       44576 B     393200 B     11.34%
+        BOOT_IPC:           4 B         16 B     25.00%
+Generating Marlin_AT32.bin and Marlin_AT32.hex
+make[3]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+[100%] Built target Marlin_AT32
+make[2]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+make[1]: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/build'
+==================================================
+ [PACK] 固件打包完成
+ - 原始输入文件: build/Marlin_AT32.bin (384540 字节)
+ - 有效代码净载: 384540 字节
+ - 目标板卡架构: 0x43500001 [MC (AT32F435)]
+ - 固件版本编号: 0x0200BA79
+ - 注入构建时间: 1795229724 (2026-11-21 10:55:24)
+ - SHA-256 摘要: dced8905dad2af208e692993d8a47266720f8bec4088949f993012e8677d8e1d
+ - 最终输出文件: build/fw_mc.bin (384668 字节)
+==================================================
+make: Leaving directory '/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu'
+Build type: Debug
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/libraries/drivers/src/at32f435_437_tmr.c:1418: warning: ignoring #pragma arm section [-Wunknown-pragmas]
+ 1418 | #pragma arm section code = "RAMCODE1"
+      | 
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/libraries/drivers/src/at32f435_437_tmr.c:1434: warning: ignoring #pragma arm section [-Wunknown-pragmas]
+ 1434 | #pragma arm section
+      | 
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/libraries/drivers/src/at32f435_437_tmr.c:1499: warning: ignoring #pragma arm section [-Wunknown-pragmas]
+ 1499 | #pragma arm section code = "RAMCODE1"
+      | 
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/libraries/drivers/src/at32f435_437_tmr.c:1504: warning: ignoring #pragma arm section [-Wunknown-pragmas]
+ 1504 | #pragma arm section
+      | 
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c:36:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
+  344 | #define NULL                             0
+      | 
+In file included from /usr/include/newlib/stdlib.h:16,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:12,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:5,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/at32f435_437_int.c:34:
+/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
+  395 | #define NULL ((void *)0)
+      | 
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/main.c:52:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
+  344 | #define NULL                             0
+      | 
+In file included from /usr/include/newlib/stdlib.h:16,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:12,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/src/main.c:46:
+/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
+  395 | #define NULL ((void *)0)
+      | 
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/motherboard.c:9:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
+  344 | #define NULL                             0
+      | 
+In file included from /usr/include/newlib/stdlib.h:16,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:12,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:5,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/motherboard.c:1:
+/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
+  395 | #define NULL ((void *)0)
+      | 
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/utf8.c: In function 'enc_unicode_to_utf8_one':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/utf8.c:164:13: warning: unused parameter 'outSize' [-Wunused-parameter]
+  164 |         int outSize)
+      |         ~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/utf8.c: In function 'unicode_to_utf8':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/utf8.c:352:47: warning: comparison is always true due to limited range of data type [-Wtype-limits]
+  352 |         else if (unicode >= 0x0800 && unicode <= 0xffff)
+      |                                               ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/mem_api.c: In function 'sd_open':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/mem_api.c:44:36: warning: unused parameter 'path' [-Wunused-parameter]
+   44 | unsigned sd_open(FIL *pFile, char *path, uint8_t flags)
+      |                              ~~~~~~^~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:34:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c: In function 'kill':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:913:3: note: in expansion of macro 'disable_x'
+  913 |   disable_x();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:914:3: note: in expansion of macro 'disable_y'
+  914 |   disable_y();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:915:3: note: in expansion of macro 'disable_z'
+  915 |   disable_z();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:915:3: note: in expansion of macro 'disable_z'
+  915 |   disable_z();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:916:3: note: in expansion of macro 'disable_a'
+  916 |   disable_a();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:917:3: note: in expansion of macro 'disable_b'
+  917 |   disable_b();
+      |   ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c: In function 'get_command':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:975:10: warning: unused variable 'checksum' [-Wunused-variable]
+  975 |  uint8_t checksum = 0;
+      |          ^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c: At top level:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1246:56: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1246 | XYZ_CONSTS_FROM_CONFIG(float, base_min_pos,    MIN_POS);
+      |                                                        ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1250:56: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1250 | XYZ_CONSTS_FROM_CONFIG(float, base_max_pos,    MAX_POS);
+      |                                                        ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1252:57: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1252 | XYZ_CONSTS_FROM_CONFIG(float, base_home_pos,   HOME_POS);
+      |                                                         ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1253:59: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1253 | XYZ_CONSTS_FROM_CONFIG(float, max_length,      MAX_LENGTH);
+      |                                                           ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1254:64: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1254 | XYZ_CONSTS_FROM_CONFIG(float, home_retract_mm, HOME_RETRACT_MM);
+      |                                                                ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:1255:57: warning: ISO C does not allow extra ';' outside of a function [-Wpedantic]
+ 1255 | XYZ_CONSTS_FROM_CONFIG(signed char, home_dir,  HOME_DIR);
+      |                                                         ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c: In function 'process_commands':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:2505:76: warning: multi-line comment [-Wcomment]
+ 2505 |     if ( (axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]))   // \
+      |                                                                            ^
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:34:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3512:11: note: in expansion of macro 'disable_a'
+ 3512 |           disable_a();
+      |           ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3513:11: note: in expansion of macro 'disable_b'
+ 3513 |           disable_b();
+      |           ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3521:30: note: in expansion of macro 'disable_x'
+ 3521 |           if(code_seen('X')) disable_x();
+      |                              ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3522:30: note: in expansion of macro 'disable_y'
+ 3522 |           if(code_seen('Y')) disable_y();
+      |                              ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3523:30: note: in expansion of macro 'disable_z'
+ 3523 |           if(code_seen('Z')) disable_z();
+      |                              ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3523:30: note: in expansion of macro 'disable_z'
+ 3523 |           if(code_seen('Z')) disable_z();
+      |                              ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3526:15: note: in expansion of macro 'disable_a'
+ 3526 |               disable_a();
+      |               ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:3527:15: note: in expansion of macro 'disable_b'
+ 3527 |               disable_b();
+      |               ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:94:36: warning: missing braces around initializer [-Wmissing-braces]
+   94 | matrix_3x3 plan_bed_level_matrix = {
+      |                                    ^
+   95 |  1.0, 0.0, 0.0,
+      |  {
+......
+   98 | };
+      | }
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c: In function 'planner_reverse_pass_kernel':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:281:43: warning: unused parameter 'previous' [-Wunused-parameter]
+  281 | void planner_reverse_pass_kernel(block_t *previous, block_t *current, block_t *next) {
+      |                                  ~~~~~~~~~^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c: In function 'planner_forward_pass_kernel':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:334:80: warning: unused parameter 'next' [-Wunused-parameter]
+  334 | void planner_forward_pass_kernel(block_t *previous, block_t *current, block_t *next) {
+      |                                                                       ~~~~~~~~~^~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:56:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c: In function 'check_axes_activity':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:551:38: note: in expansion of macro 'disable_x'
+  551 |   if((DISABLE_X) && (x_active == 0)) disable_x();
+      |                                      ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:552:38: note: in expansion of macro 'disable_y'
+  552 |   if((DISABLE_Y) && (y_active == 0)) disable_y();
+      |                                      ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:553:38: note: in expansion of macro 'disable_z'
+  553 |   if((DISABLE_Z) && (z_active == 0)) disable_z();
+      |                                      ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:553:38: note: in expansion of macro 'disable_z'
+  553 |   if((DISABLE_Z) && (z_active == 0)) disable_z();
+      |                                      ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c: In function 'plan_buffer_line':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:1123:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+ 1123 |     if(((float)block->acceleration_st * (float)block->steps_b / (float)block->step_event_count) > axis_steps_per_sqr_second[B_AXIS])
+      |     ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/planner.c:1125:2: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+ 1125 |  if(((float)block->acceleration_st * (float)block->steps_c / (float)block->step_event_count) > axis_steps_per_sqr_second[C_AXIS])
+      |  ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4778:32: warning: '%s' directive writing up to 95 bytes into a region of size 30 [-Wformat-overflow=]
+ 4778 |    sprintf(commandstr_process,"%s\"",cmdbuffer[bufindr]);
+      |                                ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin_main.c:4778:4: note: 'sprintf' output between 2 and 97 bytes into a destination of size 30
+ 4778 |    sprintf(commandstr_process,"%s\"",cmdbuffer[bufindr]);
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:60:1: warning: 'static' is not at beginning of declaration [-Wold-style-declaration]
+   60 | volatile static unsigned long step_events_completed; // The number of step events executed in the current block
+      | ^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:207:1: warning: multi-line comment [-Wcomment]
+  207 | // uses:"mov   r4, r2 \n\t" \
+      | ^
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:24:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'tmr7_global_callback':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:662:9: note: in expansion of macro 'WRITE'
+  662 |         WRITE(X_DIR_PIN, !INVERT_X_DIR);
+      |         ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:679:9: note: in expansion of macro 'WRITE'
+  679 |         WRITE(Y_DIR_PIN, !INVERT_Y_DIR);
+      |         ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:800:9: note: in expansion of macro 'WRITE'
+  800 |         WRITE(Z_DIR_PIN,!INVERT_Z_DIR);
+      |         ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:803:11: note: in expansion of macro 'WRITE'
+  803 |           WRITE(Z2_DIR_PIN,!INVERT_Z_DIR);
+      |           ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:36:70: note: in expansion of macro 'WRITE'
+   36 |     #define NORM_A_DIR() { if(current_block->active_extruder == 1) { WRITE(B_DIR_PIN, !INVERT_B_DIR); } else { WRITE(A_DIR_PIN, !INVERT_A_DIR); }}
+      |                                                                      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:815:9: note: in expansion of macro 'NORM_A_DIR'
+  815 |         NORM_A_DIR();
+      |         ^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:36:112: note: in expansion of macro 'WRITE'
+   36 |     #define NORM_A_DIR() { if(current_block->active_extruder == 1) { WRITE(B_DIR_PIN, !INVERT_B_DIR); } else { WRITE(A_DIR_PIN, !INVERT_A_DIR); }}
+      |                                                                                                                ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:815:9: note: in expansion of macro 'NORM_A_DIR'
+  815 |         NORM_A_DIR();
+      |         ^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:40:26: note: in expansion of macro 'WRITE'
+   40 |     #define NORM_B_DIR() WRITE(B_DIR_PIN, !INVERT_B_DIR)
+      |                          ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:826:9: note: in expansion of macro 'NORM_B_DIR'
+  826 |         NORM_B_DIR();
+      |         ^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:937:11: note: in expansion of macro 'WRITE'
+  937 |           WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
+      |           ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:960:11: note: in expansion of macro 'WRITE'
+  960 |           WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
+      |           ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:978:11: note: in expansion of macro 'WRITE'
+  978 |           WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
+      |           ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:981:13: note: in expansion of macro 'WRITE'
+  981 |             WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
+      |             ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:35:73: note: in expansion of macro 'WRITE'
+   35 |     #define WRITE_A_STEP(v) { if(current_block->active_extruder == 1) { WRITE(B_STEP_PIN, v); } else { WRITE(A_STEP_PIN, v); }}
+      |                                                                         ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:996:11: note: in expansion of macro 'WRITE_A_STEP'
+  996 |           WRITE_A_STEP(!INVERT_A_STEP_PIN);
+      |           ^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:35:104: note: in expansion of macro 'WRITE'
+   35 |     #define WRITE_A_STEP(v) { if(current_block->active_extruder == 1) { WRITE(B_STEP_PIN, v); } else { WRITE(A_STEP_PIN, v); }}
+      |                                                                                                        ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:996:11: note: in expansion of macro 'WRITE_A_STEP'
+  996 |           WRITE_A_STEP(!INVERT_A_STEP_PIN);
+      |           ^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.h:39:29: note: in expansion of macro 'WRITE'
+   39 |     #define WRITE_B_STEP(v) WRITE(B_STEP_PIN, v)
+      |                             ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1005:11: note: in expansion of macro 'WRITE_B_STEP'
+ 1005 |           WRITE_B_STEP(!INVERT_B_STEP_PIN);
+      |           ^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'BspStepperInit':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1210:2: note: in expansion of macro 'disable_x'
+ 1210 |  disable_x();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1211:2: note: in expansion of macro 'disable_y'
+ 1211 |  disable_y();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1212:2: note: in expansion of macro 'disable_z'
+ 1212 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1212:2: note: in expansion of macro 'disable_z'
+ 1212 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1213:2: note: in expansion of macro 'disable_a'
+ 1213 |  disable_a();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1214:2: note: in expansion of macro 'disable_b'
+ 1214 |  disable_b();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'disable_all_stepmotor':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1223:2: note: in expansion of macro 'disable_x'
+ 1223 |  disable_x();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1224:2: note: in expansion of macro 'disable_y'
+ 1224 |  disable_y();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1225:2: note: in expansion of macro 'disable_z'
+ 1225 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1225:2: note: in expansion of macro 'disable_z'
+ 1225 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1226:2: note: in expansion of macro 'disable_a'
+ 1226 |  disable_a();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1227:2: note: in expansion of macro 'disable_b'
+ 1227 |  disable_b();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'finishAndDisableSteppers':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1359:2: note: in expansion of macro 'disable_x'
+ 1359 |  disable_x();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1360:2: note: in expansion of macro 'disable_y'
+ 1360 |  disable_y();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:112:5: note: in expansion of macro 'WRITE'
+  112 |     WRITE(Z_ENABLE_PIN, !Z_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1361:2: note: in expansion of macro 'disable_z'
+ 1361 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:113:5: note: in expansion of macro 'WRITE'
+  113 |     WRITE(Z2_ENABLE_PIN, !Z_ENABLE_ON);  \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1361:2: note: in expansion of macro 'disable_z'
+ 1361 |  disable_z();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:131:21: note: in expansion of macro 'WRITE'
+  131 | #define disable_a() WRITE(A_ENABLE_PIN, !A_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1362:2: note: in expansion of macro 'disable_a'
+ 1362 |  disable_a();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:139:21: note: in expansion of macro 'WRITE'
+  139 | #define disable_b() WRITE(B_ENABLE_PIN, !B_ENABLE_ON)
+      |                     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1363:2: note: in expansion of macro 'disable_b'
+ 1363 |  disable_b();
+      |  ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'load_filamant_init':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1386:4: note: in expansion of macro 'WRITE'
+ 1386 |    WRITE(A_DIR_PIN,!INVERT_A_DIR);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1390:4: note: in expansion of macro 'WRITE'
+ 1390 |    WRITE(B_DIR_PIN,!INVERT_B_DIR);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1398:5: note: in expansion of macro 'WRITE'
+ 1398 |     WRITE(A_DIR_PIN,!INVERT_A_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1399:5: note: in expansion of macro 'WRITE'
+ 1399 |     WRITE(B_DIR_PIN,!INVERT_B_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'unload_filamantinit':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1412:4: note: in expansion of macro 'WRITE'
+ 1412 |    WRITE(A_DIR_PIN,!INVERT_A_DIR);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1416:4: note: in expansion of macro 'WRITE'
+ 1416 |    WRITE(B_DIR_PIN,!INVERT_B_DIR);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1424:5: note: in expansion of macro 'WRITE'
+ 1424 |     WRITE(A_DIR_PIN,!INVERT_A_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1425:5: note: in expansion of macro 'WRITE'
+ 1425 |     WRITE(B_DIR_PIN,!INVERT_B_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'loadorunload_filamant':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1467:6: note: in expansion of macro 'WRITE'
+ 1467 |      WRITE(A_STEP_PIN,!INVERT_A_STEP_PIN);
+      |      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1471:6: note: in expansion of macro 'WRITE'
+ 1471 |      WRITE(B_STEP_PIN,!INVERT_A_STEP_PIN);
+      |      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1475:6: note: in expansion of macro 'WRITE'
+ 1475 |      WRITE(A_STEP_PIN,!INVERT_A_STEP_PIN);
+      |      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1476:6: note: in expansion of macro 'WRITE'
+ 1476 |      WRITE(B_STEP_PIN,!INVERT_A_STEP_PIN);
+      |      ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1523:5: note: in expansion of macro 'WRITE'
+ 1523 |     WRITE(A_STEP_PIN,!INVERT_A_STEP_PIN);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1527:5: note: in expansion of macro 'WRITE'
+ 1527 |     WRITE(B_STEP_PIN,!INVERT_A_STEP_PIN);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1531:5: note: in expansion of macro 'WRITE'
+ 1531 |     WRITE(A_STEP_PIN,!INVERT_A_STEP_PIN);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1532:5: note: in expansion of macro 'WRITE'
+ 1532 |     WRITE(B_STEP_PIN,!INVERT_A_STEP_PIN);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'babystep_z':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1576:5: note: in expansion of macro 'WRITE'
+ 1576 |     WRITE(Z2_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1577:5: note: in expansion of macro 'WRITE'
+ 1577 |     WRITE(Z_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1597:5: note: in expansion of macro 'WRITE'
+ 1597 |     WRITE(Z2_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1598:5: note: in expansion of macro 'WRITE'
+ 1598 |     WRITE(Z_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1612:5: note: in expansion of macro 'WRITE'
+ 1612 |     WRITE(Z2_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1613:5: note: in expansion of macro 'WRITE'
+ 1613 |     WRITE(Z_DIR_PIN,!INVERT_Z_DIR);
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1615:4: note: in expansion of macro 'WRITE'
+ 1615 |    WRITE(Z2_STEP_PIN,!INVERT_Z_STEP_PIN);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1616:4: note: in expansion of macro 'WRITE'
+ 1616 |    WRITE(Z_STEP_PIN,!INVERT_Z_STEP_PIN);
+      |    ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'digitalPotWrite':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1779:26: warning: unused parameter 'address' [-Wunused-parameter]
+ 1779 | void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl example
+      |                      ~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1779:39: warning: unused parameter 'value' [-Wunused-parameter]
+ 1779 | void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl example
+      |                                   ~~~~^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'digipot_current':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1813:30: warning: unused parameter 'driver' [-Wunused-parameter]
+ 1813 | void digipot_current(uint8_t driver, int current)
+      |                      ~~~~~~~~^~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1813:42: warning: unused parameter 'current' [-Wunused-parameter]
+ 1813 | void digipot_current(uint8_t driver, int current)
+      |                                      ~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'microstep_ms':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1851:27: warning: unused parameter 'driver' [-Wunused-parameter]
+ 1851 | void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
+      |                   ~~~~~~~~^~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1851:42: warning: unused parameter 'ms1' [-Wunused-parameter]
+ 1851 | void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
+      |                                   ~~~~~~~^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1851:54: warning: unused parameter 'ms2' [-Wunused-parameter]
+ 1851 | void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
+      |                                               ~~~~~~~^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c: In function 'microstep_mode':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1877:29: warning: unused parameter 'driver' [-Wunused-parameter]
+ 1877 | void microstep_mode(uint8_t driver, uint8_t stepping_mode)
+      |                     ~~~~~~~~^~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:1877:45: warning: unused parameter 'stepping_mode' [-Wunused-parameter]
+ 1877 | void microstep_mode(uint8_t driver, uint8_t stepping_mode)
+      |                                     ~~~~~~~~^~~~~~~~~~~~~
+At top level:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/stepper.c:87:13: warning: 'old_y_min_endstop' defined but not used [-Wunused-variable]
+   87 | static bool old_y_min_endstop=false;
+      |             ^~~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'printing_page_data_update_flag':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:1089:9: warning: using integer absolute value function 'abs' when argument is of floating point type 'float' [-Wabsolute-value]
+ 1089 |     if((abs(Extruder_One.current_temperature - UI_Page_info.old_extruder_current_temp )>1 ) || (abs(Platform.current_temperature - UI_Page_info.old_bed_current_temp )>1))
+      |         ^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:1089:97: warning: using integer absolute value function 'abs' when argument is of floating point type 'float' [-Wabsolute-value]
+ 1089 |     if((abs(Extruder_One.current_temperature - UI_Page_info.old_extruder_current_temp )>1 ) || (abs(Platform.current_temperature - UI_Page_info.old_bed_current_temp )>1))
+      |                                                                                                 ^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'preheat_date_updata':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:1374:9: warning: using integer absolute value function 'abs' when argument is of floating point type 'float' [-Wabsolute-value]
+ 1374 |     if((abs(Extruder_One.current_temperature - UI_Page_info.old_extruder_current_temp )>1 ) || (abs(Platform.current_temperature - UI_Page_info.old_bed_current_temp )>1))
+      |         ^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:1374:97: warning: using integer absolute value function 'abs' when argument is of floating point type 'float' [-Wabsolute-value]
+ 1374 |     if((abs(Extruder_One.current_temperature - UI_Page_info.old_extruder_current_temp )>1 ) || (abs(Platform.current_temperature - UI_Page_info.old_bed_current_temp )>1))
+      |                                                                                                 ^~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'reopen_print_file':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2271:32: warning: format '%d' expects argument of type 'int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+ 2271 |     sprintf(strings,"filesize:%d,sd_pos:%d",filesize,sd_pos);
+      |                               ~^            ~~~~~~~~
+      |                                |            |
+      |                                int          uint32_t {aka long unsigned int}
+      |                               %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2271:42: warning: format '%d' expects argument of type 'int', but argument 4 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+ 2271 |     sprintf(strings,"filesize:%d,sd_pos:%d",filesize,sd_pos);
+      |                                         ~^           ~~~~~~
+      |                                          |           |
+      |                                          int         uint32_t {aka long unsigned int}
+      |                                         %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'gui_decode_data':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2582:56: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+ 2582 |             back_keycode = ((uint8_t)ptr_data[7]) << 8 & 0xFF00 | ((uint8_t)ptr_data[8]);
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2588:57: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+ 2588 |             back_keycode = ((uint32_t)ptr_data[7] << 24 & 0xFF000000 \
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2590:45: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+ 2590 |                 | (uint8_t)ptr_data[9] << 8 & 0x0000FF00 | (uint8_t)ptr_data[10]);
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2596:52: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+ 2596 |         back_address = ((uint8_t)ptr_data[4]) << 8 & 0xFF00 | ((uint8_t)ptr_data[5]);
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2606:35: warning: format '%x' expects argument of type 'unsigned int', but argument 3 has type 'long int' [-Wformat=]
+ 2606 |         printf("addr:0x%x data:0x%x\n",back_address,back_keycode);
+      |                                  ~^                 ~~~~~~~~~~~~
+      |                                   |                 |
+      |                                   unsigned int      long int
+      |                                  %lx
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2645:29: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2645 |     printf("filament_Range:%d\r\n",UI_Page_info.filament_Range);
+      |                            ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                             |                  |
+      |                             int                int32_t {aka long int}
+      |                            %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2731:31: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2731 |     printf("filament_A_Range:%d\r\n",UI_Page_info.filament_A_Range);
+      |                              ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                               |                  |
+      |                               int                int32_t {aka long int}
+      |                              %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2764:31: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2764 |     printf("filament_B_Range:%d\r\n",UI_Page_info.filament_B_Range);
+      |                              ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                               |                  |
+      |                               int                int32_t {aka long int}
+      |                              %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2776:31: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2776 |     printf("filament_C_Range:%d\r\n",UI_Page_info.filament_C_Range);
+      |                              ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                               |                  |
+      |                               int                int32_t {aka long int}
+      |                              %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2788:31: warning: format '%d' expects argument of type 'int', but argument 2 has type 'int32_t' {aka 'long int'} [-Wformat=]
+ 2788 |     printf("filament_D_Range:%d\r\n",UI_Page_info.filament_D_Range);
+      |                              ~^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                               |                  |
+      |                               int                int32_t {aka long int}
+      |                              %ld
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:5,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:5:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'gui_processReturnKeyCode':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3031:4: note: in expansion of macro 'disable_x'
+ 3031 |    disable_x();
+      |    ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:69:5: note: in expansion of macro 'WRITE'
+   69 |     WRITE(X_ENABLE_PIN, !X_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3271:4: note: in expansion of macro 'disable_x'
+ 3271 |    disable_x();
+      |    ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:36:11: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   36 |     if (y == TRUE)                               \
+      |           ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_core/Marlin.h:94:5: note: in expansion of macro 'WRITE'
+   94 |     WRITE(Y_ENABLE_PIN, !Y_ENABLE_ON);   \
+      |     ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3272:13: note: in expansion of macro 'disable_y'
+ 3272 |             disable_y();
+      |             ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2981:13: warning: unused variable 'e0_index' [-Wunused-variable]
+ 2981 |     uint8_t e0_index;
+      |             ^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2980:9: warning: variable 'covertToInt' set but not used [-Wunused-but-set-variable]
+ 2980 |     int covertToInt;
+      |         ^~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2979:9: warning: variable 'x0x1_Offset' set but not used [-Wunused-but-set-variable]
+ 2979 |     int x0x1_Offset;
+      |         ^~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2978:9: warning: variable 'x0MovePos' set but not used [-Wunused-but-set-variable]
+ 2978 |     int x0MovePos;
+      |         ^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2977:9: warning: variable 'offsetPosAddress' set but not used [-Wunused-but-set-variable]
+ 2977 |     int offsetPosAddress;
+      |         ^~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'gui_clearVariableBuffer':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3704:9: warning: unused variable 'i' [-Wunused-variable]
+ 3704 |  size_t i = 0;
+      |         ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3702:61: warning: unused parameter 'var_count' [-Wunused-parameter]
+ 3702 | void gui_clearVariableBuffer(uint16_t start_address, size_t var_count, size_t var_len)
+      |                                                      ~~~~~~~^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c: In function 'gui_writeFilenameToTable':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3778:9: warning: unused variable 'i' [-Wunused-variable]
+ 3778 |     int i = 0;
+      |         ^
+At top level:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:3855:13: warning: 'filament_control' defined but not used [-Wunused-function]
+ 3855 | static void filament_control(void)
+      |             ^~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.c:2352:13: warning: 'gui_wait_screen_ready' defined but not used [-Wunused-function]
+ 2352 | static bool gui_wait_screen_ready(void)
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c: In function 'gui_updateFilenameInTable':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:104:11: warning: unused variable 'name_show_address' [-Wunused-variable]
+  104 |  uint16_t name_show_address = 0x0013;
+      |           ^~~~~~~~~~~~~~~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c: In function 'gui_nextPage':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.h:16:41: warning: pointer targets in passing argument 2 of 'gui_updateReminderText' differ in signedness [-Wpointer-sign]
+   16 | #define MSG_SD_LASTPAGE                 "It is already the last page"
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                         |
+      |                                         char *
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:271:49: note: in expansion of macro 'MSG_SD_LASTPAGE'
+  271 |   gui_updateReminderText(reminder_text_address, MSG_SD_LASTPAGE, MSG_SD_LASTPAGE_LEN);
+      |                                                 ^~~~~~~~~~~~~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.h:4,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:295:62: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'char *'
+  295 | void gui_updateReminderText(uint16_t address, const uint8_t* message, uint8_t message_len);
+      |                                               ~~~~~~~~~~~~~~~^~~~~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c: In function 'gui_previousPage':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.h:18:41: warning: pointer targets in passing argument 2 of 'gui_updateReminderText' differ in signedness [-Wpointer-sign]
+   18 | #define MSG_SD_FIRSTPAGE                "It is already the first page"
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                         |
+      |                                         char *
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:294:49: note: in expansion of macro 'MSG_SD_FIRSTPAGE'
+  294 |   gui_updateReminderText(reminder_text_address, MSG_SD_FIRSTPAGE, MSG_SD_FIRSTPAGE_LEN);
+      |                                                 ^~~~~~~~~~~~~~~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.h:4,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/memu_gui.h:295:62: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'char *'
+  295 | void gui_updateReminderText(uint16_t address, const uint8_t* message, uint8_t message_len);
+      |                                               ~~~~~~~~~~~~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c: In function 'gui_backtoLastPage':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_lcd/gui_cmd_list.c:365:24: warning: comparison is always true due to limited range of data type [-Wtype-limits]
+  365 |  if (gui_dgus.prevPage != -1)
+      |                        ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/i2c_application.c: In function 'i2c_lowlevel_init':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/i2c_application.c:105:48: warning: unused parameter 'hi2c' [-Wunused-parameter]
+  105 | __WEAK void i2c_lowlevel_init(i2c_handle_type* hi2c)
+      |                               ~~~~~~~~~~~~~~~~~^~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.c:72:1: warning: missing initializer for field 'AutoLevelflag' of 'EEPROM' {aka 'struct EEPROM'} [-Wmissing-field-initializers]
+   72 | };
+      | ^
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.c:1:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.h:100:17: note: 'AutoLevelflag' declared here
+  100 | uint8_t         AutoLevelflag;
+      |                 ^~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.c: In function 'error_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/eeprom_at24cxx.c:85:21: warning: format '%d' expects argument of type 'int', but argument 2 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+   85 |   printf("I2C2 err:%d\r\n",error_code);
+      |                    ~^      ~~~~~~~~~~
+      |                     |      |
+      |                     int    uint32_t {aka long unsigned int}
+      |                    %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c: In function 'thermal_runaway_protection':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c:827:25: warning: this statement may fall through [-Wimplicit-fallthrough=]
+  827 |         heater->trstate = TRStable;
+      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/heater.c:830:7: note: here
+  830 |       case TRStable:
+      |       ^~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:9:1: warning: 'static' is not at beginning of declaration [-Wold-style-declaration]
+    9 | const static int MAX_TEMP = 300;
+      | ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c: In function 'Thermistor_Update':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:110:22: warning: unused variable 'avg_ex2' [-Wunused-variable]
+  110 |     int16_t avg,avg1,avg_ex2,avg_botbox,avg_box;   //平均温度值
+      |                      ^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:109:24: warning: unused variable 'temp_ex2' [-Wunused-variable]
+  109 |     int16_t temp,temp1,temp_ex2,temp_botbox,temp_box;   //温度值
+      |                        ^~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/thermistor.c:106:13: warning: unused variable 'cumulative_ex2' [-Wunused-variable]
+  106 |     int16_t cumulative_ex2 = 0;
+      |             ^~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:57:13: warning: ISO C forbids forward references to 'enum' types [-Wpedantic]
+   57 | extern enum PauseState paused;
+      |             ^~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c: In function 'power_off_save_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:210:12: warning: comparison of integer expressions of different signedness: 'uint32_t' {aka 'long unsigned int'} and 'int' [-Wsign-compare]
+  210 |  if(sd_pos < total_poweroff_cnt_nouse)
+      |            ^
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c: In function 'power_off_printer_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:303:24: warning: format '%d' expects argument of type 'int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  303 |  sprintf(stts,"sd_pos:%d.name:%s\r\n",sd_pos,FileDir);
+      |                       ~^              ~~~~~~
+      |                        |              |
+      |                        int            uint32_t {aka long unsigned int}
+      |                       %ld
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:303:31: warning: '%s' directive writing up to 99 bytes into a region of size between 76 and 86 [-Wformat-overflow=]
+  303 |  sprintf(stts,"sd_pos:%d.name:%s\r\n",sd_pos,FileDir);
+      |                               ^~             ~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_module/poweroff.c:303:2: note: 'sprintf' output between 17 and 126 bytes into a destination of size 100
+  303 |  sprintf(stts,"sd_pos:%d.name:%s\r\n",sd_pos,FileDir);
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c: In function 'print_finish_handle':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c:350:6: warning: unused variable 'i' [-Wunused-variable]
+  350 |  int i = 0;
+      |      ^
+At top level:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/fileinfomenuevent.c:624:13: warning: 'f423_stop_printf' defined but not used [-Wunused-function]
+  624 | static void f423_stop_printf(void)
+      |             ^~~~~~~~~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c: In function 'utf8_to_unicode':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c:87:33: warning: comparison is always true due to limited range of data type [-Wtype-limits]
+   87 |   else if (utf8 >= 0xe0 && utf8 <= 0xff)
+      |                                 ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c: In function 'get_gcode_num':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c:134:92: warning: comparison between pointer and integer
+  134 |    if((strstr(name_file, "gcode") || strstr(name_file, "gco") || strstr(name_file, "GCO")) == NULL)continue;
+      |                                                                                            ^~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c: In function 'Filelist_Scan':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/filemenushow.c:207:92: warning: comparison between pointer and integer
+  207 |    if((strstr(name_file, "gcode") || strstr(name_file, "gco") || strstr(name_file, "GCO")) == NULL)continue;
+      |                                                                                            ^~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.c:27:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
+  344 | #define NULL                             0
+      | 
+In file included from /usr/include/newlib/string.h:17,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.c:26:
+/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
+  395 | #define NULL ((void *)0)
+      | 
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/printprocessmenushow.c:61:1: warning: 'static' is not at beginning of declaration [-Wold-style-declaration]
+   61 | const static uint32_t ONE_HOUR = 3600000000U;
+      | ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.c: In function 'sd_block_read':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.c:1242:24: warning: unused variable 'sta' [-Wunused-variable]
+ 1242 |   sd_error_status_type sta;  //临时变量，判断dma是否正常工作
+      |                        ^~~
+In file included from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/fatfs/source/diskio.c:15:
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/marlin/marlin_msc/sdio_sdcard.h:344: warning: "NULL" redefined
+  344 | #define NULL                             0
+      | 
+In file included from /usr/include/newlib/string.h:17,
+                 from /home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/project/fatfs/source/diskio.c:14:
+/usr/lib/gcc/arm-none-eabi/9.2.1/include/stddef.h:395: note: this is the location of the previous definition
+  395 | #define NULL ((void *)0)
+      | 
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_core.c: In function 'usbh_core_init':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_core.c:503:37: warning: unused parameter 'core_id' [-Wunused-parameter]
+  503 |                             uint8_t core_id)
+      |                             ~~~~~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c: In function 'usbh_ctrl_data_in_wait_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:206:77: warning: unused parameter 'timeout' [-Wunused-parameter]
+  206 | usb_sts_type usbh_ctrl_data_in_wait_handler(usbh_core_type *uhost, uint32_t timeout)
+      |                                                                    ~~~~~~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c: In function 'usbh_ctrl_data_out_wait_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:262:78: warning: unused parameter 'timeout' [-Wunused-parameter]
+  262 | usb_sts_type usbh_ctrl_data_out_wait_handler(usbh_core_type *uhost, uint32_t timeout)
+      |                                                                     ~~~~~~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c: In function 'usbh_ctrl_status_in_wait_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:316:79: warning: unused parameter 'timeout' [-Wunused-parameter]
+  316 | usb_sts_type usbh_ctrl_status_in_wait_handler(usbh_core_type *uhost, uint32_t timeout)
+      |                                                                      ~~~~~~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c: In function 'usbh_ctrl_status_out_wait_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:369:80: warning: unused parameter 'timeout' [-Wunused-parameter]
+  369 | usb_sts_type usbh_ctrl_status_out_wait_handler(usbh_core_type *uhost, uint32_t timeout)
+      |                                                                       ~~~~~~~~~^~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c: In function 'usbh_ctrl_stall_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:428:54: warning: unused parameter 'uhost' [-Wunused-parameter]
+  428 | usb_sts_type usbh_ctrl_stall_handler(usbh_core_type *uhost)
+      |                                      ~~~~~~~~~~~~~~~~^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c: In function 'usbh_ctrl_complete_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:438:57: warning: unused parameter 'uhost' [-Wunused-parameter]
+  438 | usb_sts_type usbh_ctrl_complete_handler(usbh_core_type *uhost)
+      |                                         ~~~~~~~~~~~~~~~~^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c: In function 'usbh_get_sting_descriptor':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:803:44: warning: unused parameter 'buffer' [-Wunused-parameter]
+  803 |                                   uint8_t *buffer, uint16_t length)
+      |                                   ~~~~~~~~~^~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c: In function 'usbh_clear_ept_feature':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usb_drivers/src/usbh_ctrl.c:934:85: warning: unused parameter 'hc_num' [-Wunused-parameter]
+  934 | usb_sts_type usbh_clear_ept_feature(usbh_core_type *uhost, uint8_t ept_num, uint8_t hc_num)
+      |                                                                             ~~~~~~~~^~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_class.c: In function 'uhost_process_handler':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_class.c:215:12: warning: variable 'msize' set but not used [-Wunused-but-set-variable]
+  215 |   uint64_t msize = 0;
+      |            ^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.c: In function 'usbh_cmd_test_unit_ready':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.c:118:66: warning: unused parameter 'bot_trans' [-Wunused-parameter]
+  118 | static usb_sts_type usbh_cmd_test_unit_ready(msc_bot_trans_type *bot_trans, uint8_t *cmd, uint8_t lun)
+      |                                              ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.c: In function 'usbh_check_csw':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.c:203:35: warning: unused parameter 'uhost' [-Wunused-parameter]
+  203 | usb_sts_type usbh_check_csw(void *uhost, msc_bot_cbw_type *cbw, msc_bot_csw_type *csw)
+      |                             ~~~~~~^~~~~
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.c: In function 'usbh_msc_bot_scsi_get_inquiry':
+/home/sushaohua/workspace/ai_soc_project/mcu-p3/motion-controller-mcu/middlewares/usbh_class/usbh_msc/usbh_msc_bot_scsi.c:399:81: warning: unused parameter 'inquiry' [-Wunused-parameter]
+  399 |                                             uint8_t lun, msc_scsi_data_inquiry *inquiry)
+      |                                                          ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+
+=== ATSG TRAILER & EVIDENCE VERIFICATION ===
+MCU_P3_COMMIT=e5e45eea5fcdcd8cb87ba8f5e99a0cf4904390d3
+MARLIN_BIN_BYTES=384540
+FW_MC_BYTES=384668
+FW_MC_SHA256=d94b42b47e0b7ff74e474c0710e2303c99d36ee032d5b581e258ffcd33896e87
+TRAILER_MAGIC=0x41545347
+TRAILER_STRUCT_VER=0x00010000
+TRAILER_BOARD_ID=0x43500001
+TRAILER_FW_VERSION=0x0200BA79
+TRAILER_PAYLOAD_LEN=384540
+TRAILER_CRC32=0x3EA0E6FB
+[PASS] HOST_MC_ARM_BUILD_AND_PACK

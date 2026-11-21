@@ -1,0 +1,147 @@
+=== DBUS AFTER MC RESET ===
+--- GetPortStatus rc=0 ---
+method return time=821.455924 sender=:1.0 -> destination=:1.3 serial=1950 reply_serial=2
+   boolean true
+   string "/dev/ttyS1"
+   uint64 973
+   uint64 44
+
+--- GetVersionInfo rc=0 ---
+method return time=821.466926 sender=:1.1 -> destination=:1.4 serial=1493 reply_serial=2
+   string "{"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":3521563909,"git_commit":"0x4FC171EA","capability_flags":3221750837,"last_update_ns":820463037432},"th":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0}}}"
+
+--- GetSnapshot rc=0 ---
+method return time=821.479107 sender=:1.1 -> destination=:1.5 serial=1494 reply_serial=2
+   string "{"schema_version":2,"generation_id":1,"timestamp_ns":401436580358,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"TIMEOUT","quality":"FAULT","raw_adc":null},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"1.0","boot_id":3521563909,"git_commit":"0x4FC171EA","capability_flags":3221750837,"last_update_ns":820463037432},"th":{"valid":false,"status":"OFFLINE","proto_version":"0.0","firmware_version":"0.0","boot_id":0,"git_commit":"0x00000000","capability_flags":0,"last_update_ns":0}},"system_status":"OFFLINE","device_state":"OFFLINE"}"
+
+=== FULL PANEL.LOG ===
+[00:06:41.552] [+00000.026] [warning] [1015] [Config] Backup of /data/printer-soc/helix/config/helixscreen.env failed at both primary (/var/lib/helixscreen/helixscreen.env.backup) and fallback (/data/printer-soc/helix/.helixscreen/helixscreen.env.backup)
+=== INPUT DEVICES ===
+I: Bus=0018 Vendor=0416 Product=038f Version=1060
+N: Name="Goodix Capacitive TouchScreen"
+P: Phys=input/ts
+S: Sysfs=/devices/platform/soc/fe000000.apb4/fe06c000.i2c/i2c-3/3-0014/input/input0
+U: Uniq=
+H: Handlers=event0 
+B: PROP=2
+B: EV=b
+B: KEY=400 0 0 0 0 0 0 20000000 1 f8000000 0
+B: ABS=2658000 3
+
+I: Bus=0010 Vendor=0002 Product=0002 Version=0200
+N: Name="ir_keypad1"
+P: Phys=keypad/input0
+S: Sysfs=/devices/platform/soc/fe000000.apb4/fe084040.ir/input/input2
+U: Uniq=
+H: Handlers=event1 
+B: PROP=0
+B: EV=3
+B: KEY=3ffd0000 0 fc000 40 0 0 0 0 2000000 78000010 50002400 1e16c0 0 0 10000ffc
+
+I: Bus=0010 Vendor=0001 Product=0001 Version=0100
+N: Name="ir_keypad"
+P: Phys=keypad/input0
+S: Sysfs=/devices/platform/soc/fe000000.apb4/fe084040.ir/input/input1
+U: Uniq=
+H: Handlers=event2 
+B: PROP=0
+B: EV=3
+B: KEY=3fff0000 0 fc800 40 0 0 0 2000 b710000 78000178 50003ffc 2f9e37c2 80005f e0014001 5000cffc
+
+I: Bus=0010 Vendor=0001 Product=0001 Version=0100
+N: Name="vad_keypad"
+P: Phys=vad_keypad/input3
+S: Sysfs=/devices/platform/soc/fe330000.audiobus/fe330000.audiobus:vad/input/input3
+U: Uniq=
+H: Handlers=event3 
+B: PROP=0
+B: EV=3
+B: KEY=1 0 0 0 0 100000 0 0 0
+
+I: Bus=0010 Vendor=0001 Product=0001 Version=0100
+N: Name="input_ethrcu"
+P: Phys=input_ethrcu/input0
+S: Sysfs=/devices/platform/soc/fdc00000.ethernet/input/input4
+U: Uniq=
+H: Handlers=event4 
+B: PROP=0
+B: EV=3
+B: KEY=20 100000 0 0 0
+
+=== FB0 SYSFS ===
+bits_per_pixel: 32
+mode: modes: U:720x1280p-0
+stride: 2880
+virtual_size: 720,2560
+pan: 0,0
+=== SETTINGS & PROFILE ===
+{
+  "schema_version": 1,
+  "purpose": "C308L 生产实机配置：绑定 fbdev、Goodix 触控与只读版本文件，禁用 --test 与 Mock 演示",
+  "settings": {
+    "wizard_completed": true,
+    "sounds_enabled": false,
+    "disable_sound": true,
+    "telemetry_enabled": false,
+    "language": "en",
+    "log_level": "info",
+    "printers": {
+      "default": {
+        "name": "C308L Printer",
+        "printer_name": "C308L Printer",
+        "type": "Generic"
+      }
+    },
+    "display": {
+      "rotate": 270,
+      "dim_sec": 0,
+      "sleep_sec": 0
+    },
+    "input": {
+      "touch_device": "/dev/input/event1"
+    },
+    "tour": {
+      "completed": true,
+      "last_seen_version": 1
+    }
+  },
+  "environment": {
+    "HELIX_DISPLAY_BACKEND": "fbdev",
+    "HELIX_LOG_DEST": "file",
+    "HELIX_LOG_ROTATE_BYTES": "524288",
+    "HELIX_LOG_ROTATE_FILES": "2",
+    "HELIX_DIAGNOSTIC_UPLOADS": "0",
+    "HELIX_DISABLE_AUTO_UPDATES": "1",
+    "HELIX_HOT_RELOAD": "0",
+    "AISOC_VERSION_FILE": "/etc/printer-soc/version.json",
+    "HELIX_DATA_DIR": "/data/printer-soc/helix"
+  },
+  "arguments": [
+    "--skip-wizard",
+    "--skip-splash",
+    "--no-sound"
+  ],
+  "touch_name": "Goodix Capacitive TouchScreen"
+}
+8:  "_language_comment": "UI language code. Options: 'en' (English). Default: 'en'.",
+12:  "_sound_theme_comment": "Active sound theme. Loads from config/sounds/<name>.json. Options: 'default', 'minimal'. Default: 'default'.",
+14:  "_telemetry_enabled_comment": "Enable anonymous usage telemetry. Opt-in during setup wizard. Default: false.",
+16:  "_wifi_expected_comment": "Whether WiFi connectivity is expected. Used to show connection warnings. Set during wizard.",
+17:  "_wizard_completed_comment": "Whether the setup wizard has been completed. Set automatically after first-run wizard.",
+39:  "dark_mode": true,
+46:    "_bed_mesh_show_zero_plane_comment": "Show translucent reference plane at Z=0 in bed mesh 3D view. Helps visualize where nozzle touches bed. Default: true.",
+49:    "_drm_device_comment": "Override DRM device path (e.g., '/dev/dri/card1'). Empty string enables auto-detection. Pi 5 has multiple DRM cards: card0 (v3d, 3D only), card1 (DSI touchscreen), card2 (vc4/HDMI). Auto-detection finds the first with dumb buffer support and a connected display.",
+52:    "_sleep_backlight_off_comment": "Power off backlight during display sleep. Set false only on platforms where backlight power-off is verified to prevent wake-on-touch. When false, software overlay + FBIOBLANK make screen appear off while backlight stays powered. Default: true.",
+55:    "_theme_comment": "Color theme, loaded from assets/config/themes/defaults/<name>.json. Options: ayu, catppuccin, chatgpt, cupertino, dracula, everforest, gruvbox, helixscreen, kanagawa, material-design, midnight, nord, onedark, rose-pine, solarized, tokyonight, yami. Default: 'helixscreen'. Requires restart.",
+69:    "rotate": 270,
+74:    "theme": "helixscreen",
+98:    "_force_calibration_comment": "Force touch calibration on next startup. Automatically cleared after calibration completes. Default: false.",
+100:    "_scroll_throw_comment": "Scroll momentum decay rate (1-99). Higher = faster decay. Default LVGL is 10, we use 25 for better touchpad feel.",
+101:    "_touch_device_comment": "Override touch/pointer input device (e.g., '/dev/input/event1'). Empty string enables auto-detection. Auto-detection finds touch or pointer capable devices.",
+103:      "_comment": "Touch calibration coefficients. Set by calibration wizard or manually.",
+116:    "touch_device": "/dev/input/event1"
+142:  "language": "en",
+644:  "sound_theme": "default",
+664:  "theme": {
+693:  "wizard_completed": true
+-rw-r--r--    1 root     root        7.0M Jan  1 00:13 /tmp/fb0_cap.raw
