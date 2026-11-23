@@ -1,12 +1,12 @@
-# 已批准方案 v1.1 (helix_p0_experience_implementationplan_20261121_190357.md) 统一合并切片 SLICE-09；涉及 Bootloader 与跨板协议，显式启用 gpt-6.2-astra High 冷审。
+# 已批准方案 v1.3 (含 v1.2 S09-RES 资源评估与 v1.3 test_device_manager 竞态修复) 统一合并切片 SLICE-09；涉及 Bootloader 与跨板协议，显式启用 gpt-6.2-astra High 冷审。
 slice_id: "SLICE-09"
-revision: 1
+revision: 2
 batch_id: "BATCH-HELIX-P0-02"
 profile: "c308l-system"
 delivery_kind: "deliverable"
 depends_on: ["SLICE-08"]
 input_repositories: ["project-control", "agents", "printer-soc", "test_harness", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
-title: "SLICE-09 (P0-UX & Deferred Fixes)：r18b 现状走查 (UX-01)、默认中文与本地升级双入口/五态体验 (UX-02)、TH 0x17 急停锁存与解除 4B ACK 修复 (TH-ESTOP-01) 及 MC Bootloader 0x01 不驻留修复 (BOOT-MC-STAY-01)"
+title: "SLICE-09 (P0-UX, Deferred Fixes & S09-RES)：r18b 现状走查 (UX-01)、默认中文与本地升级双入口/五态体验 (UX-02)、TH 0x17 急停锁存与解除 4B ACK 修复 (TH-ESTOP-01)、MC Bootloader 0x01 不驻留修复 (BOOT-MC-STAY-01) 及跨端资源评估 (S09-RES)"
 plan_ref: "project-control/docs/planning/helix_p0_experience_implementationplan_20261121_190357.md"
 contract_ref: "project-control/contracts/c308l_platform_contract.yaml"
 requires_hil_immediately: true
@@ -37,10 +37,11 @@ subtasks:
       - "services/forward/modules/ota/ota_image.cpp"
       - "services/forward/forward_ota.cpp"
       - "tests/ota/test_ota_e2e.py"
+      - "tests/device_manager/twin/test_device_manager.cpp"
     diff_budget:
-      max_files: 20
-      protected_globs: ["*services/helixscreen/include/ui_panel_settings.h", "*services/helixscreen/src/ui/ui_panel_settings.cpp", "*services/helixscreen/src/system/cjk_font_manager.cpp"]
-      max_protected_lines: 45
+      max_files: 21
+      protected_globs: ["*services/helixscreen/include/ui_panel_settings.h", "*services/helixscreen/src/ui/ui_panel_settings.cpp", "*services/helixscreen/src/system/cjk_font_manager.cpp", "*tests/device_manager/twin/test_device_manager.cpp"]
+      max_protected_lines: 50
   - role: "ENG-MCU"
     repo: "mcu-p3"
     branch: "feat/soc-debug"
@@ -83,11 +84,12 @@ qa_commands:
 
 acceptance_criteria:
   - "UX-01 (S09-UX01)：刷入新候选前，INTEGRATOR 在 r18b 英文默认基线实板 (printer-soc@6f28023f) 从真实首页完成 CHK-01~CHK-06（版本、亮度、有线网络、升级入口发现性、打开页面、扫描固件与反馈），产出 UX01_WALKTHROUGH_REPORT.md 与截屏/日志证物并按 5 类标准如实归因卡点（业务仓 0 改动）"
-  - "UX-02 (S09-AP)：printer-soc@main 将 live-profile.json 默认语言设为 \"zh\" 并含 c308l_default_lang_migrated=1，c308l_services.py 与 printer-soc-panel 实现首启 .helix-fresh-install 及存量 r18b \"en\" 配置（含 .helixscreen/settings.json.backup）一次性默认中文迁移且保留用户后续手动切回 \"en\" 的选择；cjk_font_manager.cpp 在 HELIX_ENABLE_AISOC 下保持 needs_cjk()==true 防切回英文卸载字库；settings_panel.xml 新增一级「本地固件升级 (MC/TH)」与「关于」页原入口 100% 复用同一 OtaLocalOverlay 单例；Forward 补齐单节点 scan_state/scan_error 与顶层 policy 且扫描不因单文件缺失短路；全量 AISoC 文案消除硬编码“验签通过”误导且通过 LVGL 字库 100% 字形覆盖校验；配套产出同源可扫描 fw_mc.bin 与 fw_th.bin"
+  - "UX-02 (S09-AP)：printer-soc@main 将 live-profile.json 默认语言设为 \"zh\" 并含 c308l_default_lang_migrated=1，c308l_services.py 与 printer-soc-panel 实现首启 .helix-fresh-install 及存量 r18b \"en\" 配置（覆盖 /var/lib/helixscreen 与 $HOME/.helixscreen 下备份）一次性默认中文迁移且保留用户后续手动切回 \"en\" 的选择；cjk_font_manager.cpp 在 HELIX_ENABLE_AISOC 下保持 needs_cjk()==true 防切回英文卸载字库；settings_panel.xml 新增一级「本地固件升级 (MC/TH)」与「关于」页原入口 100% 复用同一 OtaLocalOverlay 单例；Forward 补齐单节点 scan_state/scan_error 与顶层 policy 且扫描不因单文件缺失短路，面板支持 MC 待恢复态单板恢复、权威同步 estop_latched 并拦截重扫 RPC 失败误报；test_device_manager.cpp 消解 500ms 身份轮询初始态竞态（零断言放宽）；全量 AISoC 文案消除硬编码“验签通过”误导且通过 LVGL 字库 100% 字形覆盖校验；配套产出同源可扫描 fw_mc.bin 与 fw_th.bin"
   - "TH-ESTOP-01 (S09-MCU)：mcu-p3@feat/soc-debug 修复 color-engine-mcu handle_th_motion_stop()，单播 0x17 锁存(0x01)与解除(0x00)均返回标准 18B (4B CMD_ACK)，解除(0x00)不触发 quickStop/清零目标温度/入队 M112，stop_mode>1 回 NACK 0x03，广播不回 ACK；test_twin45_th_debug 与 test_th_ota_and_bootid 双套件正负用例全绿"
   - "BOOT-MC-STAY-01 (S09-BOOT-MC)：boot/bootloadermc@soc_debug（严禁写 main）移除 handle_cmd_get_version() 中误置的 s_ota.stay_in_boot = 1U，确保普通只读 0x01/0x03 轮询下正常回复版本且 2.0s 窗口后自动跳 App，同时完整保留 UPG2 魔数、0x1D(action=2) 与 0x20 显式驻留及正常串口 OTA 恢复路径；交叉编译 <=128KB、零 USART6 耦合与单测全绿"
-  - "单候选四阶门禁（fast_gate <3s + integration_cmd + qa_runner c308l-system + Codex gpt-6.2-astra High 双轴冷审 0 BLOCKER）通过并登记 SW-Verified 后，按 Human Gate #2A（常规上板与触屏 OTA/急停）与独立 Human Gate #2B（MC Bootloader SWD 0x08000000 写刷）分闸执行真机验收，四项分别汇报结果、远端 40 位 SHA 与证据路径，缺测项诚实保留待验证"
+  - "S09-RES：按 §1.8/§2.6 产出 resource_assessment/RESOURCE_ASSESSMENT_REPORT.md 与原始证据：SW-Verified 阶段完成四端固件（MC App <=896KiB、TH App <=236KiB、MC Boot <=128KiB、TH Boot <=16KiB）基线与候选 ELF/Map/Flash/静态 RAM/栈预留只读核算对账，以及刷机前实板 r18b 60s 1Hz 空闲 CPU/内存与存储基线采样；候选 AP 实板空闲与双板 OTA 运行时采样及新 rootfs 包对账明确标为待 Human Gate #2A H1/H2 实测补齐（严禁把缺测或未跑实板项记为已通过）"
+  - "单候选四阶门禁（fast_gate <3s + integration_cmd 现场双板 clean pack 对账 + qa_runner c308l-system + Codex gpt-6.2-astra High 双轴冷审 0 BLOCKER）通过并登记 SW-Verified 后，按 Human Gate #2A（常规上板、触屏 OTA/急停及候选 AP 资源采样）与独立 Human Gate #2B（MC Bootloader SWD 0x08000000 写刷）分闸执行真机验收，五项分别汇报结果、远端 40 位 SHA 与证据路径，缺测项诚实保留待验证"
 
 eng_delivery_requirements:
-  - "ENG-AP 仅限修改 printer-soc@main 白名单内 <=20 个文件（受保护存量改动 <=45 行）；ENG-MCU 仅限修改 mcu-p3@feat/soc-debug 白名单内 <=3 个文件；ENG_BOOT_MC 仅限修改 boot/bootloadermc@soc_debug 白名单内 <=2 个文件（严禁切入或写入 main）；禁止触碰工作区外部路径（禁写 /tmp 构建目录，使用仓内被忽略或临时子目录并在提交前清理干净）。"
+  - "ENG-AP 仅限修改 printer-soc@main 白名单内 <=21 个文件（受保护存量改动 <=50 行）；ENG-MCU 仅限修改 mcu-p3@feat/soc-debug 白名单内 <=3 个文件；ENG_BOOT_MC 仅限修改 boot/bootloadermc@soc_debug 白名单内 <=2 个文件（严禁切入或写入 main）；INTEGRATOR 执行 UX-01 与 S09-RES 时业务仓零改动（max_files=0）；禁止触碰工作区外部路径。"
   - "所有新增或修改的自研 C/C++/Python 函数严格遵守 <=50 行、<=4 入参、全中文 docstring/逻辑注释、零伪状态/零改字节垫片（color-engine-mcu 额外遵守禁嵌套三目及单 if 逻辑运算符 <=2 个）；各自通过全套本地单测与 fast_gate 校验后线性 fetch/rebase/push 至各自目标分支，并回报最终 40 位 Commit SHA 与自检报告。"

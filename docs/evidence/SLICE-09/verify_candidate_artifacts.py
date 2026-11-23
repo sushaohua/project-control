@@ -44,8 +44,11 @@ def verify_artifacts(ws_root: pathlib.Path, min_mtime: float) -> int:
     sys.path.insert(0, str(ws_root / "printer-soc/tools"))
     ev = ws_root / "project-control/docs/evidence/SLICE-09"
     ux01 = ev / "ux01_r18b_walkthrough/UX01_WALKTHROUGH_REPORT.md"
+    res_doc = ev / "resource_assessment/RESOURCE_ASSESSMENT_REPORT.md"
     if not ux01.is_file() or ux01.stat().st_size <= 200:
         raise AssertionError("缺失有效的 UX01_WALKTHROUGH_REPORT.md")
+    if not res_doc.is_file() or res_doc.stat().st_size <= 200:
+        raise AssertionError("缺失有效的 S09-RES RESOURCE_ASSESSMENT_REPORT.md")
     man = json.loads((ev / "candidate_mcu_artifacts/artifacts_manifest.json").read_text(encoding="utf-8"))
     mc_head = subprocess.check_output(["git", "-C", str(ws_root / "mcu-p3"), "rev-parse", "HEAD"], text=True).strip()
     bt_head = subprocess.check_output(["git", "-C", str(ws_root / "boot/bootloadermc"), "rev-parse", "HEAD"], text=True).strip()

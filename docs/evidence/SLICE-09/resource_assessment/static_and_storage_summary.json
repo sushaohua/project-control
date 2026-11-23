@@ -1,0 +1,401 @@
+{
+  "toolchain": "arm-none-eabi-gcc (15:9-2019-q4-0ubuntu1) 9.2.1 20191025 (release) [ARM/arm-9-branch revision 277599]",
+  "ap_r18b_artifacts": {
+    "r18b_rootfs_tar_gz": {
+      "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261121_155747_r18b/docker_qa/artifacts/printer-soc-rootfs.tar.gz",
+      "size_bytes": 18788600,
+      "sha256": "76e9348b88fea16a91d76a1169e71488164be8f12d8564153ee8adf57d507347"
+    },
+    "r18b_rootfs_ubi": {
+      "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261121_155747_r18b/docker_qa/artifacts/rootfs.ubi",
+      "size_bytes": 68681728,
+      "sha256": "61dc843ed8c57c99cef56125a9f47139997d8060adb0223b548d3da72bf83fef"
+    },
+    "r18b_aml_upgrade_img": {
+      "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/run_20261121_155747_r18b/docker_qa/artifacts/aml_upgrade_package.img",
+      "size_bytes": 89827840,
+      "sha256": "936434bce2cdd60b7a6130a347d2bdb38bdc5ea363825f4f463937e1ecea04ce"
+    }
+  },
+  "mcu_targets": {
+    "mc_app_r18b": {
+      "berkeley_size": {
+        "text": 383532,
+        "data": 948,
+        "bss": 43636
+      },
+      "flash": {
+        "flash_origin": "0x8020000",
+        "flash_limit_bytes": 917504,
+        "max_flash_lma_end": "0x807de1c",
+        "flash_span_bytes": 384540,
+        "flash_headroom_bytes": 532964,
+        "load_segments": [
+          {
+            "vaddr": "0x8020000",
+            "paddr": "0x8020000",
+            "filesz": 383600,
+            "memsz": 383600
+          },
+          {
+            "vaddr": "0x20000000",
+            "paddr": "0x807da70",
+            "filesz": 940,
+            "memsz": 940
+          },
+          {
+            "vaddr": "0x200003b0",
+            "paddr": "0x807de1c",
+            "filesz": 0,
+            "memsz": 42084
+          },
+          {
+            "vaddr": "0x2000a814",
+            "paddr": "0x807de1c",
+            "filesz": 0,
+            "memsz": 8
+          },
+          {
+            "vaddr": "0x2000a81c",
+            "paddr": "0x2000a81c",
+            "filesz": 0,
+            "memsz": 1540
+          },
+          {
+            "vaddr": "0x2005fff0",
+            "paddr": "0x2005fff0",
+            "filesz": 0,
+            "memsz": 4
+          }
+        ]
+      },
+      "reconcile": {
+        "archived": {
+          "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/fw_mc_r18.bin",
+          "size_bytes": 384668,
+          "sha256": "1a259d259d478ef6f461932ad72c9f3a418f31d79bb224000226d8c2df7339c1"
+        },
+        "board_id": "0x43500001",
+        "payload_bytes": 384540,
+        "built_payload_bytes": 384540,
+        "raw_payload_diff_bytes": 5,
+        "normalized_machine_code_identical": true
+      }
+    },
+    "mc_app_s09": {
+      "berkeley_size": {
+        "text": 383532,
+        "data": 948,
+        "bss": 43636
+      },
+      "flash": {
+        "flash_origin": "0x8020000",
+        "flash_limit_bytes": 917504,
+        "max_flash_lma_end": "0x807de1c",
+        "flash_span_bytes": 384540,
+        "flash_headroom_bytes": 532964,
+        "load_segments": [
+          {
+            "vaddr": "0x8020000",
+            "paddr": "0x8020000",
+            "filesz": 383600,
+            "memsz": 383600
+          },
+          {
+            "vaddr": "0x20000000",
+            "paddr": "0x807da70",
+            "filesz": 940,
+            "memsz": 940
+          },
+          {
+            "vaddr": "0x200003b0",
+            "paddr": "0x807de1c",
+            "filesz": 0,
+            "memsz": 42084
+          },
+          {
+            "vaddr": "0x2000a814",
+            "paddr": "0x807de1c",
+            "filesz": 0,
+            "memsz": 8
+          },
+          {
+            "vaddr": "0x2000a81c",
+            "paddr": "0x2000a81c",
+            "filesz": 0,
+            "memsz": 1540
+          },
+          {
+            "vaddr": "0x2005fff0",
+            "paddr": "0x2005fff0",
+            "filesz": 0,
+            "memsz": 4
+          }
+        ]
+      },
+      "reconcile": {
+        "archived": {
+          "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/candidate_mcu_artifacts/fw_mc.bin",
+          "size_bytes": 384668,
+          "sha256": "320966b15cf2fb414a17cb90b4291023bb993e4922777eeace96a35056644915"
+        },
+        "board_id": "0x43500001",
+        "payload_bytes": 384540,
+        "built_payload_bytes": 384540,
+        "raw_payload_diff_bytes": 4,
+        "normalized_machine_code_identical": true
+      }
+    },
+    "th_app_r18b": {
+      "berkeley_size": {
+        "text": 75976,
+        "data": 852,
+        "bss": 17364
+      },
+      "flash": {
+        "flash_origin": "0x8004000",
+        "flash_limit_bytes": 241664,
+        "max_flash_lma_end": "0x8016c40",
+        "flash_span_bytes": 76864,
+        "flash_headroom_bytes": 164800,
+        "load_segments": [
+          {
+            "vaddr": "0x8004000",
+            "paddr": "0x8004000",
+            "filesz": 76020,
+            "memsz": 76020
+          },
+          {
+            "vaddr": "0x20000000",
+            "paddr": "0x80168f4",
+            "filesz": 844,
+            "memsz": 16660
+          },
+          {
+            "vaddr": "0x20004114",
+            "paddr": "0x8016c40",
+            "filesz": 0,
+            "memsz": 8
+          },
+          {
+            "vaddr": "0x20008000",
+            "paddr": "0x20008000",
+            "filesz": 0,
+            "memsz": 4
+          },
+          {
+            "vaddr": "0x20008010",
+            "paddr": "0x20008010",
+            "filesz": 0,
+            "memsz": 1536
+          }
+        ]
+      },
+      "reconcile": {
+        "archived": {
+          "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-08/fw_th_r18.bin",
+          "size_bytes": 76992,
+          "sha256": "f839e1d56f26ed47594c4846bc9fc797fdf3e219d718a79b45f398bb96c52e3e"
+        },
+        "board_id": "0x42300001",
+        "payload_bytes": 76864,
+        "built_payload_bytes": 76864,
+        "raw_payload_diff_bytes": 9,
+        "normalized_machine_code_identical": true
+      }
+    },
+    "th_app_s09": {
+      "berkeley_size": {
+        "text": 75952,
+        "data": 852,
+        "bss": 17364
+      },
+      "flash": {
+        "flash_origin": "0x8004000",
+        "flash_limit_bytes": 241664,
+        "max_flash_lma_end": "0x8016c28",
+        "flash_span_bytes": 76840,
+        "flash_headroom_bytes": 164824,
+        "load_segments": [
+          {
+            "vaddr": "0x8004000",
+            "paddr": "0x8004000",
+            "filesz": 75996,
+            "memsz": 75996
+          },
+          {
+            "vaddr": "0x20000000",
+            "paddr": "0x80168dc",
+            "filesz": 844,
+            "memsz": 16660
+          },
+          {
+            "vaddr": "0x20004114",
+            "paddr": "0x8016c28",
+            "filesz": 0,
+            "memsz": 8
+          },
+          {
+            "vaddr": "0x20008000",
+            "paddr": "0x20008000",
+            "filesz": 0,
+            "memsz": 4
+          },
+          {
+            "vaddr": "0x20008010",
+            "paddr": "0x20008010",
+            "filesz": 0,
+            "memsz": 1536
+          }
+        ]
+      },
+      "reconcile": {
+        "archived": {
+          "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/candidate_mcu_artifacts/fw_th.bin",
+          "size_bytes": 76968,
+          "sha256": "904ceee06e31729b98fe774b3845d1dc1b540622c44d6d0db3a3fa85a0aa7624"
+        },
+        "board_id": "0x42300001",
+        "payload_bytes": 76840,
+        "built_payload_bytes": 76840,
+        "raw_payload_diff_bytes": 10,
+        "normalized_machine_code_identical": true
+      }
+    },
+    "mc_boot_r18b": {
+      "berkeley_size": {
+        "text": 37364,
+        "data": 184,
+        "bss": 19272
+      },
+      "flash": {
+        "flash_origin": "0x8000000",
+        "flash_limit_bytes": 131072,
+        "max_flash_lma_end": "0x80092e0",
+        "flash_span_bytes": 37600,
+        "flash_headroom_bytes": 93472,
+        "load_segments": [
+          {
+            "vaddr": "0x8000000",
+            "paddr": "0x8000000",
+            "filesz": 37424,
+            "memsz": 37424
+          },
+          {
+            "vaddr": "0x20000000",
+            "paddr": "0x8009230",
+            "filesz": 176,
+            "memsz": 7160
+          },
+          {
+            "vaddr": "0x20001bf8",
+            "paddr": "0x80092e0",
+            "filesz": 0,
+            "memsz": 12288
+          }
+        ]
+      },
+      "reconcile": {
+        "archived": {
+          "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/candidate_mcu_artifacts/bootloader_3e01c00_rollback.bin",
+          "size_bytes": 37600,
+          "sha256": "1082c318fee4aecb175921290b773137970c7501b21ebd26abf32b887719d9df"
+        },
+        "payload_bytes": 37600,
+        "built_payload_bytes": 37600,
+        "raw_payload_diff_bytes": 6,
+        "normalized_machine_code_identical": true
+      }
+    },
+    "mc_boot_s09": {
+      "berkeley_size": {
+        "text": 37360,
+        "data": 184,
+        "bss": 19272
+      },
+      "flash": {
+        "flash_origin": "0x8000000",
+        "flash_limit_bytes": 131072,
+        "max_flash_lma_end": "0x80092dc",
+        "flash_span_bytes": 37596,
+        "flash_headroom_bytes": 93476,
+        "load_segments": [
+          {
+            "vaddr": "0x8000000",
+            "paddr": "0x8000000",
+            "filesz": 37420,
+            "memsz": 37420
+          },
+          {
+            "vaddr": "0x20000000",
+            "paddr": "0x800922c",
+            "filesz": 176,
+            "memsz": 7160
+          },
+          {
+            "vaddr": "0x20001bf8",
+            "paddr": "0x80092dc",
+            "filesz": 0,
+            "memsz": 12288
+          }
+        ]
+      },
+      "reconcile": {
+        "archived": {
+          "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/candidate_mcu_artifacts/bootloader.bin",
+          "size_bytes": 37596,
+          "sha256": "e52289e6505db06b9b60b2b7ea8f2b39b1e58a9d94ce7742ea6c08afc529d3d4"
+        },
+        "payload_bytes": 37596,
+        "built_payload_bytes": 37596,
+        "raw_payload_diff_bytes": 5,
+        "normalized_machine_code_identical": true
+      }
+    },
+    "th_boot_shared": {
+      "berkeley_size": {
+        "text": 9348,
+        "data": 12,
+        "bss": 3836
+      },
+      "flash": {
+        "flash_origin": "0x8000000",
+        "flash_limit_bytes": 16384,
+        "max_flash_lma_end": "0x8002490",
+        "flash_span_bytes": 9360,
+        "flash_headroom_bytes": 7024,
+        "load_segments": [
+          {
+            "vaddr": "0x8000000",
+            "paddr": "0x8000000",
+            "filesz": 9356,
+            "memsz": 9356
+          },
+          {
+            "vaddr": "0x20000000",
+            "paddr": "0x800248c",
+            "filesz": 4,
+            "memsz": 2300
+          },
+          {
+            "vaddr": "0x200008fc",
+            "paddr": "0x8002490",
+            "filesz": 0,
+            "memsz": 1540
+          }
+        ]
+      },
+      "reconcile": {
+        "archived": {
+          "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/resource_assessment/.tmp_baseline_build/bootth_shared/build/bootloaderth.bin",
+          "size_bytes": 9360,
+          "sha256": "2d28f40544f8e38a1495d7df082f2535c2f01beb6eaf2cfa55506a6d43d355a3"
+        },
+        "payload_bytes": 9360,
+        "built_payload_bytes": 9360,
+        "raw_payload_diff_bytes": 0,
+        "normalized_machine_code_identical": true
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "role": "ARCH",
+  "action": "spawn",
+  "main_session": "Codex 01a20626-e8ae-77e0-a48e-ddd69ae6511e",
+  "requested_model": "inherit",
+  "effective_model": "unverified",
+  "fallback_reason": "Codex 专用配置尚未核实，原生子会话继承主会话模型。",
+  "member_name": "/root/arch",
+  "ts": "2026-11-23T10:21:27+08:00"
+}

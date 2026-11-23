@@ -1,0 +1,10 @@
+{
+  "role": "ARCH",
+  "action": "reuse",
+  "main_session": "Antigravity-CLI 72648668-4ad0-4661-9f70-1b3ca5d190b9",
+  "requested_model": "gemini-4-carbon-high",
+  "effective_model": "gemini-4-carbon-high",
+  "fallback_reason": "",
+  "member_name": "arch",
+  "ts": "2026-11-23T12:54:30+08:00"
+}

@@ -1,0 +1,29 @@
+{
+  "slice_id": "SLICE-09",
+  "batch_id": "BATCH-HELIX-P0-02",
+  "profile": "c308l-system",
+  "commits": {
+    "printer-soc": "7dee19eb9c6db06060eac98f2bd30fdcb35ba9b1",
+    "mcu-p3": "112842cb42146e466f7001ede30096bd0125c385",
+    "boot/bootloadermc": "d2ef9fb6955eba5f7992b743642919e4e712af83",
+    "project-control": "a36845855c71067bf6079730130117b812f6ad36",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "fb1409be7ad5586c701df586553d7f5b67bc2b43",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "status": "FAILED",
+  "stage": "docker_qa",
+  "reason": "Docker 隔离沙箱测试失败",
+  "next_step": "查阅 docker_runtime_log 与 server_verdict_json 修复失败项",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r02_retry/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r02_retry/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r02_retry/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r02_retry/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r02_retry/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r02_retry/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r02_retry/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r02_retry/docker_qa/checkout.log",
+    "build_plan_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r02_retry/docker_qa/artifacts/build-plan.json"
+  }
+}

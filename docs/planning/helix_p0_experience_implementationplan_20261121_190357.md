@@ -8,6 +8,10 @@
 | `v0.2` | `2026-11-21 19:18:00` | `AI (Antigravity-CLI / PM / gemini-4-neon-high)` | 按用户确认将 `UX-01`、`UX-02`、`TH-ESTOP-01`、`BOOT-MC-STAY-01` 四项合并为下一轮统一交付；完成第 1 部分产品目标、用户流程、DES-UI 入口与状态文案规范、`UX-01` 走查清单与四项可观察验收条件，预留第 2 部分交 ARCH 原地合成技术设计 | 待 ARCH 技术核对后交用户审批 |
 | `v1.0` | `2026-11-21 19:27:00` | `AI (Antigravity-CLI / ARCH / gemini-4-carbon-high)` | 完成源码与 `graphify` AST 物理取证，逐项消解 `OI-01`~`OI-05`；原地合成第 2 部分（`§2.1`~`§2.5`：影响仓库与精确文件白名单、跨仓调用链与协议/字库/分区契约推演、`Design-It-Twice` 接缝比选与分仓 `Diff Budget`、`SLICE-09` 切片规格、四阶门禁、单台架顺序 HIL 与四项分报/回滚预案） | 待用户审批 (Human Gate #1) |
 | `v1.1` | `2026-11-23 09:16:00` | `AI (Antigravity-CLI / ARCH / gemini-4-carbon-high)` | 合入用户批准 `v1.0` 时追加的小修需求“把 Helix 默认语言改成中文 (`"zh"`)”：物理核实语言键值真值（`"zh"`）、`ui_xml/translations/zh.xml` 全量汉字 100% 字库覆盖及中英文菜单映射；设计 `/data/printer-soc/helix` 存量 `r18b` 配置一次性默认中文迁移机制（忠实保留用户后续手动切回英文的选择）；同步更新第 1/2 部分导航描述、`printer-soc@main` 文件白名单（`15` ➔ `20` 文件）、`Diff Budget`、`S09-AP` 契约与验收判据 | **已批准执行**（`2026-11-23 09:22` 用户“嗯，批准。”；常规上板过 `Human Gate #2A`，MC Bootloader SWD 写刷单独过 `Human Gate #2B`） |
+| `v1.2` | `2026-11-23 10:23:31` | `AI (Codex / PM)`、`AI (Codex / ARCH)` | 按用户要求新增第五项 `S09-RES`。以 `r18b` 对比 SLICE-09 候选，明确 AP 运行采样、MC/TH 静态容量核算与证据验收。 | **已批准执行**（`2026-11-23 13:01` 用户“全部批准。”） |
+| `v1.3` | `2026-11-23 12:56:00` | `AI (Antigravity-CLI / ARCH / gemini-4-carbon-high)` | 针对容器沙箱双套 `ctest` 复现的 `test_device_manager.cpp:1427` `500ms` 身份轮询时序竞态，将 `tests/device_manager/twin/test_device_manager.cpp` 纳入 `printer-soc@main` 白名单（`20` ➔ `21` 文件，`protected_globs` 新增该文件、`max_protected_lines` `45` ➔ `50`），在 `main()` 中将纯只读初始状态检查 `test_rpc_get_version_info` 提前至 `test_rpc_get_snapshot` 之后执行（零断言削弱）；100% 原样保留 `v1.2` 与 `§1.8`、`§2.6` 内容 | **已批准执行**（`2026-11-23 13:01` 用户“全部批准。”） |
+
+> `v1.0` ~ `v1.3` 已全部获用户批准执行；本轮合并交付包含 `UX-01`、`UX-02`（含默认中文 `"zh"` 与存量迁移）、`TH-ESTOP-01`、`BOOT-MC-STAY-01` 及第五项 `S09-RES` 资源评估。
 
 ---
 
@@ -210,6 +214,16 @@
 
 ---
 
+### 1.8 `S09-RES`｜资源评估（`v1.2` 增量，已批准）
+
+用户要求为 SLICE-09 增加资源评估。建议以 `SLICE-08 r18b` 为基线评估本轮最终候选，给出资源占用、可比差值和已知容量余量，作为第五项交付结果。AP 覆盖整机和 Helix、Forward 等生产服务的 CPU、内存，以及系统、数据和固件暂存所用存储。MC、TH 覆盖 App 和配套 Bootloader 的 Flash、静态 RAM 及栈预留。
+
+AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `UX-02` 的双板 OTA。基线优先采用版本和工况可核对的现有记录。候选 OTA 采样与原验收共用一次升级事务。MC、TH 的静态评估使用对应版本的正式构建产物。通信吞吐、协议延迟和 CRC16 仍由[通信性能测试方案](printer_performance_implementationplan_20261120_171756.md)单独评审。
+
+**完成条件**为提交一份可追溯的资源表及原始证据，逐项给出版本、工况、取数来源、绝对值和可比差值，按已有的分区或链接上限计算余量。发现超限时标出对应版本、资源和上限。缺少同工况基线、有效采样或实际栈峰值时，明确标出缺项及其对结论的影响。AP 实板数据沿用 §2.5.2 的授权边界和单台架顺序。
+
+---
+
 ## 第 2 部分：技术架构、调用链、分仓白名单与切片规划（ARCH）
 
 ### 2.1 影响仓库、锁定分支与精确文件清单（经 AST / 源码物理核实）
@@ -218,7 +232,7 @@
 
 | 仓库路径 (`workspace.json`) | 锁定分支 | 基线 Commit (`SLICE-08 r18b`) | 本轮权限属性 | 唯一责任角色 | 说明与分支红线 |
 | --- | --- | --- | :---: | --- | --- |
-| `printer-soc` | `main` | `6f28023f7f1b774d181fc4ba59d3c378f260bfc1` | **读写（限白名单 20 文件）** | `ENG-AP` | 落地 `UX-02`：默认中文（`"zh"`）与存量 `/data` 一次性迁移、`设置 (Settings)` 一级入口、OTA 单节点扫描状态/策略透传、五态文案纠偏与 CJK 运行时字库保底挂载 |
+| `printer-soc` | `main` | `6f28023f7f1b774d181fc4ba59d3c378f260bfc1` | **读写（限白名单 21 文件）** | `ENG-AP` | 落地 `UX-02`：默认中文（`"zh"`）与存量 `/data` 一次性迁移、`设置 (Settings)` 一级入口、OTA 单节点扫描状态/策略透传、五态文案纠偏、CJK 运行时字库保底挂载及 `test_device_manager` 初始版本查询时序竞态消解 |
 | `mcu-p3` | `feat/soc-debug` | `a64bffbf1a0c5cbc2fe96b51632098042697878b` | **读写（限白名单 3 文件）** | `ENG-MCU` | 落地 `TH-ESTOP-01`：TH App `0x17` 锁存/解除统一回 `4B ACK`、消除解除误动作与双单测套件对齐 |
 | `boot/bootloadermc` | `soc_debug` | `3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4` | **读写（限白名单 2 文件）** | `ENG_BOOT_MC` | 落地 `BOOT-MC-STAY-01`：移除 `0x01` 误置 `stay_in_boot`；**严格锁定 `soc_debug`，绝对严禁写入 `main`** |
 | `boot/bootloaderth` | `soc_debug` | `1a0351363cf7b9cbc0aa6919b4afc6be61561152` | **只读输入** | — | 本轮零改动；作为同源版本身份与 OTA 协议不变锚点 |
@@ -228,7 +242,7 @@
 
 #### 2.1.2 三仓精确修改文件清单（白名单外零触碰）
 
-1. **`printer-soc@main`（`ENG-AP`，共 20 个文件）**：
+1. **`printer-soc@main`（`ENG-AP`，共 21 个文件）**：
    - **默认中文语言配置、存量 `/data` 一次性迁移与打包单测（5 个）**：
      - `services/helixscreen/platform/c308l/live-profile.json`：将 `settings.language` 由 `"en"` 改为 **`"zh"`**，并写入 `"c308l_default_lang_migrated": 1`（由 `package.py:write_config()` 合并入只读包内 `config/settings.json`）。
      - `tools/c308l_services.py`：扩展 `prepare_panel_settings()`（拆分为 `<=50` 行、`<=4` 入参、全中文 docstring 的小辅助函数）：① 首次从 `assets/config/settings.json` 播种时同步创建 `panel_config/.helix-fresh-install`（对齐 `Config::init()` `config.cpp:1834-1844` 防旧备份回灌）；② 当 `assets/config/settings.json` 声明 `"language": "zh"` 且持久化 `settings.json`（及同级父目录下 `$HOME/.helixscreen/settings.json.backup` 滚动备份）尚未含 `"c308l_default_lang_migrated"` 时，若原 `language` 为 `"en"` 或空则一次性迁移为 `"zh"` 并写入 `"c308l_default_lang_migrated": 1`；此后用户在界面手动切回 `"en"` 时，`Config::save()` 原样保留 JSON 中的 `"c308l_default_lang_migrated": 1`，后续重启绝不覆盖用户手动选择。
@@ -254,6 +268,8 @@
      - `services/forward/modules/ota/ota_image.cpp`：`ota_load_image()` 精确写入单节点 `scan_state`（`"READY"` / `"MISSING"` / `"INVALID"` / `"SIGNATURE_INVALID"`）与 `scan_error`（`""` / `"FILE_NOT_FOUND"` / `"STAT_OR_SIZE_INVALID"` / `"BOARD_ID_MISMATCH"` / `"TRAILER_OR_HASH_INVALID"` / `"PACKAGE_SIGNATURE_INVALID"`）。
      - `services/forward/forward_ota.cpp`：`build_snapshot()` 输出顶层 `"policy"`（由 `AISOC_OTA_INTEGRITY_ONLY_HIL` 编译期决定 `"integrity-only-hil"` 或 `"signature-required"`）及 `mc`/`th` 子对象的 `"scan_state"`、`"scan_error"`；`prepare_images()` 在 `operation == 0U`（扫描）时完整遍历 `rt->mask` 中全部请求节点后再汇总终态，消除 `fw_mc.bin` 缺失时短路跳过 `fw_th.bin` 扫描的缺陷。
      - `tests/ota/test_ota_e2e.py`：新增单节点缺包扫描（如仅存合法 `fw_th.bin` 缺 `fw_mc.bin` 时 `th.valid==true`、`th.scan_state=="READY"`、`mc.scan_state=="MISSING"`）及 `policy` 字段断言，保持既有全量场景通过。
+   - **DeviceManager Twin 单测初始状态时序竞态消解（1 个）**：
+     - `tests/device_manager/twin/test_device_manager.cpp`：`device_manager_service.cpp:358-370` 的 `refresh_identity()` 每 `500ms` 轮转探测一个节点（`t=0ms` 查 `MC`、`t=500ms` 查 `TH`），无 mock 响应时将节点状态由初始 `"OFFLINE"` 置为 `"QUERY_FAILED"`；`SLICE-08` 在第 `1689` 行插入 `test_dds_maintenance_enter_and_exit_recovery` 后，执行至第 `1692` 行 `test_rpc_get_version_info(&env.cli_conn)` 的累计耗时恰跨过 `400~550ms` 临界点，一旦超过 `500ms` 双节点均变为 `"QUERY_FAILED"` 致第 `1427` 行 `strstr(ver_json, "\"status\":\"OFFLINE\"")` 偶发失败。在 `main()` 中将该纯只读初始状态断言提前至第 `1687` 行 `test_rpc_get_snapshot(&env.cli_conn)` 之后（先于耗时的 DDS 匹配步骤执行），保持 `"status":"OFFLINE"` 与 `"valid":false` 初始状态校验零削弱。
 2. **`mcu-p3@feat/soc-debug`（`ENG-MCU`，共 3 个文件）**：
    - `color-engine-mcu/io_toggle/src/app/minimc_proto.c`：修复 `handle_th_motion_stop()`（第 642–672 行）。
    - `color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c`：同步修正 `test_twin48_filament_and_stop()` 第 1054 行旧 `0B ACK` 长度断言（`14U` ➔ `18U` 并校验 `4B CMD_ACK` 载荷尾两字节为 `0x0000`）。
@@ -341,7 +357,7 @@
 | 责任角色 | 目标仓库与分支 | `max_files` | 受保护存量 `protected_globs` | `max_protected_lines` | 预计净改动规模与编码门禁约束 |
 | --- | --- | :---: | --- | :---: | --- |
 | `INTEGRATOR`（`UX-01`） | 全业务仓只读 | **`0`** | — | `0` | 仅向 `project-control/docs/evidence/SLICE-09/ux01_r18b_walkthrough/` 归档走查证物 |
-| `ENG-AP`（`UX-02`） | `printer-soc@main` | **`20`** | `["*services/helixscreen/include/ui_panel_settings.h", "*services/helixscreen/src/ui/ui_panel_settings.cpp", "*services/helixscreen/src/system/cjk_font_manager.cpp"]` | **`45`** | 受保护存量改动约 `22` 行；其余 17 个自研/配置/脚本/单测文件改动约 `255` 行（已实测 `c308l_services.py`、`test_tools.py`、`test_product_package.py`、`test_ota_e2e.py` 均原生通过 `fast_gate.py`），强制全中文注释/docstring、函数 $\le 50$ 行、入参 $\le 4$ 个 |
+| `ENG-AP`（`UX-02`） | `printer-soc@main` | **`21`** | `["*services/helixscreen/include/ui_panel_settings.h", "*services/helixscreen/src/ui/ui_panel_settings.cpp", "*services/helixscreen/src/system/cjk_font_manager.cpp", "*tests/device_manager/twin/test_device_manager.cpp"]` | **`50`** | 受保护存量改动约 `26` 行（含 `test_device_manager.cpp` 用例顺序调整约 `3~4` 行）；其余 17 个自研/配置/脚本/单测文件改动约 `255` 行（已实测 `c308l_services.py`、`test_tools.py`、`test_product_package.py`、`test_ota_e2e.py` 均原生通过 `fast_gate.py`），强制全中文注释/docstring、函数 $\le 50$ 行、入参 $\le 4$ 个 |
 | `ENG-MCU`（`TH-ESTOP-01`） | `mcu-p3@feat/soc-debug` | **`3`** | `[]`（全量接受静态门禁扫描） | `0` | 3 文件合计改动约 `45` 行；须同时满足 `fast_gate.py` 与 `color-engine-mcu/tests/run_tests.sh`（禁嵌套三目、单 `if` 逻辑运算符 $\le 2$ 个、函数 $\le 50$ 行、入参 $\le 4$ 个） |
 | `ENG_BOOT_MC`（`BOOT-MC-STAY-01`） | `boot/bootloadermc@soc_debug` | **`2`** | `[]`（全量接受静态门禁扫描） | `0` | 2 文件合计改动约 `35` 行；严格锁定 `soc_debug` 分支（禁写 `main`），满足 `<=128KB` Flash 预算、零 `USART6` 耦合及函数 $\le 50$ 行 / 入参 $\le 4$ 个 |
 
@@ -381,6 +397,8 @@
        - `static std::string format_ota_pkg(const char* label, const helix::aisoc::AisocOtaNodeInfo& info);`
        - `static std::string format_ota_phase(const helix::aisoc::AisocOtaStatus& st);`
        - 按 §2.2.2 字库已核验文案表渲染五态与下一步提示；`handle_start_upgrade()` 校验所选掩码对应节点的 `st.mc.valid` / `st.th.valid` 与非空 `sha256`，支持单选已就绪节点发起单板升级，并在勾选缺包/失效节点时弹出明确阻断 Toast。
+     - `tests/device_manager/twin/test_device_manager.cpp`：
+       - 在 `main()` 中将纯只读初始版本状态校验 `TEST_STEP([&]() { return test_rpc_get_version_info(&env.cli_conn); });` 提前至 `test_rpc_get_snapshot(&env.cli_conn)` 之后执行，消除 `refresh_identity()` `500ms` 双节点轮询窗口引起的时序偶发失败，保持 `test_rpc_get_version_info()` 内部 `"status":"OFFLINE"` 与 `"valid":false` 断言不变。
    - **本地自检命令**：CMake 构建 `build_ps` 与 `build_ps_hil` ➔ 运行 `ctest`、`test_ota_e2e.py`（双策略）、`test_aisoc_p0`、`test_tools.py`、`test_product_package.py` 及 AISoC XML/C++ 中文字符 `.bin` 字形 100% 覆盖检查。
 3. **`S09-MCU`｜TH App `0x17` 锁存/解除 `4B ACK` 与解除语义修复（`ENG-MCU`，`mcu-p3@feat/soc-debug`）**：
    - **精确接口与行为契约**：
@@ -404,7 +422,7 @@
 
 1. **第 1 阶 `fast_gate.py`（`<3s` 机械门禁）**：
    - 校验 `minimc_v2_contract.yaml` 与 `c308l_platform_contract.yaml` 同步零漂移；
-   - 强校验 `printer-soc@main`（$\le 20$ 文件，受保护改动 $\le 45$ 行）、`mcu-p3@feat/soc-debug`（$\le 3$ 文件）、`boot/bootloadermc@soc_debug`（$\le 2$ 文件，严禁 `main` 分支）路径白名单、全中文注释/docstring、自研函数 $\le 50$ 行 / $\le 4$ 入参、零未核实占位标记与零改字节垫片。
+   - 强校验 `printer-soc@main`（$\le 21$ 文件，受保护改动 $\le 50$ 行）、`mcu-p3@feat/soc-debug`（$\le 3$ 文件）、`boot/bootloadermc@soc_debug`（$\le 2$ 文件，严禁 `main` 分支）路径白名单、全中文注释/docstring、自研函数 $\le 50$ 行 / $\le 4$ 入参、零未核实占位标记与零改字节垫片。
 2. **第 2 阶 `integration_cmd`（宿主机跨仓全量合龙 + 同源固件包构建固化）**：
    - 运行 `printer-soc` 打包/工具单测（含 `live-profile.json` 默认 `"zh"` 与存量配置一次性迁移单测）+ **AISoC XML/C++ 字符串相对 `noto_sans_cjk_*.bin` + `noto_sans_*.c` 100% 字形覆盖校验脚本**；
    - 运行 `test_harness/hil/tests/test_helix_screen_integration.py --self-test`；
@@ -459,4 +477,20 @@
   2. **MC / TH App 侧回滚（`mcu-p3`）**：保留 `SLICE-08` 已验证的 `fw_mc_r18.bin` 与 `fw_th_r18.bin` 原件；若新 App 出现异常，将其拷入 `/run/printer-soc/firmware/` 开启 `allow_reflash=true` 通过串口 OTA 直接回刷至 `mcu-p3@a64bffbf`（即使单板滞留 Bootloader，Bootloader 的 `0x20` 串口升级恢复路径仍可直接接收回刷）。
   3. **MC Bootloader 侧回滚（`boot/bootloadermc`，仅限 `Human Gate #2B` 执行后触发）**：烧录新 `bootloader.bin` 前，预先基于基线 `boot/bootloadermc@3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4` 编译留存黄金回滚镜像 `bootloader_3e01c00.bin` 并记录 SHA-256；一旦阶段 H4 出现启动或跳转异常，立即在同一 ST-Link 探针（`0483:3748:75003800120000334C41534E`）上执行 `probe-rs download --chip AT32F435VGT7 --binary-format bin --base-address 0x08000000 bootloader_3e01c00.bin` 恢复 `3e01c00` 原貌。
 
+### 2.6 `S09-RES`｜资源评估取证（`v1.2` 增量，已批准）
+
+`INTEGRATOR` 负责收集，AP、MC、TH 和 Bootloader 对应 Owner 复核测量口径。输入为 SLICE‑08 `r18b` 和 SLICE‑09 同一最终候选的完整 Git SHA、制品 SHA‑256 及构建配置。方案的 `v1.1` 审查基线可从 `project-control@8c455bf` 取回，当前 `r01` 四项门禁按该版本核对。评估复用只读采样与现有构建制品。新增固件埋点可量出 MCU 执行时间或实际栈峰值，但会改变待测固件及观测开销，留待单独评估。业务仓 Diff Budget 为 `max_files=0`、`max_protected_lines=0`。
+
+| 端点 | 经源码、图谱核对的入口 | 取数来源与口径 |
+| --- | --- | --- |
+| AP | `printer-soc/tools/c308l_services.py:main() → query_status()`，`launch() → identity()` 经源码核实。图谱未抽取这些 Python 边。 | 采样前后执行 `printer-soc status`，根据 `controller`、`children` 的 PID、`start_ticks`、可执行文件及存活状态核对身份。由 `cat /proc/uptime /proc/stat /proc/meminfo` 与 `cat /proc/<pid>/stat /proc/<pid>/status` 采集样本。系统 CPU 以总 tick 增量扣除 idle 和 iowait 后的占比表示，服务 CPU 以 `utime+stime` 增量占整机总 tick 增量的百分比表示，总 tick 不重复加 guest。内存报各服务 `VmRSS` 观测峰值和整机 `MemAvailable` 观测最低值，单位 KiB。进程代次变化时分段，RSS 保留各进程独立值。 |
+| AP 存储 | `printer-soc/tools/release_product.py` 生成发布清单，既有 Docker QA 归档 rootfs 包。 | `df -k / /data /run/printer-soc/firmware` 配合 `/proc/self/mountinfo` 逐挂载报使用量和可用量（KiB），固件包暂存目录在同一挂载时共用容量。用 `stat -c %s` 与 `sha256sum` 记录 rootfs 包和同源固件包字节数及身份，压缩包大小单列。 |
+| MC App | `mcu-p3/motion-controller-mcu/project/src/minimc_proto.c:drain_ap_rx() → handle_ap_frame() → handle_th_relay_req() → relay_frame()` 为图谱 `EXTRACTED` 边，已对照源码。 | `motion-controller-mcu/Makefile` 的 `make pack` 产出 `build/Marlin_AT32.elf`、`build/template.map`，链接规则见 `motion-controller-mcu/AT32F435xG_FLASH.ld`，Flash 上限 896 KiB。 |
+| TH App | `mcu-p3/color-engine-mcu/io_toggle/src/app/minimc_proto.c:dispatch_th_command() → handle_th_motion_stop()` 为图谱 `EXTRACTED` 边，已对照源码。 | `color-engine-mcu/io_toggle/Makefile` 的 `make pack` 对应 `build/fw_th.elf`、`build/fw_th.map`，链接规则见该目录 `libraries/cmsis/cm4/device_support/startup/gcc/linker/AT32F423xC_FLASH.ld`，Flash 上限 236 KiB，`RAM`、`BOOT_IPC` 与 `RAM_STACK` 独立核算。 |
+| MC Bootloader | `boot/bootloadermc/bootloader/src/main.c:main() → handle_no_disk_timeout() → jump_to_app()` 为图谱 `EXTRACTED` 边，已对照源码。 | 复用 `tests/run_tests.sh` 的 `make all` 产物 `build/bootloader.elf`、`build/bootloader.map` 和 `build/bootloader.bin`。链接规则见 `cmake/linker/at32f435_bootloader.ld`，Flash 上限 128 KiB。 |
+| TH Bootloader | `boot/bootloaderth/src/main.c:main() → boot_check_and_wait_handshake()` 为图谱 `EXTRACTED` 边，已对照源码。 | 复用锁定提交 `Makefile` 的 `make all` 产物 `build/bootloaderth.elf`、`build/bootloaderth.map` 和 `build/bootloaderth.bin`。链接规则见 `ldscripts/AT32A423xC_FLASH.ld`，Flash 上限 16 KiB。基线与候选若是同一锁定构建，则共用一份静态证据。 |
+
+- **采样顺序**：优先采用已有且工况可匹配的 `r18b` 记录。台架仍运行 `r18b` 且已有采样授权时，在部署前补采空闲窗口。AP 在 H1 的候选稳定空闲和 H2 的现有双板 OTA 事务中以约 1 Hz 采样，空闲建议持续 60 秒。用主机日志时间和板端 `/proc/uptime` 对齐窗口，以 `task_id` 与 `forward.log` 对齐 OTA 阶段。记录日志和跟踪开关、启用服务、采样覆盖时段与板上版本。复用原验收操作，采样结束即退出。
+- **MCU 只读核算**：在锁定制品上执行 `arm-none-eabi-size -A <ELF>`、`arm-none-eabi-objdump -h <ELF>`、`arm-none-eabi-readelf -lW <ELF>`，与 map 的 `Memory Configuration`、段表及 `_Min_Stack_Size` 对账。按分区首址至最高有效 Flash LMA 末址计算占用跨度（含 `.data` 的 Flash 装载映像与可烧录间隙），以实际链接/布局上限减去占用得出余量。App 经 `validate_atsg_base(..., check_crc=True)` 解析 `fw_mc.bin` / `fw_th.bin`，用净载核对 ELF 的 Flash 映像，ATSG 包总字节单列。各 RAM bank 按 VMA 分别统计静态区、对齐和编译期预留，独立注明 `_Min_Stack_Size`、堆预留及 `BOOT_IPC`，避免重复扣除。运行时 MCU CPU 和实际栈峰值在没有可核实观测时记为未测。缺少原制品时先比对锁定提交、工具链、配置及重建产物，重建差异和未能建立的关联如实记录。
+- **交付与验收**：原始采样、ELF 段/链接映射摘录、制品身份及资源表统一归档于 `project-control/docs/evidence/SLICE-09/resource_assessment/`。表中逐项记录基线、候选、单位、工况、差值、既定容量余量和证据来源。准出复核时，PID 换代、制品身份不符、工况不匹配或样本缺失均标出相应缺测或不可比项，越分区或 RAM bank 上限列明实际值、上限及超额；不把缺测记为通过。没有既定阈值的观测项仅记数值和样本覆盖。若采样干扰 HIL，暂停采样并保留已有证据，恢复按 §2.5.3 执行。台架采样沿用 §2.5.2 的授权与顺序，无额外部署、刷写或压测步骤。
 

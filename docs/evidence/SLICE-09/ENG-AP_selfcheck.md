@@ -3,21 +3,22 @@
 - **角色身份**: `ENG-AP`
 - **业务仓库与分支**: `printer-soc` (`main`)
 - **基线 Commit SHA**: `6f28023f7f1b774d181fc4ba59d3c378f260bfc1`
-- **候选 Commit SHA (本地与 `origin/main` 读回一致)**: `7dee19eb9c6db06060eac98f2bd30fdcb35ba9b1`（线性演进：`c25cbfce` ➔ `5100e4a2` ➔ `7dee19eb`）
-- **对照 SSoT 方案**: `project-control/docs/planning/helix_p0_experience_implementationplan_20261121_190357.md` (`v1.1`)
-- **对照切片定义**: `project-control/slices/SLICE-09.yaml`
+- **候选 Commit SHA (本地与 `origin/main` 读回一致)**: `bc0ff8c785ff11b470a4bec6bc46c4aec461da9c`（线性演进：`c25cbfce` ➔ `5100e4a2` ➔ `7dee19eb` ➔ `bc0ff8c7`）
+- **对照 SSoT 方案**: `project-control/docs/planning/helix_p0_experience_implementationplan_20261121_190357.md` (`v1.3`)
+- **对照切片定义**: `project-control/slices/SLICE-09.yaml` (`revision: 2`)
 
 ---
 
-## 1. Diff Budget 与写边界核验 (`6f28023f..7dee19eb` 累计)
+## 1. Diff Budget 与写边界核验 (`6f28023f..bc0ff8c7` 累计)
 
-- **允许路径 (`allowed_paths`)**: 严格命中白名单内 `20 / 20` 个文件，零新增白名单外文件，零越界触碰兄弟仓（`mcu-p3`、`boot/*`、`test_harness`、`sdk/c308l`、`agents` 均为零改动）。
+- **允许路径 (`allowed_paths`)**: 严格命中白名单内 `21 / 21` 个文件，零新增白名单外文件，零越界触碰兄弟仓（`mcu-p3`、`boot/*`、`test_harness`、`sdk/c308l`、`agents` 均为零改动）。
 - **受保护存量预算 (`protected_globs`)**:
   - `services/helixscreen/include/ui_panel_settings.h`: `+2 / -0` 行
   - `services/helixscreen/src/ui/ui_panel_settings.cpp`: `+12 / -0` 行
   - `services/helixscreen/src/system/cjk_font_manager.cpp`: `+6 / -0` 行
-  - **合计受保护改动**: `20` 行（严格 `<= max_protected_lines: 45`）。
-- **工作树洁净度**: 临时构建目录 `.build_s09_r2` 已在提交前彻底删除，`git -C printer-soc status --porcelain` 输出为空。
+  - `tests/device_manager/twin/test_device_manager.cpp`: `+2 / -1` 行（共 `3` 行）
+  - **合计受保护改动**: `23` 行（严格 `<= max_protected_lines: 50`）。
+- **工作树洁净度**: 临时构建目录 `.build_s09_r2` 与 `.build_s09_dm_fix` 均已在提交前彻底删除，`git -C printer-soc status --porcelain` 输出为空。
 
 ---
 
@@ -53,3 +54,4 @@
 | 双策略 OTA E2E (含单缺包新例) | `test_ota_e2e.py` (`signature-required` + `--policy integrity-only-hil`) | **PASS** |
 | AISoC 原生连接器与门禁单测 | `./.build_s09_r2/test_aisoc_p0`（含 `S09-01`~`S09-03` 新用例） | **PASS** (`[PASS] test_aisoc_p0`) |
 | 平台工具、打包与发布集成单测 | `unittest test_tools.py test_product_package.py` (`31` 项，含 `S09-04` `/var/lib/helixscreen` 新例) + `test_release_product.py` (`14` 项) | **PASS** |
+| `test_device_manager` 初始离线版本竞态修复 (`v1.3`) | 将 `test_rpc_get_version_info` 移至 `test_rpc_get_snapshot` 之后、耗时用例之前（零削弱断言），在 `.build_s09_dm_fix` 连续运行 20 次 `ctest -R "^test_device_manager$"` + `fast_gate.py --slice project-control/slices/SLICE-09.yaml` | **PASS** (`20/20` 连续全绿，0 失败) |

@@ -1,0 +1,4755 @@
+{
+  "tag": "ap_r18b_idle_60s",
+  "target_host": "root@192.168.1.101",
+  "host_wall_start": "2026-11-23T13:09:09.122+08:00",
+  "host_wall_end": "2026-11-23T13:10:10.257+08:00",
+  "clk_tck": 100,
+  "cpu_count": 2,
+  "version": {
+    "product_version": "0.1.0-skeleton",
+    "build_id": "20261121T082130Z",
+    "candidate_id": "0.1.0-skeleton+6f28023f",
+    "profile": "c308l-production",
+    "git_sha": "6f28023f",
+    "abi": "armv7l-hf-glibc2.33",
+    "mcu_proto": "2.0"
+  },
+  "services_cfg": {
+    "uart": "/dev/ttyS1",
+    "baud": 921600,
+    "dds_domain": 198,
+    "http_port": 8080,
+    "runtime_dir": "/run/printer-soc",
+    "enable_gateway": false,
+    "enable_panel": true,
+    "allow_offline_start": true,
+    "version_file": "/etc/printer-soc/version.json",
+    "panel_runtime_dir": "/data/printer-soc/helix",
+    "panel_assets_dir": "/usr/share/printer-soc/helixscreen",
+    "fbdev": "/dev/fb0",
+    "panel_restart_limit": 5,
+    "panel_restart_window_sec": 60,
+    "panel_backoff_sec": 1,
+    "dds_transport": "SHM"
+  },
+  "identities": {
+    "controller": {
+      "pid": 841,
+      "start_ticks": "433",
+      "exe": "/usr/bin/python3.9",
+      "alive_pre": true,
+      "alive_post": true,
+      "no_pid_churn": true
+    },
+    "dbus": {
+      "pid": 842,
+      "start_ticks": "455",
+      "exe": "/usr/bin/dbus-daemon",
+      "alive_pre": true,
+      "alive_post": true,
+      "no_pid_churn": true
+    },
+    "device_manager": {
+      "pid": 858,
+      "start_ticks": "543",
+      "exe": "/usr/bin/device_manager_daemon",
+      "alive_pre": true,
+      "alive_post": true,
+      "no_pid_churn": true
+    },
+    "forward": {
+      "pid": 843,
+      "start_ticks": "462",
+      "exe": "/usr/bin/forward_service_daemon",
+      "alive_pre": true,
+      "alive_post": true,
+      "no_pid_churn": true
+    },
+    "panel": {
+      "pid": 868,
+      "start_ticks": "557",
+      "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+      "alive_pre": true,
+      "alive_post": true,
+      "no_pid_churn": true
+    }
+  },
+  "metrics": {
+    "sample_count": 61,
+    "interval_count": 60,
+    "uptime_start_sec": 6485.03,
+    "uptime_end_sec": 6545.03,
+    "uptime_span_sec": 60.0,
+    "system_cpu_pct_window_avg": 24.572,
+    "system_cpu_pct_1s_max": 30.964,
+    "system_cpu_pct_1s_min": 17.436,
+    "mem_total_kib": 1784292,
+    "mem_available_min_kib": 1653820,
+    "mem_available_max_kib": 1654072,
+    "processes": {
+      "controller": {
+        "cpu_pct_window_avg": 0.739,
+        "cpu_pct_1s_max": 1.562,
+        "vm_rss_max_kib": 7100,
+        "vm_rss_min_kib": 7100,
+        "vm_hwm_max_kib": 7100
+      },
+      "dbus": {
+        "cpu_pct_window_avg": 3.154,
+        "cpu_pct_1s_max": 4.188,
+        "vm_rss_max_kib": 1480,
+        "vm_rss_min_kib": 1480,
+        "vm_hwm_max_kib": 1480
+      },
+      "device_manager": {
+        "cpu_pct_window_avg": 2.535,
+        "cpu_pct_1s_max": 3.158,
+        "vm_rss_max_kib": 8700,
+        "vm_rss_min_kib": 8700,
+        "vm_hwm_max_kib": 8700
+      },
+      "forward": {
+        "cpu_pct_window_avg": 5.002,
+        "cpu_pct_1s_max": 6.186,
+        "vm_rss_max_kib": 8580,
+        "vm_rss_min_kib": 8580,
+        "vm_hwm_max_kib": 8580
+      },
+      "panel": {
+        "cpu_pct_window_avg": 4.469,
+        "cpu_pct_1s_max": 10.938,
+        "vm_rss_max_kib": 30264,
+        "vm_rss_min_kib": 30264,
+        "vm_hwm_max_kib": 30284
+      }
+    }
+  },
+  "df_k": "Filesystem           1K-blocks      Used Available Use% Mounted on\nubi0_0                  110440     75508     34932  68% /\n/dev/ubi1_0              61928      7588     51144  13% /data\ntmpfs                   892144      1528    890616   0% /run\n",
+  "mountinfo": "16 1 0:15 / / rw,relatime - ubifs ubi0_0 rw,assert=read-only,ubi=0,vol=0\n17 16 0:5 / /dev rw,relatime - devtmpfs devtmpfs rw,size=891120k,nr_inodes=183416,mode=755\n18 16 0:16 / /proc rw,relatime - proc proc rw\n19 17 0:17 / /dev/shm rw,relatime - tmpfs tmpfs rw,mode=777\n20 16 0:18 / /tmp rw,relatime - tmpfs tmpfs rw\n21 16 0:19 / /run rw,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=755\n22 16 0:20 / /sys rw,relatime - sysfs sysfs rw\n23 16 0:21 / /data rw,relatime - ubifs /dev/ubi1_0 rw,assert=read-only,ubi=1,vol=0\n",
+  "dbus_version_info_raw": "method return time=6545.539554 sender=:1.1 -> destination=:1.5 serial=30112 reply_serial=2\n   string \"{\"devices\":{\"mc\":{\"valid\":true,\"status\":\"ONLINE\",\"proto_version\":\"2.0\",\"firmware_version\":\"1.0\",\"boot_id\":3521563910,\"git_commit\":\"0x4FC171EA\",\"capability_flags\":3221750837,\"last_update_ns\":6545429214079},\"th\":{\"valid\":false,\"status\":\"OFFLINE\",\"proto_version\":\"0.0\",\"firmware_version\":\"0.0\",\"boot_id\":0,\"git_commit\":\"0x00000000\",\"capability_flags\":0,\"last_update_ns\":0}}}\"\n",
+  "dbus_port_status_raw": "method return time=6545.560269 sender=:1.0 -> destination=:1.6 serial=24227 reply_serial=2\n   boolean true\n   string \"/dev/ttyS1\"\n   uint64 12111\n   uint64 5984\n",
+  "pre_status": {
+    "phase": "running",
+    "mode": "production",
+    "panel_restarts": 0,
+    "controller": {
+      "pid": 841,
+      "start_ticks": "433",
+      "exe": "/usr/bin/python3.9",
+      "cmdline": "2f7573722f62696e2f707974686f6e33002d42002f7573722f6c69622f7072696e7465722d736f632f73657276696365732e7079005f72756e002d2d62756e646c65002f7573722f6c69622f7072696e7465722d736f6300"
+    },
+    "children": {
+      "dbus": {
+        "pid": 842,
+        "start_ticks": "455",
+        "exe": "/usr/bin/dbus-daemon",
+        "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f646275732d6461656d6f6e002d2d6e6f666f726b002d2d7072696e742d616464726573733d31002d2d636f6e6669672d66696c653d2f7573722f6c69622f7072696e7465722d736f632f636f6e6669672f73657373696f6e2e636f6e6600"
+      },
+      "forward": {
+        "pid": 843,
+        "start_ticks": "462",
+        "exe": "/usr/bin/forward_service_daemon",
+        "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f666f72776172645f736572766963655f6461656d6f6e002d2d706f7274002f6465762f7474795331002d2d6261756400393231363030002d2d6669726d776172652d646972002f72756e2f7072696e7465722d736f632f6669726d77617265002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d6a68373176333547476e2c677569643d3230333564656633656231326563643561353834333464363030303030303034002d2d6464732d646f6d61696e00313938002d2d616c6c6f772d6f66666c696e652d737461727400"
+      },
+      "device_manager": {
+        "pid": 858,
+        "start_ticks": "543",
+        "exe": "/usr/bin/device_manager_daemon",
+        "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f6465766963655f6d616e616765725f6461656d6f6e002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d6a68373176333547476e2c677569643d3230333564656633656231326563643561353834333464363030303030303034002d2d6464732d646f6d61696e0031393800"
+      },
+      "panel": {
+        "pid": 868,
+        "start_ticks": "557",
+        "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+        "cmdline": "2f7573722f73686172652f7072696e7465722d736f632f68656c697873637265656e2f62696e2f68656c69782d73637265656e00"
+      }
+    },
+    "bus_address": "unix:path=/tmp/dbus-jh71v35GGn,guid=2035def3eb12ecd5a58434d600000004",
+    "controller_alive": true,
+    "children_alive": {
+      "dbus": true,
+      "forward": true,
+      "device_manager": true,
+      "panel": true
+    },
+    "uart_owners": [
+      843
+    ],
+    "fb_owners": [
+      868
+    ],
+    "maintenance_inhibit": false,
+    "allow_offline_start": true,
+    "enable_gateway": false
+  },
+  "post_status": {
+    "phase": "running",
+    "mode": "production",
+    "panel_restarts": 0,
+    "controller": {
+      "pid": 841,
+      "start_ticks": "433",
+      "exe": "/usr/bin/python3.9",
+      "cmdline": "2f7573722f62696e2f707974686f6e33002d42002f7573722f6c69622f7072696e7465722d736f632f73657276696365732e7079005f72756e002d2d62756e646c65002f7573722f6c69622f7072696e7465722d736f6300"
+    },
+    "children": {
+      "dbus": {
+        "pid": 842,
+        "start_ticks": "455",
+        "exe": "/usr/bin/dbus-daemon",
+        "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f646275732d6461656d6f6e002d2d6e6f666f726b002d2d7072696e742d616464726573733d31002d2d636f6e6669672d66696c653d2f7573722f6c69622f7072696e7465722d736f632f636f6e6669672f73657373696f6e2e636f6e6600"
+      },
+      "forward": {
+        "pid": 843,
+        "start_ticks": "462",
+        "exe": "/usr/bin/forward_service_daemon",
+        "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f666f72776172645f736572766963655f6461656d6f6e002d2d706f7274002f6465762f7474795331002d2d6261756400393231363030002d2d6669726d776172652d646972002f72756e2f7072696e7465722d736f632f6669726d77617265002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d6a68373176333547476e2c677569643d3230333564656633656231326563643561353834333464363030303030303034002d2d6464732d646f6d61696e00313938002d2d616c6c6f772d6f66666c696e652d737461727400"
+      },
+      "device_manager": {
+        "pid": 858,
+        "start_ticks": "543",
+        "exe": "/usr/bin/device_manager_daemon",
+        "cmdline": "2f7573722f6c69622f7072696e7465722d736f632f62696e2f6465766963655f6d616e616765725f6461656d6f6e002d2d646275732d637573746f6d00756e69783a706174683d2f746d702f646275732d6a68373176333547476e2c677569643d3230333564656633656231326563643561353834333464363030303030303034002d2d6464732d646f6d61696e0031393800"
+      },
+      "panel": {
+        "pid": 868,
+        "start_ticks": "557",
+        "exe": "/usr/share/printer-soc/helixscreen/bin/helix-screen",
+        "cmdline": "2f7573722f73686172652f7072696e7465722d736f632f68656c697873637265656e2f62696e2f68656c69782d73637265656e00"
+      }
+    },
+    "bus_address": "unix:path=/tmp/dbus-jh71v35GGn,guid=2035def3eb12ecd5a58434d600000004",
+    "controller_alive": true,
+    "children_alive": {
+      "dbus": true,
+      "forward": true,
+      "device_manager": true,
+      "panel": true
+    },
+    "uart_owners": [
+      843
+    ],
+    "fb_owners": [
+      868
+    ],
+    "maintenance_inhibit": false,
+    "allow_offline_start": true,
+    "enable_gateway": false
+  },
+  "samples": [
+    {
+      "uptime_sec": 6485.03,
+      "idle_sec": 9547.6,
+      "cpu8": [
+        167053,
+        0,
+        48134,
+        954760,
+        1,
+        68055,
+        18931,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31864,
+        "Shmem": 3472
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7854,
+          "stime": 1969,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37592,
+          "stime": 3644,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40648,
+          "stime": 23326,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28772,
+          "stime": 4030,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48599,
+          "stime": 9955,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6486.04,
+      "idle_sec": 9549.13,
+      "cpu8": [
+        167074,
+        0,
+        48141,
+        954913,
+        1,
+        68064,
+        18933,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31864,
+        "Shmem": 3472
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7855,
+          "stime": 1969,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37597,
+          "stime": 3644,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40654,
+          "stime": 23330,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28776,
+          "stime": 4030,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48603,
+          "stime": 9957,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6487.03,
+      "idle_sec": 9550.63,
+      "cpu8": [
+        167095,
+        0,
+        48147,
+        955063,
+        1,
+        68075,
+        18936,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31868,
+        "Shmem": 3476
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7857,
+          "stime": 1969,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37602,
+          "stime": 3644,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40659,
+          "stime": 23333,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28781,
+          "stime": 4030,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48609,
+          "stime": 9959,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6488.03,
+      "idle_sec": 9552.15,
+      "cpu8": [
+        167118,
+        0,
+        48152,
+        955215,
+        1,
+        68085,
+        18939,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31868,
+        "Shmem": 3476
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7858,
+          "stime": 1970,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37608,
+          "stime": 3644,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40664,
+          "stime": 23336,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28785,
+          "stime": 4031,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48615,
+          "stime": 9959,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6489.03,
+      "idle_sec": 9553.63,
+      "cpu8": [
+        167142,
+        0,
+        48160,
+        955363,
+        1,
+        68096,
+        18942,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7858,
+          "stime": 1971,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37614,
+          "stime": 3645,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40669,
+          "stime": 23341,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28790,
+          "stime": 4031,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48621,
+          "stime": 9961,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6490.03,
+      "idle_sec": 9555.09,
+      "cpu8": [
+        167167,
+        0,
+        48166,
+        955509,
+        1,
+        68106,
+        18945,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7860,
+          "stime": 1971,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37621,
+          "stime": 3645,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40677,
+          "stime": 23344,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28795,
+          "stime": 4032,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48627,
+          "stime": 9962,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6491.03,
+      "idle_sec": 9556.46,
+      "cpu8": [
+        167201,
+        0,
+        48174,
+        955646,
+        1,
+        68116,
+        18948,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7860,
+          "stime": 1971,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37627,
+          "stime": 3646,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40681,
+          "stime": 23349,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28800,
+          "stime": 4032,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48647,
+          "stime": 9963,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209612,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6492.03,
+      "idle_sec": 9557.98,
+      "cpu8": [
+        167225,
+        0,
+        48182,
+        955798,
+        1,
+        68126,
+        18951,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7861,
+          "stime": 1971,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37632,
+          "stime": 3647,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40687,
+          "stime": 23351,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28804,
+          "stime": 4032,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48652,
+          "stime": 9965,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6493.03,
+      "idle_sec": 9559.44,
+      "cpu8": [
+        167253,
+        0,
+        48188,
+        955944,
+        1,
+        68137,
+        18954,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7862,
+          "stime": 1971,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37637,
+          "stime": 3648,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40695,
+          "stime": 23354,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28809,
+          "stime": 4033,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48659,
+          "stime": 9965,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6494.03,
+      "idle_sec": 9560.93,
+      "cpu8": [
+        167276,
+        0,
+        48197,
+        956093,
+        1,
+        68147,
+        18957,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7864,
+          "stime": 1971,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37643,
+          "stime": 3649,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40701,
+          "stime": 23358,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28812,
+          "stime": 4035,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48663,
+          "stime": 9967,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6495.03,
+      "idle_sec": 9562.43,
+      "cpu8": [
+        167301,
+        0,
+        48202,
+        956243,
+        1,
+        68157,
+        18959,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7865,
+          "stime": 1971,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37649,
+          "stime": 3649,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40707,
+          "stime": 23362,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28816,
+          "stime": 4036,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48669,
+          "stime": 9968,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6496.03,
+      "idle_sec": 9563.89,
+      "cpu8": [
+        167326,
+        0,
+        48210,
+        956390,
+        1,
+        68167,
+        18962,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7866,
+          "stime": 1972,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37656,
+          "stime": 3649,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40714,
+          "stime": 23365,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28821,
+          "stime": 4036,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48675,
+          "stime": 9969,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6497.03,
+      "idle_sec": 9565.33,
+      "cpu8": [
+        167355,
+        0,
+        48218,
+        956533,
+        1,
+        68177,
+        18965,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7867,
+          "stime": 1972,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37663,
+          "stime": 3650,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40720,
+          "stime": 23369,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28827,
+          "stime": 4036,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48680,
+          "stime": 9971,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6498.03,
+      "idle_sec": 9566.7,
+      "cpu8": [
+        167390,
+        0,
+        48228,
+        956670,
+        1,
+        68188,
+        18968,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7867,
+          "stime": 1974,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37668,
+          "stime": 3650,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40726,
+          "stime": 23374,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28831,
+          "stime": 4037,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48698,
+          "stime": 9972,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209592,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6499.03,
+      "idle_sec": 9568.12,
+      "cpu8": [
+        167425,
+        0,
+        48237,
+        956812,
+        1,
+        68198,
+        18971,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7868,
+          "stime": 1974,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37671,
+          "stime": 3650,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40731,
+          "stime": 23378,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28834,
+          "stime": 4037,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48717,
+          "stime": 9973,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209592,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6500.03,
+      "idle_sec": 9569.63,
+      "cpu8": [
+        167446,
+        0,
+        48245,
+        956963,
+        1,
+        68208,
+        18974,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7870,
+          "stime": 1974,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37675,
+          "stime": 3651,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40737,
+          "stime": 23382,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28837,
+          "stime": 4038,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48719,
+          "stime": 9976,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209592,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6501.03,
+      "idle_sec": 9571.01,
+      "cpu8": [
+        167482,
+        0,
+        48253,
+        957101,
+        1,
+        68218,
+        18976,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7871,
+          "stime": 1974,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37681,
+          "stime": 3651,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40742,
+          "stime": 23385,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28840,
+          "stime": 4039,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48738,
+          "stime": 9977,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209612,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6502.03,
+      "idle_sec": 9572.56,
+      "cpu8": [
+        167501,
+        0,
+        48260,
+        957256,
+        1,
+        68227,
+        18979,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7871,
+          "stime": 1975,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37684,
+          "stime": 3651,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40746,
+          "stime": 23388,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28843,
+          "stime": 4040,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48745,
+          "stime": 9978,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6503.03,
+      "idle_sec": 9573.99,
+      "cpu8": [
+        167527,
+        0,
+        48269,
+        957399,
+        1,
+        68238,
+        18982,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7873,
+          "stime": 1975,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37691,
+          "stime": 3652,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40753,
+          "stime": 23392,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28847,
+          "stime": 4042,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48751,
+          "stime": 9979,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6504.03,
+      "idle_sec": 9575.44,
+      "cpu8": [
+        167559,
+        0,
+        48273,
+        957544,
+        1,
+        68249,
+        18985,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7874,
+          "stime": 1975,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37698,
+          "stime": 3653,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40761,
+          "stime": 23394,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28852,
+          "stime": 4042,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48758,
+          "stime": 9980,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6505.03,
+      "idle_sec": 9576.91,
+      "cpu8": [
+        167585,
+        0,
+        48282,
+        957691,
+        1,
+        68260,
+        18988,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7875,
+          "stime": 1976,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37703,
+          "stime": 3653,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40765,
+          "stime": 23400,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28856,
+          "stime": 4043,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48765,
+          "stime": 9981,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6506.03,
+      "idle_sec": 9578.35,
+      "cpu8": [
+        167616,
+        0,
+        48291,
+        957835,
+        1,
+        68271,
+        18991,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7876,
+          "stime": 1976,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37708,
+          "stime": 3655,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40772,
+          "stime": 23404,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28861,
+          "stime": 4044,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48771,
+          "stime": 9982,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6507.03,
+      "idle_sec": 9579.79,
+      "cpu8": [
+        167643,
+        0,
+        48297,
+        957979,
+        1,
+        68282,
+        18994,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7877,
+          "stime": 1977,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37715,
+          "stime": 3656,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40778,
+          "stime": 23408,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28867,
+          "stime": 4044,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48778,
+          "stime": 9982,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6508.03,
+      "idle_sec": 9581.24,
+      "cpu8": [
+        167672,
+        0,
+        48305,
+        958124,
+        1,
+        68292,
+        18997,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7878,
+          "stime": 1977,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37720,
+          "stime": 3657,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40786,
+          "stime": 23410,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28871,
+          "stime": 4044,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48784,
+          "stime": 9984,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6509.03,
+      "idle_sec": 9582.68,
+      "cpu8": [
+        167698,
+        0,
+        48315,
+        958268,
+        1,
+        68303,
+        19000,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7879,
+          "stime": 1978,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37726,
+          "stime": 3658,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40794,
+          "stime": 23413,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28875,
+          "stime": 4046,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48789,
+          "stime": 9987,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6510.03,
+      "idle_sec": 9584.13,
+      "cpu8": [
+        167727,
+        0,
+        48322,
+        958413,
+        1,
+        68314,
+        19003,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7881,
+          "stime": 1978,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37733,
+          "stime": 3658,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40801,
+          "stime": 23416,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28880,
+          "stime": 4046,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48794,
+          "stime": 9988,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6511.03,
+      "idle_sec": 9585.52,
+      "cpu8": [
+        167761,
+        0,
+        48330,
+        958552,
+        1,
+        68324,
+        19006,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7882,
+          "stime": 1978,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37737,
+          "stime": 3658,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40806,
+          "stime": 23421,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28883,
+          "stime": 4047,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48811,
+          "stime": 9989,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209612,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6512.03,
+      "idle_sec": 9587.13,
+      "cpu8": [
+        167777,
+        0,
+        48338,
+        958713,
+        1,
+        68332,
+        19008,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1668004,
+        "MemAvailable": 1654072,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7884,
+          "stime": 1978,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37740,
+          "stime": 3659,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40811,
+          "stime": 23425,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28886,
+          "stime": 4047,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48814,
+          "stime": 9990,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6513.03,
+      "idle_sec": 9588.64,
+      "cpu8": [
+        167801,
+        0,
+        48345,
+        958864,
+        1,
+        68342,
+        19011,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7885,
+          "stime": 1978,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37745,
+          "stime": 3659,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40818,
+          "stime": 23427,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28889,
+          "stime": 4049,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48818,
+          "stime": 9991,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6514.03,
+      "idle_sec": 9590.06,
+      "cpu8": [
+        167825,
+        0,
+        48360,
+        959006,
+        1,
+        68353,
+        19014,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31872,
+        "Shmem": 3480
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7886,
+          "stime": 1978,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37750,
+          "stime": 3660,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40821,
+          "stime": 23432,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28893,
+          "stime": 4049,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48825,
+          "stime": 9992,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6515.03,
+      "idle_sec": 9591.51,
+      "cpu8": [
+        167851,
+        0,
+        48370,
+        959151,
+        1,
+        68363,
+        19017,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7887,
+          "stime": 1979,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37756,
+          "stime": 3661,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40827,
+          "stime": 23436,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28898,
+          "stime": 4050,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48829,
+          "stime": 9995,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6516.03,
+      "idle_sec": 9592.97,
+      "cpu8": [
+        167879,
+        0,
+        48374,
+        959297,
+        1,
+        68374,
+        19020,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7889,
+          "stime": 1979,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37763,
+          "stime": 3661,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40834,
+          "stime": 23439,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28902,
+          "stime": 4051,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48836,
+          "stime": 9995,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6517.03,
+      "idle_sec": 9594.4,
+      "cpu8": [
+        167907,
+        0,
+        48382,
+        959441,
+        1,
+        68385,
+        19023,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7890,
+          "stime": 1979,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37769,
+          "stime": 3662,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40841,
+          "stime": 23442,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28907,
+          "stime": 4051,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48841,
+          "stime": 9998,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6518.03,
+      "idle_sec": 9595.87,
+      "cpu8": [
+        167932,
+        0,
+        48391,
+        959587,
+        1,
+        68396,
+        19026,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7891,
+          "stime": 1979,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37774,
+          "stime": 3662,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40846,
+          "stime": 23447,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28912,
+          "stime": 4052,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48846,
+          "stime": 10000,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6519.03,
+      "idle_sec": 9597.3,
+      "cpu8": [
+        167963,
+        0,
+        48397,
+        959730,
+        1,
+        68407,
+        19029,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7892,
+          "stime": 1979,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37781,
+          "stime": 3663,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40854,
+          "stime": 23449,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28917,
+          "stime": 4052,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48854,
+          "stime": 10000,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6520.03,
+      "idle_sec": 9598.74,
+      "cpu8": [
+        167991,
+        0,
+        48404,
+        959874,
+        1,
+        68418,
+        19032,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7893,
+          "stime": 1979,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37788,
+          "stime": 3663,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40861,
+          "stime": 23453,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28922,
+          "stime": 4053,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48860,
+          "stime": 10002,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6521.03,
+      "idle_sec": 9600.09,
+      "cpu8": [
+        168028,
+        0,
+        48411,
+        960009,
+        1,
+        68428,
+        19035,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7895,
+          "stime": 1980,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37795,
+          "stime": 3663,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40867,
+          "stime": 23457,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28926,
+          "stime": 4053,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48878,
+          "stime": 10004,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209612,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6522.03,
+      "idle_sec": 9601.59,
+      "cpu8": [
+        168054,
+        0,
+        48418,
+        960159,
+        1,
+        68438,
+        19038,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7895,
+          "stime": 1980,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37800,
+          "stime": 3663,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40873,
+          "stime": 23459,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28931,
+          "stime": 4054,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48884,
+          "stime": 10005,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6523.03,
+      "idle_sec": 9603.05,
+      "cpu8": [
+        168079,
+        0,
+        48428,
+        960305,
+        1,
+        68448,
+        19041,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7897,
+          "stime": 1981,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37807,
+          "stime": 3664,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40879,
+          "stime": 23465,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28935,
+          "stime": 4055,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48890,
+          "stime": 10006,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6524.03,
+      "idle_sec": 9604.51,
+      "cpu8": [
+        168106,
+        0,
+        48437,
+        960451,
+        1,
+        68459,
+        19043,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7898,
+          "stime": 1981,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37813,
+          "stime": 3664,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40885,
+          "stime": 23468,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28939,
+          "stime": 4057,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48895,
+          "stime": 10007,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6525.03,
+      "idle_sec": 9606.05,
+      "cpu8": [
+        168124,
+        0,
+        48444,
+        960605,
+        1,
+        68469,
+        19046,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7899,
+          "stime": 1981,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37816,
+          "stime": 3665,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40892,
+          "stime": 23472,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28943,
+          "stime": 4057,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48899,
+          "stime": 10008,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6526.03,
+      "idle_sec": 9607.49,
+      "cpu8": [
+        168153,
+        0,
+        48451,
+        960749,
+        1,
+        68479,
+        19049,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7900,
+          "stime": 1982,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37823,
+          "stime": 3665,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40899,
+          "stime": 23475,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28948,
+          "stime": 4057,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48904,
+          "stime": 10010,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6527.03,
+      "idle_sec": 9608.99,
+      "cpu8": [
+        168176,
+        0,
+        48456,
+        960899,
+        1,
+        68490,
+        19052,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7901,
+          "stime": 1982,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37828,
+          "stime": 3665,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40904,
+          "stime": 23478,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28951,
+          "stime": 4058,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48911,
+          "stime": 10012,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6528.03,
+      "idle_sec": 9610.47,
+      "cpu8": [
+        168199,
+        0,
+        48463,
+        961047,
+        1,
+        68500,
+        19055,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7903,
+          "stime": 1982,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37833,
+          "stime": 3666,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40909,
+          "stime": 23481,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28955,
+          "stime": 4059,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48915,
+          "stime": 10014,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6529.03,
+      "idle_sec": 9611.91,
+      "cpu8": [
+        168228,
+        0,
+        48474,
+        961191,
+        1,
+        68511,
+        19058,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7904,
+          "stime": 1982,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37840,
+          "stime": 3666,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40914,
+          "stime": 23487,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28959,
+          "stime": 4060,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48921,
+          "stime": 10016,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6530.03,
+      "idle_sec": 9613.35,
+      "cpu8": [
+        168256,
+        0,
+        48481,
+        961335,
+        1,
+        68522,
+        19061,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7906,
+          "stime": 1983,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37846,
+          "stime": 3667,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40921,
+          "stime": 23490,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28964,
+          "stime": 4061,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48927,
+          "stime": 10017,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6531.03,
+      "idle_sec": 9614.71,
+      "cpu8": [
+        168294,
+        0,
+        48491,
+        961471,
+        1,
+        68532,
+        19064,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7906,
+          "stime": 1983,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37852,
+          "stime": 3668,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40926,
+          "stime": 23494,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28968,
+          "stime": 4062,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48946,
+          "stime": 10019,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209612,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6532.03,
+      "idle_sec": 9616.2,
+      "cpu8": [
+        168318,
+        0,
+        48497,
+        961621,
+        1,
+        68542,
+        19067,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7907,
+          "stime": 1983,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37857,
+          "stime": 3668,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40932,
+          "stime": 23498,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28972,
+          "stime": 4063,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48953,
+          "stime": 10020,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6533.04,
+      "idle_sec": 9617.64,
+      "cpu8": [
+        168345,
+        0,
+        48504,
+        961765,
+        1,
+        68553,
+        19070,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7908,
+          "stime": 1984,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37864,
+          "stime": 3669,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40939,
+          "stime": 23501,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28977,
+          "stime": 4063,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48959,
+          "stime": 10021,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6534.03,
+      "idle_sec": 9619.11,
+      "cpu8": [
+        168373,
+        0,
+        48512,
+        961911,
+        1,
+        68564,
+        19073,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7909,
+          "stime": 1984,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37870,
+          "stime": 3669,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40945,
+          "stime": 23506,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28982,
+          "stime": 4064,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48966,
+          "stime": 10022,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6535.03,
+      "idle_sec": 9620.57,
+      "cpu8": [
+        168399,
+        0,
+        48519,
+        962057,
+        1,
+        68574,
+        19076,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7910,
+          "stime": 1985,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37876,
+          "stime": 3669,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40951,
+          "stime": 23509,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28986,
+          "stime": 4065,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48972,
+          "stime": 10023,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6536.03,
+      "idle_sec": 9622.02,
+      "cpu8": [
+        168425,
+        0,
+        48527,
+        962202,
+        1,
+        68585,
+        19079,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7911,
+          "stime": 1985,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37883,
+          "stime": 3670,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40958,
+          "stime": 23513,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28991,
+          "stime": 4065,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48977,
+          "stime": 10025,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6537.03,
+      "idle_sec": 9623.55,
+      "cpu8": [
+        168446,
+        0,
+        48531,
+        962356,
+        1,
+        68595,
+        19082,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7912,
+          "stime": 1985,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37887,
+          "stime": 3670,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40965,
+          "stime": 23516,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28995,
+          "stime": 4066,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48981,
+          "stime": 10025,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6538.03,
+      "idle_sec": 9625.07,
+      "cpu8": [
+        168466,
+        0,
+        48539,
+        962507,
+        1,
+        68604,
+        19085,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31876,
+        "Shmem": 3484
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7914,
+          "stime": 1985,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37891,
+          "stime": 3670,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40971,
+          "stime": 23521,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 28998,
+          "stime": 4066,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48984,
+          "stime": 10027,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6539.03,
+      "idle_sec": 9626.53,
+      "cpu8": [
+        168494,
+        0,
+        48548,
+        962653,
+        1,
+        68615,
+        19088,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31880,
+        "Shmem": 3488
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7915,
+          "stime": 1986,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37898,
+          "stime": 3670,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40976,
+          "stime": 23526,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 29002,
+          "stime": 4067,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48989,
+          "stime": 10028,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6540.03,
+      "idle_sec": 9628.04,
+      "cpu8": [
+        168516,
+        0,
+        48555,
+        962804,
+        1,
+        68626,
+        19091,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31880,
+        "Shmem": 3488
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7916,
+          "stime": 1986,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37903,
+          "stime": 3671,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40980,
+          "stime": 23530,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 29006,
+          "stime": 4067,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 48996,
+          "stime": 10029,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6541.03,
+      "idle_sec": 9629.42,
+      "cpu8": [
+        168553,
+        0,
+        48562,
+        962942,
+        1,
+        68636,
+        19093,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31884,
+        "Shmem": 3492
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7918,
+          "stime": 1986,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37908,
+          "stime": 3671,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40985,
+          "stime": 23533,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 29009,
+          "stime": 4068,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 49014,
+          "stime": 10030,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209612,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6542.03,
+      "idle_sec": 9630.98,
+      "cpu8": [
+        168573,
+        0,
+        48570,
+        963098,
+        1,
+        68645,
+        19096,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31884,
+        "Shmem": 3492
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7919,
+          "stime": 1986,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37912,
+          "stime": 3671,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40988,
+          "stime": 23538,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 29013,
+          "stime": 4068,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 49021,
+          "stime": 10031,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6543.03,
+      "idle_sec": 9632.44,
+      "cpu8": [
+        168601,
+        0,
+        48580,
+        963244,
+        1,
+        68655,
+        19099,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31884,
+        "Shmem": 3492
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7920,
+          "stime": 1987,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37918,
+          "stime": 3671,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40993,
+          "stime": 23542,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 29017,
+          "stime": 4069,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 49026,
+          "stime": 10033,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6544.03,
+      "idle_sec": 9633.9,
+      "cpu8": [
+        168630,
+        0,
+        48587,
+        963390,
+        1,
+        68666,
+        19102,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31884,
+        "Shmem": 3492
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7921,
+          "stime": 1987,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37925,
+          "stime": 3672,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 40999,
+          "stime": 23547,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 29023,
+          "stime": 4069,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 49033,
+          "stime": 10033,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    },
+    {
+      "uptime_sec": 6545.03,
+      "idle_sec": 9635.36,
+      "cpu8": [
+        168654,
+        0,
+        48596,
+        963536,
+        1,
+        68677,
+        19105,
+        0
+      ],
+      "mem_kib": {
+        "MemTotal": 1784292,
+        "MemFree": 1667752,
+        "MemAvailable": 1653820,
+        "Buffers": 0,
+        "Cached": 31884,
+        "Shmem": 3492
+      },
+      "procs": {
+        "controller": {
+          "pid": 841,
+          "utime": 7922,
+          "stime": 1987,
+          "starttime": 433,
+          "vm_rss_kib": 7100,
+          "vm_hwm_kib": 7100,
+          "vm_size_kib": 10680,
+          "threads": 1
+        },
+        "dbus": {
+          "pid": 842,
+          "utime": 37930,
+          "stime": 3673,
+          "starttime": 455,
+          "vm_rss_kib": 1480,
+          "vm_hwm_kib": 1480,
+          "vm_size_kib": 2756,
+          "threads": 1
+        },
+        "forward": {
+          "pid": 843,
+          "utime": 41004,
+          "stime": 23552,
+          "starttime": 462,
+          "vm_rss_kib": 8580,
+          "vm_hwm_kib": 8580,
+          "vm_size_kib": 116716,
+          "threads": 15
+        },
+        "device_manager": {
+          "pid": 858,
+          "utime": 29028,
+          "stime": 4069,
+          "starttime": 543,
+          "vm_rss_kib": 8700,
+          "vm_hwm_kib": 8700,
+          "vm_size_kib": 91116,
+          "threads": 10
+        },
+        "panel": {
+          "pid": 868,
+          "utime": 49038,
+          "stime": 10036,
+          "starttime": 557,
+          "vm_rss_kib": 30264,
+          "vm_hwm_kib": 30284,
+          "vm_size_kib": 209572,
+          "threads": 18
+        }
+      }
+    }
+  ]
+}
