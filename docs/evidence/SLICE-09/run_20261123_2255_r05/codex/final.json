@@ -1,0 +1,57 @@
+{
+  "slice_id": "SLICE-09",
+  "decision": "REJECTED",
+  "axis_spec_realism": "UX-01 的 r18b 实板走查覆盖 CHK-01～CHK-06，截图、后台日志与五类归因可对账。UX-02 的候选 rootfs 已核实默认中文和迁移标记，设置页与关于页共用同一 OTA 覆层，但 DDS 失联恢复、升级受理时的包摘要和跨客户端扫描反馈仍有阻断项。七仓提交与 server_lock 一致，八件归档产物的大小及 SHA-256 均与送审值一致。容器 541e3d9807dd 的 c308l-system 回归通过，两套 ctest 各通过 24/24，fast_gate 只读复核耗时 0.159 秒。本轮不满足 SW-Verified 登记条件。",
+  "axis_embedded_safety": "急停锁存和独立故障保留各有一条生产路径会提前撤销保护。TH-ESTOP-01 的双套件通过，现场 clean pack 日志计得 MC 176 条、TH 172 条存量告警，双端 minimc_proto.c 均为零告警。BOOT-MC-STAY-01 的 2000ms 判定由生产主循环和宿主测试共用，候选 MC Boot 为 37,628 B。相对获批基线，AP、MCU、MC Boot 分别改动 24、3、4 个白名单文件，AP 受保护文件累计 95/100 行。S09-RES 有四端静态核算及 r18b 实板 60 秒、61 点原始采样。候选 AP 资源、触屏 OTA 与急停实测待 #2A，MC Boot SWD 实测待 #2B。",
+  "findings": [
+    {
+      "id": "S09-R05-01",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/device_manager/device_manager_state.cpp:1259",
+      "message": "进入 OTA 维护态会同时清零 is_fault 和 non_estop_fault。急停锁存期间仍可从面板发起扫描，Forward 的活动扫描会发布 maintenance=true，DeviceManager 收到后即走此分支。若此前已记录独立故障，扫描结束再成功解除急停时，clear_emergency_stop_state() 会从已清零的 non_estop_fault 恢复状态，普通动作可在身份与遥测新鲜后重新获准。应保留独立故障，并用“锁存期故障 → 扫描进出维护态 → 双板解除成功”验证动作仍被拒绝。"
+    },
+    {
+      "id": "S09-R05-02",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/device_manager/device_manager_dbus.cpp:344",
+      "message": "首次请求锁存时，DeviceManager 收到 BUSY 就清除本地急停锁。Forward 在 forward_control.cpp:185 先向 MC 发送，收到 ACK 后隔 45ms 再向 TH 发送；第二次 I/O 提交也可能因服务停止或队列已满返回 BUSY。因此该返回码不能证明两板都未执行。若 MC 已确认而 TH 未受理，当前分支会撤销本地保护。应区分发送前拒绝与部分执行，后者须保持 estop_latched=true、estop_confirmed=false。"
+    },
+    {
+      "id": "S09-R05-03",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:742",
+      "message": "DDS Participant 或 Subscriber 创建失败时，poll_ota_dds() 提前返回，跳过第 767 行唯一的超时检查。D-Bus 仍可受理 OtaCommand 并置 active=true，持续创建失败会使面板一直显示 BUSY，无法进入 OTA_DDS_TIMEOUT。现有用例覆盖了订阅已建立后没有样本的情形。超时检查也须覆盖订阅句柄为空的路径。"
+    },
+    {
+      "id": "S09-R05-04",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/forward/forward_ota.cpp:200",
+      "message": "Forward 在 DDS 发布前就推进 published_id，发布失败后只记日志。若 DeviceManager 已收到 maintenance=true，而扫描终态的发布失败，Forward 实际已空闲，却不会重发该终态。即使面板看门狗已报 OTA_DDS_TIMEOUT，DeviceManager 仍保留维护锁，check_ota_scan_gate() 继续拒绝重扫。需要在发布恢复后有界重送终态或重新核对 Forward 的权威状态，并验证真实维护任务仍受保护。"
+    },
+    {
+      "id": "S09-R05-05",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:356",
+      "message": "升级 RPC 受理时，apply_accepted_ota_rpc() 只清理未选节点。双板升级会保留上一轮两板的 READY、valid 和 SHA-256，单板升级也会保留所选板的旧摘要。首个 DDS 样本到达前，覆层在 PRECHECK 阶段仍把旧包显示为“已就绪”，与 Forward 已重置的元数据不一致。应保留请求中用于后端比对的摘要，同时清空两板的展示状态，并补验 operation=1 的受理窗口。"
+    },
+    {
+      "id": "S09-R05-06",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:188",
+      "message": "覆层回调丢弃随回调传入的 OTA 样本，排入 UI 队列后才读取最新状态。如果本面板扫描终态与外部新任务在同一 UI 帧前到达，两次刷新都会读到外部任务的 client_req_seq=0，本次扫描应有的结果 Toast 就会丢失。应以终态样本及其请求序号结算一次性反馈，同时用最新状态显示外部任务的忙锁。"
+    },
+    {
+      "id": "S09-R05-07",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:875",
+      "message": "面板将长度至少 12 的字符串视为有效 SHA-256，Forward 则要求恰好 64 个小写十六进制字符。异常或截短的摘要会先显示“已就绪”，再在提交时被后端拒绝。面板可以只展示前 12 位，准入校验应与 Forward 一致。"
+    }
+  ]
+}

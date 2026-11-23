@@ -1,0 +1,124 @@
+{
+  "artifacts": {
+    "aml_upgrade_package.img": {
+      "bytes": 89827712,
+      "sha256": "56903d10cace279963b61cd8c299bc85ac40b2665d05f1437602e472fe311447"
+    },
+    "printer-soc-rootfs.tar.gz": {
+      "bytes": 18795966,
+      "sha256": "6e5994661c390f2cc0c4d8bb659a6481f8ebf9c71fc50a8579eb5d8d8139e380"
+    },
+    "rootfs.ubi": {
+      "bytes": 68681728,
+      "sha256": "8ae493870bc2637920b056cce7730d644a78a7d850400a4b386aa5507065a6d6"
+    }
+  },
+  "build_plan_sha256": "ba189bc4cf4eb7b7fa48ba1ab709bb7d454788a098d255c3d2c3b4cadbfadb52",
+  "feature_matrix": {
+    "deferred": [
+      "P1"
+    ],
+    "hardware_acceptance": "pending",
+    "scope": "P0"
+  },
+  "firmware_source": {},
+  "in_image_post_strip_digest_map": {
+    "usr/bin/dbus-daemon": {
+      "image_sha256": "93f52a0b5414a26193a542fa53ed0acd064f5078480d73d5d3d775155ab354b7",
+      "product_sha256": "93f52a0b5414a26193a542fa53ed0acd064f5078480d73d5d3d775155ab354b7"
+    },
+    "usr/bin/dbus-send": {
+      "image_sha256": "dafa80503121492b62f88ad791ad15bfe5130f15bde9a956d5417fc1944a1ca8",
+      "product_sha256": "dafa80503121492b62f88ad791ad15bfe5130f15bde9a956d5417fc1944a1ca8"
+    },
+    "usr/bin/device_manager_daemon": {
+      "image_sha256": "f4bed3aada3ce6b155d2d572574d4571ce8f74464cbe8e87544b623d1bb16e4b",
+      "product_sha256": "f4bed3aada3ce6b155d2d572574d4571ce8f74464cbe8e87544b623d1bb16e4b"
+    },
+    "usr/bin/forward_service_daemon": {
+      "image_sha256": "e3d9e77cbf288840c344747e3fc7a6886f9b8c328fb2579b07fdc89bc7aa450a",
+      "product_sha256": "e3d9e77cbf288840c344747e3fc7a6886f9b8c328fb2579b07fdc89bc7aa450a"
+    },
+    "usr/bin/ui-gateway": {
+      "image_sha256": "8b90adf1ea30e86a6bf6bba30705809f9d4fc54e82af77dce8e540bba38aa16d",
+      "product_sha256": "8b90adf1ea30e86a6bf6bba30705809f9d4fc54e82af77dce8e540bba38aa16d"
+    },
+    "usr/lib/printer-soc/libaisoc_dds.so": {
+      "image_sha256": "dfd6685fc7a4a04de7c6619324b19ee58f6d5fda9cea3a1d6cd796dd7598f787",
+      "product_sha256": "dfd6685fc7a4a04de7c6619324b19ee58f6d5fda9cea3a1d6cd796dd7598f787"
+    },
+    "usr/lib/printer-soc/libdbus-1.so.3.38.3": {
+      "image_sha256": "93024f30ea4f5279b9f6afde41392cfbdaa83a253016011384975f07fb85afcc",
+      "product_sha256": "93024f30ea4f5279b9f6afde41392cfbdaa83a253016011384975f07fb85afcc"
+    },
+    "usr/lib/printer-soc/libexpat.so.1.6.11": {
+      "image_sha256": "4d6b0a4abb5f1a19ac12505cac951536f20365fdd7fa01d401d976283d750a54",
+      "product_sha256": "4d6b0a4abb5f1a19ac12505cac951536f20365fdd7fa01d401d976283d750a54"
+    },
+    "usr/lib/printer-soc/libfastcdr.so.2.2.5": {
+      "image_sha256": "1e554d8c17c8da2a1e557d1d5272f1af601ea351333b921ee244b2e934273af5",
+      "product_sha256": "1e554d8c17c8da2a1e557d1d5272f1af601ea351333b921ee244b2e934273af5"
+    },
+    "usr/lib/printer-soc/libfastdds.so.3.6.2.0": {
+      "image_sha256": "a45ed61341746284c45d8385f0c24dc09f122ce3ecc3764e24028b712192a8de",
+      "product_sha256": "a45ed61341746284c45d8385f0c24dc09f122ce3ecc3764e24028b712192a8de"
+    },
+    "usr/lib/printer-soc/libfoonathan_memory-0.7.3.so": {
+      "image_sha256": "e48b46a57c93cc4d9dcd35a63992f878528f8cd3cde539112d5124dfec0ade4e",
+      "product_sha256": "e48b46a57c93cc4d9dcd35a63992f878528f8cd3cde539112d5124dfec0ade4e"
+    },
+    "usr/share/printer-soc/helixscreen/bin/helix-screen": {
+      "image_sha256": "c70e724a874074409c036bec5a3613e354130d1c3452ef04f634b20ec81c5bae",
+      "product_sha256": "c70e724a874074409c036bec5a3613e354130d1c3452ef04f634b20ec81c5bae"
+    }
+  },
+  "ota_signing_policy": "integrity-only-hil",
+  "pending_inputs": [
+    "缺少同源 MC/TH 固件包及其 HIL 物证",
+    "临时 HIL OTA 策略(integrity-only-hil)禁止生产晋级，正式发布须使用 signature-required",
+    "产品安装树仍使用工程测试信任锚，缺少可信发布方公钥"
+  ],
+  "product_version": "0.1.0-skeleton",
+  "qa_evidence": {
+    "HIL-Verified": null,
+    "SW-Verified": null
+  },
+  "repos": {
+    ".": {
+      "clean": true,
+      "commit": "72734c423b48182f40f0f16604592e8874c74969"
+    },
+    "agents": {
+      "clean": true,
+      "commit": "30ecc6586a861c1543a97804cfe0600bb4778efb"
+    },
+    "boot/bootloadermc": {
+      "clean": true,
+      "commit": "157b5317bc8fd90e93f684f949d37e98428ea193"
+    },
+    "boot/bootloaderth": {
+      "clean": true,
+      "commit": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+    },
+    "mcu-p3": {
+      "clean": true,
+      "commit": "112842cb42146e466f7001ede30096bd0125c385"
+    },
+    "printer-soc": {
+      "clean": true,
+      "commit": "7d786f9aaa7d009254fa02bd19a63c926bd93f65"
+    },
+    "project-control": {
+      "clean": true,
+      "commit": "967fc5b205a57b5bf2d1bcf88f8c03ab01ea3693"
+    },
+    "test_harness": {
+      "clean": true,
+      "commit": "fb1409be7ad5586c701df586553d7f5b67bc2b43"
+    }
+  },
+  "schema_version": 1,
+  "sdk_lock_sha256": "ea8f4eec4425f1624af05a2cfc529c621006f2feb40b6b0bc1fa254b3312e13e",
+  "sdk_patch_sha256": "8cfc4c01ce776007993af2efeafe215925bb09527685c798b24a30e67d256e24",
+  "tag": "v0.1.0-skeleton"
+}

@@ -1,0 +1,90 @@
+{
+  "slice_id": "SLICE-09",
+  "batch_id": "BATCH-HELIX-P0-02",
+  "profile": "c308l-system",
+  "commits": {
+    "printer-soc": "7d786f9aaa7d009254fa02bd19a63c926bd93f65",
+    "mcu-p3": "112842cb42146e466f7001ede30096bd0125c385",
+    "boot/bootloadermc": "157b5317bc8fd90e93f684f949d37e98428ea193",
+    "project-control": "967fc5b205a57b5bf2d1bcf88f8c03ab01ea3693",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "fb1409be7ad5586c701df586553d7f5b67bc2b43",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "root_commit": "72734c423b48182f40f0f16604592e8874c74969",
+  "input_fingerprint": "bf108ebac5002046c717a297d85a416370cb6eb1cf78fdf51c9c4ff77ecc7968",
+  "status": "FAILED",
+  "stage": "codex",
+  "decision": "REJECTED",
+  "codex_session": "01a20902-2937-7bc1-ad3f-982824c0be90",
+  "blocker_count": 6,
+  "findings": [
+    {
+      "id": "S09-R05-01",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/device_manager/device_manager_state.cpp:1259",
+      "message": "进入 OTA 维护态会同时清零 is_fault 和 non_estop_fault。急停锁存期间仍可从面板发起扫描，Forward 的活动扫描会发布 maintenance=true，DeviceManager 收到后即走此分支。若此前已记录独立故障，扫描结束再成功解除急停时，clear_emergency_stop_state() 会从已清零的 non_estop_fault 恢复状态，普通动作可在身份与遥测新鲜后重新获准。应保留独立故障，并用“锁存期故障 → 扫描进出维护态 → 双板解除成功”验证动作仍被拒绝。"
+    },
+    {
+      "id": "S09-R05-02",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/device_manager/device_manager_dbus.cpp:344",
+      "message": "首次请求锁存时，DeviceManager 收到 BUSY 就清除本地急停锁。Forward 在 forward_control.cpp:185 先向 MC 发送，收到 ACK 后隔 45ms 再向 TH 发送；第二次 I/O 提交也可能因服务停止或队列已满返回 BUSY。因此该返回码不能证明两板都未执行。若 MC 已确认而 TH 未受理，当前分支会撤销本地保护。应区分发送前拒绝与部分执行，后者须保持 estop_latched=true、estop_confirmed=false。"
+    },
+    {
+      "id": "S09-R05-03",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:742",
+      "message": "DDS Participant 或 Subscriber 创建失败时，poll_ota_dds() 提前返回，跳过第 767 行唯一的超时检查。D-Bus 仍可受理 OtaCommand 并置 active=true，持续创建失败会使面板一直显示 BUSY，无法进入 OTA_DDS_TIMEOUT。现有用例覆盖了订阅已建立后没有样本的情形。超时检查也须覆盖订阅句柄为空的路径。"
+    },
+    {
+      "id": "S09-R05-04",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/forward/forward_ota.cpp:200",
+      "message": "Forward 在 DDS 发布前就推进 published_id，发布失败后只记日志。若 DeviceManager 已收到 maintenance=true，而扫描终态的发布失败，Forward 实际已空闲，却不会重发该终态。即使面板看门狗已报 OTA_DDS_TIMEOUT，DeviceManager 仍保留维护锁，check_ota_scan_gate() 继续拒绝重扫。需要在发布恢复后有界重送终态或重新核对 Forward 的权威状态，并验证真实维护任务仍受保护。"
+    },
+    {
+      "id": "S09-R05-05",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:356",
+      "message": "升级 RPC 受理时，apply_accepted_ota_rpc() 只清理未选节点。双板升级会保留上一轮两板的 READY、valid 和 SHA-256，单板升级也会保留所选板的旧摘要。首个 DDS 样本到达前，覆层在 PRECHECK 阶段仍把旧包显示为“已就绪”，与 Forward 已重置的元数据不一致。应保留请求中用于后端比对的摘要，同时清空两板的展示状态，并补验 operation=1 的受理窗口。"
+    },
+    {
+      "id": "S09-R05-06",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:188",
+      "message": "覆层回调丢弃随回调传入的 OTA 样本，排入 UI 队列后才读取最新状态。如果本面板扫描终态与外部新任务在同一 UI 帧前到达，两次刷新都会读到外部任务的 client_req_seq=0，本次扫描应有的结果 Toast 就会丢失。应以终态样本及其请求序号结算一次性反馈，同时用最新状态显示外部任务的忙锁。"
+    },
+    {
+      "id": "S09-R05-07",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:875",
+      "message": "面板将长度至少 12 的字符串视为有效 SHA-256，Forward 则要求恰好 64 个小写十六进制字符。异常或截短的摘要会先显示“已就绪”，再在提交时被后端拒绝。面板可以只展示前 12 位，准入校验应与 Forward 一致。"
+    }
+  ],
+  "reason": "独立 Codex 拒单 (6 BLOCKER): S09-R05-01: 进入 OTA 维护态会同时清零 is_fault 和 non_estop_fault。急停锁存期间仍可从面板发起扫描，Forward 的活动扫描会发布 maintenance=true，DeviceManager 收到后即走此分支。若此前已",
+  "next_step": "按 codex_final_json 修复 BLOCKER 项后重过四阶门禁",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/docker_qa/checkout.log",
+    "build_plan_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/docker_qa/artifacts/build-plan.json",
+    "release_manifest_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/docker_qa/artifacts/release-manifest.json",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/codex/codex.stderr",
+    "codex_request_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_2255_r05/codex/request.json"
+  }
+}
