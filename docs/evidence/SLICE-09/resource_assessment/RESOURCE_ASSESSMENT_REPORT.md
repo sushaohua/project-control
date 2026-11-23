@@ -2,8 +2,8 @@
 
 - **切片与任务标识**：`SLICE-09` / `S09-RES`（第 5 项交付：资源评估）
 - **评估角色与写边界**：`INTEGRATOR`（全业务仓只读 `max_files = 0`、`max_protected_lines = 0`；唯一归档目录 `project-control/docs/evidence/SLICE-09/resource_assessment/`）
-- **方案依据**：[helix_p0_experience_implementationplan_20261121_190357.md](../../planning/helix_p0_experience_implementationplan_20261121_190357.md)（`v1.3` 已批准版 `§1.8`、`§2.6`）
-- **当前报告阶段**：**阶段一（刷入新候选前的 `SLICE-08 r18b` 实板空闲基线与存储核算 + 四端 MCU/Bootloader 基线对比候选静态容量全量核算）**；需在 `r03` 容器构建及 `Human Gate #2A`（阶段 H1/H2）实板部署后补齐的候选 AP 空闲、双板 OTA 动态采样与新 rootfs 包体积均已在对应列明确标注 `待验证`，绝不伪造待测项。
+- **方案依据**：[helix_p0_experience_implementationplan_20261121_190357.md](../../planning/helix_p0_experience_implementationplan_20261121_190357.md)（`v1.4` 已批准版 `§1.8`、`§2.6`）
+- **当前报告阶段**：**阶段一（刷入新候选前的 `SLICE-08 r18b` 实板空闲基线与存储核算 + 四端 MCU/Bootloader 基线对比候选静态容量全量核算）**；需在 `r04` 容器构建及 `Human Gate #2A`（阶段 H1/H2）实板部署后补齐的候选 AP 空闲、双板 OTA 动态采样与新 rootfs 包体积均已在对应列明确标注 `待验证`，绝不伪造待测项。
 
 ---
 
@@ -11,10 +11,10 @@
 
 | 端点 / 仓库 | `SLICE-08 r18b` 基线锁定 Commit (40-SHA) | `SLICE-09` 候选锁定 Commit (40-SHA) | 构建配置 / 编译选项 | 正式归档制品路径与 SHA-256（前 16 位，全长见 JSON） |
 | --- | --- | --- | --- | --- |
-| **AP (`printer-soc`)** | `6f28023f7f1b774d181fc4ba59d3c378f260bfc1` | `7dee19eb9c6db06060eac98f2bd30fdcb35ba9b1` | `c308l-production`, `armv7l-hf-glibc2.33`, `--hil-ota-integrity-only` | 基线 `SLICE-08/run_20261121_155747_r18b/docker_qa/artifacts/printer-soc-rootfs.tar.gz` (`18,788,600 B`, `76e9348b88fea16a...`)；候选待 `r03` Docker QA 产出 |
+| **AP (`printer-soc`)** | `6f28023f7f1b774d181fc4ba59d3c378f260bfc1` | `2560f4858889c63d6a1d673f2b429ed78e755b07` | `c308l-production`, `armv7l-hf-glibc2.33`, `--hil-ota-integrity-only` | 基线 `SLICE-08/run_20261121_155747_r18b/docker_qa/artifacts/printer-soc-rootfs.tar.gz` (`18,788,600 B`, `76e9348b88fea16a...`)；候选待 `r04` Docker QA 产出 |
 | **MC App (`mcu-p3`)** | `a64bffbf1a0c5cbc2fe96b51632098042697878b` | `112842cb42146e466f7001ede30096bd0125c385` | `arm-none-eabi-gcc 9.2.1`, `CMake Debug`, `AT32F435xG_FLASH.ld` | 基线 `SLICE-08/fw_mc_r18.bin` (`384,668 B`, `1a259d259d478ef6...`)；候选 `SLICE-09/candidate_mcu_artifacts/fw_mc.bin` (`384,668 B`, `320966b15cf2fb41...`) |
 | **TH App (`mcu-p3`)** | `a64bffbf1a0c5cbc2fe96b51632098042697878b` | `112842cb42146e466f7001ede30096bd0125c385` | `arm-none-eabi-gcc 9.2.1`, `-O2 -fdata-sections -ffunction-sections --gc-sections`, `AT32F423xC_FLASH.ld` | 基线 `SLICE-08/fw_th_r18.bin` (`76,992 B`, `f839e1d56f26ed47...`)；候选 `SLICE-09/candidate_mcu_artifacts/fw_th.bin` (`76,968 B`, `904ceee06e31729b...`) |
-| **MC Boot (`boot/bootloadermc`)** | `3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4` | `d2ef9fb6955eba5f7992b743642919e4e712af83` | `arm-none-eabi-gcc 9.2.1`, `-Os -g3 -fdata-sections -ffunction-sections --gc-sections`, `at32f435_bootloader.ld` | 基线 `SLICE-09/candidate_mcu_artifacts/bootloader_3e01c00_rollback.bin` (`37,600 B`, `1082c318fee4aecb...`)；候选 `bootloader.bin` (`37,596 B`, `e52289e6505db06b...`) |
+| **MC Boot (`boot/bootloadermc`)** | `3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4` | `157b5317bc8fd90e93f684f949d37e98428ea193` | `arm-none-eabi-gcc 9.2.1`, `-Os -g3 -fdata-sections -ffunction-sections --gc-sections`, `at32f435_bootloader.ld` | 基线 `SLICE-09/candidate_mcu_artifacts/bootloader_3e01c00_rollback.bin` (`37,600 B`, `1082c318fee4aecb...`)；候选 `bootloader.bin` (`37,628 B`, `0e9ace3fc6dc8ffc...`) |
 | **TH Boot (`boot/bootloaderth`)** | `1a0351363cf7b9cbc0aa6919b4afc6be61561152` | `1a0351363cf7b9cbc0aa6919b4afc6be61561152`（同源零改动共用） | `arm-none-eabi-gcc 9.2.1`, `-Os -DDEBUG_LOG_ENABLE=1 --gc-sections`, `AT32A423xC_FLASH.ld` | 锁定源码隔离构建 `bootloaderth.bin` (`9,360 B`, `2d28f40544f8e38a...`)，基线与候选同源共用一份静态证据 |
 
 ---
@@ -42,7 +42,7 @@
 
 ### 2.2 工况 A：AP 生产空闲窗口（`60s @ 1Hz`）对比表
 
-| 观测对象 | 指标项 | 单位 | `SLICE-08 r18b` 基线实测值 (`6f28023f`) | `SLICE-09` 候选实测值 (`7dee19eb`) | 可比差值 (`候选 - 基线`) | 物理总量 / 容量余量 | 取数来源与状态 |
+| 观测对象 | 指标项 | 单位 | `SLICE-08 r18b` 基线实测值 (`6f28023f`) | `SLICE-09` 候选实测值 (`2560f485`) | 可比差值 (`候选 - 基线`) | 物理总量 / 容量余量 | 取数来源与状态 |
 | --- | --- | :---: | :---: | :---: | :---: | --- | --- |
 | **AP 整机 (`2 Cores`)** | 系统 CPU 均值 / 1s 峰值 | `%` | **`24.572%` / `30.964%`**（最低 `17.436%`） | `待验证 (Pending Human Gate #2A H1)` | `待验证` | 整机上限 `100%`（`r18b` 均值余量 `75.428%`，峰值余量 `69.036%`） | `/proc/stat` (`ap_r18b_idle_60s_raw.json`) |
 | **AP 整机内存** | `MemAvailable` 观测最低值 | `KiB` | **`1,653,820`**（最高 `1,654,072`） | `待验证 (Pending Human Gate #2A H1)` | `待验证` | `MemTotal = 1,784,292 KiB`（可用占比 **`92.69%`**，无固定硬阈值） | `/proc/meminfo` (`ap_r18b_idle_60s_raw.json`) |
@@ -78,11 +78,11 @@
 
 ### 3.2 AP 系统发布包与镜像制品字节数对比（单列压缩包/镜像大小）
 
-| 制品名称 | 单位 | `SLICE-08 r18b` 正式归档值 (`6f28023f`) | `SLICE-09` 候选归档值 (`7dee19eb`) | 可比差值 (`候选 - 基线`) | 上限 / 约束 | 原始证据来源 |
+| 制品名称 | 单位 | `SLICE-08 r18b` 正式归档值 (`6f28023f`) | `SLICE-09` 候选归档值 (`2560f485`) | 可比差值 (`候选 - 基线`) | 上限 / 约束 | 原始证据来源 |
 | --- | :---: | :---: | :---: | :---: | --- | --- |
-| **`printer-soc-rootfs.tar.gz`**（应用部署压缩包） | `Bytes` (`KiB`) | **`18,788,600`** (`18,348.24 KiB`) | `待验证 (Pending r03 Docker QA)` | `待验证` | 解压目标 `/`（分区总容 `110,440 KiB`） | `static_and_storage_summary.json` (`sha256=76e9348b...`) |
-| **`rootfs.ubi`**（UBI 根文件系统镜像） | `Bytes` (`KiB`) | **`68,681,728`** (`67,072.00 KiB`) | `待验证 (Pending r03 Docker QA)` | `待验证` | `ubi0_0` 卷容量上限内 | `static_and_storage_summary.json` (`sha256=61dc843e...`) |
-| **`aml_upgrade_package.img`**（整机线刷包） | `Bytes` (`KiB`) | **`89,827,840`** (`87,722.50 KiB`) | `待验证 (Pending r03 Docker QA)` | `待验证` | 产线烧录镜像（非板载常驻） | `static_and_storage_summary.json` (`sha256=936434bc...`) |
+| **`printer-soc-rootfs.tar.gz`**（应用部署压缩包） | `Bytes` (`KiB`) | **`18,788,600`** (`18,348.24 KiB`) | `待验证 (Pending r04 Docker QA)` | `待验证` | 解压目标 `/`（分区总容 `110,440 KiB`） | `static_and_storage_summary.json` (`sha256=76e9348b...`) |
+| **`rootfs.ubi`**（UBI 根文件系统镜像） | `Bytes` (`KiB`) | **`68,681,728`** (`67,072.00 KiB`) | `待验证 (Pending r04 Docker QA)` | `待验证` | `ubi0_0` 卷容量上限内 | `static_and_storage_summary.json` (`sha256=61dc843e...`) |
+| **`aml_upgrade_package.img`**（整机线刷包） | `Bytes` (`KiB`) | **`89,827,840`** (`87,722.50 KiB`) | `待验证 (Pending r04 Docker QA)` | `待验证` | 产线烧录镜像（非板载常驻） | `static_and_storage_summary.json` (`sha256=936434bc...`) |
 
 ---
 
@@ -99,10 +99,10 @@
 | **`MC App`** (`AT32F435`) | ATSG 升级包 (`0x43500001`) | `fw_mc.bin` 总字节数（含 `128B` ATSG 尾块） | `Bytes` | **`384,668`** | **`384,668`** | **`0 B`** | 净载上限 `917,504` | — | `validate_atsg_base(check_crc=True)` 通过；本轮 MC App 源码零改动，仅内嵌短提交由 `0xA64BFFBF` 变为 `0x112842CB`。 |
 | **`TH App`** (`AT32F423`) | `0x08004000` (`AT32F423xC_FLASH.ld`) | Flash 占用跨度（基线 `..0x08016c40` / 候选 `..0x08016c28`） | `Bytes` | **`76,864`** | **`76,840`** | **`-24 B`** | `241,664` (`236 KiB`) | **`164,824 B`** (`68.20%`) | **未超限**；`TH-ESTOP-01` 修复精简 `handle_th_motion_stop()` 使 `.text` 由 `70,340B` (`0x112c4`) 降至 `70,316B` (`0x112ac`)，净减 `24 B`。 |
 | **`TH App`** (`AT32F423`) | ATSG 升级包 (`0x42300001`) | `fw_th.bin` 总字节数（含 `128B` ATSG 尾块） | `Bytes` | **`76,992`** | **`76,968`** | **`-24 B`** | 净载上限 `241,664` | — | `validate_atsg_base(check_crc=True)` 通过；净载严格等于 ELF Flash LMA 跨度（`76,864 B` / `76,840 B`）。 |
-| **`MC Bootloader`** (`AT32F435`) | `0x08000000` (`at32f435_bootloader.ld`) | Flash 占用跨度 / `bootloader.bin` 大小（基线 `..0x080092e0` / 候选 `..0x080092dc`） | `Bytes` | **`37,600`** | **`37,596`** | **`-4 B`** | `131,072` (`128 KiB`) | **`93,476 B`** (`71.32%`) | **未超限**；`BOOT-MC-STAY-01` 移除 `handle_cmd_get_version()` 中误置的 `s_ota.stay_in_boot = 1U;`，`.text` 精确减少 `4 B`。 |
+| **`MC Bootloader`** (`AT32F435`) | `0x08000000` (`at32f435_bootloader.ld`) | Flash 占用跨度 / `bootloader.bin` 大小（基线 `..0x080092e0` / 候选 `..0x080092fc`） | `Bytes` | **`37,600`** | **`37,628`** | **`+28 B`** | `131,072` (`128 KiB`) | **`93,444 B`** (`71.29%`) | **未超限**；`BOOT-MC-STAY-01` 移除 `handle_cmd_get_version()` 中误置的 `s_ota.stay_in_boot = 1U;` 并提炼 `boot_uart_ota_should_jump_after_window()`（`S09-06`），`.text` 净增 `28 B`（`33,824B` ➔ `33,852B`）。 |
 | **`TH Bootloader`** (`AT32A423`) | `0x08000000` (`AT32A423xC_FLASH.ld`) | Flash 占用跨度 / `bootloaderth.bin` 大小 (`0x08000000..0x08002490`) | `Bytes` | **`9,360`** | **`9,360`** | **`0 B`（同源共用）** | `16,384` (`16 KiB`) | **`7,024 B`** (`42.87%`) | **未超限**；基线与候选锁定同一提交 `1a035136`，共用同一静态构建证据。 |
 
-- **隔离重编与正式归档包差异核对记录**：在 `.tmp_baseline_build/`（提取后已彻底删除）基于锁定 40 位 SHA 重编的 6 份基线/候选二进制与已归档正式制品逐字节比对，原始字节差异数分别为 `mc_app_r18b=5B`、`mc_app_s09=4B`、`th_app_r18b=9B`、`th_app_s09=10B`、`mc_boot_r18b=6B`、`mc_boot_s09=5B`，经 `normalize_stamps()` 归一化 `version_autogen.h` 开发流水号与 `__DATE__/__TIME__` 构建时间字符串后，**全部 100% 逐字节机器码与常量表完全一致（`normalized_machine_code_identical = true`）**。
+- **隔离重编与正式归档包差异核对记录**：在 `.tmp_baseline_build/`（提取后已彻底删除）基于锁定 40 位 SHA 重编的 6 份基线/候选二进制与已归档正式制品逐字节比对，原始字节差异数分别为 `mc_app_r18b=5B`、`mc_app_s09=4B`、`th_app_r18b=9B`、`th_app_s09=10B`、`mc_boot_r18b=6B`、`mc_boot_s09=0B`（`157b5317` 当轮洁净重编直接归档），经 `normalize_stamps()` 归一化 `version_autogen.h` 开发流水号与 `__DATE__/__TIME__` 构建时间字符串后，**全部 100% 逐字节机器码与常量表完全一致（`normalized_machine_code_identical = true`）**。
 
 ### 4.2 各 RAM Bank 静态区、编译期堆栈预留与 `BOOT_IPC` 独立核算表
 - **核算规则（`§2.6`）**：按链接脚本定义的独立 `MEMORY` 区域（`RAM`、`BOOT_IPC`、`RAM_STACK`）按 VMA 分别核算；静态全局占用含 `.data`、`.bss`、`.noinit` 及段间对齐间隙；编译期链接预留检查段 `._user_heap_stack`（含 `_Min_Heap_Size`、`_Min_Stack_Size` 及 8B 对齐填充）独立列出，不与静态区重复双扣。
@@ -122,17 +122,17 @@
 | 评估维度 | 基线状态 | 候选状态 | 缺测原因与对交付结论的影响说明 |
 | --- | :---: | :---: | --- |
 | **MC / TH 运行时 CPU 利用率** | `未测（无固件埋点）` | `未测（无固件埋点）` | 遵循 `§2.6` 零业务代码篡改约束（`max_files=0`），不向候选固件插入 DWT/SysTick 性能打点以避免改变待测二进制及引入串口/中断观测开销；通信吞吐与延迟留由独立通信性能测试方案专项评估。 |
-| **MC / TH 运行时实际栈峰值水位** | `未测（无固件埋点）` | `未测（无固件埋点）` | 固件未启用启动期栈涂色（Stack Painting）与水位读回命令，故无法实测动态最大栈深；但静态核算证实本轮 `TH-ESTOP-01`（`-24B` Flash、`0B` RAM）与 `BOOT-MC-STAY-01`（`-4B` Flash、`0B` RAM）零新增递归或大局部数组，且四端物理堆栈池（`350.2 KiB` / `16.0 KiB` 独立区 / `377.0 KiB` / `45.8 KiB`）相对各自 `_Min_Stack_Size` 均具备充裕静态安全边界。 |
+| **MC / TH 运行时实际栈峰值水位** | `未测（无固件埋点）` | `未测（无固件埋点）` | 固件未启用启动期栈涂色（Stack Painting）与水位读回命令，故无法实测动态最大栈深；但静态核算证实本轮 `TH-ESTOP-01`（`-24B` Flash、`0B` RAM）与 `BOOT-MC-STAY-01` + `S09-06`（`+28B` Flash、`0B` RAM）零新增递归或大局部数组，且四端物理堆栈池（`350.2 KiB` / `16.0 KiB` 独立区 / `377.0 KiB` / `45.8 KiB`）相对各自 `_Min_Stack_Size` 均具备充裕静态安全边界。 |
 
 ---
 
-## 5. 阶段一结论摘要与阶段二（`r03` QA & `Human Gate #2A`）待补齐清单
+## 5. 阶段一结论摘要与阶段二（`r04` QA & `Human Gate #2A`）待补齐清单
 
 1. **已闭环结论（零超限）**：
-   - **四端 MCU / Bootloader 静态评估 100% 完成**：相对 `SLICE-08 r18b`，`SLICE-09` 候选的 `MC App` Flash/RAM 增量为 `0 B` / `0 B`（Flash 余量 `532,964 B` / `58.09%`），`TH App` Flash 减少 `24 B`、RAM 增量 `0 B`（Flash 余量 `164,824 B` / `68.20%`），`MC Bootloader` Flash 减少 `4 B`、RAM 增量 `0 B`（Flash 余量 `93,476 B` / `71.32%`），`TH Bootloader` 同源零变化（Flash 余量 `7,024 B` / `42.87%`），全部 Flash 分区与独立 RAM Bank 均远低于硬上限。
+   - **四端 MCU / Bootloader 静态评估 100% 完成**：相对 `SLICE-08 r18b`，`SLICE-09` 候选的 `MC App` Flash/RAM 增量为 `0 B` / `0 B`（Flash 余量 `532,964 B` / `58.09%`），`TH App` Flash 减少 `24 B`、RAM 增量 `0 B`（Flash 余量 `164,824 B` / `68.20%`），`MC Bootloader` Flash 增加 `28 B`、RAM 增量 `0 B`（Flash 余量 `93,444 B` / `71.29%`），`TH Bootloader` 同源零变化（Flash 余量 `7,024 B` / `42.87%`），全部 Flash 分区与独立 RAM Bank 均远低于硬上限。
    - **实板 `r18b` 空闲 60s @ 1Hz 与存储基线采集完成**：采样期间 5 个生产守护进程零换代（`no_pid_churn=true`），整机系统 CPU 均值 `24.572%`（1s 峰值 `30.964%`），5 进程 `VmRSS` 峰值合计 `56,124 KiB`（其中 `panel` `30,264 KiB`），整机 `MemAvailable` 最低 `1,653,820 KiB`（占总内存 `92.69%`）；`/` 可用 `34,932 KiB`，`/data` 可用 `51,144 KiB`，`/run/printer-soc/firmware` 共用 `/run` `tmpfs` 可用 `890,616 KiB`。
 2. **阶段二待补齐项（严禁提前虚标通过）**：
-   - 待 `r03` Docker QA 产出新候选 `printer-soc-rootfs.tar.gz`、`rootfs.ubi`、`aml_upgrade_package.img` 后，补齐 §3.2 候选制品字节数、SHA-256 与差值；
+   - 待 `r04` Docker QA 产出新候选 `printer-soc-rootfs.tar.gz`、`rootfs.ubi`、`aml_upgrade_package.img` 后，补齐 §3.2 候选制品字节数、SHA-256 与差值；
    - 待用户批准 `Human Gate #2A` 部署候选上板后，在阶段 H1 采集候选稳定空闲 `60s @ 1Hz` 样本及 `df -k` 存储余量，在阶段 H2 同一次真实触屏双板 OTA 事务窗口采集 `@ 1Hz` 动态 CPU/RAM 样本并按 `task_id` 与 `forward.log` 对齐更新本报告 §2.2、§2.3 与 §3.1。
 
 ---

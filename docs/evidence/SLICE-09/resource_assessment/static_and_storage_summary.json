@@ -309,32 +309,32 @@
     },
     "mc_boot_s09": {
       "berkeley_size": {
-        "text": 37360,
+        "text": 37392,
         "data": 184,
         "bss": 19272
       },
       "flash": {
         "flash_origin": "0x8000000",
         "flash_limit_bytes": 131072,
-        "max_flash_lma_end": "0x80092dc",
-        "flash_span_bytes": 37596,
-        "flash_headroom_bytes": 93476,
+        "max_flash_lma_end": "0x80092fc",
+        "flash_span_bytes": 37628,
+        "flash_headroom_bytes": 93444,
         "load_segments": [
           {
             "vaddr": "0x8000000",
             "paddr": "0x8000000",
-            "filesz": 37420,
-            "memsz": 37420
+            "filesz": 37452,
+            "memsz": 37452
           },
           {
             "vaddr": "0x20000000",
-            "paddr": "0x800922c",
+            "paddr": "0x800924c",
             "filesz": 176,
             "memsz": 7160
           },
           {
             "vaddr": "0x20001bf8",
-            "paddr": "0x80092dc",
+            "paddr": "0x80092fc",
             "filesz": 0,
             "memsz": 12288
           }
@@ -343,12 +343,12 @@
       "reconcile": {
         "archived": {
           "path": "/home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/candidate_mcu_artifacts/bootloader.bin",
-          "size_bytes": 37596,
-          "sha256": "e52289e6505db06b9b60b2b7ea8f2b39b1e58a9d94ce7742ea6c08afc529d3d4"
+          "size_bytes": 37628,
+          "sha256": "0e9ace3fc6dc8ffc557cd0225dd36a78b776066b2a05803e7539c64e24804874"
         },
-        "payload_bytes": 37596,
-        "built_payload_bytes": 37596,
-        "raw_payload_diff_bytes": 5,
+        "payload_bytes": 37628,
+        "built_payload_bytes": 37628,
+        "raw_payload_diff_bytes": 0,
         "normalized_machine_code_identical": true
       }
     },

@@ -1,7 +1,7 @@
 {
   "slice_id": "SLICE-09",
   "mcu_p3_commit": "112842cb42146e466f7001ede30096bd0125c385",
-  "boot_mc_commit": "d2ef9fb6955eba5f7992b743642919e4e712af83",
+  "boot_mc_commit": "157b5317bc8fd90e93f684f949d37e98428ea193",
   "files": {
     "fw_mc.bin": {
       "size_bytes": 384668,
@@ -22,8 +22,8 @@
       "embedded_git_short": "0x112842CB"
     },
     "bootloader.bin": {
-      "size_bytes": 37596,
-      "sha256": "e52289e6505db06b9b60b2b7ea8f2b39b1e58a9d94ce7742ea6c08afc529d3d4"
+      "size_bytes": 37628,
+      "sha256": "0e9ace3fc6dc8ffc557cd0225dd36a78b776066b2a05803e7539c64e24804874"
     },
     "bootloader_3e01c00_rollback.bin": {
       "size_bytes": 37600,
