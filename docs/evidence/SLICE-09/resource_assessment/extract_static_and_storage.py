@@ -24,9 +24,14 @@ def sha256_and_size(path: Path) -> dict:
 
 
 def normalize_stamps(data: bytes) -> bytes:
-    """归一化固件内嵌构建时间戳与开发流水号以便核对纯机器码一致性。"""
+    """归一化固件内嵌构建日期时间戳（含跨日 __DATE__）与开发流水号以便核对纯机器码一致性。"""
     out = re.sub(rb"V(\d+\.\d+\.\d+)-[0-9A-Fa-f]{4} \d{4}", rb"V\1-XXXX 0000", data)
     out = re.sub(rb"20\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", b"2000-00-00 00:00:00", out)
+    out = re.sub(
+        rb"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [ \d]\d 20\d{2} \d{2}:\d{2}:\d{2}( \| Build #)",
+        rb"Jan 01 2000 00:00:00\1",
+        out,
+    )
     return re.sub(rb"\d{2}:\d{2}:\d{2}( \| Build #)", rb"00:00:00\1", out)
 
 

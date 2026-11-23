@@ -1,0 +1,14 @@
+{
+  "slice_id": "SLICE-09",
+  "batch_id": "BATCH-HELIX-P0-02",
+  "profile": "c308l-system",
+  "status": "FAILED",
+  "stage": "integration",
+  "reason": "AssertionError: boot/bootloadermc/build/bootloader.bin 机器码与归档候选不一致",
+  "next_step": "查阅 integration_log 修复合龙失败",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0014_r06/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0014_r06/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0014_r06/integration.log"
+  }
+}
