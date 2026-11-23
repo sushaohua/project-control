@@ -1,0 +1,90 @@
+{
+  "slice_id": "SLICE-09",
+  "batch_id": "BATCH-HELIX-P0-02",
+  "profile": "c308l-system",
+  "commits": {
+    "printer-soc": "5100e4a23c3c28512517fb07a64c80aed2e5b2d6",
+    "mcu-p3": "112842cb42146e466f7001ede30096bd0125c385",
+    "boot/bootloadermc": "d2ef9fb6955eba5f7992b743642919e4e712af83",
+    "project-control": "8c455bf56c68cde46503ff3a562f68988afadc31",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "fb1409be7ad5586c701df586553d7f5b67bc2b43",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "root_commit": "c63f82c299ab3a044cfc84b11423cca1376593a8",
+  "input_fingerprint": "4f27669094dc566ceea6d1c651ed39a3015e3ebf2481a1acc5764cfa3eb7d677",
+  "status": "FAILED",
+  "stage": "codex",
+  "decision": "REJECTED",
+  "codex_session": "01a2064e-6f40-75b2-b6a2-57661e3b90df",
+  "blocker_count": 6,
+  "findings": [
+    {
+      "id": "S09-01",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:228、254",
+      "message": "MC 已驻留 Bootloader 且没有活动任务时，Forward 将 recovery_pending 发布为 active=false、maintenance=true，并保留 MC 单板串口恢复入口。面板的扫描和开始按钮均因 maintenance 直接返回 BUSY，操作者无法从触屏恢复 MC。应区分活动任务与等待恢复，验证此状态下可扫描并恢复 MC，同时继续阻止 TH 或双板写刷。"
+    },
+    {
+      "id": "S09-02",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:208；printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:336、518",
+      "message": "急停锁存与解除成功都会得到 CONFIRMED。面板把这个最近一次命令结果直接解释为「设备已确认急停」。若从 D-Bus 解除，轮询虽读到新的 device_state 和 system_status，解析函数也不会据此更新 estop_latched。因此双板已解除并恢复在线后，触屏仍可显示急停已锁存。应以当前设备快照驱动锁存提示，并覆盖触屏锁存、外部解除后的刷新。"
+    },
+    {
+      "id": "S09-03",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:547；printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:63、195",
+      "message": "上一次扫描为 READY 后，若重扫 RPC 断连或被拒绝，连接层复制旧快照，保留 READY 和两板摘要，仅更新错误码。面板遇到非 BUSY 错误仍按旧 READY 格式化文案，再把「固件包完整性校验通过」作为本次重扫的 Toast 弹出。应优先显示本次 RPC 失败，并验证上次就绪、此次失败时不会提示校验通过。"
+    },
+    {
+      "id": "S09-04",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/tools/c308l_services.py:242；printer-soc/boards/c308l-aw419/rootfs-overlay/usr/bin/printer-soc-panel:88",
+      "message": "两个启动入口仅迁移 HOME 下的备用副本。r18b 走查报告登记的首选副本是 /var/lib/helixscreen/settings.json.backup，Config::init 在主配置损坏或无版本且无首装标记时会优先恢复它。此时旧英文配置可在迁移步骤之后重新生效。应覆盖首选副本的实际恢复路径，同时验证带迁移标记的手动英文选择仍保留。"
+    },
+    {
+      "id": "S09-05",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "project-control/docs/evidence/SLICE-09/ux01_r18b_walkthrough/UX01_WALKTHROUGH_REPORT.md:17",
+      "message": "走查报告将 heating_pwm_pct == 0 登记为实测 PASS，所引日志只有 GetDeviceState 的 heating=false。基线 device_manager_state.cpp:426 依据目标温度更新此布尔量，并明确注明该状态帧不含 PWM。请保留六项走查结果，将占空比标为 [UNVERIFIED]，或关联同一走查时段的原始 PWM 读数。"
+    },
+    {
+      "id": "S09-06",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "project-control/slices/SLICE-09.yaml:70；project-control/docs/evidence/SLICE-09/verify_candidate_artifacts.py:39",
+      "message": "批准方案要求第二阶合龙从锁定提交干净构建并打包两颗 MCU App。实际 integration_cmd 执行两套宿主单测，随后校验已归档双包。两份归档与本地构建目录的 SHA-256 一致，ATSG 校验通过，但 r01 没有执行双 App 的 make clean 和 make pack，短提交字节匹配也无法证明本轮构建来源。应在合龙中生成双包并对账归档摘要。"
+    },
+    {
+      "id": "S09-07",
+      "severity": "MINOR",
+      "axis": "embedded_safety",
+      "location": "project-control/tools/gates/fast_gate.py:148",
+      "message": "干净工作树仅以 HEAD 的父提交为比较基线。此次 AP 有两笔提交，末笔只涉及两个文件，因此单看 r01 的 fast_gate PASS 无法确认整片预算。独立按 r18b 到候选的完整差异复核后，实际为 20 个文件、受保护改动 20/45 行。门禁应记录切片基线并据此累计。"
+    }
+  ],
+  "reason": "独立 Codex 拒单 (6 BLOCKER): S09-01: MC 已驻留 Bootloader 且没有活动任务时，Forward 将 recovery_pending 发布为 active=false、maintenance=true，并保留 MC 单板串口恢复入口。面板的扫描和开始按钮均因 mai",
+  "next_step": "按 codex_final_json 修复 BLOCKER 项后重过四阶门禁",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/docker_qa/checkout.log",
+    "build_plan_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/docker_qa/artifacts/build-plan.json",
+    "release_manifest_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/docker_qa/artifacts/release-manifest.json",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/codex/codex.stderr",
+    "codex_request_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r01/codex/request.json"
+  }
+}

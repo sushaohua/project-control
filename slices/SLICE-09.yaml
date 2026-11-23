@@ -64,13 +64,16 @@ subtasks:
       max_protected_lines: 0
 
 integration_cmd: >-
+  START_TS=$(python3 -c 'import time; print(f"{time.time():.3f}")') &&
   python3 -B project-control/docs/evidence/SLICE-09/verify_cjk_glyphs.py printer-soc &&
   (cd printer-soc && python3 -B -m unittest services/helixscreen/platform/c308l/tests/test_tools.py tests/packaging/test_product_package.py && python3 -B -m unittest discover -s tests/integration -p test_release_product.py -v) &&
   python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test &&
   (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh) &&
   (cd mcu-p3/color-engine-mcu/tests && sh run_tests.sh) &&
+  (cd mcu-p3/motion-controller-mcu && make clean && make pack) &&
+  (cd mcu-p3/color-engine-mcu/io_toggle && make clean && make pack) &&
   (cd boot/bootloadermc && PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin sh tests/run_tests.sh) &&
-  python3 -B project-control/docs/evidence/SLICE-09/verify_candidate_artifacts.py .
+  python3 -B project-control/docs/evidence/SLICE-09/verify_candidate_artifacts.py . "$START_TS"
 
 qa_commands:
   - {subpath: "printer-soc", kind: "build", command: 'cmake -S . -B /output/build_ps -DSOC_AP_BUILD_SERVICES=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps -j4 && cmake -S . -B /output/build_ps_hil -DSOC_AP_BUILD_SERVICES=ON -DAISOC_OTA_INTEGRITY_ONLY_HIL=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps_hil -j4 && g++ -std=c++17 -O2 -Wall -Wextra -Iservices/helixscreen/include -Iservices/helixscreen/include/aisoc -Iservices/helixscreen/src/aisoc -Imiddleware/dbus/include -Imiddleware/dds/include -Icontracts/twin -I/usr/local/include/dbus-1.0 -I/usr/local/lib/dbus-1.0/include services/helixscreen/src/aisoc/*.cpp services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp /output/build_ps/middleware/dbus/libaisoc_dbus.a /output/build_ps/middleware/dds/libaisoc_dds.so /usr/local/lib/libdbus-1.so -lpthread -Wl,-rpath,/output/build_ps/middleware/dds:/usr/local/lib -o /output/test_aisoc_p0 && python3 -B tools/release_product.py plan --hil-ota-integrity-only --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-09 && for step in build package; do python3 -B tools/release_product.py "$step" --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-09 || exit $?; done'}

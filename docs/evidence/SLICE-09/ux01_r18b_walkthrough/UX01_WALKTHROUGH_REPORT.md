@@ -14,7 +14,7 @@
 | 安全与基线核验项 | 走查前实测值 | 走查后实测值 | 判定 | 原始证据文件 |
 | --- | --- | --- | :---: | --- |
 | **业务代码零改动 (`max_files=0`)** | 0 改动 | 0 改动（仅写入本走查证据目录） | **PASS** | `UX01_WALKTHROUGH_REPORT.md` |
-| **加热安全 (`heating_pwm_pct == 0`)** | `heating=false`（温度目标未设，0% 占空比） | `TriggerQuery(1/2)` + `GetDeviceState`: `state="IDLE", heating=false, printing=false` | **PASS** | `01_baseline_registration.log`, `08_post_walkthrough_health_and_safety_audit.log` |
+| **目标温度零加热 & 占空比核验说明** | `GetDeviceState`: `heating=false`（目标温度未设）；物理 PWM 占空比 `[UNVERIFIED]` | `TriggerQuery(1/2)` + `GetDeviceState`: `state="IDLE", heating=false, printing=false`；`UX-01` 为非侵入触屏走查（未停服独占 `/dev/ttyS1` 采集 `0x15` 原始 PWM 字节），`heating_pwm_pct` 物理占空比显式标为 **`[UNVERIFIED]`**（留待实板 HIL 阶段抓 `0x15 heater_duty_percent` 原始帧验证） | **目标温度 `heating=false` PASS / 占空比 `[UNVERIFIED]`** | `01_baseline_registration.log`, `08_post_walkthrough_health_and_safety_audit.log` |
 | **零电机运动 & 零 `probe-rs` 调用** | 零运动、`probe_rs_used=false` | 零运动、宿主 `probe_rs_processes=0` | **PASS** | `08_post_walkthrough_health_and_safety_audit.log` |
 | **零预置包 & 零真实刷写** | `/run/printer-soc/firmware/` 为空 (`0` 文件)；`MC boot_id=1775181012`、`TH boot_id=1462640722` | `/run/printer-soc/firmware/` 保持为空 (`0` 文件)；双板 `boot_id` 恒为 `1775181012` / `1462640722` | **PASS** | `chk06_scan_and_logs.log`, `08_post_walkthrough_health_and_safety_audit.log` |
 | **`/data/boot_backup.img` SHA-256** | `59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86` | `59951adabc9f633332168ec2fa48443cf8cb385c6da9746f5795893c754b8c86` | **PASS** | `01_baseline_registration.log`, `08_post_walkthrough_health_and_safety_audit.log` |
