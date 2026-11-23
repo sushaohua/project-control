@@ -1,0 +1,50 @@
+{
+  "slice_id": "SLICE-09",
+  "decision": "REJECTED",
+  "axis_spec_realism": "r04 的七仓提交与 server_lock.json、checkout.log 一致，八个沙箱制品的 SHA-256 均与提交审查的清单一致。只读复跑 fast_gate 用时 0.150 秒，c308l-system 沙箱记录为 PASSED。UX-01 的 r18b 基线 6f28023f7f1b774d181fc4ba59d3c378f260bfc1 有 CHK-01 至 CHK-06 的屏幕、背光、网络和扫描日志，见 ux01_r18b_walkthrough/。UX-02 候选 2560f4858889c63d6a1d673f2b429ed78e755b07 的 rootfs 含中文迁移标记和一级 OTA 入口，但重扫结果及维护状态仍有生产路径缺陷。S09-RES 的四端静态核算和 r18b 空闲 60 秒的 61 个样本已归档于 resource_assessment/。该空闲窗口内 MC 在 Boot、TH 离线，后续比较须保留工况差异。候选 AP 空闲、双板 OTA 和部署后存储仍待 Gate #2A。",
+  "axis_embedded_safety": "急停解除部分成功时，设备状态会继续宣称双板均已确认急停；成功解除还可能清除锁存期间新上报的独立故障。这两项均阻断 SW-Verified。TH-ESTOP-01 候选 112842cb42146e466f7001ede30096bd0125c385 的两套宿主测试通过，双板固件摘要与 candidate_mcu_artifacts/artifacts_manifest.json 一致。BOOT-MC-STAY-01 候选 157b5317bc8fd90e93f684f949d37e98428ea193 位于 soc_debug，生产主循环与单测共用跳转判定，1999/2000 ms 边界及显式驻留用例通过，归档镜像为 37,628 B。证据见 run_20261123_1654_r04/integration.log 和 docker_qa/runtime.log。三仓分别修改 24、3、4 个白名单文件，AP 受保护改动为 59/60 行。候选触屏 OTA 与急停待 Gate #2A，MC Bootloader SWD 验收待独立 Gate #2B。",
+  "findings": [
+    {
+      "id": "S09-R04-01",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/device_manager/device_manager_dbus.cpp:309",
+      "message": "已确认急停后发起解除，Forward 先向 MC 单播，收到 ACK 后才请求 TH。若 MC 已解除而 TH 超时，聚合返回失败，这里保留 estop_latched=true 和 estop_confirmed=true，面板继续显示“设备已确认急停”。解除进入下游后应撤销原双板确认，保留本地保护锁直至双板解除成功。回归应覆盖从已确认态出发、MC 解除成功而 TH 超时的快照。"
+    },
+    {
+      "id": "S09-R04-02",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/device_manager/device_manager_dbus.cpp:213",
+      "message": "解除急停用锁存前的 fault_before_estop 覆盖当前 is_fault。若锁存期间收到独立的 MC 故障报告，双板解除 ACK 会一并清掉这个较新的故障。新增测试 test_device_manager.cpp:1523 正好先注入使状态转为 FAULT 的报告，随后却要求解除后为 IDLE。应单独保留仍有效的设备故障，并验证解除急停后普通动作继续受故障准入限制。"
+    },
+    {
+      "id": "S09-R04-03",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:571",
+      "message": "重扫 RPC 受理时复制上一轮 ota_status_，只替换任务号、事件号等字段，保留旧 READY、valid、摘要和 active=false。首个新 DDS 样本到达前，页面跳过刷新，升级按钮却仍可使用旧摘要通过 check_ota_upgrade_gate。若终态 DDS 发布失败，页面也没有超时退出。应在受理时立即使旧包失效，并验证新任务长期收不到 DDS 时有明确、可重试的反馈。"
+    },
+    {
+      "id": "S09-R04-04",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:623",
+      "message": "本面板任务到达终态后仍保留 tracked_task_id_，随后其他客户端发起的新 OTA 任务会被 task_ok 过滤。此时备用的维护态判断也失效：第 349 行仅识别 MAINTENANCE_HOLD，而生产 DeviceManager 的顶层 system_status 为 UPGRADING_MAINTENANCE，MAINTENANCE_HOLD 位于温度质量字段。面板因此可能在后台实际升级时仍显示就绪。应按任务号关联本次 Toast，同时让全局忙锁跟随真实在途任务，并用生产快照格式覆盖外部任务场景。"
+    },
+    {
+      "id": "S09-R04-05",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/tests/device_manager/twin/test_device_manager.cpp:1337",
+      "message": "新增急停标志断言读取了已释放 D-Bus 回复中的字符串。aisoc_dbus_iter_get_string 返回消息持有的指针，测试先 unref(rep_st)，随后两次用 strstr 读取 state_json。该未定义行为使本轮绿色结果无法可靠证明解除后的状态。应在释放回复前完成断言，或先复制字符串。"
+    },
+    {
+      "id": "S09-R04-06",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "project-control/docs/evidence/SLICE-09/run_20261123_1654_r04/integration.log:481",
+      "message": "获批方案第 418 行要求双目录 clean pack 的 ARM 交叉编译零警告、零错误。本轮打包完成且制品对账通过，但日志含 348 条 warning: 诊断，包括 MC 驱动的未知 pragma 和 TH 引脚宏重复定义。该验收条款仍未满足；若采用存量告警基线，应由方案明确批准其范围。"
+    }
+  ]
+}
