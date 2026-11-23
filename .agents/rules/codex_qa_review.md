@@ -19,7 +19,9 @@ HIL 按被验证能力取证：真实入口可以是 Helix、IPC 或 API；UART 
 
 ## 1. 独立会话与物理隔离红线
 
-1. **异构独立只读会话**：正式代码与物证审查必须通过本机 `/home/sushaohua/.local/bin/codex` 启动全新独立会话（默认模型 `gpt-6-luna`，强制参数 `--sandbox read-only -c approval_policy="never" --json --output-schema`），从 JSONL 事件流提取真实 `thread.started` 会话 UUID 与真实 Token 消耗。禁止使用同源 `invoke_subagent` 普通子 Agent 冒充独立 Codex QA，禁止记录或提交任何 API 密钥/凭据。
+1. **异构独立只读会话**：正式代码与物证审查必须通过本机 `/home/sushaohua/.local/bin/codex` 启动全新独立会话（默认模型 `gpt-6.2-sol`、推理档位 `high`，强制参数 `--sandbox read-only -c approval_policy="never" --json --output-schema`），从 JSONL 事件流提取真实 `thread.started` 会话 UUID 与真实 Token 消耗。禁止使用同源 `invoke_subagent` 普通子 Agent 冒充独立 Codex QA，禁止记录或提交任何 API 密钥/凭据。
+   - 涉及 Bootloader、跨板协议或复杂并发的任务，可在获批切片填写 `codex_review_model: gpt-6.2-astra`，按 High 档执行同一轮冷审。切片显式选择优先，其次为既有 `CODEX_MODEL` 覆盖，最后使用默认值。
+   - `codex/request.json` 记录请求的模型与推理档位，实际会话以事件流为凭。
 2. **前置机械过滤原则**：只有当切片已通过 `fast_gate.py`（`<3s` 机械规范/契约/反假状态检查）及跨仓合龙、且具备客观构建测试证据（`qa_runner.py` 产出的 `server_qa.json`）后，才允许调用 Codex，杜绝用高成本冷审挑低级格式问题。
 3. **执行层与审计层解耦**：Docker 构建测试由 `qa_runner.py` 执行，真机 HIL 由受控台架脚本或 `INTEGRATOR` 执行并固化原始物证；Codex 审阅席位严禁依赖直连宿主机 USB 硬件，专注对锁定 Commit、Diff、契约真源与物证哈希链进行防伪审计。
 

@@ -11,7 +11,15 @@ from gates import codex_review, fast_gate
 from workflow import git_handoff
 _STATUS_EXIT = {"PASSED": 0, "FAST-PASSED": 0, "FAILED": 1, "BLOCKED": 2}
 _STAGE_IDX = {"fast_gate": 0, "checkpoint": 1, "integration": 1, "docker_qa": 2, "codex": 3}
-_EVIDENCE_ITEMS = (("fast_gate_log", "fast_gate.log", 0), ("integration_log", "integration.log", 1), ("qa_runner_log", "docker_qa/qa_runner_call.log", 2), ("server_qa_json", "docker_qa/server_qa.json", 2), ("server_verdict_json", "docker_qa/server_verdict.json", 2), ("docker_runtime_log", "docker_qa/runtime.log", 2), ("docker_checkout_log", "docker_qa/checkout.log", 2), ("build_plan_json", "docker_qa/artifacts/build-plan.json", 2), ("release_manifest_json", "docker_qa/artifacts/release-manifest.json", 2), ("codex_final_json", "codex/final.json", 3), ("codex_jsonl", "codex/codex.jsonl", 3), ("codex_stderr", "codex/codex.stderr", 3))
+_EVIDENCE_ITEMS = (
+    ("fast_gate_log", "fast_gate.log", 0), ("integration_log", "integration.log", 1),
+    ("qa_runner_log", "docker_qa/qa_runner_call.log", 2), ("server_qa_json", "docker_qa/server_qa.json", 2),
+    ("server_verdict_json", "docker_qa/server_verdict.json", 2), ("docker_runtime_log", "docker_qa/runtime.log", 2),
+    ("docker_checkout_log", "docker_qa/checkout.log", 2), ("build_plan_json", "docker_qa/artifacts/build-plan.json", 2),
+    ("release_manifest_json", "docker_qa/artifacts/release-manifest.json", 2),
+    ("codex_final_json", "codex/final.json", 3), ("codex_jsonl", "codex/codex.jsonl", 3),
+    ("codex_stderr", "codex/codex.stderr", 3), ("codex_request_json", "codex/request.json", 3),
+)
 def load_slice_spec(slice_path: Path) -> dict:
     """加载并校验垂直切片 YAML 配置必填字段。"""
     spec = yaml.safe_load(slice_path.read_text(encoding="utf-8"))
@@ -139,7 +147,8 @@ def _run_codex_stage(workspace: Path, spec: dict, commits: Dict[str, str], ctx: 
     """执行第 4 阶独立 Codex 审查，输出 `PASSED`/`FAILED`/`BLOCKED` 并维护账本。"""
     out_dir = ctx["out_dir"]
     try:
-        v = codex_review.run_codex_audit(_build_review_prompt(spec, commits, ctx["qa_proof"], str(out_dir / "integration.log")), spec["slice_id"], workspace, out_dir / "codex")
+        prompt = _build_review_prompt(spec, commits, ctx["qa_proof"], str(out_dir / "integration.log"))
+        v = codex_review.run_codex_audit(prompt, spec, workspace, out_dir / "codex")
     except (codex_review.CodexGateBlockedError, ValueError) as err:
         blk = isinstance(err, codex_review.CodexGateBlockedError)
         return _write_gate_verdict(out_dir, spec, {"commits": commits, "input_fingerprint": ctx["fp"], "status": "BLOCKED" if blk else "FAILED", "stage": "codex", "decision": "BLOCKED" if blk else "REJECTED", "reason": err.reason if blk else f"Codex 裁决校验失败: {err}", "next_step": "恢复 Codex 环境后重跑（不扣返修）" if blk else "查看 codex_final_json 后重审"})

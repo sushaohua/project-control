@@ -12,6 +12,8 @@ title: "示例：端到端温度遥测查询与超时降级闭环"
 plan_ref: "project-control/docs/planning/c308l_workspace_and_governance_implementationplan_20261116_111055.md"
 contract_ref: "project-control/contracts/minimc_v2_contract.yaml"
 requires_hil_immediately: false
+# Bootloader、跨板协议或复杂并发可在获批任务上选择 Astra。默认冷审为 Sol High。
+# codex_review_model: "gpt-6.2-astra"
 
 subtasks:
   - role: "ENG-AP"

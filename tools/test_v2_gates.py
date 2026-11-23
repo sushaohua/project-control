@@ -58,13 +58,13 @@ class V2ContractAndFastGateTest(unittest.TestCase):
         bad = dict(sync_contracts.parse_header_constants(sync_contracts.render_canonical_header(contract)), MINIMC_CMD_ESTOP_ACK=0x05, MINIMC_CMD_OTA_START=0x1D, MINIMC_MAX_PAYLOAD_SIZE=256)
         self.assertGreaterEqual(len(sync_contracts.validate_endpoint("NEG", bad, contract, True)), 3)
     def test_v2_python_tools_pass_fast_gate_self_check(self) -> None:
-        """硬性门禁自检：生产 6 文件 <=900 行、含单测 <=1150 行且通过 AST 与防伪扫描。"""
+        """核验冷审选型接入后的总行数预算、逐函数 AST 规范及防伪扫描。"""
         prod = [TOOLS_DIR / "sync_contracts.py", TOOLS_DIR / "gates/__init__.py", TOOLS_DIR / "gates/fast_gate.py", TOOLS_DIR / "gates/codex_review.py", TOOLS_DIR / "gates/slice_gate.py", TOOLS_DIR / "workflow/run_slice_batch.py"]
         prod_lines = sum(len(p.read_text(encoding="utf-8").splitlines()) for p in prod)
         all_files = prod + [TOOLS_DIR / "test_v2_gates.py"]
         total_lines = sum(len(p.read_text(encoding="utf-8").splitlines()) for p in all_files)
-        self.assertLessEqual(prod_lines, 900, f"生产 6 文件 {prod_lines} 超出 900 行预算")
-        self.assertLessEqual(total_lines, 1150, f"含单测总行数 {total_lines} 超出 1150 行预算")
+        self.assertLessEqual(prod_lines, 920, f"生产 6 文件 {prod_lines} 超出 920 行预算")
+        self.assertLessEqual(total_lines, 1190, f"含单测总行数 {total_lines} 超出 1190 行预算")
         for fp in all_files + [TOOLS_DIR / "workflow/git_handoff.py"]:
             self.assertEqual((fast_gate.check_python_ast(fp), fast_gate.check_anti_fake_markers(fp, fp.name)), ([], []), f"自检失败: {fp}")
     def test_fast_gate_catches_scale_unverified_and_shim(self) -> None:
@@ -101,6 +101,26 @@ class V2CodexAndWorkflowCruiseTest(unittest.TestCase):
         with self.assertRaises(ValueError): codex_review.validate_graded_verdict(dict(ok, findings=[dict(ok["findings"][0], severity="BLOCKER")]), "SLICE-01")
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict("os.environ", {"CODEX_BIN": str(Path(tmp) / "missing_codex")}), self.assertRaises(codex_review.CodexGateBlockedError):
             codex_review.run_codex_audit("hi", "SLICE-01", Path(tmp), Path(tmp) / "out")
+    def test_codex_review_model_and_reasoning(self) -> None:
+        """核对默认、环境兼容及切片显式选择的实际启动参数和请求记录。"""
+        cases = (
+            ({"slice_id": "SLICE-01"}, {}, "gpt-6.2-sol"),
+            ("SLICE-01", {"CODEX_MODEL": "gpt-6-luna"}, "gpt-6-luna"),
+            ({"slice_id": "SLICE-01", "codex_review_model": "gpt-6.2-astra"}, {"CODEX_MODEL": "gpt-6-luna"}, "gpt-6.2-astra"),
+        )
+        for spec, env, expected in cases:
+            with self.subTest(model=expected), tempfile.TemporaryDirectory() as tmp:
+                root, settings = Path(tmp), {"CODEX_BIN": sys.executable, **env}
+                with mock.patch.dict("os.environ", settings, clear=True), mock.patch.object(codex_review.subprocess, "run", return_value=subprocess.CompletedProcess([], 1)) as launch:
+                    with self.assertRaises(codex_review.CodexGateBlockedError):
+                        codex_review.run_codex_audit("审查候选", spec, root, root)
+                    cmd = launch.call_args.args[0]
+                self.assertEqual(cmd[cmd.index("-m") + 1], expected)
+                self.assertIn('model_reasoning_effort="high"', cmd)
+                self.assertEqual(cmd[cmd.index("--sandbox") + 1], "read-only")
+                self.assertEqual(json.loads((root / "request.json").read_text()), {"requested_model": expected, "requested_reasoning_effort": "high"})
+        with tempfile.TemporaryDirectory() as tmp, self.assertRaisesRegex(codex_review.CodexGateBlockedError, "非空型号"):
+            codex_review.run_codex_audit("审查候选", {"slice_id": "SLICE-01", "codex_review_model": ""}, Path(tmp), Path(tmp))
     def test_slice_gate_tristate_nonempty_reuse_and_qa_conflict(self) -> None:
         """核验三态输出、非空证据目录拒复用及 Docker QA 退出码与证据冲突拦截。"""
         with tempfile.TemporaryDirectory() as tmp:

@@ -58,7 +58,7 @@ AP 使用 `printer-soc`，SDK 使用 `sdk/c308l` 独立 Repo 客户端，角色�
 3. **第 3 阶：隔离 Docker 干净沙箱构建与回归（`tools/qa_runner/qa_runner.py`）**
    - 对锁定的多仓 40 位 Commit SHA 在隔离只读容器内全新检出、干净构建并运行回归测试，产出带 `container_inspect` 与 SHA256 绑定的 `server_qa.json`（远端未同步前本地巡航支持显式标记 `local_pre_publish_gate`，正式发布前须锁定远端 Commit 复核）。
 4. **第 4 阶：独立异构 Codex 双轴分级冷审（`tools/gates/codex_review.py`）**
-   - 宿主机启动独立只读会话（`codex exec --sandbox read-only -m gpt-6-luna`），输出 `BLOCKER / MINOR / NIT` 三级结论：
+   - 宿主机按[独立 QA 规则](codex_qa_review.md#1-独立会话与物理隔离红线)启动独立只读会话，输出 `BLOCKER / MINOR / NIT` 三级结论：
      - **存在 `BLOCKER`**：判定 `REJECTED`，唤醒原 `ENG-*` 保活会话定向修复并重过漏斗（**最多允许 2 轮返修**；第 2 轮仍未闭环或同因复发立即 Fail-Fast 熔断停机升级人类）。
      - **`0 BLOCKER`（含仅有 `MINOR` / `NIT`）**：签发带 `report_sha256` 的 `verdict.json`（`APPROVED`），`MINOR` 记入 `ledger.md` 技术债表，切片标记为 **`SW-Verified`** 自动推进下一切片。
 

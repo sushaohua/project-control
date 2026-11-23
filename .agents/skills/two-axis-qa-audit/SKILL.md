@@ -5,7 +5,7 @@ description: "AI SoC V2 独立异构 QA 双轴分级冷审技能：面向 Codex 
 
 # 独立 QA 双轴分级冷审规范 (`two-axis-qa-audit`)
 
-本技能定义 `QA`（独立只读 Codex 会话，`gpt-6-luna`）对垂直切片候选的双轴审查标准。行长、参数个数与契约宏对齐已由前置 `fast_gate.py` 机械拦截，审阅者聚焦深层语义与系统风险。
+本技能定义 `QA`（独立只读 Codex 会话，模型按[独立 QA 规则](../../rules/codex_qa_review.md)）对垂直切片候选的双轴审查标准。行长、参数个数与契约宏对齐已由前置 `fast_gate.py` 机械拦截，审阅者聚焦深层语义与系统风险。
 
 ## 双轴独立审计清单
 

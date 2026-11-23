@@ -25,7 +25,7 @@ plan_revision: v2-product-and-deep-module-10-roles
 | **`ENG_BOOT_MC`** | 仅 `boot/bootloadermc/`（严格锁定 `soc_debug`，**禁写 `main`**） | MC 板 Bootloader 启动、VTOR `0x08020000` 跳转、128B ATSG Trailer 预验签、MiniMCProto v2 升级接收、扇区擦写与掉电恢复（详见 [Bootloader 角色边界](bootloader_role_boundaries.md)） | 严禁向 `main` 提交、严禁未验签擦除 Flash、严禁无授权探针刷写 |
 | **`ENG_BOOT_TH`** | 仅 `boot/bootloaderth/`（严格锁定 `soc_debug`，**禁写 `main`**） | TH 板 Bootloader 启动、VTOR `0x08004000` 跳转、级联升级接收、128B Trailer 预验签后擦写与防变砖自愈（详见 [Bootloader 角色边界](bootloader_role_boundaries.md)） | 严禁向 `main` 提交、严禁未验签擦除 Flash、严禁无授权探针刷写 |
 | **`INTEGRATOR`** | `test_harness/`（及切片显式授权的跨仓部署编排脚本） | 跨仓全进程零篡改合龙联调（真实守护进程群 ↔ 真实固件协议/业务核）、固件打包、清洁部署及 HIL 预检 | **严禁编写篡改报文字节的测试桥垫片（Shim）或 `ctypes` 伪日志注入器** |
-| **`QA`** | 仅 `project-control/docs/evidence/`；审阅进程强制 `--sandbox read-only` | 第 1 阶：受控 `qa_runner.py` 独立 Docker 干净构建与全链路测试；第 2 阶：独立异构 Codex（`gpt-6-luna`）双轴分级冷审；第 3 阶：业务域里程碑真机 HIL 正负配对审计 | 严禁作者自审、严禁以 PTY/Mock 冒充真实 HIL 通过 |
+| **`QA`** | 仅 `project-control/docs/evidence/`；审阅进程强制 `--sandbox read-only` | 第 1 阶：受控 `qa_runner.py` 独立 Docker 干净构建与全链路测试；第 2 阶：独立异构 Codex 双轴分级冷审（模型按[独立 QA 规则](codex_qa_review.md)）；第 3 阶：业务域里程碑真机 HIL 正负配对审计 | 严禁作者自审、严禁以 PTY/Mock 冒充真实 HIL 通过 |
 
 ## 2. 全生命周期 RACI 责任矩阵
 

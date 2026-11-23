@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """V2 独立异构 Codex 只读双轴分级冷审门禁。
 
-调用本机独立 Codex CLI (`--sandbox read-only -m gpt-6-luna --output-schema`)，
+调用本机独立 Codex CLI，默认以 GPT-6.2 Sol 的 High 档执行只读审阅，
 执行 `Spec真实性` 与 `嵌入式安全/Diff预算` 双轴审查，强制校验 `BLOCKER/MINOR/NIT` 分级自洽性。
 """
 
@@ -14,7 +14,8 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 DEFAULT_CODEX_BIN = Path("/home/sushaohua/.local/bin/codex")
-DEFAULT_CODEX_MODEL = "gpt-6-luna"
+DEFAULT_CODEX_MODEL = "gpt-6.2-sol"
+DEFAULT_CODEX_REASONING_EFFORT = "high"
 
 
 @dataclass
@@ -97,15 +98,27 @@ def validate_graded_verdict(payload: dict, expected_slice: str) -> Tuple[int, Li
 
 def _build_codex_cmd(codex_bin: Path, model: str, workdir: Path, out_dir: Path) -> List[str]:
     """构造带只读沙箱、禁止交互审批与 JSON Schema 约束的 Codex CLI 命令。"""
-    return [str(codex_bin), "exec", "--skip-git-repo-check", "--sandbox", "read-only", "-c", 'approval_policy="never"', "-m", model, "-C", str(workdir.resolve()), "--json", "--output-schema", str(out_dir / "schema.json"), "--output-last-message", str(out_dir / "final.json"), "-"]
+    return [
+        str(codex_bin), "exec", "--skip-git-repo-check", "--sandbox", "read-only",
+        "-c", 'approval_policy="never"', "-c", f'model_reasoning_effort="{DEFAULT_CODEX_REASONING_EFFORT}"',
+        "-m", model, "-C", str(workdir.resolve()), "--json", "--output-schema", str(out_dir / "schema.json"),
+        "--output-last-message", str(out_dir / "final.json"), "-",
+    ]
 
-def run_codex_audit(prompt: str, slice_id: str, workdir: Path, out_dir: Path) -> CodexVerdict:
-    """启动全新只读独立 Codex 会话执行切片双轴审查并落盘审计物证。"""
+def run_codex_audit(prompt: str, slice_id: str | dict, workdir: Path, out_dir: Path) -> CodexVerdict:
+    """按切片定义或切片 ID 启动独立只读冷审，记录所请求的模型和审查物证。"""
     out_dir.mkdir(parents=True, exist_ok=True)
     codex_bin = Path(os.environ.get("CODEX_BIN", str(DEFAULT_CODEX_BIN)))
     model = os.environ.get("CODEX_MODEL", DEFAULT_CODEX_MODEL)
+    if isinstance(slice_id, dict):
+        model = slice_id.get("codex_review_model", model)
+        slice_id = slice_id["slice_id"]
+    if not isinstance(model, str) or not model.strip():
+        raise CodexGateBlockedError("冷审模型须配置为非空型号", out_dir)
     if not codex_bin.is_file() or not os.access(codex_bin, os.X_OK):
         raise CodexGateBlockedError(f"独立 Codex CLI 不可用: {codex_bin}", out_dir)
+    request = {"requested_model": model, "requested_reasoning_effort": DEFAULT_CODEX_REASONING_EFFORT}
+    (out_dir / "request.json").write_text(json.dumps(request, indent=2) + "\n", encoding="utf-8")
     (out_dir / "schema.json").write_text(json.dumps(v2_audit_schema()), encoding="utf-8")
     (out_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
     timeout_sec = int(os.environ.get("CODEX_TIMEOUT_SEC", "420"))
