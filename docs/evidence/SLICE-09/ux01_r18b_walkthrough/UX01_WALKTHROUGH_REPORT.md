@@ -123,7 +123,7 @@
   1. **后台扫描通路与耗时**：点击后 D-Bus `ForwardInterface.OtaCommand(op=0, mask=3)` 立即送达 `forward_service_daemon`，`/run/printer-soc/forward.log` 新增 `task_id="760000002"`：
      - `event_id=4` (`timestamp_unix_ms=147021619`): `phase="PRECHECK", active=true, target_mask=3`；
      - `event_id=5` (`timestamp_unix_ms=147021619`): `phase="FAILED", active=false, error="PACKAGE_INVALID_OR_CHANGED", mc.valid=false, th.valid=false`。
-     后端响应耗时 `< 1 ms`，扫描 IPC 与 DDS 状态回传链路本身工作正常。
+     后台 `forward.log` 中同一任务从 `PRECHECK` 至 `FAILED` 两个阶段的时间戳差 `< 1 ms`（落在同一毫秒 `147021619`，注：该数值为后台两阶段日志时间差，不含客户端 D-Bus RPC 发起与应答往返时戳），扫描 IPC 与 DDS 状态回传链路本身工作正常。
   2. **界面结果反馈三大卡点**：
      - **卡点 A（默认目录无固件包）**：`r18b` 部署后 `/run/printer-soc/firmware/` 默认为空目录，无配套可扫描的 `fw_mc.bin` / `fw_th.bin`。
      - **卡点 B（底部点击无即时视觉反馈，视口上下割裂）**：`扫描固定目录固件` 按钮位于页面底部第二屏，点击后既无 Toast 提示，底部画面也无任何文字变化（仅行边框聚焦高亮，见 [chk06_01_after_scan_bottom_en.png](chk06_01_after_scan_bottom_en.png)）；用户必须手动滑回最顶部才能看到 `升级状态` 行，极易误以为“点了没反应”。
@@ -146,7 +146,7 @@
 | **`CHK-03` 有线网络查看** | `eth0` IP `192.168.1.101` 与 MAC `02:ad:3d:01:8e:eb` 100% 一致 | — | — | — | — | — | `chk03_02_network_settings_en.png`, `chk03_ip_addr_eth0.log` |
 | **`CHK-04` 升级入口发现性** | `Settings` 一级无入口；需 4 次点击 + 2 次滚动进入 `About` 底部 | **命中** | —（`aisoc_mode=1` 未隐藏） | — | **命中**（旧副标题误写“验签”，上方紧邻 `Check for Updates`） | **命中**（`"en"` 下入口变 `本□□□□□ (MC/TH)`） | `chk04_01`~`chk04_03`, `02b`, `02c`, `02f` |
 | **`CHK-05` 打开 OTA 页面** | `OtaLocalOverlay` 正常打开零崩溃，但字体与文案存在显著卡点 | — | —（页面正常打开） | — | **命中**（硬编码误写 ECDSA-P256 签名；包状态未区分未扫描/缺包/损坏） | **命中**（`"en"` 下全页中文变豆腐块；`"zh"` 下 `订阅真` 3 字仍变 `□□□`） | `chk05_01`, `chk05_02`, `02g`, `02h` |
-| **`CHK-06` 扫描固件与反馈** | 扫描 RPC `<1ms` 返回，但空目录报错语义模糊且无下一步提示 | — | — | **命中**（`/run/printer-soc/firmware/` 默认为空） | **命中**（空目录误报 `PACKAGE_INVALID_OR_CHANGED`，底部点击无即时提示，无放入路径指引） | **命中**（`"en"` 下状态文字全为豆腐块 `□`） | `chk06_01`, `chk06_02`, `chk06_scan_and_logs.log` |
+| **`CHK-06` 扫描固件与反馈** | 扫描链路畅通（后台 `PRECHECK->FAILED` 阶段时间差 `<1ms`），但空目录报错语义模糊且无下一步提示 | — | — | **命中**（`/run/printer-soc/firmware/` 默认为空） | **命中**（空目录误报 `PACKAGE_INVALID_OR_CHANGED`，底部点击无即时提示，无放入路径指引） | **命中**（`"en"` 下状态文字全为豆腐块 `□`） | `chk06_01`, `chk06_02`, `chk06_scan_and_logs.log` |
 
 ### 4.2 总结性诊断结论（直接印证 `SLICE-09` `UX-02` 修复靶向性）
 1. **排除 `页面打不开`**：实板 `aisoc_mode == 1` 正常生效，`OtaLocalOverlay` 页面打开及 `OtaCommand(op=0)` 后台扫描链路均真实畅通、零崩溃。

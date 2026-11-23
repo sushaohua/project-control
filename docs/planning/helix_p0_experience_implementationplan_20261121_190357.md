@@ -10,8 +10,9 @@
 | `v1.1` | `2026-11-23 09:16:00` | `AI (Antigravity-CLI / ARCH / gemini-4-carbon-high)` | 合入用户批准 `v1.0` 时追加的小修需求“把 Helix 默认语言改成中文 (`"zh"`)”：物理核实语言键值真值（`"zh"`）、`ui_xml/translations/zh.xml` 全量汉字 100% 字库覆盖及中英文菜单映射；设计 `/data/printer-soc/helix` 存量 `r18b` 配置一次性默认中文迁移机制（忠实保留用户后续手动切回英文的选择）；同步更新第 1/2 部分导航描述、`printer-soc@main` 文件白名单（`15` ➔ `20` 文件）、`Diff Budget`、`S09-AP` 契约与验收判据 | **已批准执行**（`2026-11-23 09:22` 用户“嗯，批准。”；常规上板过 `Human Gate #2A`，MC Bootloader SWD 写刷单独过 `Human Gate #2B`） |
 | `v1.2` | `2026-11-23 10:23:31` | `AI (Codex / PM)`、`AI (Codex / ARCH)` | 按用户要求新增第五项 `S09-RES`。以 `r18b` 对比 SLICE-09 候选，明确 AP 运行采样、MC/TH 静态容量核算与证据验收。 | **已批准执行**（`2026-11-23 13:01` 用户“全部批准。”） |
 | `v1.3` | `2026-11-23 12:56:00` | `AI (Antigravity-CLI / ARCH / gemini-4-carbon-high)` | 针对容器沙箱双套 `ctest` 复现的 `test_device_manager.cpp:1427` `500ms` 身份轮询时序竞态，将 `tests/device_manager/twin/test_device_manager.cpp` 纳入 `printer-soc@main` 白名单（`20` ➔ `21` 文件，`protected_globs` 新增该文件、`max_protected_lines` `45` ➔ `50`），在 `main()` 中将纯只读初始状态检查 `test_rpc_get_version_info` 提前至 `test_rpc_get_snapshot` 之后执行（零断言削弱）；100% 原样保留 `v1.2` 与 `§1.8`、`§2.6` 内容 | **已批准执行**（`2026-11-23 13:01` 用户“全部批准。”） |
+| `v1.4` | `2026-11-23 14:02:00` | `AI (Antigravity-CLI / ARCH / gemini-4-carbon-high)` | 针对 `SLICE-09 r03` 独立 Codex 冷审检出的 6 项 `BLOCKER`（`S09-01`~`S09-06`）与 2 项证据 `MINOR`（`S09-07`~`S09-08`）原地合入一次性根治设计：分离 `DeviceManager` 本地急停保护锁 `estop_latched` 与双板 `4B ACK` 确认态 `estop_confirmed`；重扫 Toast 绑定单调 `client_req_seq` 与 `task_id`；`Forward` `prepare_command()` 同步清理重扫/未选节点旧 `valid` 与 `sha256`；移除 `last_estop_outcome==BACKEND_BUSY` 陈旧锁残留；`test_device_manager.cpp` 夹具确定性留出首 `1.5s` 初始未探测窗口；`bootloadermc` 提炼生产 `2000ms` 超时跳转判定函数并纳入宿主单测；同步扩增白名单（`printer-soc` `21` ➔ `24` 文件、`bootloadermc` `2` ➔ `4` 文件）与 `Diff Budget`（`ENG-AP` 受保护上限 `50` ➔ `60` 行） | **已批准执行**（`2026-11-23 14:53` 用户“批准执行。”） |
 
-> `v1.0` ~ `v1.3` 已全部获用户批准执行；本轮合并交付包含 `UX-01`、`UX-02`（含默认中文 `"zh"` 与存量迁移）、`TH-ESTOP-01`、`BOOT-MC-STAY-01` 及第五项 `S09-RES` 资源评估。
+> `v1.0` ~ `v1.4` 已全部获用户批准执行；本轮合并交付包含 `UX-01`、`UX-02`（含默认中文 `"zh"` 与存量迁移）、`TH-ESTOP-01`、`BOOT-MC-STAY-01` 及第五项 `S09-RES` 资源评估。
 
 ---
 
@@ -232,9 +233,9 @@ AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `
 
 | 仓库路径 (`workspace.json`) | 锁定分支 | 基线 Commit (`SLICE-08 r18b`) | 本轮权限属性 | 唯一责任角色 | 说明与分支红线 |
 | --- | --- | --- | :---: | --- | --- |
-| `printer-soc` | `main` | `6f28023f7f1b774d181fc4ba59d3c378f260bfc1` | **读写（限白名单 21 文件）** | `ENG-AP` | 落地 `UX-02`：默认中文（`"zh"`）与存量 `/data` 一次性迁移、`设置 (Settings)` 一级入口、OTA 单节点扫描状态/策略透传、五态文案纠偏、CJK 运行时字库保底挂载及 `test_device_manager` 初始版本查询时序竞态消解 |
+| `printer-soc` | `main` | `6f28023f7f1b774d181fc4ba59d3c378f260bfc1` | **读写（限白名单 24 文件）** | `ENG-AP` | 落地 `UX-02` 及 `r03` 冷审 `S09-01`~`S09-05` 根治：默认中文与存量迁移、双入口、单节点当次扫描一致性、重扫请求序号绑定、急停本地锁存与双板确认分离、实时忙锁释放及 `test_device_manager` 确定性初始窗口 |
 | `mcu-p3` | `feat/soc-debug` | `a64bffbf1a0c5cbc2fe96b51632098042697878b` | **读写（限白名单 3 文件）** | `ENG-MCU` | 落地 `TH-ESTOP-01`：TH App `0x17` 锁存/解除统一回 `4B ACK`、消除解除误动作与双单测套件对齐 |
-| `boot/bootloadermc` | `soc_debug` | `3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4` | **读写（限白名单 2 文件）** | `ENG_BOOT_MC` | 落地 `BOOT-MC-STAY-01`：移除 `0x01` 误置 `stay_in_boot`；**严格锁定 `soc_debug`，绝对严禁写入 `main`** |
+| `boot/bootloadermc` | `soc_debug` | `3e01c00ce4dfb5e9e749e79c3cfbc076e3680bf4` | **读写（限白名单 4 文件）** | `ENG_BOOT_MC` | 落地 `BOOT-MC-STAY-01` 及 `S09-06`：移除 `0x01` 误置 `stay_in_boot`，提炼 `main.c` 生产 `2000ms` 超时跳转判定纳入宿主单测；**严格锁定 `soc_debug`，绝对严禁写入 `main`** |
 | `boot/bootloaderth` | `soc_debug` | `1a0351363cf7b9cbc0aa6919b4afc6be61561152` | **只读输入** | — | 本轮零改动；作为同源版本身份与 OTA 协议不变锚点 |
 | `test_harness` | `main` | `fb1409be7ad5586c701df586553d7f5b67bc2b43` | **只读输入** | `INTEGRATOR`（执行） | 复用既有 `test_helix_screen_integration.py` 与 `check_platform_inputs.py`，零夹具篡改 |
 | `sdk/c308l` | 清单锁 `ea8f4eec...` | `manifest_commit=eb5d0d51...` | **只读输入** | — | 遵循 `c308l_platform_contract.yaml`，零平台/内核/驱动修改 |
@@ -242,13 +243,13 @@ AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `
 
 #### 2.1.2 三仓精确修改文件清单（白名单外零触碰）
 
-1. **`printer-soc@main`（`ENG-AP`，共 21 个文件）**：
+1. **`printer-soc@main`（`ENG-AP`，共 24 个文件）**：
    - **默认中文语言配置、存量 `/data` 一次性迁移与打包单测（5 个）**：
      - `services/helixscreen/platform/c308l/live-profile.json`：将 `settings.language` 由 `"en"` 改为 **`"zh"`**，并写入 `"c308l_default_lang_migrated": 1`（由 `package.py:write_config()` 合并入只读包内 `config/settings.json`）。
-     - `tools/c308l_services.py`：扩展 `prepare_panel_settings()`（拆分为 `<=50` 行、`<=4` 入参、全中文 docstring 的小辅助函数）：① 首次从 `assets/config/settings.json` 播种时同步创建 `panel_config/.helix-fresh-install`（对齐 `Config::init()` `config.cpp:1834-1844` 防旧备份回灌）；② 当 `assets/config/settings.json` 声明 `"language": "zh"` 且持久化 `settings.json`（及同级父目录下 `$HOME/.helixscreen/settings.json.backup` 滚动备份）尚未含 `"c308l_default_lang_migrated"` 时，若原 `language` 为 `"en"` 或空则一次性迁移为 `"zh"` 并写入 `"c308l_default_lang_migrated": 1`；此后用户在界面手动切回 `"en"` 时，`Config::save()` 原样保留 JSON 中的 `"c308l_default_lang_migrated": 1`，后续重启绝不覆盖用户手动选择。
+     - `tools/c308l_services.py`：扩展 `prepare_panel_settings()`（拆分为 `<=50` 行、`<=4` 入参、全中文 docstring 的小辅助函数）：① 首次从 `assets/config/settings.json` 播种时同步创建 `panel_config/.helix-fresh-install`（对齐 `Config::init()` `config.cpp:1834-1844` 防旧备份回灌）；② 当 `assets/config/settings.json` 声明 `"language": "zh"` 且持久化 `settings.json`（及 `/var/lib/helixscreen` 与 `$HOME/.helixscreen` 滚动备份）尚未含 `"c308l_default_lang_migrated"` 时，若原 `language` 为 `"en"` 或空则一次性迁移为 `"zh"` 并写入 `"c308l_default_lang_migrated": 1`；此后用户在界面手动切回 `"en"` 时，`Config::save()` 原样保留 JSON 中的 `"c308l_default_lang_migrated": 1`，后续重启绝不覆盖用户手动选择。
      - `boards/c308l-aw419/rootfs-overlay/usr/bin/printer-soc-panel`：镜像同步上述首启 `.helix-fresh-install` 标记与一次性默认中文迁移逻辑（外层改为 `if [ -f "$HELIX_CONFIG_DIR/settings.json" ]` 解耦 `sys_input` 存在性，内部仅在 `default_settings.language == "zh"` 时触发一次性迁移、仅在 `sys_input` 目录存在时执行 `touch_device` 清洗，100% 兼容存量极简夹具）。
      - `services/helixscreen/platform/c308l/tests/test_tools.py`：同步更新 `live-profile.json` 语言断言为 `live['settings']['language'] == 'zh'` 及 `c308l_default_lang_migrated == 1`。
-     - `tests/packaging/test_product_package.py`：保留存量播种测试不退化，新增 `prepare_panel_settings()` 与 `printer-soc-panel` 对 `r18b` 遗留 `"language": "en"`（含 `.helixscreen/settings.json.backup`）首次升级自动切为 `"zh"`、以及用户手动改回 `"en"` 后重启忠实保留 `"en"` 的正反单测。
+     - `tests/packaging/test_product_package.py`：保留存量播种测试不退化，新增 `prepare_panel_settings()` 与 `printer-soc-panel` 对 `r18b` 遗留 `"language": "en"`（含滚动备份）首次升级自动切为 `"zh"`、以及用户手动改回 `"en"` 后重启忠实保留 `"en"` 的正反单测。
    - **UI 布局 XML（3 个）**：
      - `services/helixscreen/ui_xml/settings_panel.xml`：在 `group_settings` 内 `row_system`（`系统`）与 `row_help`（`帮助与关于`）之间新增受 `aisoc_mode` 门控的 `container_settings_aisoc_ota` / `row_settings_local_ota`（主标题 `本地固件升级 (MC/TH)`，副标题 `从固定目录扫描、校验并升级 MC/TH 固件`，`description_min_bp="0"`，回调 `on_settings_local_ota_clicked`）。
      - `services/helixscreen/ui_xml/about_settings_overlay.xml`：保留 `row_aisoc_local_ota` 次入口，将第 158 行副标题由 `从固定目录扫描、验签并升级 MC/TH 固件` 修正为 `从固定目录扫描、校验并升级 MC/TH 固件`。
@@ -257,26 +258,31 @@ AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `
      - `services/helixscreen/include/ui_panel_settings.h`：声明静态回调 `static void on_settings_local_ota_clicked(lv_event_t* e);`。
      - `services/helixscreen/src/ui/ui_panel_settings.cpp`：注册 `on_settings_local_ota_clicked`（同步写入 `SettingsPanel::init_subjects()` 与 `register_settings_panel_callbacks()` 以满足 `[L013]` XML 解析前置约束），回调内调用 `helix::settings::get_ota_local_overlay().show(get_global_settings_panel().parent_screen_);`，与 `关于 (About)` 入口 100% 复用同一单例。
      - `services/helixscreen/src/system/cjk_font_manager.cpp`：在 `#ifdef HELIX_ENABLE_AISOC` 下令 `CjkFontManager::needs_cjk()` 返回 `true`——默认 `"zh"` 下原生加载 CJK 字库，且即使用户在 `显示与声音` → `语言` 手动切回英文 `"en"`，AISoC 专属中文行（`AP 版本`、`本地固件升级 (MC/TH)` 与 `OtaLocalOverlay`）仍保持挂载 29 个 `assets/fonts/cjk/noto_sans_cjk_*.bin` 而不卸载退化为豆腐块。
-     - `services/helixscreen/include/ui_settings_ota.h`：将 `phase_buf_` 扩至 `192` 字节，`mc_pkg_buf_`、`th_pkg_buf_`、`lock_estop_buf_` 扩至 `160` 字节，防止中文下一步提示截断。
-     - `services/helixscreen/src/ui/ui_settings_ota.cpp`：基于后端真实 `scan_state`、`scan_error`、`policy` 及 `AisocSnapshot` 在线态实现五态展示与下一步提示，修正第 43、176、181 行误导文案与缺字字符。
+     - `services/helixscreen/include/ui_settings_ota.h`：将 `phase_buf_` 扩至 `192` 字节，`mc_pkg_buf_`、`th_pkg_buf_`、`lock_estop_buf_` 扩至 `160` 字节，并新增 `uint64_t pending_scan_seq_ = 0U;` 绑定当次扫描请求序号（`S09-02`）。
+     - `services/helixscreen/src/ui/ui_settings_ota.cpp`：基于后端真实 `scan_state`、`scan_error`、`policy` 及 `AisocSnapshot` 实现五态展示与下一步提示，并闭环 `S09-01`~`S09-04`：① 仅当 `snap.estop_confirmed` 为真显示 `状态: 设备已确认急停`，`snap.estop_latched && !snap.estop_confirmed` 显示 `状态: 本地急停已锁存（板卡未全部应答）`；② 重扫 Toast 严格校验 `st.client_req_seq == pending_scan_seq_`，杜绝旧 `READY` 快照抢先消费等待标志；③ `format_ota_pkg` 与 `scanned_*_sha256_` 同时要求 `scan_state == "READY" && valid && sha256.size() >= 12U`；④ `busy` 仅读取实时锁（`st.active || st.last_rpc_code == -5 || snap.maintenance_locked`），移除 `last_estop_outcome == BACKEND_BUSY` 陈旧残留（急停遇 `-5` 继续由 `application.cpp:2034` 全局 `estop_callback` 弹即时提示，不覆盖全局回调）。
    - **Helix 原生连接器与单测（3 个）**：
-     - `services/helixscreen/include/aisoc/aisoc_connection.h`：`AisocOtaNodeInfo` 新增 `std::string scan_state = "UNSCANNED"` 与 `std::string scan_error`；`AisocOtaStatus` 新增 `std::string policy`。
-     - `services/helixscreen/src/aisoc/aisoc_connection.cpp`：`parse_ota_node_json()` 提取 `scan_state`、`scan_error`；`parse_ota_status_json()` 提取顶层 `policy`。
-     - `services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp`：补充 `policy`、`scan_state`（含单板 `MISSING` 另一板 `READY` 及 `INVALID`/`SIGNATURE_INVALID`）解析与状态同步单测。
-   - **Forward OTA 扫描状态/策略补齐与 E2E 测试（4 个）**：
-     - `services/forward/modules/ota/ota_internal.h`：`fwd_ota_runtime` 新增定长静态字段 `char scan_state[2][24]` 与 `char scan_error[2][32]`（零动态分配）。
-     - `services/forward/modules/ota/ota_image.cpp`：`ota_load_image()` 精确写入单节点 `scan_state`（`"READY"` / `"MISSING"` / `"INVALID"` / `"SIGNATURE_INVALID"`）与 `scan_error`（`""` / `"FILE_NOT_FOUND"` / `"STAT_OR_SIZE_INVALID"` / `"BOARD_ID_MISMATCH"` / `"TRAILER_OR_HASH_INVALID"` / `"PACKAGE_SIGNATURE_INVALID"`）。
-     - `services/forward/forward_ota.cpp`：`build_snapshot()` 输出顶层 `"policy"`（由 `AISOC_OTA_INTEGRITY_ONLY_HIL` 编译期决定 `"integrity-only-hil"` 或 `"signature-required"`）及 `mc`/`th` 子对象的 `"scan_state"`、`"scan_error"`；`prepare_images()` 在 `operation == 0U`（扫描）时完整遍历 `rt->mask` 中全部请求节点后再汇总终态，消除 `fw_mc.bin` 缺失时短路跳过 `fw_th.bin` 扫描的缺陷。
-     - `tests/ota/test_ota_e2e.py`：新增单节点缺包扫描（如仅存合法 `fw_th.bin` 缺 `fw_mc.bin` 时 `th.valid==true`、`th.scan_state=="READY"`、`mc.scan_state=="MISSING"`）及 `policy` 字段断言，保持既有全量场景通过。
-   - **DeviceManager Twin 单测初始状态时序竞态消解（1 个）**：
-     - `tests/device_manager/twin/test_device_manager.cpp`：`device_manager_service.cpp:358-370` 的 `refresh_identity()` 每 `500ms` 轮转探测一个节点（`t=0ms` 查 `MC`、`t=500ms` 查 `TH`），无 mock 响应时将节点状态由初始 `"OFFLINE"` 置为 `"QUERY_FAILED"`；`SLICE-08` 在第 `1689` 行插入 `test_dds_maintenance_enter_and_exit_recovery` 后，执行至第 `1692` 行 `test_rpc_get_version_info(&env.cli_conn)` 的累计耗时恰跨过 `400~550ms` 临界点，一旦超过 `500ms` 双节点均变为 `"QUERY_FAILED"` 致第 `1427` 行 `strstr(ver_json, "\"status\":\"OFFLINE\"")` 偶发失败。在 `main()` 中将该纯只读初始状态断言提前至第 `1687` 行 `test_rpc_get_snapshot(&env.cli_conn)` 之后（先于耗时的 DDS 匹配步骤执行），保持 `"status":"OFFLINE"` 与 `"valid":false` 初始状态校验零削弱。
+     - `services/helixscreen/include/aisoc/aisoc_connection.h`：`AisocOtaNodeInfo` 含 `scan_state`/`scan_error`；`AisocOtaStatus` 含 `policy` 与 `uint64_t client_req_seq = 0U`；`AisocSnapshot` 新增 `bool estop_confirmed = false`；`request_ota()` 返回本次分配的单调递增 `uint64_t` 请求序号（并声明可单测复用的纯判定辅助接口）。
+     - `services/helixscreen/src/aisoc/aisoc_connection.cpp`：`parse_dm_snapshot_json()`（及状态轮询）从权威布尔字段解析 `estop_latched` 与 `estop_confirmed`；`request_ota()` 分配单调递增 `req_seq` 入队并在工作线程出队/绑定 `task_id` 时同步至 `ota_status_.client_req_seq`；`check_ota_upgrade_gate()` 对所选节点同时强制 `scan_state == "READY" && valid && sha256.size() >= 12U`。
+     - `services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp`：覆盖 `policy`、`scan_state`、双板急停确认 vs 单板超时仅本地锁存 vs 锁存期故障上报不丢锁及外部解除（`S09-01`）、旧 `READY` 回调先于本次拒绝到达不吞失败提示（`S09-02`）、`UNSCANNED` 节点不误判就绪（`S09-03`）、以及 `BUSY -> OTA 完成 -> 恢复就绪` 锁自动释放（`S09-04`）。
+   - **Forward OTA 扫描状态/策略与当次镜像一致性及 E2E 测试（4 个）**：
+     - `services/forward/modules/ota/ota_internal.h`：`fwd_ota_runtime` 含定长静态字段 `char scan_state[2][24]` 与 `char scan_error[2][32]`（零动态分配）。
+     - `services/forward/modules/ota/ota_image.cpp`：`ota_load_image()` 精确写入单节点 `scan_state`（`"READY"` / `"MISSING"` / `"INVALID"` / `"SIGNATURE_INVALID"`）与 `scan_error`。
+     - `services/forward/forward_ota.cpp`：`build_snapshot()` 输出顶层 `"policy"` 及 `mc`/`th` 的 `"scan_state"`、`"scan_error"`；`prepare_images()` 在 `operation == 0U` 时完整遍历 `rt->mask` 全部节点；**`prepare_command()` 在重置 `scan_state[index] = "UNSCANNED"` 时，对扫描任务（`operation == 0U`）或升级任务未选节点（`(request->target_mask & (1U << index)) == 0U`）同步清空 `rt->image[index].valid = false; size = 0U; version = 0U; sha256[0] = '\0'; warning[0] = '\0';`（`S09-03`）**。
+     - `tests/ota/test_ota_e2e.py`：覆盖单节点缺包扫描、`policy` 字段断言，以及**「双包扫描 `READY` ➔ 移走 `fw_th.bin` 并发起仅 MC 任务 ➔ TH 终态快照保持 `UNSCANNED + valid=false + sha256=""`」**（`S09-03`）。
+   - **DeviceManager 急停锁存/双板确认权威分离与 Twin 确定性夹具（4 个）**：
+     - `services/device_manager/device_manager_types.h`：经源码物理核实 `device_manager_state_t` 定义于该头文件第 `78–118` 行（`device_manager_state.h` 仅含函数原型且签名不变，保持零改动），紧邻第 `94` 行 `bool estop_latched;` 新增 `bool estop_confirmed;`（标识本次急停锁存已获 MC+TH 双板 `4B ACK` 确认，`S09-01`）。
+     - `services/device_manager/device_manager_state.cpp`：`dev_state_init_snapshot()` 显式清零 `estop_latched = false; estop_confirmed = false;`；`dev_state_get_snapshot_json()`（`GetSnapshot`）与 `dev_state_get_summary_json()`（`GetDeviceState`）直接输出布尔字段 `"estop_latched":true|false,"estop_confirmed":true|false`，与易被后续 `dev_state_set_fault()` 覆写的 `system_status` 字符串彻底解耦（`S09-01`）。
+     - `services/device_manager/device_manager_dbus.cpp`：`latch_emergency_stop()` 置 `estop_latched = true, estop_confirmed = false`；`handle_emergency_stop()` 仅当 `reason_code == 1U && fwd_err == 0` 时加锁置 `estop_confirmed = true` 并递增 `generation_id`（下游超时/失败时保持 `estop_latched == true && estop_confirmed == false`）；`clear_emergency_stop_state()` 同时清零 `estop_latched` 与 `estop_confirmed`（`S09-01`）。
+     - `tests/device_manager/twin/test_device_manager.cpp`：① 在 `setup_dev_test_env()` 中先完成 `setup_test_dds_and_dbus_cli(env)` 并在启动 `dev_thread` 前将 `env->dev_state.next_identity_probe_ns` 设为 `get_host_monotonic_ns() + 1500000000ULL`，确定性留出首 `1.5s` 初始未探测窗口供 `test_rpc_get_version_info` 100% 稳定验证初始 `OFFLINE + valid:false`，随后在 `test_rpc_identity_fields` 显式归零 `next_identity_probe_ns` 触发真实探测验证不伪造身份（`S09-05`）；② 新增急停双板 `4B ACK` 确认（`estop_latched=true, estop_confirmed=true`）、下游单板超时仅本地锁存（`estop_latched=true, estop_confirmed=false`）、锁存期间 MC 故障上报覆盖 `system_status="FAULT"` 仍保持急停锁、以及外部 `EmergencyStop(0)` 解除清零用例（`S09-01`）。
 2. **`mcu-p3@feat/soc-debug`（`ENG-MCU`，共 3 个文件）**：
    - `color-engine-mcu/io_toggle/src/app/minimc_proto.c`：修复 `handle_th_motion_stop()`（第 642–672 行）。
    - `color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c`：同步修正 `test_twin48_filament_and_stop()` 第 1054 行旧 `0B ACK` 长度断言（`14U` ➔ `18U` 并校验 `4B CMD_ACK` 载荷尾两字节为 `0x0000`）。
    - `color-engine-mcu/tests/test_th_ota_and_bootid.c`：新增 `0x17 [0x01]` 急停锁存与 `0x17 [0x00]` 急停解除正负配对测试（验证 `18B` 帧 / `4B CMD_ACK`、锁存清温并入队 `M112`、解除不清温且不入队 `M112`、非法 `stop_mode > 1` 回 `NACK 0x03`）。
-3. **`boot/bootloadermc@soc_debug`（`ENG_BOOT_MC`，共 2 个文件）**：
-   - `bootloader/src/boot_uart_ota.c`：移除 `handle_cmd_get_version()` 第 327 行 `s_ota.stay_in_boot = 1U;`，保持只读 `0x01` 与 `0x03` 绝不置位 `stay_in_boot`。
-   - `tests/test_mc_boot_ota.c`：更新 `test_magic_info_heartbeat_and_dst_filter()` 并新增无 `UPG2` 冷启动连续 `0x01`/`0x03` 轮询保持 `boot_uart_ota_should_stay_in_boot() == 0U`、以及 `UPG2` / `0x1D(action=2)` / `0x20` 显式驻留与 `0x1D(action=1)` 重启不驻留的配对单测。
+3. **`boot/bootloadermc@soc_debug`（`ENG_BOOT_MC`，共 4 个文件）**：
+   - `bootloader/inc/boot_uart_ota.h`：定义统一探测窗口常量 `#define BOOT_PROBE_WINDOW_MS (2000U)`，声明共用纯判定函数 `uint8_t boot_uart_ota_should_jump_after_window(uint32_t probe_ticks, uint8_t udisk_connected, uint8_t upgrade_in_progress);`（`S09-06`）。
+   - `bootloader/src/boot_uart_ota.c`：移除 `handle_cmd_get_version()` 第 327 行 `s_ota.stay_in_boot = 1U;`；实现 `boot_uart_ota_should_jump_after_window()`（仅当 `!upgrade_in_progress && boot_uart_ota_should_stay_in_boot() == 0U && !udisk_connected && probe_ticks >= BOOT_PROBE_WINDOW_MS` 时返回 `1U`，否则返回 `0U`）。
+   - `bootloader/src/main.c`：第 `210–220` 行主循环直接调用 `boot_uart_ota_should_jump_after_window(probe_ticks, g_udisk_connected, g_upgrade_in_progress)` 驱动 `handle_no_disk_timeout(probe_ticks)`，消除生产代码与单测阈值脱节（`S09-06`）。
+   - `tests/test_mc_boot_ota.c`：直接调用 `boot_uart_ota_should_jump_after_window()` 覆盖 `1999ms` 窗口未届满保持不跳、连续 `0x01`/`0x03` 轮询满 `2000ms` 触发跳转、以及 `UPG2` / `0x1D(action=2)` / `0x20` / `udisk_connected=1` / `upgrade_in_progress=1` 超过 `2000ms` 继续驻留及 `0x1D(action=1)` 重启不驻留的完整配对单测（`S09-06`）。
 
 ---
 
@@ -319,7 +325,7 @@ AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `
    | 节点包就绪（`READY`） | 包行：`已就绪 · <file> (<size>B, sha:<前12位>..)`<br>升级状态（`integrity-only-hil`）：`固件包完整性校验通过，请确认目标与安全开关后开始升级`<br>升级状态（`signature-required`）：`固件包签名与完整性校验通过，请确认目标与安全开关后开始升级` |
    | 节点缺包（`MISSING`） | 缺失节点行：`缺失 · 未找到 <fw_mc.bin|fw_th.bin>（请放入 /run/printer-soc/firmware/ 后重扫，或取消选择该板）`<br>总状态（全缺）：`固定目录未找到可升级固件包，请放入 fw_th.bin / fw_mc.bin 后重新扫描` |
    | 校验失败（`INVALID` / `SIGNATURE_INVALID`） | 节点行：`校验失败 · 包完整性或板型不匹配（请替换有效包后重扫）` 或 `校验失败 · 发布签名校验未通过（请替换有效签名包后重扫）`<br>总状态：`固件包校验未通过，请核对节点提示并替换有效包后重新扫描` |
-   | 离线 / 未连接 / 忙锁 / 急停 | `状态: 本地服务未连接（请检查后台服务后重试）` / `状态: 节点离线（请检查板卡连接待恢复 ONLINE 后重试）` / `状态: 后台已锁定 (BUSY)` / `状态: 设备已确认急停` |
+   | 离线 / 未连接 / 忙锁 / 急停 | `状态: 本地服务未连接（请检查后台服务后重试）` / `状态: 节点离线（请检查板卡连接待恢复 ONLINE 后重试）` / `状态: 后台已锁定 (BUSY)` / `状态: 本地急停已锁存（板卡未全部应答）` / `状态: 设备已确认急停` |
    | 按钮本地拦阻 Toast | 缺选择或未开安全确认：`请选择升级节点并开启安全前置确认`<br>所选节点未扫描或未就绪：`请先扫描固件并确认所选节点固件包校验通过` |
    | 升级中 / 待核验 / 完成 / 失败 | 升级中：`升级进行中请勿断电：阶段 <phase> (<pct>%)`<br>待核验：`传输已提交，等待重启回 App(Bit31=0) 并核验版本与 boot_id...`<br>完成：`100% 升级完成，已回 App 且核验通过（可切回“关于”页复查版本）`<br>失败：`升级失败: <error>（请核对设备在线状态与故障原因后重扫重试）` |
 
@@ -334,7 +340,7 @@ AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `
 
 - **MiniMCProto v2 协议帧与单一契约源**：`project-control/contracts/minimc_v2_contract.yaml` 保持零变更。
   - `0x17 (CMD_EMERGENCY_STOP)`：AP `Forward` 固定发送 `1B` 载荷（`1=急停锁存`，`0=解除锁存`），先单播 `0x02 (MC)`、间隔 `45ms` 再单播 `0x03 (TH)`，每跳超时预算 `200ms`（921600 bps 下 `15B` 请求 + `18B` 响应物理传输仅约 `0.36ms`）。`TH App` 修复后对 `plen <= 1U` 的单播 `WANTS_ACK` 帧统一返回 `18B`（`12B` 头 + `4B minimc_ack_payload_t [queue_free, rx_free_units, 0x00, 0x00]` + `2B CRC16`），广播帧（`dst_id=0xFF`）继续静默不回 ACK。
-  - **DeviceManager 快照字段精确映射**：物理核实 `device_manager_dbus.cpp:215,230` 与 `device_manager_state.cpp:811-813`，第 1 部分所述的整机状态 `IDLE -> EMERGENCY_STOP -> IDLE` 在 `DeviceInterface.GetSnapshot()` JSON 中的权威字段表现为：锁存前 `{"device_state":"IDLE","system_status":"ONLINE"}` ➔ `EmergencyStop(1)` 成功后 `{"device_state":"FAULT","system_status":"EMERGENCY_STOP_INVOKED"}`（Helix `AisocSnapshot.estop_latched == true`）➔ `EmergencyStop(0)` 双板 `4B ACK` 成功后恢复 `{"device_state":"IDLE","system_status":"ONLINE"}`（`estop_latched == false`）。
+  - **DeviceManager 快照与摘要字段精确映射**：物理核实 `device_manager_types.h:94`、`device_manager_dbus.cpp:207-282` 与 `device_manager_state.cpp:704-744`，`GetSnapshot()` 与 `GetDeviceState()` 同时输出权威布尔字段 `"estop_latched"` 与 `"estop_confirmed"`（解耦易被后续传感器/板卡故障改写为 `"FAULT"` 的 `system_status` 字符串）：锁存前 `{"device_state":"IDLE","system_status":"ONLINE","estop_latched":false,"estop_confirmed":false}` ➔ `EmergencyStop(1)` 经 MC+TH 双板 `4B ACK` 确认后 `{"device_state":"FAULT","system_status":"EMERGENCY_STOP_INVOKED","estop_latched":true,"estop_confirmed":true}`（若下游单板超时则保持 `"estop_latched":true,"estop_confirmed":false`，UI 如实提示“本地急停已锁存（板卡未全部应答）”，绝不谎报设备已确认）➔ `EmergencyStop(0)` 双板 `4B ACK` 成功后恢复 `{"device_state":"IDLE","system_status":"ONLINE","estop_latched":false,"estop_confirmed":false}`。
 - **Flash 分区、VTOR、SRAM 魔数与中断/超时预算**：
   - `bootloadermc`（`AT32F435VGT7`）：Bootloader 位于 `0x08000000`（上限 `128 KB = 131,072 B`），App 位于 `0x08020000`（上限 `896 KB = 917,504 B`），跳转前执行 `200ms` USB SE0 断开、`__disable_irq()`、复位 `USART1/USART2/DMA1/OTGFS1/SysTick`、清空 `NVIC->ICER/ICPR` 并设置 `SCB->VTOR = 0x08020000`。移除 `handle_cmd_get_version()` 中的 `s_ota.stay_in_boot = 1U` 后，仅当检测到 `0x2005FFF0 == 0x55504732 ("UPG2")`、收到 `0x1D(action=2)`、收到合法 `0x20 (CMD_OTA_START)` 持锁、或插入 U 盘升级时才驻留 Bootloader；常规复位下即使 `500ms` 收到 AP `0x01` 查询，仍正常回复 `0x02 (capability_flags=0xC0080435, Bit31=1)` 并在 `2000ms` 窗口届满后自动跳入 `MC App`。
   - **零动态内存与静态缓冲预算**：`TH App` 与 `bootloadermc` 全程零 `malloc/free`；`Forward` `ota_internal.h` 仅在单实例静态结构 `fwd_ota_runtime` 增加 `2*(24+32) = 112 B` 定长字符数组，序列化后的 `state/ota_status` JSON 峰值约 `670 B`，严格低于 `aisoc_ota_status_t::json` `1024 B` 上限。
@@ -357,9 +363,9 @@ AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `
 | 责任角色 | 目标仓库与分支 | `max_files` | 受保护存量 `protected_globs` | `max_protected_lines` | 预计净改动规模与编码门禁约束 |
 | --- | --- | :---: | --- | :---: | --- |
 | `INTEGRATOR`（`UX-01`） | 全业务仓只读 | **`0`** | — | `0` | 仅向 `project-control/docs/evidence/SLICE-09/ux01_r18b_walkthrough/` 归档走查证物 |
-| `ENG-AP`（`UX-02`） | `printer-soc@main` | **`21`** | `["*services/helixscreen/include/ui_panel_settings.h", "*services/helixscreen/src/ui/ui_panel_settings.cpp", "*services/helixscreen/src/system/cjk_font_manager.cpp", "*tests/device_manager/twin/test_device_manager.cpp"]` | **`50`** | 受保护存量改动约 `26` 行（含 `test_device_manager.cpp` 用例顺序调整约 `3~4` 行）；其余 17 个自研/配置/脚本/单测文件改动约 `255` 行（已实测 `c308l_services.py`、`test_tools.py`、`test_product_package.py`、`test_ota_e2e.py` 均原生通过 `fast_gate.py`），强制全中文注释/docstring、函数 $\le 50$ 行、入参 $\le 4$ 个 |
+| `ENG-AP`（`UX-02` + `S09-01`~`S09-05`） | `printer-soc@main` | **`24`** | `["*services/helixscreen/include/ui_panel_settings.h", "*services/helixscreen/src/ui/ui_panel_settings.cpp", "*services/helixscreen/src/system/cjk_font_manager.cpp", "*tests/device_manager/twin/test_device_manager.cpp"]` | **`60`** | 受保护存量改动约 `38` 行；新增的 `device_manager_types.h`、`device_manager_state.cpp`、`device_manager_dbus.cpp` 已实测原生通过 `fast_gate.py`，其余自研/配置/脚本/单测文件强制全中文注释/docstring、函数 $\le 50$ 行、入参 $\le 4$ 个 |
 | `ENG-MCU`（`TH-ESTOP-01`） | `mcu-p3@feat/soc-debug` | **`3`** | `[]`（全量接受静态门禁扫描） | `0` | 3 文件合计改动约 `45` 行；须同时满足 `fast_gate.py` 与 `color-engine-mcu/tests/run_tests.sh`（禁嵌套三目、单 `if` 逻辑运算符 $\le 2$ 个、函数 $\le 50$ 行、入参 $\le 4$ 个） |
-| `ENG_BOOT_MC`（`BOOT-MC-STAY-01`） | `boot/bootloadermc@soc_debug` | **`2`** | `[]`（全量接受静态门禁扫描） | `0` | 2 文件合计改动约 `35` 行；严格锁定 `soc_debug` 分支（禁写 `main`），满足 `<=128KB` Flash 预算、零 `USART6` 耦合及函数 $\le 50$ 行 / 入参 $\le 4$ 个 |
+| `ENG_BOOT_MC`（`BOOT-MC-STAY-01` + `S09-06`） | `boot/bootloadermc@soc_debug` | **`4`** | `[]`（`boot_uart_ota.h`、`main.c` 等 4 文件均原生通过 `fast_gate.py`） | `0` | 4 文件合计改动约 `65` 行；严格锁定 `soc_debug` 分支（禁写 `main`），满足 `<=128KB` Flash 预算、零 `USART6` 耦合及函数 $\le 50$ 行 / 入参 $\le 4$ 个 |
 
 ---
 
@@ -376,30 +382,32 @@ AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `
 
 #### 2.4.2 子任务精确接口签名、实现契约与验收命令
 
-1. **`S09-UX01`｜`r18b` 现状走查取证（`INTEGRATOR`，全仓只读 `max_files=0`）**：
+1. **`S09-UX01`｜`r18b` 现状走查取证与证据措辞收敛（`INTEGRATOR` / `COORD`，全业务仓只读 `max_files=0`）**：
    - **输入（Consumes）**：台架在跑 `SLICE-08 r18b` 候选（`printer-soc@6f28023f`）及 §1.5 走查表（`CHK-01`~`CHK-06`）。
-   - **产出（Produces）**：`project-control/docs/evidence/SLICE-09/ux01_r18b_walkthrough/UX01_WALKTHROUGH_REPORT.md` 及对应照片/截屏、背光节点读数、`ip addr`、`/run/printer-soc/firmware/` `ls` 与 `panel.log`/`forward.log`，逐项按 5 类标准定性卡点（含验证一级入口缺失、默认无包、旧验签文案及英文配置下 CJK 字库表现）。
-2. **`S09-AP`｜默认中文与存量迁移、Helix 升级双入口、单节点扫描状态/策略透传及字库保底（`ENG-AP`，`printer-soc@main`）**：
+   - **产出（Produces）**：`project-control/docs/evidence/SLICE-09/ux01_r18b_walkthrough/UX01_WALKTHROUGH_REPORT.md` 及对应照片/截屏、背光节点读数、`ip addr`、`/run/printer-soc/firmware/` `ls` 与 `panel.log`/`forward.log`，逐项按 5 类标准定性卡点；同步闭环冷审两项证据 `MINOR`：**`S09-08`** 将 `UX01_WALKTHROUGH_REPORT.md` 中 `CHK-06` 时间差严格限定表述为后台同一 `task` 的 `PRECHECK` 至 `FAILED` 阶段日志时间戳差（`<1ms`），不混同为客户端 RPC 往返耗时；**`S09-07`** 在最终候选固化后同步 `resource_assessment/RESOURCE_ASSESSMENT_REPORT.md` 的 AP 候选 Commit SHA 与候选列标题。
+2. **`S09-AP`｜默认中文与存量迁移、升级双入口、扫描当次一致性、请求序号绑定及急停双布尔分离（`ENG-AP`，`printer-soc@main`）**：
    - **精确接口与结构变更（Produces / Consumes）**：
      - `live-profile.json` / `c308l_services.py` / `printer-soc-panel`：
        - `live-profile.json`：`settings.language = "zh"`，`settings.c308l_default_lang_migrated = 1`；
        - `def migrate_default_language_once(data: dict, default_lang: str) -> bool:` 与 `def sync_panel_backup_language(panel_config: Path, default_lang: str) -> None:`（均含中文 docstring、`<=50` 行、`<=4` 入参），由 `prepare_panel_settings(assets: Path, panel_config: Path, sys_input: Path = None) -> None` 调用；首次播种 `settings.json` 时写入 `panel_config / ".helix-fresh-install"`；`printer-soc-panel` 保持等价一次性迁移语义，并在 `test_tools.py`、`test_product_package.py` 增补正反单测。
-     - `ota_internal.h` / `ota_image.cpp` / `forward_ota.cpp`：
-       - `bool ota_load_image(fwd_ota_runtime* rt, uint8_t index);`（保持原签名，内部更新 `rt->scan_state[index]` 与 `rt->scan_error[index]`；`prepare_command()` 初始置 `"UNSCANNED"` / `""`；`prepare_images()` 在 `rt->operation == 0U` 时遍历完 `0..1` 中匹配 `rt->mask` 的全部节点后再判定返回 `true` 发 `"READY"` 或返回 `false` 发 `"FAILED"`，确保单缺一包时另一就绪包 `valid=true` 与 `sha256` 完整发布）。
+     - `device_manager_types.h` / `device_manager_state.cpp` / `device_manager_dbus.cpp`（`S09-01`）：
+       - `device_manager_state_t` 新增 `bool estop_confirmed;`；`dev_state_init_snapshot()` 清零 `estop_latched` 与 `estop_confirmed`；`latch_emergency_stop()` 置 `estop_latched = true, estop_confirmed = false`；`handle_emergency_stop()` 仅当 `reason_code == 1U && fwd_err == 0` 时置 `estop_confirmed = true` 并递增 `generation_id`；`clear_emergency_stop_state()` 同时清零两者；`dev_state_get_snapshot_json()` 与 `dev_state_get_summary_json()` 输出 `"estop_latched":true|false,"estop_confirmed":true|false`。
+     - `ota_internal.h` / `ota_image.cpp` / `forward_ota.cpp`（含 `S09-03`）：
+       - `bool ota_load_image(fwd_ota_runtime* rt, uint8_t index);`（保持原签名，内部更新 `rt->scan_state[index]` 与 `rt->scan_error[index]`；`prepare_command()` 初始置 `"UNSCANNED"` / `""`，并对 `operation == 0U` 扫描任务或 `operation == 1U` 未选节点同步清空 `rt->image[index].valid = false; size = 0U; version = 0U; sha256[0] = '\0'; warning[0] = '\0';`；`prepare_images()` 在 `rt->operation == 0U` 时遍历完 `0..1` 中匹配 `rt->mask` 的全部节点后再汇总终态）。
        - `state/ota_status` JSON 新增向后兼容键：顶层 `"policy":"integrity-only-hil"|"signature-required"`，以及 `mc`/`th` 内 `"scan_state"`、`"scan_error"`。
-     - `aisoc_connection.h/.cpp`：
-       - `AisocOtaNodeInfo` 增 `std::string scan_state = "UNSCANNED"; std::string scan_error;`；`AisocOtaStatus` 增 `std::string policy;`；`parse_ota_status_json()` 同步填充。
+     - `aisoc_connection.h/.cpp`（含 `S09-01`~`S09-03`）：
+       - `AisocSnapshot` 增 `bool estop_confirmed = false;` 并从权威布尔键解析；`AisocOtaNodeInfo` 含 `scan_state`/`scan_error`；`AisocOtaStatus` 含 `policy` 与 `uint64_t client_req_seq = 0U;`；`uint64_t AisocConnection::request_ota(const AisocOtaRequest& req)` 返回单调递增 `req_seq` 并在工作线程执行及绑定 `task_id` 期间透传至 `AisocOtaStatus::client_req_seq`；`check_ota_upgrade_gate()` 对所选节点同时要求 `scan_state == "READY" && valid && sha256.size() >= 12U`。
      - `ui_panel_settings.h/.cpp` & `settings_panel.xml`：
        - `static void SettingsPanel::on_settings_local_ota_clicked(lv_event_t* e);` ➔ 调用 `helix::settings::get_ota_local_overlay().show(get_global_settings_panel().parent_screen_);`。
      - `cjk_font_manager.cpp`：
        - `bool CjkFontManager::needs_cjk(const std::string& lang)`：在 `#ifdef HELIX_ENABLE_AISOC` 下返回 `true`（默认 `"zh"` 原生启用，且防止用户手动切回 `"en"` 时卸载 CJK fallback 字库；非 AISoC 构建保持 `lang == "zh" || lang == "ja"`）。
-     - `ui_settings_ota.h/.cpp`：
-       - `static std::string format_ota_pkg(const char* label, const helix::aisoc::AisocOtaNodeInfo& info);`
+     - `ui_settings_ota.h/.cpp`（含 `S09-01`~`S09-04`）：
+       - `static std::string format_ota_pkg(const char* label, const helix::aisoc::AisocOtaNodeInfo& info);`（同时要求 `info.scan_state == "READY" && info.valid && info.sha256.size() >= 12U`）
        - `static std::string format_ota_phase(const helix::aisoc::AisocOtaStatus& st);`
-       - 按 §2.2.2 字库已核验文案表渲染五态与下一步提示；`handle_start_upgrade()` 校验所选掩码对应节点的 `st.mc.valid` / `st.th.valid` 与非空 `sha256`，支持单选已就绪节点发起单板升级，并在勾选缺包/失效节点时弹出明确阻断 Toast。
-     - `tests/device_manager/twin/test_device_manager.cpp`：
-       - 在 `main()` 中将纯只读初始版本状态校验 `TEST_STEP([&]() { return test_rpc_get_version_info(&env.cli_conn); });` 提前至 `test_rpc_get_snapshot(&env.cli_conn)` 之后执行，消除 `refresh_identity()` `500ms` 双节点轮询窗口引起的时序偶发失败，保持 `test_rpc_get_version_info()` 内部 `"status":"OFFLINE"` 与 `"valid":false` 断言不变。
-   - **本地自检命令**：CMake 构建 `build_ps` 与 `build_ps_hil` ➔ 运行 `ctest`、`test_ota_e2e.py`（双策略）、`test_aisoc_p0`、`test_tools.py`、`test_product_package.py` 及 AISoC XML/C++ 中文字符 `.bin` 字形 100% 覆盖检查。
+       - `pending_scan_seq_` 严格匹配 `st.client_req_seq` 后方消费 `scan_feedback_pending_` 弹出扫描结果 Toast；`busy` 仅读取 `st.active || st.last_rpc_code == -5 || snap.maintenance_locked`（不读 `last_estop_outcome == BACKEND_BUSY`，保留 `application.cpp:2034` 全局一次性急停 Toast）；区分 `snap.estop_confirmed`（`状态: 设备已确认急停`）与 `snap.estop_latched && !snap.estop_confirmed`（`状态: 本地急停已锁存（板卡未全部应答）`）。
+     - `tests/device_manager/twin/test_device_manager.cpp`（`S09-01` & `S09-05`）：
+       - `setup_dev_test_env()` 先初始化测试客户端并在启动 `dev_thread` 前设定 `next_identity_probe_ns = now + 1500000000ULL`，确定性暴露初始 `OFFLINE + valid:false` 状态供 `test_rpc_get_version_info` 断言，随后在 `test_rpc_identity_fields` 显式归零 `next_identity_probe_ns` 触发真实探测；同步覆盖急停双板确认、单板超时仅本地锁存、锁存期故障上报不丢锁与外部解除。
+   - **本地自检命令**：CMake 构建 `build_ps` 与 `build_ps_hil` ➔ 运行双套 `ctest`、`test_ota_e2e.py`（双策略含移走未选包新用例）、`test_aisoc_p0`（含 `S09-01`~`S09-04` 新用例）、`test_tools.py`、`test_product_package.py` 及 AISoC XML/C++ 中文字符 `.bin` 字形 100% 覆盖检查。
 3. **`S09-MCU`｜TH App `0x17` 锁存/解除 `4B ACK` 与解除语义修复（`ENG-MCU`，`mcu-p3@feat/soc-debug`）**：
    - **精确接口与行为契约**：
      - `static uint16_t handle_th_motion_stop(const uint8_t *frame, uint16_t plen, uint8_t *out_buf);`（保持原签名，`<=50` 行，`<=4` 入参，单 `if` 逻辑操作符 `<=2` 个）：
@@ -408,10 +416,11 @@ AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `
        3) 仅当 `(plen == 0U) || (frame[MINIMC_HEADER_SIZE] == 1U)`（急停锁存/无参急停）时执行 `quickStop()`、`thermistor_set_target_deci_c(0)`、`load_filament_Flag = 0` 及 `(void)th_control_enqueue_gcode("M112", 4U, true)`；当 `plen == 1U && frame[MINIMC_HEADER_SIZE] == 0U`（解除急停）时**不执行**上述关断与 `"M112"` 入队；
        4) 若为广播（`dst_id == MINIMC_NODE_BROADCAST`）或未置 `MINIMC_FLAG_WANTS_ACK` 返回 `0U`；其余单播请求**统一调用 `build_ack_resp(src_id, seq, out_buf)` 返回标准 `18B`（`4B CMD_ACK`）响应帧**。
    - **本地自检命令**：`(cd mcu-p3/color-engine-mcu/tests && sh run_tests.sh) && (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh)`，并执行双目录 `make clean && make pack` 验证 ARM 交叉编译零警告/零错误。
-4. **`S09-BOOT-MC`｜MC Bootloader 只读 `0x01` 不置驻留位修复（`ENG_BOOT_MC`，`boot/bootloadermc@soc_debug`）**：
+4. **`S09-BOOT-MC`｜MC Bootloader 只读 `0x01` 不置驻留位与生产 `2000ms` 窗口判定覆盖（`ENG_BOOT_MC`，`boot/bootloadermc@soc_debug`）**：
    - **精确接口与行为契约**：
      - `static void handle_cmd_get_version(const minimc_frame_hdr_t *p_req);`（`bootloader/src/boot_uart_ota.c:320`）：删除 `s_ota.stay_in_boot = 1U;`，其余 `16B 0x02 CMD_VERSION_REPORT` 字段（`proto=2.0`, `fw=1.0`, `boot_id`, `MC_FW_GIT_COMMIT_SHORT`, `MC_BOOT_CAPABILITY_FLAGS=0xC0080435`）完全不变；
-     - `uint8_t boot_uart_ota_should_stay_in_boot(void);`：仅在 `UPG2` 魔数命中、收到 `0x1D(action=2)`、或 `0x20` 串口升级会话激活（`s_ota.stay_in_boot != 0U || s_active_writer == BOOT_WRITER_UART2`）时返回 `1U`。
+     - `uint8_t boot_uart_ota_should_stay_in_boot(void);`：仅在 `UPG2` 魔数命中、收到 `0x1D(action=2)`、或 `0x20` 串口升级会话激活（`s_ota.stay_in_boot != 0U || s_active_writer == BOOT_WRITER_UART2`）时返回 `1U`；
+     - `uint8_t boot_uart_ota_should_jump_after_window(uint32_t probe_ticks, uint8_t udisk_connected, uint8_t upgrade_in_progress);`（`boot_uart_ota.h/.c`，`<=50` 行、`3` 入参）：基于 `BOOT_PROBE_WINDOW_MS (2000U)` 返回 `(upgrade_in_progress == 0U && boot_uart_ota_should_stay_in_boot() == 0U && udisk_connected == 0U && probe_ticks >= BOOT_PROBE_WINDOW_MS) ? 1U : 0U`，由 `bootloader/src/main.c` 主循环直接调用，并在 `tests/test_mc_boot_ota.c` 覆盖窗口届满前（`1999ms`）、`0x01/0x03` 轮询届满（`2000ms`）自动跳转、以及显式驻留/U盘连接/升级中越窗保持驻留（`S09-06`）。
    - **本地自检命令**：`(cd boot/bootloadermc && PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin sh tests/run_tests.sh)`（一次跑通交叉编译 `<=128KB`、零 `USART6`、`pack_firmware.py` 边界、`test_mc_boot_ota` 新旧用例及函数规模门禁）。
 
 ---
@@ -422,7 +431,7 @@ AP 运行数据复用同一台架的实板验收窗口，覆盖正常空闲和 `
 
 1. **第 1 阶 `fast_gate.py`（`<3s` 机械门禁）**：
    - 校验 `minimc_v2_contract.yaml` 与 `c308l_platform_contract.yaml` 同步零漂移；
-   - 强校验 `printer-soc@main`（$\le 21$ 文件，受保护改动 $\le 50$ 行）、`mcu-p3@feat/soc-debug`（$\le 3$ 文件）、`boot/bootloadermc@soc_debug`（$\le 2$ 文件，严禁 `main` 分支）路径白名单、全中文注释/docstring、自研函数 $\le 50$ 行 / $\le 4$ 入参、零未核实占位标记与零改字节垫片。
+   - 强校验 `printer-soc@main`（$\le 24$ 文件，受保护改动 $\le 60$ 行）、`mcu-p3@feat/soc-debug`（$\le 3$ 文件）、`boot/bootloadermc@soc_debug`（$\le 4$ 文件，严禁 `main` 分支）路径白名单、全中文注释/docstring、自研函数 $\le 50$ 行 / $\le 4$ 入参、零未核实占位标记与零改字节垫片。
 2. **第 2 阶 `integration_cmd`（宿主机跨仓全量合龙 + 同源固件包构建固化）**：
    - 运行 `printer-soc` 打包/工具单测（含 `live-profile.json` 默认 `"zh"` 与存量配置一次性迁移单测）+ **AISoC XML/C++ 字符串相对 `noto_sans_cjk_*.bin` + `noto_sans_*.c` 100% 字形覆盖校验脚本**；
    - 运行 `test_harness/hil/tests/test_helix_screen_integration.py --self-test`；

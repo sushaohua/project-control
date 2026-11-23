@@ -1,0 +1,97 @@
+{
+  "slice_id": "SLICE-09",
+  "batch_id": "BATCH-HELIX-P0-02",
+  "profile": "c308l-system",
+  "commits": {
+    "printer-soc": "bc0ff8c785ff11b470a4bec6bc46c4aec461da9c",
+    "mcu-p3": "112842cb42146e466f7001ede30096bd0125c385",
+    "boot/bootloadermc": "d2ef9fb6955eba5f7992b743642919e4e712af83",
+    "project-control": "85b97df8a66e08ef890eff4197ac7fbeedd44360",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "fb1409be7ad5586c701df586553d7f5b67bc2b43",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "root_commit": "fc7840776d5183d10f2e1c52d6957bbc4a8739d9",
+  "input_fingerprint": "fcbde51e337ee32325ad846f863430570107d47f389051b54e564b0679bd4ac4",
+  "status": "FAILED",
+  "stage": "codex",
+  "decision": "REJECTED",
+  "codex_session": "01a206f4-66b5-71a0-b75c-d2cde7f0dc22",
+  "blocker_count": 6,
+  "findings": [
+    {
+      "id": "S09-01",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:350；printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:223",
+      "message": "面板可在 TH 未应答时显示“设备已确认急停”。DeviceManager 在转发前就设置本地保护锁并写入 EMERGENCY_STOP_INVOKED（device_manager_dbus.cpp:262），下游超时后仍保留该锁。面板随后轮询到这段文字就显示设备已确认。反向也会出错：MC 故障上报可将文字改为 FAULT，而保护锁仍在。验收需要分别验证本地锁存和双板 ACK，并覆盖单板超时、锁存期间故障上报及外部解除。"
+    },
+    {
+      "id": "S09-02",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:206；printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:250",
+      "message": "上一次扫描为 READY 时，点击重扫会立即置 scan_feedback_pending_，新 RPC 此时仅已入队。若已排队的设备状态刷新先执行，页面会读取旧 READY、弹成功提示并清掉等待标志。随后本次 RPC 即使被拒，也不会再弹失败提示。应把提示绑定到本次请求及其 task_id，并覆盖旧 READY 回调先于本次拒绝到达的顺序。"
+    },
+    {
+      "id": "S09-03",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/forward/forward_ota.cpp:242；printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:29",
+      "message": "新任务把两个节点的 scan_state 重置为 UNSCANNED，却保留上轮 image.valid 和 SHA。双包扫描成功后移走 TH 包，再发起仅 MC 的任务，TH 不会进入 ota_load_image，终态快照仍可同时给出 TH 的 UNSCANNED、valid=true 和旧摘要。面板优先检查 valid，会把 TH 显示为“已就绪”。需要保证同一节点的扫描状态、有效标志和摘要属于同一次检查。"
+    },
+    {
+      "id": "S09-04",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/ui/ui_settings_ota.cpp:219",
+      "message": "升级期间点击急停得到 BUSY 后，last_estop_outcome 会在每次设备轮询中沿用。即使 OTA 已完成、后台已释放锁，页面仍优先显示“后台已锁定”，直至再次执行急停。应按当前任务状态显示锁，并验证 BUSY → OTA 完成 → 恢复就绪的全过程。"
+    },
+    {
+      "id": "S09-05",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/tests/device_manager/twin/test_device_manager.cpp:1689",
+      "message": "提前执行 GetVersionInfo 保留了原断言，但未消除 500ms 竞态。setup_dev_test_env 已启动 dispatch 线程，随后还要初始化 DDS、等待 100ms 并调用 GetSnapshot。如果测试线程在此期间被延迟，两个节点均可被轮询为 QUERY_FAILED，原 OFFLINE 断言仍会失败。需要让夹具确定性地暴露初始状态，保留现有断言。"
+    },
+    {
+      "id": "S09-06",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "boot/bootloadermc/tests/test_mc_boot_ota.c:789",
+      "message": "宿主用例正确检查了连续 0x01/0x03 不置驻留位，但最后由测试自身调用 jump_to_app。该分支没有检查模拟时间，也没有执行 main.c:218 的生产超时判定。即使生产阈值被改错，这条“2.0s window jumps to App”断言仍会通过。软件回归需覆盖生产判定在窗口届满前保持、届满后跳转，以及显式驻留时继续保持。"
+    },
+    {
+      "id": "S09-07",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "project-control/docs/evidence/SLICE-09/resource_assessment/RESOURCE_ASSESSMENT_REPORT.md:14",
+      "message": "资源报告仍将 AP 候选列为 7dee19eb9c6db06060eac98f2bd30fdcb35ba9b1，r03 实际锁定 printer-soc@bc0ff8c785ff11b470a4bec6bc46c4aec461da9c。两提交间仅修改宿主测试，已有 MCU 静态核算和 r18b 采样仍可使用。应更正版本表及候选列标题，使 H1/H2 实测挂到正确候选。"
+    },
+    {
+      "id": "S09-08",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "project-control/docs/evidence/SLICE-09/ux01_r18b_walkthrough/UX01_WALKTHROUGH_REPORT.md:149",
+      "message": "CHK-06 把耗时写成“扫描 RPC <1ms 返回”。原始日志只显示同一 task 的 PRECHECK 和 FAILED 落在同一毫秒，没有 RPC 发起及应答时间戳。应将该数值限定为后台两个阶段的时间差，保留已有的扫描响应和界面反馈结论。"
+    }
+  ],
+  "reason": "独立 Codex 拒单 (6 BLOCKER): S09-01: 面板可在 TH 未应答时显示“设备已确认急停”。DeviceManager 在转发前就设置本地保护锁并写入 EMERGENCY_STOP_INVOKED（device_manager_dbus.cpp:262），下游超时后仍保留该锁。面板随",
+  "next_step": "按 codex_final_json 修复 BLOCKER 项后重过四阶门禁",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/docker_qa/checkout.log",
+    "build_plan_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/docker_qa/artifacts/build-plan.json",
+    "release_manifest_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/docker_qa/artifacts/release-manifest.json",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/codex/codex.stderr",
+    "codex_request_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261123_r03/codex/request.json"
+  }
+}
