@@ -1,0 +1,17 @@
+=== /etc/printer-soc/version.json ===
+{
+  "product_version": "0.1.0-skeleton",
+  "build_id": "20261121T082130Z",
+  "candidate_id": "0.1.0-skeleton+6f28023f",
+  "profile": "c308l-production",
+  "git_sha": "6f28023f",
+  "abi": "armv7l-hf-glibc2.33",
+  "mcu_proto": "2.0"
+}
+
+=== DeviceInterface.GetVersionInfo ===
+method return time=146856.145206 sender=:1.1 -> destination=:1.10 serial=674378 reply_serial=2
+   string "{"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":1775181012,"git_commit":"0xA64BFFBF","capability_flags":3,"last_update_ns":146855660967901},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":1462640722,"git_commit":"0xA64BFFBF","capability_flags":7,"last_update_ns":146855154341942}}}"
+=== DeviceInterface.GetSnapshot ===
+method return time=146856.154530 sender=:1.1 -> destination=:1.11 serial=674379 reply_serial=2
+   string "{"schema_version":2,"generation_id":1,"timestamp_ns":760045567320,"bed":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"UNKNOWN","quality":"UNKNOWN","raw_adc":null},"tool":{"temperature_millic":2147483646,"temperature_c":null,"sensor_status":"UNKNOWN","quality":"UNKNOWN","raw_adc":null},"devices":{"mc":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":1775181012,"git_commit":"0xA64BFFBF","capability_flags":3,"last_update_ns":146855660967901},"th":{"valid":true,"status":"ONLINE","proto_version":"2.0","firmware_version":"2.0","boot_id":1462640722,"git_commit":"0xA64BFFBF","capability_flags":7,"last_update_ns":146855154341942}},"system_status":"OFFLINE","device_state":"OFFLINE"}"

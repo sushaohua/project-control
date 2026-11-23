@@ -1,0 +1,13 @@
+{
+  "role": "PM",
+  "action": "spawn",
+  "main_session": "agy / Antigravity-CLI (coordinator=gemini-4-carbon-high)",
+  "requested_model": "gemini-4-neon-high",
+  "effective_model": "gemini-4-neon-high",
+  "fallback_reason": null,
+  "member_name": "pm",
+  "conversation_id": "c3784624-2e3d-47eb-a53a-90495a31f85b",
+  "models_check": "swarm models 2026-11-21T19:14:10+08:00: gemini-4-neon-high in list, quota_remaining=95%",
+  "effective_model_source": "swarm status 2026-11-21 19:15:50",
+  "ts": "2026-11-21T19:15:36+08:00"
+}

@@ -1,0 +1,7 @@
+{
+  "slice_id": "SMOKE-PROBE",
+  "decision": "APPROVED",
+  "axis_spec_realism": "ok",
+  "axis_embedded_safety": "ok",
+  "findings": []
+}

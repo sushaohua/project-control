@@ -1,0 +1,694 @@
+{
+  "_active_printer_id_comment": "Which entry under 'printers' is live. Must name an existing key there.",
+  "_beta_features_comment": "Enable beta features (e.g., HelixPrint plugin install prompt). Default: false. Always enabled in --test mode.",
+  "_brightness_comment": "Screen brightness percentage (1-100). Default: 80%.",
+  "_completion_alert_comment": "Print completion alert mode: 0=Off, 1=Notification, 2=Alert. Default: 1.",
+  "_config_version_comment": "Config schema version. MUST be present and current: Config::init treats a missing version as 0, reads that as a tarball default, and will restore a rolling backup over this file. Pinned by tests/unit/test_settings_template_contract.cpp.",
+  "_disable_sound_comment": "Disable all sound output. Prevents audio backend initialization entirely. Use on hardware where audio causes excessive CPU load (e.g., Artillery M1 Pro). Also available as --no-sound CLI flag. Default: false.",
+  "_language_comment": "UI language code. Options: 'en' (English). Default: 'en'.",
+  "_log_dest_comment": "Log destination: 'auto' (detect best), 'journal' (systemd), 'syslog', 'file', 'console' (disable system log)",
+  "_log_level_comment": "Log verbosity: warn (quiet), info (default), debug, trace. CLI -v flags override this.",
+  "_log_path_comment": "Log file path when using file destination. Empty = auto (/var/log or ~/.local/share)",
+  "_sound_theme_comment": "Active sound theme. Loads from config/sounds/<name>.json. Options: 'default', 'minimal'. Default: 'default'.",
+  "_sounds_enabled_comment": "Master switch for all sound effects. Default: true.",
+  "_telemetry_enabled_comment": "Enable anonymous usage telemetry. Opt-in during setup wizard. Default: false.",
+  "_ui_sounds_enabled_comment": "Enable UI interaction sounds (button taps, navigation). Independent of event sounds. Default: true.",
+  "_wifi_expected_comment": "Whether WiFi connectivity is expected. Used to show connection warnings. Set during wizard.",
+  "_wizard_completed_comment": "Whether the setup wizard has been completed. Set automatically after first-run wizard.",
+  "active_printer_id": "default",
+  "ams": {
+    "_spool_style_comment": "Filament spool visualization style. Options: '3d' (Bambu-style pseudo-3D canvas with gradients), 'flat' (concentric rings). Default is '3d'.",
+    "spool_style": "3d"
+  },
+  "appearance": {
+    "_show_widget_labels_comment": "Show text labels below home panel widget icons. Default: false.",
+    "show_widget_labels": false
+  },
+  "beta_features": false,
+  "brightness": 80,
+  "cache": {
+    "_disk_critical_mb_comment": "Stop caching when available disk falls below this (MB). Prevents filling filesystem. AD5M default: 5",
+    "_disk_low_mb_comment": "Evict aggressively when available disk falls below this (MB). Reduces cache to half normal limit. AD5M default: 20",
+    "_thumbnail_max_mb_comment": "Maximum thumbnail cache size in MB. Auto-sizes to 5% of available disk, clamped to this ceiling. AD5M default: 20",
+    "disk_critical_mb": 5,
+    "disk_low_mb": 20,
+    "thumbnail_max_mb": 20
+  },
+  "completion_alert": 1,
+  "config_version": 23,
+  "dark_mode": true,
+  "disable_sound": true,
+  "display": {
+    "_animations_enabled_comment": "Enable UI animations and transitions. Default: auto-detected from platform capabilities (off on embedded/basic hardware, on for standard).",
+    "_backlight_enable_ioctl_comment": "Use BACKLIGHT_ENABLE/DISABLE ioctls for Allwinner display control. Some platforms (e.g. Elegoo CC1, AD5X) invert PWM polarity when these are called; set false for brightness-only control. Default: true.",
+    "_backlight_floor_percent_comment": "Lowest brightness level (percent of the panel's raw range) the screen may drop to while on. Some panels render lower levels as black; raise this if the panel goes black before the slider minimum. 0 disables. Default: 0 (20 on K2 builds). Requires restart.",
+    "_bed_mesh_render_mode_comment": "Bed mesh visualization mode. 0=3D surface (default), 1=2D heatmap. Default: 0.",
+    "_bed_mesh_show_zero_plane_comment": "Show translucent reference plane at Z=0 in bed mesh 3D view. Helps visualize where nozzle touches bed. Default: true.",
+    "_dim_brightness_comment": "Brightness percentage when dimmed (1-100). Default: 30%.",
+    "_dim_sec_comment": "Seconds of inactivity before display dims (0 = no dimming). Default: 600 (10 minutes). Must be less than sleep_sec.",
+    "_drm_device_comment": "Override DRM device path (e.g., '/dev/dri/card1'). Empty string enables auto-detection. Pi 5 has multiple DRM cards: card0 (v3d, 3D only), card1 (DSI touchscreen), card2 (vc4/HDMI). Auto-detection finds the first with dumb buffer support and a connected display.",
+    "_gcode_render_mode_comment": "G-code visualization mode. 0=Auto, 1=3D GLES, 2=2D Layer (default). Can also be overridden via HELIX_GCODE_MODE env var (3D/2D).",
+    "_screensaver_type_comment": "Screensaver during display sleep. 0=Off (blank screen), 1=Flying Toasters, 2=Starfield, 3=3D Pipes. Default: 1, or 0 on low-power hardware. Replaces legacy screensaver_enabled boolean.",
+    "_sleep_backlight_off_comment": "Power off backlight during display sleep. Set false only on platforms where backlight power-off is verified to prevent wake-on-touch. When false, software overlay + FBIOBLANK make screen appear off while backlight stays powered. Default: true.",
+    "_sleep_sec_comment": "Seconds of inactivity before display turns OFF (0 = never). Default: 1200 (20 minutes).",
+    "_sleep_while_printing_comment": "Allow display to dim and sleep during active prints. When false, display stays on while printing. Default: true.",
+    "_theme_comment": "Color theme, loaded from assets/config/themes/defaults/<name>.json. Options: ayu, catppuccin, chatgpt, cupertino, dracula, everforest, gruvbox, helixscreen, kanagawa, material-design, midnight, nord, onedark, rose-pine, solarized, tokyonight, yami. Default: 'helixscreen'. Requires restart.",
+    "_time_format_comment": "Time display format. 0 = 12-hour (2:30 PM), 1 = 24-hour (14:30). Default is 12-hour.",
+    "_timezone_comment": "IANA timezone ID (e.g., 'America/New_York', 'Europe/London'). Applied via setenv/tzset so all localtime_r() calls produce correct local times. Default: 'UTC'.",
+    "animations_enabled": true,
+    "backlight_enable_ioctl": true,
+    "backlight_floor_percent": 0,
+    "bed_mesh_render_mode": 0,
+    "bed_mesh_show_zero_plane": true,
+    "dim_brightness": 30,
+    "dim_sec": 0,
+    "drm_device": "",
+    "gcode_render_mode": 3,
+    "gpu_3d_blocked": false,
+    "gpu_blur_blocked": false,
+    "rotate": 270,
+    "screensaver_type": 1,
+    "sleep_backlight_off": true,
+    "sleep_sec": 0,
+    "sleep_while_printing": true,
+    "theme": "helixscreen",
+    "time_format": 0,
+    "timezone": "UTC"
+  },
+  "filament_sensors": {
+    "_master_enabled_comment": "Global toggle to enable/disable all filament sensor monitoring. When false, sensor states are ignored.",
+    "_sensors_comment": "Array of sensor configurations. Each sensor has: klipper_name (full Klipper object name like 'filament_switch_sensor fsensor'), role ('none', 'runout', 'toolhead', 'entry'), enabled (boolean). Sensors are auto-discovered from Moonraker.",
+    "master_enabled": true,
+    "sensors": []
+  },
+  "gcode_viewer": {
+    "_adaptive_layer_target_ms_comment": "Target render time in milliseconds when using adaptive layers_per_frame (only used when layers_per_frame=0). Lower = smoother UI, higher = faster caching. Default 16ms = ~60 FPS.",
+    "_layers_per_frame_comment": "Number of layers to render per frame during progressive 2D visualization. 0 = auto (adaptive based on render time, default), 1-100 = fixed value. Higher = faster caching, but may cause UI stutter on slow devices.",
+    "_streaming_mode_comment": "G-code streaming mode for large files. 'auto' (calculate based on RAM), 'on' (always stream), 'off' (always full load). Override with HELIX_GCODE_STREAMING env var.",
+    "_streaming_threshold_percent_comment": "Percent of available RAM that triggers streaming mode (1-90). Lower = stream smaller files. Only used when streaming_mode is 'auto'.",
+    "_tube_sides_comment": "Number of sides for tube cross-section. Options: 4 (diamond, fastest, default), 8 (octagonal, balanced), 16 (circular, highest quality, matches OrcaSlicer)",
+    "adaptive_layer_target_ms": 16,
+    "layers_per_frame": 0,
+    "streaming_mode": "auto",
+    "streaming_threshold_percent": 40,
+    "tube_sides": 4
+  },
+  "input": {
+    "_device_blacklist_comment": "List of USB input devices HelixScreen ignores entirely for keyboard/scanner input, as 'vid:pid' lowercase 4-digit hex strings (e.g. ['002c:261a']). Use this when an external barcode scanner tool (like afc-spool-scan) needs the device and HelixScreen keeps grabbing it. Find a device's VID:PID in the Barcode Scanner settings device list, or in helixscreen.log lines '[InputScanner] Found keyboard:' / 'Found USB HID keyboard device:'. Empty list = no blacklist.",
+    "_force_calibration_comment": "Force touch calibration on next startup. Automatically cleared after calibration completes. Default: false.",
+    "_scroll_limit_comment": "Pixels of movement before scrolling starts. Lower = more responsive. Default LVGL is 10, we use 10 to match.",
+    "_scroll_throw_comment": "Scroll momentum decay rate (1-99). Higher = faster decay. Default LVGL is 10, we use 25 for better touchpad feel.",
+    "_touch_device_comment": "Override touch/pointer input device (e.g., '/dev/input/event1'). Empty string enables auto-detection. Auto-detection finds touch or pointer capable devices.",
+    "calibration": {
+      "_comment": "Touch calibration coefficients. Set by calibration wizard or manually.",
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 0.0,
+      "e": 1.0,
+      "f": 0.0,
+      "valid": false
+    },
+    "device_blacklist": [],
+    "force_calibration": false,
+    "scroll_limit": 10,
+    "scroll_throw": 25,
+    "touch_device": ""
+  },
+  "label_printer": {
+    "_address_comment": "Network address (IP or hostname) for network label printers.",
+    "_bt_comment": "Bluetooth address, name, and transport (spp or ble) for Bluetooth label printers.",
+    "_label_count_comment": "Number of labels to print per job. Default: 1.",
+    "_label_size_comment": "Label size preset index. 0 = default size for printer model.",
+    "_port_comment": "Network port for label printer. Default: 9100 (RAW/JetDirect).",
+    "_preset_comment": "Label content preset index.",
+    "_protocol_comment": "Network protocol. Options: 'raw' (JetDirect), 'ipp'. Default: 'raw'.",
+    "_type_comment": "Label printer connection type. Options: 'network', 'usb', 'bluetooth'. Default: 'network'.",
+    "_usb_comment": "USB vendor ID, product ID, and serial for USB label printers. 0 = auto-detect.",
+    "address": "",
+    "bt_address": "",
+    "bt_name": "",
+    "bt_transport": "spp",
+    "label_count": 1,
+    "label_size": 0,
+    "port": 9100,
+    "preset": 0,
+    "protocol": "raw",
+    "type": "network",
+    "usb_pid": 0,
+    "usb_serial": "",
+    "usb_vid": 0
+  },
+  "language": "zh",
+  "log_dest": "auto",
+  "log_level": "info",
+  "log_path": "",
+  "motion": {
+    "jog_mode": 0
+  },
+  "network": {
+    "connection_type": "None",
+    "eth_ip": "",
+    "wifi_ssid": ""
+  },
+  "output": {
+    "_led_on_at_start_comment": "Automatically turn on the configured LED when Klipper becomes ready. Default: false.",
+    "led_on_at_start": false
+  },
+  "plugins": {
+    "_enabled_comment": "List of plugin IDs to load. Plugins must be explicitly enabled. Example: [\"led-effects\"]",
+    "enabled": []
+  },
+  "printers": {
+    "_per_printer_comment": "Each configured printer is an object here keyed by id (e.g. 'default', 'printer-2'), holding that machine's own moonraker_host/port, heaters, temp_sensors, fans, leds, hardware, panel_widgets, preset, toolhead_style, and detection/policy_u1. 'active_printer_id' at the root selects which one is live. Keys directly under 'printers' that are not objects (like show_printer_switcher) are install-wide settings, not printers.",
+    "_show_printer_switcher_comment": "Show the printer switcher button on the home panel. Default: false.",
+    "default": {
+      "_chamber_heater_comment": "Chamber heater assignment. 'auto' (detect by name heuristics), 'none' (disable), or Klipper object name (e.g., 'heater_generic chamber'). Default: 'auto'.",
+      "_chamber_sensor_comment": "Chamber temperature sensor assignment. 'auto' (detect by name heuristics), 'none' (disable), or Klipper object name (e.g., 'temperature_sensor enclosure_bme'). Default: 'auto'.",
+      "capability_overrides": {
+        "_comment": "Override auto-detected printer capabilities. Values: 'auto' (use detection), 'enable' (force on), 'disable' (force off). Use 'enable' for features that work but weren't detected (e.g., heat_soak without chamber heater).",
+        "bed_mesh": "auto",
+        "chamber": "auto",
+        "heat_soak": "auto",
+        "nozzle_clean": "auto",
+        "qgl": "auto",
+        "speaker": "auto",
+        "z_tilt": "auto"
+      },
+      "chamber_heater": "auto",
+      "chamber_sensor": "auto",
+      "default_macros": {
+        "cooldown": "SET_HEATER_TEMPERATURE HEATER=extruder TARGET=0\nSET_HEATER_TEMPERATURE HEATER=heater_bed TARGET=0",
+        "load_filament": {
+          "gcode": "LOAD_FILAMENT",
+          "label": "Load"
+        },
+        "macro_1": {
+          "gcode": "HELIX_CLEAN_NOZZLE",
+          "label": "Clean Nozzle"
+        },
+        "macro_2": {
+          "gcode": "HELIX_BED_LEVEL_IF_NEEDED",
+          "label": "Bed Level"
+        },
+        "unload_filament": {
+          "gcode": "UNLOAD_FILAMENT",
+          "label": "Unload"
+        }
+      },
+      "extra_sensors": {},
+      "fans": {
+        "chamber": "",
+        "exhaust": "",
+        "hotend": "heater_fan hotend_fan",
+        "part": "fan"
+      },
+      "filament": {
+        "_cooldown_delay_seconds_comment": "Seconds to wait after a filament operation before turning off the extruder heater. Default: 120 (2 minutes). Set to 0 to disable auto-cooldown. Per-printer: read as printers/<id>/filament/cooldown_delay_seconds.",
+        "cooldown_delay_seconds": 120
+      },
+      "hardware": {
+        "expected": [],
+        "last_snapshot": {},
+        "optional": []
+      },
+      "heaters": {
+        "_hotend_comment": "Primary extruder heater. Additional extruders (extruder1, extruder2, etc.) are auto-discovered from Klipper. Toolchangers and multi-backend AMS systems are also auto-detected. No manual configuration needed for multi-extruder or multi-tool setups.",
+        "bed": "heater_bed",
+        "hotend": "extruder"
+      },
+      "leds": {
+        "_color_presets_comment": "Preset colors (#RRGGBB) shown in the color picker. Default: white, red, green, blue, yellow, magenta, cyan.",
+        "_last_brightness_comment": "Last used brightness percentage (0-100). Remembered between sessions.",
+        "_last_color_comment": "Last used LED color as #RRGGBB hex string (also accepts legacy integer RGB). Remembered between sessions.",
+        "_led_on_at_start_comment": "Automatically turn on selected LED strips when Klipper becomes ready. Default: false.",
+        "_macro_devices_comment": "Custom LED macro devices shown as cards in LED control overlay. Each: {name, type (on_off|toggle|preset), on_macro, off_macro, toggle_macro, presets}.",
+        "_selected_strips_comment": "Klipper LED strip IDs to control (e.g., [\"neopixel caselight\"]). Configured via Settings > LED Settings.",
+        "_startup_brightness_comment": "Brightness percentage (1-100) used when LEDs turn on at startup. Default: 80.",
+        "_strip_comment": "Legacy single LED strip name. Superseded by selected_strips for multi-strip control.",
+        "auto_state": {
+          "_comment": "Automatic state-based LED lighting. Actions: off, brightness, color, effect, wled_preset, macro.",
+          "enabled": false,
+          "mappings": {
+            "complete": {
+              "action": "color",
+              "brightness": 100,
+              "color": "#00FF00"
+            },
+            "error": {
+              "action": "color",
+              "brightness": 100,
+              "color": "#FF0000"
+            },
+            "heating": {
+              "action": "color",
+              "brightness": 100,
+              "color": "#FF0000"
+            },
+            "idle": {
+              "action": "brightness",
+              "brightness": 50,
+              "color": "#000000"
+            },
+            "paused": {
+              "action": "off"
+            },
+            "printing": {
+              "action": "brightness",
+              "brightness": 100,
+              "color": "#000000"
+            }
+          }
+        },
+        "color_presets": [
+          "#FFFFFF",
+          "#FF0000",
+          "#00FF00",
+          "#0000FF",
+          "#FFFF00",
+          "#FF00FF",
+          "#00FFFF"
+        ],
+        "last_brightness": 100,
+        "last_color": "#FFFFFF",
+        "led_on_at_start": false,
+        "macro_devices": [],
+        "selected": [],
+        "selected_strips": [],
+        "startup_brightness": 80,
+        "strip": ""
+      },
+      "moonraker_api_key": false,
+      "moonraker_connection_timeout_ms": 10000,
+      "moonraker_host": "127.0.0.1",
+      "moonraker_keepalive_interval_ms": 10000,
+      "moonraker_port": 7125,
+      "moonraker_reconnect_max_delay_ms": 2000,
+      "moonraker_reconnect_min_delay_ms": 200,
+      "moonraker_request_timeout_ms": 30000,
+      "moonraker_timeout_check_interval_ms": 2000,
+      "name": "C308L Printer",
+      "panel_widgets": {
+        "home": {
+          "main_page_index": 0,
+          "next_page_id": 1,
+          "pages": [
+            {
+              "id": "main",
+              "widgets": [
+                {
+                  "col": 0,
+                  "colspan": 3,
+                  "enabled": true,
+                  "id": "printer_image",
+                  "row": 0,
+                  "rowspan": 3
+                },
+                {
+                  "col": 0,
+                  "colspan": 3,
+                  "enabled": true,
+                  "id": "print_status",
+                  "row": 3,
+                  "rowspan": 2
+                },
+                {
+                  "col": 3,
+                  "colspan": 5,
+                  "enabled": true,
+                  "id": "tips",
+                  "row": 0,
+                  "rowspan": 2
+                },
+                {
+                  "col": 3,
+                  "colspan": 1,
+                  "enabled": true,
+                  "id": "temperature",
+                  "row": 2,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "shutdown",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "lock",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "power_device",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "network",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "firmware_restart",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "tool_switcher",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": 4,
+                  "colspan": 1,
+                  "enabled": true,
+                  "id": "led",
+                  "row": 4,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "led_controls",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": 5,
+                  "colspan": 1,
+                  "enabled": true,
+                  "id": "fan_stack",
+                  "row": 4,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "fan",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "nozzle_temps",
+                  "row": -1,
+                  "rowspan": 2
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "chamber_temperature",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "temp_stack",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "thermistor",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 2,
+                  "enabled": false,
+                  "id": "temp_graph",
+                  "row": -1,
+                  "rowspan": 2
+                },
+                {
+                  "col": -1,
+                  "colspan": 3,
+                  "enabled": false,
+                  "id": "preheat",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "ams",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "bypass",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "active_spool",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": 6,
+                  "colspan": 1,
+                  "enabled": true,
+                  "id": "filament",
+                  "row": 4,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "humidity",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "width_sensor",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "favorite_macro",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "macros",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "motion",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 2,
+                  "enabled": false,
+                  "id": "clock",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 2,
+                  "enabled": false,
+                  "id": "control_buttons",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 2,
+                  "enabled": false,
+                  "id": "job_queue",
+                  "row": -1,
+                  "rowspan": 2
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "clog_detection",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 2,
+                  "enabled": false,
+                  "id": "print_stats",
+                  "row": -1,
+                  "rowspan": 2
+                },
+                {
+                  "col": -1,
+                  "colspan": 1,
+                  "enabled": false,
+                  "id": "gcode_console",
+                  "row": -1,
+                  "rowspan": 1
+                },
+                {
+                  "col": -1,
+                  "colspan": 2,
+                  "enabled": false,
+                  "id": "camera",
+                  "row": -1,
+                  "rowspan": 2
+                },
+                {
+                  "col": 7,
+                  "colspan": 1,
+                  "enabled": true,
+                  "id": "notifications",
+                  "row": 4,
+                  "rowspan": 1
+                },
+                {
+                  "col": 3,
+                  "colspan": 1,
+                  "enabled": true,
+                  "id": "bed_temperature",
+                  "row": 3,
+                  "rowspan": 1
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "printer_name": "C308L Printer",
+      "safety_limits": {
+        "_comment": "Safety limits for G-code generation. Explicit values override Moonraker auto-detection. Defaults are conservative for most FDM printers. High-temp printers may need max_temperature_celsius > 400. Leave unset to auto-detect from printer.cfg via Moonraker.",
+        "max_absolute_position_mm": 1000.0,
+        "max_fan_speed_percent": 100.0,
+        "max_feedrate_mm_min": 50000.0,
+        "max_relative_distance_mm": 1000.0,
+        "max_temperature_celsius": 400.0,
+        "min_absolute_position_mm": 0.0,
+        "min_fan_speed_percent": 0.0,
+        "min_feedrate_mm_min": 0.0,
+        "min_relative_distance_mm": -1000.0,
+        "min_temperature_celsius": 0.0
+      },
+      "temp_sensors": {
+        "bed": "temperature_sensor bed",
+        "hotend": "temperature_sensor extruder"
+      },
+      "type": "Generic"
+    },
+    "show_printer_switcher": false
+  },
+  "safety": {
+    "_cancel_escalation_enabled_comment": "Enable cancel-to-E-Stop escalation. When enabled, rapidly pressing cancel multiple times triggers an emergency stop. Default: false.",
+    "_cancel_escalation_timeout_seconds_comment": "Window in seconds for cancel escalation to trigger E-Stop. Default: 30.",
+    "_estop_require_confirmation_comment": "Require confirmation dialog before emergency stop. When false, E-Stop triggers immediately. Default: true (confirmation required).",
+    "cancel_escalation_enabled": false,
+    "cancel_escalation_timeout_seconds": 30,
+    "estop_require_confirmation": true
+  },
+  "security": {
+    "_auto_lock_comment": "Automatically lock screen on sleep/wake. Requires pin_hash to be set. Default: false.",
+    "_pin_hash_comment": "SHA-256 hash of lock screen PIN. Empty = no lock screen. Set via Settings > Security.",
+    "auto_lock": false,
+    "pin_hash": ""
+  },
+  "sound_theme": "default",
+  "sounds": {
+    "_volume_comment": "Master volume level (0-100). Default: 80.",
+    "volume": 80
+  },
+  "sounds_enabled": false,
+  "standard_macros": {
+    "_comment": "Controls panel quick-action button assignments. Built-in options: 'clean_nozzle', 'bed_level', 'heat_soak', 'purge', 'bed_mesh'. Empty string hides the button.",
+    "quick_button_1": "clean_nozzle",
+    "quick_button_2": "bed_level",
+    "quick_button_3": "",
+    "quick_button_4": ""
+  },
+  "streaming": {
+    "_force_streaming_comment": "Always use streaming operations regardless of file size. Useful for memory-constrained devices or testing. Can also be set via HELIX_FORCE_STREAMING=1 env var.",
+    "_threshold_mb_comment": "File size threshold in MB for using streaming (disk-based) operations instead of buffered (in-memory). 0 = auto-detect based on 10% of available RAM. Override with HELIX_FORCE_STREAMING=1 env var to force streaming for all files.",
+    "force_streaming": false,
+    "threshold_mb": 0
+  },
+  "telemetry_enabled": false,
+  "theme": {
+    "_preset_comment": "Theme accent preset. 0=Nord. Requires restart.",
+    "preset": 0
+  },
+  "tour": {
+    "completed": true,
+    "last_seen_version": 1
+  },
+  "ui": {
+    "cached_grid": {
+      "home": {
+        "rows": 5
+      }
+    }
+  },
+  "ui_sounds_enabled": true,
+  "update": {
+    "_channel_comment": "Update channel. 0=Stable, 1=Beta (pre-releases), 2=Dev (custom URL)",
+    "_dev_url_comment": "Base URL for dev channel manifest. Set to enable Dev channel option.",
+    "channel": 0,
+    "dev_url": ""
+  },
+  "upgrade_nudge": {
+    "_dismissed_version_comment": "Auto-maintained. The version the user dismissed the banner for; resets on each new detected release.",
+    "_intensity_comment": "In-app upgrade nudging intensity. 'off' = no in-app prompt beyond the Settings > About entry. 'normal' = red dot on Settings icon when an update is available. 'aggressive' = persistent dismissible top-banner for the 1.0 rollout. Default 'off' until 1.0 ships.",
+    "dismissed_version": "",
+    "intensity": "off"
+  },
+  "wifi_expected": false,
+  "wizard_completed": true
+}

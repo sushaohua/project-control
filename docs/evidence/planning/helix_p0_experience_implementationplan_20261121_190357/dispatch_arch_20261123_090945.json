@@ -1,0 +1,13 @@
+{
+  "role": "ARCH",
+  "action": "reuse",
+  "main_session": "agy / Antigravity-CLI (coordinator=gemini-4-carbon-high)",
+  "requested_model": "gemini-4-carbon-high",
+  "effective_model": "gemini-4-carbon-high",
+  "fallback_reason": null,
+  "member_name": "arch",
+  "conversation_id": "323803ed-4c6d-4ea4-bed4-6b6b690a7551",
+  "models_check": "swarm models 2026-11-23T09:09:31+08:00: gemini-4-carbon-high in list, quota_remaining=97%; swarm status 09:09:33: arch waiting on gemini-4-carbon-high",
+  "effective_model_source": "swarm status 2026-11-23 09:09:33",
+  "ts": "2026-11-23T09:09:45+08:00"
+}

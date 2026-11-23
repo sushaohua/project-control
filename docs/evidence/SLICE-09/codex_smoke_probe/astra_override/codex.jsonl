@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"01a20628-394f-7ef3-b279-8d23fa6d83cc"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\n  \"slice_id\": \"SMOKE-PROBE\",\n  \"decision\": \"APPROVED\",\n  \"axis_spec_realism\": \"ok\",\n  \"axis_embedded_safety\": \"ok\",\n  \"findings\": []\n}"}}
+{"type":"turn.completed","usage":{"input_tokens":25073,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":60,"reasoning_output_tokens":0}}

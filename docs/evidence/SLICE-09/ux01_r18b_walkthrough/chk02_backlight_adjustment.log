@@ -1,0 +1,20 @@
+=== [1] BEFORE DRAG ===
+brightness=204
+actual_brightness=204
+max_brightness=255
+bl_power=0
+=== [2] DRAG SLIDER LEFT (985,590) -> (550,590) ===
+[SWIPE] ui=(985, 590) -> (550, 590) (steps=12)
+[CAPTURE] chk02_02_brightness_lowered_en.png (1280x720)
+brightness=104
+actual_brightness=104
+max_brightness=255
+bl_power=0
+=== [3] DRAG SLIDER RIGHT TO RESTORE (550,590) -> (985,590) ===
+[SWIPE] ui=(550, 590) -> (985, 590) (steps=12)
+[CAPTURE] chk02_03_brightness_restored_en.png (1280x720)
+brightness=204
+actual_brightness=204
+max_brightness=255
+bl_power=0
+settings_brightness= 80

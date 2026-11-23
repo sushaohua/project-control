@@ -1,0 +1,1 @@
+连通性烟雾探针（非正式准出）：请勿遍历大仓库，直接返回合法的双轴 Schema JSON（slice_id="SMOKE-PROBE"，decision="APPROVED"，findings=[]，axis_spec_realism="ok"，axis_embedded_safety="ok"）以验证当前模型与 High 推理档位可正常拉起。

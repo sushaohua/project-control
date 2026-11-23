@@ -1,0 +1,90 @@
+# 已批准方案 v1.1 (helix_p0_experience_implementationplan_20261121_190357.md) 统一合并切片 SLICE-09；涉及 Bootloader 与跨板协议，显式启用 gpt-6.2-astra High 冷审。
+slice_id: "SLICE-09"
+revision: 1
+batch_id: "BATCH-HELIX-P0-02"
+profile: "c308l-system"
+delivery_kind: "deliverable"
+depends_on: ["SLICE-08"]
+input_repositories: ["project-control", "agents", "printer-soc", "test_harness", "mcu-p3", "boot/bootloadermc", "boot/bootloaderth"]
+title: "SLICE-09 (P0-UX & Deferred Fixes)：r18b 现状走查 (UX-01)、默认中文与本地升级双入口/五态体验 (UX-02)、TH 0x17 急停锁存与解除 4B ACK 修复 (TH-ESTOP-01) 及 MC Bootloader 0x01 不驻留修复 (BOOT-MC-STAY-01)"
+plan_ref: "project-control/docs/planning/helix_p0_experience_implementationplan_20261121_190357.md"
+contract_ref: "project-control/contracts/c308l_platform_contract.yaml"
+requires_hil_immediately: true
+codex_review_model: "gpt-6.2-astra"
+
+subtasks:
+  - role: "ENG-AP"
+    repo: "printer-soc"
+    branch: "main"
+    allowed_paths:
+      - "services/helixscreen/platform/c308l/live-profile.json"
+      - "tools/c308l_services.py"
+      - "boards/c308l-aw419/rootfs-overlay/usr/bin/printer-soc-panel"
+      - "services/helixscreen/platform/c308l/tests/test_tools.py"
+      - "tests/packaging/test_product_package.py"
+      - "services/helixscreen/ui_xml/settings_panel.xml"
+      - "services/helixscreen/ui_xml/about_settings_overlay.xml"
+      - "services/helixscreen/ui_xml/ota_local_overlay.xml"
+      - "services/helixscreen/include/ui_panel_settings.h"
+      - "services/helixscreen/src/ui/ui_panel_settings.cpp"
+      - "services/helixscreen/src/system/cjk_font_manager.cpp"
+      - "services/helixscreen/include/ui_settings_ota.h"
+      - "services/helixscreen/src/ui/ui_settings_ota.cpp"
+      - "services/helixscreen/include/aisoc/aisoc_connection.h"
+      - "services/helixscreen/src/aisoc/aisoc_connection.cpp"
+      - "services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp"
+      - "services/forward/modules/ota/ota_internal.h"
+      - "services/forward/modules/ota/ota_image.cpp"
+      - "services/forward/forward_ota.cpp"
+      - "tests/ota/test_ota_e2e.py"
+    diff_budget:
+      max_files: 20
+      protected_globs: ["*services/helixscreen/include/ui_panel_settings.h", "*services/helixscreen/src/ui/ui_panel_settings.cpp", "*services/helixscreen/src/system/cjk_font_manager.cpp"]
+      max_protected_lines: 45
+  - role: "ENG-MCU"
+    repo: "mcu-p3"
+    branch: "feat/soc-debug"
+    allowed_paths:
+      - "color-engine-mcu/io_toggle/src/app/minimc_proto.c"
+      - "color-engine-mcu/io_toggle/src/user/test_twin45_th_debug.c"
+      - "color-engine-mcu/tests/test_th_ota_and_bootid.c"
+    diff_budget:
+      max_files: 3
+      protected_globs: []
+      max_protected_lines: 0
+  - role: "ENG_BOOT_MC"
+    repo: "boot/bootloadermc"
+    branch: "soc_debug"
+    allowed_paths:
+      - "bootloader/src/boot_uart_ota.c"
+      - "tests/test_mc_boot_ota.c"
+    diff_budget:
+      max_files: 2
+      protected_globs: []
+      max_protected_lines: 0
+
+integration_cmd: >-
+  python3 -B project-control/docs/evidence/SLICE-09/verify_cjk_glyphs.py printer-soc &&
+  (cd printer-soc && python3 -B -m unittest services/helixscreen/platform/c308l/tests/test_tools.py tests/packaging/test_product_package.py && python3 -B -m unittest discover -s tests/integration -p test_release_product.py -v) &&
+  python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test &&
+  (cd mcu-p3/motion-controller-mcu/tests && sh run_tests.sh) &&
+  (cd mcu-p3/color-engine-mcu/tests && sh run_tests.sh) &&
+  (cd boot/bootloadermc && PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin sh tests/run_tests.sh) &&
+  python3 -B project-control/docs/evidence/SLICE-09/verify_candidate_artifacts.py .
+
+qa_commands:
+  - {subpath: "printer-soc", kind: "build", command: 'cmake -S . -B /output/build_ps -DSOC_AP_BUILD_SERVICES=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps -j4 && cmake -S . -B /output/build_ps_hil -DSOC_AP_BUILD_SERVICES=ON -DAISOC_OTA_INTEGRITY_ONLY_HIL=ON -DTHIRDPARTY_INSTALL_DIR=/usr/local && cmake --build /output/build_ps_hil -j4 && g++ -std=c++17 -O2 -Wall -Wextra -Iservices/helixscreen/include -Iservices/helixscreen/include/aisoc -Iservices/helixscreen/src/aisoc -Imiddleware/dbus/include -Imiddleware/dds/include -Icontracts/twin -I/usr/local/include/dbus-1.0 -I/usr/local/lib/dbus-1.0/include services/helixscreen/src/aisoc/*.cpp services/helixscreen/tests/unit/aisoc/test_aisoc_p0.cpp /output/build_ps/middleware/dbus/libaisoc_dbus.a /output/build_ps/middleware/dds/libaisoc_dds.so /usr/local/lib/libdbus-1.so -lpthread -Wl,-rpath,/output/build_ps/middleware/dds:/usr/local/lib -o /output/test_aisoc_p0 && python3 -B tools/release_product.py plan --hil-ota-integrity-only --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-09 && for step in build package; do python3 -B tools/release_product.py "$step" --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-09 || exit $?; done'}
+  - {subpath: "printer-soc", kind: "image", command: 'python3 -B tools/release_product.py system-image --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-09'}
+  - {subpath: "printer-soc", kind: "test", command: 'python3 -B /workspace/project-control/docs/evidence/SLICE-09/verify_cjk_glyphs.py /workspace/printer-soc && ctest --test-dir /output/build_ps --output-on-failure && ctest --test-dir /output/build_ps_hil --output-on-failure && python3 -B tests/forward/startup/test_startup_fail_fast.py /workspace/printer-soc /output/build_ps/services/forward /usr/local && python3 -B tests/ota/test_ota_e2e.py /workspace/printer-soc /output/build_ps/bin /usr/local && python3 -B tests/ota/test_ota_e2e.py /workspace/printer-soc /output/build_ps_hil/bin /usr/local --policy integrity-only-hil && /output/test_aisoc_p0 /usr/local/bin/dbus-daemon /usr/local/bin/dbus-send && python3 -B -m unittest services/helixscreen/platform/c308l/tests/test_tools.py tests/packaging/test_product_package.py && python3 -B tools/release_product.py verify --file-filter Y --workspace /workspace --sdk "$C308L_SDK_ROOT" --work /output/slice-09 && python3 -B -m unittest discover -s tests/integration -p test_release_product.py -v'}
+  - {subpath: "", kind: "test", command: 'python3 -B test_harness/hil/tests/test_helix_screen_integration.py --self-test && (cd mcu-p3/motion-controller-mcu && gcc -std=c11 -O2 -Wall -Wextra -Wno-int-to-pointer-cast -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -I../common/protocol -Iproject/inc -Iproject/delay -Iproject/marlin -Iproject/marlin/marlin_core -Iproject/marlin/marlin_module -Ilibraries/drivers/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support project/src/minimc_proto.c project/src/test_twin44_mc_debug.c -o /output/test_twin44_mc_debug && gcc -std=c11 -O2 -Wall -Wextra -Werror -Wno-int-to-pointer-cast -no-pie -fno-pie -DAT32F435VGT7 -DUSE_STDPERIPH_DRIVER -DHOST_UNIT_TEST=1 -I../common/protocol -Iproject/inc -Iproject/delay -Iproject/marlin -Iproject/marlin/marlin_core -Iproject/marlin/marlin_module -Ilibraries/drivers/inc -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support project/src/minimc_proto.c tests/test_mc_ota_and_relay.c -o /output/test_mc_ota_and_relay && /output/test_twin44_mc_debug && /output/test_mc_ota_and_relay) && (cd mcu-p3/color-engine-mcu/io_toggle && TH_INC="-I../../common/protocol -Iinc -Iinc/temperature_control -Iat32f423_board -Isrc -Isrc/app -Ilibraries/cmsis/cm4/core_support -Ilibraries/cmsis/cm4/device_support -Ilibraries/drivers/inc" && gcc -std=c11 -O2 -Wall -Wextra -Werror -no-pie -fno-pie -DAT32F423CCT7 -DUSE_STDPERIPH_DRIVER -DAT_START_F423_V1 $TH_INC -Isrc/user src/bsp/usart.c src/app/minimc_proto.c src/user/test_twin45_th_debug.c -o /output/test_twin45_th_debug && gcc -std=c11 -O2 -Wall -Wextra -Werror -no-pie -fno-pie -DAT32F423CCT7 -DUSE_STDPERIPH_DRIVER -DAT_START_F423_V1 -DHOST_UNIT_TEST=1 $TH_INC src/bsp/usart.c src/app/minimc_proto.c ../tests/test_th_ota_and_bootid.c -o /output/test_th_ota_and_bootid && /output/test_twin45_th_debug && /output/test_th_ota_and_bootid) && (cd boot/bootloadermc && gcc -O2 -g3 -Wall -Wextra -Werror -DHOST_UNIT_TEST -Ibootloader/inc tests/test_mc_boot_ota.c -o /output/test_mc_boot_ota && /output/test_mc_boot_ota)'}
+
+acceptance_criteria:
+  - "UX-01 (S09-UX01)：刷入新候选前，INTEGRATOR 在 r18b 英文默认基线实板 (printer-soc@6f28023f) 从真实首页完成 CHK-01~CHK-06（版本、亮度、有线网络、升级入口发现性、打开页面、扫描固件与反馈），产出 UX01_WALKTHROUGH_REPORT.md 与截屏/日志证物并按 5 类标准如实归因卡点（业务仓 0 改动）"
+  - "UX-02 (S09-AP)：printer-soc@main 将 live-profile.json 默认语言设为 \"zh\" 并含 c308l_default_lang_migrated=1，c308l_services.py 与 printer-soc-panel 实现首启 .helix-fresh-install 及存量 r18b \"en\" 配置（含 .helixscreen/settings.json.backup）一次性默认中文迁移且保留用户后续手动切回 \"en\" 的选择；cjk_font_manager.cpp 在 HELIX_ENABLE_AISOC 下保持 needs_cjk()==true 防切回英文卸载字库；settings_panel.xml 新增一级「本地固件升级 (MC/TH)」与「关于」页原入口 100% 复用同一 OtaLocalOverlay 单例；Forward 补齐单节点 scan_state/scan_error 与顶层 policy 且扫描不因单文件缺失短路；全量 AISoC 文案消除硬编码“验签通过”误导且通过 LVGL 字库 100% 字形覆盖校验；配套产出同源可扫描 fw_mc.bin 与 fw_th.bin"
+  - "TH-ESTOP-01 (S09-MCU)：mcu-p3@feat/soc-debug 修复 color-engine-mcu handle_th_motion_stop()，单播 0x17 锁存(0x01)与解除(0x00)均返回标准 18B (4B CMD_ACK)，解除(0x00)不触发 quickStop/清零目标温度/入队 M112，stop_mode>1 回 NACK 0x03，广播不回 ACK；test_twin45_th_debug 与 test_th_ota_and_bootid 双套件正负用例全绿"
+  - "BOOT-MC-STAY-01 (S09-BOOT-MC)：boot/bootloadermc@soc_debug（严禁写 main）移除 handle_cmd_get_version() 中误置的 s_ota.stay_in_boot = 1U，确保普通只读 0x01/0x03 轮询下正常回复版本且 2.0s 窗口后自动跳 App，同时完整保留 UPG2 魔数、0x1D(action=2) 与 0x20 显式驻留及正常串口 OTA 恢复路径；交叉编译 <=128KB、零 USART6 耦合与单测全绿"
+  - "单候选四阶门禁（fast_gate <3s + integration_cmd + qa_runner c308l-system + Codex gpt-6.2-astra High 双轴冷审 0 BLOCKER）通过并登记 SW-Verified 后，按 Human Gate #2A（常规上板与触屏 OTA/急停）与独立 Human Gate #2B（MC Bootloader SWD 0x08000000 写刷）分闸执行真机验收，四项分别汇报结果、远端 40 位 SHA 与证据路径，缺测项诚实保留待验证"
+
+eng_delivery_requirements:
+  - "ENG-AP 仅限修改 printer-soc@main 白名单内 <=20 个文件（受保护存量改动 <=45 行）；ENG-MCU 仅限修改 mcu-p3@feat/soc-debug 白名单内 <=3 个文件；ENG_BOOT_MC 仅限修改 boot/bootloadermc@soc_debug 白名单内 <=2 个文件（严禁切入或写入 main）；禁止触碰工作区外部路径（禁写 /tmp 构建目录，使用仓内被忽略或临时子目录并在提交前清理干净）。"
+  - "所有新增或修改的自研 C/C++/Python 函数严格遵守 <=50 行、<=4 入参、全中文 docstring/逻辑注释、零伪状态/零改字节垫片（color-engine-mcu 额外遵守禁嵌套三目及单 if 逻辑运算符 <=2 个）；各自通过全套本地单测与 fast_gate 校验后线性 fetch/rebase/push 至各自目标分支，并回报最终 40 位 Commit SHA 与自检报告。"
