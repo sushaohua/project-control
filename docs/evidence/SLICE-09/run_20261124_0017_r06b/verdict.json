@@ -1,0 +1,83 @@
+{
+  "slice_id": "SLICE-09",
+  "batch_id": "BATCH-HELIX-P0-02",
+  "profile": "c308l-system",
+  "commits": {
+    "printer-soc": "547162dc1525c7476c7713245feb03aca0a8f150",
+    "mcu-p3": "112842cb42146e466f7001ede30096bd0125c385",
+    "boot/bootloadermc": "157b5317bc8fd90e93f684f949d37e98428ea193",
+    "project-control": "61dd2021d417e7ac670cb69bd6c76f3ecd852af1",
+    "agents": "30ecc6586a861c1543a97804cfe0600bb4778efb",
+    "test_harness": "fb1409be7ad5586c701df586553d7f5b67bc2b43",
+    "boot/bootloaderth": "1a0351363cf7b9cbc0aa6919b4afc6be61561152"
+  },
+  "root_commit": "8ae0f92c74628a35b224a53d3767f8289176dac7",
+  "input_fingerprint": "5b0667aeb4f9901fed201913f3f34d6ec2fcc6aa77cf938d4294629f16897553",
+  "status": "FAILED",
+  "stage": "codex",
+  "decision": "REJECTED",
+  "codex_session": "01a2094d-1c57-7e83-85e1-ce0e3f6a39ac",
+  "blocker_count": 4,
+  "findings": [
+    {
+      "id": "S09-R06B-01",
+      "severity": "BLOCKER",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/device_manager/device_manager_service.cpp:327",
+      "message": "带独立故障或急停锁退出 OTA 维护时，dev_state_exit_maintenance() 正确恢复 FAULT，但同一次转换发出的 DeviceStateChanged 将新状态固定写为 IDLE。订阅者会收到设备已空闲的通知，同时 GetDeviceState 仍返回 FAULT。现有维护循环测试只轮询查询结果。应从同一把状态锁内取得实际新状态，并在回归中同时核对广播、查询和动作拒绝结果。"
+    },
+    {
+      "id": "S09-R06B-02",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:319",
+      "message": "面板将所有 active=false、maintenance=true 的终态都解释为 MC 待恢复。Forward 在 TH 进入 Boot 时也设置 recovery_pending。若 TH 传输随后失败，MC 仍可处于 App，终态和重扫结果却都会携带 maintenance=true。面板因此提示取消 TH，并在第 914 行拒绝任何包含 TH 的重试，挡住了实际需要恢复的板。应区分维护标志与节点身份，补验 MC 在 App、TH 驻留 Boot 时的单 TH 恢复路径。"
+    },
+    {
+      "id": "S09-R06B-03",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/forward/forward_ota.cpp:219",
+      "message": "Forward 只保存一份 latest 快照。面板扫描结束时，ota_emit() 先释放 active；若外部任务在 reporter 取走扫描终态前进入 PRECHECK，新的快照就会覆盖原 READY 或 FAILED。面板随后接收更大的 task_id，清除原请求跟踪，既收不到本次扫描 Toast，也不会再为原请求触发超时。现有测试直接发布两个 DDS 样本，覆盖不到发布前的丢失。应保证每个已受理扫描的终态可交付或可按 task_id 取回。"
+    },
+    {
+      "id": "S09-R06B-04",
+      "severity": "BLOCKER",
+      "axis": "spec_realism",
+      "location": "printer-soc/services/helixscreen/src/aisoc/aisoc_connection.cpp:953",
+      "message": "DDS 失联超时后，面板允许重扫。若这次请求收到 -5，last_rpc_code 会保留 BUSY。随后即使 DeviceManager 已报告退出维护、两板在线，只要面板 DDS 订阅仍不可用，锁状态和阶段文案就持续显示「后台已锁定」，而扫描按钮此时已可用。现有负例在模拟后台解除维护后立即停止连接，漏验了恢复结果。应让单次 RPC 拒绝提示结束，并验证后台解锁后页面恢复可重试状态。"
+    },
+    {
+      "id": "S09-R06B-05",
+      "severity": "MINOR",
+      "axis": "spec_realism",
+      "location": "project-control/docs/evidence/SLICE-09/resource_assessment/RESOURCE_ASSESSMENT_REPORT.md:83",
+      "message": "表中三件 AP 制品仍标为等待 Docker QA。本轮归档已可独立对账，rootfs 压缩包为 18,796,844 B，较基线增加 8,244 B；rootfs.ubi 大小持平；整机镜像减少 280 B。归档表可据此更新，板上分区占用和运行采样继续保留待 #2A。"
+    },
+    {
+      "id": "S09-R06B-06",
+      "severity": "NIT",
+      "axis": "embedded_safety",
+      "location": "printer-soc/services/forward/forward_ota.cpp:280",
+      "message": "fwd_ota_command() 已将 operation 限为 0 或 1，因此清理镜像元数据的条件对所有合法请求恒为真。直接清理两板槽位，更容易核验「新任务受理即作废旧摘要」这一约束。"
+    }
+  ],
+  "reason": "独立 Codex 拒单 (4 BLOCKER): S09-R06B-01: 带独立故障或急停锁退出 OTA 维护时，dev_state_exit_maintenance() 正确恢复 FAULT，但同一次转换发出的 DeviceStateChanged 将新状态固定写为 IDLE。订阅者会收到设备已空闲的通知，同时",
+  "next_step": "按 codex_final_json 修复 BLOCKER 项后重过四阶门禁",
+  "evidence": {
+    "verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/verdict.json",
+    "fast_gate_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/fast_gate.log",
+    "integration_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/integration.log",
+    "qa_runner_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/docker_qa/qa_runner_call.log",
+    "server_qa_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/docker_qa/server_qa.json",
+    "server_verdict_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/docker_qa/server_verdict.json",
+    "docker_runtime_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/docker_qa/runtime.log",
+    "docker_checkout_log": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/docker_qa/checkout.log",
+    "build_plan_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/docker_qa/artifacts/build-plan.json",
+    "release_manifest_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/docker_qa/artifacts/release-manifest.json",
+    "codex_final_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/codex/final.json",
+    "codex_jsonl": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/codex/codex.jsonl",
+    "codex_stderr": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/codex/codex.stderr",
+    "codex_request_json": "file:///home/sushaohua/workspace/ai_soc_project/project-control/docs/evidence/SLICE-09/run_20261124_0017_r06b/codex/request.json"
+  }
+}
